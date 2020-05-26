@@ -1,3 +1,212 @@
+Sunpy v2.0rc2 (2020-05-26)
+==========================
+
+Backwards Incompatible Changes
+------------------------------
+
+- The frames `~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` now inherit from the new base class `~sunpy.coordinates.frames.BaseHeliographic`.
+  This changes means that ``isinstance(frame, HeliographicStonyhurst)`` is no longer ``True`` when ``frame`` is `~sunpy.coordinates.frames.HeliographicCarrington`. (`#3595 <https://github.com/sunpy/sunpy/pull/3595>`__)
+- `~sunpy.visualization.cm.color_tables.aia_color_table`, `~sunpy.visualization.cm.color_tables.eit_color_table` and `~sunpy.visualization.cm.color_tables.suvi_color_table` now only take `astropy.units` quantities instead of strings. (`#3640 <https://github.com/sunpy/sunpy/pull/3640>`__)
+- `sunpy.map.Map` is now more strict when the metadata of a map cannot be validated, and
+  an error is now thrown instead of a warning if metadata cannot be validated. In order to
+  load maps that previously loaded without error you may need to pass ``silence_errors=True``
+  to `sunpy.map.Map`. (`#3646 <https://github.com/sunpy/sunpy/pull/3646>`__)
+- ``Fido.search`` will now return results from all clients which match a query, you no longer have to make the query specific to a single client. This means that searches involving the 'eve' and 'rhessi' instruments will now potentially also return results from the VSO. For `~sunpy.net.dataretriever.RHESSIClient` you can now specify ``a.Physobs("summary_lightcurve")`` to only include the summary lightcurve data products not provided by the VSO. (`#3770 <https://github.com/sunpy/sunpy/pull/3770>`__)
+- The objects returned by the ``search`` methods on ``VSOClient``, ``JSOCClient`` and ``GenericClient`` have been changed to be based on `sunpy.net.base_client.BaseQueryResponse`. This introduces a few subtle breaking changes for people using the client search methods directly (not ``Fido.search``), or people using `sunpy.net.fido_factory.UnifiedResponse.get_response`. When slicing an instance of ``QueryResponse`` it will now return an instance of itself, ``QueryResponse.blocks`` can be used to access the underlying records. Also, the ``.client`` attribute of the response no longer has to be the instance of the class the search was made with, however, it often is. (`#3770 <https://github.com/sunpy/sunpy/pull/3770>`__)
+- `~sunpy.coordinates.frames.HeliographicCarrington` is now an observer-based frame, where the observer location (specifically, the distance from the Sun) is used to account for light travel time when determining apparent Carrington longitudes.  Coordinate transformations using this frame now require an observer to be specified. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
+- To enable the precise co-alignment of solar images from different observatories, the calculation of Carrington coordinates now ignores the stellar-aberration correction due to observer motion.
+  For an Earth observer, this change results in an increase in Carrington longitude of ~20 arcseconds.
+  See :ref:`sunpy-coordinates-carrington` for more information. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
+- Fixed a bug where some of the coordinate transformations could raise `ValueError` instead of `~astropy.coordinates.ConvertError` when the transformation could not be performed. (`#3894 <https://github.com/sunpy/sunpy/pull/3894>`__)
+- Astropy 3.2 is now the minimum required version of that dependency. (`#3936 <https://github.com/sunpy/sunpy/pull/3936>`__)
+
+
+Deprecations and Removals
+-------------------------
+
+- Fido search attrs available as `sunpy.net.attrs` i.e, ``a.Time``, ``a.Instrument`` etc are now deprecated as VSO attrs (`sunpy.net.vso.attrs`). (`#3714 <https://github.com/sunpy/sunpy/pull/3714>`__)
+- `sunpy.util.multimethod.MultiMethod` is deprecated, `functools.singledispatch` provides equivalent functionality in the standard library. (`#3714 <https://github.com/sunpy/sunpy/pull/3714>`__)
+- `sunpy.net.vso.attrs.Physobs` has been moved to `sunpy.net.attrs.Physobs` and the original deprecated. (`#3877 <https://github.com/sunpy/sunpy/pull/3877>`__)
+- Deprecate `sunpy.instr.aia.aiaprep` in favor of the `register` function in the
+  [aiapy](https://gitlab.com/LMSAL_HUB/aia_hub/aiapy) package.
+  `sunpy.instr.aia.aiaprep` will be removed in version 2.1 (`#3960 <https://github.com/sunpy/sunpy/pull/3960>`__)
+- Removed the module `sunpy.sun.sun`, which was deprecated in version 1.0.
+  Use the module `sunpy.coordinates.sun` instead. (`#4014 <https://github.com/sunpy/sunpy/pull/4014>`__)
+- Removed Sun-associated functions in `sunpy.coordinates.ephemeris`, which were deprecated in 1.0.
+  Use the corresponding functions in `sunpy.coordinates.sun`. (`#4014 <https://github.com/sunpy/sunpy/pull/4014>`__)
+- Remove the deprecated ``sunpy.net.vso.vso.VSOClient`` ``.query_legacy`` and ``.latest`` methods. (`#4109 <https://github.com/sunpy/sunpy/pull/4109>`__)
+
+
+Features
+--------
+
+- Added `~sunpy.coordinates.metaframes.RotatedSunFrame` for defining coordinate frames that account for solar rotation. (`#3537 <https://github.com/sunpy/sunpy/pull/3537>`__)
+- Added a context manager (`~sunpy.coordinates.transform_with_sun_center`) to ignore the motion of the center of the Sun for coordinate transformations. (`#3540 <https://github.com/sunpy/sunpy/pull/3540>`__)
+- Updated the gallery example titled 'Downloading and plotting an HMI magnetogram' to rotate the HMI magnetogram such that solar North is pointed up. (`#3573 <https://github.com/sunpy/sunpy/pull/3573>`__)
+- Creates a function named ``sunpy.map.sample_at_coords`` that samples the data from the map at the given set of coordinates. (`#3592 <https://github.com/sunpy/sunpy/pull/3592>`__)
+- Enabled the discovery of search attributes for each of our clients. (`#3637 <https://github.com/sunpy/sunpy/pull/3637>`__)
+- Printing `sunpy.net.attr.Instrument` or other "attrs" will show all attributes that exist under the corresponding "attr". (`#3637 <https://github.com/sunpy/sunpy/pull/3637>`__)
+- Printing `sunpy.net.Fido` will print out all the clients that Fido can use. (`#3637 <https://github.com/sunpy/sunpy/pull/3637>`__)
+- Updates `~sunpy.map.GenericMap.draw_grid` to allow disabling the axes labels and the ticks on the top and right axes. (`#3673 <https://github.com/sunpy/sunpy/pull/3673>`__)
+- Creates a ``tables`` property for `~sunpy.net.fido_factory.UnifiedResponse`, which allows to access the `QueryResponse` as an `~astropy.table.Table`, which then can be used for indexing of results. (`#3675 <https://github.com/sunpy/sunpy/pull/3675>`__)
+- Change the APIs for :meth:`sunpy.map.GenericMap.draw_rectangle` and :meth:`sunpy.map.GenericMap.submap` to be consistent with each other and to use keyword-only arguments for specifying the bounding box. (`#3677 <https://github.com/sunpy/sunpy/pull/3677>`__)
+- Updates the `~sunpy.map.mapbase.observer_coordinate` property to warn the user of specific missing metadata for each frame.
+  Omits warning about frames where all metadata is missing or all meta is present. (`#3692 <https://github.com/sunpy/sunpy/pull/3692>`__)
+- Added `sunpy.util.config.copy_default_config` that copies the default config file to the user's config directory. (`#3722 <https://github.com/sunpy/sunpy/pull/3722>`__)
+- ``sunpy.database`` now supports adding database entries and downloading data from ``HEK`` query (`#3731 <https://github.com/sunpy/sunpy/pull/3731>`__)
+- Added a helper function (`~sunpy.coordinates.util.get_rectangle_coordinates`) for defining a rectangle in longitude and latitude coordinates. (`#3737 <https://github.com/sunpy/sunpy/pull/3737>`__)
+- Add a ``.data`` property in `~sunpy.timeseries.GenericTimeSeries`, so that users are encouraged to use `to_dataframe` to get the data of the timeseries. (`#3746 <https://github.com/sunpy/sunpy/pull/3746>`__)
+- It is now possible to turn on or off various corrections in :func:`~sunpy.coordinates.sun.L0` (the apparent Carrington longitude of Sun-disk center as seen from Earth). (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
+- Made skimage.transform import lazy to reduce import time of `sunpy.image.transform` by ~50% (`#3818 <https://github.com/sunpy/sunpy/pull/3818>`__)
+- Add support for parfive 1.1. This sets a limit on the number of open connections to JSOC when downloading files to 10. (`#3822 <https://github.com/sunpy/sunpy/pull/3822>`__)
+- Fido clients (subclasses of `sunpy.net.base_client.BaseClient`) can now register their own attrs modules with `sunpy.net.attrs`.
+  This allows clients which require attr classes specific to that client to register modules that can be used by the user i.e. ``a.vso``.
+  It also allows clients implemented externally to sunpy to register attrs. (`#3869 <https://github.com/sunpy/sunpy/pull/3869>`__)
+- Added the methods :meth:`sunpy.map.GenericMap.quicklook` and :meth:`sunpy.map.MapSequence.quicklook` to display an HTML summary of the instance, including interactive controls.
+  When using Jupyter notebooks, this HTML summary is automatically shown instead of a text-only representation. (`#3951 <https://github.com/sunpy/sunpy/pull/3951>`__)
+- Added `_localfilelist` method in `~sunpy.util.scraper.Scraper` to scrap local data archives. (`#3994 <https://github.com/sunpy/sunpy/pull/3994>`__)
+- Added extra constants to `sunpy.sun.constants`:
+
+  - Longitude of the prime meridian (epoch J2000.0) : ``sunpy.sun.constants.get('W_0')``
+  - Sidereal rotation rate : `sunpy.sun.constants.sidereal_rotation_rate`
+  - First Carrington rotation (JD TT) : `sunpy.sun.constants.first_carrington_rotation`
+  - Mean synodic period : `sunpy.sun.constants.mean_synodic_period`
+  - Right ascension (RA) of the north pole (epoch J2000.0) : ``sunpy.sun.constants.get('alpha_0')``
+  - Declination of the north pole (epoch J2000.0) : ``sunpy.sun.constants.get('delta_0')`` (`#4013 <https://github.com/sunpy/sunpy/pull/4013>`__)
+
+
+Bug Fixes
+---------
+
+- Added support for passing ``TimeSeriesMetaData`` object to ``timeseries_factory`` and associated validation tests. (`#3639 <https://github.com/sunpy/sunpy/pull/3639>`__)
+- Now when `~sunpy.map.GenericMap` fails to load a file, the filename that failed to load will now be part of the error message. (`#3727 <https://github.com/sunpy/sunpy/pull/3727>`__)
+- Work around incorrect Content-Disposition headers in some VSO downloads, which were leading to mangled filenames. (`#3740 <https://github.com/sunpy/sunpy/pull/3740>`__)
+- ``Fido.search`` can now service queries without ``a.Time`` being specified. This is currently only used by the `sunpy.net.jsoc.JSOCClient`. (`#3770 <https://github.com/sunpy/sunpy/pull/3770>`__)
+- Fixed a bug with the calculation of Carrington longitude as seen from Earth where it was using an old approach instead of the current approach (for example, the varying Sun-Earth distance is now taken into account).
+  The old approach resulted in errors no greater than 7 arcseconds in Carrington longitude when using `~sunpy.coordinates.sun.L0` and `~sunpy.coordinates.frames.HeliographicCarrington`. (`#3772 <https://github.com/sunpy/sunpy/pull/3772>`__)
+- Updated `sunpy.map.compositemap.plot` to support a linewidths argument. (`#3792 <https://github.com/sunpy/sunpy/pull/3792>`__)
+- Fix a bug in `sunpy.net.jsoc.JSOCClient` where requesting data for export would not work if a non-time primekey was used. (`#3825 <https://github.com/sunpy/sunpy/pull/3825>`__)
+- Add support for passing paths of type `pathlib.Path` in `sunpy.net.jsoc.JSOCClient.fetch`. (`#3838 <https://github.com/sunpy/sunpy/pull/3838>`__)
+- Add explicit support for dealing with download urls for files, under 'as-is' protocol in `sunpy.net.jsoc.JSOCClient.get_request`. (`#3838 <https://github.com/sunpy/sunpy/pull/3838>`__)
+- Updated the method used to filter time in the VSO post-search filtering function. (`#3840 <https://github.com/sunpy/sunpy/pull/3840>`__)
+- Fix failing of fetching of the indexed JSOCResponses using `Fido.fetch`. (`#3852 <https://github.com/sunpy/sunpy/pull/3852>`__)
+- Prevented `GenericMap.plot` modifying in-place any items passed as ``imshow_kwargs``. (`#3867 <https://github.com/sunpy/sunpy/pull/3867>`__)
+- Changed the format of DATE-OBS in `GenericMap.wcs` from iso to isot (ie. with a "T" between the date and time) to conform with the FITS standard. (`#3872 <https://github.com/sunpy/sunpy/pull/3872>`__)
+- Fixed a minor error (up to ~10 arcseconds) in the calculation of the Sun's position angle (:func:`sunpy.coordinates.sun.P`). (`#3886 <https://github.com/sunpy/sunpy/pull/3886>`__)
+- `~sunpy.net.hek.HEKClient` was returning HTML and not JSON. (`#3899 <https://github.com/sunpy/sunpy/pull/3899>`__)
+- Updated to HTTPS for HEK. (`#3917 <https://github.com/sunpy/sunpy/pull/3917>`__)
+- The accuracy of the output of :func:`sunpy.coordinates.ephemeris.get_horizons_coord` is significantly improved. (`#3919 <https://github.com/sunpy/sunpy/pull/3919>`__)
+- Fixed a bug where the longitude value for the reference coordinate in the Map repr would be displayed with the unintended longitude wrapping. (`#3959 <https://github.com/sunpy/sunpy/pull/3959>`__)
+- It is now possible to specify a local file path to
+  `sunpy.data.data_manager.DataManager.override_file` without having to prefix it
+  with ``file://``. (`#3970 <https://github.com/sunpy/sunpy/pull/3970>`__)
+- Closed the session in the destructor of VSOClient thus solving the problem of socket being left open (`#3973 <https://github.com/sunpy/sunpy/pull/3973>`__)
+- Fixed a bug of where results of VSO searches would have inconsistent ordering in `~sunpy.net.vso.vso.QueryResponse` by always sorting the results by start time. (`#3974 <https://github.com/sunpy/sunpy/pull/3974>`__)
+- Fixes two bugs in `sunpy.util.decorator.deprecated`: correctly calculates the
+  removal version and does not override the default and/or alternative functionality
+  message. Providing a custom deprecation message now suppresses any
+  mention of the removal version. Additionally, a `pending` keyword argument is
+  provided to denote functions/classes that are pending deprecation. (`#3982 <https://github.com/sunpy/sunpy/pull/3982>`__)
+- Correctly generate labels for sliders in
+  `~sunpy.visualization.animators.ArrayAnimatorWCS` when the number of pixel
+  dimensions and the number of world dimensions are not the same in the WCS. (`#3990 <https://github.com/sunpy/sunpy/pull/3990>`__)
+- Fix a bug with `sunpy.visualization.animator.ArrayAnimatorWCS` where animating
+  a line with a masked array with the whole of the initial line masked out the
+  axes limits for the x axis were not correctly set. (`#4001 <https://github.com/sunpy/sunpy/pull/4001>`__)
+- Fixed passing in a list of URLs into `sunpy.map.GenericMap`, before it caused an error due to the wrong type being returned. (`#4007 <https://github.com/sunpy/sunpy/pull/4007>`__)
+- Fixed a bug with :func:`~sunpy.coordinates.transformations.transform_with_sun_center` where the global variable was sometimes restored incorrectly.
+  This bug was most likely encountered if there was a nested use of this context manager. (`#4015 <https://github.com/sunpy/sunpy/pull/4015>`__)
+- Fixes a bug in fido_factory to allow  path="./" in fido.fetch(). (`#4058 <https://github.com/sunpy/sunpy/pull/4058>`__)
+- Prevented `sunpy.io.fits.header_to_fits` modifying the passed header in-place. (`#4067 <https://github.com/sunpy/sunpy/pull/4067>`__)
+- Strip out any unknown unicode from the HEK response to prevent it failing to load some results. (`#4088 <https://github.com/sunpy/sunpy/pull/4088>`__)
+- Fixed a bug in :func:`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst` that resulted in a error when requesting an array of locations in conjuction with enabling the light-travel-time correction. (`#4112 <https://github.com/sunpy/sunpy/pull/4112>`__)
+- `sunpy.map.GenericMap.top_right_coord` and `~sunpy.map.map.GenericMap.center`
+  have had their definitions clarified, and both have had off-by-one indexing
+  errors fixed. (`#4121 <https://github.com/sunpy/sunpy/pull/4121>`__)
+- Fixed `sunpy.map.GenericMap.submap()` when scaled pixel units (e.g. ``u.mpix``)
+  are used. (`#4127 <https://github.com/sunpy/sunpy/pull/4127>`__)
+- Fixed bugs in `~sunpy.util.scraper.Scraper.filelist`
+  that resulted in error when the HTML page of URL opened by the scraper contains some "a" tags without "href" attribute
+  and resulted in incorrect file urls when any href stores filepath relative to the URL's domain instead of just a filename. (`#4132 <https://github.com/sunpy/sunpy/pull/4132>`__)
+- Fixed inconsistencies in how `~sunpy.map.GenericMap.submap` behaves when passed corners in pixel and world coordinates.
+  The behavior for submaps specified in pixel coordinates is now well-defined for pixels on the boundary of the rectangle
+  and is consistent for all boundaries. Previously pixels on the lower left boundary were included, but excluded on the
+  upper and right boundary. This means the shape of a submap may now be 1 pixel larger in each dimension.
+  Added several more tests for `~sunpy.map.GenericMap.submap` for a range of cutout sizes in both pixel and world
+  coordinates. (`#4134 <https://github.com/sunpy/sunpy/pull/4134>`__)
+- `sunpy.map.on_disk_bounding_coordinates` now fully propagates the coordinate
+  frame of the input map to the output coordinates. Previously only the observer
+  coordinate, and no other frame attributes, were propagated. (`#4141 <https://github.com/sunpy/sunpy/pull/4141>`__)
+- Fix an off-by-one error in the reference pixel returned by
+  `sunpy.map.make_fitswcs_header`. (`#4152 <https://github.com/sunpy/sunpy/pull/4152>`__)
+- `sunpy.map.GenericMap.reference_pixel` now uses zero-based indexing, in order
+  to be consistent with the rest of the `sunpy.map` API. (`#4154 <https://github.com/sunpy/sunpy/pull/4154>`__)
+- Previously `sunpy.map.GenericMap.resample` with ``method='linear'`` was
+  using an incorrect and constant value to fill edges when upsampling a map. Values
+  near the edges are now correctly extrapolated using the ``fill_value=extrapolate``
+  option to `scipy.interpolate.interp1d`. (`#4164 <https://github.com/sunpy/sunpy/pull/4164>`__)
+- Fixed a bug where passing an `int` or `list` via the `hdus` keyword argument to
+  `~sunpy.io.fits.read` threw an exception because the list of HDU objects was no longer
+  of type `~astropy.io.fits.hdu.HDUList`. (`#4183 <https://github.com/sunpy/sunpy/pull/4183>`__)
+- Fix attr printing when the attr registry is empty for that attr (`#4199 <https://github.com/sunpy/sunpy/pull/4199>`__)
+
+
+Improved Documentation
+----------------------
+
+- Fixed an issue with the scaling of class-inheritance diagrams in the online documentation by blocking the versions of `graphviz` containing a bug. (`#3548 <https://github.com/sunpy/sunpy/pull/3548>`__)
+- A new example gallery example "Plotting a difference image" has been added,
+  which can be used for base difference or running difference images. (`#3627 <https://github.com/sunpy/sunpy/pull/3627>`__)
+- Removed obselete `Astropy Helpers` submodule section in `CONTRIBUTING.rst`;
+  Also removed mentions of `astropy_helpers` in all files of the project. (`#3676 <https://github.com/sunpy/sunpy/pull/3676>`__)
+- Corrected misleading `~sunpy.timeseries.metadata.TimeSeriesMetaData` documentation about optional parameters. (`#3680 <https://github.com/sunpy/sunpy/pull/3680>`__)
+- Added an example for `~sunpy.map.GenericMap.world_to_pixel` function in the Units & Coordinates guide. (`#3776 <https://github.com/sunpy/sunpy/pull/3776>`__)
+- Added a :ref:`page <sunpy-coordinates-carrington>` describing how SunPy calculates Carrington longitudes. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
+- Changed padding value of an example in the example gallery to fix the overlap of titles and x-label axes. (`#3835 <https://github.com/sunpy/sunpy/pull/3835>`__)
+- More information and links about how to create changelogs. (`#3856 <https://github.com/sunpy/sunpy/pull/3856>`__)
+- Clarified some inputs to `sunpy.map.GenericMap.plot`. (`#3866 <https://github.com/sunpy/sunpy/pull/3866>`__)
+- Changed quoted sentence (that we suggest authors add to their research papers) in CITATION.rst (`#3896 <https://github.com/sunpy/sunpy/pull/3896>`__)
+- Add example of how to use SunPy's HEK client to search for the GOES flare event list. (`#3953 <https://github.com/sunpy/sunpy/pull/3953>`__)
+- Improved the doc layout of `sunpy.data.sample`. (`#4034 <https://github.com/sunpy/sunpy/pull/4034>`__)
+- Made improvements to the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_secchi_starfield.py`. (`#4039 <https://github.com/sunpy/sunpy/pull/4039>`__)
+- Improved the documentation of `sunpy.map.GenericMap.resample`. (`#4043 <https://github.com/sunpy/sunpy/pull/4043>`__)
+- Updated the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_secchi_starfield.py` to use all of the information in the star catalog. (`#4116 <https://github.com/sunpy/sunpy/pull/4116>`__)
+- Mini-galleries are now easier to create in the documentation thanks to a custom Sphinx directive (``minigallery``).
+  The page :ref:`sunpy-coordinates-rotatedsunframe` has an example of a mini-gallery at the bottom. (`#4124 <https://github.com/sunpy/sunpy/pull/4124>`__)
+- Added `sunpy.visualization.colormaps.color_tables` to the docs. (`#4182 <https://github.com/sunpy/sunpy/pull/4182>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Removed un-used and un-tested code paths in the private ``_remove_lytaf_events`` function
+  in `sunpy.instr.lyra`. (`#3570 <https://github.com/sunpy/sunpy/pull/3570>`__)
+- Removed ``astropy_helpers`` and this means that ``python setup.py <test,build_docs>`` no longer works.
+  So if you want to:
+
+  * Run the tests: Use ``tox -e <env name>`` or call ``pytest`` directly
+  * Build the docs: Use ``tox -e docs`` or cd into the docs folder and run ``make html`` or ``sphinx-build docs docs/_build/html -W -b html -d docs/_build/.doctrees`` (`#3598 <https://github.com/sunpy/sunpy/pull/3598>`__)
+- Cleaned up test warnings in sunpy.coordinates. (`#3652 <https://github.com/sunpy/sunpy/pull/3652>`__)
+- Fix Python version for requiring importlib_resources (`#3683 <https://github.com/sunpy/sunpy/pull/3683>`__)
+- `sunpy.net.attr.AttrWalker` no longer uses `sunpy.util.multimethod.MultiMethod` it uses a derivative of `functools.singledispatch` `sunpy.util.functools.seconddispatch` which dispatches on the second argument. (`#3714 <https://github.com/sunpy/sunpy/pull/3714>`__)
+- Errors from a VSO search will now be raised to the user. (`#3719 <https://github.com/sunpy/sunpy/pull/3719>`__)
+- Fixed the transformation test for `~sunpy.coordinates.metaframes.NorthOffsetFrame`, which would intermittently fail. (`#3775 <https://github.com/sunpy/sunpy/pull/3775>`__)
+- :func:`~sunpy.coordinates.sun.earth_distance` is now computed without using coordinate transformations for better performance. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
+- Created a helper function for testing the equality/closeness of longitude angles (i.e., angles with wrapping). (`#3804 <https://github.com/sunpy/sunpy/pull/3804>`__)
+- Bump the astropy version figure tests are run with from 3.1.2 to 3.2.3 (`#3925 <https://github.com/sunpy/sunpy/pull/3925>`__)
+- Used `urllib.parse.urlsplit` in `~sunpy.util.scraper` for file scraping functionalities. (`#3956 <https://github.com/sunpy/sunpy/pull/3956>`__)
+- Added `sunpy.net.base_client.BaseClient.check_attr_types_in_query` as a helper method
+  to check if a query contains a set of required attributes, and is a subset of optional
+  attributes. (`#3979 <https://github.com/sunpy/sunpy/pull/3979>`__)
+- Removes appending login details for ftp urls from scraper. (`#4020 <https://github.com/sunpy/sunpy/pull/4020>`__)
+- Re-factored the `sunpy.map.Map` factory to dispatch argument parsing based on type. (`#4037 <https://github.com/sunpy/sunpy/pull/4037>`__)
+- Improved the error message raised by the Map factory when a map matches multiple source map types. (`#4052 <https://github.com/sunpy/sunpy/pull/4052>`__)
+- Added log messages when the sample data fails to download. (`#4137 <https://github.com/sunpy/sunpy/pull/4137>`__)
+- Remove an Astropy 3.1 comptibility wrapper for ``Quantity.to_string``. (`#4172 <https://github.com/sunpy/sunpy/pull/4172>`__)
+- Refactor the sphinx config to no longer depend on astropy-sphinx and more
+  closely match the new sunpy package template (`#4188 <https://github.com/sunpy/sunpy/pull/4188>`__)
+
+
 Sunpy v2.0rc1 (2020-05-20)
 ==========================
 
