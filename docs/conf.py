@@ -9,7 +9,6 @@ isort:skip_file
 import os
 import sys
 import datetime
-from pathlib import Path
 from pkg_resources import get_distribution, DistributionNotFound
 
 # -- Check for dependencies ----------------------------------------------------
@@ -183,12 +182,10 @@ graphviz_dot_args = [
 
 # -- Sphinx Gallery ------------------------------------------------------------
 
-path = Path.cwd()
-example_dir = path.parent.joinpath('examples')
 sphinx_gallery_conf = {
-    'backreferences_dir': str(path.joinpath('generated', 'modules')),
+    'backreferences_dir': os.path.join('generated', 'modules'),
     'filename_pattern': '^((?!skip_).)*$',
-    'examples_dirs': example_dir,
+    'examples_dirs': os.path.join('..', 'examples'),
     'subsection_order': ExplicitOrder([
         '../examples/acquiring_data',
         '../examples/map',
@@ -201,8 +198,8 @@ sphinx_gallery_conf = {
         '../examples/computer_vision_techniques',
     ]),
     'within_subsection_order': ExampleTitleSortKey,
-    'gallery_dirs': path.joinpath('generated', 'gallery'),
-    'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
+    'gallery_dirs': os.path.join('generated', 'gallery'),
+    'default_thumb_file': os.path.join('logo', 'sunpy_icon_128x128.png'),
     'abort_on_example_error': False,
     'plot_gallery': True,
     'remove_config_comments': True,
