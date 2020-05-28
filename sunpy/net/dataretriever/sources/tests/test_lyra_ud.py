@@ -32,7 +32,7 @@ def LCClient():
      )
 ])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
+    urls, urlmeta = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end

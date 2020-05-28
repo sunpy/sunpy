@@ -30,7 +30,7 @@ def LCClient():
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
+    urls, urlmeta = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -42,7 +42,7 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits')])
 def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
+    urls, urlmeta = LCClient._get_url_for_timerange(timerange)
     assert len(urls) == 9
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -98,8 +98,7 @@ def test_query(LCClient, time):
     # start of the day.
     assert qr1.time_range().start.strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
 
-    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
-    end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
+    end = time.end
     assert is_time_equal(qr1.time_range().end, end)
 
 
@@ -138,19 +137,6 @@ def test_fido(time, instrument):
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
-
-
-@settings(deadline=10000, max_examples=5)
-@pytest.mark.remote_data
-@given(goes_time())
-def test_time_for_url(LCClient, time):
-    time = time.start.strftime("%Y/%m/%d")
-    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
-
-    tr = TimeRange(time, almost_day)
-    url = LCClient._get_url_for_timerange(tr)
-    times = LCClient._get_time_for_url(url)
-    assert all([tr == t2 for t2 in times])
 
 
 def test_attr_reg():

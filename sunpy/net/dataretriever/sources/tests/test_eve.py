@@ -33,7 +33,7 @@ def LCClient():
      )
 ])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
+    urls, urlmeta = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -65,7 +65,7 @@ def test_query(LCClient):
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range().start == parse_time('2012/08/09')
-    assert qr1.time_range().end == parse_time('2012/08/11')  # includes end.
+    assert qr1.time_range().end == parse_time('2012/08/10')
 
 
 @pytest.mark.remote_data

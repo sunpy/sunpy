@@ -160,7 +160,7 @@ class RHESSIClient(GenericClient):
         timerange : `~sunpy.time.TimeRange`
             Date range should be specified using a TimeRange.
         """
-        return self.get_observing_summary_filename(timerange)
+        return self.get_observing_summary_filename(timerange), None
 
     def _get_time_for_url(self, urls):
         ts = [datetime.strptime(url.split("hsi_obssumm_")[1].split("_")[0],

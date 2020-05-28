@@ -37,11 +37,11 @@ class GBMClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the GBMClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
-    2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
-    2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
+    Resolution Detector      Start Time     Source Provider Physobs Instrument
+    ---------- -------- ------------------- ------ -------- ------- ----------
+         ctime       n3 2015-06-21 00:00:00  FERMI     NASA    flux        GBM
+         ctime       n3 2015-06-22 00:00:00  FERMI     NASA    flux        GBM
+         ctime       n3 2015-06-23 00:00:00  FERMI     NASA    flux        GBM
     <BLANKLINE>
     <BLANKLINE>
     """
@@ -57,9 +57,11 @@ class GBMClient(GenericClient):
 
         Returns
         -------
-        `str`:
-            The url(s) for time of interest.
+        urls, urlmeta : `tuple`
+            A tuple of list of URLs and their metadata for requested time range.
         """
+        pattern = ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/{4d}/'
+                   '{2d}/{2d}/current/glg_{Resolution:5w}_{Detector:2w}_{}_v00.pha')
         # Checks if detector keyword
         # If not defaults to detector 5
         if 'detector' in kwargs:
@@ -76,9 +78,8 @@ class GBMClient(GenericClient):
 
         gbm_pattern = ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
                        '%Y/%m/%d/current/glg_{data_type}_{det}_%y%m%d_v00.pha')
-        gbm_files = Scraper(gbm_pattern, data_type=data_type, det=det)
+        gbm_files = Scraper(gbm_pattern, extractor=pattern, data_type=data_type, det=det)
         urls = gbm_files.filelist(timerange)
-
         return urls
 
     def _makeimap(self):
@@ -134,7 +135,7 @@ def _check_detector(detector, **kwargs):
     detector_numbers = [str(i) for i in range(12)]
     detector_list = ['n' + i for i in detector_numbers]
     if detector.lower() in detector_list:
-        return detector
+        return detector.lower()
     elif detector in detector_numbers:
         return 'n' + detector
     else:

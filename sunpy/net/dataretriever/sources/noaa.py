@@ -44,7 +44,7 @@ class NOAAIndicesClient(GenericClient):
         """
         Helper function:
         """
-        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
+        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"], None
 
     def _makeimap(self):
         """
@@ -118,7 +118,7 @@ class NOAAPredictClient(GenericClient):
         """
         Helper function:
         """
-        return NOAAPredictClient._get_default_uri()
+        return NOAAPredictClient._get_default_uri(), None
 
     def _makeimap(self):
         """
@@ -198,7 +198,7 @@ class SRSClient(GenericClient):
                     day.end.strftime('%Y'), day.end.strftime('%Y'))
             url = base_url + suffix
             result.append(url)
-        return result
+        return result, None
 
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
         """

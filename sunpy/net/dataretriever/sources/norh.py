@@ -5,8 +5,10 @@
 import astropy.units as u
 from astropy.time import TimeDelta
 
+from parse import parse
+
 from sunpy.net.dataretriever import GenericClient
-from sunpy.time import TimeRange
+from sunpy.time import parse_time, TimeRange
 from sunpy.util.scraper import Scraper
 
 __all__ = ['NoRHClient']
@@ -35,10 +37,10 @@ class NoRHClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the NoRHClient:
-         Start Time           End Time      Source Instrument   Wavelength
-    ------------------- ------------------- ------ ---------- --------------
-    2016-01-01 00:00:00 2016-01-02 00:00:00   NAOJ       NORH 17000000.0 kHz
-    2016-01-02 00:00:00 2016-01-03 00:00:00   NAOJ       NORH 17000000.0 kHz
+    Wavelength      Start Time     Source Provider Physobs Instrument
+    ---------- ------------------- ------ -------- ------- ----------
+      17.0 GHz 2016-01-01 00:00:00   NAOJ      NRO               NORH
+      17.0 GHz 2016-01-02 00:00:00   NAOJ      NRO               NORH
     <BLANKLINE>
     <BLANKLINE>
 
@@ -87,23 +89,22 @@ class NoRHClient(GenericClient):
         if timerange.start.strftime('%M-%S') != '00-00':
             timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'),
                                   timerange.end)
-
-        norh = Scraper(BASEURL, freq=freq)
+        pattern = ('ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
+                   '{4d}/{2d}/{Wavelength}{:6d}')
+        norh = Scraper(BASEURL, extractor=pattern, freq=freq)
         # TODO: warn user that some files may have not been listed, like for example:
         #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
         #       as it doesn't follow pattern.
 
-        return norh.filelist(timerange)
-
-    def _get_time_for_url(self, urls):
-        freq = urls[0].split('/')[-1][0:3]  # extract the frequency label
-        crawler = Scraper(BASEURL, freq=freq)
-        times = list()
-        for url in urls:
-            t0 = crawler._extractDateURL(url)
-            # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
-        return times
+        urls,urlmeta = norh.filelist(timerange)
+        urlmeta_return = list()
+        for metadict in urlmeta:
+            if metadict['Wavelength'] == 'tcz':
+                metadict['Wavelength'] = 34 * u.GHz
+            elif metadict['Wavelength'] == 'tca':
+                metadict['Wavelength'] = 17 * u.GHz
+            urlmeta_return.append(metadict)
+        return urls, urlmeta_return
 
     def _makeimap(self):
         """

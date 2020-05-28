@@ -33,10 +33,10 @@ class EVEClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the EVEClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve        nan
-    2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan
+    Level      Start Time     Source Provider  Physobs   Instrument
+    ----- ------------------- ------ -------- ---------- ----------
+      0CS 2016-01-01 00:00:00    SDO     LASP irradiance        eve
+      0CS 2016-01-02 00:00:00    SDO     LASP irradiance        eve
     <BLANKLINE>
     <BLANKLINE>
 
@@ -44,7 +44,7 @@ class EVEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Return list of URLS corresponding to value of input timerange.
+        Return list of URLS and metadata corresponding to value of input timerange.
 
         Parameters
         ----------
@@ -53,8 +53,8 @@ class EVEClient(GenericClient):
 
         Returns
         -------
-        urls : list
-            list of URLs corresponding to the requested time range
+        urls, urlmeta : `tuple`
+            A tuple of list of URLs and their metadata for requested time range.
 
         """
         # If start of time range is before 00:00, converted to such, so
@@ -62,17 +62,10 @@ class EVEClient(GenericClient):
         # This is done because the archive contains daily files.
         if timerange.start.strftime('%M-%S') != '00-00':
             timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
-        eve = Scraper(BASEURL)
+        pattern = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
+                   '{}/{:8d}_EVE_L{Level:3w}_DIODES_1m.txt')
+        eve = Scraper(BASEURL, extractor=pattern)
         return eve.filelist(timerange)
-
-    def _get_time_for_url(self, urls):
-        eve = Scraper(BASEURL)
-        times = list()
-        for url in urls:
-            t0 = eve._extractDateURL(url)
-            # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
-        return times
 
     def _makeimap(self):
         """

@@ -3,6 +3,7 @@
 # Google Summer of Code 2014
 
 import os
+
 from datetime import datetime
 from itertools import compress
 from urllib.parse import urlsplit
@@ -38,10 +39,10 @@ class XRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the XRSClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2016-01-01 00:00:00 2016-01-01 23:59:59   nasa       goes        nan
-    2016-01-02 00:00:00 2016-01-02 23:59:59   nasa       goes        nan
+    SatelliteNumber      Start Time     Source Provider  Physobs   Instrument
+    --------------- ------------------- ------ -------- ---------- ----------
+                 15 2016-01-01 00:00:00   nasa     sdac irradiance       goes
+                 15 2016-01-02 00:00:00   nasa     sdac irradiance       goes
     <BLANKLINE>
     <BLANKLINE>
 
@@ -88,25 +89,6 @@ class XRSClient(GenericClient):
                 )
             )
 
-    def _get_time_for_url(self, urls):
-        times = []
-        for uri in urls:
-            uripath = urlsplit(uri).path
-
-            # Extract the yymmdd or yyyymmdd timestamp
-            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][4:]
-
-            # 1999-01-15 as an integer.
-            if int(datestamp) <= 990115:
-                start = Time.strptime(datestamp, "%y%m%d")
-            else:
-                start = Time.strptime(datestamp, "%Y%m%d")
-
-            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-            times.append(TimeRange(start, start + almost_day))
-
-        return times
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns a URL to the GOES data for the specified date.
@@ -131,7 +113,9 @@ class XRSClient(GenericClient):
 
         goes_pattern = f"https://umbra.nascom.nasa.gov/goes/fits/{goes_file}"
         satellitenumber = kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start))
-        goes_files = Scraper(goes_pattern, satellitenumber=satellitenumber)
+        pattern = ('https://umbra.nascom.nasa.gov/goes/fits/{4d}/'
+                   'go{SatelliteNumber:02d}{}{4d}.fits')
+        goes_files = Scraper(goes_pattern, extractor=pattern, satellitenumber=satellitenumber)
 
         return goes_files.filelist(timerange)
 
@@ -151,9 +135,9 @@ class XRSClient(GenericClient):
         """
         tr_before = TimeRange(timerange.start, parse_time("1999/01/14"))
         tr_after = TimeRange(parse_time("1999/01/15"), timerange.end)
-        urls_before = self._get_url_for_timerange(tr_before, **kwargs)
-        urls_after = self._get_url_for_timerange(tr_after, **kwargs)
-        return urls_before + urls_after
+        urls_before, meta_before = self._get_url_for_timerange(tr_before, **kwargs)
+        urls_after, meta_after = self._get_url_for_timerange(tr_after, **kwargs)
+        return urls_before + urls_after, meta_before + meta_after
 
     def _makeimap(self):
         """
@@ -260,21 +244,30 @@ class SUVIClient(GenericClient):
             # if no satellites were found then raise an exception
             raise ValueError(f"No operational SUVI instrument on {date.strftime(TIME_FORMAT)}")
 
-    def _get_time_for_url(self, urls):
-        these_timeranges = []
-
+    def _get_metadata_for_url(self, urls):
+        meta = list()
         for this_url in urls:
+            metadict = {}
             if this_url.count('/l2/') > 0:  # this is a level 2 data file
                 start_time = parse_time(os.path.basename(this_url).split('_s')[2].split('Z')[0])
                 end_time = parse_time(os.path.basename(this_url).split('_e')[1].split('Z')[0])
-                these_timeranges.append(TimeRange(start_time, end_time))
+                metadict['Level'] = '2'
             if this_url.count('/l1b/') > 0:  # this is a level 1b data file
                 start_time = datetime.strptime(os.path.basename(this_url).split('_s')[
                                                1].split('_e')[0][:-1], '%Y%j%H%M%S')
                 end_time = datetime.strptime(os.path.basename(this_url).split('_e')[
                                              1].split('_c')[0][:-1], '%Y%j%H%M%S')
-                these_timeranges.append(TimeRange(start_time, end_time))
-        return these_timeranges
+                metadict['Level'] = '1b'
+            if this_url.count('/goes16/') > 0:
+                metadict['SatelliteNumber'] = 16
+            if this_url.count('/goes17/') > 0:
+                metadict['SatelliteNumber'] = 17
+            wave = int(os.path.basename(this_url).split('-')[2][2:5]) * u.Angstrom
+            metadict['StartTime'] = start_time
+            metadict['EndTime'] = end_time
+            metadict['Wavelength'] = wave
+            meta.append(metadict)
+        return meta
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """

@@ -25,7 +25,7 @@ class QueryResponseBlock:
     Represents url, source along with other information
     """
 
-    def __init__(self, map0, url, time=None):
+    def __init__(self, map0, url, time=None, meta=None):
         """
         Parameters
         ----------
@@ -41,12 +41,18 @@ class QueryResponseBlock:
         self.time = TimeRange(map0.get('Time_start'),
                               map0.get('Time_end')) if time is None else time
         self.wave = map0.get('wavelength', np.NaN)
+        if meta is not None:
+            meta['Source'] = self.source
+            meta['Provider'] = self.provider
+            meta['Physobs'] = self.physobs
+            meta['Instrument'] = self.instrument
+            self.meta = meta
 
 
-def iter_urls(amap, url_list, time):
+def iter_urls(amap, url_list, time, meta):
     """Helper Function"""
-    for aurl, t in zip(url_list, time):
-        tmp = QueryResponseBlock(amap, aurl, t)
+    for aurl, t, m in zip(url_list, time, meta):
+        tmp = QueryResponseBlock(amap, aurl, t, m)
         yield tmp
 
 
@@ -86,10 +92,12 @@ class QueryResponse(BaseQueryResponse):
             yield block
 
     @classmethod
-    def create(cls, amap, lst, time=None, client=None):
+    def create(cls, amap, lst, time=None, meta=None, client=None):
         if time is None:
             time = [None] * len(lst)
-        return cls(list(iter_urls(amap, lst, time)), client=client)
+        if meta is None:
+            meta = [None] * len(lst)
+        return cls(list(iter_urls(amap, lst, time, meta)), client=client)
 
     def time_range(self):
         """
@@ -110,17 +118,24 @@ class QueryResponse(BaseQueryResponse):
         return s
 
     def build_table(self):
-        columns = OrderedDict((('Start Time', []), ('End Time', []),
-                               ('Source', []), ('Instrument', []),
-                               ('Wavelength', [])))
-        for qrblock in self:
-            columns['Start Time'].append(
-                (qrblock.time.start).strftime(TIME_FORMAT))
-            columns['End Time'].append(
-                (qrblock.time.end).strftime(TIME_FORMAT))
-            columns['Source'].append(qrblock.source)
-            columns['Instrument'].append(qrblock.instrument)
-            columns['Wavelength'].append(str(u.Quantity(qrblock.wave)))
+        if len(self._data) > 0 and hasattr(self._data[0], 'meta') and self._data[0].meta:
+            meta0 = self._data[0].meta
+            columns = OrderedDict(((col, [])) for col in meta0.keys())
+            for qrblock in self:
+                for colname in columns.keys():
+                    columns[colname].append(qrblock.meta[colname])
+        else:
+            columns = OrderedDict((('Start Time', []), ('End Time', []),
+                                   ('Source', []), ('Instrument', []),
+                                   ('Wavelength', [])))
+            for qrblock in self:
+                columns['Start Time'].append(
+                    (qrblock.time.start).strftime(TIME_FORMAT))
+                columns['End Time'].append(
+                    (qrblock.time.end).strftime(TIME_FORMAT))
+                columns['Source'].append(qrblock.source)
+                columns['Instrument'].append(qrblock.instrument)
+                columns['Wavelength'].append(str(u.Quantity(qrblock.wave)))
 
         return astropy.table.Table(columns)
 
@@ -286,12 +301,14 @@ class GenericClient(BaseClient):
 
         kwergs = copy.copy(self.map_)
         kwergs.update(kwargs)
-        urls = self._get_url_for_timerange(
+        urls, urlmeta = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
         if urls:
             times = self._get_time_for_url(urls)
             if times and times is not NotImplemented:
                 return QueryResponse.create(self.map_, urls, times, client=self)
+            if urlmeta is not None:
+                return QueryResponse.create(self.map_, urls, meta=urlmeta, client=self)
         return QueryResponse.create(self.map_, urls, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,

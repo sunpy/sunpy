@@ -6,6 +6,7 @@ import re
 import datetime
 import warnings
 from ftplib import FTP
+from parse import parse
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
@@ -15,7 +16,10 @@ from bs4 import BeautifulSoup
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
+from sunpy import config
 from sunpy.util.exceptions import SunpyUserWarning
+
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['Scraper']
 
@@ -70,7 +74,7 @@ class Scraper:
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
-    def __init__(self, pattern, regex=False, **kwargs):
+    def __init__(self, pattern, regex=False, extractor=None, **kwargs):
         if regex:
             self.pattern = pattern
             if kwargs:
@@ -90,6 +94,7 @@ class Scraper:
                 milli=milliseconds_,
                 end=self.pattern[milliseconds.end():]
             ))
+        self.extractor = extractor
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
@@ -196,6 +201,17 @@ class Scraper:
         return Time.strptime(' '.join(final_date),
                              ' '.join(final_pattern))
 
+    def _extractMetaDataURL(self, urls):
+        if self.extractor is None:
+            return None
+        metalist = list()
+        for url in urls:
+            udict = parse(self.extractor, url).named
+            urltime = self._extractDateURL(url)
+            udict['Start Time'] = urltime.strftime(TIME_FORMAT)
+            metalist.append(udict)
+        return metalist
+
     def filelist(self, timerange):
         """
         Returns the list of existent files in the archive for the given time
@@ -237,9 +253,11 @@ class Scraper:
         directories = self.range(timerange)
         filesurls = []
         if urlsplit(directories[0]).scheme == "ftp":
-            return self._ftpfileslist(timerange)
+            filesurls = self._ftpfileslist(timerange)
+            return filesurls, self._extractMetaDataURL(filesurls)
         if urlsplit(directories[0]).scheme == "file":
-            return self._localfilelist(timerange)
+            filesurls = self._localfilelist(timerange)
+            return filesurls, self._extractMetaDataURL(filesurls)
         for directory in directories:
             try:
                 opn = urlopen(directory)
@@ -266,7 +284,7 @@ class Scraper:
                 raise
             except Exception:
                 raise
-        return filesurls
+        return filesurls, self._extractMetaDataURL(filesurls)
 
     def _ftpfileslist(self, timerange):
         directories = self.range(timerange)

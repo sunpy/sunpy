@@ -82,7 +82,7 @@ def test_fetch_working(LCClient, tmpdir):
       'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
       'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
+    urls, urlmeta = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end

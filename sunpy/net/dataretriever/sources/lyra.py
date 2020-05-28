@@ -24,10 +24,10 @@ class LYRAClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the LYRAClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00 Proba2       lyra        nan
-    2016-01-01 00:00:00 2016-01-02 00:00:00 Proba2       lyra        nan
+    Level      Start Time     Source Provider  Physobs   Instrument
+    ----- ------------------- ------ -------- ---------- ----------
+        2 2016-01-01 00:00:00 Proba2      esa irradiance       lyra
+        2 2016-01-02 00:00:00 Proba2      esa irradiance       lyra
     <BLANKLINE>
     <BLANKLINE>
 
@@ -47,11 +47,12 @@ class LYRAClient(GenericClient):
         `list`
             The URL(s) for the corresponding timerange.
         """
+        pattern = ('http://proba2.oma.be/lyra/data/bsd/{4d}/{2d}/{2d}'
+                   '/lyra_{}-000000_lev{Level:d}_std.fits')
         lyra_pattern = ('http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
                         'lyra_%Y%m%d-000000_lev{level}_std.fits')
-        lyra_files = Scraper(lyra_pattern, level=kwargs.get('level', 2))
+        lyra_files = Scraper(lyra_pattern, extractor=pattern, level=kwargs.get('level', 2))
         urls = lyra_files.filelist(timerange)
-
         return urls
 
     def _makeimap(self):
