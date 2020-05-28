@@ -85,6 +85,12 @@ class BaseQueryResponse(Sequence):
     def _repr_html_(self):
         return self.build_table()._repr_html_()
 
+    def show(self, *cols):
+        """
+        A method to return a table with desired columns.
+        """
+        return self.build_table()[[col for col in cols]]
+
 
 def _print_client(client, html=False):
     """
