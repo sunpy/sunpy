@@ -1595,8 +1595,8 @@ class GenericMap(NDData):
         """
         pass
 
-    @_parse_submap_input.register
-    def _parse_submap_quantity_input(self, bottom_left: u.Quantity, top_right, width, height):
+    @_parse_submap_input.register(u.Quantity)
+    def _parse_submap_quantity_input(self, bottom_left, top_right, width, height):
         if bottom_left.shape != (2, ):
             raise ValueError('bottom_left must have shape (2, ) when specified as a Quantity')
         if top_right is not None:
@@ -1616,8 +1616,8 @@ class GenericMap(NDData):
             top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
         return bottom_left, top_right
 
-    @_parse_submap_input.register
-    def _parse_submap_coord_input(self, bottom_left: SkyCoord, top_right, width, height):
+    @_parse_submap_input.register(SkyCoord)
+    def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
         if top_right is not None:
             if not isinstance(top_right, SkyCoord):
                 raise TypeError("When bottom_left is a SkyCoord, top_right "
