@@ -340,6 +340,12 @@ def test_world_to_pixel(generic_map):
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
 
+def test_world_to_pixel_error(generic_map):
+    strerr = 'world_to_pixel takes a Astropy coordinate frame or SkyCoord instance'
+    with pytest.raises(ValueError, match=strerr):
+        generic_map.world_to_pixel(1)
+
+
 def test_save(aia171_test_map, generic_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
@@ -626,6 +632,11 @@ def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
         np.int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
 
 
+def test_superpixel_err(generic_map):
+    with pytest.raises(ValueError, match="Offset is strictly non-negative."):
+        generic_map.superpixel((2, 2) * u.pix, offset=(-2, 2) * u.pix)
+
+
 def calc_new_matrix(angle):
     c = np.cos(np.deg2rad(angle))
     s = np.sin(np.deg2rad(angle))
@@ -717,7 +728,7 @@ def test_rotate_new_matrix(generic_map):
 
 
 def test_rotate_rmatrix_angle(generic_map):
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError, match="You cannot specify both an angle and a rotation matrix."):
         generic_map.rotate(angle=5, rmatrix=np.array([[1, 0], [0, 1]]))
 
 
