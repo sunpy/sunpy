@@ -119,7 +119,7 @@ class GBMClient(GenericClient):
                  attrs.Physobs: [('CSPEC', 'counts accumulated every 4.096 seconds in 128 energy channels for each detector.'),
                                  ('CTIME', 'counts accumulated every 0.256 seconds in 8 energy channels')],
                  attrs.Detector: [
-            (f"N{x}", f"GBM Detector short name for the detector NAI_{x:02}") for x in range(12)],
+            (f"n{x}", f"GBM Detector short name for the detector NAI_{x:02}") for x in range(12)],
             attrs.Resolution: [
             ("CSPEC", "CSPEC 128 channel spectra every 4.096 seconds."),
             ("CTIME", "CTIME provides 8 channel spectra every 0.256 seconds")]
