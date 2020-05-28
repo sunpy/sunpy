@@ -729,7 +729,7 @@ def test_rotate_new_matrix(generic_map):
 
 def test_rotate_rmatrix_angle(generic_map):
     with pytest.raises(ValueError, match="You cannot specify both an angle and a rotation matrix."):
-        generic_map.rotate(angle=5, rmatrix=np.array([[1, 0], [0, 1]]))
+        generic_map.rotate(angle=5*u.deg, rmatrix=np.array([[1, 0], [0, 1]]))
 
 
 def test_rotate_invalid_order(generic_map):
