@@ -134,7 +134,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         summary_counts = _bin_data_for_summary(energy_bins, count_data)
 
         # get the time information in datetime format with the correct MET adjustment
-        met_ref_time = parse_time('2001-01-01 00:00') # Mission elapsed time
+        met_ref_time = parse_time('2001-01-01 00:00')  # Mission elapsed time
         gbm_times = met_ref_time + TimeDelta(count_data['time'], format='sec')
         gbm_times.precision = 9
         gbm_times = gbm_times.isot.astype('datetime64')
