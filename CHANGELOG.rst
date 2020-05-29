@@ -1,3 +1,40 @@
+Sunpy v1.0.11 (2020-05-29)
+==========================
+
+Bug Fixes
+---------
+
+- Strip out any unknown unicode from the HEK response to prevent it failing to load some results. (`#4088 <https://github.com/sunpy/sunpy/pull/4088>`__)
+- Fixed a bug in :func:`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst` that resulted in a error when requesting an array of locations in conjuction with enabling the light-travel-time correction. (`#4112 <https://github.com/sunpy/sunpy/pull/4112>`__)
+- Fixed `sunpy.map.GenericMap.submap()` when scaled pixel units (e.g. ``u.mpix``)
+  are used. (`#4127 <https://github.com/sunpy/sunpy/pull/4127>`__)
+- `sunpy.map.on_disk_bounding_coordinates` now fully propagates the coordinate
+  frame of the input map to the output coordinates. Previously only the observer
+  coordinate, and no other frame attributes, were propagated. (`#4141 <https://github.com/sunpy/sunpy/pull/4141>`__)
+- Fix an off-by-one error in the reference pixel returned by
+  `sunpy.map.make_fitswcs_header`. (`#4152 <https://github.com/sunpy/sunpy/pull/4152>`__)
+- Previously `sunpy.map.GenericMap.resample` with ``method='linear'`` was
+  using an incorrect and constant value to fill edges when upsampling a map. Values
+  near the edges are now correctly extrapolated using the ``fill_value=extrapolate``
+  option to `scipy.interpolate.interp1d`. (`#4164 <https://github.com/sunpy/sunpy/pull/4164>`__)
+- Fixed a bug where passing an `int` or `list` via the `hdus` keyword argument to
+  `~sunpy.io.fits.read` threw an exception because the list of HDU objects was no longer
+  of type `~astropy.io.fits.hdu.HDUList`. (`#4183 <https://github.com/sunpy/sunpy/pull/4183>`__)
+
+
+Improved Documentation
+----------------------
+
+- Made improvements to the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_secchi_starfield.py`. (`#4039 <https://github.com/sunpy/sunpy/pull/4039>`__)
+- Updated the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_secchi_starfield.py` to use all of the information in the star catalog. (`#4116 <https://github.com/sunpy/sunpy/pull/4116>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Added log messages when the sample data fails to download. (`#4137 <https://github.com/sunpy/sunpy/pull/4137>`__)
+
+
 Sunpy 1.0.10 (2020-04-30)
 =========================
 
