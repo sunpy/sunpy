@@ -5,21 +5,10 @@ This submodule contains two types of routines, the first reads (data, header)
 pairs from files in a way similar to FITS files. The other is special readers
 for files that are commonly used in solar physics.
 
-.. automodapi:: sunpy.io
+.. warning::
 
-.. automodapi:: sunpy.io.header
-
-Unified File Readers
-====================
-
-.. _iofits:
-.. automodapi:: sunpy.io.fits
-
-.. _iojp2:
-.. automodapi:: sunpy.io.jp2
-
-.. _ioana:
-.. automodapi:: sunpy.io.ana
+   When reading FITS files, it is strongly recommended that `astropy.io.fits` be used over the tools in `sunpy.io`.
+   The sunpy FITS reader is designed to meet the needs of map, and does not represent the structure of the FITS file well.
 
 Special File Readers
 ====================
@@ -85,3 +74,20 @@ file
           [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
            -128.03072  , -128.03072  ]], dtype=float32)
    >>> input_asdf.close()  # doctest: +REMOTE_DATA
+
+
+Unified File Readers
+====================
+
+.. automodapi:: sunpy.io
+
+.. automodapi:: sunpy.io.header
+
+.. _iofits:
+.. automodapi:: sunpy.io.fits
+
+.. _iojp2:
+.. automodapi:: sunpy.io.jp2
+
+.. _ioana:
+.. automodapi:: sunpy.io.ana
