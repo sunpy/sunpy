@@ -8,11 +8,11 @@ import numpy as np
 import pandas as pd
 
 import astropy.units as u
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 
 import sunpy.io
-from sunpy.instr import fermi
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -134,7 +134,8 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         summary_counts = _bin_data_for_summary(energy_bins, count_data)
 
         # get the time information in datetime format with the correct MET adjustment
-        gbm_times = Time([fermi.met_to_utc(t) for t in count_data['time']])
+        met_ref_time = parse_time('2001-01-01 00:00') # Mission elapsed time
+        gbm_times = met_ref_time + TimeDelta(count_data['time'], format='sec')
         gbm_times.precision = 9
         gbm_times = gbm_times.isot.astype('datetime64')
 
