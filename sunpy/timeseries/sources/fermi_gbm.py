@@ -8,11 +8,11 @@ import numpy as np
 import pandas as pd
 
 import astropy.units as u
-from astropy.time import Time, TimeDelta
+from astropy.time import TimeDelta
 
 import sunpy.io
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.time import parse_time
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
