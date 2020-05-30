@@ -1858,11 +1858,11 @@ class GenericMap(NDData):
         Parameters
         ----------
         levels : `~astropy.units.Quantity`
-            A list of numbers indicating the level curves to draw given in
-            percent.
+            A list of numbers indicating the contours to draw. These are given
+            as a percentage of the maximum value of the map data.
 
         axes : `matplotlib.axes.Axes`
-            The axes on which to plot the rectangle, defaults to the current
+            The axes on which to plot the contours. Defaults to the current
             axes.
 
         Returns
@@ -1875,7 +1875,6 @@ class GenericMap(NDData):
         -----
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.pyplot.contour` function.
-
         """
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
