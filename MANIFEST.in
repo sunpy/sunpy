@@ -1,27 +1,21 @@
-include README.rst
-include CHANGELOG.rst
-
-include setup.py
-include setup.cfg
-include pyproject.toml
-include LICENSE.rst
-include CITATION.rst
-include sunpy/CITATION.rst
-include licenses/*.rst
-include README.rst
-
-recursive-include sunpy *.pyx *.c *.pxd
-recursive-include docs *
-recursive-include licenses *
-recursive-include cextern *
-recursive-include scripts *
-
-# Include the docs and examples
-recursive-include docs *
-recursive-include examples *
-prune build
-prune docs/_build
-prune docs/api
-
-# Globally exclude compiled files
-global-exclude *.pyc *.o
+# Exclude specific files
+exclude .codecov.yaml
+exclude .mailmap
+exclude .editorconfig
+exclude .gitattributes
+exclude .gitignore
+exclude .pep8speaks.yml
+exclude .pre-commit-config.yaml
+exclude .pre-commit-config.yaml
+exclude .test_package_pins.txt
+exclude .zenodo.json
+exclude azure-pipelines.yml
+exclude readthedocs.yml
+exclude rtd-environment.yml
+# Prune folders
+prune .circleci
+prune .github
+prune .jupyter
+prune binder
+prune changelog
+prune tools
