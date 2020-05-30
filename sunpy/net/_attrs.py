@@ -78,7 +78,7 @@ class Time(Range):
         return type(self)(self.start - timedelta, self.start + timedelta)
 
     def __repr__(self):
-        return f'<sunpy.net.attrs.Time({self.start.iso}, {self.end.iso}, {self.near.iso if self.near else ""})>'
+        return f'<sunpy.net.attrs.Time({self.start.iso}, {self.end.iso}{", " + self.near.iso if self.near else ""})>'
 
 
 class Wavelength(Range):

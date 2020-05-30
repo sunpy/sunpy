@@ -120,7 +120,7 @@ pass an Astropy Time object, like::
 Then, the Time attribute can be passed as::
 
     >>> a.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))
-    <sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000, )>
+    <sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000)>
 
 The second argument::
 
@@ -173,7 +173,7 @@ Also, note that the pre-defined primekeys, Time and Wavelength can also be passe
 specify the exact keyword for it. For e.g. by::
 
     >>> a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')
-    (<sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000, )>, <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    (<sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000)>, <sunpy.net.jsoc.attrs.PrimeKey object at ...>
     ('WAVELNTH', '161'))
 
 If the correct keyword is not specified, or the passed PrimeKey is not supported by the given series, a
