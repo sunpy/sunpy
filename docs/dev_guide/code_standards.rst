@@ -52,15 +52,24 @@ Coding Style/Conventions
 Formatting
 ==========
 
-**This is optional and we do not enforce, check or expect you to do this.**
+We enforce a minimum level of code compliance and we have tools that will automate this step for you.
 
-We have pre-commit hooks in our repository if you would rather let these tools do the work for you.
-You will need to:
+First step is to install pre-commit::
 
-* Install pre-commit: ``pip install pre-commit``
-* Execute pre-commit: ``pre-commit install``
+    $ pip install pre-commit
 
-Now each time on a commit, the tools defined in ``.pre-commit-config.yaml`` will run and their changes either be added to the commit or you have to re-add them.
+Now you can do::
+
+    $ pre-commit run --all-files
+
+which will run the tools on all the files and make the necessary adjustments.
+This will show up as new changes that you can review before you commit your work.
+
+The other option is to::
+
+    $ pre-commit install
+
+which installs a command to `.git/hooks/pre-commit` which will run these tools at the time you do ``git commit`` and means you don't have to run the first command each time.
 
 Documentation and Testing
 =========================
