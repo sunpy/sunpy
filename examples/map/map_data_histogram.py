@@ -52,7 +52,7 @@ plt.axvspan(one_sigma[0], one_sigma[1], alpha=0.3, color='green',
 plt.axvline(one_sigma[0], color='green')
 plt.axvline(one_sigma[1], color='red')
 plt.yscale('log')
-plt.legend()
+plt.legend(loc=9)
 
 ###############################################################################
 # Finally let's overplot the one-sigma contours
