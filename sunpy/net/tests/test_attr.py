@@ -38,6 +38,11 @@ def NUMBER():
 
 
 @pytest.fixture
+def POINTNUMBER():
+    return Instrument('1.5')
+
+
+@pytest.fixture
 def NUMBERS():
     return Instrument('12AIAs')
 
@@ -281,6 +286,15 @@ def test_attr_number(NUMBER):
     assert '1AIA' in attr.Attr._attr_registry[Instrument].name_long
     assert 'One Number first.' in attr.Attr._attr_registry[Instrument].desc
     assert Instrument.one_aia == NUMBER
+
+
+def test_attr_number_point(POINTNUMBER):
+    attr.Attr.update_values({GenericClient: {Instrument: [('1.5', 'One Point Five.')]}})
+    # This checks for sanitization of names.
+    assert 'onepointfive' in attr.Attr._attr_registry[Instrument].name
+    assert '1.5' in attr.Attr._attr_registry[Instrument].name_long
+    assert 'One Point Five.' in attr.Attr._attr_registry[Instrument].desc
+    assert Instrument.onepointfive == POINTNUMBER
 
 
 def test_attr_numbes():

@@ -25,12 +25,13 @@ from collections import namedtuple, defaultdict
 from astropy.table import Table
 from astropy.utils.misc import isiterable
 
+from sunpy.extern import inflect
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import get_width
 
 _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 # Matches any number.
-NUMBER_REGEX = re.compile(r"^[-+]?[0-9]+$")
+NUMBER_REGEX = re.compile(r"(\d+(?:\.\d+)?)")
 
 __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
            'ValueAttr', 'and_', 'or_', 'AttrWalker']
@@ -38,23 +39,6 @@ __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
 
 def make_tuple():
     return _ATTR_TUPLE([], [], [], [])
-
-
-def strtonum(value):
-    """
-    For numbers 0 to 9, return the number spelled out. Otherwise, return the
-    number. This follows Associated Press style.  This always returns a string
-    unless the value was not int-able, unlike the Django filter.
-    Taken from: https://github.com/jmoiron/humanize/blob/master/humanize/number.py#L81
-    """
-    try:
-        value = int(value)
-    except (TypeError, ValueError):
-        return value
-    if not 0 <= value < 10:
-        return str(value)
-    return ('zero', 'one', 'two', 'three', 'four', 'five', 'six',
-            'seven', 'eight', 'nine')[value]
 
 
 def _print_attrs(attr, html=False):
@@ -243,20 +227,28 @@ class Attr(metaclass=AttrMeta):
                             if len(pair) == 1:
                                 # Special case handling for * aka all values allowed.
                                 if pair[0] == "*":
-                                    strtonum
                                     pair = ["all", "All values of this type are supported."]
                                 else:
                                     raise ValueError(
                                         f'Invalid value given for * registration: {attr_values}.')
                             else:
                                 raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
-                        # Sanitize part one: Check if the first letter is a number and
-                        # replace it with a string version
-                        if NUMBER_REGEX.match(pair[0][0]):
-                            # This turns that digit into its name
-                            name = strtonum(pair[0][0])
-                            if pair[0][1:]:
-                                name = name + "_" + pair[0][1:]
+                        p = inflect.engine()
+                        # Sanitize part one: Check if the name is has a number in it
+                        if NUMBER_REGEX.match(pair[0]):
+                            # Now check if the entire name is a number
+                            if len(pair[0]) == NUMBER_REGEX.match(pair[0]).span()[1]:
+                                # This turns that digit into its name
+                                name = p.number_to_words(pair[0])
+                            # What if just the first character is
+                            elif NUMBER_REGEX.match(pair[0][0]):
+                                name = p.number_to_words(pair[0][0])
+                                # Then we append the rest of the name here with a _ to break it up.
+                                if pair[0][1:]:
+                                    name = name + "_" + pair[0][1:]
+                            else:
+                                # Give up
+                                name = pair[0]
                         else:
                             name = pair[0]
                         # Sanitize part two: remove punctuation and replace it with _
