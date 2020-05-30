@@ -21,7 +21,8 @@ from sunpy.data.sample import AIA_171_IMAGE
 aia = sunpy.map.Map(AIA_171_IMAGE)
 bottom_left = SkyCoord(-300 * u.arcsec, 0 * u.arcsec, frame=aia.coordinate_frame)
 top_right = SkyCoord(100 * u.arcsec, 400 * u.arcsec, frame=aia.coordinate_frame)
-aia_smap = aia.submap(bottom_left, top_right)
+aia_smap = aia.submap(bottom_left, top_right=top_right)
+aia_smap.plot()
 
 ###############################################################################
 # The image of a `~sunpy.map.GenericMap` is always available in the data attribute.
@@ -29,15 +30,15 @@ aia_smap = aia.submap(bottom_left, top_right)
 # Let's create a histogram of the data in this submap.
 num_bins = 50
 bins = np.linspace(aia_smap.min(), aia_smap.max(), num_bins)
-hist, bins = np.histogram(aia_smap.data, bins=bins)
-width = 0.7 * (bins[1] - bins[0])
-x = (bins[:-1] + bins[1:]) / 2
+hist, bin_edges = np.histogram(aia_smap.data, bins=bins)
 
 ###############################################################################
 # Let's plot the histogram as well as some standard values such as mean
 # upper, and lower value and the one-sigma range.
 plt.figure()
-plt.bar(x, hist, align='center', width=width, label='Histogram')
+# Note that we have to use .ravel() here to avoid matplotlib interpreting each
+# row in the array as a different dataset to histogram
+plt.hist(aia_smap.data.ravel(), bins=bins, label='Histogram', histtype='step')
 plt.xlabel('Intensity')
 plt.axvline(aia_smap.min(), label='Data min={:.2f}'.format(aia_smap.min()), color='black')
 plt.axvline(aia_smap.max(), label='Data max={:.2f}'.format(aia_smap.max()), color='black')
@@ -50,8 +51,8 @@ plt.axvspan(one_sigma[0], one_sigma[1], alpha=0.3, color='green',
             one_sigma[0], one_sigma[1]))
 plt.axvline(one_sigma[0], color='green')
 plt.axvline(one_sigma[1], color='red')
-plt.legend()
-plt.show()
+plt.yscale('log')
+plt.legend(loc=9)
 
 ###############################################################################
 # Finally let's overplot the one-sigma contours
