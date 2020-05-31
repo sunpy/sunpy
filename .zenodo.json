@@ -114,12 +114,14 @@
             "name": "Ankit Kumar"
         },
         {
-            "name": "Raahul Singh"
+            "name": "Raahul Singh",
+            "orcid": "0000-0003-4114-8856",
+            "affiliation": "​Indian Institute of Information Technology Sri City​"
         },
         {
             "name": "Will Barnes",
             "orcid": "0000-0001-9642-6089",
-            "affiliation": "Lockheed Martin Solar and Astrophysics Laboratory / Bay Area Environmental Research Institute"
+            "affiliation": "National Research Council Research Associate residing at the Naval Research Laboratory, Washington, D.C. 20375, USA"
         },
         {
             "name": "Prateek Chanda",
@@ -145,7 +147,9 @@
             "name": "Rajul Srivastava"
         },
         {
-            "name": "Abhijeet Manhas"
+            "name": "Abhijeet Manhas",
+            "orcid": "0000-0002-0757-2883",
+            "affiliation": " School of Computing and Electrical Engineering, Indian Institute of Technology Mandi"
         },
         {
             "name": "Yash Jain",
@@ -183,10 +187,14 @@
             "name": "Sanskar Modi"
         },
         {
-            "name": "James Paul Mason"
+            "name": "James Paul Mason",
+            "orcid": "0000-0002-3783-5509",
+            "affiliation": "Laboratory for Atmospheric and Space Physics, University of Colorado Boulder"
         },
         {
-            "name": "Yash Sharma"
+            "name": "Yash Sharma",
+            "orcid": "0000-0002-7861-9677",
+            "affiliation": "Indian Institute of Technology Kharagpur"
         },
         {
             "name": "Naman9639"
@@ -221,7 +229,9 @@
             "name": "John Evans"
         },
         {
-            "name": "Sashank Mishra"
+            "name": "Sashank Mishra",
+            "orcid": "0000-0001-8302-1584",
+            "affiliation": "Indian Institute of Information Technology, Allahabad"
         },
         {
             "name": "Michael Malocha"
@@ -230,9 +240,6 @@
             "name": "Sourav Ghosh",
             "orcid": "0000-0002-7259-5651",
             "affiliation": "Jadavpur University, Kolkata"
-        },
-        {
-            "name": "sashmish"
         },
         {
             "name": "Dominik Stańczak",
@@ -251,13 +258,17 @@
             "name": "Ruben De Visscher"
         },
         {
-            "name": "Rajiv Ranjan Singh"
+            "name": "Rajiv Ranjan Singh",
+            "orcid": "0000-0002-1266-4790",
+            "affiliation": "JSS Academy Of Technical Education, Bengaluru"
         },
         {
             "name": "Ankit Agrawal"
         },
         {
-            "name": "Himanshu Pathak"
+            "name": "Himanshu Pathak",
+            "orcid": "0000-0001-9387-4492",
+            "affiliation": "Shri Siddhi Vinayak Institute of Technology, Bareilly"
         },
         {
             "name": "Swapnil Sharma"
@@ -385,9 +396,6 @@
             "name": "neerajkulk"
         },
         {
-            "name": "utkarsh"
-        },
-        {
             "name": "Yash Kothari"
         },
         {
@@ -420,7 +428,9 @@
             "name": "honey"
         },
         {
-            "name": "Kris Stern"
+            "name": "Kris Akira Stern",
+            "orcid": "0000-0003-1613-8947",
+            "affiliation": " University of Hong Kong (Hong Kong SAR), University of London (Great Britain)"
         },
         {
             "name": "Joseph Letts",
@@ -448,7 +458,9 @@
             "name": "Brandon Stone"
         },
         {
-            "name": "Swapnil Kannojia"
+            "name": "Swapnil Kannojia",
+            "orcid": "0000-0002-4233-774X",
+            "affiliation": "Maulana Azad National Institute of Technology, Bhopal"
         },
         {
             "name": "Arseniy Kustov"
@@ -462,15 +474,12 @@
             "name": "Tessa D. Wilkinson"
         },
         {
-            "name": "utkarsh parkhi"
+            "name": "Utkarsh Parkhi"
         },
         {
             "name": "Tiago M. D. Pereira",
             "orcid": "0000-0003-4747-4329",
             "affiliation": "1 - Rosseland Centre for Solar Physics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway 2 - Institute of Theoretical Astrophysics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway "
-        },
-        {
-            "name": "Raahul-Singh"
         },
         {
             "name": "Arfon Smith"
