@@ -1,0 +1,1 @@
+Adds to `~sunpy.net.scraper.Scraper` the ability to include regular expressions in the URL passed.
