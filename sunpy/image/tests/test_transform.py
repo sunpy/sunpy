@@ -7,7 +7,7 @@ from sunpy.image.transform import affine_transform
 from sunpy.util import SunpyUserWarning
 
 # Tolerance for tests
-RTOL = 1.0e-15
+RTOL = 1.0e-10
 
 
 @pytest.fixture
