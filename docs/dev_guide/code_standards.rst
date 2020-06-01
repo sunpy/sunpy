@@ -52,7 +52,7 @@ Coding Style/Conventions
 Formatting
 ==========
 
-We enforce a minimum level of code compliance and we have tools that will automate this step for you.
+We enforce a minimum level of code style and we have tools that will automate this step for you.
 
 First step is to install pre-commit::
 
