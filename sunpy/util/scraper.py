@@ -4,11 +4,11 @@ This module provides a web scraper.
 import os
 import re
 import datetime
+import warnings
 from ftplib import FTP
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
-import warnings
 
 from bs4 import BeautifulSoup
 
