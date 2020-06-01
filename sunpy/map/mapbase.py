@@ -1798,7 +1798,7 @@ class GenericMap(NDData):
         Draw a rectangle defined in world coordinates on the plot.
 
         This draws a rectangle that has corners at ``(bottom_left, top_right)``,
-        and has sides parallel to the x and y axes of the plot.
+        and has sides parallel to coordinate axes of the map.
 
         If ``width`` and ``height`` are specified, they are respectively added to the
         longitude and latitude of the ``bottom_left`` coordinate to calculate a
