@@ -989,22 +989,22 @@ def test_deprecated_submap_inputs(generic_map2, coords):
 
     with pytest.warns(SunpyDeprecationWarning):
         with pytest.raises(ValueError,
-                           match="either top_right alone or both width and height must be specified."):
+                           match="Either top_right alone or both width and height must be specified."):
             generic_map2.submap(bl_coord, width_deg, height=height_deg)
 
     with pytest.warns(SunpyDeprecationWarning):
         with pytest.raises(ValueError,
-                           match="either top_right alone or both width and height must be specified"):
+                           match="Either top_right alone or both width and height must be specified"):
             generic_map2.submap(bl_pix, width_pix, height=height_pix)
 
     with pytest.warns(SunpyDeprecationWarning):
         with pytest.raises(TypeError,
-                           match="When bottom_left is a SkyCoord, top_right must also be a SkyCoord."):
+                           match="Invalid input, top_right must be of type SkyCoord or BaseCoordinateFrame."):
             generic_map2.submap(bl_coord, width_deg)
 
     with pytest.warns(SunpyDeprecationWarning):
         with pytest.raises(ValueError,
-                               match="either top_right alone or both width and height must be specified"):
+                           match="Either top_right alone or both width and height must be specified"):
             generic_map2.submap(bl_pix, width_pix, height=height_pix)
 
 
@@ -1038,7 +1038,8 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
         dict(),  # Only post deprecation
     )
     for kwargs in inputs:
-        with pytest.raises(ValueError, match="top_right alone or both width and height must be specified."):
+        with pytest.raises(ValueError, match="top_right alone or both width and height "
+                                             "must be specified"):
             generic_map2.submap(bl_pix, **kwargs)
 
     with pytest.raises(TypeError, match="width and height must be a Quantity in units of pixels"):
@@ -1058,7 +1059,7 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
         generic_map2.submap([10, 10]*u.deg, width=10*u.km, height=10*u.J)
 
     with pytest.raises(ValueError,
-                       match="either top_right alone or both width and height must be specified"):
+                       match="either bottom_left and top_right or bottom_left and height and width should be provided"):
         generic_map2.submap(SkyCoord([10, 10, 10]*u.deg, [10, 10, 10]*u.deg,
                                      frame=generic_map2.coordinate_frame))
 
