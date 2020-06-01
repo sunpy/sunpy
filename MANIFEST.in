@@ -7,7 +7,6 @@ exclude .gitattributes
 exclude .gitignore
 exclude .pep8speaks.yml
 exclude .pre-commit-config.yaml
-exclude .pre-commit-config.yaml
 exclude .test_package_pins.txt
 exclude .zenodo.json
 exclude azure-pipelines.yml
