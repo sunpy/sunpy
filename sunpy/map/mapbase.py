@@ -1521,16 +1521,11 @@ class GenericMap(NDData):
             [268.24377, 254.83157, 268.24377, 321.89252],
             [249.99167, 265.14267, 274.61206, 240.5223 ]], dtype=float32)
         """
-        # Handle the case where bottom_left and top_right are really in bottom_left
-        if isinstance(bottom_left, SkyCoord) and bottom_left.shape == (2,):
-            top_right = bottom_left[1]
-            bottom_left = bottom_left[0]
-
         # Check that we have been given a valid combination of inputs
+        # [False, False, False] is valid if bottom_left contains the two corner coords
         if ([arg is not None for arg in (top_right, width, height)]
-                not in [[True, False, False], [False, True, True]]):
-            raise ValueError("If bottom_left is not a SkyCoord either top_right alone or "
-                             "both width and height must be specified.")
+                not in [[True, False, False], [False, False, False], [False, True, True]]):
+            raise ValueError("Either top_right alone or both width and height must be specified.")
         # parse input arguments
         bottom_left, top_right = self._parse_submap_input(bottom_left, top_right, width, height)
 
@@ -1597,6 +1592,9 @@ class GenericMap(NDData):
 
     @_parse_submap_input.register(u.Quantity)
     def _parse_submap_quantity_input(self, bottom_left, top_right, width, height):
+        if top_right is None and width is None:
+            raise ValueError('Either top_right alone or both width and height must be specified '
+                             'when bottom_left is a Quantity')
         if bottom_left.shape != (2, ):
             raise ValueError('bottom_left must have shape (2, ) when specified as a Quantity')
         if top_right is not None:
@@ -1618,15 +1616,6 @@ class GenericMap(NDData):
 
     @_parse_submap_input.register(SkyCoord)
     def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
-        if top_right is not None:
-            if not isinstance(top_right, SkyCoord):
-                raise TypeError("When bottom_left is a SkyCoord, top_right "
-                                "must also be a SkyCoord.")
-        else:
-            if not (width.unit.is_equivalent(u.deg) and
-                    height.unit.is_equivalent(u.deg)):
-                raise TypeError("When bottom_left is a SkyCoord, width and height "
-                                "must both be a Quantity in units convertable to degrees.")
         # Use helper function to get top_right as a SkyCoord
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
