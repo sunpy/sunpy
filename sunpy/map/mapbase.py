@@ -1797,6 +1797,13 @@ class GenericMap(NDData):
         """
         Draw a rectangle defined in world coordinates on the plot.
 
+        This draws a rectangle that has corners at ``(bottom_left, top_right)``,
+        and has sides parallel to the x and y axes of the plot.
+
+        If ``width`` and ``height`` are specified, they are respectively added to the
+        longitude and latitude of the ``bottom_left`` coordinate to calculate a
+        ``top_right`` coordinate.
+
         Parameters
         ----------
         bottom_left : `~astropy.coordinates.SkyCoord`
@@ -1839,13 +1846,6 @@ class GenericMap(NDData):
 
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
-        if width < 0:
-            warnings.warn("The rectangle is inverted in the left/right (longitude) direction,  "
-                          "which may lead to unintended behavior.", SunpyUserWarning)
-
-        if height < 0:
-            warnings.warn("The rectangle is inverted in the bottom/top (latitude) direction, "
-                          "which may lead to unintended behavior.", SunpyUserWarning)
 
         if not axes:
             axes = plt.gca()
