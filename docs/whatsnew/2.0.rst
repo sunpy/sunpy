@@ -61,7 +61,7 @@ Our `~sunpy.coordinates.frames.HeliographicCarrington` coordinate frame is now e
 SunPy output now matches the calculations by `JPL Horizons <https://ssd.jpl.nasa.gov/?horizons>`__ and `SPICE <https://naif.jpl.nasa.gov/naif/>`__.
 There may be small differences compared to Carrington coordinates computed by groups that do not use modern parameter values or the same assumptions for the methodology.
 
-Importantly, the Carrington longitude that is now calculated (including using :func:`sunpy.coordinates.sun.L0`) with not match earlier versions of SunPy.
+Importantly, the Carrington longitude that is now calculated (including using :func:`sunpy.coordinates.sun.L0`) will not match earlier versions of SunPy.
 A detailed write-up of the calculation approach and comparisons to other resources can be found :ref:`here <sunpy-coordinates-carrington>`.
 
 Graphical overview for Map and MapSequence
@@ -131,7 +131,7 @@ Download behind proxies
 
 With the release of parfive 1.1, sunpy has been patched now to able to pass proxy information to `aiohttp.ClientSession`.
 
-* Proxy URL is read from the environment variables `HTTP_PROXY` or `HTTPS_PROXY`, depending on the protocol of the `url` passed.
+* Proxy URL is read from the environment variables `HTTP_PROXY` or `HTTPS_PROXY`.
 * Proxy Authentication `proxy_auth` should be passed as a `aiohttp.BasicAuth` object, explicitly by the user.
 * Proxy Headers `proxy_headers` should be passed as `dict` object, explicitly by the user.
 
@@ -149,7 +149,7 @@ these will be used to enable downloads through a proxy.
 Citation update
 ===============
 
-We had a new paper accepted in, The Astrophysical Journal and you can find the bibtex for it by::
+A paper discussing sunpy 1.0 was accepted in The Astrophysical Journal and you can find the bibtex for it by running::
 
     >>> import sunpy
     >>> sunpy.__citation__
@@ -173,7 +173,7 @@ Before sunpy 2.0, you had to supply values, as the following example demonstrate
 
 There was no way to know if the value was correct, but now we have a extenstive list of supported values from the clients and servers we can request data from.
 
-Using ``Instrument`` as an example, if you print the object::
+Using `~sunpy.net.attrs.Instrument` as an example, if you print the object::
 
     >>> print(a.Instrument)
     sunpy.net.attrs.Instrument
