@@ -238,7 +238,7 @@ class Attr(metaclass=AttrMeta):
                         if NUMBER_REGEX.match(pair[0]):
                             # Now check if the entire name is a number
                             if len(pair[0]) == NUMBER_REGEX.match(pair[0]).span()[1]:
-                                # This turns that digit into its name
+                                # This turns that number into its name
                                 name = p.number_to_words(pair[0])
                             # What if just the first character is
                             elif NUMBER_REGEX.match(pair[0][0]):
