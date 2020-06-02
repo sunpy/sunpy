@@ -1,30 +1,17 @@
-import re
-import os
-import gzip
-from pathlib import Path
-
-from urllib.error import HTTPError
-from urllib.request import urlopen
-
-from bs4 import BeautifulSoup
-
-from parfive import Downloader
-
-from ..client import GenericClient
+from sunpy.net.dataretriever import GenericClient
 from sunpy.util.scraper import Scraper
-from sunpy.time import parse_time
 
 __all__ = ['GongSynopticClient']
 
 
 class GongSynopticClient(GenericClient):
     """
-    Provides access to the merged data product for NSO-GONG synoptic maps
-    `archive <gong2.nso.edu/oQR/zqs/>`__
+    Provides access to the Magnetogram products of NSO-GONG synoptic Maps.
+
+    Searches data hosted by the `National Solar Observatory <gong2.nso.edu/oQR/zqs/>`__
 
     Examples
     --------
-
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2019/12/31 22:00", "2020/1/1 02:00"),
     ...                       a.Instrument('GONG'))  #doctest: +REMOTE_DATA
@@ -50,7 +37,7 @@ class GongSynopticClient(GenericClient):
         Parameters
         ----------
         timerange : `~sunpy.time.TimeRange`
-            The time range you want the files for.
+            The time range required.
 
         Returns
         -------
@@ -81,8 +68,7 @@ class GongSynopticClient(GenericClient):
 
         Returns
         -------
-        boolean
-            answer as to whether client can service the query
+        bool : Answer as to whether client can service the query.
         """
         from sunpy.net import attrs as a
 
@@ -111,7 +97,7 @@ class GongSynopticClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [
             ("GONG", "Global Oscillation Network Group.")],
-            attrs.gong_synoptic.ExtentType: [("SYNOPTIC",
-            "Coverage of a complete solar rotation synthesized over time")],
+            attrs.gong_synoptic.ExtentType: [
+            ("SYNOPTIC", "Coverage of a complete solar rotation synthesized over time")],
             attrs.Physobs: [("LOS_MAGNETIC_FIELD", "Line of sight magnetic field")]}
         return adict

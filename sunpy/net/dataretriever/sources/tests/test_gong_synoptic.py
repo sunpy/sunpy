@@ -1,16 +1,12 @@
 import pytest
 
-from sunpy.time.timerange import TimeRange
-from sunpy.time import parse_time
-from sunpy.net._attrs import Time, Instrument
-from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.gong_synoptic as gong_synoptic
-from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-
-from hypothesis import given
-from sunpy.net.tests.strategies import range_time
+from sunpy.net._attrs import Instrument, Time
+from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.fido_factory import UnifiedResponse
+from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -40,29 +36,18 @@ def test_get_url_for_time_range(GSClient, timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
-@given(range_time('2010-01-06'))
-def test_can_handle_query(time):
-    ans1 = gong_synoptic.GongSynopticClient._can_handle_query(
-        time, Instrument('gong'))
-    assert ans1 is True
-    ans2 = gong_synoptic.GongSynopticClient._can_handle_query(time)
-    assert ans2 is False
-    ans3 = gong_synoptic.GongSynopticClient._can_handle_query(time, Instrument('goes'))
-    assert ans3 is False
-    ans4 = gong_synoptic.GongSynopticClient._can_handle_query(
-        time, Instrument('gong'), a.Physobs('LOS_MAGNETIC_FIELD'),
-        a.gong_synoptic.ExtentType('synoptic'))
-    assert ans4 is True
-    ans4 = gong_synoptic.GongSynopticClient._can_handle_query(
-        time, Instrument('gong'), a.Physobs('LOS_MAGNETIC_FIELD'),
-        a.gong_synoptic.ExtentType('synoptic'))
-    assert ans4 is True
-    ans5 = gong_synoptic.GongSynopticClient._can_handle_query(
-        time, Instrument('gong'), a.gong_synoptic.ExtentType('synoptic'))
-    assert ans5 is True
-    ans6 = gong_synoptic.GongSynopticClient._can_handle_query(
-        time, Instrument('gong'), a.gong_synoptic.ExtentType('FULL_DISK'))
-    assert ans6 is False
+@pytest.mark.parametrize(
+    "query, result",
+    [((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong')), True),
+     ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('goes')), False),
+     ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong'), a.Physobs('LOS_MAGNETIC_FIELD'),
+       a.gong_synoptic.ExtentType('synoptic')), True),
+     ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong'),
+       a.gong_synoptic.ExtentType('synoptic')), True),
+     ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong'),
+       a.gong_synoptic.ExtentType('FULL_DISK')), False)])
+def test_can_handle_query(query, result):
+    assert gong_synoptic.GongSynopticClient._can_handle_query(*query) == result
 
 
 @pytest.mark.parametrize("time", [
@@ -97,8 +82,7 @@ def test_fido(time, instrument):
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
-    for res in response:
-        assert res.split('.')[-1] == 'gz'
+    assert all(map(lambda x: x.endswith('.gz'), response))
 
 
 def test_attr_reg():

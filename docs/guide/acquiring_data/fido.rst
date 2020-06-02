@@ -50,13 +50,13 @@ Using ``Instrument`` as the first example, if you print the object::
     <BLANKLINE>
     Specifies the Instrument name for the search.
     <BLANKLINE>
-           Attribute Name          Client          Full Name                                           Description
-    --------------------------- ----------- ------------------------ --------------------------------------------------------------------------------
-    aia                         VSO         AIA                      Atmospheric Imaging Assembly
-    bbi                         VSO         BBI                      None
-    bcs                         VSO         BCS                      Bragg Crystal Spectrometer
-    bic_hifi                    VSO         BIC-HIFI                 None
-    bigbear                     VSO         Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
+           Attribute Name          Client           Full Name                                           Description
+    --------------------------- ------------ ------------------------ --------------------------------------------------------------------------------
+    aia                         VSO          AIA                      Atmospheric Imaging Assembly
+    bbi                         VSO          BBI                      None
+    bcs                         VSO          BCS                      Bragg Crystal Spectrometer
+    bic_hifi                    VSO          BIC-HIFI                 None
+    bigbear                     VSO          Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
     ...
 
 You get a full list of known values, a description and what "Clients" support those values (if you want to use a specific data source).
@@ -331,17 +331,18 @@ If you want to see the current list of clients you can do::
     For details of using `~sunpy.net.Fido` see :ref:`fido_guide`.
     <BLANKLINE>
     <BLANKLINE>
-          Client                                                    Description
-    ----------------- -------------------------------------------------------------------------------------------------------
-    EVEClient         Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
-    GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
-    XRSClient         Provides access to the GOES XRS fits files archive.
-    SUVIClient        Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
-    LYRAClient        Provides access to the LYRA/Proba2 data archive.
-    NOAAIndicesClient Provides access to the NOAA solar cycle indices.
-    NOAAPredictClient Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
-    SRSClient         Provides access to the NOAA SWPC solar region summary data.
-    NoRHClient        Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
-    RHESSIClient      Provides access to the RHESSI observing summary time series data.
-    JSOCClient        This is a client to the JSOC Data Export service.
-    VSOClient         Allows queries and downloads from the Virtual Solar Observatory (VSO).
+          Client                                                     Description
+    ------------------ -------------------------------------------------------------------------------------------------------
+    EVEClient          Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
+    GBMClient          Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
+    XRSClient          Provides access to the GOES XRS fits files archive.
+    SUVIClient         Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
+    GongSynopticClient Provides access to the Magnetogram products of NSO-GONG synoptic Maps.
+    LYRAClient         Provides access to the LYRA/Proba2 data archive.
+    NOAAIndicesClient  Provides access to the NOAA solar cycle indices.
+    NOAAPredictClient  Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
+    SRSClient          Provides access to the NOAA SWPC solar region summary data.
+    NoRHClient         Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
+    RHESSIClient       Provides access to the RHESSI observing summary time series data.
+    JSOCClient         This is a client to the JSOC Data Export service.
+    VSOClient          Allows queries and downloads from the Virtual Solar Observatory (VSO).
