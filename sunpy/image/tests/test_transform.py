@@ -32,10 +32,19 @@ def compare_results(expect, result, allclose=True):
     t1 = abs(exp.mean() - res.mean()) <= RTOL*exp.mean()
 
     # Don't do the allclose test for scipy as the bicubic algorithm has edge effects
-    if allclose:
-        t2 = np.allclose(exp, res, rtol=RTOL)  # TODO: Develop a better way of testing this
+    # TODO: Develop a way of testing this for scipy
+    if not allclose:
+        return t1
     else:
-        t2 = True
+        notclose = ~np.isclose(exp, res, rtol=RTOL)
+        t2 = not np.any(notclose)
+
+        # Print out every mismatch
+        if not t2:
+            mismatches = np.stack([*notclose.nonzero(), exp[notclose], res[notclose]]).T
+            for row in mismatches:
+                print(f"i={int(row[0]+1)}, j={int(row[1]+1)}: expected={row[2]}, result={row[3]}, "
+                      f"adiff={row[2]-row[3]}, rdiff={(row[2]-row[3])/row[2]}")
 
     return t1 and t2
 
