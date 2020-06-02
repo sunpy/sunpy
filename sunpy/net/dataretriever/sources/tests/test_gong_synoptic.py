@@ -12,7 +12,10 @@ from sunpy.net import attrs as a
 from hypothesis import given
 from sunpy.net.tests.strategies import range_time
 
-GSClient = gong_synoptic.GongSynopticClient()
+
+@pytest.fixture
+def GSClient():
+    return gong_synoptic.GongSynopticClient()
 
 
 @pytest.mark.remote_data
@@ -30,7 +33,7 @@ GSClient = gong_synoptic.GongSynopticClient()
      'https://gong2.nso.edu/oQR/zqs/200609/mrzqs060919/mrzqs060919t1754c2048_320.fits.gz'
      )
 ])
-def test_get_url_for_time_range(timerange, url_start, url_end):
+def test_get_url_for_time_range(GSClient, timerange, url_start, url_end):
     urls = GSClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
@@ -66,7 +69,7 @@ def test_can_handle_query(time):
     Time('2015/8/27', '2015/8/27 12:00'),
     Time('2020/2/4', '2020/2/5')])
 @pytest.mark.remote_data
-def test_query(time):
+def test_query(GSClient, time):
     qr1 = GSClient.search(time, Instrument('gong'))
     assert isinstance(qr1, QueryResponse)
     assert qr1.time_range().start == time.start
@@ -78,7 +81,7 @@ def test_query(time):
     (Time('2013/8/27', '2013/8/27'), Instrument('gong')),
     (Time('2020/4/23 17:00', '2020/4/23 21:00'), Instrument('gong')),
 ])
-def test_get(time, instrument):
+def test_get(GSClient, time, instrument):
     qr1 = GSClient.search(time, instrument)
     download_list = GSClient.fetch(qr1)
     assert len(download_list) == len(qr1)
@@ -95,4 +98,17 @@ def test_fido(time, instrument):
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
     for res in response:
-        assert res.split('.')[-1] == 'fits'
+        assert res.split('.')[-1] == 'gz'
+
+
+def test_attr_reg():
+    assert a.Instrument.gong == a.Instrument("GONG")
+    assert a.gong_synoptic.ExtentType.synoptic == a.gong_synoptic.ExtentType("SYNOPTIC")
+
+
+def test_client_repr(GSClient):
+    """
+    Repr check
+    """
+    output = str(GSClient)
+    assert output[:50] == 'sunpy.net.dataretriever.sources.gong_synoptic.Gong'

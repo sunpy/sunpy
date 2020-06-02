@@ -57,76 +57,11 @@ class GongSynopticClient(GenericClient):
         `list`
             The URL(s) for the corresponding timerange.
         """
-        prefix = 'https://gong2.nso.edu/oQR/zqs/%Y%m/mrzqs%y%m%d/'
-        file_pattern = 'mrzqs\d{6}t\d{4}c\d+_\d+.fits.gz'
-        pref_scrap = Scraper(prefix)
-        directories = pref_scrap.range(timerange)
-        filesurls = []
-        for directory in directories:
-            try:
-                opn = urlopen(directory)
-                try:
-                    soup = BeautifulSoup(opn, "html.parser")
-                    for link in soup.find_all("a"):
-                        href = link.get("href")
-                        if re.match(file_pattern, href):
-                            # extracting timestamp from the filename
-                            timestring = href[5:16]
-                            tstamp = parse_time('20'+timestring.upper()+'00')
-                            if tstamp >= timerange.start and tstamp <= timerange.end:
-                                fullpath = directory + href
-                                filesurls.append(fullpath)
-                finally:
-                    opn.close()
-            except HTTPError as http_err:
-                if http_err.code == 404:
-                    continue
-                raise
-            except Exception:
-                raise
-        return filesurls
-
-    def fetch(self, qres, path=None, error_callback=None, **kwargs):
-        """
-        Download a set of results.
-
-        Parameters
-        ----------
-        qres : `~sunpy.net.dataretriever.QueryResponse`
-            Results to download.
-
-        path : `str`, optional
-            The directory to retrieve the files into.
-
-        Returns
-        -------
-        results: `parfive.Results`
-
-        """
-        if path is not None:
-            path = Path(path)
-
-        urls = [qrblock.url for qrblock in qres]
-
-        filenames = [url.split('/')[-1] for url in urls]
-        local_filenames = [name[:-3] for name in filenames]
-        paths = self._get_full_filenames(qres, filenames, path)
-        local_paths = self._get_full_filenames(qres, local_filenames, path)
-
-        downloader = Downloader()
-
-        for url, filename in zip(urls, paths):
-            downloader.enqueue_file(url, filename=filename)
-
-        resobj = downloader.download()
-
-        for loc_fpath, fpath in zip(local_paths, paths):
-            f = gzip.open(fpath, 'r')
-            g = gzip.open(loc_fpath, 'w')
-            g.write(f.read())
-
-        resobj.data = list(map(str, local_paths))
-        return resobj
+        prefix = r'https://gong2.nso.edu/oQR/zqs/%Y%m/mrzqs%y%m%d/'
+        pattern = prefix + r'mrzqs%y%m%dt%H%Mc(\d){4}_(\d){3}\.fits.gz'
+        gongsynoptic_files = Scraper(pattern, regex=True)
+        urls = gongsynoptic_files.filelist(timerange)
+        return urls
 
     def _makeimap(self):
         """
@@ -170,3 +105,13 @@ class GongSynopticClient(GenericClient):
     @classmethod
     def _attrs_module(cls):
         return 'gong_synoptic', 'sunpy.net.dataretriever.attrs.gong_synoptic'
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [
+            ("GONG", "Global Oscillation Network Group.")],
+            attrs.gong_synoptic.ExtentType: [("SYNOPTIC",
+            "Coverage of a complete solar rotation synthesized over time")],
+            attrs.Physobs: [("LOS_MAGNETIC_FIELD", "Line of sight magnetic field")]}
+        return adict
