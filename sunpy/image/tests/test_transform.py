@@ -98,7 +98,7 @@ def test_shift(original, dx, dy):
     shift = affine_transform(original, rmatrix=rmatrix, recenter=True, image_center=rcen)
     ymin, ymax = max([0, dy]), min([original.shape[1], original.shape[1]+dy])
     xmin, xmax = max([0, dx]), min([original.shape[0], original.shape[0]+dx])
-    compare_results(expected[ymin:ymax, xmin:xmax], shift[ymin:ymax, xmin:xmax])
+    assert compare_results(expected[ymin:ymax, xmin:xmax], shift[ymin:ymax, xmin:xmax])
 
     # Check shifted and unshifted shape against original image
     rcen = image_center - np.array([dx, dy])
@@ -106,7 +106,7 @@ def test_shift(original, dx, dy):
     # Need to ignore the portion of the image cut off by the first shift
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
-    compare_results(original[ymin:ymax, xmin:xmax], unshift[ymin:ymax, xmin:xmax])
+    assert compare_results(original[ymin:ymax, xmin:xmax], unshift[ymin:ymax, xmin:xmax])
 
 
 @pytest.mark.parametrize("scale_factor", [0.25, 0.5, 0.75, 1.0, 1.25, 1.5])
@@ -129,7 +129,7 @@ def test_scale(original, scale_factor):
         lower = int(w - new_c)
         expected[lower:upper, lower:upper] = newim
     scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor)
-    compare_results(expected, scale)
+    assert compare_results(expected, scale)
 
 
 @pytest.mark.parametrize("angle, dx, dy, scale_factor", [(90, -100, 50, 0.25),
@@ -178,7 +178,7 @@ def test_all(original, angle, dx, dy, scale_factor):
     else:
         lower = int(w-new_c)
         expected[lower:upper, lower:upper] = rotscaleshift
-    compare_results(expected, rotscaleshift)
+    assert compare_results(expected, rotscaleshift)
 
     # Check a rotated/shifted and restored image against original
     transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, recenter=True,
@@ -193,7 +193,7 @@ def test_all(original, angle, dx, dy, scale_factor):
     # (which isn't the portion you'd expect, because of the rotation)
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
-    compare_results(original[ymin:ymax, xmin:xmax], inverse[ymin:ymax, xmin:xmax])
+    assert compare_results(original[ymin:ymax, xmin:xmax], inverse[ymin:ymax, xmin:xmax])
 
 
 def test_flat(identity):
