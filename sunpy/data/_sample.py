@@ -8,8 +8,8 @@ from sunpy.util.config import _is_writable_dir, get_and_create_sample_dir
 from sunpy.util.parfive_helpers import Downloader
 
 _base_urls = (
-    'http://data.sunpy.org/sunpy/v1/',
-    'https://github.com/sunpy/sample-data/raw/master/sunpy/v1/',
+    "http://data.sunpy.org/sunpy/v1/",
+    "https://github.com/sunpy/sample-data/raw/master/sunpy/v1/"
 )
 
 # Shortcut requirements:
@@ -52,7 +52,8 @@ _sample_data = {
     "NOAAINDICES_TIMESERIES": "swpc_solar_cycle_indices.txt",
     "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
     "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
-    "NORH_TIMESERIES": "tca110607.fits"
+    "NORH_TIMESERIES": "tca110607.fits",
+    "LOFAR_IMAGE": "LOFAR_70MHZ_EXAMPLE.fits"
 }
 
 # Reverse the dict because we want to use it backwards, but it is nicer to
