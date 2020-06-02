@@ -1,2 +1,1 @@
-Created `~sunpy.net.dataretriever.sources.GongSynopticClient` for accessing merged data product
-for GONG Synoptic Maps.
+Created `~sunpy.net.dataretriever.sources.GongSynopticClient` for accessing Magnetogram Synoptic Map Archives of NSO-GONG.
