@@ -47,6 +47,21 @@ def test_plot_aia171(aia171_test_map):
     aia171_test_map.plot()
 
 
+def test_plot_rotated_aia171(aia171_test_map):
+    # Check that plotting a rotated map and a rectangle works as expected
+
+    # Set rotation metadata
+    aia171_test_map.meta['CROTA2'] = 45
+    # Plot map
+    aia171_test_map.plot(draw_grid=True)
+    # Plot rectangle
+    bottom_left = SkyCoord(
+        0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    w = 100 * u.arcsec
+    h = 100 * u.arcsec
+    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
+
+
 @figure_test
 def test_plot_aia171_clip(aia171_test_map):
     aia171_test_map.plot(clip_interval=(5., 99.)*u.percent)
