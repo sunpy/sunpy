@@ -84,3 +84,33 @@ class Sunspotter:
         return self.properties[self.properties.id_filename == idx]
 
 
+class HFC:
+    """
+    For the HELIO Feature Catalogue.
+    """
+    def __init__(self, vot_file=None):
+        """
+        Parameters
+        ----------
+        vot_file: `str`
+            file path to the vot file corresponding to the given observation.
+        
+        #TODO: Make getting the VOT table completely online using urllib.
+        """
+        self.vot_table = vot_file
+
+        self.vot_table_to_pandas()
+
+    def vot_table_to_pandas(self):
+        """
+        Reads the VOT table and returns the corresponding pandas DataFrame.
+
+        Returns
+        -------
+        vot_table: `pd.Dataframe`
+            Pandas Dataframe corresponding to the VOT table from HFC.
+        """
+        self.vot_table = parse(self.vot_table)
+        table = self.vot_table.get_first_table().to_table(use_names_over_ids=True)
+        return table.to_pandas()
+
