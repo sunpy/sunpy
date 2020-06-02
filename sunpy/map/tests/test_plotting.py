@@ -47,6 +47,7 @@ def test_plot_aia171(aia171_test_map):
     aia171_test_map.plot()
 
 
+@figure_test
 def test_plot_rotated_aia171(aia171_test_map):
     # Check that plotting a rotated map and a rectangle works as expected
 
