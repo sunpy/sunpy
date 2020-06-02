@@ -54,7 +54,7 @@ def test_plot_rotated_aia171(aia171_test_map):
     # Set rotation metadata
     aia171_test_map.meta['CROTA2'] = 45
     # Plot map
-    aia171_test_map.plot(draw_grid=True)
+    aia171_test_map.plot()
     # Plot rectangle
     bottom_left = SkyCoord(
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
