@@ -1588,7 +1588,6 @@ class GenericMap(NDData):
         Should take any valid input to submap() and return bottom_left and
         top_right in pixel coordinates.
         """
-        pass
 
     @_parse_submap_input.register(u.Quantity)
     def _parse_submap_quantity_input(self, bottom_left, top_right, width, height):
