@@ -55,8 +55,8 @@ def angular_radius(t='now'):
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     """
-    solar_semidiameter_rad = constants.radius / earth_distance(t)
-    return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
+    solar_semidiameter_rad = np.arcsin(constants.radius / earth_distance(t))
+    return Angle(solar_semidiameter_rad.to(u.arcsec))
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
