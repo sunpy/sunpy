@@ -1,0 +1,2 @@
+Improved the accuracy of :func:`~sunpy.coordinates.sun.angular_radius` by removing the use of the small-angle approximation.
+The inaccuracy had been less than 5 milliarcseconds.
