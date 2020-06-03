@@ -57,12 +57,12 @@ class TableMatcher:
             df_1 = self.df_1[feature_1]
         except KeyError:
             raise SunpyUserWarning("The features specified for table 1 do not "
-                                    "correspond to any columns in table 1.")
+                                   "correspond to any columns in table 1.")
         try:
             df_2 = self.df_2[feature_2]
         except KeyError:
             raise SunpyUserWarning("The features specified for table 2 do not "
-                                    "correspond to any columns in table 2.")
+                                   "correspond to any columns in table 2.")
 
         return df_1, df_2
 
