@@ -1,6 +1,5 @@
 import json
 import subprocess
-import warnings
 
 
 def remove_initials(name):
