@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
 
 from sunpy.util import SunpyUserWarning
 
@@ -87,6 +86,11 @@ class TableMatcher:
             Contains match score for  corresponding best matches.
         """
 
+        try:
+            from sklearn.metrics.pairwise import cosine_similarity
+        except ImportError:
+            raise SunpyUserWarning("Table Matcher requires Scikit Learn to be installed")
+
         cosine = cosine_similarity(X=df_1, Y=df_2)
         result = np.argmax(cosine, axis=1)
         match_score = np.max(cosine, axis=1)
@@ -113,6 +117,11 @@ class TableMatcher:
             Array of size `(n,)` where n is the number of rows in df_1.
             Contains match score for  corresponding best matches.
         """
+        try:
+            from sklearn.metrics.pairwise import euclidean_distances
+        except ImportError:
+            raise SunpyUserWarning("Table Matcher requires Scikit Learn to be installed")
+
         euclidean = euclidean_distances(X=df_1, Y=df_2)
         result = np.argmin(euclidean, axis=1)
         match_score = np.min(euclidean, axis=1)
