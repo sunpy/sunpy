@@ -1534,20 +1534,30 @@ class GenericMap(NDData):
             raise ValueError("If bottom_left is not a SkyCoord either top_right alone or "
                              "both width and height must be specified.")
 
-        elif (not all([arg is None or (isinstance(arg, u.Quantity) and arg.unit.is_equivalent(u.pix))
-                       for arg in (bottom_left, top_right, width, height)])):
+        elif (not all([arg is None or (isinstance(arg, u.Quantity) and
+              arg.unit.is_equivalent(u.pix))
+                for arg in (bottom_left, top_right, width, height)])):
             raise TypeError("When bottom_left is not a SkyCoord, any values of top_right, "
-                            "width or height specified must be Quantity objects in units of pixels.")
+                            "width or height specified must be Quantity objects in "
+                            "units of pixels.")
 
         elif bottom_left.shape != (2,) or (top_right is not None and top_right.shape != (2,)):
             raise ValueError(
-                "Both bottom_left and top_right when specified as Quantity objects must have shape (2,)")
+                "Both bottom_left and top_right when specified as Quantity objects "
+                "must have shape (2,)")
 
         elif height is not None and width is not None:
             top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
 
         x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
         y_pixels = u.Quantity([top_right[1], bottom_left[1]]).to_value(u.pix)
+        if x_pixels[0] > x_pixels[1]:
+            warnings.warn("The rectangle is inverted in the left/right direction,  "
+                          "which may lead to unintended behavior.", SunpyUserWarning)
+
+        if y_pixels[0] > y_pixels[1]:
+            warnings.warn("The rectangle is inverted in the bottom/top direction, "
+                          "which may lead to unintended behavior.", SunpyUserWarning)
         # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
         y_pixels.sort()
@@ -1786,6 +1796,13 @@ class GenericMap(NDData):
                        axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
+
+        This draws a rectangle that has corners at ``(bottom_left, top_right)``,
+        and has sides parallel to coordinate axes of the map.
+
+        If ``width`` and ``height`` are specified, they are respectively added to the
+        longitude and latitude of the ``bottom_left`` coordinate to calculate a
+        ``top_right`` coordinate.
 
         Parameters
         ----------
