@@ -1,7 +1,6 @@
 """
 Miscellaneous utilities related to coordinates
 """
-import warnings
 
 import numpy as np
 
@@ -9,7 +8,6 @@ import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 
 from sunpy.coordinates import Heliocentric
-from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['GreatArc', 'get_rectangle_coordinates']
 
@@ -268,19 +266,21 @@ class GreatArc:
                         frame=Heliocentric).transform_to(self.start_frame)
 
 
-def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = None, height: u.deg = None):
+def get_rectangle_coordinates(bottom_left, *, top_right=None,
+                              width: u.deg = None, height: u.deg = None):
     """
     Specify a rectangular region of interest in longitude and latitude in a given coordinate frame.
 
     Parameters
     ----------
     bottom_left : `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
-        The bottom-left coordinate of the rectangle.
-        Supports passing both the bottom left and top right coordinates by passing with a shape of ``(2,)``.
+        The bottom-left coordinate of the rectangle. Supports passing both the
+        bottom left and top right coordinates by passing with a shape of ``(2,)``.
     top_right : `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
         The top-right coordinate of the rectangle.
-        If in a different frame than ``bottom_left`` and all required metadata for frame conversion is present,
-        ``top_right`` will be transformed to ``bottom_left`` frame.
+        If in a different frame than ``bottom_left`` and all required metadata
+        for frame conversion is present, ``top_right`` will be transformed to
+        ``bottom_left`` frame.
     width : `~astropy.units.Quantity`
         The width of the rectangle.
         Must be omitted if the coordinates of both corners have been specified.
@@ -318,6 +318,15 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = Non
     >>> height = 10 * u.arcsec
     >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=width, height=height)
 
+    Notes
+    -----
+    ``width`` is always treated as an increase in longitude, but ``bottom_left`` may have a higher
+    value of longitude than ``top_right`` due to the wrapping of the longitude angle.  Appropriate
+    care should be taken when using this function's output to define a range of longitudes.
+
+    ``height`` is always treated as an increase in latitude, but this function does not enforce
+    that ``bottom_left`` has a lower value of latitude than ``top_right``, in case that orientation
+    is valid for the intended use.
     """
     if not (hasattr(bottom_left, 'transform_to') and
             hasattr(bottom_left, 'shape') and
@@ -373,14 +382,5 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = Non
 
         if isinstance(bottom_left, BaseCoordinateFrame):
             top_right = top_right.frame
-
-    if top_right.spherical.lon < bottom_left.spherical.lon:
-        warnings.warn("The rectangle is inverted in the left/right (longitude) direction, possibly "
-                      f"due to the longitude wrap angle ({bottom_left.spherical.lon.wrap_angle}), "
-                      "and may lead to unintended behavior.", SunpyUserWarning)
-
-    if top_right.spherical.lat < bottom_left.spherical.lat:
-        warnings.warn("The rectangle is inverted in the bottom/top (latitude) direction "
-                      "and may lead to unintended behavior.", SunpyUserWarning)
 
     return bottom_left, top_right
