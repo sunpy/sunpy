@@ -88,10 +88,10 @@ def wsdl_urls():
     """
     No `Taverna` links, just `WSDL`
     """
-    return ('http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl',
-            'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService?wsdl',
-            'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
-            'http://helio.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl')
+    return ('http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService?wsdl',
+            'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService?wsdl',
+            'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService1_1?wsdl',
+            'http://helio.ucl.ac.uk/helio-hec/HelioLongQueryService1_0b?wsdl')
 
 
 @mock.patch('sunpy.net.helio.parser.link_test', return_value=None)
