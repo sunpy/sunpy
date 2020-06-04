@@ -88,10 +88,10 @@ def wsdl_urls():
     """
     No `Taverna` links, just `WSDL`
     """
-    return ('http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl',
-            'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService?wsdl',
-            'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
-            'http://helio.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl')
+    return ('http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService?wsdl',
+            'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService?wsdl',
+            'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService1_1?wsdl',
+            'http://helio.ucl.ac.uk/helio-hec/HelioLongQueryService1_0b?wsdl')
 
 
 @mock.patch('sunpy.net.helio.parser.link_test', return_value=None)
@@ -260,10 +260,11 @@ def test_link_test_on_urlerror(mock_link_test):
 
 
 @pytest.mark.remote_data
-@pytest.fixture
+@pytest.fixture(scope="session")
 def client():
-    link = 'http://helio.mssl.ucl.ac.uk:80/helio_hec/HelioTavernaService?wsdl'
-    return HECClient(link)
+    working_links = list(filter(link_test, webservice_parser()))
+    taverna_link = taverna_parser(working_links[0])[0]
+    return HECClient(taverna_link)
 
 
 @pytest.mark.remote_data
