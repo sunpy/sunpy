@@ -32,11 +32,15 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
+    .. note::
+        See the gallery example :ref:`sphx_glr_generated_gallery_plotting_solar_cycle_example.py`
+        for how to use `~sunpy.net.Fido` to retrieve the data file.
+
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')  # doctest: +REMOTE_DATA
+    >>> noaa_url = "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
+    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAIndices')  # doctest: +REMOTE_DATA
     >>> noaa.peek()   # doctest: +SKIP
 
     References
@@ -58,8 +62,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         .. plot::
 
             import sunpy.timeseries
-            import sunpy.data.sample
-            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
+            noaa_url = "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
+            noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAIndices')
             noaa.peek()
 
         Parameters
@@ -174,11 +178,15 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     * The predicted radio flux at 10.7 cm is produced by
       `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
 
+    .. note::
+        See the gallery example :ref:`sphx_glr_generated_gallery_plotting_solar_cycle_example.py`
+        for how to use `~sunpy.net.Fido` to retrieve the data file.
+
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')  # doctest: +REMOTE_DATA
+    >>> noaa_url = 'ftp://ftp.swpc.noaa.gov/pub/weekly/Predict.txt'
+    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')  # doctest: +REMOTE_DATA
     >>> noaa.peek()   # doctest: +SKIP
 
     References
@@ -201,8 +209,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         .. plot::
 
             import sunpy.timeseries
-            import sunpy.data.sample
-            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')
+            noaa_url = 'ftp://ftp.swpc.noaa.gov/pub/weekly/Predict.txt'
+            noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')
             noaa.peek()
 
         Parameters

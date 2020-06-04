@@ -1,33 +1,54 @@
 """
-==============================
-Plotting the solar cycle index
-==============================
+=============================
+Plotting a solar cycle index
+=============================
 
-How to plot the current and possible next solar cycle.
+This example demonstrates how to plot the solar cycle in terms of
+the number of sunspots and a prediction for the next few years.
 """
 import matplotlib.pyplot as plt
 
+import astropy.units as u
+from astropy.time import Time, TimeDelta
+
 import sunpy.timeseries as ts
-from sunpy.data.sample import NOAAINDICES_TIMESERIES, NOAAPREDICT_TIMESERIES
+from sunpy.net import Fido
+from sunpy.net import attrs as a
+from sunpy.time import TimeRange
 
 ###############################################################################
-# For this example we will use the SunPy sample data. This code snippet grabs
-# the most current NOAA solar cycle data as a ``TimeSeries``.
-noaa = ts.TimeSeries(NOAAINDICES_TIMESERIES, source='noaaindices')
-noaa_predict = ts.TimeSeries(NOAAPREDICT_TIMESERIES, source='noaapredictindices')
+# The U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center (SWPC)
+# provides recent solar cycle indices which includes different sunspot numbers,
+# radio flux, and geomagnetic index. They also provide predictions for how the
+# sunspot number and radio flux will evolve. Predicted values are based on the
+# consensus of the Solar Cycle 24 Prediction Panel.
+#
+# We will first search for and then download the data.
+time_range = TimeRange("2008-06-01 00:00", Time.now())
+result = Fido.search(a.Time(time_range), a.Instrument('noaa-indices'))
+f_noaa_indices = Fido.fetch(result)
+result = Fido.search(a.Time(time_range.end, time_range.end + TimeDelta(4 * u.year)),
+                     a.Instrument('noaa-predict'))
+f_noaa_predict = Fido.fetch(result)
 
 ###############################################################################
-# Finally, we plot both ``noaa`` and ``noaa2`` together, with an arbitrary
-# range for the strength of the next solar cycle.
+#  We then load them into individual `~sunpy.timeseries.TimeSeries` objects.
+noaa = ts.TimeSeries(f_noaa_indices, source='noaaindices').truncate(time_range)
+noaa_predict = ts.TimeSeries(f_noaa_predict, source='noaapredictindices')
+
+###############################################################################
+# Finally, we plot both ``noaa`` and ``noaa_predict`` for the sunspot number.
+# In this case we use the S.I.D.C. Brussels International Sunspot Number (RI).
+# The predictions provide both a high and low values, which we plot below as
+# ranges.
 fig, ax = plt.subplots()
-ax.plot(noaa.data.index, noaa.data['sunspot RI'], label='Sunspot Number')
-ax.plot(noaa_predict.data.index, noaa_predict.data['sunspot'],
+ax.plot(noaa.index, noaa.quantity('sunspot RI'), label='Sunspot Number')
+ax.plot(noaa_predict.index, noaa_predict.quantity('sunspot'),
         color='grey', label='Near-term Prediction')
-ax.fill_between(noaa_predict.data.index, noaa_predict.data['sunspot low'],
-                noaa_predict.data['sunspot high'], alpha=0.3, color='grey')
+ax.fill_between(noaa_predict.index, noaa_predict.quantity('sunspot low'),
+                noaa_predict.quantity('sunspot high'), alpha=0.3, color='grey')
 ax.set_ylim(bottom=0)
 ax.set_ylabel('Sunspot Number')
 ax.set_xlabel('Year')
 ax.legend()
-
 plt.show()

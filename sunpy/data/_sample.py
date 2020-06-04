@@ -49,8 +49,6 @@ _sample_data = {
     "LYRA_LEVEL3_TIMESERIES": "lyra_20110607-000000_lev3_std.fits",
     "GOES_XRS_TIMESERIES": "go1520110607.fits",
     "GBM_TIMESERIES": "glg_cspec_n5_110607_v00.pha",
-    "NOAAINDICES_TIMESERIES": "swpc_solar_cycle_indices.txt",
-    "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
     "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
     "NORH_TIMESERIES": "tca110607.fits"
 }
