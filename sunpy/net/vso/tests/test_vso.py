@@ -538,3 +538,11 @@ def test_vso_repr(client):
     """
     output = str(client)
     assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nAllows queries and do'
+
+
+@pytest.mark.remote_data
+def test_response_block_properties(client):
+    res = client.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom),
+                        a.vso.Sample(10 * u.minute))
+    properties = res.response_block_properties()
+    assert len(properties) == 0
