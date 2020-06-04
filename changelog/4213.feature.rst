@@ -1,0 +1,2 @@
+`QueryResponse` of Dataretriever clients' in `~sunpy.net.dataretriever.sources` can now show more metadata columns
+using information extracted from file URLs.
