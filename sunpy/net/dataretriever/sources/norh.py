@@ -26,6 +26,7 @@ class NoRHClient(GenericClient):
 
     Examples
     --------
+    >>> import astropy.units as u
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument.norh, a.Wavelength(17*u.GHz))  #doctest: +REMOTE_DATA
