@@ -113,11 +113,11 @@ variable set to the Fido search, in this case, result::
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the LYRAClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+         Start Time     Source Provider  Physobs   Instrument Level
+    ------------------- ------ -------- ---------- ---------- -----
+    2012-03-04 00:00:00 Proba2      esa irradiance       lyra     2
+    2012-03-05 00:00:00 Proba2      esa irradiance       lyra     2
+    2012-03-06 00:00:00 Proba2      esa irradiance       lyra     2
     <BLANKLINE>
     <BLANKLINE>
 
@@ -133,11 +133,11 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the NoRHClient:
-         Start Time           End Time      Source Instrument   Wavelength
-    ------------------- ------------------- ------ ---------- --------------
-    2012-03-04 00:00:00 2012-03-05 00:00:00   NAOJ       NORH 17000000.0 kHz
-    2012-03-05 00:00:00 2012-03-06 00:00:00   NAOJ       NORH 17000000.0 kHz
-    2012-03-06 00:00:00 2012-03-07 00:00:00   NAOJ       NORH 17000000.0 kHz
+         Start Time     Source Provider Physobs Instrument Wavelength
+    ------------------- ------ -------- ------- ---------- ----------
+    2012-03-04 00:00:00   NAOJ      NRO               NORH   17.0 GHz
+    2012-03-05 00:00:00   NAOJ      NRO               NORH   17.0 GHz
+    2012-03-06 00:00:00   NAOJ      NRO               NORH   17.0 GHz
     <BLANKLINE>
     <BLANKLINE>
 
@@ -194,9 +194,14 @@ operator would::
     Results from 3 Providers:
     <BLANKLINE>
     1 Results from the LYRAClient:
+         Start Time     Source Provider  Physobs   Instrument Level
+    ------------------- ------ -------- ---------- ---------- -----
+    2012-03-04 00:00:00 Proba2      esa irradiance       lyra     2
+    <BLANKLINE>
+    1 Results from the RHESSIClient:
          Start Time           End Time      Source Instrument Wavelength
     ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-04 02:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     rhessi        nan
     <BLANKLINE>
     3 Results from the VSOClient:
        Start Time [1]       End Time [1]    Source ...     Type    Wavelength [2]
@@ -205,11 +210,6 @@ operator would::
     2012-03-03 22:57:40 2012-03-04 00:33:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
     2012-03-04 00:33:20 2012-03-04 01:45:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
     2012-03-04 01:45:40 2012-03-04 02:09:00 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
-    <BLANKLINE>
-    1 Results from the RHESSIClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     rhessi        nan
     <BLANKLINE>
     <BLANKLINE>
 
@@ -239,10 +239,10 @@ results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the LYRAClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+         Start Time     Source Provider  Physobs   Instrument Level
+    ------------------- ------ -------- ---------- ---------- -----
+    2012-01-01 00:00:00 Proba2      esa irradiance       lyra     2
+    2012-01-02 00:00:00 Proba2      esa irradiance       lyra     2
     <BLANKLINE>
     <BLANKLINE>
 
@@ -253,10 +253,10 @@ Or, equivalently::
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the LYRAClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+         Start Time     Source Provider  Physobs   Instrument Level
+    ------------------- ------ -------- ---------- ---------- -----
+    2012-01-01 00:00:00 Proba2      esa irradiance       lyra     2
+    2012-01-02 00:00:00 Proba2      esa irradiance       lyra     2
     <BLANKLINE>
     <BLANKLINE>
 

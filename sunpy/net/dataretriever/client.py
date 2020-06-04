@@ -42,11 +42,15 @@ class QueryResponseBlock:
                               map0.get('Time_end')) if time is None else time
         self.wave = map0.get('wavelength', np.NaN)
         if meta is not None:
-            meta['Source'] = self.source
-            meta['Provider'] = self.provider
-            meta['Physobs'] = self.physobs
-            meta['Instrument'] = self.instrument
-            self.meta = meta
+            meta_ord = OrderedDict()
+            meta_ord['Start Time'] = meta['Start Time']
+            meta_ord['Source'] = self.source
+            meta_ord['Provider'] = self.provider
+            meta_ord['Physobs'] = self.physobs
+            meta_ord['Instrument'] = self.instrument
+            for k in meta.keys():
+                meta_ord[k] = meta[k]
+            self.meta = meta_ord
 
 
 def iter_urls(amap, url_list, time, meta):

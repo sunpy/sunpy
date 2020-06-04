@@ -1,8 +1,5 @@
 import pytest
-from hypothesis import given, settings
-
-import astropy.units as u
-from astropy.time import TimeDelta
+from hypothesis import given
 
 import sunpy.net.dataretriever.sources.goes as goes
 from sunpy.net import Fido
@@ -11,7 +8,7 @@ from sunpy.net._attrs import Instrument, Time
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time
-from sunpy.time import is_time_equal, parse_time
+from sunpy.time import is_time_equal
 from sunpy.time.timerange import TimeRange
 
 

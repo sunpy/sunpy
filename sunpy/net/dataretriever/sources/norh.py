@@ -3,12 +3,9 @@
 #  Google Summer of Code 2014
 
 import astropy.units as u
-from astropy.time import TimeDelta
-
-from parse import parse
 
 from sunpy.net.dataretriever import GenericClient
-from sunpy.time import parse_time, TimeRange
+from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
 
 __all__ = ['NoRHClient']
@@ -37,10 +34,10 @@ class NoRHClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the NoRHClient:
-    Wavelength      Start Time     Source Provider Physobs Instrument
-    ---------- ------------------- ------ -------- ------- ----------
-      17.0 GHz 2016-01-01 00:00:00   NAOJ      NRO               NORH
-      17.0 GHz 2016-01-02 00:00:00   NAOJ      NRO               NORH
+         Start Time     Source Provider Physobs Instrument Wavelength
+    ------------------- ------ -------- ------- ---------- ----------
+    2016-01-01 00:00:00   NAOJ      NRO               NORH   17.0 GHz
+    2016-01-02 00:00:00   NAOJ      NRO               NORH   17.0 GHz
     <BLANKLINE>
     <BLANKLINE>
 
@@ -96,7 +93,7 @@ class NoRHClient(GenericClient):
         #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
         #       as it doesn't follow pattern.
 
-        urls,urlmeta = norh.filelist(timerange)
+        urls, urlmeta = norh.filelist(timerange)
         urlmeta_return = list()
         for metadict in urlmeta:
             if metadict['Wavelength'] == 'tcz':

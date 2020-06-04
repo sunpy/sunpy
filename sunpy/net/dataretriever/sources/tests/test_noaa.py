@@ -35,7 +35,7 @@ def mock_query_object(start_date, end_date):
     }
 
     resp = QueryResponse.create(map_,
-                                noaa.NOAAIndicesClient()._get_url_for_timerange(None),
+                                noaa.NOAAIndicesClient()._get_url_for_timerange(None)[0],
                                 client=noaa.NOAAIndicesClient())
     return resp
 

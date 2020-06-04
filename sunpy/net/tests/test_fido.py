@@ -207,7 +207,7 @@ def test_tables_single_response():
     assert isinstance(tables[0], Table)
     assert len(tables) == 1
 
-    columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    columns = ['Start Time', 'Source', 'Provider', 'Physobs', 'Instrument', 'Level']
     assert columns == tables[0].colnames
     assert len(tables[0]) == 5
 
@@ -221,8 +221,9 @@ def test_tables_multiple_response():
     assert all(isinstance(t, Table) for t in tables)
     assert len(tables) == 2
 
-    columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
-    assert columns == tables[0].colnames and columns == tables[1].colnames
+    cols_lyra = ['Start Time', 'Source', 'Provider', 'Physobs', 'Instrument', 'Level']
+    cols_rhessi = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert cols_lyra == tables[0].colnames and cols_rhessi == tables[1].colnames
 
     assert all(entry == 'lyra' for entry in tables[0]['Instrument'])
     assert all(entry == 'rhessi' for entry in tables[1]['Instrument'])

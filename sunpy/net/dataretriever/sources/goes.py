@@ -2,14 +2,9 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-import os
-
-from datetime import datetime
 from itertools import compress
-from urllib.parse import urlsplit
 
 import astropy.units as u
-from astropy.time import Time, TimeDelta
 
 from sunpy import config
 from sunpy.net.dataretriever import GenericClient
@@ -39,10 +34,10 @@ class XRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the XRSClient:
-    SatelliteNumber      Start Time     Source Provider  Physobs   Instrument
-    --------------- ------------------- ------ -------- ---------- ----------
-                 15 2016-01-01 00:00:00   nasa     sdac irradiance       goes
-                 15 2016-01-02 00:00:00   nasa     sdac irradiance       goes
+         Start Time     Source Provider  Physobs   Instrument SatelliteNumber
+    ------------------- ------ -------- ---------- ---------- ---------------
+    2016-01-01 00:00:00   nasa     sdac irradiance       goes              15
+    2016-01-02 00:00:00   nasa     sdac irradiance       goes              15
     <BLANKLINE>
     <BLANKLINE>
 
@@ -244,31 +239,6 @@ class SUVIClient(GenericClient):
             # if no satellites were found then raise an exception
             raise ValueError(f"No operational SUVI instrument on {date.strftime(TIME_FORMAT)}")
 
-    def _get_metadata_for_url(self, urls):
-        meta = list()
-        for this_url in urls:
-            metadict = {}
-            if this_url.count('/l2/') > 0:  # this is a level 2 data file
-                start_time = parse_time(os.path.basename(this_url).split('_s')[2].split('Z')[0])
-                end_time = parse_time(os.path.basename(this_url).split('_e')[1].split('Z')[0])
-                metadict['Level'] = '2'
-            if this_url.count('/l1b/') > 0:  # this is a level 1b data file
-                start_time = datetime.strptime(os.path.basename(this_url).split('_s')[
-                                               1].split('_e')[0][:-1], '%Y%j%H%M%S')
-                end_time = datetime.strptime(os.path.basename(this_url).split('_e')[
-                                             1].split('_c')[0][:-1], '%Y%j%H%M%S')
-                metadict['Level'] = '1b'
-            if this_url.count('/goes16/') > 0:
-                metadict['SatelliteNumber'] = 16
-            if this_url.count('/goes17/') > 0:
-                metadict['SatelliteNumber'] = 17
-            wave = int(os.path.basename(this_url).split('-')[2][2:5]) * u.Angstrom
-            metadict['StartTime'] = start_time
-            metadict['EndTime'] = end_time
-            metadict['Wavelength'] = wave
-            meta.append(metadict)
-        return meta
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns urls to the SUVI data for the specified time range.
@@ -321,7 +291,9 @@ class SUVIClient(GenericClient):
         if level not in supported_levels:
             raise ValueError(f"Level {level} is not supported.")
 
-        results = []
+        pattern = '{}/goes{Satellite_Numner:2d}/l{Level:.2w}{}suvi-l{:.2w}-{:.2}{Wavelength:03d}/{}'
+        urls = []
+        urlsmeta = []
         for this_wave in waves:
             if level == "2":
                 search_pattern = base_url + \
@@ -338,13 +310,16 @@ class SUVIClient(GenericClient):
                         r'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
 
             if search_pattern.count('wave_minus1'):
-                scraper = Scraper(search_pattern, level=level, wave=this_wave,
+                scraper = Scraper(search_pattern, extractor=pattern, level=level, wave=this_wave,
                                   goes_number=satellitenumber, wave_minus1=this_wave-1)
             else:
-                scraper = Scraper(search_pattern, level=level, wave=this_wave,
+                scraper = Scraper(search_pattern, extractor=pattern, level=level, wave=this_wave,
                                   goes_number=satellitenumber)
-            results.extend(scraper.filelist(timerange))
-        return results
+            url, urlmeta = scraper.filelist(timerange)
+            if urlmeta is not None:
+                urls += url
+                urlsmeta += urlmeta
+        return urls, urlsmeta
 
     def _makeimap(self):
         """

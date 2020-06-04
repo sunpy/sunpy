@@ -24,10 +24,10 @@ class LYRAClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the LYRAClient:
-    Level      Start Time     Source Provider  Physobs   Instrument
-    ----- ------------------- ------ -------- ---------- ----------
-        2 2016-01-01 00:00:00 Proba2      esa irradiance       lyra
-        2 2016-01-02 00:00:00 Proba2      esa irradiance       lyra
+         Start Time     Source Provider  Physobs   Instrument Level
+    ------------------- ------ -------- ---------- ---------- -----
+    2016-01-01 00:00:00 Proba2      esa irradiance       lyra     2
+    2016-01-02 00:00:00 Proba2      esa irradiance       lyra     2
     <BLANKLINE>
     <BLANKLINE>
 

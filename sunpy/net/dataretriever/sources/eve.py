@@ -2,9 +2,6 @@
 # This module was developed under funding by
 # Google Summer of Code 2014
 
-import astropy.units as u
-from astropy.time import TimeDelta
-
 from sunpy.net.dataretriever import GenericClient
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
@@ -33,10 +30,10 @@ class EVEClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the EVEClient:
-    Level      Start Time     Source Provider  Physobs   Instrument
-    ----- ------------------- ------ -------- ---------- ----------
-      0CS 2016-01-01 00:00:00    SDO     LASP irradiance        eve
-      0CS 2016-01-02 00:00:00    SDO     LASP irradiance        eve
+         Start Time     Source Provider  Physobs   Instrument Level
+    ------------------- ------ -------- ---------- ---------- -----
+    2016-01-01 00:00:00    SDO     LASP irradiance        eve   0CS
+    2016-01-02 00:00:00    SDO     LASP irradiance        eve   0CS
     <BLANKLINE>
     <BLANKLINE>
 

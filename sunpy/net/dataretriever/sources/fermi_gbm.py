@@ -37,11 +37,11 @@ class GBMClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the GBMClient:
-    Resolution Detector      Start Time     Source Provider Physobs Instrument
-    ---------- -------- ------------------- ------ -------- ------- ----------
-         ctime       n3 2015-06-21 00:00:00  FERMI     NASA    flux        GBM
-         ctime       n3 2015-06-22 00:00:00  FERMI     NASA    flux        GBM
-         ctime       n3 2015-06-23 00:00:00  FERMI     NASA    flux        GBM
+         Start Time     Source Provider Physobs Instrument Resolution Detector
+    ------------------- ------ -------- ------- ---------- ---------- --------
+    2015-06-21 00:00:00  FERMI     NASA    flux        GBM      ctime       n3
+    2015-06-22 00:00:00  FERMI     NASA    flux        GBM      ctime       n3
+    2015-06-23 00:00:00  FERMI     NASA    flux        GBM      ctime       n3
     <BLANKLINE>
     <BLANKLINE>
     """

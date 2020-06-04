@@ -6,12 +6,12 @@ import re
 import datetime
 import warnings
 from ftplib import FTP
-from parse import parse
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
+from parse import parse
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
@@ -202,7 +202,7 @@ class Scraper:
                              ' '.join(final_pattern))
 
     def _extractMetaDataURL(self, urls):
-        if self.extractor is None:
+        if self.extractor is None or not urls:
             return None
         metalist = list()
         for url in urls:
@@ -236,7 +236,7 @@ class Scraper:
         >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)
         >>> from sunpy.time import TimeRange
         >>> timerange = TimeRange('2015-01-01','2015-01-01T16:00:00')
-        >>> print(solmon.filelist(timerange))  # doctest: +REMOTE_DATA
+        >>> print(solmon.filelist(timerange)[0])  # doctest: +REMOTE_DATA
         ['http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_025423.fts.gz',
          'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_061145.fts.gz',
          'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_093037.fts.gz',

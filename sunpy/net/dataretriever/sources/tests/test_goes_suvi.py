@@ -76,8 +76,8 @@ def mock_querry_object(suvi_client, start, end, wave):
         'physobs': 'flux',
         'provider': 'NOAA'
     }
-    results = QueryResponse.create(obj, suvi_client._get_url_for_timerange(TimeRange(start, end),
-                                                                           wavelength=wave), client=suvi_client)
+    urls = suvi_client._get_url_for_timerange(TimeRange(start, end), wavelength=wave)[0]
+    results = QueryResponse.create(obj, urls, client=suvi_client)
     return results
 
 
@@ -111,8 +111,8 @@ def test_fetch_working(suvi_client):
     assert mock_qr.instrument == qr.instrument
     assert mock_qr.url == qr.url
 
-    assert qr1.time_range() == TimeRange("2019-05-25T00:52:00.000",
-                                         "2019-05-25T00:56:00.000")
+    assert qr1.time_range() == TimeRange("2019-05-25T00:50:00.000",
+                                         "2019-05-25T00:52:00.000")
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         download_list = suvi_client.fetch(qr1, path=tmpdirname)
@@ -131,7 +131,7 @@ def test_fetch_working(suvi_client):
 def test_get_url_for_time_range_level2(suvi_client, start, end, wave, expected_num_files):
     urls = suvi_client._get_url_for_timerange(TimeRange(start, end),
                                               wavelength=wave * u.Angstrom,
-                                              level=2)
+                                              level=2)[0]
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files
 
@@ -142,7 +142,7 @@ def test_get_url_for_time_range_level2(suvi_client, start, end, wave, expected_n
                          )
 def test_get_url_for_time_range_level2_allwave(suvi_client, start, end, expected_num_files):
     """check that we get all wavelengths if no wavelength is given"""
-    urls = suvi_client._get_url_for_timerange(TimeRange(start, end), level=2)
+    urls = suvi_client._get_url_for_timerange(TimeRange(start, end), level=2)[0]
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files
 
@@ -160,7 +160,7 @@ def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_
     """check that we get all wavelengths if no wavelength is given"""
     urls = suvi_client._get_url_for_timerange(TimeRange(start, end),
                                               wavelength=wave * u.Angstrom,
-                                              level='1b')
+                                              level='1b')[0]
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files
 
@@ -205,5 +205,5 @@ def test_query(suvi_client, start, end, expected_num_files):
     qr1 = suvi_client.search(a.Time(start, end), a.Instrument.suvi)
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == expected_num_files
-    assert qr1.time_range().start == parse_time('2019/05/25 00:52')
-    assert qr1.time_range().end == parse_time('2019/05/25 00:56')
+    assert qr1.time_range().start == parse_time('2019/05/25 00:50')
+    assert qr1.time_range().end == parse_time('2019/05/25 00:52')

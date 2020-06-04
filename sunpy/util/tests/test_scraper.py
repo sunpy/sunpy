@@ -165,10 +165,10 @@ def testFilesRange_sameDirectory_local():
                           'EIT', 'efz%Y%m%d.%H%M%S_s.fits']))
     startdate = parse_time((2004, 3, 1, 4, 0))
     enddate = parse_time((2004, 3, 1, 6, 30))
-    assert len(s.filelist(TimeRange(startdate, enddate))) == 3
+    assert len(s.filelist(TimeRange(startdate, enddate))[0]) == 3
     startdate = parse_time((2010, 1, 10, 20, 30))
     enddate = parse_time((2010, 1, 20, 20, 30))
-    assert len(s.filelist(TimeRange(startdate, enddate))) == 0
+    assert len(s.filelist(TimeRange(startdate, enddate))[0]) == 0
 
 
 @pytest.mark.remote_data
@@ -180,11 +180,11 @@ def testFilesRange_sameDirectory_remote():
     startdate = parse_time((2014, 5, 14, 0, 0))
     enddate = parse_time((2014, 5, 14, 6, 30))
     timerange = TimeRange(startdate, enddate)
-    assert len(s.filelist(timerange)) == 2
+    assert len(s.filelist(timerange)[0]) == 2
     startdate = parse_time((2014, 5, 14, 21, 0))
     enddate = parse_time((2014, 5, 14, 23, 30))
     timerange = TimeRange(startdate, enddate)
-    assert len(s.filelist(timerange)) == 0
+    assert len(s.filelist(timerange)[0]) == 0
 
 
 @pytest.mark.remote_data
@@ -195,7 +195,7 @@ def testFilesRange_sameDirectory_months_remote():
     startdate = parse_time((2007, 8, 1))
     enddate = parse_time((2007, 9, 10))
     timerange = TimeRange(startdate, enddate)
-    assert len(s.filelist(timerange)) == 2
+    assert len(s.filelist(timerange)[0]) == 2
 
 
 @pytest.mark.remote_data
@@ -203,7 +203,7 @@ def test_ftp():
     pattern = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/tca%y%m%d'
     s = Scraper(pattern)
     timerange = TimeRange('2016/5/18 15:28:00', '2016/5/20 16:30:50')
-    urls = s.filelist(timerange)
+    urls = s.filelist(timerange)[0]
     assert urls[0] == ('ftp://solar-pub.nao.ac.jp'
                        '/pub/nsro/norh/data/tcx/2016/05/tca160519')
     assert len(urls) == 2
@@ -216,7 +216,7 @@ def test_filelist_url_missing_directory():
     pattern = 'http://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/%Y/%j/'
     s = Scraper(pattern)
     timerange = TimeRange('1960/01/01 00:00:00', '1960/01/02 00:00:00')
-    assert len(s.filelist(timerange)) == 0
+    assert len(s.filelist(timerange)[0]) == 0
 
 
 @pytest.mark.remote_data
@@ -228,7 +228,7 @@ def test_filelist_relative_hrefs():
     assert s.domain == 'http://www.bbso.njit.edu/'
     # hrefs are relative to domain here, not to the directory they are present in
     # this checks that `scraper.filelist` returns fileurls relative to the domain
-    fileurls = s.filelist(timerange)
+    fileurls = s.filelist(timerange)[0]
     assert fileurls[1] == s.domain + 'pub/archive/2016/05/18/bbso_halph_fr_20160518_160033.fts'
 
 
@@ -248,4 +248,4 @@ def test_regex_data():
     s = Scraper(pattern, regex=True)
     timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
     assert s._URL_followsPattern(prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
-    assert len(s.filelist(timerange)) == 37
+    assert len(s.filelist(timerange)[0]) == 37
