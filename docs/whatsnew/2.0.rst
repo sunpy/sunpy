@@ -24,6 +24,41 @@ We have bumped the minimum version of several packages we depend on:
 * astropy>=3.2
 * parfive>=1.1.0
 
+Search Attributes
+=================
+
+To search with `~sunpy.net.Fido`, you need to specify attributes to search against.
+Before sunpy 2.0, you had to supply values, as the following example demonstrates::
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument("norh"),
+    ...             a.Wavelength(17*u.GHz))
+
+There was no way to know if the value was correct, but now we have a extenstive list of supported values from the clients and servers we can request data from.
+
+Using `~sunpy.net.attrs.Instrument` as an example, if you print the object::
+
+    >>> print(a.Instrument)
+    sunpy.net.attrs.Instrument
+    <BLANKLINE>
+    Specifies the Instrument name for the search.
+    <BLANKLINE>
+           Attribute Name          Client          Full Name                                           Description
+    --------------------------- ----------- ------------------------ --------------------------------------------------------------------------------
+    aia                         VSO         AIA                      Atmospheric Imaging Assembly
+    bbi                         VSO         BBI                      None
+    bcs                         VSO         BCS                      Bragg Crystal Spectrometer
+    bic_hifi                    VSO         BIC-HIFI                 None
+    bigbear                     VSO         Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
+    ...
+
+This will list the name of value you should use, what data source will supply that data and a description.
+Furthermore, you can use tab completion to auto-fill the attribute name, for example by typing ``a.Instrument.<TAB>``.
+
+So now you can do the following instead::
+
+    Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh, a.Wavelength(17*u.GHz))
+
 Fixes and clarification to pixel indexing
 =========================================
 
@@ -40,29 +75,42 @@ In particular:
   Note that this means the ``reference_pixel`` now does **not** have the same value as the FITS ``CRPIX`` values, which are one-based indices.
 - `sunpy.map.make_fitswcs_header` now correctly interprets the `reference_pixel` argument as being zero-based.
 
-Differential rotation in the coordinate framework
-=================================================
+Standardization of `~sunpy.map.GenericMap.submap` and `~sunpy.map.GenericMap.draw_rectangle`
+============================================================================================
 
-SunPy has already included functionality in the `sunpy.physics.differential_rotation` module to transform coordinates and `Maps <sunpy.map.GenericMap>` to account for the rotation of the Sun.
-Because the rotation rate of solar features varies with heliographic latitude, this rotation is called "differential rotation".
-SunPy now provides differential-rotation functionality integrated directly into the `coordinate framework <sunpy.coordinates>` using the `~sunpy.coordinates.metaframes.RotatedSunFrame` class.
-Here are examples of using this class:
+Both `~sunpy.map.GenericMap.submap` and `~sunpy.map.GenericMap.draw_rectangle` allow specification of "rectangles" in world (spherical) coordinates.
+In versions prior to 2.0 you passed the coordinates of the rectangle to ``draw_rectangle`` as a bottom left coordinate, and a height and width, but for submap you passed it as a bottom left and a top right.
+In 2.0 the way you call both methods has changed, to accept a bottom left and then either width and height or a top right coordinate.
+As part of this change, the ``top_right``, ``width``, and ``height`` arguments must always be keyword arguments, i.e. ``width=10*u.arcsec``.
 
-.. minigallery:: sunpy.coordinates.RotatedSunFrame
+This change allows you to give the same rectangle specification to `~sunpy.map.GenericMap.submap` as to `~sunpy.map.GenericMap.draw_rectangle`.
+Which is especially useful when you wish to plot a cropped area of a map, along with it's context in the parent map::
 
-A detailed write-up of how to use `~sunpy.coordinates.metaframes.RotatedSunFrame` can be found :ref`here <sunpy-coordinates-rotatedsunframe>`.
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> import matplotlib.pyplot as plt
 
-Changes to Carrington coordinates
-=================================
+    >>> import sunpy.map
+    >>> from sunpy.data.sample import AIA_171_IMAGE
 
-We have refined our approach for heliographic Carrington coordinates to best support high-resolution imagery of the Sun, including from observatories that are at distances from the Sun that is significantly different from 1 AU (e.g., `Solar Orbiter <https://en.wikipedia.org/wiki/Solar_Orbiter>`__).
-Our `~sunpy.coordinates.frames.HeliographicCarrington` coordinate frame is now expressly intended for the co-alignment of images of the Sun's surface from different observatories.
-`~sunpy.coordinates.frames.HeliographicCarrington` now requires the specification of the observer location (Earth or otherwise) because the light travel time between the Sun and the observer is accounted for.
-SunPy output now matches the calculations by `JPL Horizons <https://ssd.jpl.nasa.gov/?horizons>`__ and `SPICE <https://naif.jpl.nasa.gov/naif/>`__.
-There may be small differences compared to Carrington coordinates computed by groups that do not use modern parameter values or the same assumptions for the methodology.
+    >>> aia = sunpy.map.Map(AIA_171_IMAGE)
 
-Importantly, the Carrington longitude that is now calculated (including using :func:`sunpy.coordinates.sun.L0`) will not match earlier versions of SunPy.
-A detailed write-up of the calculation approach and comparisons to other resources can be found :ref:`here <sunpy-coordinates-carrington>`.
+    >>> bottom_left = SkyCoord(-100 * u.arcsec, -100 * u.arcsec, frame=aia.coordinate_frame)
+    >>> width = 500 * u.arcsec
+    >>> height = 300 * u.arcsec
+
+    >>> sub_aia = aia.submap(bottom_left, width=width, height=height)
+
+    >>> fig = plt.figure()
+    >>> ax1 =fig.add_subplot(1, 2, 1, projection=aia)
+    >>> aia.plot(axes=ax1)
+    >>> aia.draw_rectangle(bottom_left, width=width, height=height)
+
+    >>> ax2 = fig.add_subplot(1, 2, 2, projection=sub_aia)
+    >>> sub_aia.plot(axes=ax2)
+
+
+Both these methods delegate the input parsing to a new utility function `sunpy.coordinates.utils.get_rectangle_coordinates`.
 
 Graphical overview for Map and MapSequence
 ==========================================
@@ -85,46 +133,30 @@ Here's an example of the output for a `~sunpy.map.MapSequence` instance:
 If you are using `Jupyter Notebook <https://jupyter.org/>`__, there is no need to call these methods explicitly to see this graphical overview.
 If you type just the name of the instance, the graphical overview is shown within the notebook itself as a rich representation of the instance, instead of the typical text representation.
 
-New function to generate rectangles
-===================================
+Differential rotation in the coordinate framework
+=================================================
 
-A utility to get the bottom left and top right coordinates of a rectangular region of interest in longitude and latitude in a given coordinate frame.
-It offers a range of input options as the following example demonstrates::
+SunPy has already included functionality in the `sunpy.physics.differential_rotation` module to transform coordinates and `Maps <sunpy.map.GenericMap>` to account for the rotation of the Sun.
+Because the rotation rate of solar features varies with heliographic latitude, this rotation is called "differential rotation".
+SunPy now provides differential-rotation functionality integrated directly into the `coordinate framework <sunpy.coordinates>` using the `~sunpy.coordinates.metaframes.RotatedSunFrame` class.
+Here are examples of using this class:
 
-    >>> import astropy.units as u
-    >>> from astropy.coordinates import SkyCoord
-    >>> from sunpy.coordinates.frames import HeliographicStonyhurst
-    >>> from sunpy.coordinates.utils import get_rectangle_coordinates
-    # With bottom left as a SkyCoord, width and height
-    >>> bottom_left = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame='heliographic_stonyhurst')
-    >>> width = 10 * u.arcsec
-    >>> height = 10 * u.arcsec
-    >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=width, height=height)
-    >>> bottom_left, top_right
-    (<SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-     (0., 0., 695700.)>,
-    <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-     (0.00277778, 0.00277778, 695700.)>)
+.. minigallery:: sunpy.coordinates.RotatedSunFrame
 
-    # With bottom left of shape (2,)
-    >>> bottom_left_vector = SkyCoord([0 * u.arcsec, 10 * u.arcsec], [0 * u.arcsec, 10 * u.arcsec], frame='heliographic_stonyhurst')
-    >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left_vector)
-    >>> bottom_left, top_right
-    (<SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-        (0., 0., 695700.)>,
-    <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-        (0.00277778, 0.00277778, 695700.)>)
 
-    # With bottom left as a BaseCoordinateFrame instance, width and height
-    >>> bottom_left =  HeliographicStonyhurst(0 * u.arcsec, 0 * u.arcsec)
-    >>> width = 10 * u.arcsec
-    >>> height = 10 * u.arcsec
-    >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=width, height=height)
-    >>> bottom_left, top_right
-    (<HeliographicStonyhurst Coordinate (obstime=None): (lon, lat, radius) in (deg, deg, km)
-        (0., 0., 695700.)>,
-    <HeliographicStonyhurst Coordinate (obstime=None): (lon, lat, radius) in (deg, deg, km)
-        (0.00277778, 0.00277778, 695700.)>)
+A detailed write-up of how to use `~sunpy.coordinates.metaframes.RotatedSunFrame` can be found :ref:`here <sunpy-coordinates-rotatedsunframe>`.
+
+Changes to Carrington coordinates
+=================================
+
+We have refined our approach for heliographic Carrington coordinates to best support high-resolution imagery of the Sun, including from observatories that are at distances from the Sun that is significantly different from 1 AU (e.g., `Solar Orbiter <https://en.wikipedia.org/wiki/Solar_Orbiter>`__).
+Our `~sunpy.coordinates.frames.HeliographicCarrington` coordinate frame is now expressly intended for the co-alignment of images of the Sun's surface from different observatories.
+`~sunpy.coordinates.frames.HeliographicCarrington` now requires the specification of the observer location (Earth or otherwise) because the light travel time between the Sun and the observer is accounted for.
+SunPy output now matches the calculations by `JPL Horizons <https://ssd.jpl.nasa.gov/?horizons>`__ and `SPICE <https://naif.jpl.nasa.gov/naif/>`__.
+There may be small differences compared to Carrington coordinates computed by groups that do not use modern parameter values or the same assumptions for the methodology.
+
+Importantly, the Carrington longitude that is now calculated (including using :func:`sunpy.coordinates.sun.L0`) will not match earlier versions of SunPy.
+A detailed write-up of the calculation approach and comparisons to other resources can be found :ref:`here <sunpy-coordinates-carrington>`.
 
 Download behind proxies
 =======================
@@ -161,40 +193,6 @@ aiaprep is now deprecated
 
 With the release of the new `aiapy <https://aiapy.readthedocs.io>`__ package, `sunpy.instr.aia.aiaprep` will be removed in version 2.1.
 You can use the `register` function in the aiapy package to convert AIA images to level 1.5.
-
-Search Attributes
-=================
-
-To search with `~sunpy.net.Fido`, you need to specify attributes to search against.
-Before sunpy 2.0, you had to supply values, as the following example demonstrates::
-
-    >>> from sunpy.net import Fido, attrs as a
-    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument("norh"), a.Wavelength(17*u.GHz))
-
-There was no way to know if the value was correct, but now we have a extenstive list of supported values from the clients and servers we can request data from.
-
-Using `~sunpy.net.attrs.Instrument` as an example, if you print the object::
-
-    >>> print(a.Instrument)
-    sunpy.net.attrs.Instrument
-    <BLANKLINE>
-    Specifies the Instrument name for the search.
-    <BLANKLINE>
-           Attribute Name          Client          Full Name                                           Description
-    --------------------------- ----------- ------------------------ --------------------------------------------------------------------------------
-    aia                         VSO         AIA                      Atmospheric Imaging Assembly
-    bbi                         VSO         BBI                      None
-    bcs                         VSO         BCS                      Bragg Crystal Spectrometer
-    bic_hifi                    VSO         BIC-HIFI                 None
-    bigbear                     VSO         Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
-    ...
-
-This will list the name of value you should use, what data source will supply that data and a description.
-Furthermore, you can use tab completion to auto-fill the attribute name, for example by typing ``a.Instrument.<TAB>``.
-
-So now you can do the following instead::
-
-    Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh, a.Wavelength(17*u.GHz))
 
 Previous update: sunpy 1.1
 ==========================
