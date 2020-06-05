@@ -21,7 +21,7 @@ from sunpy.data.sample import AIA_171_IMAGE
 aia = sunpy.map.Map(AIA_171_IMAGE)
 bottom_left = SkyCoord(750 * u.arcsec, -200 * u.arcsec, frame=aia.coordinate_frame)
 top_right = SkyCoord(1500 * u.arcsec, 550 * u.arcsec, frame=aia.coordinate_frame)
-aia_smap = aia.submap(bottom_left, top_right)
+aia_smap = aia.submap(bottom_left, top_right=top_right)
 
 ###############################################################################
 # Next we apply an edge enhance filter to the data in both x and y directions

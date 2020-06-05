@@ -2,7 +2,6 @@ import os
 import json
 import pathlib
 import tempfile
-import warnings
 import importlib
 
 import pytest
@@ -13,7 +12,6 @@ import astropy.config.paths
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
 from sunpy.tests.helpers import generate_figure_webpage, new_hash_library
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -158,7 +156,3 @@ def pytest_unconfigure(config):
 
         print('All images from image tests can be found in {}'.format(figure_base_dir.resolve()))
         print("The corresponding hash library is {}".format(hashfile.resolve()))
-
-
-def pytest_sessionstart(session):
-    warnings.simplefilter("error", SunpyDeprecationWarning)
