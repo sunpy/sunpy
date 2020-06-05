@@ -8,6 +8,7 @@ from astropy.io.fits.verify import VerifyWarning
 import sunpy.data.test as test
 import sunpy.map
 from sunpy.instr.aia import aiaprep
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 # Define the original and prepped images first so they're available to all
@@ -21,7 +22,8 @@ def original(request):
 
 @pytest.fixture
 def prep_map(original):
-    return aiaprep(original)
+    with pytest.warns(SunpyDeprecationWarning):
+        return aiaprep(original)
 
 
 def test_aiaprep(original, prep_map):

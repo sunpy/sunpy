@@ -21,7 +21,7 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 bottom_left = SkyCoord(-400*u.arcsec, -900*u.arcsec, frame=aiamap.coordinate_frame)
 top_right = SkyCoord(800*u.arcsec, 700*u.arcsec, frame=aiamap.coordinate_frame)
-aiamap_sub = aiamap.submap(bottom_left, top_right)
+aiamap_sub = aiamap.submap(bottom_left, top_right=top_right)
 
 title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 
