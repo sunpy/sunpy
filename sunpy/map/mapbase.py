@@ -1530,7 +1530,7 @@ class GenericMap(NDData):
         bottom_left, top_right = self._parse_submap_input(bottom_left, top_right, width, height)
 
         x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
-        y_pixels = u.Quantity([top_right[1], bottom_left[1]]).to_value(u.pix)
+        y_pixels = u.Quantity([bottom_left[1], top_right[1]]).to_value(u.pix)
         if x_pixels[0] > x_pixels[1]:
             warnings.warn("The rectangle is inverted in the left/right direction,  "
                           "which may lead to unintended behavior.", SunpyUserWarning)
