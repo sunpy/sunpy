@@ -25,9 +25,9 @@ hmi_map = sunpy.map.Map(sunpy.data.sample.HMI_LOS_IMAGE)
 bottom_left = [0, 0] * u.arcsec
 top_right = [800, 800] * u.arcsec
 aia_smap = aia_map.submap(SkyCoord(*bottom_left, frame=aia_map.coordinate_frame),
-                          SkyCoord(*top_right, frame=aia_map.coordinate_frame))
+                          top_right=SkyCoord(*top_right, frame=aia_map.coordinate_frame))
 hmi_smap = hmi_map.submap(SkyCoord(*bottom_left, frame=hmi_map.coordinate_frame),
-                          SkyCoord(*top_right, frame=hmi_map.coordinate_frame))
+                          top_right=SkyCoord(*top_right, frame=hmi_map.coordinate_frame))
 
 
 ##############################################################################

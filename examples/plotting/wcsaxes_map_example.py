@@ -19,7 +19,7 @@ from sunpy.data.sample import AIA_171_IMAGE
 aia = sunpy.map.Map(AIA_171_IMAGE)
 top_right = SkyCoord(0 * u.arcsec, 1000 * u.arcsec, frame=aia.coordinate_frame)
 bottom_left = SkyCoord(-1000 * u.arcsec, 0 * u.arcsec, frame=aia.coordinate_frame)
-smap = aia.submap(bottom_left, top_right)
+smap = aia.submap(bottom_left, top_right=top_right)
 
 ###############################################################################
 # By setting the projection of the axis, a WCSAxes is created and this enables
