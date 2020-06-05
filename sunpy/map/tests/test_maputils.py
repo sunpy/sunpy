@@ -34,22 +34,22 @@ def aia171_test_map():
 
 @pytest.fixture
 def all_off_disk_map(aia171_test_map):
-    return aia171_test_map.submap((1, 1)*u.pix, (11, 12)*u.pix)
+    return aia171_test_map.submap((1, 1)*u.pix, top_right=(11, 12)*u.pix)
 
 
 @pytest.fixture
 def all_on_disk_map(aia171_test_map):
-    return aia171_test_map.submap((30, 60)*u.pix, (50, 85)*u.pix)
+    return aia171_test_map.submap((30, 60)*u.pix, top_right=(50, 85)*u.pix)
 
 
 @pytest.fixture
 def straddles_limb_map(aia171_test_map):
-    return aia171_test_map.submap((64, 80)*u.pix, (120, 127)*u.pix)
+    return aia171_test_map.submap((64, 80)*u.pix, top_right=(120, 127)*u.pix)
 
 
 @pytest.fixture
 def sub_smap(aia171_test_map):
-    return aia171_test_map.submap((0, 0)*u.pix, (50, 60)*u.pix)
+    return aia171_test_map.submap((0, 0)*u.pix, top_right=(50, 60)*u.pix)
 
 
 @pytest.fixture
