@@ -686,6 +686,10 @@ def hme_to_hee(hmecoord, heeframe):
     """
     Convert from Heliocentric Mean Ecliptic to Heliocentric Earth Ecliptic
     """
+    if heeframe.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Convert to the HME frame with mean equinox of date at the HEE obstime, through HCRS
     int_frame = HeliocentricMeanEcliptic(obstime=heeframe.obstime, equinox=heeframe.obstime)
     int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
@@ -704,6 +708,10 @@ def hee_to_hme(heecoord, hmeframe):
     """
     Convert from Heliocentric Earth Ecliptic to Heliocentric Mean Ecliptic
     """
+    if heecoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     int_frame = HeliocentricMeanEcliptic(obstime=heecoord.obstime, equinox=heecoord.obstime)
 
     # Rotate the HEE coord to the intermediate frame
@@ -735,6 +743,10 @@ def hee_to_gse(heecoord, gseframe):
     """
     Convert from Heliocentric Earth Ecliptic to Geocentric Solar Ecliptic
     """
+    if heecoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Use an intermediate frame of HEE at the GSE observation time
     int_frame = HeliocentricEarthEcliptic(obstime=gseframe.obstime)
     int_coord = heecoord.transform_to(int_frame)
@@ -760,6 +772,10 @@ def gse_to_hee(gsecoord, heeframe):
     """
     Convert from Geocentric Solar Ecliptic to Heliocentric Earth Ecliptic
     """
+    if gsecoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Use an intermediate frame of HEE at the GSE observation time
     int_frame = HeliocentricEarthEcliptic(obstime=gsecoord.obstime)
 
@@ -822,6 +838,10 @@ def hgs_to_hci(hgscoord, hciframe):
     # First transform the HGS coord to the HCI obstime
     int_coord = _transform_obstime(hgscoord, hciframe.obstime)
 
+    if int_coord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Rotate from HGS to HCI
     total_matrix = _rotation_matrix_hgs_to_hci(int_coord.obstime)
     newrepr = int_coord.cartesian.transform(total_matrix)
@@ -838,6 +858,10 @@ def hci_to_hgs(hcicoord, hgsframe):
     """
     # First transform the HCI coord to the HGS obstime
     int_coord = _transform_obstime(hcicoord, hgsframe.obstime)
+
+    if int_coord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
 
     # Rotate from HCI to HGS
     total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hci(int_coord.obstime))
@@ -874,6 +898,10 @@ def hme_to_gei(hmecoord, geiframe):
     """
     Convert from Heliocentric Mean Ecliptic to Geocentric Earth Equatorial
     """
+    if geiframe.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Use an intermediate frame of HME at the GEI observation time, through HCRS
     int_frame = HeliocentricMeanEcliptic(obstime=geiframe.obstime, equinox=geiframe.equinox)
     int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
@@ -899,6 +927,10 @@ def gei_to_hme(geicoord, hmeframe):
     """
     Convert from Geocentric Earth Equatorial to Heliocentric Mean Ecliptic
     """
+    if geicoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Use an intermediate frame of HME at the GEI observation time
     int_frame = HeliocentricMeanEcliptic(obstime=geicoord.obstime, equinox=geicoord.equinox)
 

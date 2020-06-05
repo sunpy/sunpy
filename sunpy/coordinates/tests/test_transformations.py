@@ -5,6 +5,7 @@ import astropy
 import astropy.units as u
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
+    ICRS,
     Angle,
     CartesianDifferential,
     CartesianRepresentation,
@@ -753,13 +754,32 @@ def test_array_obstime():
     assert isinstance(t2.frame, Helioprojective)
 
 
+_frames_wo_observer = [HeliographicStonyhurst, HeliocentricInertial,
+                       HeliocentricEarthEcliptic, GeocentricSolarEcliptic,
+                       GeocentricEarthEquatorial]
+
+
+@pytest.mark.parametrize("frame_class", _frames_wo_observer)
+def test_convert_error_with_no_obstime(frame_class):
+    # For most transformations, we do not allow `obstime` to be `None`
+    frame = frame_class(CartesianRepresentation(0, 0, 0)*u.km, obstime=None)
+
+    with pytest.raises(ConvertError, match=r".*obstime.*"):
+        ICRS(0*u.deg, 0*u.deg, 0*u.AU).transform_to(frame)
+
+    with pytest.raises(ConvertError, match=r".*obstime.*"):
+        frame.transform_to(ICRS)
+
+
 _frameset1 = [HeliographicStonyhurst, HeliocentricInertial]
 _frameset2 = [HeliographicCarrington, Heliocentric, Helioprojective]
 
 
 @pytest.mark.parametrize("start_class", _frameset1 + _frameset2)
 @pytest.mark.parametrize("end_class", _frameset1)
-def test_no_obstime_on_one_end(start_class, end_class):
+def test_no_obstime_on_target_end(start_class, end_class):
+    # We currently allow the target `obstime` to be `None` for the transformation subgraph
+    # below `HeliographicStonyhurst`, but this may change in the future
     start_obstime = Time("2001-01-01")
 
     if hasattr(start_class, 'observer'):
