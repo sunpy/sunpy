@@ -531,7 +531,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
 
             # Create a submap that excludes the off disk emission that does
             # not need to be rotated.
-            smap = smap.submap(bottom_left, top_right)
+            smap = smap.submap(bottom_left, top_right=top_right)
         bottom_left = smap.bottom_left_coord
         top_right = smap.top_right_coord
 
@@ -615,6 +615,6 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
             ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
         out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
             ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
-        return smap._new_instance(out_data, out_meta).submap(rotated_bl, rotated_tr)
+        return smap._new_instance(out_data, out_meta).submap(rotated_bl, top_right=rotated_tr)
     else:
         return smap._new_instance(out_data, out_meta)
