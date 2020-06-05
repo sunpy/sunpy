@@ -53,7 +53,7 @@ _sample_data = {
     "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
     "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
     "NORH_TIMESERIES": "tca110607.fits",
-    "LOFAR_IMAGE": "LOFAR_70MHZ_EXAMPLE.fits"
+    "LOFAR_IMAGE": "LOFAR_70MHZ_20190409_131136.fits "
 }
 
 # Reverse the dict because we want to use it backwards, but it is nicer to
