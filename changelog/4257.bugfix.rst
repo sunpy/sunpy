@@ -1,0 +1,1 @@
+Transforming any `sunpy.coordinates` frame to a frame class (as opposed to an instantiated frame) will now preserve the values for any shared frame attributes (e.g., ``obstime``).

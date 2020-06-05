@@ -753,13 +753,15 @@ def test_array_obstime():
     assert isinstance(t2.frame, Helioprojective)
 
 
-_frameset1 = [HeliographicStonyhurst, HeliocentricInertial]
-_frameset2 = [HeliographicCarrington, Heliocentric, Helioprojective]
+_frames_wo_observer = [HeliographicStonyhurst, HeliocentricInertial,
+                       HeliocentricEarthEcliptic, GeocentricSolarEcliptic,
+                       GeocentricEarthEquatorial]
+_frames_w_observer = [HeliographicCarrington, Heliocentric, Helioprojective]
 
 
-@pytest.mark.parametrize("start_class", _frameset1 + _frameset2)
-@pytest.mark.parametrize("end_class", _frameset1)
-def test_no_obstime_on_one_end(start_class, end_class):
+@pytest.mark.parametrize("start_class", _frames_wo_observer + _frames_w_observer)
+@pytest.mark.parametrize("end_class", _frames_wo_observer)
+def test_transform_to_class(start_class, end_class):
     start_obstime = Time("2001-01-01")
 
     if hasattr(start_class, 'observer'):

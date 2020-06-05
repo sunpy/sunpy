@@ -4,6 +4,8 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
+import inspect
+
 import numpy as np
 
 import astropy.units as u
@@ -131,6 +133,25 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         property in `~astropy.coordinates.BaseCoordinateFrame`.
         """
         return self.data.size if self.has_data else 0
+
+    def transform_to(self, new_frame):
+        """
+
+        Notes
+        -----
+        If a class is specified, the new frame will be instantiated using the values
+        from this frame for any shared frame attributes (e.g., ``obstime``) that do
+        not have default values.  All other frame attributes will have default values.
+        """
+        # The docstring above will be prepended by the parent method's docstring
+
+        if inspect.isclass(new_frame):
+            nondefault = set(self.frame_attributes.keys()) - set(self._attr_names_with_defaults)
+            shared_attr = nondefault.intersection(new_frame.frame_attributes.keys())
+            new_frame = new_frame(**dict([(attr, getattr(self, attr)) for attr in shared_attr]))
+        return super().transform_to(new_frame)
+
+    transform_to.__doc__ = BaseCoordinateFrame.transform_to.__doc__ + transform_to.__doc__
 
     def __str__(self):
         """
