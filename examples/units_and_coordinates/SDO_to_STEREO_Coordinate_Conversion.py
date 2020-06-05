@@ -54,13 +54,11 @@ for i, m in enumerate(maps.values()):
 
 ###############################################################################
 # We are now going to pick out a region around the south west corner:
-aia_width = 200 * u.arcsec
-aia_height = 250 * u.arcsec
 aia_bottom_left = SkyCoord(-800 * u.arcsec,
                            -300 * u.arcsec,
                            frame=maps['AIA'].coordinate_frame)
-aia_top_right = SkyCoord(aia_bottom_left.Tx + aia_width,
-                         aia_bottom_left.Ty + aia_height,
+aia_top_right = SkyCoord(-600 * u.arcsec,
+                         -50 * u.arcsec,
                          frame=maps['AIA'].coordinate_frame)
 
 ###############################################################################
@@ -69,12 +67,12 @@ m = maps['AIA']
 fig = plt.figure()
 ax = fig.add_subplot(111, projection=m)
 m.plot(axes=ax)
-m.draw_rectangle(aia_bottom_left, aia_width, aia_height)
+m.draw_rectangle(aia_bottom_left, top_right=aia_top_right)
 
 
 ###############################################################################
 # Create a submap of this area
-subaia = maps['AIA'].submap(aia_bottom_left, aia_top_right)
+subaia = maps['AIA'].submap(aia_bottom_left, top_right=aia_top_right)
 fig = plt.figure()
 subaia.plot()
 
@@ -84,8 +82,8 @@ subaia.plot()
 # this object, we use `Map.coordinate_frame` so that the location parameters of
 # SDO are correctly set.
 corners = ([aia_bottom_left.Tx, aia_bottom_left.Ty],
-           [aia_bottom_left.Tx + aia_width, aia_bottom_left.Ty],
-           [aia_bottom_left.Tx, aia_bottom_left.Ty + aia_height],
+           [aia_top_right.Tx, aia_bottom_left.Ty],
+           [aia_bottom_left.Tx, aia_top_right.Ty],
            [aia_top_right.Tx, aia_top_right.Ty])
 
 hpc_aia = SkyCoord(corners, frame=maps['AIA'].coordinate_frame)
@@ -108,14 +106,12 @@ for i, (m, coord) in enumerate(zip([maps['EUVI'], maps['AIA']],
     m.plot(axes=ax)
 
     # coord[3] is the top-right corner coord[0] is the bottom-left corner.
-    w = (coord[3].Tx - coord[0].Tx)
-    h = (coord[3].Ty - coord[0].Ty)
-    m.draw_rectangle(coord[0], w, h,
+    m.draw_rectangle(coord[0], top_right=coord[3],
                      transform=ax.get_transform('world'))
 
 ###############################################################################
 # We can now zoom in on the region in the EUVI image:
-subeuvi = maps['EUVI'].submap(hpc_B[0], hpc_B[3])
+subeuvi = maps['EUVI'].submap(hpc_B[0], top_right=hpc_B[3])
 fig = plt.figure()
 plt.subplot(projection=subeuvi)
 subeuvi.plot()
