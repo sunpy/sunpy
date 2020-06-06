@@ -42,7 +42,8 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 
 @given(time_attr())
-def test_can_handle_query(LCClient, time):
+def test_can_handle_query(time):
+    LCClient = norh.NoRHClient()
     ans1 = LCClient._can_handle_query(time, a.Instrument.norh)
     assert ans1 is True
     ans1 = LCClient._can_handle_query(time, a.Instrument.norh,

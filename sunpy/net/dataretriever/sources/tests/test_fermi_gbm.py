@@ -31,7 +31,8 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 
 @given(time_attr())
-def test_can_handle_query(LCClient, time):
+def test_can_handle_query(time):
+    LCClient = fermi_gbm.GBMClient()
     ans1 = LCClient._can_handle_query(time, a.Instrument.gbm)
     assert ans1 is True
     ans2 = LCClient._can_handle_query(time, a.Instrument.gbm,
