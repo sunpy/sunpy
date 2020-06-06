@@ -57,7 +57,8 @@ def test_can_handle_query(time):
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
 @given(time=range_time(Time('1992-6-1')))
 @settings(max_examples=2, deadline=50000)
-def test_query(LCClient, time, wave):
+def test_query(time, wave):
+    LCClient = norh.NoRHClient()
     qr1 = LCClient.search(time, a.Instrument.norh, wave)
     assert isinstance(qr1, QueryResponse)
     # Not all hypothesis queries are going to produce results, and

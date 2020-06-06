@@ -126,7 +126,7 @@ def test_get_horizons_coord_array_time():
 
 # Ignore the warning hypothesis throws, as in this case we don't care that
 # the fixutre isn't reset bewteen tests
-@pytest.mark.filterwarnings('ignore:.*function-scoped fixtures should not be used with.*')
+@pytest.mark.filterwarnings('ignore:.*which is reset between function calls but not between test cases.*')
 @pytest.mark.remote_data
 @given(obstime=times())
 @settings(deadline=5000, max_examples=10)
