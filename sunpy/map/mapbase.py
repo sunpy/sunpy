@@ -808,7 +808,7 @@ class GenericMap(NDData):
                     fake_observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, sc.radius,
                                                            obstime=sc.obstime)
                     fake_frame = sc.frame.replicate(observer=fake_observer)
-                    hgs = fake_frame.transform_to(HeliographicStonyhurst)
+                    hgs = fake_frame.transform_to(HeliographicStonyhurst(obstime=sc.obstime))
 
                     # HeliographicStonyhurst doesn't need an observer, but adding the observer
                     # facilitates a conversion back to HeliographicCarrington

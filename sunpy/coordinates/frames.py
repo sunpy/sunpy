@@ -4,6 +4,9 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
+import inspect
+import warnings
+
 import numpy as np
 
 import astropy.units as u
@@ -20,6 +23,7 @@ from astropy.time import Time
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 
 _J2000 = Time('J2000.0', scale='tt')
@@ -131,6 +135,15 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         property in `~astropy.coordinates.BaseCoordinateFrame`.
         """
         return self.data.size if self.has_data else 0
+
+    def transform_to(self, new_frame):
+        if inspect.isclass(new_frame) and issubclass(new_frame, BaseCoordinateFrame):
+            warnings.warn("Transforming a frame instance to a frame class (as opposed to another "
+                          "frame instance) will not be supported in the future.  Either "
+                          "explicitly instantiate the target frame or first convert this frame "
+                          "instance to a `astropy.coordinates.SkyCoord`.",
+                          SunpyDeprecationWarning)
+        return super().transform_to(new_frame)
 
     def __str__(self):
         """
