@@ -48,7 +48,7 @@ def test_hcc_to_hgs():
     lon = 20 * u.deg
     observer = HeliographicStonyhurst(lat=lat, lon=lon)
     hcc_in = Heliocentric(x=0*u.km, y=0*u.km, z=1*u.km, observer=observer)
-    hgs_out = hcc_in.transform_to(HeliographicStonyhurst)
+    hgs_out = hcc_in.transform_to(HeliographicStonyhurst())
 
     assert_quantity_allclose(hgs_out.lat, lat)
     assert_quantity_allclose(hgs_out.lon, lon)
@@ -780,7 +780,7 @@ def assert_no_obstime_on_target_end(start_class, end_class):
     else:
         coord = start_class(CartesianRepresentation(0, 0, 0)*u.km, obstime=start_obstime)
 
-    result = coord.transform_to(end_class)
+    result = coord.transform_to(end_class(obstime=None))
     assert result.obstime == start_obstime
 
 

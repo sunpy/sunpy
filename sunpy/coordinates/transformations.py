@@ -695,7 +695,7 @@ def hme_to_hee(hmecoord, heeframe):
 
     # Convert to the HME frame with mean equinox of date at the HEE obstime, through HCRS
     int_frame = HeliocentricMeanEcliptic(obstime=heeframe.obstime, equinox=heeframe.obstime)
-    int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
+    int_coord = hmecoord.transform_to(HCRS(obstime=hmecoord.obstime)).transform_to(int_frame)
 
     # Rotate the intermediate coord to the HEE frame
     total_matrix = _rotation_matrix_hme_to_hee(int_frame)
@@ -723,7 +723,7 @@ def hee_to_hme(heecoord, hmeframe):
     int_coord = int_frame.realize_frame(int_repr)
 
     # Convert to the HME frame through HCRS
-    return int_coord.transform_to(HCRS).transform_to(hmeframe)
+    return int_coord.transform_to(HCRS(obstime=int_coord.obstime)).transform_to(hmeframe)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -738,7 +738,7 @@ def hee_to_hee(from_coo, to_frame):
     elif to_frame.obstime is None:
         return from_coo
     else:
-        return from_coo.transform_to(HCRS).transform_to(to_frame)
+        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -807,7 +807,8 @@ def gse_to_gse(from_coo, to_frame):
     if np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
-        return from_coo.transform_to(HeliocentricEarthEcliptic).transform_to(to_frame)
+        heecoord = from_coo.transform_to(HeliocentricEarthEcliptic(obstime=from_coo.obstime))
+        return heecoord.transform_to(to_frame)
 
 
 def _rotation_matrix_hgs_to_hci(obstime):
@@ -906,7 +907,7 @@ def hme_to_gei(hmecoord, geiframe):
 
     # Use an intermediate frame of HME at the GEI observation time, through HCRS
     int_frame = HeliocentricMeanEcliptic(obstime=geiframe.obstime, equinox=geiframe.equinox)
-    int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
+    int_coord = hmecoord.transform_to(HCRS(obstime=int_frame.obstime)).transform_to(int_frame)
 
     # Get the Sun-Earth vector in the intermediate frame
     sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
@@ -949,7 +950,7 @@ def gei_to_hme(geicoord, hmeframe):
     int_coord = int_frame.realize_frame(sun_object_int)
 
     # Convert to the final frame through HCRS
-    return int_coord.transform_to(HCRS).transform_to(hmeframe)
+    return int_coord.transform_to(HCRS(obstime=int_coord.obstime)).transform_to(hmeframe)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -962,7 +963,7 @@ def gei_to_gei(from_coo, to_frame):
     if np.all((from_coo.equinox == to_frame.equinox) and (from_coo.obstime == to_frame.obstime)):
         return to_frame.realize_frame(from_coo.data)
     else:
-        return from_coo.transform_to(HCRS).transform_to(to_frame)
+        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
 
 
 def _make_sunpy_graph():
