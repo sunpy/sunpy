@@ -1,7 +1,7 @@
 import datetime
 
 import astropy.units as u
-from astropy.coordinates import CoordinateAttribute, TimeAttribute
+from astropy.coordinates import BaseCoordinateFrame, CoordinateAttribute, SkyCoord, TimeAttribute
 from astropy.time import Time
 
 from sunpy.time import parse_time
@@ -102,6 +102,10 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         if isinstance(value, str):
             return value, False
         else:
+            # Upgrade the coordinate to a `SkyCoord` so that frame attributes will be merged
+            if isinstance(value, BaseCoordinateFrame) and not isinstance(value, self._frame):
+                value = SkyCoord(value)
+
             return super().convert_input(value)
 
     def _convert_string_to_coord(self, out, obstime):
