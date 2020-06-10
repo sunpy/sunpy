@@ -144,8 +144,8 @@ If you type just the name of the instance, the graphical overview is shown withi
 Differential rotation in the coordinate framework
 =================================================
 
+The rotation rate of solar features varies with heliographic latitude, this rotation is called "differential rotation".
 SunPy has already included functionality in the `sunpy.physics.differential_rotation` module to transform coordinates and `Maps <sunpy.map.GenericMap>` to account for the rotation of the Sun.
-Because the rotation rate of solar features varies with heliographic latitude, this rotation is called "differential rotation".
 SunPy now provides differential-rotation functionality integrated directly into the `coordinate framework <sunpy.coordinates>` using the `~sunpy.coordinates.metaframes.RotatedSunFrame` class.
 Here are examples of using this class:
 
