@@ -14,6 +14,7 @@ HASH_LIBRARY_FILE = os.path.join(os.path.dirname(__file__), HASH_LIBRARY_NAME)
 # Load the hash library if it exists
 try:
     with open(HASH_LIBRARY_FILE) as infile:
+        print(f"Figure tests are using hash library: {HASH_LIBRARY_NAME}")
         hash_library = json.load(infile)
 except OSError:
     hash_library = {}
