@@ -24,7 +24,8 @@ from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunP
 
 _J2000 = Time('J2000.0', scale='tt')
 
-__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
+__all__ = ['SunPyBaseCoordinateFrame', 'BaseHeliographic',
+           'HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective',
            'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
            'HeliocentricInertial', 'GeocentricEarthEquatorial']
