@@ -2,7 +2,7 @@
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import ICRS, get_body_barycentric
+from astropy.coordinates import ICRS, HeliocentricMeanEcliptic, get_body_barycentric
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
@@ -93,11 +93,21 @@ def test_string_coord(oca):
     assert coord.obstime == parse_time(obstime)
 
 
-def test_observer_not_hgs(oca):
+def test_observer_not_hgs_sunpy(oca):
     observer = HeliocentricInertial(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-01-01')
     result, converted = oca.convert_input(observer)
 
     assert isinstance(result, HeliographicStonyhurst)
+    assert result.obstime == observer.obstime
+    assert converted
+
+
+def test_observer_not_hgs_astropy(oca):
+    observer = HeliocentricMeanEcliptic(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-01-01')
+    result, converted = oca.convert_input(observer)
+
+    assert isinstance(result, HeliographicStonyhurst)
+    assert result.obstime == observer.obstime
     assert converted
 
 
