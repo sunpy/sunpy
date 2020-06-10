@@ -58,6 +58,7 @@ So now you can do the following instead::
 
     Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh, a.Wavelength(17*u.GHz))
     
+    
 aiaprep is now deprecated
 =========================
 
