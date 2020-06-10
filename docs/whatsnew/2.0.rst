@@ -11,7 +11,6 @@ Overview
 
 The SunPy project is pleased to announce the 2.0 release of the sunpy package.
 
-.. _whatsnew-2.0-pixels:
 
 Increase in required package versions
 =====================================
@@ -102,7 +101,7 @@ Which is especially useful when you wish to plot a cropped area of a map, along 
     >>> sub_aia = aia.submap(bottom_left, width=width, height=height)
 
     >>> fig = plt.figure()
-    >>> ax1 =fig.add_subplot(1, 2, 1, projection=aia)
+    >>> ax1 = fig.add_subplot(1, 2, 1, projection=aia)
     >>> aia.plot(axes=ax1)
     >>> aia.draw_rectangle(bottom_left, width=width, height=height)
 
@@ -161,7 +160,7 @@ A detailed write-up of the calculation approach and comparisons to other resourc
 Download behind proxies
 =======================
 
-With the release of parfive 1.1, sunpy has been patched now to able to pass proxy information to `aiohttp.ClientSession`.
+With the release of parfive 1.1, sunpy has been patched to be able to utilize proxy servers when downloading files.
 
 * Proxy URL is read from the environment variables `HTTP_PROXY` or `HTTPS_PROXY`.
 * Proxy Authentication `proxy_auth` should be passed as a `aiohttp.BasicAuth` object, explicitly by the user.
@@ -192,7 +191,9 @@ aiaprep is now deprecated
 =========================
 
 With the release of the new `aiapy <https://aiapy.readthedocs.io>`__ package, `sunpy.instr.aia.aiaprep` will be removed in version 2.1.
-You can use the `register` function in the aiapy package to convert AIA images to level 1.5.
+Equivalent functionality is provided by the `register` function in aiapy. For more
+details, see the `example on registering and aligning level 1 AIA images <https://aiapy.readthedocs.io/en/latest/generated/gallery/prepping_level_1_data.html>`_
+in the aiapy documentation.
 
 Previous update: sunpy 1.1
 ==========================
