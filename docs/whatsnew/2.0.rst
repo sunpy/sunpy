@@ -57,6 +57,15 @@ Furthermore, you can use tab completion to auto-fill the attribute name, for exa
 So now you can do the following instead::
 
     Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh, a.Wavelength(17*u.GHz))
+    
+aiaprep is now deprecated
+=========================
+
+With the release of the new `aiapy <https://aiapy.readthedocs.io>`__ package, `sunpy.instr.aia.aiaprep` will be removed in version 2.1.
+Equivalent functionality is provided by the `register` function in aiapy. For more
+details, see the `example on registering and aligning level 1 AIA images <https://aiapy.readthedocs.io/en/latest/generated/gallery/prepping_level_1_data.html>`_
+in the aiapy documentation.
+
 
 Fixes and clarification to pixel indexing
 =========================================
@@ -143,7 +152,7 @@ Here are examples of using this class:
 .. minigallery:: sunpy.coordinates.RotatedSunFrame
 
 
-A detailed write-up of how to use `~sunpy.coordinates.metaframes.RotatedSunFrame` can be found :ref:`here <sunpy-coordinates-rotatedsunframe>`.
+A detailed write-up of how to use `~sunpy.coordinates.metaframes.RotatedSunFrame` can be found :ref:`at the RotatedSunFrame documentation<sunpy-coordinates-rotatedsunframe>`.
 
 Changes to Carrington coordinates
 =================================
@@ -155,7 +164,7 @@ SunPy output now matches the calculations by `JPL Horizons <https://ssd.jpl.nasa
 There may be small differences compared to Carrington coordinates computed by groups that do not use modern parameter values or the same assumptions for the methodology.
 
 Importantly, the Carrington longitude that is now calculated (including using :func:`sunpy.coordinates.sun.L0`) will not match earlier versions of SunPy.
-A detailed write-up of the calculation approach and comparisons to other resources can be found :ref:`here <sunpy-coordinates-carrington>`.
+A detailed write-up of the calculation approach and comparisons to other resources can be found :ref:`at carrington's functionality documentation<sunpy-coordinates-carrington>`.
 
 Download behind proxies
 =======================
@@ -186,14 +195,6 @@ A paper discussing sunpy 1.0 was accepted in The Astrophysical Journal and you c
     >>> sunpy.__citation__
 
 or `accessing the website directly <https://iopscience.iop.org/article/10.3847/1538-4357/ab4f7a>`__.
-
-aiaprep is now deprecated
-=========================
-
-With the release of the new `aiapy <https://aiapy.readthedocs.io>`__ package, `sunpy.instr.aia.aiaprep` will be removed in version 2.1.
-Equivalent functionality is provided by the `register` function in aiapy. For more
-details, see the `example on registering and aligning level 1 AIA images <https://aiapy.readthedocs.io/en/latest/generated/gallery/prepping_level_1_data.html>`_
-in the aiapy documentation.
 
 Previous update: sunpy 1.1
 ==========================
