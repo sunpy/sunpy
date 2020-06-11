@@ -1,15 +1,20 @@
 import io
-import os
 import json
 import hashlib
-from sys import version_info
+from pathlib import Path
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+import astropy
 
 __all__ = ["hash_figure", "verify_figure_hash"]
 
-HASH_LIBRARY_NAME = f'figure_hashes_py{version_info.major}{version_info.minor}.json'
-HASH_LIBRARY_FILE = os.path.join(os.path.dirname(__file__), HASH_LIBRARY_NAME)
+ft2_version = f"{mpl.ft2font.__freetype_version__.replace('.', '')}"
+mpl_version = "dev" if "+" in mpl.__version__ else mpl.__version__.replace('.', '')
+astropy_version = "dev" if "dev" in astropy.__version__ else astropy.__version__.replace('.', '')
+HASH_LIBRARY_NAME = f"figure_hashes_mpl_{mpl_version}_ft_{ft2_version}_astropy_{astropy_version}.json"
+HASH_LIBRARY_FILE = Path(__file__).parent / HASH_LIBRARY_NAME
 
 # Load the hash library if it exists
 try:
