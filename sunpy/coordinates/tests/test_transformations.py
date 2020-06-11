@@ -771,15 +771,8 @@ def test_convert_error_with_no_obstime(frame_class):
         frame.transform_to(ICRS)
 
 
-_frameset1 = [HeliographicStonyhurst, HeliocentricInertial]
-_frameset2 = [HeliographicCarrington, Heliocentric, Helioprojective]
-
-
-@pytest.mark.parametrize("start_class", _frameset1 + _frameset2)
-@pytest.mark.parametrize("end_class", _frameset1)
-def test_no_obstime_on_target_end(start_class, end_class):
-    # We currently allow the target `obstime` to be `None` for the transformation subgraph
-    # below `HeliographicStonyhurst`, but this may change in the future
+# Convenience function to check whether a transformation succeeds if the target `obstime` is `None`
+def assert_no_obstime_on_target_end(start_class, end_class):
     start_obstime = Time("2001-01-01")
 
     if hasattr(start_class, 'observer'):
@@ -790,6 +783,29 @@ def test_no_obstime_on_target_end(start_class, end_class):
 
     result = coord.transform_to(end_class)
     assert result.obstime == start_obstime
+
+
+# We currently allow the target `obstime` to be `None` for the transformation subgraph
+# below `HeliographicStonyhurst`, but this may change in the future
+_frameset1 = [HeliographicStonyhurst, HeliocentricInertial]
+_frameset2 = [HeliographicCarrington, Heliocentric, Helioprojective]
+
+
+@pytest.mark.parametrize("start_class", _frameset1 + _frameset2)
+@pytest.mark.parametrize("end_class", _frameset1)
+def test_no_obstime_on_target_end_hgs_subgraph(start_class, end_class):
+    assert_no_obstime_on_target_end(start_class, end_class)
+
+
+# We currently allow the target `obstime` to be `None` for the transformation subgraph
+# below `HeliocentricEarthEcliptic`, but this may change in the future
+_frameset3 = [HeliocentricEarthEcliptic, GeocentricSolarEcliptic]
+
+
+@pytest.mark.parametrize("start_class", _frameset3)
+@pytest.mark.parametrize("end_class", _frameset3)
+def test_no_obstime_on_target_end_hee_subgraph(start_class, end_class):
+    assert_no_obstime_on_target_end(start_class, end_class)
 
 
 def test_transform_with_sun_center():
