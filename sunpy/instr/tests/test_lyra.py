@@ -175,7 +175,7 @@ def test_remove_lytaf_events_1(local_cache):
                                  "not_removed": LYTAF_TEST[1],
                                  "not_found": ["Offpoint"]}
     # Assert test values are same as expected
-    assert time_test.all() == time_expected.all()
+    assert (time_test == time_expected).all()
     assert (channels_test[0]).all() == (channels_expected[0]).all()
     assert (channels_test[1]).all() == (channels_expected[1]).all()
     assert artifacts_status_test.keys() == artifacts_status_expected.keys()
@@ -196,7 +196,7 @@ def test_remove_lytaf_events_1(local_cache):
             TIME, artifacts=["LAR", "Offpoint"],
             return_artifacts=True, force_use_local_lytaf=True)
     # Assert test values are same as expected
-    assert time_test.all() == time_expected.all()
+    assert (time_test == time_expected).all()
     assert artifacts_status_test.keys() == artifacts_status_expected.keys()
     np.testing.assert_array_equal(artifacts_status_test["lytaf"],
                                   artifacts_status_expected["lytaf"])
