@@ -1357,7 +1357,6 @@ def flux_to_flareclass(goesflux: u.watt/u.m**2):
 
 
 def _assert_chrono_order(obstime):
-    chrono_check = np.array(obstime) - np.roll(obstime, 1)
-    chrono_check = chrono_check[1:]
+    chrono_check = obstime[1:] - obstime[:-1]
     if not all(val > TimeDelta(0*u.day) for val in chrono_check):
         raise ValueError("Elements of obstime must be in chronological order.")
