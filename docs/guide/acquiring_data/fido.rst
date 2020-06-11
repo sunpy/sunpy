@@ -23,7 +23,7 @@ It can be imported as follows::
 Search Attributes
 *****************
 
-To search for data with `~sunpy.net.Fido, you need to specify attributes to search against.
+To search for data with `~sunpy.net.Fido`, you need to specify attributes to search against.
 The range of attributes are found in the `attrs <sunpy.net.attrs>` submodule.
 Examples of these attributes are:
 
