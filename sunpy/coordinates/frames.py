@@ -91,6 +91,10 @@ def _frame_parameters():
 
 class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     """
+    Base class for sunpy coordinate frames.
+
+    This class is not intended to be used directly and has no transformations defined.
+
     * Defines the frame attribute ``obstime`` for observation time.
     * Defines a default longitude wrap angle of 180 degrees, which can be overridden via the class
       variable ``_wrap_angle``.
