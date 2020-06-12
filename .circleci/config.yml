@@ -23,55 +23,29 @@ merge-check: &merge-check
 apt-run: &apt-install
   name: Install apt packages
   command: |
-    apt update
-    apt install -y graphviz build-essential libopenjp2-7
+    sudo apt update
+    sudo apt install -y graphviz build-essential libopenjp2-7 python3-dev
 
 jobs:
-  twine-check:
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - run: *no-backports
-      - checkout
-      - run: *skip-check
-      - run: *merge-check
-      - run: pip install -U pep517
-      - run: python -m pep517.build --source .
-      - run: python -m pip install -U --user --force-reinstall twine
-      - run: python -m twine check dist/*
-
-  pip-install:
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - run: *no-backports
-      - checkout
-      - run: *skip-check
-      - run: *merge-check
-      - run: *apt-install
-      - run: pip install -U pip
-      - run: pip install --progress-bar off .[all,dev]
-      - run: pip install -e .[all,dev]
-
   html-docs:
     docker:
-      - image: continuumio/miniconda3
+      - image: circleci/python:3.8.1-buster
     environment:
-      SUNPY_SAMPLEDIR=/root/sunpy/data/sample_data/
+      SUNPY_SAMPLEDIR=/home/circleci/sunpy/data/sample_data/
     steps:
       - run: *no-backports
       - checkout
       - run: *skip-check
       - restore_cache:
-          keys: sample-data-v12
+          keys: sample-data-v13
       - run: *merge-check
       - run: *apt-install
-      - run: pip install -U tox tox-pypi-filter>=0.12
+      - run: pip install --user -U tox tox-pypi-filter>=0.12
       - run: tox -e build_docs
       - save_cache:
-          key: sample-data-v12
+          key: sample-data-v13
           paths:
-            - /root/sunpy/data/sample_data/
+            - /home/circleci/sunpy/data/sample_data/
       - run:
           name: Prepare for upload
           command: |
@@ -94,7 +68,7 @@ jobs:
       jobname:
         type: string
     docker:
-      - image: continuumio/miniconda3
+      - image: circleci/python:3.8.1-buster
     environment:
       TOXENV=<< parameters.jobname >>
     steps:
@@ -103,7 +77,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install -U tox tox-conda codecov
+      - run: pip install --user -U tox codecov
       - run: tox
       - run: codecov
       - store_artifacts:
@@ -138,11 +112,6 @@ jobs:
 workflows:
   version: 2
 
-  packaging:
-    jobs:
-      - twine-check
-      - pip-install
-
   figure-tests:
     jobs:
       - figure:
@@ -150,20 +119,17 @@ workflows:
           matrix:
             parameters:
               jobname:
-                - "figure_py36"
-                - "figure_py37_astropydev"
+                - "py38-figure"
+                - "py37-figure-devdeps"
 
       - deploy-reference-images:
           requires:
-            - "figure_py36"
-            - "figure_py37_astropydev"
+            - "py38-figure"
+            - "py37-figure-devdeps"
           filters:
             branches:
               only:
                 - master
-                # - 1.1
-                # - 1.0
-
 
   test-documentation:
     jobs:
