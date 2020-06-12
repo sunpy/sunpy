@@ -1,1 +1,0 @@
-Updated VSOClient.response_block_properties to check if "None" is in the return.

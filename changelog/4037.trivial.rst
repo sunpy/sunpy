@@ -1,1 +1,0 @@
-Re-factored the `sunpy.map.Map` factory to dispatch argument parsing based on type.

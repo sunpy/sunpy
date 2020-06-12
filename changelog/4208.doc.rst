@@ -1,1 +1,0 @@
-Add a warning to `sunpy.io` docs to recommend not using it for FITS
