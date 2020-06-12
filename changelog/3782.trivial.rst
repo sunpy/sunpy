@@ -1,1 +1,0 @@
-:func:`~sunpy.coordinates.sun.earth_distance` is now computed without using coordinate transformations for better performance.
