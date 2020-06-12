@@ -235,7 +235,7 @@ output = '\n'.join(shortlog)
 pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-name"] else args["--project-name"]
 
 print()
-print(f"This release of {pretty_project_name} contains {ncommits} commits in {prcnt['merged']} merged pull requests closing {icnt['closed']} issues from {npeople} people, {nnew} of which are first time contributors to {pretty_project_name}.")
+print(f"This release of {pretty_project_name} contains {ncommits} commits in {prcnt['merged']} merged pull requests closing {icnt['closed']} issues from {npeople} people, {nnew} of which are first-time contributors to {pretty_project_name}.")
 print()
 print("The people who have contributed to the code for this release are:")
 print()
