@@ -1,1 +1,0 @@
-Fixed a bug with the ``observer`` frame attribute for coordinate frames where an input that was not supplied as a `~astropy.coordinates.SkyCoord` would sometimes result in a transformation error.

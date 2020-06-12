@@ -1,1 +1,0 @@
-Updated the method used to filter time in the VSO post-search filtering function.

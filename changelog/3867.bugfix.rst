@@ -1,1 +1,0 @@
-Prevented `GenericMap.plot` modifying in-place any items passed as ``imshow_kwargs``.
