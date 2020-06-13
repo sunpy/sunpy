@@ -22,6 +22,8 @@ class Downloader(parfive.Downloader):
                        f"sunpy/{sunpy.__version__} parfive/{parfive.__version__} "
                        f"aiohttp/{aiohttp.__version__} python/{sys.version[:5]}"}
 
-        kwargs["headers"] = headers
+        # Only specify headers to parfive 1.1
+        if not parfive.__version__.startswith('1.0'):
+            kwargs["headers"] = headers
 
         super().__init__(*args, **kwargs)
