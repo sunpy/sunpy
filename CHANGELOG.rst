@@ -1,3 +1,14 @@
+Sunpy v2.0.1 (2020-06-13)
+=========================
+
+Bug Fixes
+---------
+
+- Fixed a bug where transformation errors were not getting raised in some situations when a coordinate frame had ``obstime`` set to the default value of ``None`` and `~astropy.coordinates.SkyCoord` was not being used.
+  Users are recommended to use `~astropy.coordinates.SkyCoord` to manage coordinate transformations unless they have a specific reason not to. (`#4267 <https://github.com/sunpy/sunpy/pull/4267>`__)
+- Fix some bugs with Python 3.6 regarding parfive versions. (`#4283 <https://github.com/sunpy/sunpy/pull/4283>`__)
+
+
 Sunpy v2.0.0 (2020-06-12)
 =========================
 
