@@ -90,7 +90,7 @@ SunPy's Requirements
 
 SunPy has the following strict requirements:
 
-- `Python <https://www.python.org/>`__ 3.6.x or later.
+- `Python <https://www.python.org/>`__ 3.7.x or later.
 
 - `NumPy <https://www.numpy.org/>`__  1.15.0 or later.
 

@@ -8,11 +8,10 @@ If you already have a working Python / Scientific Python environment then you ca
 Requirements
 ============
 
-- python >= 3.6
+- python >= 3.7
 - astropy >= 3.2
 
-sunpy v1.X or greater is compatible with Python 3.6+.
-If you need a Python 2 compatible version, you have to install SunPy v0.9.X.
+sunpy is compatible with Python 3.7+.
 
 .. _main-install:
 
@@ -29,7 +28,7 @@ Other options are listed later in the :ref:`advanced-install` section.
 To install the Anaconda Python distribution follow the instructions at
 `here <https://docs.anaconda.com/anaconda/install/>`__.
 Although Anaconda makes it simple to switch between Python versions, we recommend that new users install
-the latest Python 3.x version of Anaconda as SunPy v1.X only supports Python 3.6+.
+the latest Python 3.x version of Anaconda as SunPy only supports Python 3.7+.
 
 Installing sunpy using Anaconda
 -------------------------------
