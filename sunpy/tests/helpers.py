@@ -182,7 +182,7 @@ table, th, td {
 def _generate_fig_html(fname):
     generated_image = figure_base_dir / (fname + '.png')
 
-    envname = os.environ.get("TOXENV", None)
+    envname = os.environ.get("TOX_ENV_NAME", None)
     if envname is None:
         raise RuntimeError("Could not find a TOXENV environment variable")
     # Download baseline image
