@@ -1,11 +1,11 @@
 """SDO Map subclass definitions"""
 
+import numpy as np
+
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
-
-import numpy as np
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
@@ -138,7 +138,7 @@ class HMISynopticMap(HMIMap):
             # the spacing should be modified to 180/pi times the original value
             # Reference: Section 5.5, Thompson 2006
             self.meta['cdelt2'] = 180 / np.pi * self.meta['cdelt2']
-            self.meta['cdelt1'] *= -1
+            self.meta['cdelt1'] = np.abs(self.meta['cdelt1'])
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

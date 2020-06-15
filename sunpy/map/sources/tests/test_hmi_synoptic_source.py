@@ -5,9 +5,8 @@ import pytest
 
 from astropy.io import fits
 
-from sunpy.map.sources.sdo import HMISynopticMap, HMIMap
 from sunpy.map import Map
-from sunpy.util import MetaDict
+from sunpy.map.sources.sdo import HMISynopticMap
 
 
 @pytest.fixture
