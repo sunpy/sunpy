@@ -10,7 +10,6 @@ more common Helioprojective coordinate system, it is in Heliographic Carrington
 coordinates and in a non-trivial Cylindrical Equal Area projection.
 """
 import matplotlib.pyplot as plt
-import numpy as np
 
 from astropy.utils.data import download_file
 
