@@ -11,6 +11,10 @@ from sunpy.tests.helpers import figure_test
 from sunpy.visualization.animator.wcs import ArrayAnimatorWCS
 
 
+pytestmark = pytest.mark.filterwarnings('ignore:target cannot be converted to ICRS, so will not be '
+                                        'set on SpectralCoord')
+
+
 @pytest.fixture
 def wcs_4d():
     header = dedent("""\
