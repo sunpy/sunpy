@@ -2,22 +2,20 @@
 This particular test file pertains to MDIMap.
 @Author: Pritish C. (VaticanCameos)
 """
-from textwrap import dedent
 import os
 import glob
+from textwrap import dedent
 
+import numpy as np
 import pytest
 
-from astropy.io import fits
 import astropy.units as u
-import numpy as np
+from astropy.io import fits
 
 import sunpy.data.test
 from sunpy.coordinates import frames
-from sunpy.map.sources.soho import MDIMap, MDISynopticMap
 from sunpy.map import Map
-from sunpy.util import MetaDict
-import sunpy.data.test
+from sunpy.map.sources.soho import MDIMap, MDISynopticMap
 
 
 @pytest.fixture
