@@ -181,7 +181,9 @@ table, th, td {
 def _generate_fig_html(fname):
     generated_image = figure_base_dir / (fname + '.png')
 
-    envname = os.environ.get("TOXENV", "figure_py36")
+    envname = os.environ.get("TOXENV", None)
+    if envname is None:
+        raise RuntimeError("Could not find a TOXENV environment variable")
     # Download baseline image
     baseline_url = f'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/sunpy-master/figures/{envname}/'
     baseline_image_url = baseline_url + generated_image.name
