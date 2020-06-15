@@ -108,9 +108,10 @@ def figure_test(test_function):
         if name not in hash.hash_library:
             pytest.fail(f"Hash not present: {name}")
 
-        if hash.hash_library[name] != figure_hash:
-            raise RuntimeError('Figure hash does not match expected hash.\n'
-                               'New image generated and placed at {}'.format(result_image_loc))
+        expected_hash = hash.hash_library[name]
+        if expected_hash != figure_hash:
+            raise RuntimeError(f'Figure hash ({figure_hash}) does not match expected hash ({expected_hash}).\n'
+                               f'New image generated and placed at {result_image_loc}')
 
     return wrapper
 
@@ -181,7 +182,9 @@ table, th, td {
 def _generate_fig_html(fname):
     generated_image = figure_base_dir / (fname + '.png')
 
-    envname = os.environ.get("TOXENV", "figure_py36")
+    envname = os.environ.get("TOX_ENV_NAME", None)
+    if envname is None:
+        raise RuntimeError("Could not find a TOXENV environment variable")
     # Download baseline image
     baseline_url = f'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/sunpy-master/figures/{envname}/'
     baseline_image_url = baseline_url + generated_image.name
