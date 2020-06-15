@@ -108,9 +108,10 @@ def figure_test(test_function):
         if name not in hash.hash_library:
             pytest.fail(f"Hash not present: {name}")
 
-        if hash.hash_library[name] != figure_hash:
-            raise RuntimeError('Figure hash does not match expected hash.\n'
-                               'New image generated and placed at {}'.format(result_image_loc))
+        expected_hash = hash.hash_library[name]
+        if expected_hash != figure_hash:
+            raise RuntimeError(f'Figure hash ({figure_hash}) does not match expected hash ({expected_hash}).\n'
+                               f'New image generated and placed at {result_image_loc}')
 
     return wrapper
 
