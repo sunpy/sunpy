@@ -171,10 +171,8 @@ class MDIMap(GenericMap):
         self._nickname = self.detector + " " + self.measurement
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
-        if abs(vmin) > abs(vmax):
-            self.plot_settings['norm'] = colors.Normalize(-abs(vmin), abs(vmin))
-        else:
-            self.plot_settings['norm'] = colors.Normalize(-abs(vmax), abs(vmax))
+        threshold = max([abs(vmin), abs(vmax)])
+        self.plot_settings['norm'] = colors.Normalize(-threshold, threshold)
 
     @staticmethod
     def _is_mdi_map(header):
