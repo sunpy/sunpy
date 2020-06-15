@@ -74,7 +74,7 @@ jobs:
       - linux: py38-hypothesis
 
       - linux: py38-conda
-        name: py368_conda
+        name: py38_conda
         libraries: {}
 
       - linux: py37-oldestdeps
