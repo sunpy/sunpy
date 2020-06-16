@@ -79,6 +79,13 @@ def test_fixed_satellite(LCClient):
     for resp in ans1:
         assert "go13" in resp.url
 
+    ans1 = LCClient.search(a.Time("1999/1/13", "1999/1/16"),
+                           a.Instrument.xrs,
+                           a.goes.SatelliteNumber(8))
+
+    for resp in ans1:
+        assert "go08" in resp.url
+
 
 @pytest.mark.parametrize("time", [
     Time('2005/4/27', '2005/4/27'),

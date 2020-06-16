@@ -125,7 +125,7 @@ class XRSClient(GenericClient):
         if timerange.end < parse_time("1999/01/15"):
             goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits"
         elif timerange.start < parse_time("1999/01/15") and timerange.end >= parse_time("1999/01/15"):
-            return self._get_overlap_urls(timerange)
+            return self._get_overlap_urls(timerange, **kwargs)
         else:
             goes_file = "%Y/go{satellitenumber}%Y%m%d.fits"
 
@@ -135,7 +135,7 @@ class XRSClient(GenericClient):
 
         return goes_files.filelist(timerange)
 
-    def _get_overlap_urls(self, timerange):
+    def _get_overlap_urls(self, timerange, **kwargs):
         """
         Return a list of URLs over timerange when the URL path changed format `%Y` to `%y`
         on the date 1999/01/15
@@ -151,8 +151,8 @@ class XRSClient(GenericClient):
         """
         tr_before = TimeRange(timerange.start, parse_time("1999/01/14"))
         tr_after = TimeRange(parse_time("1999/01/15"), timerange.end)
-        urls_before = self._get_url_for_timerange(tr_before)
-        urls_after = self._get_url_for_timerange(tr_after)
+        urls_before = self._get_url_for_timerange(tr_before, **kwargs)
+        urls_after = self._get_url_for_timerange(tr_after, **kwargs)
         return urls_before + urls_after
 
     def _makeimap(self):
