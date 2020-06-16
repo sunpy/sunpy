@@ -1,5 +1,4 @@
 from sunpy.net.dataretriever import GenericClient
-from sunpy.util.scraper import Scraper
 
 __all__ = ['GBMClient']
 
@@ -45,42 +44,10 @@ class GBMClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-
-    def _get_url_for_timerange(self, timerange, **kwargs):
-        """
-        Returns the url for Fermi/GBM data for the given date.
-
-        Parameters
-        ----------
-        timerange : `sunpy.time.TimeRange`
-            The time range for which to download the data.
-
-        Returns
-        -------
-        urls, urlmeta : `tuple`
-            A tuple of list of URLs and their metadata for requested time range.
-        """
-        pattern = ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/{4d}/'
-                   '{2d}/{2d}/current/glg_{Resolution:5w}_{Detector:2w}_{}_v00.pha')
-        # Checks if detector keyword
-        # If not defaults to detector 5
-        if 'detector' in kwargs:
-            det = _check_detector(kwargs['detector'])
-        else:
-            det = 'n5'
-
-        # Check for resolution keyword - either CSPEC or CTIME
-        # Default type is CSPEC
-        if 'resolution' in kwargs:
-            data_type = _check_type(kwargs['resolution'])
-        else:
-            data_type = 'cspec'
-
-        gbm_pattern = ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
-                       '%Y/%m/%d/current/glg_{data_type}_{det}_%y%m%d_v00.pha')
-        gbm_files = Scraper(gbm_pattern, extractor=pattern, data_type=data_type, det=det)
-        urls = gbm_files.filelist(timerange)
-        return urls
+    baseurl = (r'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
+               r'%Y/%m/%d/current/glg_(\w){5}_(\w){2,3}_%y%m%d_v00.pha')
+    extractor = ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/{4d}/'
+                 '{2d}/{2d}/current/glg_{Resolution:5w}_{Detector:2w}_{}_v00.pha')
 
     def _makeimap(self):
         """

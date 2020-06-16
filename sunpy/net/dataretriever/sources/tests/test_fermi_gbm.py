@@ -23,7 +23,7 @@ def LCClient():
                            'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/09/'
                            'current/glg_cspec_n5_110609_v00.pha')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls, urlmeta = LCClient._get_url_for_timerange(timerange, detector='n5', resolution='cspec')
+    urls, urlmeta = LCClient._get_url_for_timerange(timerange, Detector='n5', Resolution='cspec')
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -50,7 +50,7 @@ def test_can_handle_query(LCClient, time):
 def test_query(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
     assert isinstance(qr1, QueryResponse)
-    assert len(qr1) == 1
+    assert len(qr1) == 20
     assert qr1.time_range().start == time.start
     assert qr1.time_range().end == time.end
 

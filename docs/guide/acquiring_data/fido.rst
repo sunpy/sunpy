@@ -98,7 +98,8 @@ Searching for Data Using Fido
 
 For example::
 
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra) # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+                             a.Instrument.lyra, a.Level(2)) # doctest: +REMOTE_DATA
 
 this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
@@ -197,6 +198,7 @@ operator would::
          Start Time     Source Provider  Physobs   Instrument Level
     ------------------- ------ -------- ---------- ---------- -----
     2012-03-04 00:00:00 Proba2      esa irradiance       lyra     2
+    2012-03-04 00:00:00 Proba2      esa irradiance       lyra     3
     <BLANKLINE>
     1 Results from the RHESSIClient:
          Start Time           End Time      Source Instrument Wavelength
@@ -228,7 +230,7 @@ the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"),
-    ...                       a.Instrument.lyra | a.Instrument.eve)  # doctest: +REMOTE_DATA
+    ...                       a.Instrument.lyra | a.Instrument.eve, a.Level(2))  # doctest: +REMOTE_DATA
 
 If you then wanted to inspect just the LYRA data for the whole time range
 specified in the search, you would index this response to see just the

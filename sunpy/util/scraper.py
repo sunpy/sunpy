@@ -74,7 +74,7 @@ class Scraper:
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
-    def __init__(self, pattern, regex=False, extractor=None, **kwargs):
+    def __init__(self, pattern, regex=False, extractor=None, matcher=None, **kwargs):
         if regex:
             self.pattern = pattern
             if kwargs:
@@ -95,9 +95,29 @@ class Scraper:
                 end=self.pattern[milliseconds.end():]
             ))
         self.extractor = extractor
+        self.matcher = matcher
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
+
+    def infoextract(self, url, timestamp=False):
+        timeattrs  = ['year', 'month', 'day', 'hours', 'minutes', 'seconds']
+        udict = parse(self.extractor, url)
+        if udict is None:
+            return None
+        udict = udict.named
+        dictnew = udict
+        if not timestamp:
+            for k in timeattrs:
+                if k in dictnew:
+                    del dictnew[k]
+            return dictnew
+        else:
+            timedict = {}
+            for a in timeattrs:
+                timedict[a] = 0
+            timedict.update(udict)
+            return timedict
 
     def range(self, timerange):
         """
@@ -133,6 +153,18 @@ class Scraper:
         """
         Check whether the url provided follows the pattern.
         """
+        if self.matcher is not None:
+            dnew = self.matcher
+            udict = self.infoextract(url)
+            if udict is None:
+                return False
+            if len(udict.keys())!=len(dnew.keys()):
+                return False
+            for k in udict.keys():
+                allvals = [str(i).lower() for i in dnew[k]]
+                if str(udict[k]).lower() not in allvals:
+                    return False
+            return True
         pattern = self.pattern
         for k, v in TIME_CONVERSIONS.items():
             pattern = pattern.replace(k, v)
@@ -145,6 +177,11 @@ class Scraper:
         """
         Extracts the date from a particular url following the pattern.
         """
+        if 'year:' in self.extractor:
+            timedict = self.infoextract(url, timestamp=True)
+            timeattrs  = ['year', 'month', 'day', 'hours', 'minutes', 'seconds']
+            urltime = [timedict[timeattr] for timeattr in timeattrs]
+            return Time(datetime.datetime(*urltime))
         # remove the user and passwd from files if there:
         url = url.replace("anonymous:data@sunpy.org@", "")
 
@@ -206,7 +243,7 @@ class Scraper:
             return None
         metalist = list()
         for url in urls:
-            udict = parse(self.extractor, url).named
+            udict = self.infoextract(url)
             urltime = self._extractDateURL(url)
             udict['Start Time'] = urltime.strftime(TIME_FORMAT)
             metalist.append(udict)

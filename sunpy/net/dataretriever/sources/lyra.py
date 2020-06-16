@@ -3,7 +3,6 @@
 # Google Summer of Code 2014
 
 from sunpy.net.dataretriever.client import GenericClient
-from sunpy.util.scraper import Scraper
 
 __all__ = ['LYRAClient']
 
@@ -18,7 +17,7 @@ class LYRAClient(GenericClient):
     --------
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument.lyra)  #doctest: +REMOTE_DATA
+    ...                       a.Instrument.lyra, a.Level(2))  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -32,28 +31,10 @@ class LYRAClient(GenericClient):
     <BLANKLINE>
 
     """
-
-    def _get_url_for_timerange(self, timerange, **kwargs):
-        """
-        Return URL(s) for corresponding timerange.
-
-        Parameters
-        ----------
-        timerange : `~sunpy.time.TimeRange`
-            The time range you want the files for.
-
-        Returns
-        -------
-        `list`
-            The URL(s) for the corresponding timerange.
-        """
-        pattern = ('http://proba2.oma.be/lyra/data/bsd/{4d}/{2d}/{2d}'
-                   '/lyra_{}-000000_lev{Level:d}_std.fits')
-        lyra_pattern = ('http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
-                        'lyra_%Y%m%d-000000_lev{level}_std.fits')
-        lyra_files = Scraper(lyra_pattern, extractor=pattern, level=kwargs.get('level', 2))
-        urls = lyra_files.filelist(timerange)
-        return urls
+    baseurl = (r'http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
+               r'lyra_%Y%m%d-000000_lev(\w){1}_std.fits')
+    extractor = ('http://proba2.oma.be/lyra/data/bsd/{4d}/{2d}/{2d}'
+                 '/lyra_{}-000000_lev{Level:d}_std.fits')
 
     def _makeimap(self):
         """

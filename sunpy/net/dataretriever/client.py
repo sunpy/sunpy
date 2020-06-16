@@ -14,6 +14,7 @@ from sunpy.net.attr import Range
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
+from sunpy.util.scraper import Scraper
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -196,10 +197,10 @@ class GenericClient(BaseClient):
                     else:
                         prefix = ''
                     minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
-                    self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
+                    self.map_[elem.__class__.__name__] = minmax(a_min, a_max)
             else:
                 if hasattr(elem, 'value'):
-                    self.map_[elem.__class__.__name__.lower()] = elem.value
+                    self.map_[elem.__class__.__name__] = elem.value
                 else:
                     # This will only get hit if the attr is something like
                     # Extent, which is a unique subclass of Attr. Currently no
@@ -226,7 +227,42 @@ class GenericClient(BaseClient):
              attributes passed to
              `~sunpy.net.dataretriever.client.GenericClient.search`.
         """
-        raise NotImplementedError
+        if cls.baseurl is None or cls.extractor is None:
+            raise NotImplementedError
+        matchdict = cls._get_matchdict(**kwargs)
+        scraper = Scraper(cls.baseurl, regex=True, extractor=cls.extractor, matcher=matchdict)
+        return scraper.filelist(timerange)
+
+    @classmethod
+    def _get_matchdict(cls, **kwargs):
+        """
+        Method which generates a dict representing all valid attributes
+        that can be retrieved from the file url.
+
+        Parameters
+        ----------
+        \\*\\*kwargs: `dict`
+             Any extra keywords to refine the search. Generated from the
+             attributes passed to
+             `~sunpy.net.dataretriever.client.GenericClient.search`.
+        """
+        a = cls.register_values()
+        d = {}
+        for i in a.keys():
+            attrname = (i.__name__)
+            d[attrname] = []
+            for val, desc in a[i]:
+                d[attrname].append(val)
+        dnew = {}
+        for i in d.keys():
+            if i in cls.extractor:
+                dnew[i] = d[i]
+        knew = {}
+        for i in kwargs.keys():
+            if i in cls.extractor:
+                knew[i] = [kwargs[i]]
+        dnew.update(knew)
+        return dnew
 
     def _makeimap(self):
         """

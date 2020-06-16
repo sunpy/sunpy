@@ -68,7 +68,7 @@ def test_offline_fido(query):
 # Until we get more mocked, we can't really do this to online clients.
 # TODO: Hypothesis this again
 @pytest.mark.parametrize("query", [
-    (a.Instrument.eve & a.Time('2014/7/7', '2014/7/14') & a.Level.zero),
+    (a.Instrument.eve & a.Time('2014/7/7', '2014/7/14') & a.Level('0CS')),
     (a.Instrument.rhessi & a.Time('2014/7/7', '2014/7/14')),
     (a.Instrument.norh & a.Time('2014/7/7', '2014/7/14') & a.Wavelength(17*u.GHz)),
 ])
@@ -100,10 +100,10 @@ def check_response(query, unifiedresp):
 
 @pytest.mark.remote_data
 def test_save_path(tmpdir):
-    qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level.zero)
+    qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level('0cs'))
 
     # Test when path is str
-    files = Fido.fetch(qr, path=str(tmpdir / "{instrument}" / "{level}"))
+    files = Fido.fetch(qr, path=str(tmpdir / "{instrument}" / "{Level}"))
     for f in files:
         assert str(tmpdir) in f
         assert f"eve{os.path.sep}0" in f
@@ -111,11 +111,11 @@ def test_save_path(tmpdir):
 
 @pytest.mark.remote_data
 def test_save_path_pathlib(tmpdir):
-    qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level.zero)
+    qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level('0cs'))
 
     # Test when path is pathlib.Path
     target_dir = tmpdir.mkdir("down")
-    path = pathlib.Path(target_dir, "{instrument}", "{level}")
+    path = pathlib.Path(target_dir, "{instrument}", "{Level}")
     files = Fido.fetch(qr, path=path)
     for f in files:
         assert target_dir.strpath in f
@@ -124,7 +124,7 @@ def test_save_path_pathlib(tmpdir):
 
 @pytest.mark.remote_data
 def test_save_path_cwd(tmpdir):
-    qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level.zero)
+    qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level('0cs'))
 
     # Test when path is ./ for current working directory
     os.chdir(tmpdir)  # move into temp directory
@@ -142,7 +142,7 @@ Factory Tests
 def test_unified_response():
     start = parse_time("2012/1/1")
     end = parse_time("2012/1/2")
-    qr = Fido.search(a.Instrument.eve, a.Level.zero, a.Time(start, end))
+    qr = Fido.search(a.Instrument.eve, a.Level('0cs'), a.Time(start, end))
     assert qr.file_num == 2
     strings = ['eve', 'SDO', start.strftime(TIMEFORMAT), end.strftime(TIMEFORMAT)]
     assert all(s in qr._repr_html_() for s in strings)
@@ -167,7 +167,7 @@ def test_call_error():
 def test_fetch():
     qr = Fido.search(a.Instrument.eve,
                      a.Time("2016/10/01", "2016/10/02"),
-                     a.Level.zero)
+                     a.Level('0cs'))
     res = Fido.fetch(qr)
     assert isinstance(res, Results)
 
@@ -200,7 +200,7 @@ def test_unifiedresponse_slicing_reverse():
 @pytest.mark.remote_data
 def test_tables_single_response():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra, a.Level(2))
     tables = results.tables
 
     assert isinstance(tables, list)

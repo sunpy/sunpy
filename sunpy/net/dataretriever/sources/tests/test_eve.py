@@ -40,9 +40,6 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 
 def test_can_handle_query(LCClient):
-    ans1 = LCClient._can_handle_query(
-        Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level(0))
-    assert ans1 is True
     ans2 = LCClient._can_handle_query(Time('2012/7/7', '2012/7/7'))
     assert ans2 is False
     ans3 = LCClient._can_handle_query(
@@ -81,7 +78,7 @@ def test_get(LCClient, time, instrument):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     'query',
-    [(a.Time('2012/10/4', '2012/10/5') & a.Instrument.eve & a.Level.zero)])
+    [(a.Time('2012/10/4', '2012/10/5') & a.Instrument.eve & a.Level('0cs'))])
 def test_fido(LCClient, query):
     qr = Fido.search(query)
     client = qr.get_response(0).client
@@ -105,7 +102,7 @@ def test_levels(time):
     clients = {type(a.client) for a in qr.responses}
     assert clients == {VSOClient}
 
-    qr = Fido.search(time, eve_a, a.Level.zero)
+    qr = Fido.search(time, eve_a, a.Level('0cs'))
     clients = {type(a.client) for a in qr.responses}
     assert clients == {eve.EVEClient}
 
@@ -117,7 +114,7 @@ def test_levels(time):
 
 def test_attr_reg():
     assert a.Instrument.eve == a.Instrument('EVE')
-    assert a.Level.zero == a.Level('0')
+    assert a.Level('0cs') == a.Level('0cs')
 
 
 def test_client_repr(LCClient):

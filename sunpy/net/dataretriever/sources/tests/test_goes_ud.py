@@ -36,11 +36,11 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange, url_start, url_end",
                          [(TimeRange('1999/01/10', '1999/01/20'),
-                           'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
+                           'https://umbra.nascom.nasa.gov/goes/fits/1999/go0819990115.fits',
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits')])
 def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
     urls, urlmeta = LCClient._get_url_for_timerange(timerange)
-    assert len(urls) == 9
+    assert len(urls) == 28
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
@@ -56,15 +56,9 @@ def test_can_handle_query(time):
 
 
 @pytest.mark.remote_data
-def test_no_satellite(LCClient):
-    with pytest.raises(ValueError):
-        LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
-
-
-@pytest.mark.remote_data
 def test_fixed_satellite(LCClient):
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
-                           a.Instrument.xrs)
+                           a.Instrument.xrs, a.goes.SatelliteNumber(15))
 
     for resp in ans1:
         assert "go15" in resp.url
@@ -97,14 +91,6 @@ def test_query(LCClient, time):
 
     end = time.end
     assert is_time_equal(qr1.time_range().end, end)
-
-
-@pytest.mark.remote_data
-def test_query_error(LCClient):
-    times = [a.Time("1983-05-01", "1983-05-02")]
-    for time in times:
-        with pytest.raises(ValueError):
-            LCClient.search(time, Instrument('XRS'))
 
 
 @pytest.mark.remote_data
