@@ -62,6 +62,7 @@ def test_rotation(original, angle, k):
     error = False
 
     # Run the tests at order 4 as it produces more accurate 90 deg rotations
+    print("Order 4 rotated")
     rot = affine_transform(original, order=4, rmatrix=rmatrix)
     if not compare_results(expected, rot):
         print("*** Running again ***")
@@ -70,9 +71,30 @@ def test_rotation(original, angle, k):
 
     # TODO: Check incremental 360 degree rotation against original image
 
+    print("Order 4 derotated")
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
     derot = affine_transform(rot, order=4, rmatrix=derot_matrix)
+    if not compare_results(original, derot):
+        print("*** Running again ***")
+        compare_results(original, derot)
+        error = True
+
+    # Repeat everything for order=3
+
+    print("Order 3 rotated")
+    rot = affine_transform(original, order=3, rmatrix=rmatrix)
+    if not compare_results(expected, rot):
+        print("*** Running again ***")
+        compare_results(expected, rot)
+        error = True
+
+    # TODO: Check incremental 360 degree rotation against original image
+
+    # Check derotated image against original
+    print("Order 3 derotated")
+    derot_matrix = np.array([[c, s], [-s, c]])
+    derot = affine_transform(rot, order=3, rmatrix=derot_matrix)
     if not compare_results(original, derot):
         print("*** Running again ***")
         compare_results(original, derot)
