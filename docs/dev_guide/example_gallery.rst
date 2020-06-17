@@ -18,7 +18,7 @@ Contribution Guidelines
 
 * Each example should begin with a paragraph that gives a brief overview of the entire example, including relevant astronomy concepts, and motivates the described functionality.
 
-* The examples must be compatible with the versions supported by the last major release of the SunPy core package (i.e., Python >= 3.6).
+* The examples must be compatible with the versions supported by the last major release of the SunPy core package (i.e., Python >= 3.7).
 
 * All the examples must be fully PEP8 compliant, we recommend using one of the many PEP8 linters that are available (autopep8, flake8 as some examples).
 
