@@ -55,8 +55,8 @@ jobs:
         - freetype-devel
         - libpng-devel
     envs:
-      - macos: py36
-        name: py36_test
+      - macos: py38
+        name: py38_test
         posargs: -n=1
 
       - windows: py37
@@ -73,12 +73,12 @@ jobs:
 
       - linux: py38-hypothesis
 
-      - linux: py36-conda
-        name: py36_conda
+      - linux: py38-conda
+        name: py38_conda
         libraries: {}
 
-      - linux: py36-oldestdeps
-        name: py36_test_oldestdeps
+      - linux: py37-oldestdeps
+        name: py37_test_oldestdeps
 
       - linux: py38-devdeps
 
@@ -97,9 +97,9 @@ jobs:
         - wheels_macos
         - sdist
       dependsOn:
-        - py36_test
         - py37_test
+        - py38_test
         - py38_test_online
         - py38_test_32bit
-        - py36_test_oldestdeps
-        - py36_conda
+        - py38_test_oldestdeps
+        - py38_conda

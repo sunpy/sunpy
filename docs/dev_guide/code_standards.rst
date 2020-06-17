@@ -13,7 +13,7 @@ We try to closely follow the coding style and conventions proposed by `Astropy <
 Language Standard
 =================
 
-* All code must be compatible with Python 3.6 and later.
+* All code must be compatible with Python 3.7 and later.
   Usage of ``six``, ``__future__``, and ``2to3`` is no longer acceptable.
 
 * The new Python 3 formatting style should be used (i.e.
