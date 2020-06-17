@@ -59,12 +59,14 @@ def test_rotation(original, angle, k):
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
 
+    error = False
+
     # Run the tests at order 4 as it produces more accurate 90 deg rotations
     rot = affine_transform(original, order=4, rmatrix=rmatrix)
     if not compare_results(expected, rot):
         print("*** Running again ***")
-        assert compare_results(expected, rot)
-        assert False
+        compare_results(expected, rot)
+        error = True
 
     # TODO: Check incremental 360 degree rotation against original image
 
@@ -73,8 +75,10 @@ def test_rotation(original, angle, k):
     derot = affine_transform(rot, order=4, rmatrix=derot_matrix)
     if not compare_results(original, derot):
         print("*** Running again ***")
-        assert compare_results(original, derot)
-        assert False
+        compare_results(original, derot)
+        error = True
+
+    assert not error
 
 
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
