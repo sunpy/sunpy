@@ -65,6 +65,7 @@ def test_rotation(original, angle, k):
     print("Order 4 rotated")
     rot = affine_transform(original, order=4, rmatrix=rmatrix)
     if not compare_results(expected, rot):
+        print(rot.flags)
         print("*** Running again ***")
         compare_results(expected, rot)
         error = True
@@ -76,6 +77,7 @@ def test_rotation(original, angle, k):
     derot_matrix = np.array([[c, s], [-s, c]])
     derot = affine_transform(rot, order=4, rmatrix=derot_matrix)
     if not compare_results(original, derot):
+        print(derot.flags)
         print("*** Running again ***")
         compare_results(original, derot)
         error = True
@@ -85,6 +87,7 @@ def test_rotation(original, angle, k):
     print("Order 3 rotated")
     rot = affine_transform(original, order=3, rmatrix=rmatrix)
     if not compare_results(expected, rot):
+        print(rot.flags)
         print("*** Running again ***")
         compare_results(expected, rot)
         error = True
@@ -96,6 +99,7 @@ def test_rotation(original, angle, k):
     derot_matrix = np.array([[c, s], [-s, c]])
     derot = affine_transform(rot, order=3, rmatrix=derot_matrix)
     if not compare_results(original, derot):
+        print(derot.flags)
         print("*** Running again ***")
         compare_results(original, derot)
         error = True
