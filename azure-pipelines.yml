@@ -73,8 +73,17 @@ jobs:
 
       - linux: py38-hypothesis
 
-      - macos: py38-conda
-        name: py38_conda
+      - macos: py38-cf-conda
+        name: py38_cf_conda
+        libraries: {}
+
+      - macos: py38-cf-conda
+        name: py38_cf_n1_conda
+        libraries: {}
+        posargs: -n=1
+
+      - macos: py38-sp-conda
+        name: py38_sp_conda
         libraries: {}
 
       - linux: py37-oldestdeps
