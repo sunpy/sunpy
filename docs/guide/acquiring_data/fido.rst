@@ -201,9 +201,9 @@ operator would::
     2012-03-04 00:00:00 Proba2      esa irradiance       lyra     3
     <BLANKLINE>
     1 Results from the RHESSIClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     rhessi        nan
+         Start Time           End Time      Source Provider  Physobs   Instrument
+    ------------------- ------------------- ------ -------- ---------- ----------
+    2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     nasa irradiance     rhessi
     <BLANKLINE>
     3 Results from the VSOClient:
        Start Time [1]       End Time [1]    Source ...     Type    Wavelength [2]

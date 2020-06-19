@@ -222,8 +222,9 @@ def test_tables_multiple_response():
     assert len(tables) == 2
 
     cols_lyra = ['Start Time', 'Source', 'Provider', 'Physobs', 'Instrument', 'Level']
-    cols_rhessi = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
-    assert cols_lyra == tables[0].colnames and cols_rhessi == tables[1].colnames
+    cols_rhessi = ['Start Time', 'End Time', 'Source', 'Provider', 'Physobs', 'Instrument']
+    assert cols_lyra == tables[0].colnames
+    assert cols_rhessi == tables[1].colnames
 
     assert all(entry == 'lyra' for entry in tables[0]['Instrument'])
     assert all(entry == 'rhessi' for entry in tables[1]['Instrument'])

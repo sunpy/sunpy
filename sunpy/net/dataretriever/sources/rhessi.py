@@ -54,10 +54,10 @@ class RHESSIClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the RHESSIClient:
-         Start Time           End Time      Source Instrument
-    ------------------- ------------------- ------ ----------
-    2016-01-01 00:00:00 2016-01-01 23:59:59 rhessi     rhessi
-    2016-01-02 00:00:00 2016-01-02 23:59:59 rhessi     rhessi
+         Start Time           End Time      Source Provider  Physobs   Instrument
+    ------------------- ------------------- ------ -------- ---------- ----------
+    2016-01-01 00:00:00 2016-01-01 23:59:59 rhessi     nasa irradiance     rhessi
+    2016-01-02 00:00:00 2016-01-02 23:59:59 rhessi     nasa irradiance     rhessi
     <BLANKLINE>
     <BLANKLINE>
 

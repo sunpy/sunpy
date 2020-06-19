@@ -133,13 +133,16 @@ class QueryResponse(BaseQueryResponse):
                     columns[colname].append(qrblock.meta[colname])
         else:
             columns = OrderedDict((('Start Time', []), ('End Time', []),
-                                   ('Source', []), ('Instrument', [])))
+                                   ('Source', []), ('Provider', []),
+                                   ('Physobs', []), ('Instrument', [])))
             for qrblock in self:
                 columns['Start Time'].append(
                     (qrblock.time.start).strftime(TIME_FORMAT))
                 columns['End Time'].append(
                     (qrblock.time.end).strftime(TIME_FORMAT))
                 columns['Source'].append(qrblock.source)
+                columns['Provider'].append(qrblock.provider)
+                columns['Physobs'].append(qrblock.physobs)
                 columns['Instrument'].append(qrblock.instrument)
 
         return astropy.table.Table(columns)
