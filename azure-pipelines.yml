@@ -86,9 +86,19 @@ jobs:
         name: py38_cf_mkl_conda
         libraries: {}
 
+      - macos: py38-cf-mkl-conda
+        name: py38_cf_mkl_n1_conda
+        libraries: {}
+        posargs: -n=1
+
       - macos: py38-cf-defaults-conda
         name: py38_cf_defaults_conda
         libraries: {}
+
+      - macos: py38-cf-defaults-conda
+        name: py38_cf_defaults_n1_conda
+        libraries: {}
+        posargs: -n=1
 
       - macos: py38-sp-conda
         name: py38_sp_conda
