@@ -293,12 +293,16 @@ def test_broken_apart(original):
         match1[i] = compare_results(expected_coords[0, : :], result_coords[0, : :])
         match1[i] &= compare_results(expected_coords[1, : :], result_coords[1, : :])
 
+    print(np.sum(~match1))
+
     print("Running map_coordinates() 100 times")
 
     match2 = np.zeros(100, bool)
     for i in range(len(match2)):
         result_warped = map_coordinates(original, expected_coords, order=4)
         match2[i] = compare_results(expected_warped, result_warped)
+
+    print(np.sum(~match2))
 
     print("Running ProjectiveTransform 100 times")
 
@@ -310,6 +314,21 @@ def test_broken_apart(original):
         match3[i] = compare_results(expected[0, : :], result[0, : :])
         match3[i] &= compare_results(expected[1, : :], result[1, : :])
 
+    print(np.sum(~match3))
+
+    print("Running matrix multiplication 100 times")
+
+    match4 = np.zeros(100, bool)
+    x, y = np.transpose(base)
+    src = np.vstack((x, y, np.ones_like(x)))
+    expected = src.T @ matrix.T
+    for i in range(len(match4)):
+        result = src.T @ matrix.T
+        match4[i] = np.allclose(expected, result)
+
+    print(np.sum(~match4))
+
     assert np.sum(~match1) == 0
     assert np.sum(~match2) == 0
     assert np.sum(~match3) == 0
+    assert np.sum(~match4) == 0
