@@ -283,21 +283,33 @@ def test_broken_apart(original):
     matrix = np.array([[0, -1, 511], [1, 0, 0], [0, 0, 1]])
     coord_map = ProjectiveTransform(matrix=matrix)
     expected_coords = warp_coords(coord_map, original.shape)
-    expected_warped = map_coordinates(original, expected_coords)
+    expected_warped = map_coordinates(original, expected_coords, order=4)
 
     print("Running warp_coords() 100 times")
 
-    match = np.zeros(100, bool)
-    for i in range(len(match)):
+    match1 = np.zeros(100, bool)
+    for i in range(len(match1)):
         result_coords = warp_coords(coord_map, original.shape)
-        match[i] = compare_results(expected_coords[0, : :], result_coords[0, : :])
-        match[i] &= compare_results(expected_coords[1, : :], result_coords[1, : :])
-    assert np.sum(~match) == 0
+        match1[i] = compare_results(expected_coords[0, : :], result_coords[0, : :])
+        match1[i] &= compare_results(expected_coords[1, : :], result_coords[1, : :])
 
     print("Running map_coordinates() 100 times")
 
-    match = np.zeros(100, bool)
-    for i in range(len(match)):
-        result_warped = map_coordinates(original, expected_coords)
-        match[i] = compare_results(expected_warped, result_warped)
-    assert np.sum(~match) == 0
+    match2 = np.zeros(100, bool)
+    for i in range(len(match2)):
+        result_warped = map_coordinates(original, expected_coords, order=4)
+        match2[i] = compare_results(expected_warped, result_warped)
+
+    print("Running ProjectiveTransform 100 times")
+
+    match3 = np.zeros(100, bool)
+    base = np.indices(original.shape, dtype=np.float64).reshape(2, -1).T
+    expected = coord_map(base).T.reshape(2, 512, 512)
+    for i in range(len(match3)):
+        result = coord_map(base).T.reshape(2, 512, 512)
+        match3[i] = compare_results(expected[0, : :], result[0, : :])
+        match3[i] &= compare_results(expected[1, : :], result[1, : :])
+
+    assert np.sum(~match1) == 0
+    assert np.sum(~match2) == 0
+    assert np.sum(~match3) == 0
