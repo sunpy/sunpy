@@ -76,7 +76,10 @@ class DataManager:
                         # That might mean the wrong hash is supplied to decorator
                         # We match by urls to make sure that is not the case
                         if self._cache_has_file(urls):
-                            raise ValueError(" Hash provided does not match the hash in database.")
+                            # If we can't find a file matching sha_hash, but the url is already
+                            # in the database
+                            raise ValueError(f"{urls} has already been downloaded, but no file "
+                                             f"matching the hash {sha_hash} can be found.")
                         file_path = self._cache.download(urls)
                         file_hash = hash_file(file_path)
                         if file_hash != sha_hash:
