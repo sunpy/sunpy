@@ -5,7 +5,6 @@ from collections import OrderedDict, namedtuple
 import numpy as np
 
 import astropy.table
-import astropy.units as u
 
 import sunpy
 from sunpy import config
@@ -44,7 +43,10 @@ class QueryResponseBlock:
         self.wave = map0.get('wavelength', np.NaN)
         if meta is not None:
             meta_ord = OrderedDict()
-            meta_ord['Start Time'] = meta['Start Time']
+            if "Start Time" in meta:
+                meta_ord['Start Time'] = meta['Start Time']
+            if "End Time" in meta:
+                meta_ord['End Time'] = meta['End Time']
             meta_ord['Source'] = self.source
             meta_ord['Provider'] = self.provider
             meta_ord['Physobs'] = self.physobs
@@ -100,8 +102,8 @@ class QueryResponse(BaseQueryResponse):
     def create(cls, amap, lst, time=None, meta=None, client=None):
         if time is None:
             time = [None] * len(lst)
-        if meta is None:
-            meta = [None] * len(lst)
+        if meta is None or len(meta) == 0:
+            meta = [meta] * len(lst)
         return cls(list(iter_urls(amap, lst, time, meta)), client=client)
 
     def time_range(self):
@@ -131,8 +133,7 @@ class QueryResponse(BaseQueryResponse):
                     columns[colname].append(qrblock.meta[colname])
         else:
             columns = OrderedDict((('Start Time', []), ('End Time', []),
-                                   ('Source', []), ('Instrument', []),
-                                   ('Wavelength', [])))
+                                   ('Source', []), ('Instrument', [])))
             for qrblock in self:
                 columns['Start Time'].append(
                     (qrblock.time.start).strftime(TIME_FORMAT))
@@ -140,7 +141,6 @@ class QueryResponse(BaseQueryResponse):
                     (qrblock.time.end).strftime(TIME_FORMAT))
                 columns['Source'].append(qrblock.source)
                 columns['Instrument'].append(qrblock.instrument)
-                columns['Wavelength'].append(str(u.Quantity(qrblock.wave)))
 
         return astropy.table.Table(columns)
 

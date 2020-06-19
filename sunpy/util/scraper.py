@@ -11,12 +11,12 @@ from urllib.parse import urlsplit
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
-from parse import parse
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 from sunpy import config
+from sunpy.extern.parse import parse
 from sunpy.util.exceptions import SunpyUserWarning
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -101,7 +101,7 @@ class Scraper:
         return date.strftime(self.pattern) == filepath
 
     def infoextract(self, url, timestamp=False):
-        timeattrs  = ['year', 'month', 'day', 'hours', 'minutes', 'seconds']
+        timeattrs = ['year', 'month', 'day', 'hours', 'minutes', 'seconds']
         udict = parse(self.extractor, url)
         if udict is None:
             return None
@@ -158,7 +158,7 @@ class Scraper:
             udict = self.infoextract(url)
             if udict is None:
                 return False
-            if len(udict.keys())!=len(dnew.keys()):
+            if len(udict.keys()) != len(dnew.keys()):
                 return False
             for k in udict.keys():
                 allvals = [str(i).lower() for i in dnew[k]]
@@ -177,9 +177,9 @@ class Scraper:
         """
         Extracts the date from a particular url following the pattern.
         """
-        if 'year:' in self.extractor:
+        if self.extractor is not None and 'year:' in self.extractor:
             timedict = self.infoextract(url, timestamp=True)
-            timeattrs  = ['year', 'month', 'day', 'hours', 'minutes', 'seconds']
+            timeattrs = ['year', 'month', 'day', 'hours', 'minutes', 'seconds']
             urltime = [timedict[timeattr] for timeattr in timeattrs]
             return Time(datetime.datetime(*urltime))
         # remove the user and passwd from files if there:

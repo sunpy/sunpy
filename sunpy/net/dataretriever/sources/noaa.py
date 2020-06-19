@@ -8,8 +8,11 @@ from collections import OrderedDict
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
+from sunpy import config
 from sunpy.net.dataretriever import GenericClient
 from sunpy.util.parfive_helpers import Downloader
+
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
@@ -32,9 +35,9 @@ class NOAAIndicesClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the NOAAIndicesClient:
-         Start Time           End Time      Source  Instrument  Wavelength
-    ------------------- ------------------- ------ ------------ ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00   sdic noaa-indices        nan
+    Source Provider    Physobs      Instrument
+    ------ -------- -------------- ------------
+      sdic     swpc sunspot number noaa-indices
     <BLANKLINE>
     <BLANKLINE>
 
@@ -44,7 +47,7 @@ class NOAAIndicesClient(GenericClient):
         """
         Helper function:
         """
-        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"], None
+        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"], {}
 
     def _makeimap(self):
         """
@@ -102,23 +105,19 @@ class NOAAPredictClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the NOAAPredictClient:
-         Start Time           End Time      Source  Instrument  Wavelength
-    ------------------- ------------------- ------ ------------ ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00   ises noaa-predict        nan
+    Source Provider    Physobs      Instrument
+    ------ -------- -------------- ------------
+      ises     swpc sunspot number noaa-predict
     <BLANKLINE>
     <BLANKLINE>
 
     """
-    @staticmethod
-    def _get_default_uri():
-        """Return the url to download indices"""
-        return ["http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"]
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Helper function:
         """
-        return NOAAPredictClient._get_default_uri(), None
+        return ["http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"], {}
 
     def _makeimap(self):
         """
@@ -174,10 +173,10 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-         Start Time           End Time        Source  Instrument Wavelength
-    ------------------- ------------------- --------- ---------- ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
-    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
+         Start Time           End Time        Source  ... Physobs Instrument
+    ------------------- ------------------- --------- ... ------- ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF ...     SRS       SOON
+    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF ...     SRS       SOON
     <BLANKLINE>
     <BLANKLINE>
 
@@ -198,7 +197,10 @@ class SRSClient(GenericClient):
                     day.end.strftime('%Y'), day.end.strftime('%Y'))
             url = base_url + suffix
             result.append(url)
-        return result, None
+        meta = {}
+        meta['Start Time'] = timerange.start.strftime(TIME_FORMAT)
+        meta['End Time'] = timerange.end.strftime(TIME_FORMAT)
+        return result, [meta]*len(result)
 
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
         """
