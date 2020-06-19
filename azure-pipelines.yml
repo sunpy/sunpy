@@ -86,8 +86,8 @@ jobs:
         name: py38_cf_mkl_conda
         libraries: {}
 
-      - macos: py38-cf-numpy-conda
-        name: py38_cf_numpy_conda
+      - macos: py38-cf-defaults-conda
+        name: py38_cf_defaults_conda
         libraries: {}
 
       - macos: py38-sp-conda
