@@ -334,15 +334,15 @@ def test_broken_apart(original):
 
 
 def test_minimal_example():
-    x = np.arange(0, 300000).reshape(3, -1).T
+    x = np.arange(0, 3000000).reshape(3, -1).T
     y = np.array([[0, 1, 0], [1, 0, 0], [0, 0, 1]])
     xy = x[:, [1,0,2]]
 
-    mismatches = np.zeros(1000, int)
+    mismatches = np.zeros(100, int)
     for i in range(len(mismatches)):
         result = x @ y
         mismatches[i] = (~np.isclose(result, xy)).sum()
         if mismatches[i] != 0:
             print(mismatches[i])
 
-    assert np.all(mismatches == 0)
+    assert np.sum(mismatches != 0) == 0
