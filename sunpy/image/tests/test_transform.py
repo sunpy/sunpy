@@ -271,8 +271,33 @@ def test_lots_of_rotations(original):
     # Test a 90-degree rotation many times
     expected = np.rot90(original, k=1)
     matrix = np.array([[0, -1, 511], [1, 0, 0], [0, 0, 1]])
-    match = np.zeros(100)
+    match = np.zeros(100, bool)
     for i in range(len(match)):
         result = tf.warp(original, matrix, order=4)
         match[i] = compare_results(expected, result)
-    assert np.all(match)
+    assert np.sum(~match) == 0
+
+def test_broken_apart(original):
+    from skimage.transform import ProjectiveTransform, warp_coords
+    from scipy.ndimage import map_coordinates
+    matrix = np.array([[0, -1, 511], [1, 0, 0], [0, 0, 1]])
+    coord_map = ProjectiveTransform(matrix=matrix)
+    expected_coords = warp_coords(coord_map, original.shape)
+    expected_warped = map_coordinates(original, expected_coords)
+
+    print("Running warp_coords() 100 times")
+
+    match = np.zeros(100, bool)
+    for i in range(len(match)):
+        result_coords = warp_coords(coord_map, original.shape)
+        match[i] = compare_results(expected_coords[0, : :], result_coords[0, : :])
+        match[i] &= compare_results(expected_coords[1, : :], result_coords[1, : :])
+    assert np.sum(~match) == 0
+
+    print("Running map_coordinates() 100 times")
+
+    match = np.zeros(100, bool)
+    for i in range(len(match)):
+        result_warped = map_coordinates(original, expected_coords)
+        match[i] = compare_results(expected_warped, result_warped)
+    assert np.sum(~match) == 0
