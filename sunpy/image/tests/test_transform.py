@@ -308,11 +308,10 @@ def test_broken_apart(original):
 
     match3 = np.zeros(100, bool)
     base = np.indices(original.shape, dtype=np.float64).reshape(2, -1).T
-    expected = coord_map(base).T.reshape(2, 512, 512)
+    expected = coord_map(base)
     for i in range(len(match3)):
-        result = coord_map(base).T.reshape(2, 512, 512)
-        match3[i] = compare_results(expected[0, : :], result[0, : :])
-        match3[i] &= compare_results(expected[1, : :], result[1, : :])
+        result = coord_map(base)
+        match3[i] = np.allclose(expected, result)
 
     print(np.sum(~match3))
 
@@ -332,3 +331,18 @@ def test_broken_apart(original):
     assert np.sum(~match2) == 0
     assert np.sum(~match3) == 0
     assert np.sum(~match4) == 0
+
+
+def test_minimal_example():
+    x = np.arange(0, 300000).reshape(3, -1).T
+    y = np.array([[0, 1, 0], [1, 0, 0], [0, 0, 1]])
+    xy = x[:, [1,0,2]]
+
+    mismatches = np.zeros(1000, int)
+    for i in range(len(mismatches)):
+        result = x @ y
+        mismatches[i] = (~np.isclose(result, xy)).sum()
+        if mismatches[i] != 0:
+            print(mismatches[i])
+
+    assert np.all(mismatches == 0)
