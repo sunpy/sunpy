@@ -78,13 +78,15 @@ class DataManager:
                         if self._cache_has_file(urls):
                             raise ValueError(" Hash provided does not match the hash in database.")
                         file_path = self._cache.download(urls)
-                        if hash_file(file_path) != sha_hash:
+                        file_hash = hash_file(file_path)
+                        if file_hash != sha_hash:
                             # the hash of the file downloaded does not match provided hash
                             # this means the file has changed on the server.
                             # the function should be updated to use the new
                             # hash. Raise an error to notify.
                             raise RuntimeError(
-                                "Remote file on the server has changed. Update hash of the function.")
+                                f"Hash of local file ({file_hash}) does not match expected hash ({sha_hash}). "
+                                "File may have changed on the remote server.")
                     else:
                         # This is to handle the case when the local file
                         # appears to be tampered/corrupted
