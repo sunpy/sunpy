@@ -265,3 +265,14 @@ def test_int(identity):
     with pytest.warns(SunpyUserWarning, match='Input data has been cast to float64.'):
         out_arr = affine_transform(in_arr, rmatrix=identity)
     assert np.issubdtype(out_arr.dtype, np.floating)
+
+
+def test_lots_of_rotations(original):
+    # Test a 90-degree rotation many times
+    expected = np.rot90(original, k=1)
+    matrix = np.array([[0, -1, 511], [1, 0, 0], [0, 0, 1]])
+    match = np.zeros(100)
+    for i in range(len(match)):
+        result = tf.warp(original, matrix, order=4)
+        match[i] = compare_results(expected, result)
+    assert np.all(match)
