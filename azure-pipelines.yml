@@ -78,32 +78,32 @@ jobs:
         libraries: {}
 
       - macos: py38-cf-conda
-        name: py38_cf_n1_conda
+        name: py38_cf_n0_conda
         libraries: {}
-        posargs: -n=1
+        posargs: -n=0
 
       - macos: py38-cf-single-conda
         name: py38_cf_single_conda
         libraries: {}
 
       - macos: py38-cf-single-conda
-        name: py38_cf_single_n1_conda
+        name: py38_cf_single_n0_conda
         libraries: {}
-        posargs: -n=1
+        posargs: -n=0
 
       - macos: py38-cf-mkl-conda
         name: py38_cf_mkl_conda
         libraries: {}
 
       - macos: py38-cf-mkl-conda
-        name: py38_cf_mkl_n1_conda
+        name: py38_cf_mkl_n0_conda
         libraries: {}
-        posargs: -n=1
+        posargs: -n=0
 
       - macos: py38-cf-defaults-conda
         name: py38_cf_defaults_conda
         libraries: {}
-        posargs: -n=1
+        posargs: -n=0
 
       - macos: py38-sp-conda
         name: py38_sp_conda
