@@ -86,6 +86,11 @@ jobs:
         name: py38_cf_single_conda
         libraries: {}
 
+      - macos: py38-cf-single-conda
+        name: py38_cf_single_n1_conda
+        libraries: {}
+        posargs: -n=1
+
       - macos: py38-cf-mkl-conda
         name: py38_cf_mkl_conda
         libraries: {}
