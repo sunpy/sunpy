@@ -277,6 +277,7 @@ def test_lots_of_rotations(original):
         match[i] = compare_results(expected, result)
     assert np.sum(~match) == 0
 
+
 def test_broken_apart(original):
     from skimage.transform import ProjectiveTransform, warp_coords
     from scipy.ndimage import map_coordinates
@@ -327,16 +328,14 @@ def test_broken_apart(original):
 
     print(np.sum(~match4))
 
-    assert np.sum(~match1) == 0
-    assert np.sum(~match2) == 0
-    assert np.sum(~match3) == 0
-    assert np.sum(~match4) == 0
+    assert (np.sum(~match1), np.sum(~match2), np.sum(~match3), np.sum(~match4)) == (0, 0, 0, 0)
 
 
 def test_minimal_example():
-    x = np.arange(0, 3000000).reshape(3, -1).T
-    y = np.array([[0, 1, 0], [1, 0, 0], [0, 0, 1]])
-    xy = x[:, [1,0,2]]
+    n = np.arange(1000000)
+    x = np.vstack((n, n + len(n), np.ones_like(n))).T
+    y = np.array([[0, 1, 2 * len(n)], [1, 0, 0], [0, 0, 1]])
+    xy = x @ y
 
     mismatches = np.zeros(100, int)
     for i in range(len(mismatches)):
