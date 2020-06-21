@@ -38,13 +38,15 @@ class MapSequence:
     derotate : `bool`
         Apply a derotation to the data. Default to False.
 
-    To coalign a mapsequence so that solar features remain on the same pixels,
-    please see the "Coalignment of MapSequences" note below.
-
     Attributes
     ----------
     maps : `list`
         This attribute holds the list of Map instances obtained from parameter args.
+
+    Notes
+    -----
+    To coalign a mapsequence so that solar features remain on the same pixels,
+    please see the "Coalignment of MapSequences" note below.
 
     Examples
     --------
