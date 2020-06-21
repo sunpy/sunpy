@@ -86,6 +86,19 @@ def test_build_table(client):
 
 
 @pytest.mark.remote_data
+def test_show(client):
+    responses = client.search(
+        a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
+    showtable = responses.show('TELESCOP', 'CAR_ROT')
+    assert isinstance(showtable, astropy.table.Table)
+
+    columns = ['TELESCOP', 'CAR_ROT']
+    assert columns == showtable.colnames
+    assert showtable['TELESCOP'][0] == 'SDO/HMI'
+
+
+@pytest.mark.remote_data
 def test_post_wavelength(client):
     responses = client.search(
         a.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
