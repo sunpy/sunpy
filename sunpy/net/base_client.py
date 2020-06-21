@@ -85,6 +85,22 @@ class BaseQueryResponse(Sequence):
     def _repr_html_(self):
         return self.build_table()._repr_html_()
 
+    def show(self, *cols):
+        """
+        Returns response tables with desired columns for the Query.
+
+        Parameters
+        ----------
+        \\*cols : `tuple`
+            Name of columns to be shown.
+
+        Returns
+        -------
+        `astropy.table.Table`
+            A table showing values for specified columns.
+        """
+        return self.build_table()[list(cols)]
+
 
 def _print_client(client, html=False):
     """
