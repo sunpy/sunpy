@@ -99,7 +99,10 @@ class BaseQueryResponse(Sequence):
         `astropy.table.Table`
             A table showing values for specified columns.
         """
-        return self.build_table()[list(cols)]
+        table = self.build_table()
+        if len(cols) == 0:
+            return table
+        return table[list(cols)]
 
 
 def _print_client(client, html=False):
