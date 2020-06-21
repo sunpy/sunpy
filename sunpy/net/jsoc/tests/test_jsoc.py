@@ -85,16 +85,12 @@ def test_build_table(client):
     assert columns == table.colnames
 
 
-@pytest.mark.remote_data
 def test_show(client):
-    responses = client.search(
-        a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
-    showtable = responses.show('TELESCOP', 'CAR_ROT')
+    jdict = {'TELESCOP': ['SDO/HMI', 'SDO/AIA'], 'CAR_ROT': [2145, 2145]}
+    responses = JSOCResponse(table=astropy.table.Table(jdict))
+    showtable = responses.show('TELESCOP')
     assert isinstance(showtable, astropy.table.Table)
-
-    columns = ['TELESCOP', 'CAR_ROT']
-    assert columns == showtable.colnames
+    assert showtable.colnames == ['TELESCOP']
     assert showtable['TELESCOP'][0] == 'SDO/HMI'
 
 

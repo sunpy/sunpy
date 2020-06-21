@@ -8,6 +8,7 @@ from sunpy.net._attrs import Instrument, Time
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import range_time
+from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 
 
@@ -91,3 +92,35 @@ def test_client_repr(LCClient):
     """
     output = str(LCClient)
     assert output[:50] == 'sunpy.net.dataretriever.sources.lyra.LYRAClient\n\nP'
+
+
+def mock_query_object(LCClient):
+    """
+    Creating a Query Response object and prefilling it with some information
+    """
+    # Creating a Query Response Object
+    start = '2016/1/1'
+    end = '2016/1/2'
+    obj = {
+        'TimeRange': TimeRange(parse_time(start), parse_time(end)),
+        'Time_start': parse_time(start),
+        'Time_end': parse_time(end),
+        'source': 'Proba2',
+        'instrument': 'lyra',
+        'physobs': 'irradiance',
+        'provider': 'esa'
+    }
+    urls = ['http://proba2.oma.be/lyra/data/bsd/2016/01/01/lyra_20160101-000000_lev2_std.fits',
+            'http://proba2.oma.be/lyra/data/bsd/2016/01/02/lyra_20160102-000000_lev2_std.fits']
+    results = QueryResponse.create(obj, urls, client=LCClient)
+    return results
+
+
+def test_show(LCClient):
+    mock_qr = mock_query_object(LCClient)
+    qrshow0 = mock_qr.show()
+    qrshow1 = mock_qr.show('Start Time', 'Instrument')
+    allcols = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert qrshow0.colnames == allcols
+    assert qrshow1.colnames == ['Start Time', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'lyra'

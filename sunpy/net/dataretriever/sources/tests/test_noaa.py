@@ -184,3 +184,13 @@ def test_client_repr(LCClient):
     """
     output = str(LCClient)
     assert output[:50] == 'sunpy.net.dataretriever.sources.noaa.NOAAIndicesCl'
+
+
+def test_show(LCClient):
+    mock_qr = mock_query_object('2012/10/4', '2012/10/6')
+    qrshow0 = mock_qr.show()
+    qrshow1 = mock_qr.show('Start Time', 'Instrument')
+    allcols = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert qrshow0.colnames == allcols
+    assert qrshow1.colnames == ['Start Time', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'noaa-indices'

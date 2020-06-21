@@ -203,7 +203,7 @@ class GenericClient(BaseClient):
         timerange: `sunpy.time.TimeRange`
              The timerange to extract the URLs for.
         \\*\\*kwargs: `dict`
-            `Any extra keywords to refine the search. Generated from the
+             Any extra keywords to refine the search. Generated from the
              attributes passed to
              `~sunpy.net.dataretriever.client.GenericClient.search`.
         """

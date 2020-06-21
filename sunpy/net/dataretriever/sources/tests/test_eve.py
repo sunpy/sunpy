@@ -126,3 +126,37 @@ def test_client_repr(LCClient):
     """
     output = str(LCClient)
     assert output[:50] == 'sunpy.net.dataretriever.sources.eve.EVEClient\n\nPro'
+
+
+def mock_query_object(LCClient):
+    """
+    Creating a Query Response object and prefilling it with some information
+    """
+    # Creating a Query Response Object
+    start = '2016/1/1'
+    end = '2016/1/2'
+    obj = {
+        'TimeRange': TimeRange(parse_time(start), parse_time(end)),
+        'Time_start': parse_time(start),
+        'Time_end': parse_time(end),
+        'source': 'SDO',
+        'instrument': 'eve',
+        'physobs': 'irradiance',
+        'provider': 'LASP'
+    }
+    urls = ['http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
+            '2016/20160101_EVE_L0CS_DIODES_1m.txt',
+            'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
+            '2016/20160102_EVE_L0CS_DIODES_1m.txt']
+    results = QueryResponse.create(obj, urls, client=LCClient)
+    return results
+
+
+def test_show(LCClient):
+    mock_qr = mock_query_object(LCClient)
+    qrshow0 = mock_qr.show()
+    qrshow1 = mock_qr.show('Start Time', 'Instrument')
+    allcols = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert qrshow0.colnames == allcols
+    assert qrshow1.colnames == ['Start Time', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'eve'
