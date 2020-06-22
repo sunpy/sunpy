@@ -197,11 +197,13 @@ def _observers_are_equal(obs_1, obs_2):
 
     # obs_1 != obs_2
     if obs_1 is None:
-        raise ConvertError("The source observer is set to None, but the destination observer is "
-                           f"{obs_2}.")
+        raise ConvertError("The source observer is set to None, but the transformation requires "
+                           "the source observer to be specified, as the destination observer "
+                           f"is set to {obs_2}.")
     if obs_2 is None:
-        raise ConvertError("The destination observer is set to None, but the source observer is "
-                           f"{obs_2}.")
+        raise ConvertError("The destination observer is set to None, but the transformation "
+                           "requires the destination observer to be specified, as the "
+                           f"source observer is set to {obs_1}.")
     if isinstance(obs_1, str):
         raise ConvertError("The source observer needs to have `obstime` set because the "
                            "destination observer is different.")
