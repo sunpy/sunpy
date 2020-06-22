@@ -332,16 +332,18 @@ def test_broken_apart(original):
 
 
 def test_minimal_example():
-    n = np.arange(1000000)
-    x = np.vstack((n, n + len(n), np.ones_like(n))).T
-    y = np.array([[0, 1, 2 * len(n)], [1, 0, 0], [0, 0, 1]])
-    xy = x @ y
+    base = np.indices((512, 512), dtype=np.float64).reshape(2, -1).T
+    x, y = np.transpose(base)
+    src = np.vstack((x, y, np.ones_like(x)))
+
+    matrix = np.array([[0, -1, 511], [1, 0, 0], [0, 0, 1]])
+    expected = src.T @ matrix.T
 
     mismatches = np.zeros(100, int)
     for i in range(len(mismatches)):
-        result = x @ y
-        mismatches[i] = (~np.isclose(result, xy)).sum()
+        result = src.T @ matrix.T
+        mismatches[i] = (~np.isclose(result, expected)).sum()
         if mismatches[i] != 0:
-            print(mismatches[i])
+            print(f"{mismatches[i]} mismatching elements in this multiplication")
 
     assert np.sum(mismatches != 0) == 0
