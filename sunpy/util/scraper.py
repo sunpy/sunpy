@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
+from sunpy.extern.parse import parse
 from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['Scraper']
@@ -331,3 +332,37 @@ class Scraper:
                 return None
         except Exception:
             raise
+
+    def _extractMetaURLs(self, timerange, extractor=None, translator=None):
+        """
+        Returns metadata information contained in URLs.
+
+        Parameters
+        ----------
+        timerange : `~sunpy.time.TimeRange`
+            Time interval where to find the directories for a given pattern.
+        extractor: `str`
+            Pattern to extract metadata by parsing the URL.
+        translator: `dict`
+            Convert metadata retrieved from URL to table displayable format.
+        
+        Returns
+        -------
+        metalist: `list` of `dict`
+            List of metadata info for all URLs.
+        """
+        urls = self.filelist(timerange)
+        if extractor is None:
+            return [{} for url in urls]
+        metalist = []
+        for url in urls:
+            metadict = parse(extractor, url)
+            if extractor is None:
+                metalist.append(metadict)
+            else:
+                for k in translator.keys():
+                    inurl = metadict[k]
+                    intable = translator[k][inurl]
+                    metadict[k] = intable
+                    metalist.append(metadict)
+        return metalist
