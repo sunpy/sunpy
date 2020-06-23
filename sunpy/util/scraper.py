@@ -345,7 +345,7 @@ class Scraper:
             Pattern to extract metadata by parsing the URL.
         translator: `dict`
             Convert metadata retrieved from URL to table displayable format.
-        
+
         Returns
         -------
         metalist: `list` of `dict`
@@ -353,11 +353,16 @@ class Scraper:
         """
         urls = self.filelist(timerange)
         if extractor is None:
-            return [{} for url in urls]
+            return [{'url': url} for url in urls]
         metalist = []
         for url in urls:
             metadict = parse(extractor, url)
-            if extractor is None:
+            if metadict is not None:
+                metadict = metadict.named
+            else:
+                metadict = {}
+            metadict['url'] = url
+            if translator is None:
                 metalist.append(metadict)
             else:
                 for k in translator.keys():

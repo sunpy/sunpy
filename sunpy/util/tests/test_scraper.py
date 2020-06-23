@@ -249,3 +249,25 @@ def test_regex_data():
     timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
     assert s._URL_followsPattern(prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
     assert len(s.filelist(timerange)) == 37
+
+
+@pytest.mark.remote_data
+def test_extractMetaURLs():
+    baseurl0 = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
+    extractpattern0 = '{}/tcx/{year:4d}/{month:2d}/{wavelength}{:4d}{day:2d}'
+    convdict0 = {'wavelength': {'tcz': 34*u.GHz, 'tca': 17*u.GHz}}
+    s0 = Scraper(baseurl0, freq='tca')
+    timerange0 = TimeRange('2020/1/1', '2020/1/2')
+    metalist0 = s0._extractMetaURLs(timerange0, extractpattern0, convdict0)
+    assert metalist0[0]['wavelength'] == 17*u.GHz
+    assert metalist0[1]['day'] == 2
+
+    prefix = r'https://gong2.nso.edu/oQR/zqs/'
+    baseurl1 = prefix + r'%Y%m/mrzqs%y%m%d/mrzqs%y%m%dt%H%Mc(\d){4}_(\d){3}\.fits.gz'
+    extractpattern1 = '{}/zqs/{:6d}/mrzqs{:6d}/mrzqs{:6d}t{:4d}c{CAR_ROT:4d}_{:3d}.fits.gz'
+    s1 = Scraper(baseurl1, regex=True)
+    timerange1 = TimeRange('2020-01-05', '2020-01-05T16:00:00')
+    metalist1 = s1._extractMetaURLs(timerange1, extractpattern1)
+    urls = s1.filelist(timerange1)
+    assert metalist1[3]['CAR_ROT'] == 2226
+    assert metalist1[-1]['url'] == urls[-1]
