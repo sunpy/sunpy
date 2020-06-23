@@ -333,7 +333,7 @@ class Scraper:
         except Exception:
             raise
 
-    def _extractMetaURLs(self, timerange, extractor=None, translator=None):
+    def _extract_files_meta(self, timerange, extractor=None):
         """
         Returns metadata information contained in URLs.
 
@@ -343,8 +343,6 @@ class Scraper:
             Time interval where to find the directories for a given pattern.
         extractor: `str`
             Pattern to extract metadata by parsing the URL.
-        translator: `dict`
-            Convert metadata retrieved from URL to table displayable format.
 
         Returns
         -------
@@ -362,12 +360,5 @@ class Scraper:
             else:
                 metadict = {}
             metadict['url'] = url
-            if translator is None:
-                metalist.append(metadict)
-            else:
-                for k in translator.keys():
-                    inurl = metadict[k]
-                    intable = translator[k][inurl]
-                    metadict[k] = intable
-                    metalist.append(metadict)
+            metalist.append(metadict)
         return metalist
