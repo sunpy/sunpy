@@ -41,7 +41,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install --user -U tox codecov
+      - run: pip install --user -U tox codecov virtualenv!=20.0.24
       - run: tox
       - run: codecov
       - store_artifacts:
