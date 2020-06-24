@@ -351,16 +351,33 @@ def test_minimal_example():
 
 def test_minimal_example_simplified():
     x, y = np.indices((512, 512), dtype=np.float64).reshape(2, -1)
-    src = np.vstack((x, y, np.ones_like(x))).T
+    src = np.vstack((x, y, np.ones_like(x)))
 
-    matrix = np.array([[0, 1, 0], [-1, 0, 0], [511, 0, 1]])
-    expected = src @ matrix
+    matrix = np.array([[0, -1, 511], [1, 0, 0], [0, 0, 1]])
+    expected = matrix @ src
 
     mismatches = np.zeros(500, int)
     for i in range(len(mismatches)):
-        result = src @ matrix
+        result = matrix @ src
         mismatches[i] = (~np.isclose(result, expected)).sum()
         if mismatches[i] != 0:
-            print(f"{mismatches[i]} mismatching elements in this multiplication")
+            print(f"{mismatches[i]} mismatching elements in multiplication #{i}")
+
+    assert np.sum(mismatches != 0) == 0
+
+
+def test_minimal_example_simplified_v2():
+    x = np.arange(300000)
+    src = np.vstack((x, -x, np.ones_like(x)))
+
+    matrix = np.array([[0, -1, 511], [1, 0, 0], [0, 0, 1]])
+    expected = matrix @ src
+
+    mismatches = np.zeros(500, int)
+    for i in range(len(mismatches)):
+        result = matrix @ src
+        mismatches[i] = (~np.isclose(result, expected)).sum()
+        if mismatches[i] != 0:
+            print(f"{mismatches[i]} mismatching elements in multiplication #{i}")
 
     assert np.sum(mismatches != 0) == 0
