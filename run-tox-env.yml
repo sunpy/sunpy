@@ -1,0 +1,183 @@
+parameters:
+  libraries: []
+  envs: []
+  coverage: false
+
+jobs:
+- ${{ each env in parameters.envs }}:
+  - ${{ each env_pair in env }}:
+
+    - ${{ if or(eq(env_pair.key, 'linux32'), eq(env_pair.key, 'linux'), startsWith(env_pair.key, 'macos'), eq(env_pair.key, 'windows')) }}:
+
+      - job: ${{ coalesce(env['name'], variables['Agent.Id']) }}
+        variables:
+          friendly_name: '${{ env_pair.value }} [${{ env_pair.key }}]'
+          posargs: ${{ coalesce(env['posargs'], parameters.posargs) }}
+          toxdeps: ${{ coalesce(env['toxdeps'], parameters.toxdeps) }}
+          toxargs: ${{ coalesce(env['toxargs'], parameters.toxargs) }}
+          xvfb: ${{ and(coalesce(env['xvfb'], parameters.xvfb, false), eq(env_pair.key, 'linux')) }}
+          mesaopengl: ${{ and(coalesce(env['mesaopengl'], parameters.mesaopengl, false), eq(env_pair.key, 'windows')) }}
+          default32bit: '/opt/python/cp27-cp27m/bin/python'
+          ${{ if startsWith(env_pair.value, 'py27') }}:
+            python: '2.7'
+            python32bit: '/opt/python/cp27-cp27m/bin/python'
+          ${{ if startsWith(env_pair.value, 'py34') }}:
+            python: '3.4'
+            python32bit: '/opt/python/cp34-cp34m/bin/python'
+          ${{ if startsWith(env_pair.value, 'py35') }}:
+            python: '3.5'
+            python32bit: '/opt/python/cp35-cp35m/bin/python'
+          ${{ if startsWith(env_pair.value, 'py36') }}:
+            python: '3.6'
+            python32bit: '/opt/python/cp36-cp36m/bin/python'
+          ${{ if startsWith(env_pair.value, 'py37') }}:
+            python: '3.7'
+            python32bit: '/opt/python/cp37-cp37m/bin/python'
+          ${{ if startsWith(env_pair.value, 'py38') }}:
+            python: '3.8'
+            python32bit: '/opt/python/cp38-cp38/bin/python'
+          ${{ if eq(env_pair.key, 'windows') }}:
+            source: 'call'
+          ${{ if not(eq(env_pair.key, 'windows')) }}:
+            source: 'source'
+          ${{ if eq(env_pair.key, 'windows') }}:
+            pytest_flag: '--junitxml=junit\test-results.xml --cov-report=xml:$(System.DefaultWorkingDirectory)\coverage.xml'
+          ${{ if not(eq(env_pair.key, 'windows')) }}:
+            pytest_flag: '--junitxml=junit/test-results.xml --cov-report=xml:$(System.DefaultWorkingDirectory)/coverage.xml'
+
+        displayName: ${{ variables.friendly_name }}
+
+        pool:
+          ${{ if eq(env_pair.key, 'macos') }}:
+            vmImage: macos-latest
+          ${{ if eq(env_pair.key, 'macos14') }}:
+            vmImage: macos-10.14
+          ${{ if or(eq(env_pair.key, 'linux'), eq(env_pair.key, 'linux32')) }}:
+            vmImage: ubuntu-latest
+          ${{ if eq(env_pair.key, 'windows') }}:
+            vmImage: windows-latest
+
+        steps:
+        - checkout: self
+          lfs: true
+          submodules: ${{ coalesce(parameters.submodules, true) }}
+          fetchDepth: 999999999
+
+        - ${{ if eq(env_pair.key, 'linux32') }}:
+          - bash: docker run -v $PWD:/project -i --name manylinux2010 -d quay.io/pypa/manylinux2010_i686:latest /bin/bash
+            displayName: Start up Docker container
+
+        - ${{ each tool_pair in coalesce(env['libraries'], parameters.libraries) }}:
+          - ${{ each library in tool_pair.value }}:
+
+            - ${{ if and(eq(tool_pair.key, 'brew'), startsWith(env_pair.key, 'macos')) }}:
+              - script: brew install ${{ library }}
+                displayName: Installing ${{ library }} with brew
+
+            - ${{ if and(eq(tool_pair.key, 'brew-cask'), startsWith(env_pair.key, 'macos')) }}:
+              - script: brew cask install ${{ library }}
+                displayName: Installing ${{ library }} with brew cask
+
+            - ${{ if and(eq(tool_pair.key, 'apt'), eq(env_pair.key, 'linux')) }}:
+              - script: sudo apt-get install -y ${{ library }}
+                displayName: Installing ${{ library }} with apt
+
+            - ${{ if and(eq(tool_pair.key, 'yum'), eq(env_pair.key, 'linux32')) }}:
+              - script: docker exec -i -w /project manylinux2010 linux32 yum install -y ${{ library }}
+                displayName: Installing ${{ library }} with yum
+
+            - ${{ if and(eq(tool_pair.key, 'choco'), eq(env_pair.key, 'windows')) }}:
+              - script: choco install ${{ library }}
+                displayName: Installing ${{ library }} with choco
+
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: ${{ coalesce(variables['python'], '3.x') }}
+
+        - ${{ if eq(variables.mesaopengl, 'true') }}:
+
+          - bash: git clone --depth 1 git://github.com/vtkiorg/gl-ci-helpers.git
+            displayName: Getting OpenGL helper script
+
+          - powershell: gl-ci-helpers\appveyor\install_opengl.ps1
+            displayName: Installing OpenGL library
+
+          - bash: rm -r gl-ci-helpers
+            displayName: Cleaning up OpenGL helper script
+
+        - ${{ if eq(variables.xvfb, 'true') }}:
+          - bash: |
+              /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid \
+                                      --make-pidfile --background --exec /usr/bin/Xvfb \
+                                      -- :99 -screen 0 1920x1200x24 -ac \
+                                      +extension GLX +render -noreset
+            displayName: Starting Xvfb
+
+        - ${{ if contains(env_pair.value, 'conda') }}:
+
+          - ${{ if startsWith(env_pair.key, 'macos') }}:
+            - bash: echo "##vso[task.prependpath]$CONDA/bin"
+              displayName: Add conda to PATH
+            - bash: sudo chown -R $USER $CONDA
+              displayName: Take ownership of conda installation
+
+          - ${{ if eq(env_pair.key, 'linux') }}:
+            - bash: echo "##vso[task.prependpath]$CONDA/bin"
+              displayName: Add conda to PATH
+
+          - ${{ if eq(env_pair.key, 'windows') }}:
+            - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
+              displayName: Add conda to PATH
+
+          - script: |
+              conda create --yes --quiet --name testenv
+              ${{ variables.source }} activate testenv
+              conda install --yes --quiet --name testenv python=${{ variables.python }} pip
+            displayName: Create and activate conda env
+
+          - script: python -m pip install --upgrade tox-conda ${{ variables.toxdeps }}
+            displayName: install tox-conda
+
+        - ${{ if eq(env_pair.key, 'linux32') }}:
+
+          - script: docker exec -i -w /project manylinux2010 linux32 ${{ coalesce(variables.python32bit, variables.default32bit) }} -m pip install --upgrade tox ${{ variables.toxdeps }}
+            displayName: Install tox
+
+          - script: docker exec -i -w /project manylinux2010 linux32 ${{ coalesce(variables.python32bit, variables.default32bit) }} -m tox -e ${{ env_pair.value }} ${{ variables['toxargs'] }} -- ${{ variables['pytest_flag'] }} ${{ variables['posargs'] }}
+            displayName: Running tox
+
+        - ${{ if ne(env_pair.key, 'linux32') }}:
+
+          - script: python -m pip install --upgrade tox ${{ variables.toxdeps }}
+            displayName: Install tox
+
+          - script: tox -e ${{ env_pair.value }} ${{ variables['toxargs'] }} -- ${{ variables['pytest_flag'] }} ${{ variables['posargs'] }}
+            displayName: Running tox
+            ${{ if eq(variables.xvfb, 'true') }}:
+              env:
+                DISPLAY: :99.0
+            ${{ if and(startsWith(env_pair.key, 'macos'),contains(env_pair.value, 'conda')) }}:
+              env:
+                CONDA_BUILD_SYSROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+
+        - ${{ if eq(coalesce(env['coverage'], parameters.coverage), 'codecov') }}:
+          - script: |
+              python -m pip install --upgrade codecov
+              python -m codecov --name "${{ variables.friendly_name }}"
+            displayName: Running codecov
+            condition: succeededOrFailed()
+            env:
+              CODECOV_TOKEN: $(CODECOV_TOKEN)
+
+        - task: PublishTestResults@2
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFiles: '**/test-*.xml'
+            testRunTitle: 'Publish test results for ${{ variables.friendly_name }}'
+
+        - ${{ if eq(coalesce(env['coverage'], parameters.coverage), 'azure') }}:
+          - task: PublishCodeCoverageResults@1
+            condition: succeededOrFailed()
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
