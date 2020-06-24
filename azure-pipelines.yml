@@ -93,21 +93,21 @@ jobs:
         posargs: -n=1
 
       - macos14: py38-cf-conda
-        name: py38_cf_conda
+        name: py38_macos14_cf_conda
         libraries: {}
 
       - macos14: py38-cf-conda
-        name: py38_cf_n1_conda
+        name: py38_macos14_cf_n1_conda
         libraries: {}
         posargs: -n=1
 
       - macos14: py38-cf-conda
-        name: py38_cf_n0_conda
+        name: py38_macos14_cf_n0_conda
         libraries: {}
         posargs: -n=0
 
       - macos14: py38-cf-copy-conda
-        name: py38_cf_copy_conda
+        name: py38_macos14_cf_copy_conda
         libraries: {}
         posargs: -n=1
 
