@@ -68,7 +68,7 @@ jobs:
       jobname:
         type: string
     docker:
-      - image: circleci/python:3.8.1-buster
+      - image: circleci/python:3.8.3
     environment:
       TOXENV=<< parameters.jobname >>
     steps:
