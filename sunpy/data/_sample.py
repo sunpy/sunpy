@@ -90,7 +90,7 @@ def download_sample_data(overwrite=False):
         if fname.exists() and not overwrite:
             already_downloaded.append(fname)
         else:
-            dl.enqueue_file(url, filename=sampledata_dir/file_name)
+            dl.enqueue_file(url, filename=fname)
 
     if dl.queued_downloads:
         results = dl.download()
