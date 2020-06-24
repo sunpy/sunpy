@@ -11,7 +11,7 @@ jobs:
 
       - job: ${{ coalesce(env['name'], variables['Agent.Id']) }}
         variables:
-          friendly_name: '${{ env_pair.value }} [${{ env_pair.key }}]'
+          friendly_name: '${{ job }} [${{ env_pair.key }}]'
           posargs: ${{ coalesce(env['posargs'], parameters.posargs) }}
           toxdeps: ${{ coalesce(env['toxdeps'], parameters.toxdeps) }}
           toxargs: ${{ coalesce(env['toxargs'], parameters.toxargs) }}
