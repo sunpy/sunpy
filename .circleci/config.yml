@@ -32,7 +32,7 @@ jobs:
       jobname:
         type: string
     docker:
-      - image: circleci/python:3.8.1-buster
+      - image: circleci/python:3.8.3
     environment:
       TOXENV=<< parameters.jobname >>
     steps:
@@ -41,7 +41,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install --user -U tox codecov virtualenv!=20.0.24
+      - run: pip install --user -U tox codecov
       - run: tox
       - run: codecov
       - store_artifacts:
