@@ -8,4 +8,6 @@ python:
    version: 3.8
    install:
       - method: pip
+        extra_requirements:
+           - dev
         path: .
