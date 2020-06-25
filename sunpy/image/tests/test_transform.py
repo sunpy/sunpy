@@ -370,13 +370,13 @@ def test_minimal_example_simplified_v2():
     x = np.arange(300000, dtype=np.float64)
     src = np.vstack((x, -x, np.ones_like(x))).T
 
-    matrix = np.array([[0, -1, 511], [1, 0, 0], [0, 0, 1]]).T
-    expected = src @ matrix
+    matrix = np.array([[0, -1, 0], [-1, 0, 0], [0, 0, 1]])
+    # src @ matrix == src
 
     mismatches = np.zeros(500, int)
     for i in range(len(mismatches)):
         result = src @ matrix
-        mismatches[i] = (~np.isclose(result, expected)).sum()
+        mismatches[i] = (~np.isclose(result, src)).sum()
         if mismatches[i] != 0:
             print(f"{mismatches[i]} mismatching elements in multiplication #{i}")
 
