@@ -15,6 +15,8 @@ asdf = pytest.importorskip('asdf', '2.0.2')
 from asdf.tests.helpers import assert_roundtrip_tree  # NOQA isort:skip
 
 sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
+# Don't test the two base frames
+sunpy_frames = [frame for frame in sunpy_frames if 'base' not in frame.name]
 
 
 @pytest.fixture(params=sunpy_frames)
