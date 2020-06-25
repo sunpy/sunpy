@@ -71,6 +71,13 @@ jobs:
       - linux: py38-online
         name: py38_test_online
 
+      - macos: py38-conda
+        name: py38_conda
+        libraries: {}
+
+      - macos: py38-singlethread-conda
+        libraries: {}
+
       - linux: py37-oldestdeps
         name: py37_test_oldestdeps
 
