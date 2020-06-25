@@ -366,12 +366,12 @@ def test_minimal_example_simplified():
     assert np.sum(mismatches != 0) == 0
 
 
-def test_minimal_example_simplified_v2():
+def test_reproducible_matrix_multiplication():
     x = np.arange(500000, dtype=np.float64)
-    src = np.vstack((x, -x)).T
+    src = np.vstack((x, -10*x)).T
+    matrix = np.array([[0, 1], [1, 0]])
 
-    matrix = np.array([[0, 10], [1, 0]])
-    expected = np.vstack((-x, 10*x)).T
+    expected = np.vstack((-10*x, x)).T  # src @ matrix
 
     mismatches = np.zeros(500, int)
     for i in range(len(mismatches)):
