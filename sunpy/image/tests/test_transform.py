@@ -367,10 +367,10 @@ def test_minimal_example_simplified():
 
 
 def test_minimal_example_simplified_v2():
-    x = np.arange(300000, dtype=np.float64)
-    src = np.vstack((x, -x, np.ones_like(x))).T
+    x = np.arange(500000, dtype=np.float64)
+    src = np.vstack((x, -x)).T
 
-    matrix = np.array([[0, -1, 0], [-1, 0, 0], [0, 0, 1]])
+    matrix = np.array([[0, -1], [-1, 0]])
     # src @ matrix == src
 
     mismatches = np.zeros(500, int)
