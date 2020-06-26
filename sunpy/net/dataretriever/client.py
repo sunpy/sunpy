@@ -1,53 +1,19 @@
-import copy
 from pathlib import Path
-from collections import OrderedDict, namedtuple
-
-import numpy as np
+from collections import OrderedDict
 
 import astropy.table
-import astropy.units as u
 
 import sunpy
 from sunpy import config
-from sunpy.net._attrs import Time, Wavelength
-from sunpy.net.attr import Range
+from sunpy.net._attrs import Time
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
+from sunpy.util.scraper import Scraper
 
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['QueryResponse', 'GenericClient']
-
-
-class QueryResponseBlock:
-    """
-    Represents url, source along with other information
-    """
-
-    def __init__(self, map0, url, time=None):
-        """
-        Parameters
-        ----------
-        map0 : Dict with relevant information
-        url  : Uniform Resource Locator
-        """
-        self._map = map0
-        self.source = map0.get('source', "Data not Available")
-        self.provider = map0.get('provider', "Data not Available")
-        self.physobs = map0.get('physobs', "Data not Available")
-        self.instrument = map0.get('instrument', "Data not Available")
-        self.url = url
-        self.time = TimeRange(map0.get('Time_start'),
-                              map0.get('Time_end')) if time is None else time
-        self.wave = map0.get('wavelength', np.NaN)
-
-
-def iter_urls(amap, url_list, time):
-    """Helper Function"""
-    for aurl, t in zip(url_list, time):
-        tmp = QueryResponseBlock(amap, aurl, t)
-        yield tmp
 
 
 class QueryResponse(BaseQueryResponse):
@@ -85,19 +51,6 @@ class QueryResponse(BaseQueryResponse):
         for block in self._data:
             yield block
 
-    @classmethod
-    def create(cls, amap, lst, time=None, client=None):
-        if time is None:
-            time = [None] * len(lst)
-        return cls(list(iter_urls(amap, lst, time)), client=client)
-
-    def time_range(self):
-        """
-        Returns the time-span for which records are available.
-        """
-        return TimeRange(min(qrblock.time.start for qrblock in self),
-                         max(qrblock.time.end for qrblock in self))
-
     def response_block_properties(self):
         """
         Returns a set of class attributes on all the response blocks.
@@ -110,18 +63,14 @@ class QueryResponse(BaseQueryResponse):
         return s
 
     def build_table(self):
-        columns = OrderedDict((('Start Time', []), ('End Time', []),
-                               ('Source', []), ('Instrument', []),
-                               ('Wavelength', [])))
+        if len(self._data) == 0:
+            return astropy.table.Table()
+        meta0 = self._data[0]
+        meta0.pop('url', None)
+        columns = OrderedDict(((col, [])) for col in meta0.keys())
         for qrblock in self:
-            columns['Start Time'].append(
-                (qrblock.time.start).strftime(TIME_FORMAT))
-            columns['End Time'].append(
-                (qrblock.time.end).strftime(TIME_FORMAT))
-            columns['Source'].append(qrblock.source)
-            columns['Instrument'].append(qrblock.instrument)
-            columns['Wavelength'].append(str(u.Quantity(qrblock.wave)))
-
+            for colname in columns.keys():
+                columns[colname].append(qrblock[colname])
         return astropy.table.Table(columns)
 
 
@@ -137,86 +86,13 @@ class GenericClient(BaseClient):
     `~sunpy.net.dataretriever.client.GenericClient.fetch` the former generates a
     set of results for files available through the service the client is
     querying and the latter downloads that data.
-
-    The `~sunpy.net.dataretriever.client.GenericClient.search` method takes a
-    set of `sunpy.net.attrs` objects and then converts these into a call to
-    `~sunpy.net.dataretriever.client.GenericClient._get_url_for_timerange`. It
-    does this through the `map\\_` dictionary which represents the
-    `~sunpy.net.attrs` objects as a dictionary.
     """
 
-    def __init__(self):
-        self.map_ = {}
-
-    def _makeargs(self, *args):
-        """
-        Construct the `map\\_` internal representation of the query.
-
-        This `map\\_` dictionary is passed through to the
-        `_get_url_for_timerange` method to get the URL results.
-
-        Parameters
-        ----------
-        \\*args: `tuple`
-            The query attributes.
-
-        """
-        for elem in args:
-            if isinstance(elem, Time):
-                self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
-                self.map_['Time_start'] = elem.start
-                self.map_['Time_end'] = elem.end
-            elif isinstance(elem, Range):
-                a_min = elem.min
-                a_max = elem.max
-                if a_min == a_max:
-                    self.map_[elem.__class__.__name__.lower()] = a_min
-                else:
-                    if isinstance(elem, Wavelength):
-                        prefix = 'wave'
-                    else:
-                        prefix = ''
-                    minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
-                    self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
-            else:
-                if hasattr(elem, 'value'):
-                    self.map_[elem.__class__.__name__.lower()] = elem.value
-                else:
-                    # This will only get hit if the attr is something like
-                    # Extent, which is a unique subclass of Attr. Currently no
-                    # unidown Clients support this, so we skip this line.
-                    # Anything that hits this will require special code to
-                    # convert it into the map_ dict.
-                    raise ValueError(
-                        "GenericClient can not add {} to the map_ dictionary to pass "
-                        "to the Client.".format(elem.__class__.__name__))  # pragma: no cover
-        self._makeimap()
-
     @classmethod
-    def _get_url_for_timerange(cls, timerange, **kwargs):
+    def _get_patterns_for_attrs(cls, **kwargs):
         """
-        Method which generates URL results from a timerange and the `map\\_`
-        dictionary.
-
-        Parameters
-        ----------
-        timerange: `sunpy.time.TimeRange`
-             The timerange to extract the URLs for.
-        \\*\\*kwargs: `dict`
-             Any extra keywords to refine the search. Generated from the
-             attributes passed to
-             `~sunpy.net.dataretriever.client.GenericClient.search`.
         """
-        raise NotImplementedError
-
-    def _makeimap(self):
-        """
-        Add client specific information to the _map dict.
-
-        Normally this is extra metadata which is not downloaded, but known
-        a priori.
-        """
-        raise NotImplementedError
+        return cls.baseurl, cls.pattern, cls.fixed, cls.required, cls.optional
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -264,35 +140,41 @@ class GenericClient(BaseClient):
 
         return paths
 
-    def _get_time_for_url(self, urls):
-        """
-        This method allows clients to customise the timerange displayed for
-        each URL.
-
-        It should return a sunpy.time.TimeRange object per URL.
-        """
-        return NotImplemented
-
     def search(self, *args, **kwargs):
         """
         Query this client for a list of results.
-
-        Parameters
-        ----------
-        \\*args: `tuple`
-            `sunpy.net.attrs` objects representing the query.
         """
-        GenericClient._makeargs(self, *args, **kwargs)
-
-        kwergs = copy.copy(self.map_)
-        kwergs.update(kwargs)
-        urls = self._get_url_for_timerange(
-            self.map_.get('TimeRange'), **kwergs)
-        if urls:
-            times = self._get_time_for_url(urls)
-            if times and times is not NotImplemented:
-                return QueryResponse.create(self.map_, urls, times, client=self)
-        return QueryResponse.create(self.map_, urls, client=self)
+        baseurl, pattern, fixed, required, optional = self._get_patterns_for_attrs(**kwargs)
+        scraper = Scraper(baseurl, regex=True)
+        matchdict = {}
+        matchdict.update(optional)
+        for elem in args:
+            if isinstance(elem, Time):
+                timerange = TimeRange(elem.start, elem.end)
+            elif hasattr(elem, 'value'):
+                matchdict[elem.__class__.__name__] = [elem.value]
+            else:
+                raise ValueError("GenericClient can not add {} to the map_ dictionary to pass to the Client.".format(elem.__class__.__name__))
+        for k in kwargs:
+            matchdict[k] = [kwargs[k]]
+        filesmeta = scraper._extract_files_meta(timerange, extractor=pattern)
+        metalist = []
+        for i in filesmeta:
+            map_ = OrderedDict()
+            map_['Start Time'] = timerange.start.strftime(TIME_FORMAT)
+            map_['End Time'] = timerange.end.strftime(TIME_FORMAT)
+            map_['url'] = i['url']
+            map_['Instrument'] = required['Instrument']
+            map_.update(fixed)
+            append = True
+            for k in i:
+                if k in matchdict and i[k] not in matchdict[k]:
+                    append = False
+                elif k in matchdict:
+                    map_[k] = i[k]
+            if append:
+                metalist.append(map_)
+        return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,
               progress=True, downloader=None, wait=True):
@@ -347,10 +229,3 @@ class GenericClient(BaseClient):
             return
 
         return downloader.download()
-
-    def _link(self, map_):
-        """Helper Function"""
-        paths = []
-        for k, v in map_.items():
-            paths.append(map_[k]['path'])
-        return paths
