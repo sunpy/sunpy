@@ -268,6 +268,14 @@ def test_repr(mock_build_client):
     assert "Start Time End Time Source Instrument Type" in repr(qr)
 
 
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+def test_show(mock_build_client):
+    qr = QueryResponse([])
+    qrshow = qr.show('Start Time', 'Source', 'Type')
+    assert str(qrshow) == ('Start Time Source Type\n'
+                           '---------- ------ ----')
+
+
 @pytest.mark.remote_data
 def test_path(client, tmpdir):
     """

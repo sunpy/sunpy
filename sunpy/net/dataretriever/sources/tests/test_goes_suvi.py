@@ -62,11 +62,14 @@ def test_get_url_for_timerange_errors(suvi_client):
         suvi_client._get_url_for_timerange(tr, satellitenumber=1)
 
 
-def mock_querry_object(suvi_client, start, end, wave):
+def mock_query_object(suvi_client):
     """
     Creating a Query Response object and prefilling it with some information
     """
     # Creating a Query Response Object
+    start = '2019/05/25 00:50'
+    end = '2019/05/25 00:52'
+    wave = 94 * u.Angstrom
     obj = {
         'TimeRange': TimeRange(parse_time(start), parse_time(end)),
         'Time_start': parse_time(start),
@@ -74,10 +77,13 @@ def mock_querry_object(suvi_client, start, end, wave):
         'source': 'GOES',
         'instrument': 'SUVI',
         'physobs': 'flux',
-        'provider': 'NOAA'
+        'provider': 'NOAA',
+        'wavelength': wave
     }
-    results = QueryResponse.create(obj, suvi_client._get_url_for_timerange(TimeRange(start, end),
-                                                                           wavelength=wave), client=suvi_client)
+    urls = ['https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites'
+            '/goes/goes16/l2/data/suvi-l2-ci094/2019/05/25/'
+            'dr_suvi-l2-ci094_g16_s20190525T005200Z_e20190525T005600Z_v1-0-0.fits']
+    results = QueryResponse.create(obj, urls, client=suvi_client)
     return results
 
 
@@ -89,7 +95,7 @@ def test_attr_reg():
 @pytest.mark.remote_data
 def test_fetch_working(suvi_client):
     """
-    Tests if the online server for fermi_gbm is working.
+    Tests if the online server for goes_suvi is working.
     This also checks if the mock is working well.
     """
     start = '2019/05/25 00:50'
@@ -98,7 +104,7 @@ def test_fetch_working(suvi_client):
     qr1 = suvi_client.search(a.Time(start, end), a.Instrument.suvi, a.Wavelength(wave))
 
     # Mock QueryResponse object
-    mock_qr = mock_querry_object(suvi_client, start, end, wave)
+    mock_qr = mock_query_object(suvi_client)
 
     # Compare if two objects have the same attribute
 
@@ -207,3 +213,13 @@ def test_query(suvi_client, start, end, expected_num_files):
     assert len(qr1) == expected_num_files
     assert qr1.time_range().start == parse_time('2019/05/25 00:52')
     assert qr1.time_range().end == parse_time('2019/05/25 00:56')
+
+
+def test_show(suvi_client):
+    mock_qr = mock_query_object(suvi_client)
+    qrshow0 = mock_qr.show()
+    qrshow1 = mock_qr.show('Start Time', 'Instrument')
+    allcols = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert qrshow0.colnames == allcols
+    assert qrshow1.colnames == ['Start Time', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'SUVI'

@@ -7,6 +7,7 @@ from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import time_attr
+from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 
 
@@ -88,3 +89,37 @@ def test_client_repr(LCClient):
     """
     output = str(LCClient)
     assert output[:50] == 'sunpy.net.dataretriever.sources.fermi_gbm.GBMClien'
+
+
+def mock_query_object(LCClient):
+    """
+    Creating a Query Response object and prefilling it with some information
+    """
+    # Creating a Query Response Object
+    start = '2016/1/1'
+    end = '2016/1/2'
+    obj = {
+        'TimeRange': TimeRange(parse_time(start), parse_time(end)),
+        'Time_start': parse_time(start),
+        'Time_end': parse_time(end),
+        'source': 'FERMI',
+        'instrument': 'GBM',
+        'physobs': 'flux',
+        'provider': 'NASA'
+    }
+    urls = ['https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
+            '2016/01/01/current/glg_cspec_n5_160101_v00.pha',
+            'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
+            '2016/01/02/current/glg_cspec_n5_160102_v00.pha']
+    results = QueryResponse.create(obj, urls, client=LCClient)
+    return results
+
+
+def test_show(LCClient):
+    mock_qr = mock_query_object(LCClient)
+    qrshow0 = mock_qr.show()
+    qrshow1 = mock_qr.show('Start Time', 'Instrument')
+    allcols = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert qrshow0.colnames == allcols
+    assert qrshow1.colnames == ['Start Time', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'GBM'

@@ -85,6 +85,15 @@ def test_build_table(client):
     assert columns == table.colnames
 
 
+def test_show(client):
+    jdict = {'TELESCOP': ['SDO/HMI', 'SDO/AIA'], 'CAR_ROT': [2145, 2145]}
+    responses = JSOCResponse(table=astropy.table.Table(jdict))
+    showtable = responses.show('TELESCOP')
+    assert isinstance(showtable, astropy.table.Table)
+    assert showtable.colnames == ['TELESCOP']
+    assert showtable['TELESCOP'][0] == 'SDO/HMI'
+
+
 @pytest.mark.remote_data
 def test_post_wavelength(client):
     responses = client.search(
