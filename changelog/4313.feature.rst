@@ -1,0 +1,1 @@
+Added ``_extract_files_meta`` method in `~sunpy.util.scraper.Scraper` which allows scraper to extract metadata from the file URLs retrieved for a given time range.
