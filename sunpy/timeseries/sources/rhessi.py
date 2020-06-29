@@ -100,10 +100,10 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         axes.legend()
 
         # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M')
+        formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
         axes.xaxis.set_major_formatter(formatter)
 
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
+        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M:%S')
         figure.autofmt_xdate()
 
         return figure
