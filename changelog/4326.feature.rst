@@ -1,0 +1,7 @@
+`sunpy.timeseries.RHESSISummaryTimeSeries.peek()` has had the following minor
+changes:
+
+- The default matplotlib color cycle is now used
+- The default matplotlib linewidth is now used
+- It is now possible to pass in a user specified linewidth
+- Seconds have been added to the x-axis labels (previously it was just hours and minutes)
