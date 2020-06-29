@@ -85,11 +85,9 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         figure = plt.figure()
         axes = plt.gca()
 
-        lc_linecolors = rhessi.hsi_linecolors()
-
-        for lc_color, (item, frame) in zip(lc_linecolors, self.to_dataframe().items()):
+        for item, frame in self.to_dataframe().items():
             axes.plot_date(self.to_dataframe().index, frame.values, '-',
-                           label=item, lw=2, color=lc_color, **kwargs)
+                           label=item, lw=2, **kwargs)
 
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
