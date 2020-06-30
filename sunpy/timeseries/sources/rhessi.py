@@ -85,9 +85,11 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         figure = plt.figure()
         axes = plt.gca()
 
-        for item, frame in self.to_dataframe().items():
+        lc_linecolors = rhessi.hsi_linecolors()
+
+        for lc_color, (item, frame) in zip(lc_linecolors, self.to_dataframe().items()):
             axes.plot_date(self.to_dataframe().index, frame.values, '-',
-                           label=item, **kwargs)
+                           label=item, lw=2, color=lc_color, **kwargs)
 
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
@@ -100,10 +102,10 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         axes.legend()
 
         # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
+        formatter = matplotlib.dates.DateFormatter('%H:%M')
         axes.xaxis.set_major_formatter(formatter)
 
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M:%S')
+        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
 
         return figure

@@ -32,7 +32,7 @@
     "sunpy.timeseries.tests.test_timeseriesbase.test_noaa_ind_peek": "7f72b08b4525186472b5748a8f85257f185d6006ff349b82206ddce23e009727",
     "sunpy.timeseries.tests.test_timeseriesbase.test_noaa_pre_peek": "fa39e07e36e4e98b97dfb353dcb850b619d7e0848e3e2e3c6a59f743245e7c1f",
     "sunpy.timeseries.tests.test_timeseriesbase.test_norh_peek": "a898e56374a4194ff89a0de5f2336361b4155b453321437fc090254b13f6d803",
-    "sunpy.timeseries.tests.test_timeseriesbase.test_rhessi_peek": "45647a871f3514a19e26159552f7e3dcab89202a3e2ea99534f7bac6c9157924",
+    "sunpy.timeseries.tests.test_timeseriesbase.test_rhessi_peek": "4d908604f59f5e5b9d37cd8e4e1a7fddd47de938d9f9458a88afe63e1bca428c",
     "sunpy.visualization.animator.tests.test_basefuncanimator.test_imageanimator_figure": "9d6bd03d14a9374f654733ecc4d2c79a56f78800b8f7a5e657db5fcd6151f54e",
     "sunpy.visualization.animator.tests.test_basefuncanimator.test_lineanimator_figure": "452bbca60e081eec63108839851554cf6384966cb372456c5b264370c4af0378",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_1d_update_plot": "d7cf96cf18410d604ffb23060dc55d6a9d0062d5814bce60a621c963e8362d8f",
