@@ -2,12 +2,14 @@ from pathlib import Path
 from collections import OrderedDict
 
 import astropy.table
+import astropy.units as u
+from astropy.time import TimeDelta
 
 import sunpy
 from sunpy import config
 from sunpy.net._attrs import Time
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.util.parfive_helpers import Downloader
 from sunpy.util.scraper import Scraper
 
@@ -17,9 +19,6 @@ __all__ = ['QueryResponse', 'GenericClient']
 
 
 class QueryResponse(BaseQueryResponse):
-    """
-    Container of QueryResponseBlocks
-    """
 
     def __init__(self, lst, client=None):
         super().__init__()
@@ -89,10 +88,17 @@ class GenericClient(BaseClient):
     """
 
     @classmethod
-    def _get_patterns_for_attrs(cls, **kwargs):
+    def pre_hook(cls, *args, **kwargs):
         """
         """
-        return cls.baseurl, cls.pattern, cls.fixed, cls.required, cls.optional
+        a = cls.register_values()
+        d = {}
+        for i in a.keys():
+            attrname = i.__name__
+            d[attrname] = []
+            for val, desc in a[i]:
+                d[attrname].append(val)
+        return cls.baseurl, cls.pattern, d
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -101,7 +107,34 @@ class GenericClient(BaseClient):
         `sunpy.net.fido_factory.UnifiedDownloaderFactory`
         class uses to dispatch queries to this Client.
         """
-        raise NotImplementedError
+        from sunpy.net import attrs as a
+
+        required = {a.Time, a.Instrument}
+        adict = cls.register_values()
+        optional = {i for i in adict.keys()}
+        if not cls.check_attr_types_in_query(query, required, optional):
+            return False
+        for x in query:
+            if isinstance(x, a.Instrument) and x.value.lower() == adict[a.Instrument][0][0].lower():
+                return True
+        return False
+
+    def post_hook(self, exdict, matchdict):
+        """
+        """
+        map_ = OrderedDict()
+        start = parse_time("{}/{}/{}".format(exdict['year'], exdict['month'], exdict['day']))
+        end = start + TimeDelta(1 * u.day - 1 * u.millisecond)
+        map_['Start Time'] = start.strftime(TIME_FORMAT)
+        map_['End Time'] = end.strftime(TIME_FORMAT)
+        map_['Instrument'] = matchdict['Instrument'][0]
+        map_['Phsyobs'] = matchdict['Physobs'][0]
+        map_['Source'] = matchdict['Source'][0]
+        map_['Provider'] = matchdict['Provider'][0]
+        for k in exdict:
+            if k not in ['year', 'month', 'day']:
+                map_[k] = exdict[k]
+        return map_
 
     def _get_full_filenames(self, qres, filenames, path):
         """
@@ -144,36 +177,22 @@ class GenericClient(BaseClient):
         """
         Query this client for a list of results.
         """
-        baseurl, pattern, fixed, required, optional = self._get_patterns_for_attrs(**kwargs)
+        baseurl, pattern, matchdict = self.pre_hook(*args, **kwargs)
         scraper = Scraper(baseurl, regex=True)
-        matchdict = {}
-        matchdict.update(optional)
         for elem in args:
             if isinstance(elem, Time):
                 timerange = TimeRange(elem.start, elem.end)
             elif hasattr(elem, 'value'):
-                matchdict[elem.__class__.__name__] = [elem.value]
+                matchdict[elem.__class__.__name__] = [str(elem.value)]
             else:
                 raise ValueError("GenericClient can not add {} to the map_ dictionary to pass to the Client.".format(elem.__class__.__name__))
         for k in kwargs:
-            matchdict[k] = [kwargs[k]]
-        filesmeta = scraper._extract_files_meta(timerange, extractor=pattern)
+            matchdict[k] = [str(kwargs[k])]
+        filesmeta = scraper._extract_files_meta(timerange, extractor=pattern, matcher=matchdict)
         metalist = []
         for i in filesmeta:
-            map_ = OrderedDict()
-            map_['Start Time'] = timerange.start.strftime(TIME_FORMAT)
-            map_['End Time'] = timerange.end.strftime(TIME_FORMAT)
-            map_['url'] = i['url']
-            map_['Instrument'] = required['Instrument']
-            map_.update(fixed)
-            append = True
-            for k in i:
-                if k in matchdict and i[k] not in matchdict[k]:
-                    append = False
-                elif k in matchdict:
-                    map_[k] = i[k]
-            if append:
-                metalist.append(map_)
+            map_ = self.post_hook(i, matchdict)
+            metalist.append(map_)
         return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,
