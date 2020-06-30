@@ -11,7 +11,7 @@ import pytest
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
@@ -67,6 +67,10 @@ def aia171_test_map_with_mask(aia171_test_map):
 @pytest.fixture
 def generic_map():
     data = np.ones([6, 6], dtype=np.float64)
+    dobs = Time('1970-01-01T00:00:00')
+    l0 = sun.L0(dobs).to_value(u.deg)
+    b0 = sun.B0(dobs).to_value(u.deg)
+    dsun = sun.earth_distance(dobs).to_value(u.m)
     header = {
         'CRVAL1': 0,
         'CRVAL2': 0,
@@ -82,7 +86,10 @@ def generic_map():
         'PC2_2': 0,
         'NAXIS1': 6,
         'NAXIS2': 6,
-        'date-obs': '1970-01-01T00:00:00',
+        'date-obs': dobs.isot,
+        'crln_obs': l0,
+        'crlt_obs': b0,
+        "dsun_obs": dsun,
         'mjd-obs': 40587.0,
         'obsrvtry': 'Foo',
         'detector': 'bar',
@@ -97,11 +104,12 @@ def simple_map():
     # A 3x3 map, with it's center at (0, 0), and scaled differently in
     # each direction
     data = np.arange(9).reshape((3, 3))
-    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg')
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.m,
+                                           frame='heliographic_stonyhurst'))
     ref_pix = [1, 1] * u.pix
     scale = [2, 1] * u.arcsec / u.pix
     header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
-
     return sunpy.map.Map(data, header)
 
 
@@ -194,8 +202,7 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
-        assert_quantity_allclose(generic_map.dsun, sun.earth_distance(generic_map.date))
+    assert_quantity_allclose(generic_map.dsun, sun.earth_distance(generic_map.date))
 
 
 def test_rsun_meters(generic_map):
@@ -212,18 +219,16 @@ def test_coordinate_system(generic_map):
 
 
 def test_carrington_longitude(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
-        assert generic_map.carrington_longitude == sun.L0(generic_map.date)
+    assert u.allclose(generic_map.carrington_longitude, sun.L0(generic_map.date))
 
 
 def test_heliographic_latitude(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
-        assert generic_map.heliographic_latitude == sun.B0(generic_map.date)
+    assert u.allclose(generic_map.heliographic_latitude, Latitude(sun.B0(generic_map.date)))
 
 
 def test_heliographic_longitude(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
-        assert generic_map.heliographic_longitude == 0.
+    # Needs a small tolerance to account for 32bit rounding errors
+    assert u.allclose(generic_map.heliographic_longitude, 0 * u.deg, atol=1e-15*u.deg)
 
 
 def test_units(generic_map):
@@ -261,6 +266,7 @@ def test_partially_missing_observers(generic_map):
     generic_map.meta['hgln_obs'] = 0
     generic_map.meta['crlt_obs'] = 0
     generic_map.meta['crln_obs'] = 0
+    generic_map.meta.pop('dsun_obs')
     with pytest.warns(SunpyUserWarning,
                       match="Missing metadata for observer: assuming Earth-based observer.\n" +
                             "For frame 'heliographic_stonyhurst' the following metadata is missing: dsun_obs\n" +
@@ -332,11 +338,8 @@ def test_swap_cd():
 
 
 def test_world_to_pixel(generic_map):
-    """Make sure conversion from data units to pixels is internally
-    consistent"""
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        # Note: FITS pixels start from 1,1
-        test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate)
+    """Make sure conversion from data units to pixels is internally consistent"""
+    test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
 
@@ -394,15 +397,13 @@ def test_default_shift():
 
 def test_shift_applied(generic_map):
     """Test that adding a shift actually updates the reference coordinate"""
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        original_reference_coord = (generic_map.reference_coordinate.Tx,
-                                    generic_map.reference_coordinate.Ty)
+    original_reference_coord = (generic_map.reference_coordinate.Tx,
+                                generic_map.reference_coordinate.Ty)
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
-        assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
+    assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
+    assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
     crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units[0] +
                shifted_map.shifted_value[0]).to(shifted_map.spatial_units[0])).value
     assert shifted_map.meta.get('crval1') == crval1
@@ -473,6 +474,8 @@ pixel_corners = [
 ]
 
 
+@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the left/right direction')
+@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 @pytest.mark.parametrize('rect, submap_out', pixel_corners)
 def test_submap_pixel(simple_map, rect, submap_out):
     # Check that result is the same specifying corners either way round
@@ -485,6 +488,8 @@ def test_submap_pixel(simple_map, rect, submap_out):
 # The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when
 # converting to world coordinates due to round-off error when round-tripping
 # through pixel_to_world -> world_to_pixel
+@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the left/right direction')
+@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 @pytest.mark.parametrize('rect, submap_out', pixel_corners[:2] + pixel_corners[3:])
 def test_submap_world(simple_map, rect, submap_out):
     # Check that coordinates behave the same way
@@ -560,8 +565,7 @@ resample_test_data = [('linear', (100, 200) * u.pixel), ('neighbor', (128, 256) 
 @pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        resampled_map = generic_map.resample(new_dimensions, method=sample_method)
+    resampled_map = generic_map.resample(new_dimensions, method=sample_method)
     assert resampled_map.dimensions[0] == new_dimensions[0]
     assert resampled_map.dimensions[1] == new_dimensions[1]
 
@@ -571,17 +575,15 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
     """
     Check that the resampled map has correctly adjusted metadata.
     """
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        resampled_map = generic_map.resample(new_dimensions, method=sample_method)
+    resampled_map = generic_map.resample(new_dimensions, method=sample_method)
     assert float(resampled_map.meta['cdelt1']) / generic_map.meta['cdelt1'] \
         == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
     assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
         == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
     assert resampled_map.meta['crpix1'] == (resampled_map.data.shape[1] + 1) / 2.
     assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
-        assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
+    assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
+    assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1', 'crval2'):
             assert resampled_map.meta[key] == generic_map.meta[key]
@@ -690,8 +692,7 @@ def test_rotate(aia171_test_map):
 
 
 def test_rotate_pad_crpix(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        rotated_map = generic_map.rotate(30*u.deg)
+    rotated_map = generic_map.rotate(30*u.deg)
     # This tests that the reference pixel of the map is in the expected place.
     assert rotated_map.data.shape != generic_map.data.shape
     assert_quantity_allclose(u.Quantity(rotated_map.reference_pixel),
@@ -699,8 +700,7 @@ def test_rotate_pad_crpix(generic_map):
 
 
 def test_rotate_recenter(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        rotated_map = generic_map.rotate(20 * u.deg, recenter=True)
+    rotated_map = generic_map.rotate(20 * u.deg, recenter=True)
     pixel_array_center = (np.flipud(rotated_map.data.shape) - 1) / 2.0
 
     assert_quantity_allclose(
@@ -714,16 +714,14 @@ def test_rotate_crota_remove(aia171_test_map):
 
 
 def test_rotate_scale_cdelt(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        rot_map = generic_map.rotate(scale=10.)
+    rot_map = generic_map.rotate(scale=10.)
     assert rot_map.meta['CDELT1'] == generic_map.meta['CDELT1'] / 10.
     assert rot_map.meta['CDELT2'] == generic_map.meta['CDELT2'] / 10.
 
 
 def test_rotate_new_matrix(generic_map):
     # Rotate by CW90 to go from CCW 90 in generic map to CCW 180
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        rot_map = generic_map.rotate(rmatrix=np.array([[0, 1], [-1, 0]]))
+    rot_map = generic_map.rotate(rmatrix=np.array([[0, 1], [-1, 0]]))
     np.testing.assert_allclose(rot_map.rotation_matrix, np.array([[-1, 0], [0, -1]]))
 
 
@@ -751,8 +749,7 @@ def test_as_mpl_axes_aia171(aia171_test_map):
 
 
 def test_pixel_to_world_no_projection(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel))
+    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel))
     assert_quantity_allclose(out.Tx, 0*u.arcsec)
     assert_quantity_allclose(out.Ty, 0*u.arcsec)
 
@@ -1064,6 +1061,7 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
                                      frame=generic_map2.coordinate_frame))
 
 
+@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 def test_submap_inputs(generic_map2, coords):
     bl_coord, tr_coord, bl_tr_coord = coords
 
