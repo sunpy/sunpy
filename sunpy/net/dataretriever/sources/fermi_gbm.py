@@ -36,53 +36,28 @@ class GBMClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the GBMClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
-    2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
-    2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
+         Start Time           End Time      Instrument ... Resolution Detector
+    ------------------- ------------------- ---------- ... ---------- --------
+    2015-06-21 00:00:00 2015-06-21 23:59:59        GBM ...      ctime       n3
+    2015-06-22 00:00:00 2015-06-22 23:59:59        GBM ...      ctime       n3
+    2015-06-23 00:00:00 2015-06-23 23:59:59        GBM ...      ctime       n3
     <BLANKLINE>
     <BLANKLINE>
     """
-
-    fixed = {'Source': 'FERMI', 'Phsyobs': 'flux', 'Provider': 'NASA'}
-    required = {'Time': [], 'Instrument': 'GBM'}
-    optional = {'Detector': ['n'+str(i) for i in range(12)], 'Resolution': ['cspec', 'ctime']}
     baseurl = r'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/%Y/%m/%d/current/glg_(\w){5}_(\w){2}_%y%m%d_v00.pha'
     pattern = '{}/daily/{year:4d}/{month:2d}/{day:2d}/current/glg_{Resolution:5}_{Detector:2}_{:6d}{}'
-
-    @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether a client can service the query.
-
-        Parameters
-        ----------
-        query : `list`
-            A list of of query objects.
-
-        Returns
-        -------
-        `bool`
-            `True` if this client can service the query, otherwise `False`.
-        """
-        chkattr = ['Time', 'Instrument', 'Detector', 'Resolution']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
-        for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'gbm':
-                return all(chklist)
-        return False
 
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('GBM', 'Gamma-Ray Burst Monitor on board the Fermi satellite.')],
-                 attrs.Physobs: [('CSPEC', 'counts accumulated every 4.096 seconds in 128 energy channels for each detector.'),
-                                 ('CTIME', 'counts accumulated every 0.256 seconds in 8 energy channels')],
+                 attrs.Physobs: [('flux', 'a measure of the amount of radiation received by an object from a given source')],
+                 attrs.Source: [('FERMI', 'The Fermi Gamma-ray Space Telescope')],
+                 attrs.Provider: [('NASA', 'The National Aeronautics and Space Administration')],
                  attrs.Detector: [
             (f"n{x}", f"GBM Detector short name for the detector NAI_{x:02}") for x in range(12)],
             attrs.Resolution: [
-            ("CSPEC", "CSPEC 128 channel spectra every 4.096 seconds."),
-            ("CTIME", "CTIME provides 8 channel spectra every 0.256 seconds")]
+            ("cspec", "CSPEC 128 channel spectra every 4.096 seconds."),
+            ("ctime", "CTIME provides 8 channel spectra every 0.256 seconds")]
         }
         return adict
