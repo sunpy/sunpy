@@ -14,7 +14,7 @@ from sunpy.util.decorators import add_common_docstring
 from .attr import Range, SimpleAttr
 
 __all__ = ['Physobs', 'Resolution', 'Detector', 'Sample',
-           'Level', 'Instrument', 'Wavelength', 'Time']
+           'Level', 'Instrument', 'Wavelength', 'Time', 'Source', 'Provider']
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -242,4 +242,14 @@ class Physobs(SimpleAttr):
     More information about the values of physobs used by the VSO
     registry can be found at
     https://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
+    """
+
+
+class Source(SimpleAttr):
+    """
+    """
+
+
+class Provider(SimpleAttr):
+    """
     """
