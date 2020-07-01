@@ -1,2 +1,2 @@
-Changed `sunpy.coordinates.sun.B0` return type from `~astropy.coordinates.Angle`
+Changed :func:`sunpy.coordinates.sun.B0` return type from `~astropy.coordinates.Angle`
 to `~astropy.coordinates.Latitude`.
