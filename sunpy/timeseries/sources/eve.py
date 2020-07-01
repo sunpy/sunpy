@@ -178,13 +178,12 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """
         Plots the time series in a new figure. An example is shown below:
 
-        ..
-            .. plot::
+        .. plot::
 
-                import sunpy.timeseries
-                from sunpy.data.sample import EVE_TIMESERIES
-                eve = sunpy.timeseries.TimeSeries(EVE_TIMESERIES, source='eve')
-                eve.peek(subplots=True)
+            import sunpy.timeseries
+            from sunpy.data.sample import EVE_TIMESERIES
+            eve = sunpy.timeseries.TimeSeries(EVE_TIMESERIES, source='eve')
+            eve.peek(subplots=True)
 
         Parameters
         ----------
