@@ -8,7 +8,10 @@ from collections import OrderedDict
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
-from sunpy.net.dataretriever import GenericClient
+from sunpy.extern.parse import parse
+from sunpy.net import attrs as a
+from sunpy.net.dataretriever import GenericClient, QueryResponse
+from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
@@ -32,55 +35,30 @@ class NOAAIndicesClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the NOAAIndicesClient:
-         Start Time           End Time      Source  Instrument  Wavelength
-    ------------------- ------------------- ------ ------------ ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00   sdic noaa-indices        nan
+     Instrument     Physobs     Source Provider
+    ------------ -------------- ------ --------
+    NOAA-Indices sunspot number   SIDC     SWPC
     <BLANKLINE>
     <BLANKLINE>
 
     """
-    @staticmethod
-    def _get_url_for_timerange(timerange, **kwargs):
-        """
-        Helper function:
-        """
-        return ["https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json"]
+    required = {a.Instrument}
+    optional = {a.Time, a.Source, a.Physobs, a.Provider}
 
-    def _makeimap(self):
-        """
-        Helper Function:used to hold information about source.
-        """
-        self.map_['source'] = 'sdic'
-        self.map_['instrument'] = 'noaa-indices'
-        self.map_['physobs'] = 'sunspot number'
-        self.map_['provider'] = 'swpc'
-
-    @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether client can service the query.
-
-        Parameters
-        ----------
-        query : list of query objects
-
-        Returns
-        -------
-        boolean
-            answer as to whether client can service the query
-        """
-        chkattr = ['Time', 'Instrument']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
-        for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'noaa-indices':
-                return all(chklist)
-        return False
+    def search(self, *args, **kwargs):
+        map_ = OrderedDict([('Instrument', 'NOAA-Indices'), ('Physobs', 'sunspot number'),
+                            ('Source', 'SIDC'), ('Provider', 'SWPC')])
+        map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
+        return QueryResponse([map_], client=self)
 
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [
-            ('NOAA-Indices', 'Recent Solar Indices of Observed Monthly Mean Values')]}
+            ('NOAA-Indices', 'Recent Solar Indices of Observed Monthly Mean Values')],
+            attrs.Physobs: [('sunspot number', 'Sunspot Number.')],
+            attrs.Source: [('SIDC', 'The Solar Influence Data Analysis Center')],
+            attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')]}
         return adict
 
 
@@ -102,59 +80,30 @@ class NOAAPredictClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the NOAAPredictClient:
-         Start Time           End Time      Source  Instrument  Wavelength
-    ------------------- ------------------- ------ ------------ ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00   ises noaa-predict        nan
+     Instrument     Physobs     Source Provider
+    ------------ -------------- ------ --------
+    NOAA-Predict sunspot number   ISES     SWPC
     <BLANKLINE>
     <BLANKLINE>
 
     """
-    @staticmethod
-    def _get_default_uri():
-        """Return the url to download indices"""
-        return ["https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json"]
+    required = {a.Instrument}
+    optional = {a.Time, a.Source, a.Physobs, a.Provider}
 
-    def _get_url_for_timerange(self, timerange, **kwargs):
-        """
-        Helper function:
-        """
-        return NOAAPredictClient._get_default_uri()
-
-    def _makeimap(self):
-        """
-        Helper Function:used to hold information about source.
-        """
-        self.map_['source'] = 'ises'
-        self.map_['instrument'] = 'noaa-predict'
-        self.map_['physobs'] = 'sunspot number'
-        self.map_['provider'] = 'swpc'
-
-    @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether client can service the query.
-
-        Parameters
-        ----------
-        query : list of query objects
-
-        Returns
-        -------
-        boolean
-            answer as to whether client can service the query
-        """
-        chkattr = ['Time', 'Instrument']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
-        for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'noaa-predict':
-                return all(chklist)
-        return False
+    def search(self, *args, **kwargs):
+        map_ = OrderedDict([('Instrument', 'NOAA-Predict'), ('Physobs', 'sunspot number'),
+                            ('Source', 'ISES'), ('Provider', 'SWPC')])
+        map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
+        return QueryResponse([map_], client=self)
 
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [
-            ('NOAA-Predict', 'Predicted Sunspot Number And Radio Flux Values With Expected Ranges.')]}
+            ('NOAA-Predict', 'Predicted Sunspot Number And Radio Flux Values With Expected Ranges.')],
+            attrs.Physobs: [('sunspot number', 'Sunspot Number.')],
+            attrs.Source: [('ISES', 'The International Space Environmental Services.')],
+            attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')]}
         return adict
 
 
@@ -174,16 +123,16 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-         Start Time           End Time        Source  Instrument Wavelength
-    ------------------- ------------------- --------- ---------- ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
-    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
+         Start Time           End Time      Instrument Phsyobs Source Provider
+    ------------------- ------------------- ---------- ------- ------ --------
+    2016-01-01 00:00:00 2016-12-31 23:59:59       SOON     SRS   SWPC     NOAA
+    2016-01-01 00:00:00 2016-12-31 23:59:59       SOON     SRS   SWPC     NOAA
     <BLANKLINE>
     <BLANKLINE>
 
     """
 
-    def _get_url_for_timerange(self, timerange, **kwargs):
+    def _get_url_for_timerange(self, timerange):
         result = list()
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
         total_days = int(timerange.days.value) + 1
@@ -199,6 +148,22 @@ class SRSClient(GenericClient):
             url = base_url + suffix
             result.append(url)
         return result
+
+    def search(self, *args, **kwargs):
+        extractor1 = '{}/warehouse/{:4d}/SRS/{year:4d}{month:2d}{day:2d}SRS.txt'
+        extractor2 = '{}/warehouse/{year:4d}/{}'
+        matchdict = {'Instrument': ['SOON'], 'Source': ['SWPC'], 'Provider': ['NOAA'], 'Physobs': ['SRS']}
+        metalist = []
+        for elem in args:
+            if isinstance(elem, a.Time):
+                timerange = TimeRange(elem.start, elem.end)
+        for url in self._get_url_for_timerange(timerange):
+            exdict1 = parse(extractor1, url)
+            exdict2 = parse(extractor2, url)
+            exdict = (exdict2 if exdict1 is None else exdict1).named
+            map_ = super().post_hook(exdict, matchdict)
+            metalist.append(map_)
+        return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
         """
@@ -283,38 +248,12 @@ class SRSClient(GenericClient):
         paths.data = list(map(str, outfiles))
         return paths
 
-    def _makeimap(self):
-        self.map_['source'] = 'swpc'
-        self.map_['instrument'] = 'SOON'
-        self.map_['physobs'] = 'SRS'
-        self.map_['source'] = 'NOAA/USAF'
-
-    @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether client can service the query.
-
-        Parameters
-        ----------
-        query : list of query objects
-
-        Returns
-        -------
-        boolean
-            answer as to whether client can service the query
-        """
-        from sunpy.net import attrs as a
-        if a.Time not in [type(at) for at in query]:
-            return False
-        for x in query:
-            if (x.__class__.__name__ == "Instrument" and
-                    str(x.value).lower() in ["soon", "srs-table"]):
-                return True
-        return False
-
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [("SOON", "Solar Region Summary."),
-                                    ("SRS-Table", "Solar Region Summary.")]}
+                                    ("SRS-Table", "Solar Region Summary.")],
+                 attrs.Physobs: [('SRS', 'Solar Region Summary.')],
+                 attrs.Source: [('SWPC', 'The Space Weather Prediction Center.')],
+                 attrs.Provider: [('NOAA', 'The National Oceanic and Atmospheric Administration.')]}
         return adict
