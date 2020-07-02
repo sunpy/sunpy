@@ -128,8 +128,9 @@ class GenericClient(BaseClient):
             optional = cls.optional
         if not cls.check_attr_types_in_query(query, required, optional):
             return False
+        all_instr = [i[0].lower() for i in adict[a.Instrument]]
         for x in query:
-            if isinstance(x, a.Instrument) and x.value.lower() == adict[a.Instrument][0][0].lower():
+            if isinstance(x, a.Instrument) and x.value.lower() in all_instr:
                 return True
         return False
 
@@ -137,8 +138,13 @@ class GenericClient(BaseClient):
         """
         """
         map_ = OrderedDict()
-        start = parse_time("{}/{}/{}".format(exdict['year'], exdict['month'], exdict['day']))
-        end = start + TimeDelta(1 * u.day - 1 * u.millisecond)
+        almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+        if 'month' in exdict and 'day' in exdict:
+            start = parse_time("{}/{}/{}".format(exdict['year'], exdict['month'], exdict['day']))
+            end = start + almost_day
+        else:
+            start = parse_time("{}/{}/{}".format(exdict['year'], 1, 1))
+            end = parse_time("{}/{}/{}".format(exdict['year'], 12, 31)) + almost_day
         map_['Start Time'] = start.strftime(TIME_FORMAT)
         map_['End Time'] = end.strftime(TIME_FORMAT)
         map_['Instrument'] = matchdict['Instrument'][0]
