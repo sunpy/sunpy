@@ -3,11 +3,10 @@
 #  Google Summer of Code 2014
 
 import astropy.units as u
-from astropy.time import TimeDelta
 
+from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient
 from sunpy.time import TimeRange
-from sunpy.util.scraper import Scraper
 
 __all__ = ['NoRHClient']
 
@@ -35,119 +34,55 @@ class NoRHClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the NoRHClient:
-         Start Time           End Time      Source Instrument   Wavelength
-    ------------------- ------------------- ------ ---------- --------------
-    2016-01-01 00:00:00 2016-01-02 00:00:00   NAOJ       NORH 17000000.0 kHz
-    2016-01-02 00:00:00 2016-01-03 00:00:00   NAOJ       NORH 17000000.0 kHz
+         Start Time           End Time      Instrument Source Provider Wavelength
+    ------------------- ------------------- ---------- ------ -------- ----------
+    2016-01-01 00:00:00 2016-01-01 23:59:59       NORH   NAOJ      NRO   17.0 GHz
+    2016-01-02 00:00:00 2016-01-02 23:59:59       NORH   NAOJ      NRO   17.0 GHz
     <BLANKLINE>
     <BLANKLINE>
 
     """
-
-    def _get_url_for_timerange(self, timerange, **kwargs):
-        """
-        Returns list of URLS corresponding to value of input timerange.
-
-        Parameters
-        ----------
-        timerange: `sunpy.time.TimeRange`
-            time range for which data is to be downloaded.
-
-        Returns
-        -------
-        urls : list
-            list of URLs corresponding to the requested time range
-        """
-
-        # We allow queries with no Wavelength but error here so that the query
-        # does not get passed to VSO and spit out garbage.
-        if 'wavelength' not in kwargs:
-            raise ValueError("Queries to NORH should specify either 17GHz or 34GHz as a Wavelength."
-                             "see https://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
-        else:
-            wavelength = kwargs['wavelength']
-
-        # If wavelength is a single value GenericClient will have made it a
-        # Quantity in the kwargs.
-        if not isinstance(wavelength, u.Quantity):
-            raise ValueError(f"Wavelength to NORH must be one value not {wavelength}.")
-
-        wavelength = wavelength.to(u.GHz, equivalencies=u.spectral())
-        if wavelength == 34 * u.GHz:
-            freq = 'tcz'
-        elif wavelength == 17 * u.GHz:
-            freq = 'tca'
-        else:
-            raise ValueError("NORH Data can be downloaded for 17GHz or 34GHz,"
-                             " see https://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
-
-        # If start of time range is before 00:00, converted to such, so
-        # files of the requested time ranger are included.
-        # This is done because the archive contains daily files.
-        if timerange.start.strftime('%M-%S') != '00-00':
-            timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'),
-                                  timerange.end)
-
-        norh = Scraper(BASEURL, freq=freq)
-        # TODO: warn user that some files may have not been listed, like for example:
-        #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
-        #       as it doesn't follow pattern.
-
-        return norh.filelist(timerange)
-
-    def _get_time_for_url(self, urls):
-        freq = urls[0].split('/')[-1][0:3]  # extract the frequency label
-        crawler = Scraper(BASEURL, freq=freq)
-        times = list()
-        for url in urls:
-            t0 = crawler._extractDateURL(url)
-            # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
-        return times
-
-    def _makeimap(self):
-        """
-        Helper Function used to hold information about source.
-        """
-        self.map_['source'] = 'NAOJ'
-        self.map_['provider'] = 'NRO'
-        self.map_['instrument'] = 'NORH'
-        self.map_['physobs'] = ''
+    baseurl = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
+    pattern = '{}/tcx/{year:4d}/{month:2d}/{Wavelength:3l}{:4d}{day:2d}'
+    optional = {a.Wavelength, a.Source, a.Provider}
 
     @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether client can service the query.
+    def pre_hook(cls, *args, **kwargs):
+        d = {'Source': ['NAOJ'], 'Instrument': ['NORH'], 'Provider': ['NRO']}
+        d['Wavelength'] = []
+        waverange = a.Wavelength(34*u.GHz, 17*u.GHz)
+        req_wave = waverange
+        for elem in args:
+            if isinstance(elem, a.Wavelength):
+                req_wave = elem
+            elif isinstance(elem, a.Time):
+                timerange = TimeRange(elem.start, elem.end)
+                d['timerange'] = timerange
+        if hasattr(kwargs, 'Wavelength'):
+            req_wave = kwargs['Wavelength']
+        wmin = req_wave.min.to(u.GHz, equivalencies=u.spectral())
+        wmax = req_wave.max.to(u.GHz, equivalencies=u.spectral())
+        req_wave = a.Wavelength(wmin, wmax)
+        if waverange.min in req_wave:
+            d['Wavelength'].append('tcz')
+        if waverange.max in req_wave:
+            d['Wavelength'].append('tca')
+        return cls.baseurl, cls.pattern, d
 
-        Parameters
-        ----------
-        query : list of query objects
-
-        Returns
-        -------
-        boolean
-            answer as to whether client can service the query
-        """
-        # Import here to prevent circular imports
-        from sunpy.net import attrs as a
-
-        required = {a.Time, a.Instrument}
-        optional = {a.Wavelength}
-        if not cls.check_attr_types_in_query(query, required, optional):
-            return False
-
-        # if we get this far we have either Instrument and Time
-        # or Instrument, Time and Wavelength
-        for x in query:
-            if isinstance(x, a.Instrument) and x.value.lower() == 'norh':
-                return True
-
-        return False
+    def post_hook(self, exdict, matchdict):
+        map_ = super().post_hook(exdict, matchdict)
+        if map_['Wavelength'] == 'tcz':
+            map_['Wavelength'] = 17*u.GHz
+        elif map_['Wavelength'] == 'tca':
+            map_['Wavelength'] = 34*u.GHz
+        return map_
 
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('NORH',
                                      ('Nobeyama Radio Heliograph is an imaging radio telescope at 17 '
-                                      'or 34GHz located at the Nobeyama Solar Radio Observatory.'))]}
+                                      'or 34GHz located at the Nobeyama Solar Radio Observatory.'))],
+                 attrs.Source: [('NAOJ', 'The National Astronomical Observatory of Japan')],
+                 attrs.Provider: [('NRO', 'Nobeyama Radio Observatory')]}
         return adict
