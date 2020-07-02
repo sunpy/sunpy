@@ -8,10 +8,10 @@ from urllib.request import urlopen, urlretrieve
 
 from dateutil.rrule import MONTHLY, rrule
 
-import astropy.units as u
-
+from sunpy.extern.parse import parse
 from sunpy.instr import rhessi
-from sunpy.net.dataretriever import GenericClient
+from sunpy.net import attrs as a
+from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.time import TimeRange, parse_time
 
 __all__ = ['RHESSIClient']
@@ -54,10 +54,10 @@ class RHESSIClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the RHESSIClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2016-01-01 00:00:00 2016-01-01 23:59:59 rhessi     rhessi        nan
-    2016-01-02 00:00:00 2016-01-02 23:59:59 rhessi     rhessi        nan
+         Start Time           End Time      Instrument ... Source Provider
+    ------------------- ------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00 2016-01-01 23:59:59     RHESSI ... RHESSI     NASA
+    2016-01-02 00:00:00 2016-01-02 23:59:59     RHESSI ... RHESSI     NASA
     <BLANKLINE>
     <BLANKLINE>
 
@@ -151,65 +151,25 @@ class RHESSIClient(GenericClient):
         url = get_base_url() + f'dbase/{_time.strftime("hsi_obssumm_filedb_%Y%m.txt")}'
         return urlretrieve(url)
 
-    def _get_url_for_timerange(self, timerange, **kwargs):
-        """
-        Returns a URL to the RHESSI data for the specified date range.
-
-        Parameters
-        ----------
-        timerange : `~sunpy.time.TimeRange`
-            Date range should be specified using a TimeRange.
-        """
-        return self.get_observing_summary_filename(timerange)
-
-    def _get_time_for_url(self, urls):
-        ts = [datetime.strptime(url.split("hsi_obssumm_")[1].split("_")[0],
-                                "%Y%m%d") for url in urls]
-        return [TimeRange(t, (1*u.day-1*u.ms)) for t in ts]
-
-    def _makeimap(self):
-        """
-        Helper Function:used to hold information about source.
-        """
-        self.map_['source'] = 'rhessi'
-        self.map_['instrument'] = 'rhessi'
-        self.map_['physobs'] = 'irradiance'
-        self.map_['provider'] = 'nasa'
-
-    @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether client can service the query.
-
-        Parameters
-        ----------
-        query : list of query objects
-
-        Returns
-        -------
-        boolean
-            answer as to whether client can service the query
-        """
-        from sunpy.net import attrs as a
-
-        required = {a.Time, a.Instrument}
-        optional = {a.Physobs}
-        if not cls.check_attr_types_in_query(query, required, optional):
-            return False
-
-        matches = True
-        for x in query:
-            if isinstance(x, a.Instrument) and x.value.lower() != 'rhessi':
-                matches = False
-            if isinstance(x, a.Physobs) and x.value.lower() != 'summary_lightcurve':
-                matches = False
-
-        return matches
+    def search(self, *args, **kwargs):
+        pattern = '{}/catalog/hsi_obssumm_{year:4d}{month:2d}{day:2d}_{}'
+        matchdict = {'Instrument': ['RHESSI'], 'Source': ['RHESSI'], 'Provider': ['NASA'], 'Physobs': ['summary_lightcurve']}
+        metalist = []
+        for elem in args:
+            if isinstance(elem, a.Time):
+                timerange = TimeRange(elem.start, elem.end)
+        for url in self.get_observing_summary_filename(timerange):
+            exdict = parse(pattern, url).named
+            map_ = super().post_hook(exdict, matchdict)
+            metalist.append(map_)
+        return QueryResponse(metalist, client=self)
 
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('RHESSI',
                                      'Reuven Ramaty High Energy Solar Spectroscopic Imager.')],
-                 attrs.Physobs: [("summary_lightcurve", "A summary lightcurve.")]}
+                 attrs.Physobs: [("summary_lightcurve", "A summary lightcurve.")],
+                 attrs.Source: [('RHESSI', 'Reuven Ramaty High Energy Solar Spectroscopic Imager.')],
+                 attrs.Provider: [('NASA', 'The National Aeronautics and Space Administration.')]}
         return adict
