@@ -45,7 +45,7 @@ class LYRAClient(GenericClient):
                  attrs.Level: [('1', 'LYRA: Metadata and uncalibrated data daily fits.'),
                                ('2', 'LYRA: Calibrated data, provided as daily fits.'),
                                ('3', 'LYRA: Same as level 2 but the calibrated data is averaged over 1 min.')],
-                 attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area')],
+                 attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
                  attrs.Source: [('Proba2', 'The PROBA-2 Satellite')],
-                 attrs.Provider: [('esa', 'The European Space Agency')]}
+                 attrs.Provider: [('esa', 'The European Space Agency.')]}
         return adict
