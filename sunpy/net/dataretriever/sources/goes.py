@@ -5,10 +5,8 @@
 import os
 from datetime import datetime
 from itertools import compress
-from urllib.parse import urlsplit
 
 import astropy.units as u
-from astropy.time import Time, TimeDelta
 
 from sunpy import config
 from sunpy.net.dataretriever import GenericClient
@@ -37,156 +35,19 @@ class XRSClient(GenericClient):
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    2 Results from the XRSClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2016-01-01 00:00:00 2016-01-01 23:59:59   nasa       goes        nan
-    2016-01-02 00:00:00 2016-01-02 23:59:59   nasa       goes        nan
+    4 Results from the XRSClient:
+         Start Time           End Time      Instrument ... Provider SatelliteNumber
+    ------------------- ------------------- ---------- ... -------- ---------------
+    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...     SDAC              13
+    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...     SDAC              13
+    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...     SDAC              15
+    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...     SDAC              15
     <BLANKLINE>
     <BLANKLINE>
 
     """
-
-    def _get_goes_sat_num(self, date):
-        """
-        Determines the satellite number for a given date.
-
-        Parameters
-        ----------
-        date : `astropy.time.Time`
-            The date to determine which satellite is active.
-        """
-        goes_operational = {
-            2: TimeRange("1981-01-01", "1983-04-30"),
-            5: TimeRange("1983-05-02", "1984-07-31"),
-            6: TimeRange("1983-06-01", "1994-08-18"),
-            7: TimeRange("1994-01-01", "1996-08-13"),
-            8: TimeRange("1996-03-21", "2003-06-18"),
-            9: TimeRange("1997-01-01", "1998-09-08"),
-            10: TimeRange("1998-07-10", "2009-12-01"),
-            11: TimeRange("2006-06-20", "2008-02-15"),
-            12: TimeRange("2002-12-13", "2007-05-08"),
-            13: TimeRange("2006-08-01", "2006-08-01"),
-            14: TimeRange("2009-12-02", "2010-10-04"),
-            15: TimeRange("2010-09-01", parse_time("now")),
-        }
-
-        results = []
-        for sat_num in goes_operational:
-            if date in goes_operational[sat_num]:
-                # if true then the satellite with sat_num is available
-                results.append(sat_num)
-
-        if results:
-            # Return the newest satellite
-            return max(results)
-        else:
-            # if no satellites were found then raise an exception
-            raise ValueError(
-                "No operational GOES satellites on {}".format(
-                    date.strftime(TIME_FORMAT)
-                )
-            )
-
-    def _get_time_for_url(self, urls):
-        times = []
-        for uri in urls:
-            uripath = urlsplit(uri).path
-
-            # Extract the yymmdd or yyyymmdd timestamp
-            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][4:]
-
-            # 1999-01-15 as an integer.
-            if int(datestamp) <= 990115:
-                start = Time.strptime(datestamp, "%y%m%d")
-            else:
-                start = Time.strptime(datestamp, "%Y%m%d")
-
-            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-            times.append(TimeRange(start, start + almost_day))
-
-        return times
-
-    def _get_url_for_timerange(self, timerange, **kwargs):
-        """
-        Returns a URL to the GOES data for the specified date.
-
-        Parameters
-        ----------
-        timerange : `~sunpy.time.TimeRange`
-            The time range you want the files for.
-
-        Returns
-        -------
-        `list`
-            The URL(s) for the corresponding timerange.
-        """
-        timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
-        if timerange.end < parse_time("1999/01/15"):
-            goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits"
-        elif timerange.start < parse_time("1999/01/15") and timerange.end >= parse_time("1999/01/15"):
-            return self._get_overlap_urls(timerange, **kwargs)
-        else:
-            goes_file = "%Y/go{satellitenumber}%Y%m%d.fits"
-
-        goes_pattern = f"https://umbra.nascom.nasa.gov/goes/fits/{goes_file}"
-        satellitenumber = kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start))
-        goes_files = Scraper(goes_pattern, satellitenumber=satellitenumber)
-
-        return goes_files.filelist(timerange)
-
-    def _get_overlap_urls(self, timerange, **kwargs):
-        """
-        Return a list of URLs over timerange when the URL path changed format `%Y` to `%y`
-        on the date 1999/01/15
-
-        Parameters
-        ----------
-        timerange : `~sunpy.time.TimeRange`
-            The time range you want the files for.
-        Returns
-        -------
-        `list`
-            The URL(s) for the corresponding timerange.
-        """
-        tr_before = TimeRange(timerange.start, parse_time("1999/01/14"))
-        tr_after = TimeRange(parse_time("1999/01/15"), timerange.end)
-        urls_before = self._get_url_for_timerange(tr_before, **kwargs)
-        urls_after = self._get_url_for_timerange(tr_after, **kwargs)
-        return urls_before + urls_after
-
-    def _makeimap(self):
-        """
-        Helper function used to hold information about source.
-        """
-        self.map_["source"] = "nasa"
-        self.map_["instrument"] = "goes"
-        self.map_["physobs"] = "irradiance"
-        self.map_["provider"] = "sdac"
-
-    @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether client can service the query.
-
-        Parameters
-        ----------
-        query : list of query objects
-
-        Returns
-        -------
-        boolean
-            answer as to whether client can service the query
-        """
-        chkattr = ["Time", "Instrument", "SatelliteNumber"]
-        chklist = [x.__class__.__name__ in chkattr for x in query]
-        for x in query:
-            if x.__class__.__name__ == "Instrument" and x.value.lower() in (
-                "xrs",
-                "goes",
-            ):
-                return all(chklist)
-        return False
+    baseurl = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
+    pattern = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
 
     @classmethod
     def _attrs_module(cls):
@@ -199,7 +60,10 @@ class XRSClient(GenericClient):
         adict = {attrs.Instrument: [
             ("GOES", "The Geostationary Operational Environmental Satellite Program."),
             ("XRS", "GOES X-ray Flux")],
-            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number],
+            attrs.Source: [('NASA', 'The National Aeronautics and Space Administration.')],
+            attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
+            attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.')]}
         return adict
 
 
@@ -353,54 +217,6 @@ class SUVIClient(GenericClient):
             results.extend(scraper.filelist(timerange))
         return results
 
-    def _makeimap(self):
-        """
-        Helper Function used to hold information about source.
-        """
-        self.map_['source'] = 'GOES'
-        self.map_['provider'] = 'NOAA'
-        self.map_['instrument'] = 'SUVI'
-        self.map_['physobs'] = 'flux'
-
-    @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether client can service the query.
-
-        Parameters
-        ----------
-        query : `tuple`
-            All specified query objects.
-
-        Returns
-        -------
-        `bool`
-            answer as to whether client can service the query.
-        """
-        # Import here to prevent circular imports
-        from sunpy.net import attrs as a
-
-        required = {a.Time, a.Instrument}
-        optional = {a.Wavelength, a.Level, a.goes.SatelliteNumber}
-        all_attrs = {type(x) for x in query}
-
-        ops = all_attrs - required
-        # check to ensure that all optional requirements are in approved list
-        if ops and not all(elem in optional for elem in ops):
-            return False
-
-        # if we get this far we have either Instrument and Time
-        # or Instrument, Time and Wavelength
-        check_var_count = 0
-        for x in query:
-            if isinstance(x, a.Instrument) and x.value.lower() == 'suvi':
-                check_var_count += 1
-
-        if check_var_count == 1:
-            return True
-        else:
-            return False
-
     @classmethod
     def _attrs_module(cls):
         return 'goes', 'sunpy.net.dataretriever.attrs.goes'
@@ -410,6 +226,9 @@ class SUVIClient(GenericClient):
         from sunpy.net import attrs
         goes_number = [16, 17]
         adict = {attrs.Instrument: [
-            ("SUVI", "The Geostationary Operational Environmental Satellite Program.")],
-            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
+            ("SUVI", "GOES Solar Ultraviolet Imager.")],
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number],
+            attrs.Source: [('GOES', 'The Geostationary Operational Environmental Satellite Program.')],
+            attrs.Physobs: [('flux', 'a measure of the amount of radiation received by an object from a given source.')],
+            attrs.Provider: [('NOAA', 'The National Oceanic and Atmospheric Administration.')]}
         return adict
