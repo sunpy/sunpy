@@ -110,7 +110,7 @@ CSS/HTML:
 * `sunpy.org <https://github.com/sunpy/sunpy.org>`_
 
 .. _issues: https://github.com/sunpy/sunpy/issues
-.. _Package Novice label: https://github.com/sunpy/sunpy/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3A%22Package+Novice%22
+.. _Good First Issue label: https://github.com/sunpy/sunpy/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3A%22Good+First+Issue%22
 .. _Hacktoberfest: https://hacktoberfest.digitalocean.com/
 .. _Hacktoberfest label: https://github.com/sunpy/sunpy/issues?q=is%3Aissue+is%3Aopen+label%3AHacktoberfest
 
