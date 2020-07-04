@@ -1076,3 +1076,17 @@ def test_submap_inputs(generic_map2, coords):
     for args, kwargs in inputs:
         smap = generic_map2.submap(*args, **kwargs)
         assert u.allclose(smap.dimensions, (3, 3) * u.pix)
+
+
+def test_contour(simple_map):
+    data = np.ones((3, 3))
+    data[1, 1] = 2
+    simple_map = sunpy.map.Map(data, simple_map.meta)
+    # 2 is the central pixel of the map, so contour half way between 1 and 2
+    contours = simple_map.contour(1.5)
+    assert len(contours) == 1
+    contour = contours[0]
+    assert contour.observer == simple_map.observer_coordinate.frame
+    assert contour.obstime == simple_map.date
+    assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
+    assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
