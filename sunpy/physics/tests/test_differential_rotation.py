@@ -215,7 +215,6 @@ def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map,
     assert dmap.heliographic_longitude == new_observer.lon
 
     # Testing with time input
-
     # Test a full disk map
     new_time = aia171_test_map.date + 6*u.hr
     dmap = differential_rotate(aia171_test_map, time=new_time)

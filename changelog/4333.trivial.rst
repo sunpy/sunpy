@@ -1,1 +1,0 @@
-Added the required tests for `sunpy.physics.differential_rotation.differential_rotate` based on time parameter as input.
