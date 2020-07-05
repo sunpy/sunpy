@@ -10,6 +10,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.time import parse_time
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap', 'MDISynopticMap']
 
@@ -229,6 +230,10 @@ class MDISynopticMap(MDIMap):
             header['cunit2'] = 'deg'
         if 'date-obs' not in header:
             header['date-obs'] = header['t_obs']
+            header['date-obs'] = parse_time(header['date-obs']).isot
+        for i in [1, 2]:
+            if header[f'CRDER{i}'] == 'nan':
+                header.pop(f'CRDER{i}')
         super().__init__(data, header, **kwargs)
 
     @classmethod
