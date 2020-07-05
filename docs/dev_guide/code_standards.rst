@@ -52,9 +52,9 @@ Coding Style/Conventions
 Formatting
 ==========
 
-We enforce a minimum level of code style and we have tools that will automate this step for you.
-
-First step is to install pre-commit::
+We enforce a minimum level of code style with our continuous intergration (the name is ``sunpy.sunpy (python_codestyle [linux]``).
+This runs a tool called `https://pre-commit.com/ <https://pre-commit.com/>`__ and you can install and run it on your own computer.
+To do so, you will need to install::
 
     $ pip install pre-commit
 
@@ -62,14 +62,22 @@ Now you can do::
 
     $ pre-commit run --all-files
 
-which will run the tools on all the files and make the necessary adjustments.
-This will show up as new changes that you can review before you commit your work.
+which will setup the tools and then run them on all files in the sunpy git repository.
+The pre-commit tools can change some of the files, in other cases it will report problems but will require manual correction.
+If the pre-commit tool changes any files, they will show up as new changes that will need to be committed.
 
-The other option is to::
+Instead of running the pre-commit command each time you can install the git hook::
 
     $ pre-commit install
 
 which installs a command to `.git/hooks/pre-commit` which will run these tools at the time you do ``git commit`` and means you don't have to run the first command each time.
+We only suggest doing the install step if you are comfortable with git and the pre-commit tool.
+
+The settings and tools we use for the pre-commit can be found in the file `.pre-commit-config.yaml` at the root of the sunpy git repository.
+Some of the checks are:
+* Check (but will not fix) for various PEP8 issues with flake8.
+* Sort all imports in any Python files with isort.
+* Remove any unused variables or imports with autoflake.
 
 Documentation and Testing
 =========================
