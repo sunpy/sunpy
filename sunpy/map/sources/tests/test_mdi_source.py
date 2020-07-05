@@ -16,6 +16,7 @@ import sunpy.data.test
 from sunpy.coordinates import frames
 from sunpy.map import Map
 from sunpy.map.sources.soho import MDIMap, MDISynopticMap
+from sunpy.util.exceptions import SunpyUserWarning
 
 
 @pytest.fixture
@@ -30,7 +31,6 @@ def mdi_synoptic():
     # sample MDI map
     # Please do not edit this header, it is a 1:1 copy of a MDI map header
     header = dedent("""
-        # HDU 0 in mdi.synoptic_mr_small_96m.2099.data.fits:
         SIMPLE  =                    T / file does conform to FITS standard
         BITPIX  =                  -32 / number of bits per data pixel
         NAXIS   =                    2 / number of data axes
@@ -155,5 +155,6 @@ def test_carrington(mdi):
 @pytest.mark.filterwarnings("error")
 def test_synoptic_source(mdi_synoptic):
     assert isinstance(mdi_synoptic, MDISynopticMap)
-    # Doing a smoke test of plotting checks that the WCS is valid
-    mdi_synoptic.peek()
+    # Check that the WCS is valid
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        mdi_synoptic.wcs
