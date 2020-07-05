@@ -426,8 +426,9 @@ class GenericMap(NDData):
             warnings.simplefilter("ignore", SunpyUserWarning)
             try:
                 w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
-            except Exception:
-                warnings.warn("Unable to treat `.meta` as a FITS header, assuming a simple WCS.")
+            except Exception as e:
+                warnings.warn("Unable to treat `.meta` as a FITS header, assuming a simple WCS. "
+                              f"The exception raised was:\n{e}")
                 w2 = astropy.wcs.WCS(naxis=2)
 
         # If the FITS header is > 2D pick the first 2 and move on.
