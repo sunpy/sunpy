@@ -62,6 +62,7 @@ class RHESSIClient(GenericClient):
     <BLANKLINE>
 
     """
+    pattern = '{}/catalog/hsi_obssumm_{year:4d}{month:2d}{day:2d}_{}'
 
     def get_observing_summary_filename(self, time_range):
         """
@@ -152,15 +153,12 @@ class RHESSIClient(GenericClient):
         return urlretrieve(url)
 
     def search(self, *args, **kwargs):
-        pattern = '{}/catalog/hsi_obssumm_{year:4d}{month:2d}{day:2d}_{}'
-        matchdict = {'Instrument': ['RHESSI'], 'Source': ['RHESSI'], 'Provider': ['NASA'], 'Physobs': ['summary_lightcurve']}
+        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        timerange = matchdict['Time']
         metalist = []
-        for elem in args:
-            if isinstance(elem, a.Time):
-                timerange = TimeRange(elem.start, elem.end)
         for url in self.get_observing_summary_filename(timerange):
             exdict = parse(pattern, url).named
-            map_ = super().post_hook(exdict, matchdict)
+            map_ = super().post_search_hook(exdict, matchdict)
             metalist.append(map_)
         return QueryResponse(metalist, client=self)
 
