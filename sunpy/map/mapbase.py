@@ -36,7 +36,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
-from sunpy.util.decorators import deprecate_positional_args_since,deprecated
+from sunpy.util.decorators import deprecate_positional_args_since, deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -531,7 +531,7 @@ class GenericMap(NDData):
         return self.data.dtype
 
     @property
-    @deprecated(since="2.1",message="Use map.data.shape instead", alternative="map.data.shape")
+    @deprecated(since="2.1", message="Use map.data.shape instead", alternative="map.data.shape")
     def size(self):
         """
         The number of pixels in the array of the map.
