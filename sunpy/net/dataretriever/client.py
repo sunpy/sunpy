@@ -66,6 +66,7 @@ class QueryResponse(BaseQueryResponse):
             return astropy.table.Table()
         meta0 = self._data[0]
         meta0.pop('url', None)
+        meta0.pop('Time', None)
         columns = OrderedDict(((col, [])) for col in meta0.keys())
         for qrblock in self:
             for colname in columns.keys():
@@ -86,9 +87,11 @@ class GenericClient(BaseClient):
     set of results for files available through the service the client is
     querying and the latter downloads that data.
     """
+    baseurl = None
+    pattern = None
 
     @classmethod
-    def pre_hook(cls, *args, **kwargs):
+    def _get_match_dict(cls, *args, **kwargs):
         """
         """
         a = cls.register_values()
@@ -101,14 +104,21 @@ class GenericClient(BaseClient):
         for elem in args:
             if isinstance(elem, Time):
                 timerange = TimeRange(elem.start, elem.end)
-                d['timerange'] = timerange
+                d['Time'] = timerange
             elif hasattr(elem, 'value'):
                 d[elem.__class__.__name__] = [str(elem.value)]
             else:
                 raise ValueError("GenericClient can not add {} to the map_ dictionary to pass to the Client.".format(elem.__class__.__name__))
         for k in kwargs:
             d[k] = [kwargs[k]]
-        return cls.baseurl, cls.pattern, d
+        return d
+
+    @classmethod
+    def pre_search_hook(cls, *args, **kwargs):
+        """
+        """
+        matchdict = cls._get_match_dict(*args, **kwargs)
+        return cls.baseurl, cls.pattern, matchdict
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -134,7 +144,7 @@ class GenericClient(BaseClient):
                 return True
         return False
 
-    def post_hook(self, exdict, matchdict):
+    def post_search_hook(self, exdict, matchdict):
         """
         """
         map_ = OrderedDict()
@@ -142,9 +152,10 @@ class GenericClient(BaseClient):
         if 'month' in exdict and 'day' in exdict:
             start = parse_time("{}/{}/{}".format(exdict['year'], exdict['month'], exdict['day']))
             end = start + almost_day
-        else:
+        elif 'year' in exdict:
             start = parse_time("{}/{}/{}".format(exdict['year'], 1, 1))
             end = parse_time("{}/{}/{}".format(exdict['year'], 12, 31)) + almost_day
+        map_['Time'] = TimeRange(start, end)
         map_['Start Time'] = start.strftime(TIME_FORMAT)
         map_['End Time'] = end.strftime(TIME_FORMAT)
         map_['Instrument'] = matchdict['Instrument'][0]
@@ -198,12 +209,12 @@ class GenericClient(BaseClient):
         """
         Query this client for a list of results.
         """
-        baseurl, pattern, matchdict = self.pre_hook(*args, **kwargs)
+        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         scraper = Scraper(baseurl, regex=True)
-        filesmeta = scraper._extract_files_meta(matchdict['timerange'], extractor=pattern, matcher=matchdict)
+        filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern, matcher=matchdict)
         metalist = []
         for i in filesmeta:
-            map_ = self.post_hook(i, matchdict)
+            map_ = self.post_search_hook(i, matchdict)
             metalist.append(map_)
         return QueryResponse(metalist, client=self)
 

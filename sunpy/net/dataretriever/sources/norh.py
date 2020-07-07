@@ -47,7 +47,7 @@ class NoRHClient(GenericClient):
     optional = {a.Wavelength, a.Source, a.Provider}
 
     @classmethod
-    def pre_hook(cls, *args, **kwargs):
+    def pre_search_hook(cls, *args, **kwargs):
         d = {'Source': ['NAOJ'], 'Instrument': ['NORH'], 'Provider': ['NRO']}
         d['Wavelength'] = []
         waverange = a.Wavelength(34*u.GHz, 17*u.GHz)
@@ -57,7 +57,7 @@ class NoRHClient(GenericClient):
                 req_wave = elem
             elif isinstance(elem, a.Time):
                 timerange = TimeRange(elem.start, elem.end)
-                d['timerange'] = timerange
+                d['Time'] = timerange
         if hasattr(kwargs, 'Wavelength'):
             req_wave = kwargs['Wavelength']
         wmin = req_wave.min.to(u.GHz, equivalencies=u.spectral())
@@ -69,8 +69,8 @@ class NoRHClient(GenericClient):
             d['Wavelength'].append('tca')
         return cls.baseurl, cls.pattern, d
 
-    def post_hook(self, exdict, matchdict):
-        map_ = super().post_hook(exdict, matchdict)
+    def post_search_hook(self, exdict, matchdict):
+        map_ = super().post_search_hook(exdict, matchdict)
         if map_['Wavelength'] == 'tcz':
             map_['Wavelength'] = 17*u.GHz
         elif map_['Wavelength'] == 'tca':

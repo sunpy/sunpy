@@ -46,8 +46,10 @@ class NOAAIndicesClient(GenericClient):
     optional = {a.Time, a.Source, a.Physobs, a.Provider}
 
     def search(self, *args, **kwargs):
-        map_ = OrderedDict([('Instrument', 'NOAA-Indices'), ('Physobs', 'sunspot number'),
-                            ('Source', 'SIDC'), ('Provider', 'SWPC')])
+        map_ = self._get_match_dict(*args, **kwargs)
+        for key in map_:
+            if isinstance(map_[key], list):
+                map_[key] = map_[key][0]
         map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
         return QueryResponse([map_], client=self)
 
@@ -91,8 +93,10 @@ class NOAAPredictClient(GenericClient):
     optional = {a.Time, a.Source, a.Physobs, a.Provider}
 
     def search(self, *args, **kwargs):
-        map_ = OrderedDict([('Instrument', 'NOAA-Predict'), ('Physobs', 'sunspot number'),
-                            ('Source', 'ISES'), ('Provider', 'SWPC')])
+        map_ = self._get_match_dict(*args, **kwargs)
+        for key in map_:
+            if isinstance(map_[key], list):
+                map_[key] = map_[key][0]
         map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
         return QueryResponse([map_], client=self)
 
@@ -152,16 +156,14 @@ class SRSClient(GenericClient):
     def search(self, *args, **kwargs):
         extractor1 = '{}/warehouse/{:4d}/SRS/{year:4d}{month:2d}{day:2d}SRS.txt'
         extractor2 = '{}/warehouse/{year:4d}/{}'
-        matchdict = {'Instrument': ['SOON'], 'Source': ['SWPC'], 'Provider': ['NOAA'], 'Physobs': ['SRS']}
+        matchdict = self._get_match_dict(*args, **kwargs)
+        timerange = matchdict['Time']
         metalist = []
-        for elem in args:
-            if isinstance(elem, a.Time):
-                timerange = TimeRange(elem.start, elem.end)
         for url in self._get_url_for_timerange(timerange):
             exdict1 = parse(extractor1, url)
             exdict2 = parse(extractor2, url)
             exdict = (exdict2 if exdict1 is None else exdict1).named
-            map_ = super().post_hook(exdict, matchdict)
+            map_ = super().post_search_hook(exdict, matchdict)
             metalist.append(map_)
         return QueryResponse(metalist, client=self)
 
