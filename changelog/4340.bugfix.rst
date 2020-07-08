@@ -1,0 +1,3 @@
+Data products from `~sunpy.net.dataretriever.NOAAIndicesClient` and `~sunpy.net.dataretriever.NOAAPredictClient` update to download the new JSON files.
+The old text files no longer exist.
+Both `sunpy.timseries.sources.NOAAIndicesTimeSeries` and `sunpy.timseries.sources.NOAAPredictIndicesTimeSeries` have been updated to support the old text files as well as the new JSON files.
