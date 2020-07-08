@@ -102,9 +102,12 @@ class SUVIClient(GenericClient):
         return cls.baseurl1b, cls.pattern1b, cls.baseurl2, cls.pattern2, matchdict
 
     def post_search_hook(self, i, matchdict):
+
+        # extracting start times and end times
         start = datetime(i['year'], i['month'], i['day'], i['hour'], i['minute'], i['second'])
         end = datetime(i['year'], i['month'], i['day'], i['ehour'], i['eminute'], i['esecond'])
         timerange = TimeRange(start, end)
+
         map_ = OrderedDict()
         map_['Time'] = timerange
         map_['Start Time'] = start.strftime(TIME_FORMAT)
@@ -135,6 +138,8 @@ class SUVIClient(GenericClient):
         all_satnos = matchdict.get('SatelliteNumber')
         all_levels = matchdict.get('Level')
         metalist = []
+
+        # iterating over all possible Attr values through loops
         for satno in all_satnos:
             for level in all_levels:
                 for wave in all_waves:
@@ -150,12 +155,15 @@ class SUVIClient(GenericClient):
                         pattern = pattern2
                     else:
                         raise ValueError(f"Level {level} is not supported.")
+                    # formatting baseurl using Level, SatelliteNumber and Wavelength
                     urlpattern = baseurl.format(**formdict)
+
                     scraper = Scraper(urlpattern)
                     filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern)
                     for i in filesmeta:
                         map_ = self.post_search_hook(i, matchdict)
                         metalist.append(map_)
+
         return QueryResponse(metalist, client=self)
 
     @classmethod

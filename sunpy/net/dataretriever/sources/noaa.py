@@ -136,6 +136,10 @@ class SRSClient(GenericClient):
     """
 
     def _get_url_for_timerange(self, timerange):
+        """
+        Returns a list of urls corresponding to a
+        given time-range.
+        """
         result = list()
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
         total_days = int(timerange.days.value) + 1

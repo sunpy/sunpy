@@ -247,33 +247,33 @@ class Physobs(SimpleAttr):
 
 class Provider(SimpleAttr):
     """
-    Specifies the data provider to search for data using Fido clients.
+    Specifies the data provider to search for data using Fido.
 
     Parameters
     ----------
     value : str
+        A keyword describing the Provider for the data.
 
     Notes
     -----
-    For VSO, More information about each provider may be found within in the VSO Registry.
-    For a list of VSO providers see
-    https://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
+    For VSO, more information about each provider may be found within in the VSO Registry.
+    See `VSO providers <https://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER>`__.
     """
 
 
 class Source(SimpleAttr):
     """
-    Data sources that Fido clients can search on.
+    Data sources that Fido can search with.
 
     Parameters
     ----------
     value : str
+        A keyword describing the Data Source.
 
     Notes
     -----
-    For VSO, More information about each source may be found within in the VSO Registry.
-    User Interface programmers should note that some names may be encoded as
-    UTF-8. Please note that 'Source' is used internally by VSO to represent
-    what the VSO Data Model refers to as 'Observatory'.  For a list of VSO sources
-    see https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
+    For VSO, more information about each source may be found within in the VSO Registry.
+    See `VSO sources <https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE>`__.
+    Please note that 'Source' is used internally by VSO to represent
+    what the VSO Data Model refers to as 'Observatory'.
     """
