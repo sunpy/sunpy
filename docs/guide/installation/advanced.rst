@@ -3,92 +3,92 @@
 Advanced Installation Instructions
 **********************************
 
-This document provides details on things you need to know to install and manage your own scientific Python + SunPy installation.
-If you have never installed or used scientific Python we recommend that you follow the :ref:`Anaconda installation instructions <main-install>`.
+This document provides details on things you need to know to install and manage your own scientific Python + sunpy installation.
+If you have never installed or used scientific Python we recommend that you follow the :ref:`Miniconda installation instructions <main-install>`.
 
-Installing SunPy on top of an existing Scientific Python Environment
+Installing sunpy on top of an existing Scientific Python Environment
 ====================================================================
 
-These instructions assume you have a scientific Python distribution with access to the `pip` command installed.
+These instructions assume you have a scientific Python distribution with access to the ``pip`` command installed.
+
+.. warning::
+    Users of the Miniconda python distribution should follow the instructions for :ref:`main-install`.
 
 Prerequisites
 -------------
 
-You will need a compiler suite and the development headers for Python and numpy in order to build SunPy.
-On Linux, using the package manager for your distribution will usually be the easiest route, while on MacOS X you will need the XCode command line tools.
+You will need a C compiler (e.g., ``gcc`` or ``clang``) to be installed as we have a C library within sunpy that is built at install time.
 
-The `instructions for building Numpy from source <https://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good resource for setting up your environment to build Python packages.
+If you use Miniconda, you can get these compilers from there.
+On Linux, using the package manager for your distribution will usually be the easiest route, while on MacOS X you will need the XCode command line tools.
 
 Using `pip`
 -----------
 
-.. warning::
-    Users of the Anaconda python distribution should follow the instructions for :ref:`anaconda_install`.
+.. note::
+    We strongly recommend using a `Python virtual environment <https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/>`__ so any Python packages you install will be kept separate from your Operating System Python.
+    You can use Conda as a virtual environment manager instead of one of the more common Python virtual environment managers.
 
-SunPy consists of many submodules that each have their own requirements.
-You do not need to fulfil all the requirements if you only intend on using parts of SunPy.
+sunpy consists of many submodules that each have their own requirements.
+You do not need to fulfil all the requirements if you only intend on using parts of sunpy.
 It is however *strongly* recommended to have all the dependencies installed (with the potential exception of ``glymur``).
 
 There are multiple options depending on how many optional dependencies you want to install:
 
-To install SunPy with ``pip`` including optional dependencies (recommended), simply run::
+To install sunpy with ``pip`` including optional dependencies (recommended), simply run::
 
     pip install sunpy[all]
 
-To install SunPy with no optional dependencies::
+To install sunpy with no optional dependencies::
 
     pip install sunpy
 
-To install SunPy with net-based dependencies::
+To install sunpy with net-based dependencies::
 
     pip install sunpy[net]
 
-To install SunPy with database dependencies::
+To install sunpy with database dependencies::
 
     pip install sunpy[database]
 
 Other available options are: ``[image]``, ``[jpeg2000]``, ``[asdf]``, ``[tests]`` and ``[docs]``.
 
-The entire list of options are compassed by a ``[dev]`` option, so you can do::
+The entire list of options are encompassed by a ``[dev]`` option, so you can do::
 
     pip install sunpy[dev]
 
-to install all the packages needed to run and develop SunPy.
-
-.. note::
-    You will need a C compiler (e.g., ``gcc`` or ``clang``) to be installed.
-    If you use anaconda, you can get these packages from there instead.
+to install all the packages needed to run and develop sunpy.
+However if you want to develop sunpy we would strongly recommend reading :ref:`newcomers`.
 
 .. note::
     If you get a ``PermissionError`` this means that you do not have the required administrative access to install new packages to your Python installation.
     In this case you may consider using the ``--user`` option to install the package into your home directory.
     You can read more about how to do this in the `pip documentation <https://pip.pypa.io/en/stable/user_guide/#user-installs>`__.
 
-    Alternatively, if you intend to do development on other software that uses SunPy, such as an affiliated package, consider installing SunPy into a `virtualenv <https://docs.python-guide.org/dev/virtualenvs/>`__.
-
-    Do **not** install SunPy or other third-party packages using ``sudo`` unless you are fully aware of the risks.
+    Do **not** install sunpy or other third-party packages using ``sudo``.
 
 .. _testing-sunpy:
 
-Testing SunPy
+Testing sunpy
 *************
 
 .. warning::
     The tests will fail if you do not install all the optional dependencies.
+    If you have installed sunpy with conda-forge, you will be missing the ``pytest-mock`` package which will cause the test suite to fail.
 
-The easiest way to test your installed version of SunPy is running correctly is to use the :func:`sunpy.self_test()` function::
+The easiest way to test your installed version of sunpy is running correctly is to use the :func:`sunpy.self_test()` function::
 
     import sunpy
     sunpy.self_test()
 
-which will run many of the SunPy tests.
+which will run many of the sunpy tests.
 
-The tests should run and print out any failures, which you can report at the `SunPy issue tracker <https://github.com/sunpy/sunpy/issues>`__.
+The tests should run and print out any failures, which you can report at the `sunpy issue tracker <https://github.com/sunpy/sunpy/issues>`__.
 
-SunPy's Requirements
+sunpy's Requirements
 ********************
 
-SunPy has the following strict requirements:
+sunpy has the following strict requirements:
 
 - `Python <https://www.python.org/>`__ 3.7.x or later.
 
@@ -104,9 +104,13 @@ SunPy has the following strict requirements:
 
 - `matplotlib <https://matplotlib.org/>`__ 2.2.2 or later.
 
-SunPy also depends on other packages for optional features.
-However, note that these only need to be installed if those particular features are needed.
-SunPy will import even if these dependencies are not installed.
+These packages that will be installed as dependencies by default and are the ones required to import the core datatypes `~sunpy.map`, `~sunpy.timeseries` and `~sunpy.spectra`.
+
+sunpy also depends on other packages for optional features.
+However, note that these only need to be installed if those you have requested them when you pip install them.
+They are installed by default if you use the conda-forge sunpy package.
+
+The following optional packages are:
 
 - `sqlalchemy <https://www.sqlalchemy.org>`__: For the `~sunpy.database` package.
 
@@ -138,8 +142,3 @@ To run the tests:
 - `pytest-cov <https://github.com/pytest-dev/pytest-cov>`__.
 
 - `pytest-mock <https://github.com/pytest-dev/pytest-mock>`__.
-
-The packages that will be installed as dependencies by default and are the ones
-required to import the core datatypes `~sunpy.map`, `~sunpy.timeseries` and
-`~sunpy.spectra`. These are the strict requirements and the following optional
-packages:

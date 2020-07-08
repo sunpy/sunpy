@@ -21,22 +21,24 @@ Installing Scientific Python and sunpy
 sunpy is part of the wider ecosystem of scientific Python packages for solar physics.
 Therefore a working sunpy installation is more about installing the scientific Python ecosystem than sunpy itself.
 
-If you do not currently have a working scientific Python distribution this guide will set you up with the Anaconda
-scientific Python distribution, which makes it easy to install and manage your scientific Python packages.
+If you do not currently have a working scientific Python distribution this guide will set you up with the Miniconda, which makes it easy to install and manage your scientific Python packages.
 Other options are listed later in the :ref:`advanced-install` section.
 
-To install the Anaconda Python distribution follow the instructions at
-`here <https://docs.anaconda.com/anaconda/install/>`__.
-Although Anaconda makes it simple to switch between Python versions, we recommend that new users install
-the latest Python 3.x version of Anaconda as SunPy only supports Python 3.7+.
+To install the Miniconda Python distribution follow the instructions at
+`here <https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html`__.
+Although Miniconda makes it simple to switch between Python versions, we recommend that new users install
+the latest Python 3.x version of Miniconda as SunPy only supports Python 3.7+.
 
-Installing sunpy using Anaconda
--------------------------------
+The reason we choose Miniconda over Anaconda, is mainly due to the size as Anaconda comes with a full install of packages you probably do not need and this way you have more direct control over what has been installed into your Python virtual environment.
 
-To install SunPy launch a system command prompt or the 'Anaconda Command Prompt' (under Windows).
+Installing sunpy using Miniconda
+--------------------------------
+
+To install SunPy launch a system command prompt or the 'Anaconda Prompt' (under Windows).
 First configure conda for sunpy downloads::
 
     conda config --add channels conda-forge
+    conda config --set channel_priority strict
 
 to install sunpy::
 
@@ -52,11 +54,10 @@ You can update to the latest version by running::
 
     conda update sunpy
 
-
 Advanced sunpy Installation
 ===========================
 
-If you do not wish to use Anaconda to install Scientific Python or you already have a scientific Python
+If you do not wish to use Miniconda to install Scientific Python or you already have a scientific Python
 installation there are other options for installing SunPy:
 
 .. toctree::
