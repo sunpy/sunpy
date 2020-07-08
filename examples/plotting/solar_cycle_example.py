@@ -42,11 +42,12 @@ noaa_predict = ts.TimeSeries(f_noaa_predict, source='noaapredictindices')
 # The predictions provide both a high and low values, which we plot below as
 # ranges.
 fig, ax = plt.subplots()
-ax.plot(noaa.index, noaa.quantity('sunspot RI'), label='Sunspot Number')
-ax.plot(noaa_predict.index, noaa_predict.quantity('sunspot'),
+ax.plot(noaa.index, noaa.quantity('mean monthly S.I.D.C. sunspot number'),
+        label='mean monthly S.I.D.C. sunspot number')
+ax.plot(noaa_predict.index, noaa_predict.quantity('predicted sunspot number'),
         color='grey', label='Near-term Prediction')
-ax.fill_between(noaa_predict.index, noaa_predict.quantity('sunspot low'),
-                noaa_predict.quantity('sunspot high'), alpha=0.3, color='grey')
+ax.fill_between(noaa_predict.index, noaa_predict.quantity('predicted sunspot number low range'),
+                noaa_predict.quantity('predicted sunspot number high range'), alpha=0.3, color='grey')
 ax.set_ylim(bottom=0)
 ax.set_ylabel('Sunspot Number')
 ax.set_xlabel('Year')
