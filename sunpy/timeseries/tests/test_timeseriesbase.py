@@ -22,6 +22,7 @@ from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -39,10 +40,11 @@ lyra_filepath = os.path.join(filepath,
                              'lyra_20150101-000000_lev3_std_truncated.fits.gz')
 rhessi_filepath = os.path.join(filepath,
                                'hsi_obssumm_20120601_018_truncated.fits.gz')
-noaa_ind_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
-noaa_pre_filepath = os.path.join(filepath,
-                                 'predicted-sunspot-radio-flux_truncated.txt')
-
+noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
+noaa_pre_json_filepath = os.path.join(filepath,
+                                      'predicted-solar-cycle-truncated.json')
+noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
+noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 goes_filepath = os.path.join(filepath, 'go1520120601.fits.gz')
 
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
@@ -50,59 +52,63 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 @pytest.fixture
 def eve_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
     with pytest.warns(SunpyUserWarning, match='Unknown units'):
         return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
 
 
 @pytest.fixture
 def esp_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='ESP')
     return sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
 
 
 @pytest.fixture
 def fermi_gbm_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
     with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
         return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
 
 @pytest.fixture
 def norh_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NoRH')
     return sunpy.timeseries.TimeSeries(norh_filepath, source='NoRH')
 
 
 @pytest.fixture
 def goes_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='XRS')
     return sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
 
 
 @pytest.fixture
 def lyra_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='LYRA')
     return sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
 
 
 @pytest.fixture
 def rhessi_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='RHESSI')
     return sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
 
 
 @pytest.fixture
-def noaa_ind_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
-    return sunpy.timeseries.TimeSeries(noaa_ind_filepath, source='NOAAIndices')
+def noaa_ind_json_test_ts():
+    return sunpy.timeseries.TimeSeries(noaa_ind_json_filepath, source='NOAAIndices')
 
 
 @pytest.fixture
-def noaa_pre_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
+def noaa_pre_json_test_ts():
     return sunpy.timeseries.TimeSeries(
-        noaa_pre_filepath, source='NOAAPredictIndices')
+        noaa_pre_json_filepath, source='NOAAPredictIndices')
+
+
+@pytest.fixture
+def noaa_ind_txt_test_ts():
+    with pytest.warns(SunpyDeprecationWarning):
+        return sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
+
+
+@pytest.fixture
+def noaa_pre_txt_test_ts():
+    with pytest.warns(SunpyDeprecationWarning):
+        return sunpy.timeseries.TimeSeries(
+            noaa_pre_txt_filepath, source='NOAAPredictIndices')
 
 
 @pytest.fixture
@@ -159,8 +165,8 @@ def table_ts():
 
 
 def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                    lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
-                    noaa_pre_test_ts, generic_ts, table_ts):
+                    lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
+                    noaa_pre_json_test_ts, noaa_pre_txt_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.units, OrderedDict)
     assert isinstance(esp_test_ts.units, OrderedDict)
     assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
@@ -168,15 +174,17 @@ def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, g
     assert isinstance(goes_test_ts.units, OrderedDict)
     assert isinstance(lyra_test_ts.units, OrderedDict)
     assert isinstance(rhessi_test_ts.units, OrderedDict)
-    assert isinstance(noaa_ind_test_ts.units, OrderedDict)
-    assert isinstance(noaa_pre_test_ts.units, OrderedDict)
+    assert isinstance(noaa_ind_json_test_ts.units, OrderedDict)
+    assert isinstance(noaa_pre_json_test_ts.units, OrderedDict)
+    assert isinstance(noaa_pre_txt_test_ts.units, OrderedDict)
+    assert isinstance(noaa_ind_txt_test_ts.units, OrderedDict)
     assert isinstance(generic_ts.units, OrderedDict)
     assert isinstance(table_ts.units, OrderedDict)
 
 
 def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                   lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
-                   noaa_pre_test_ts, generic_ts, table_ts):
+                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
+                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(esp_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
@@ -184,15 +192,17 @@ def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
     assert isinstance(goes_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(lyra_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(rhessi_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(noaa_ind_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(noaa_pre_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(noaa_ind_json_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(noaa_pre_json_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(noaa_pre_txt_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(noaa_ind_txt_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(generic_ts.meta, TimeSeriesMetaData)
     assert isinstance(table_ts.meta, TimeSeriesMetaData)
 
 
 def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                   lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
-                   noaa_pre_test_ts, generic_ts, table_ts):
+                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
+                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.to_dataframe(), DataFrame)
     assert isinstance(esp_test_ts.to_dataframe(), DataFrame)
     assert isinstance(fermi_gbm_test_ts.to_dataframe(), DataFrame)
@@ -200,8 +210,10 @@ def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
     assert isinstance(goes_test_ts.to_dataframe(), DataFrame)
     assert isinstance(lyra_test_ts.to_dataframe(), DataFrame)
     assert isinstance(rhessi_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(noaa_ind_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(noaa_pre_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(noaa_ind_json_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(noaa_pre_json_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(noaa_pre_txt_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(noaa_ind_txt_test_ts.to_dataframe(), DataFrame)
     assert isinstance(generic_ts.to_dataframe(), DataFrame)
     assert isinstance(table_ts.to_dataframe(), DataFrame)
 
@@ -664,12 +676,9 @@ def test_norh_peek(norh_test_ts):
     norh_test_ts.peek()
 
 
-# TODO: Fix this
-"""
 @figure_test
 def test_goes_peek(goes_test_ts):
     goes_test_ts.peek()
-"""
 
 
 @figure_test
@@ -683,13 +692,23 @@ def test_rhessi_peek(rhessi_test_ts):
 
 
 @figure_test
-def test_noaa_ind_peek(noaa_ind_test_ts):
-    noaa_ind_test_ts.peek()
+def test_noaa_json_ind_peek(noaa_ind_json_test_ts):
+    noaa_ind_json_test_ts.peek()
 
 
 @figure_test
-def test_noaa_pre_peek(noaa_pre_test_ts):
-    noaa_pre_test_ts.peek()
+def test_noaa_json_pre_peek(noaa_pre_json_test_ts):
+    noaa_pre_json_test_ts.peek()
+
+
+@figure_test
+def test_noaa_txt_ind_peek(noaa_ind_txt_test_ts):
+    noaa_ind_txt_test_ts.peek()
+
+
+@figure_test
+def test_noaa_txt_pre_peek(noaa_pre_txt_test_ts):
+    noaa_pre_txt_test_ts.peek()
 
 
 @figure_test
@@ -753,18 +772,35 @@ def test_rhessi_invalid_peek(rhessi_test_ts):
         empty_ts.peek()
 
 
-def test_noaa_ind_invalid_peek(noaa_ind_test_ts):
-    a = noaa_ind_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_ind_test_ts.time_range.start - TimeDelta(1*u.day)
-    empty_ts = noaa_ind_test_ts.truncate(TimeRange(a, b))
+def test_noaa_ind_json_invalid_peek(noaa_ind_json_test_ts):
+    a = noaa_ind_json_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = noaa_ind_json_test_ts.time_range.start - TimeDelta(1*u.day)
+    empty_ts = noaa_ind_json_test_ts.truncate(TimeRange(a, b))
+
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
-def test_noaa_pre_invalid_peek(noaa_pre_test_ts):
-    a = noaa_pre_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_pre_test_ts.time_range.start - TimeDelta(1*u.day)
-    empty_ts = noaa_pre_test_ts.truncate(TimeRange(a, b))
+def test_noaa_ind_txt_invalid_peek(noaa_ind_txt_test_ts):
+    a = noaa_ind_txt_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = noaa_ind_txt_test_ts.time_range.start - TimeDelta(1*u.day)
+    empty_ts = noaa_ind_txt_test_ts.truncate(TimeRange(a, b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
+
+def test_noaa_pre_json_invalid_peek(noaa_pre_json_test_ts):
+    a = noaa_pre_json_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = noaa_pre_json_test_ts.time_range.start - TimeDelta(1*u.day)
+    empty_ts = noaa_pre_json_test_ts.truncate(TimeRange(a, b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
+
+def test_noaa_pre_txt_invalid_peek(noaa_pre_txt_test_ts):
+    a = noaa_pre_txt_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = noaa_pre_txt_test_ts.time_range.start - TimeDelta(1*u.day)
+    empty_ts = noaa_pre_txt_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
@@ -789,7 +825,7 @@ def test_equality(generic_ts, table_ts):
     assert generic_ts != table_ts
 
 
-def test_equality_different_ts_types(generic_ts, table_ts):
+def test_equality_different_ts_types(generic_ts):
     # this should fail as they're not the smae type and can't match
     assert not (generic_ts == eve_test_ts)
 

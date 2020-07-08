@@ -153,7 +153,7 @@ def test_entries_from_fido_search_result(fido_search_result):
     # 1 entry from noaa-indices
     assert entries[58] == DatabaseEntry(
         source='sdic', provider='swpc', physobs='sunspot number',
-        fileid='ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
+        fileid='https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
         wavemin=np.nan, wavemax=np.nan,
@@ -161,7 +161,7 @@ def test_entries_from_fido_search_result(fido_search_result):
     # 1 entry from noaa-predict
     assert entries[59] == DatabaseEntry(
         source='ises', provider='swpc', physobs='sunspot number',
-        fileid='http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt',
+        fileid='https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
         wavemin=np.nan, wavemax=np.nan,

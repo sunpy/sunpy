@@ -1,0 +1,65 @@
+[
+    {
+        "time-tag": "2012-09",
+        "ssn": 93.7,
+        "smoothed_ssn": 85.3,
+        "observed_swpc_ssn": 84.03,
+        "smoothed_swpc_ssn": 83.7,
+        "f10.7": 123.4,
+        "smoothed_f10.7": 119.1
+    },
+    {
+        "time-tag": "2012-10",
+        "ssn": 76.5,
+        "smoothed_ssn": 85.8,
+        "observed_swpc_ssn": 73.52,
+        "smoothed_swpc_ssn": 85.0,
+        "f10.7": 123.07,
+        "smoothed_f10.7": 119.5
+    },
+    {
+        "time-tag": "2012-11",
+        "ssn": 87.6,
+        "smoothed_ssn": 87.7,
+        "observed_swpc_ssn": 89.2,
+        "smoothed_swpc_ssn": 87.3,
+        "f10.7": 121.15,
+        "smoothed_f10.7": 120.4
+    },
+    {
+        "time-tag": "2012-12",
+        "ssn": 56.8,
+        "smoothed_ssn": 88.1,
+        "observed_swpc_ssn": 60.42,
+        "smoothed_swpc_ssn": 88.1,
+        "f10.7": 108.26,
+        "smoothed_f10.7": 120.4
+    },
+    {
+        "time-tag": "2013-01",
+        "ssn": 96.1,
+        "smoothed_ssn": 86.8,
+        "observed_swpc_ssn": 99.87,
+        "smoothed_swpc_ssn": 87.2,
+        "f10.7": 126.83,
+        "smoothed_f10.7": 119.1
+    },
+    {
+        "time-tag": "2013-02",
+        "ssn": 60.9,
+        "smoothed_ssn": 86.1,
+        "observed_swpc_ssn": 60.07,
+        "smoothed_swpc_ssn": 86.8,
+        "f10.7": 104.41,
+        "smoothed_f10.7": 118.1
+    },
+    {
+        "time-tag": "2013-03",
+        "ssn": 78.3,
+        "smoothed_ssn": 84.4,
+        "observed_swpc_ssn": 81.1,
+        "smoothed_swpc_ssn": 85.8,
+        "f10.7": 111.36,
+        "smoothed_f10.7": 117.2
+    }
+]
