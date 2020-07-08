@@ -176,8 +176,7 @@ def test_solar_rotate_coordinate():
         assert isinstance(d.frame, frames.Helioprojective)
 
 
-def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
-
+def test_differential_rotate_observer(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     # Testing with observer inputs
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
@@ -214,6 +213,8 @@ def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map,
     assert dmap.heliographic_latitude == new_observer.lat
     assert dmap.heliographic_longitude == new_observer.lon
 
+
+def test_differential_rotate_time(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     # Testing with time input
     # Test a full disk map
     new_time = aia171_test_map.date + 6*u.hr
