@@ -19,6 +19,10 @@ __all__ = ['QueryResponse', 'GenericClient']
 
 
 class QueryResponse(BaseQueryResponse):
+    """
+    A container for files metadata returned by
+    searches from Dataretriver clients.
+    """
 
     def __init__(self, lst, client=None):
         super().__init__()
@@ -64,10 +68,13 @@ class QueryResponse(BaseQueryResponse):
     def build_table(self):
         if len(self._data) == 0:
             return astropy.table.Table()
+
+        # removing columns not to be shown in the response table.
         meta0 = self._data[0]
         meta0.pop('url', None)
         meta0.pop('Time', None)
         columns = OrderedDict(((col, [])) for col in meta0.keys())
+
         for qrblock in self:
             for colname in columns.keys():
                 columns[colname].append(qrblock[colname])
@@ -93,31 +100,48 @@ class GenericClient(BaseClient):
     @classmethod
     def _get_match_dict(cls, *args, **kwargs):
         """
+        Returns a dictionary to validate the metadata of searched files using
+        query and registered values for Attrs for the respective client.
+
+        Parameters
+        ----------
+        \\*args: `tuple`
+            `sunpy.net.attrs` objects representing the query.
+        \\*\\*kwargs: `dict`
+             Any extra keywords to refine the search.
+
+        Returns
+        -------
+        matchdict: `dict`
+            A dictionary having a `list` of all possible Attr values
+            corresponding to an Attr.
         """
         a = cls.register_values()
-        d = {}
+        matchdict = {}
         for i in a.keys():
             attrname = i.__name__
-            d[attrname] = []
+            matchdict[attrname] = []
             for val, desc in a[i]:
-                d[attrname].append(val)
+                matchdict[attrname].append(val)
         for elem in args:
             if isinstance(elem, Time):
                 timerange = TimeRange(elem.start, elem.end)
-                d['Time'] = timerange
+                matchdict['Time'] = timerange
             elif hasattr(elem, 'value'):
-                d[elem.__class__.__name__] = [str(elem.value)]
+                matchdict[elem.__class__.__name__] = [str(elem.value)]
             elif isinstance(elem, Wavelength):
-                d['Wavelength'] = elem
+                matchdict['Wavelength'] = elem
             else:
                 raise ValueError("GenericClient can not add {} to the map_ dictionary to pass to the Client.".format(elem.__class__.__name__))
         for k in kwargs:
-            d[k] = [kwargs[k]]
-        return d
+            matchdict[k] = [kwargs[k]]
+        return matchdict
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         """
+        Helper function to return the baseurl, pattern and matchdict
+        for the client required by `search()` before using the scraper.
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
         return cls.baseurl, cls.pattern, matchdict
@@ -148,6 +172,22 @@ class GenericClient(BaseClient):
 
     def post_search_hook(self, exdict, matchdict):
         """
+        Helper function used after `search()` which makes the
+        extracted metadata representable in a query response table.
+
+        Parameters
+        ----------
+        exdict: `dict`
+            Represents metadata extracted from files.
+        matchdict: `dict`
+            Contains attr values accessed from `register_values()`
+            and the search query itself.
+
+        Returns
+        -------
+        map_: `~collections.OrderedDict`
+            An Ordered Dictionary which is used by `QueryResponse`
+            to show results.
         """
         map_ = OrderedDict()
         almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
@@ -210,6 +250,17 @@ class GenericClient(BaseClient):
     def search(self, *args, **kwargs):
         """
         Query this client for a list of results.
+
+        Parameters
+        ----------
+        \\*args: `tuple`
+            `sunpy.net.attrs` objects representing the query.
+        \\*\\*kwargs: `dict`
+             Any extra keywords to refine the search.
+
+        Returns
+        -------
+        A `QueryResponse` instance containing the query result.
         """
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         scraper = Scraper(baseurl, regex=True)

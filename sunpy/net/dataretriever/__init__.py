@@ -18,5 +18,5 @@ from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 
 __all__ = ['QueryResponse', 'GenericClient', 'EVEClient', 'GBMClient',
-           'XRSClient', 'SUVI_Client', 'LYRAClient', 'NOAAIndicesClient',
+           'XRSClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
            'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', ]

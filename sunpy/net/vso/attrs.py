@@ -330,7 +330,7 @@ class _DeprecatedAttr:
         super().__init__(*args, **kwargs)
 
 
-_deprecated_names = ['Time', 'Instrument', 'Wavelength',
+_deprecated_names = ['Time', 'Instrument', 'Wavelength', 'Source', 'Provider',
                      'Level', 'Sample', 'Detector', 'Resolution', 'Physobs']
 
 for _name in _deprecated_names:

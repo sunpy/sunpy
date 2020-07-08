@@ -6,7 +6,6 @@ import astropy.units as u
 
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient
-from sunpy.time import TimeRange
 
 __all__ = ['NoRHClient']
 
@@ -48,32 +47,32 @@ class NoRHClient(GenericClient):
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
-        d = {'Source': ['NAOJ'], 'Instrument': ['NORH'], 'Provider': ['NRO']}
-        d['Wavelength'] = []
+        """
+        Converts the wavength specified in the query to its
+        representation in the url which can be used by the scraper.
+        """
+        d = cls._get_match_dict(*args, **kwargs)
         waverange = a.Wavelength(34*u.GHz, 17*u.GHz)
-        req_wave = waverange
-        for elem in args:
-            if isinstance(elem, a.Wavelength):
-                req_wave = elem
-            elif isinstance(elem, a.Time):
-                timerange = TimeRange(elem.start, elem.end)
-                d['Time'] = timerange
-        if hasattr(kwargs, 'Wavelength'):
-            req_wave = kwargs['Wavelength']
+        req_wave = d.get('Wavelength', waverange)
         wmin = req_wave.min.to(u.GHz, equivalencies=u.spectral())
         wmax = req_wave.max.to(u.GHz, equivalencies=u.spectral())
         req_wave = a.Wavelength(wmin, wmax)
-        if waverange.min in req_wave:
-            d['Wavelength'].append('tcz')
-        if waverange.max in req_wave:
+        d['Wavelength'] = []
+        if 17*u.GHz in req_wave:
             d['Wavelength'].append('tca')
+        if 34*u.GHz in req_wave:
+            d['Wavelength'].append('tcz')
         return cls.baseurl, cls.pattern, d
 
     def post_search_hook(self, exdict, matchdict):
+        """
+        This method converts 'tca' and 'tcz' in the url's metadata
+        to a frequency of '17 GHz' and '34 GHz' respectively.
+        """
         map_ = super().post_search_hook(exdict, matchdict)
-        if map_['Wavelength'] == 'tcz':
+        if map_['Wavelength'] == 'tca':
             map_['Wavelength'] = 17*u.GHz
-        elif map_['Wavelength'] == 'tca':
+        elif map_['Wavelength'] == 'tcz':
             map_['Wavelength'] = 34*u.GHz
         return map_
 
