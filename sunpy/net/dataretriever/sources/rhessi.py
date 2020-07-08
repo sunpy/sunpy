@@ -10,7 +10,6 @@ from dateutil.rrule import MONTHLY, rrule
 
 from sunpy.extern.parse import parse
 from sunpy.instr import rhessi
-from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.time import TimeRange, parse_time
 

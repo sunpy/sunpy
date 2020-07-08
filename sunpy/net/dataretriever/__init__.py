@@ -17,6 +17,6 @@ from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 
-__all__ = ['QueryResponse', 'GenericClient',
-           'EVEClient', 'XRSClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
-           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', 'GBMClient']
+__all__ = ['QueryResponse', 'GenericClient', 'EVEClient', 'GBMClient',
+           'XRSClient', 'SUVI_Client', 'LYRAClient', 'NOAAIndicesClient',
+           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', ]
