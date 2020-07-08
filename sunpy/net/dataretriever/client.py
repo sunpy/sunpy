@@ -7,7 +7,7 @@ from astropy.time import TimeDelta
 
 import sunpy
 from sunpy import config
-from sunpy.net._attrs import Time
+from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.parfive_helpers import Downloader
@@ -107,6 +107,8 @@ class GenericClient(BaseClient):
                 d['Time'] = timerange
             elif hasattr(elem, 'value'):
                 d[elem.__class__.__name__] = [str(elem.value)]
+            elif isinstance(elem, Wavelength):
+                d['Wavelength'] = elem
             else:
                 raise ValueError("GenericClient can not add {} to the map_ dictionary to pass to the Client.".format(elem.__class__.__name__))
         for k in kwargs:
