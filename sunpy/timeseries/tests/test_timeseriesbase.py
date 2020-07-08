@@ -697,13 +697,13 @@ def test_noaa_json_ind_peek(noaa_ind_json_test_ts):
 
 
 @figure_test
-def test_noaa_json_pre_peek(noaa_pre_json_test_ts):
-    noaa_pre_json_test_ts.peek()
+def test_noaa_txt_ind_peek(noaa_ind_txt_test_ts):
+    noaa_ind_txt_test_ts.peek()
 
 
 @figure_test
-def test_noaa_txt_ind_peek(noaa_ind_txt_test_ts):
-    noaa_ind_txt_test_ts.peek()
+def test_noaa_json_pre_peek(noaa_pre_json_test_ts):
+    noaa_pre_json_test_ts.peek()
 
 
 @figure_test

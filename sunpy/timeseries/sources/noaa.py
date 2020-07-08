@@ -82,29 +82,37 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
         figure = plt.figure()
         axes = plt.gca()
-
-        if type == 'sunspot SWO':
-            axes = self.to_dataframe()['sunspot SWO'].plot(**kwargs)
-            self.to_dataframe()['sunspot SWO smooth'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
-        elif type == 'sunspot RI':
-            axes = self.to_dataframe()['sunspot RI'].plot(**kwargs)
-            self.to_dataframe()['sunspot RI smooth'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
-        elif type == 'sunspot compare':
-            axes = self.to_dataframe()['sunspot RI'].plot(**kwargs)
-            self.to_dataframe()['sunspot SWO'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
-        elif type == 'radio':
-            axes = self.to_dataframe()['radio flux'].plot(**kwargs)
-            self.to_dataframe()['radio flux smooth'].plot(**kwargs)
-            axes.set_ylabel('Radio Flux [sfu]')
-        elif type == 'geo':
-            axes = self.to_dataframe()['geomagnetic ap'].plot(**kwargs)
-            self.to_dataframe()['geomagnetic ap smooth'].plot(**kwargs)
-            axes.set_ylabel('Geomagnetic AP Index')
+        dataframe = self.to_dataframe()
+        if "sunspot SWO" in dataframe.columns.values:
+            if type == 'sunspot SWO':
+                axes = dataframe['sunspot SWO'].plot(**kwargs)
+                dataframe['sunspot SWO smooth'].plot(**kwargs)
+                axes.set_ylabel('Sunspot Number')
+            elif type == 'sunspot RI':
+                axes = dataframe['sunspot RI'].plot(**kwargs)
+                dataframe['sunspot RI smooth'].plot(**kwargs)
+                axes.set_ylabel('Sunspot Number')
+            elif type == 'sunspot compare':
+                axes = dataframe['sunspot RI'].plot(**kwargs)
+                dataframe['sunspot SWO'].plot(**kwargs)
+                axes.set_ylabel('Sunspot Number')
+            elif type == 'radio':
+                axes = dataframe['radio flux'].plot(**kwargs)
+                dataframe['radio flux smooth'].plot(**kwargs)
+                axes.set_ylabel('Radio Flux [sfu]')
+            elif type == 'geo':
+                axes = dataframe['geomagnetic ap'].plot(**kwargs)
+                dataframe['geomagnetic ap smooth'].plot(**kwargs)
+                axes.set_ylabel('Geomagnetic AP Index')
+            else:
+                raise ValueError(f'Got unknown plot type "{type}"')
         else:
-            raise ValueError(f'Got unknown plot type "{type}"')
+            dataframe['mean monthly S.I.D.C. sunspot number'].plot(**kwargs)
+            dataframe['smoothed S.I.D.C. sunspot number'].plot(**kwargs)
+            dataframe['mean monthly SWPC/SWO sunspot number'].plot(**kwargs)
+            dataframe['smoothed SWPC/SWO sunspot number'].plot(**kwargs)
+            dataframe['mean monthly 10.7cm radio flux'].plot(**kwargs)
+            dataframe['smoothed 10.7cm radio flux'].plot(**kwargs)
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Progression')
@@ -237,7 +245,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.timeseries
     >>> noaa_url = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'  # doctest: +REMOTE_DATA
-    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')  # doctest: +REMOTE_DATA
+    # doctest: +REMOTE_DATA
+    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')
     >>> noaa.peek()  # doctest: +SKIP
 
     References
@@ -271,13 +280,20 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
-
         figure = plt.figure()
         axes = plt.gca()
-
-        axes = self.to_dataframe()['sunspot'].plot(color='b', **plot_args)
-        self.to_dataframe()['sunspot low'].plot(linestyle='--', color='b', **plot_args)
-        self.to_dataframe()['sunspot high'].plot(linestyle='--', color='b', **plot_args)
+        # Old dataframe vs New dataframe
+        dataframe = self.to_dataframe()
+        if "sunspot" in dataframe.columns.values:
+            axes = dataframe['sunspot'].plot(color='b', **plot_args)
+            dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
+            dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
+        else:
+            axes = dataframe['predicted sunspot number'].plot(color='b', **plot_args)
+            dataframe['predicted sunspot number high range'].plot(
+                linestyle='--', color='b', **plot_args)
+            dataframe['predicted sunspot number low range'].plot(
+                linestyle='--', color='b', **plot_args)
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Sunspot Number Prediction')
@@ -289,7 +305,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
         return figure
 
-    @classmethod
+    @ classmethod
     def _parse_file(cls, filepath):
         suffix = Path(filepath).suffix
         if suffix == '.json':
@@ -299,7 +315,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         else:
             raise ValueError(f"{Path(filepath).name} does not have a suffix of '.txt' or '.json'")
 
-    @classmethod
+    @ classmethod
     def is_datasource_for(cls, **kwargs):
         """
         Determines if header corresponds to an NOAA predict indices
@@ -308,8 +324,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
 
-    @staticmethod
-    @deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
+    @ staticmethod
+    @ deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
     def _parse_txt_file(filepath):
         """
         Parses an NOAA Predict indices text file.
@@ -350,7 +366,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             # Todo: check units used.
             return data, MetaDict({'comments': header}), units
 
-    @staticmethod
+    @ staticmethod
     def _parse_json_file(filepath):
         """
         Parses an NOAA Predict indices JSON file.
