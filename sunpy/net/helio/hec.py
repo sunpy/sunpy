@@ -10,8 +10,11 @@ from zeep.transports import Transport
 
 from astropy.io.votable.table import parse_single_table
 
+from sunpy.net import attrs as a
+from sunpy.net.helio import attrs as ha
 from sunpy.net.helio import parser
-from sunpy.time import parse_time
+from sunpy.time import parse_time, TimeRange
+from sunpy.net.base_client import BaseClient, BaseQueryResponse
 
 __all__ = ['HECClient']
 
@@ -49,8 +52,10 @@ def votable_handler(xml_table):
     fake_file.close()
     return votable
 
+class HECResponse(BaseQueryResponse):
+    
 
-class HECClient:
+class HECClient(BaseClient):
     """
     A client class used to interface with and query HELIO webservices.
     """
@@ -81,7 +86,20 @@ class HECClient:
         transport = Transport(session=session)
         self.hec_client = Client(link, transport=transport)
 
-    def time_query(self, start_time, end_time, table=None, max_records=None):
+    @classmethod
+    def _can_handle_query(cls, *query):
+        required = {a.Time, ha.Catalogue}
+        optional = {ha.max_records}
+        for x in query:
+            if isinstance(x, ha.Catalogue) and x.value.lower()!='hec':
+                return False
+        return cls.check_attr_types_in_query(query, required, optional)
+
+    @classmethod
+    def _attrs_module(cls):
+        return 'helio', 'sunpy.net.helio.attrs'
+
+    def search(self, *args, **kwargs):
         """
         The simple interface to query the wsdl service.
 
@@ -90,18 +108,6 @@ class HECClient:
 
         Parameters
         ----------
-        start_time : str, `~sunpy.time.parse_time` parsable objects
-            The time where the query window opens
-
-        end_time : str, `~sunpy.time.parse_time` parsable objects
-            The time where the query window closes
-
-        table : bytes
-            The table to query from. If the table is unknown, the user will be
-            prompted to pick from a list of tables.
-
-        max_records: int
-            The maximum number of desired records.
 
         Returns
         -------
@@ -110,12 +116,22 @@ class HECClient:
 
         Examples
         --------
-        >>> from sunpy.net.helio import hec
-        >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> start = '2005/01/03'
-        >>> end = '2005/12/03'
-        >>> temp = hc.time_query(start, end, max_records=10)  # doctest: +REMOTE_DATA +SKIP
         """
+        qrdict = {}
+        for elem in args:
+            if isinstance(elem, a.Time):
+                qrdict['Time'] = elem
+            elif isinstance(elem, ha.max_records):
+                qrdict['max_records'] = elem.value
+            elif not isinstance(elem, ha.Catalogue):
+                raise ValueError(
+                        "HECClient can not add {} to the map_ dictionary to pass "
+                        "to the Client.".format(elem.__class__.__name__))
+        qrdict.update(kwargs)
+        table = qrdict.get('table', None)
+        start_time = qrdict.get('Time').start
+        end_time = qrdict.get('Time').end
+        max_records = qrdict.get('max_records', 10)
         while table is None:
             table = self.select_table()
         start_time = parse_time(start_time)
@@ -190,3 +206,6 @@ class HECClient:
                 return table_list[table_no - 1]
             else:
                 print(f"Input must be an integer between 1 and {len(table_list)}")
+
+    def fetch(self, *args, **kwargs):
+        return NotImplemented
