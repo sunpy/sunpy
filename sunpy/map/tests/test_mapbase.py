@@ -152,7 +152,8 @@ def test_dtype(generic_map):
 
 
 def test_size(generic_map):
-    assert generic_map.size == 36 * u.pix
+    with pytest.warns(SunpyDeprecationWarning, match='Use map.data.size instead'):
+        assert generic_map.size == 36 * u.pix
 
 
 def test_min(generic_map):
