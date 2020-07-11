@@ -158,6 +158,7 @@ class RHESSIClient(GenericClient):
         for url in self.get_observing_summary_filename(timerange):
             exdict = parse(pattern, url).named
             map_ = super().post_search_hook(exdict, matchdict)
+            map_['url'] = url
             metalist.append(map_)
         return QueryResponse(metalist, client=self)
 

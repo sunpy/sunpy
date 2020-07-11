@@ -384,6 +384,8 @@ class DatabaseEntry(DatabaseEntryType, Base):
         time_end = sr_block.time.end.datetime
 
         wavelengths = getattr(sr_block, 'wave', None)
+        if wavelengths is None:
+            wavelengths = getattr(sr_block, 'wavelength', np.nan)
         wavelength_temp = {}
         if isinstance(wavelength_temp, tuple):
             # Tuple of values
@@ -572,17 +574,17 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> entries = entries_from_fido_search_result(sr) # doctest: +REMOTE_DATA
     >>> entry = next(entries) # doctest: +REMOTE_DATA
     >>> entry.source # doctest: +REMOTE_DATA
-    'Proba2'
+    'PROBA2'
     >>> entry.provider # doctest: +REMOTE_DATA
-    'esa'
+    'ESA'
     >>> entry.physobs # doctest: +REMOTE_DATA
     'irradiance'
     >>> entry.fileid # doctest: +REMOTE_DATA
     'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
     >>> entry.observation_time_start, entry.observation_time_end # doctest: +REMOTE_DATA
-    (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0))
+    (datetime.datetime(2012, 1, 1, 0, 0),  datetime.datetime(2012, 1, 1, 23, 59, 59, 999000))
     >>> entry.instrument # doctest: +REMOTE_DATA
-    'lyra'
+    'LYRA'
 
     """
     for entry in sr:
