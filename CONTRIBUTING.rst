@@ -84,7 +84,7 @@ The main one is the SunPy repository with where all the known `issues`_ with Sun
 Each issue should have a series of labels that provide information about the nature of the issue.
 If you find an issue you'd like to work on, please make sure to add a comment to let people know that you are working on it! This will make it less likely that effort is duplicated.
 
-If you are unsure where to start we suggest the `Package Novice label`_.
+If you are unsure where to start we suggest the `Good First Issue`_ label.
 These are issues that have been deemed a good way to be eased into SunPy and are achievable with little understanding of the SunPy codebase.
 Please be aware that this does not mean the issue is "easy", just that you do not need to be aware of the underlying structure of SunPy.
 
@@ -110,7 +110,7 @@ CSS/HTML:
 * `sunpy.org <https://github.com/sunpy/sunpy.org>`_
 
 .. _issues: https://github.com/sunpy/sunpy/issues
-.. _Package Novice label: https://github.com/sunpy/sunpy/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3A%22Package+Novice%22
+.. _Good First Issue label: https://github.com/sunpy/sunpy/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3A%22Good+First+Issue%22
 .. _Hacktoberfest: https://hacktoberfest.digitalocean.com/
 .. _Hacktoberfest label: https://github.com/sunpy/sunpy/issues?q=is%3Aissue+is%3Aopen+label%3AHacktoberfest
 
