@@ -13,7 +13,7 @@ from pathlib import Path
 from textwrap import dedent
 from collections.abc import Sequence
 
-from parfive import Downloader, Results
+import parfive
 
 from astropy.table import Table
 
@@ -343,7 +343,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         if downloader is None:
             downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
-        elif not isinstance(downloader, Downloader):
+        elif not isinstance(downloader, parfive.Downloader):
             raise TypeError("The downloader argument must be a parfive.Downloader object.")
 
         # Handle retrying failed downloads
