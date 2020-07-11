@@ -462,10 +462,10 @@ def B0(time='now'):
 
     Returns
     -------
-    out : `~astropy.coordinates.Angle`
+    out : `~astropy.coordinates.Latitude`
         The position angle
     """
-    return Angle(get_earth(time).lat)
+    return Latitude(get_earth(time).lat)
 
 
 # Function returns a SkyCoord's longitude in the de-tilted frame (HCRS rotated so that the Sun's
