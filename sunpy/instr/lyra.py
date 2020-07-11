@@ -4,8 +4,6 @@ Alpha Radiometer) instrument on Proba-2.
 """
 import csv
 import copy
-import urllib
-import os.path
 import sqlite3
 import datetime
 from warnings import warn
@@ -19,7 +17,7 @@ from astropy.time import Time
 from sunpy.data import cache
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.decorators import add_common_docstring
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
@@ -28,7 +26,6 @@ LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 __all__ = ['remove_lytaf_events_from_timeseries',
            'get_lytaf_events',
            'get_lytaf_event_types',
-           'download_lytaf_database',
            'split_series_using_lytaf']
 
 
@@ -540,18 +537,6 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     all_event_types = [event_type[0] for event_types in all_event_types
                        for event_type in event_types]
     return all_event_types
-
-
-@deprecated("1.1")
-def download_lytaf_database(lytaf_dir=''):
-    """
-    download latest Proba2 pointing database from Proba2 Science Center.
-    """
-    url = 'http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
-    destination = os.path.join(lytaf_dir, 'annotation_ppt.db')
-    urllib.request.urlretrieve(url, destination)
-
-    return
 
 
 def split_series_using_lytaf(timearray, data, lytaf):
