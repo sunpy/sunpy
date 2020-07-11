@@ -18,6 +18,7 @@ import sunpy.timeseries
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -31,8 +32,10 @@ fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
 rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
-noaa_ind_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
-noaa_pre_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
+noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
+noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated.json')
+noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
+noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
 goes_filepath = os.path.join(filepath, 'go1520110607.fits')
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
@@ -173,14 +176,28 @@ class TestTimeSeries:
         ts_rhessi = sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
         assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries)
 
-    def test_noaa_ind(self):
-        # Test a NOAAPredictIndices TimeSeries
-        ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_filepath, source='NOAAIndices')
+    def test_noaa_ind_json(self):
+        # Test a NOAAPredictIndices TimeSeries json
+        ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_json_filepath, source='NOAAIndices')
         assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
 
-    def test_noaa_pre(self):
-        # Test a NOAAIndices TimeSeries
-        ts_noaa_pre = sunpy.timeseries.TimeSeries(noaa_pre_filepath, source='NOAAPredictIndices')
+    def test_noaa_ind_txt(self):
+        # Test a NOAAPredictIndices TimeSeries txt
+        with pytest.warns(SunpyDeprecationWarning):
+            ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
+        assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
+
+    def test_noaa_pre_json(self):
+        # Test a NOAAIndices TimeSeries json
+        ts_noaa_pre = sunpy.timeseries.TimeSeries(
+            noaa_pre_json_filepath, source='NOAAPredictIndices')
+        assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
+
+    def test_noaa_pre_txt(self):
+        # Test a NOAAIndices TimeSeries txt
+        with pytest.warns(SunpyDeprecationWarning):
+            ts_noaa_pre = sunpy.timeseries.TimeSeries(
+                noaa_pre_txt_filepath, source='NOAAPredictIndices')
         assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
 
 # ==============================================================================
