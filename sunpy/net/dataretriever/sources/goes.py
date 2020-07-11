@@ -84,6 +84,26 @@ class SUVIClient(GenericClient):
     GOES-16 began providing regular level-1b data on 2018-06-01.  At the time
     of writing, SUVI on GOES-17 is operational but currently does not provide
     Level-2 data.
+
+    Examples
+    --------
+    >>> from sunpy.net import Fido, attrs as a
+    >>> import astropy.units as u
+    >>> results = Fido.search(a.Time("2020/7/10", "2020/7/10 00:10"), a.Instrument('suvi'),a.Level.two,
+    ...                       a.goes.SatelliteNumber(16), a.Wavelength(304*u.Angstrom))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    3 Results from the SUVIClient:
+         Start Time           End Time      Instrument ... Level   Wavelength  
+    ------------------- ------------------- ---------- ... ----- --------------
+    2020-07-10 00:00:00 2020-07-10 00:04:00       SUVI ...     2 304.0 Angstrom
+    2020-07-10 00:04:00 2020-07-10 00:08:00       SUVI ...     2 304.0 Angstrom
+    2020-07-10 00:08:00 2020-07-10 00:12:00       SUVI ...     2 304.0 Angstrom
+    <BLANKLINE>
+    <BLANKLINE>
+
     """
     baseurl1b = (r'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes'
                  r'{SatelliteNumber}/l1b/suvi-l1b-{elem:2}{wave:03}/%Y/%m/%d/OR_SUVI-L1b.*\.fits.gz')
@@ -95,7 +115,7 @@ class SUVIClient(GenericClient):
     pattern2 = ('{}/goes/goes{SatelliteNumber:2d}/{}/dr_suvi-l{Level}-ci{Wavelength:03d}_g{SatelliteNumber:2d}_s'
                 '{year:4d}{month:2d}{day:2d}T{hour:2d}{minute:2d}{second:2d}Z_e'
                 '{eyear:4d}{emonth:2d}{eday:2d}T{ehour:2d}{eminute:2d}{esecond:2d}Z_{}')
-    optional = {a.Wavelength, a.Source, a.Provider, a.Level, a.Physobs}
+    optional = {a.Wavelength, a.Source, a.Provider, a.Level, a.Physobs, a.goes.SatelliteNumber}
 
     def pre_search_hook(cls, *args, **kwargs):
         matchdict = cls._get_match_dict(*args, **kwargs)
@@ -112,7 +132,7 @@ class SUVIClient(GenericClient):
         map_['Time'] = timerange
         map_['Start Time'] = start.strftime(TIME_FORMAT)
         map_['End Time'] = end.strftime(TIME_FORMAT)
-        map_['Instrument'] = matchdict['Instrument'][0]
+        map_['Instrument'] = matchdict['Instrument'][0].upper()
         map_['Phsyobs'] = matchdict['Physobs'][0]
         map_['Source'] = matchdict['Source'][0]
         map_['Provider'] = matchdict['Provider'][0]

@@ -25,10 +25,10 @@ class LYRAClient(GenericClient):
     4 Results from the LYRAClient:
          Start Time           End Time      Instrument ... Source Provider Level
     ------------------- ------------------- ---------- ... ------ -------- -----
-    2016-01-01 00:00:00 2016-01-01 23:59:59       LYRA ... Proba2      esa     2
-    2016-01-01 00:00:00 2016-01-01 23:59:59       LYRA ... Proba2      esa     3
-    2016-01-02 00:00:00 2016-01-02 23:59:59       LYRA ... Proba2      esa     2
-    2016-01-02 00:00:00 2016-01-02 23:59:59       LYRA ... Proba2      esa     3
+    2016-01-01 00:00:00 2016-01-01 23:59:59       LYRA ... PROBA2      ESA     2
+    2016-01-01 00:00:00 2016-01-01 23:59:59       LYRA ... PROBA2      ESA     3
+    2016-01-02 00:00:00 2016-01-02 23:59:59       LYRA ... PROBA2      ESA     2
+    2016-01-02 00:00:00 2016-01-02 23:59:59       LYRA ... PROBA2      ESA     3
     <BLANKLINE>
     <BLANKLINE>
 
@@ -46,6 +46,6 @@ class LYRAClient(GenericClient):
                                ('2', 'LYRA: Calibrated data, provided as daily fits.'),
                                ('3', 'LYRA: Same as level 2 but the calibrated data is averaged over 1 min.')],
                  attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
-                 attrs.Source: [('Proba2', 'The PROBA-2 Satellite')],
-                 attrs.Provider: [('esa', 'The European Space Agency.')]}
+                 attrs.Source: [('PROBA2', 'The PROBA-2 Satellite')],
+                 attrs.Provider: [('ESA', 'The European Space Agency.')]}
         return adict
