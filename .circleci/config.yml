@@ -29,7 +29,7 @@ apt-run: &apt-install
 jobs:
   html-docs:
     docker:
-      - image: circleci/python:3.8.1-buster
+      - image: circleci/python:3.8.3
     environment:
       SUNPY_SAMPLEDIR=/home/circleci/sunpy/data/sample_data/
     steps:
