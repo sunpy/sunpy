@@ -23,21 +23,19 @@ def mock_query_object(start_date, end_date):
     Creation of a QueryResponse object, and prefill some
     downloaded data from noaa.NOAAIndicesClient().fetch(Time('20 ..)
     """
-    # Create a mock QueryResponse object
-    map_ = {
-        'TimeRange': TimeRange(parse_time(start_date), parse_time(end_date)),
-        'Time_start': parse_time(start_date),
-        'Time_end': parse_time(end_date),
-        'source': 'sdic',
-        'instrument': 'noaa-indices',
-        'physobs': 'sunspot number',
-        'provider': 'swpc'
+    # Create a mock Query Response object
+    start = parse_time(start_date)
+    end = parse_time(end_date)
+    obj = {
+        'Time': TimeRange(parse_time(start), parse_time(end)),
+        'Instrument': 'NOAA-Indices',
+        'Physobs': 'sunspot number',
+        'Source': 'SIDC',
+        'Provider': 'SWPC',
+        'url': 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
     }
-
-    resp = QueryResponse.create(map_,
-                                noaa.NOAAIndicesClient()._get_url_for_timerange(None),
-                                client=noaa.NOAAIndicesClient())
-    return resp
+    results = QueryResponse([obj], client=noaa.NOAAIndicesClient())
+    return results
 
 
 @pytest.mark.remote_data
@@ -57,12 +55,12 @@ def test_fetch_working(LCClient, tmpdir):
     mock_qr = mock_qr.blocks[0]
     qr = qr1.blocks[0]
 
-    assert mock_qr.source == qr.source
-    assert mock_qr.provider == qr.provider
-    assert mock_qr.physobs == qr.physobs
-    assert mock_qr.instrument == qr.instrument
-    assert mock_qr.url == qr.url
-    assert mock_qr.time == qr.time
+    assert mock_qr['Source'] == qr['Source']
+    assert mock_qr['Provider'] == qr['Provider']
+    assert mock_qr['Physobs'] == qr['Physobs']
+    assert mock_qr['Instrument'] == qr['Instrument']
+    assert mock_qr['url'] == qr['url']
+    assert mock_qr['Time'] == qr['Time']
 
     # Assert if the timerange is same
     assert qr1.time_range() == TimeRange('2012/10/4', '2012/10/6')
@@ -75,14 +73,15 @@ def test_fetch_working(LCClient, tmpdir):
 
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
-    [(TimeRange('1995/06/03', '1995/06/04'),
+    [(Time('1995/06/03', '1995/06/04'),
       'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
       'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'),
-     (TimeRange('2008/06/01', '2008/06/02'),
+     (Time('2008/06/01', '2008/06/02'),
       'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
       'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
+    resp = LCClient.search(timerange)
+    urls = [i['url'] for i in resp]
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -189,8 +188,8 @@ def test_client_repr(LCClient):
 def test_show(LCClient):
     mock_qr = mock_query_object('2012/10/4', '2012/10/6')
     qrshow0 = mock_qr.show()
-    qrshow1 = mock_qr.show('Start Time', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    qrshow1 = mock_qr.show('Source', 'Instrument')
+    allcols = ['Instrument', 'Physobs', 'Source', 'Provider']
     assert qrshow0.colnames == allcols
-    assert qrshow1.colnames == ['Start Time', 'Instrument']
-    assert qrshow0['Instrument'][0] == 'noaa-indices'
+    assert qrshow1.colnames == ['Source', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'NOAA-Indices'

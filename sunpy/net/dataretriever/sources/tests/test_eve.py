@@ -7,7 +7,6 @@ from sunpy.net._attrs import Instrument, Level, Time
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.vso import VSOClient
-from sunpy.net.vso.attrs import Source
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 
@@ -19,21 +18,22 @@ def LCClient():
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
-    (TimeRange('2012/4/21', '2012/4/21'),
+    (Time('2012/4/21', '2012/4/21'),
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt'
      ),
-    (TimeRange('2012/5/5', '2012/5/6'),
+    (Time('2012/5/5', '2012/5/6'),
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120505_EVE_L0CS_DIODES_1m.txt',
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120506_EVE_L0CS_DIODES_1m.txt',
      ),
-    (TimeRange('2012/7/7', '2012/7/14'),
+    (Time('2012/7/7', '2012/7/14'),
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120707_EVE_L0CS_DIODES_1m.txt',
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt',
      )
 ])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
+    qresponse = LCClient.search(timerange)
+    urls = [i['url'] for i in qresponse]
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -46,11 +46,11 @@ def test_can_handle_query(LCClient):
     ans2 = LCClient._can_handle_query(Time('2012/7/7', '2012/7/7'))
     assert ans2 is False
     ans3 = LCClient._can_handle_query(
-        Time('2012/8/9', '2012/8/10'), Instrument('eve'), Source('sdo'))
-    assert ans3 is False
+        Time('2012/8/9', '2012/8/10'), Instrument('eve'), a.Source('sdo'))
+    assert ans3 is True
     ans4 = LCClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level('0CS'))
-    assert ans4 is True
+    assert ans4 is False
     ans5 = LCClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level('wibble'))
     assert ans5 is False
@@ -65,7 +65,7 @@ def test_query(LCClient):
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range().start == parse_time('2012/08/09')
-    assert qr1.time_range().end == parse_time('2012/08/11')  # includes end.
+    assert qr1.time_range().end == parse_time('2012/08/10 23:59:59.999')  # includes end.
 
 
 @pytest.mark.remote_data
@@ -101,7 +101,7 @@ def test_levels(time):
     Level 0 comes from EVEClient, other levels from EVE.
     """
     eve_a = a.Instrument.eve
-    qr = Fido.search(time, eve_a)
+    qr = Fido.search(time, eve_a, a.Level.one)
     clients = {type(a.client) for a in qr.responses}
     assert clients == {VSOClient}
 
@@ -134,21 +134,20 @@ def mock_query_object(LCClient):
     """
     # Creating a Query Response Object
     start = '2016/1/1'
-    end = '2016/1/2'
+    end = '2016/1/1 23:59:59'
     obj = {
-        'TimeRange': TimeRange(parse_time(start), parse_time(end)),
-        'Time_start': parse_time(start),
-        'Time_end': parse_time(end),
-        'source': 'SDO',
-        'instrument': 'eve',
-        'physobs': 'irradiance',
-        'provider': 'LASP'
+        'Time': TimeRange(parse_time(start), parse_time(end)),
+        'Start Time': parse_time(start),
+        'End Time': parse_time(end),
+        'Instrument': 'EVE',
+        'Physobs': 'irradiance',
+        'Source': 'SDO',
+        'Provider': 'LASP',
+        'Level': '0',
+        'url': ('http://lasp.colorado.edu/eve/data_access/evewebdata/'
+                'quicklook/L0CS/SpWx/2016/20160101_EVE_L0CS_DIODES_1m.txt')
     }
-    urls = ['http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
-            '2016/20160101_EVE_L0CS_DIODES_1m.txt',
-            'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
-            '2016/20160102_EVE_L0CS_DIODES_1m.txt']
-    results = QueryResponse.create(obj, urls, client=LCClient)
+    results = QueryResponse([obj], client=LCClient)
     return results
 
 
@@ -156,7 +155,8 @@ def test_show(LCClient):
     mock_qr = mock_query_object(LCClient)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
+               'Provider', 'Level']
     assert qrshow0.colnames == allcols
     assert qrshow1.colnames == ['Start Time', 'Instrument']
-    assert qrshow0['Instrument'][0] == 'eve'
+    assert qrshow0['Instrument'][0] == 'EVE'

@@ -15,7 +15,7 @@ from sunpy.timeseries import TimeSeries
 
 ###############################################################################
 # Let's first grab GOES XRS data for a particular time of interest
-tr = TimeRange(['2011-06-07 04:00', '2011-06-07 12:00'])
+tr = TimeRange(['2011-06-07 00:00', '2011-06-07 12:00'])
 results = Fido.search(a.Time(tr), a.Instrument.xrs)
 
 ###############################################################################

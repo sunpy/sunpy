@@ -18,6 +18,16 @@ TIME_FORMAT = config.get("general", "time_format")
 __all__ = ['QueryResponse', 'GenericClient']
 
 
+class QueryResponseBlock(OrderedDict):
+    """
+    Represents each row for the QueryResponse table.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for k in self:
+            self.__dict__[k.lower()] = self[k]
+
+
 class QueryResponse(BaseQueryResponse):
     """
     A container for files metadata returned by
@@ -26,7 +36,10 @@ class QueryResponse(BaseQueryResponse):
 
     def __init__(self, lst, client=None):
         super().__init__()
-        self._data = lst
+        datalist = []
+        for datablock in lst:
+            datalist.append(QueryResponseBlock(datablock))
+        self._data = datalist
         self._client = client
 
     @property
@@ -40,6 +53,13 @@ class QueryResponse(BaseQueryResponse):
     @client.setter
     def client(self, client):
         self._client = client
+
+    def time_range(self):
+        """
+        Returns the time-span for which records are available.
+        """
+        return TimeRange(min(qrblock['Time'].start for qrblock in self),
+                         max(qrblock['Time'].end for qrblock in self))
 
     def __len__(self):
         return len(self._data)
@@ -69,11 +89,12 @@ class QueryResponse(BaseQueryResponse):
         if len(self._data) == 0:
             return astropy.table.Table()
 
-        # removing columns not to be shown in the response table.
-        meta0 = self._data[0]
-        meta0.pop('url', None)
-        meta0.pop('Time', None)
-        columns = OrderedDict(((col, [])) for col in meta0.keys())
+        # finding column names to be shown in the response table.
+        colnames = []
+        for colname in self._data[0].keys():
+            if colname != 'url' and colname != 'Time':
+                colnames.append(colname)
+        columns = OrderedDict(((col, [])) for col in colnames)
 
         for qrblock in self:
             for colname in columns.keys():
@@ -135,6 +156,8 @@ class GenericClient(BaseClient):
                 raise ValueError("GenericClient can not add {} to the map_ dictionary to pass to the Client.".format(elem.__class__.__name__))
         for k in kwargs:
             matchdict[k] = [kwargs[k]]
+            if isinstance(kwargs[k], str):
+                matchdict[k] = [kwargs[k].lower()]
         return matchdict
 
     @classmethod
@@ -164,11 +187,12 @@ class GenericClient(BaseClient):
             optional = cls.optional
         if not cls.check_attr_types_in_query(query, required, optional):
             return False
-        all_instr = [i[0].lower() for i in adict[a.Instrument]]
-        for x in query:
-            if isinstance(x, a.Instrument) and x.value.lower() in all_instr:
-                return True
-        return False
+        for key in adict:
+            all_vals = [i[0].lower() for i in adict[key]]
+            for x in query:
+                if isinstance(x, key) and str(x.value).lower() not in all_vals:
+                    return False
+        return True
 
     def post_search_hook(self, exdict, matchdict):
         """
@@ -202,7 +226,7 @@ class GenericClient(BaseClient):
         map_['End Time'] = end.strftime(TIME_FORMAT)
         map_['Instrument'] = matchdict['Instrument'][0].upper()
         if 'Physobs' in matchdict:
-            map_['Phsyobs'] = matchdict['Physobs'][0]
+            map_['Physobs'] = matchdict['Physobs'][0]
         map_['Source'] = matchdict['Source'][0].upper()
         map_['Provider'] = matchdict['Provider'][0].upper()
         for k in exdict:
@@ -238,7 +262,7 @@ class GenericClient(BaseClient):
             elif '{file}' not in str(path):
                 fname = path / '{file}'
 
-            temp_dict = qres.blocks[i]._map.copy()
+            temp_dict = qres.blocks[i].copy()
             temp_dict['file'] = str(filename)
             fname = fname.expanduser()
             fname = Path(str(fname).format(**temp_dict))
@@ -306,7 +330,7 @@ class GenericClient(BaseClient):
         if path is not None:
             path = Path(path)
 
-        urls = [qrblock.url for qrblock in qres.blocks]
+        urls = [qrblock['url'] for qrblock in qres]
 
         filenames = [url.split('/')[-1] for url in urls]
 

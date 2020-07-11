@@ -96,7 +96,7 @@ class SUVIClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the SUVIClient:
-         Start Time           End Time      Instrument ... Level   Wavelength  
+         Start Time           End Time      Instrument ... Level   Wavelength
     ------------------- ------------------- ---------- ... ----- --------------
     2020-07-10 00:00:00 2020-07-10 00:04:00       SUVI ...     2 304.0 Angstrom
     2020-07-10 00:04:00 2020-07-10 00:08:00       SUVI ...     2 304.0 Angstrom
@@ -133,12 +133,13 @@ class SUVIClient(GenericClient):
         map_['Start Time'] = start.strftime(TIME_FORMAT)
         map_['End Time'] = end.strftime(TIME_FORMAT)
         map_['Instrument'] = matchdict['Instrument'][0].upper()
-        map_['Phsyobs'] = matchdict['Physobs'][0]
+        map_['Physobs'] = matchdict['Physobs'][0]
         map_['Source'] = matchdict['Source'][0]
         map_['Provider'] = matchdict['Provider'][0]
         map_['SatelliteNumber'] = i['SatelliteNumber']
         map_['Level'] = i['Level']
         map_['Wavelength'] = i['Wavelength']*u.Angstrom
+        map_['url'] = i['url']
         return map_
 
     def search(self, *args, **kwargs):

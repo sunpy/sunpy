@@ -9,8 +9,6 @@ from sunpy.net.dataretriever import GenericClient
 
 __all__ = ['NoRHClient']
 
-BASEURL = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
-
 
 class NoRHClient(GenericClient):
     """

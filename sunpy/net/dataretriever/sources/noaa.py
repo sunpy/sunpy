@@ -128,7 +128,7 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-         Start Time           End Time      Instrument Phsyobs Source Provider
+         Start Time           End Time      Instrument Physobs Source Provider
     ------------------- ------------------- ---------- ------- ------ --------
     2016-01-01 00:00:00 2016-12-31 23:59:59       SOON     SRS   SWPC     NOAA
     2016-01-01 00:00:00 2016-12-31 23:59:59       SOON     SRS   SWPC     NOAA
@@ -169,6 +169,7 @@ class SRSClient(GenericClient):
             exdict2 = parse(extractor2, url)
             exdict = (exdict2 if exdict1 is None else exdict1).named
             map_ = super().post_search_hook(exdict, matchdict)
+            map_['url'] = url
             metalist.append(map_)
         return QueryResponse(metalist, client=self)
 
@@ -186,7 +187,7 @@ class SRSClient(GenericClient):
         Results Object
         """
 
-        urls = [qrblock.url for qrblock in qres]
+        urls = [qrblock['url'] for qrblock in qres]
 
         filenames = []
         local_filenames = []
@@ -195,7 +196,7 @@ class SRSClient(GenericClient):
             name = url.split('/')[-1]
 
             # temporary fix !!! coz All QRBs have same start_time values
-            day = Time(qre.time.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+            day = Time(qre['Time'].start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
 
             if name not in filenames:
                 filenames.append(name)
