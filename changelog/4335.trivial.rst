@@ -1,0 +1,2 @@
+Added information on what went wrong when `sunpy.map.GenericMap.wcs` fails to parse
+a FITS header into a WCS.
