@@ -3,6 +3,7 @@ Test Generic Map
 """
 import os
 
+import matplotlib.colors as mcolor
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
@@ -202,3 +203,12 @@ def test_heliographic_rectangle_top_right(heliographic_test_map):
 def test_heliographic_grid_annotations(heliographic_test_map):
     heliographic_test_map.plot()
     heliographic_test_map.draw_grid(annotate=False)
+
+
+def test_plot_norm_error(aia171_test_map):
+    # Check that duplicating vmin, vmax raises an error
+    norm = mcolor.Normalize(vmin=0, vmax=1)
+    with pytest.raises(ValueError, match='Cannot manually specify vmin'):
+        aia171_test_map.plot(norm=norm, vmin=0)
+    with pytest.raises(ValueError, match='Cannot manually specify vmax'):
+        aia171_test_map.plot(norm=norm, vmax=0)
