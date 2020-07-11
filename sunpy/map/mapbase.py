@@ -531,7 +531,7 @@ class GenericMap(NDData):
         return self.data.dtype
 
     @property
-    @deprecated(since="2.1", message="Use map.data.shape instead", alternative="map.data.shape")
+    @deprecated(since="2.1", message="Use map.data.size instead", alternative="map.data.size")
     def size(self):
         """
         The number of pixels in the array of the map.
