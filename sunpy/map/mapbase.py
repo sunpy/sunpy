@@ -2077,6 +2077,19 @@ class GenericMap(NDData):
             imshow_args['vmin'] = vmin
             imshow_args['vmax'] = vmax
 
+        if 'norm' in imshow_args:
+            norm = imshow_args['norm']
+            if 'vmin' in imshow_args:
+                if norm.vmin is not None:
+                    raise ValueError('Cannot manually specify vmin, as the norm '
+                                     'already has vmin set')
+                norm.vmin = imshow_args.pop('vmin')
+            if 'vmax' in imshow_args:
+                if norm.vmax is not None:
+                    raise ValueError('Cannot manually specify vmax, as the norm '
+                                     'already has vmax set')
+                norm.vmax = imshow_args.pop('vmax')
+
         if self.mask is None:
             ret = axes.imshow(self.data, **imshow_args)
         else:
