@@ -1,0 +1,56 @@
+[
+    {
+        "time-tag": "2037-07-17",
+        "predicted_ssn": 0.1,
+        "high_ssn": 10.1,
+        "low_ssn": 0.0,
+        "predicted_f10.7": 67.8,
+        "high_f10.7": 76.8,
+        "low_f10.7": 67.7
+    },
+    {
+        "time-tag": "2037-08-15",
+        "predicted_ssn": 0.1,
+        "high_ssn": 10.1,
+        "low_ssn": 0.0,
+        "predicted_f10.7": 67.8,
+        "high_f10.7": 76.8,
+        "low_f10.7": 67.7
+    },
+    {
+        "time-tag": "2037-09-17",
+        "predicted_ssn": 0.1,
+        "high_ssn": 10.1,
+        "low_ssn": 0.0,
+        "predicted_f10.7": 67.8,
+        "high_f10.7": 76.8,
+        "low_f10.7": 67.7
+    },
+    {
+        "time-tag": "2037-10-16",
+        "predicted_ssn": 0.1,
+        "high_ssn": 10.1,
+        "low_ssn": 0.0,
+        "predicted_f10.7": 67.8,
+        "high_f10.7": 76.8,
+        "low_f10.7": 67.7
+    },
+    {
+        "time-tag": "2037-11-14",
+        "predicted_ssn": 0.1,
+        "high_ssn": 10.1,
+        "low_ssn": 0.0,
+        "predicted_f10.7": 67.8,
+        "high_f10.7": 76.8,
+        "low_f10.7": 67.7
+    },
+    {
+        "time-tag": "2037-12-17",
+        "predicted_ssn": 0.1,
+        "high_ssn": 10.1,
+        "low_ssn": 0.0,
+        "predicted_f10.7": 67.8,
+        "high_f10.7": 76.8,
+        "low_f10.7": 67.7
+    }
+]
