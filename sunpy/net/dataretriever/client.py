@@ -128,7 +128,7 @@ class GenericClient(BaseClient):
                 timerange = TimeRange(elem.start, elem.end)
                 matchdict['Time'] = timerange
             elif hasattr(elem, 'value'):
-                matchdict[elem.__class__.__name__] = [str(elem.value)]
+                matchdict[elem.__class__.__name__] = [str(elem.value).lower()]
             elif isinstance(elem, Wavelength):
                 matchdict['Wavelength'] = elem
             else:
@@ -200,11 +200,11 @@ class GenericClient(BaseClient):
         map_['Time'] = TimeRange(start, end)
         map_['Start Time'] = start.strftime(TIME_FORMAT)
         map_['End Time'] = end.strftime(TIME_FORMAT)
-        map_['Instrument'] = matchdict['Instrument'][0]
+        map_['Instrument'] = matchdict['Instrument'][0].upper()
         if 'Physobs' in matchdict:
             map_['Phsyobs'] = matchdict['Physobs'][0]
-        map_['Source'] = matchdict['Source'][0]
-        map_['Provider'] = matchdict['Provider'][0]
+        map_['Source'] = matchdict['Source'][0].upper()
+        map_['Provider'] = matchdict['Provider'][0].upper()
         for k in exdict:
             if k not in ['year', 'month', 'day']:
                 map_[k] = exdict[k]

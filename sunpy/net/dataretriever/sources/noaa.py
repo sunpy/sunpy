@@ -50,6 +50,7 @@ class NOAAIndicesClient(GenericClient):
             if isinstance(map_[key], list):
                 map_[key] = map_[key][0]
         map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
+        map_['Instrument'] = 'NOAA-Indices'
         return QueryResponse([map_], client=self)
 
     @classmethod
@@ -97,6 +98,7 @@ class NOAAPredictClient(GenericClient):
             if isinstance(map_[key], list):
                 map_[key] = map_[key][0]
         map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
+        map_['Instrument'] = 'NOAA-Predict'
         return QueryResponse([map_], client=self)
 
     @classmethod
