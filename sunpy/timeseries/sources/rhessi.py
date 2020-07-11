@@ -2,6 +2,7 @@
 This module provies a RHESSI `~sunpy.timeseries.TimeSeries` source.
 """
 import datetime
+import itertools
 from collections import OrderedDict
 
 import matplotlib.dates
@@ -91,7 +92,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         figure = plt.figure()
         axes = plt.gca()
 
-        for color, (item, frame) in zip(colors, self.to_dataframe().items()):
+        for color, (item, frame) in zip(itertools.cycle(colors),
+                                        self.to_dataframe().items()):
             axes.plot(self.to_dataframe().index, frame.values,
                       color=color, label=item, **kwargs)
 
