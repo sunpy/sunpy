@@ -235,10 +235,11 @@ def rstjinja(app, docname, source):
 
 def setup(app):
     # If SunpyDeprecationWarning is raised, we want it to error
+    import os
     import warnings
-    from sunpy.util import SunpyDeprecationWarning
+    from sunpy.util.exceptions import SunpyDeprecationWarning
     warnings.simplefilter("error", SunpyDeprecationWarning)
-
+    os.environ["PYTHONWARNINGS"] = "error::sunpy.util.exceptions.SunpyDeprecationWarning"
     # Generate the stability page
     app.connect("source-read", rstjinja)
 

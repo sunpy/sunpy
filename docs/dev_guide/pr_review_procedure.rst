@@ -37,15 +37,35 @@ Continuous Integration
 
 Currently we have a variety of services that respond or activate on an opened pull request:
 
-* `pep8speaks <https://github.com/OrkoHunter/pep8speaks>`_: Performs a PEP8 check on any submitted code.
+Comments from bots:
 
-* `CircleCi <https://circleci.com/gh/sunpy/sunpy/>`_: Tests to see if sunpy installs, builds the documentation and runs the figure tests.
+* `pep8speaks <https://github.com/OrkoHunter/pep8speaks>`_: Performs a PEP8 check on any submitted code. This is updated as the code changes.
 
-* Giles: Returns a link if the documentation builds successfully.
+Checks (they are located at the bottom of the pull request):
 
-* `Azure Pipelines <https://dev.azure.com/sunpy/sunpy/_build>`_: Runs our test suite on all three operating systems.
+* `figure-tests (CircleCi) <https://circleci.com/gh/sunpy/sunpy/>`_: Runs two figure tests environments ("py38-figure", "py37-figure-devdeps").
 
-* `CodeCov <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage.
+* figure_report/figure_tests (Giles): Show the final results of the figure tests.
+
+* figure_report_devdeps (Giles): Show the final results of the figure tests using development packages.
+
+* changelog: absent | found (Giles): If a changelog is needed, this will check and will pass if a changelog with the correct number is found.
+
+* milestone: absent | present (Giles): Will check that the pull request has a milestone assigned.
+
+* `docs/readthedocs.org:sunpy (Read the Docs) <https://readthedocs.org/projects/sunpy/>`_: This builds our documentation.
+
+* `sunpy.sunpy (Azure Pipelines) <https://dev.azure.com/sunpy/sunpy/_build>`_: Runs our test suite on all three operating systems.
+  There are 10 separate checks for this.
+
+* `codecov/patch (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage for the submitted code.
+
+* `codecov/project (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage in sunpy overall.
+
+It is common to see some of these checks fail.
+This can be happen to due a change that has broken a test or a remote server that we use has failed.
+Therefore it is important to check why a task failed and if has a pre-existing issue, it can be safe to ignore on that pull request.
+However, you should try to ensure that as many checks pass before merging.
 
 SunPy GitHub Groups
 ===================
