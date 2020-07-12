@@ -76,6 +76,11 @@ def sea_locations():
 
 
 @pytest.fixture
+def seas_metadict(sea_locations):
+    return MetaDict(sea_locations)
+
+
+@pytest.fixture
 def atomic_weights():
     return [['hydrogen', 1],
             ['chromium', 24],
@@ -84,8 +89,55 @@ def atomic_weights():
 
 
 @pytest.fixture
-def seas_metadict(sea_locations):
-    return MetaDict(sea_locations)
+def atomic_weights_keycomments():
+    """
+    Atomic weights with keycomments (including extraneous keycomments).
+    """
+    return [['hydrogen', 1],
+            ['chromium', 24],
+            ['mercury', 80],
+            ['iridium', 77],
+            ['keycomments', {
+                'chromium': 'Cr',
+                'extra key 1': 'foo',
+                'MERCURY': 'Hg',
+                'extra key 2': 'bar'
+            }]]
+
+
+@pytest.fixture
+def atomic_weights_pruned_keycomments():
+    """
+    Expected result of atomic weights with extraneous keycomments removed.
+    """
+    return [['hydrogen', 1],
+            ['chromium', 24],
+            ['mercury', 80],
+            ['iridium', 77],
+            ['keycomments', {
+                'chromium': 'Cr',
+                'MERCURY': 'Hg'
+            }]]
+
+
+@pytest.fixture
+def atomic_weights_keycomments_after_removal():
+    """
+    Expected result after removing some atomic weights and their keycomments.
+    """
+    return [['chromium', 24],
+            ['iridium', 77],
+            ['keycomments', {
+                'chromium': 'Cr'
+            }]]
+
+
+@pytest.fixture
+def empty_keycomments():
+    """
+    Expected result after removing all keys.
+    """
+    return [['keycomments', {}]]
 
 
 # Test constructors `MetaDict.__init__(...)`
@@ -139,12 +191,34 @@ def test_init_with_metadict(atomic_weights):
     assert id(original) != id(new)
 
 
+def test_init_with_keycomments(atomic_weights_keycomments, atomic_weights_pruned_keycomments):
+    """
+    Initialise `MetaDict` with keycomments. Ensure caller's keycomments dict is not mutated.
+    """
+    orig_dict = pairs_to_dict(atomic_weights_keycomments)
+    orig_keycomments = orig_dict['keycomments'].copy()
+
+    md = MetaDict(orig_dict)
+    check_contents_and_insertion_order(md, atomic_weights_pruned_keycomments)
+
+    assert md['keycomments'] is not orig_dict['keycomments']
+    assert orig_dict['keycomments'] == orig_keycomments
+
+
 def test_init_with_illegal_arg():
     """
     Ensure attempt to initialise with a nonsensical data structure is rejected.
     """
     with pytest.raises(TypeError):
         MetaDict({'a', 'b', 'c', 'd'})
+
+
+def test_init_with_invalid_keycomments_type():
+    """
+    Ensure attempt to initialise with an invalid keycomments type is rejected.
+    """
+    with pytest.raises(TypeError):
+        MetaDict({'a': 1, 'b': 2, 'keycomments': 3})
 
 
 # Test individual methods
@@ -191,6 +265,50 @@ def test_setitem_new_entry(seas_metadict):
     assert len(seas_metadict) == len_before + 1
 
     assert seas_metadict['Irish'] == 'N.Europe'
+
+
+def test_delitem(seas_metadict):
+    """
+    Test `MetaDict.__delitem__(...)`.
+    """
+    len_before = len(seas_metadict)
+    del seas_metadict['NoRwEgIaN']
+    del seas_metadict['baltic']
+    assert len(seas_metadict) == len_before - 2
+
+    with pytest.raises(KeyError):
+        seas_metadict['baltic']
+
+    with pytest.raises(KeyError):
+        seas_metadict['NoRwEgIaN']
+
+
+def test_delitem_missing_key(seas_metadict):
+    """
+    Test `MetaDict.__delitem__(...)` raises error on missing key.
+    """
+    with pytest.raises(KeyError):
+        del seas_metadict['missing key']
+
+
+def test_delitem_with_keycomments(atomic_weights_keycomments,
+                                  atomic_weights_keycomments_after_removal):
+    """
+    Test `MetaDict.__delitem__(...)` removes corresponding keycomments.
+    """
+    len_before = len(atomic_weights_keycomments)
+    md = MetaDict(atomic_weights_keycomments)
+    del md['hydrogen']
+    del md['mercury']
+    assert len(md) == len_before - 2
+
+    with pytest.raises(KeyError):
+        md['hydrogen']
+
+    with pytest.raises(KeyError):
+        md['mercury']
+
+    check_contents_and_insertion_order(md, atomic_weights_keycomments_after_removal)
 
 
 def test_get(seas_metadict):
@@ -242,6 +360,32 @@ def test_pop(seas_metadict):
     assert seas_metadict.pop('baltic') == 'europe'
     assert len(seas_metadict) == len_before - 1
 
+
+def test_pop_with_keycomments(atomic_weights_keycomments,
+                              atomic_weights_keycomments_after_removal):
+    """
+    Test `MetaDict.pop(...)` removes corresponding keycomments.
+    """
+    len_before = len(atomic_weights_keycomments)
+    md = MetaDict(atomic_weights_keycomments)
+
+    assert md.pop('hydrogen') == 1
+    assert md.pop('mercury') == 80
+    assert len(md) == len_before - 2
+    check_contents_and_insertion_order(md, atomic_weights_keycomments_after_removal)
+
+
+def test_popitem_with_keycomments(atomic_weights_keycomments, empty_keycomments):
+    """
+    Test `MetaDict.popitem(...)` removes corresponding keycomments.
+    """
+    md = MetaDict(atomic_weights_keycomments)
+
+    assert md.popitem(last=False) == ('hydrogen', 1)
+    assert md.popitem(last=False) == ('chromium', 24)
+    assert md.popitem(last=False) == ('mercury', 80)
+    assert md.popitem(last=False) == ('iridium', 77)
+    check_contents_and_insertion_order(md, empty_keycomments)
 
 #  Test `MetaDict.update(...)`.
 
