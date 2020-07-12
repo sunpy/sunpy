@@ -21,7 +21,7 @@ from sunpy.data.sample import AIA_171_IMAGE
 aia = sunpy.map.Map(AIA_171_IMAGE)
 bottom_left = SkyCoord(-300 * u.arcsec, 0 * u.arcsec, frame=aia.coordinate_frame)
 top_right = SkyCoord(100 * u.arcsec, 400 * u.arcsec, frame=aia.coordinate_frame)
-aia_smap = aia.submap(bottom_left, top_right=top_right)
+aia_smap = aia.submap(bottom_left, top_right)
 aia_smap.plot()
 
 ###############################################################################

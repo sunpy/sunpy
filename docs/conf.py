@@ -39,12 +39,12 @@ if on_rtd:
 
 # -- Non stdlib imports --------------------------------------------------------
 
-import ruamel.yaml as yaml
-from sphinx_gallery.sorting import ExplicitOrder
-from sphinx_gallery.sorting import ExampleTitleSortKey
+import ruamel.yaml as yaml  # NOQA
+from sphinx_gallery.sorting import ExplicitOrder  # NOQA
+from sphinx_gallery.sorting import ExampleTitleSortKey  # NOQA
 
-import sunpy
-from sunpy import __version__
+import sunpy  # NOQA
+from sunpy import __version__  # NOQA
 
 # -- Project information -------------------------------------------------------
 
@@ -62,7 +62,7 @@ is_development = '.dev' in __version__
 # in the CI, especially RTD.
 ori_level = sunpy.log.level
 sunpy.log.setLevel("DEBUG")
-import sunpy.data.sample  # isort:skip
+import sunpy.data.sample  # NOQA
 sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
@@ -85,29 +85,28 @@ rst_epilog = """
 
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
-suppress_warnings = ['app.add_directive',]
+suppress_warnings = ['app.add_directive', ]
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.inheritance_diagram',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.doctest',
-    'sphinx.ext.mathjax',
+    'matplotlib.sphinxext.plot_directive',
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_gallery.gen_gallery',
-    'sunpy.util.sphinx.doctest',
-    'matplotlib.sphinxext.plot_directive',
-    'sunpy.util.sphinx.minigallery',
-    'sunpy.util.sphinx.generate',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
+    'sphinx.ext.inheritance_diagram',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
     'sunpy.util.sphinx.changelog',
+    'sunpy.util.sphinx.doctest',
+    'sunpy.util.sphinx.generate',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -161,7 +160,7 @@ intersphinx_mapping = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-from sunpy_sphinx_theme.conf import *
+from sunpy_sphinx_theme.conf import *  # NOQA
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -204,7 +203,7 @@ sphinx_gallery_conf = {
     'abort_on_example_error': False,
     'plot_gallery': True,
     'remove_config_comments': True,
-    'doc_module': ('sunpy')
+    'doc_module': ('sunpy'),
 }
 
 # -- Stability Page ------------------------------------------------------------
@@ -215,6 +214,7 @@ with open('./dev_guide/sunpy_stability.yaml', 'r') as estability:
 html_context = {
     'sunpy_modules': sunpy_modules
 }
+
 
 def rstjinja(app, docname, source):
     """
@@ -232,7 +232,13 @@ def rstjinja(app, docname, source):
 
 # -- Sphinx setup --------------------------------------------------------------
 
+
 def setup(app):
+    # If SunpyDeprecationWarning is raised, we want it to error
+    import warnings
+    from sunpy.util import SunpyDeprecationWarning
+    warnings.simplefilter("error", SunpyDeprecationWarning)
+
     # Generate the stability page
     app.connect("source-read", rstjinja)
 

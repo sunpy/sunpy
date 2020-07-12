@@ -94,7 +94,7 @@ Sphinx builds documentation iteratively, only adding things that have changed.
 
 If you want to build the documentation without building the gallery, i.e. to reduce build times while working on other sections of the documentation you can run::
 
-    $ tox -e build_docs -- -D plot_gallery=0
+    $ tox -e build_docs -- -D plot_gallery=False
 
 If you'd like to start from scratch (i.e., remove the tox cache) then run::
 
