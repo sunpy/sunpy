@@ -26,6 +26,9 @@ class TimeRange:
        Regardless of how a `sunpy.time.TimeRange` is constructed it will always
        provide a positive time range where the start time is before the end time.
 
+       `sunpy.time.TimeRange.__contains__` allows you to check if a time is within the
+       time range you have created. Please see the example section below.
+
     Parameters
     ----------
     a : {parse_time_types}
@@ -54,6 +57,9 @@ class TimeRange:
                576000.0 minutes or
                34560000.0 seconds
     <BLANKLINE>
+    >>> # You can also check if a time is within the time range.
+    >>> '2010/03/04 00:10' in time_range
+    True
     """
 
     def __init__(self, a, b=None, format=None):
