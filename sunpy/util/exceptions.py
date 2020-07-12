@@ -5,13 +5,11 @@ Exceptions that are specific to a given package should **not** be here,
 but rather in the particular package.
 """
 
-from astropy.utils.exceptions import AstropyWarning
-
 __all__ = ["SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
            "SunpyPendingDeprecationWarning"]
 
 
-class SunpyWarning(AstropyWarning):
+class SunpyWarning(Warning):
     """
     The base warning class from which all Sunpy warnings should inherit.
 
