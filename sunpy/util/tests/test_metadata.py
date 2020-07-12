@@ -102,7 +102,7 @@ def atomic_weights_keycomments():
                 'extra key 1': 'foo',
                 'MERCURY': 'Hg',
                 'extra key 2': 'bar'
-             }]]
+            }]]
 
 
 @pytest.fixture
@@ -117,7 +117,7 @@ def atomic_weights_pruned_keycomments():
             ['keycomments', {
                 'chromium': 'Cr',
                 'MERCURY': 'Hg'
-             }]]
+            }]]
 
 
 @pytest.fixture
@@ -129,7 +129,7 @@ def atomic_weights_keycomments_after_removal():
             ['iridium', 77],
             ['keycomments', {
                 'chromium': 'Cr'
-             }]]
+            }]]
 
 
 @pytest.fixture
