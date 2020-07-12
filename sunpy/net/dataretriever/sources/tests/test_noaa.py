@@ -44,7 +44,7 @@ def mock_query_object(start_date, end_date):
 def test_fetch_working(LCClient, tmpdir):
     """
     Tests if the online server for noaa is working.
-    Uses the url : ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
+    Uses the url : https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json
     """
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
                           Instrument('noaa-indices'))
@@ -70,17 +70,17 @@ def test_fetch_working(LCClient, tmpdir):
     target_dir = tmpdir.mkdir("down")
     download_list = LCClient.fetch(qr1, path=target_dir)
     assert len(download_list) == len(qr1)
-    assert download_list[0].split('/')[-1] == 'RecentIndices.txt'
+    assert download_list[0].split('/')[-1] == 'observed-solar-cycle-indices.json'
 
 
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
     [(TimeRange('1995/06/03', '1995/06/04'),
-      'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
-      'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt'),
+      'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
+      'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'),
      (TimeRange('2008/06/01', '2008/06/02'),
-      'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
-      'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt')])
+      'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
+      'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
@@ -128,8 +128,8 @@ def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path, LCClient):
     # Downloader.enqueue_file method with the correct arguments. Everything
     # that happens after this point should either be tested in the
     # GenericClient tests or in parfive itself.
-    assert mock_enqueue.called_once_with(("ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt",
-                                          path / "RecentIndices.txt"))
+    assert mock_enqueue.called_once_with(("https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json",
+                                          path / "observed-solar-cycle-indices.json"))
 
 
 @no_vso
@@ -150,8 +150,8 @@ def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, LCClient):
     # Downloader.enqueue_file method with the correct arguments. Everything
     # that happens after this point should either be tested in the
     # GenericClient tests or in parfive itself.
-    assert mock_enqueue.called_once_with(("ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt",
-                                          path / "RecentIndices.txt"))
+    assert mock_enqueue.called_once_with(("https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json",
+                                          path / "observed-solar-cycle-indices.json"))
 
 
 @pytest.mark.remote_data

@@ -1,16 +1,20 @@
 """
 This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 """
+from pathlib import Path
 from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from pandas.io.parsers import read_csv
 
 import astropy.units as u
 from astropy.time import Time
 
+from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.util.decorators import deprecated
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -39,14 +43,14 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> noaa_url = "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
+    >>> noaa_url = "https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json"
     >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAIndices')  # doctest: +REMOTE_DATA
-    >>> noaa.peek()   # doctest: +SKIP
+    >>> noaa.peek()  # doctest: +SKIP
 
     References
     ----------
     * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products/3-day-geomagnetic-forecast>`_
-    * `Recent solar indices <ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt>`_
+    * `Recent solar indices <https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json>`_
     * `Indices Descriptions <ftp://ftp.swpc.noaa.gov/pub/weekly/README3>`_
     * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
     * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
@@ -62,7 +66,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         .. plot::
 
             import sunpy.timeseries
-            noaa_url = "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
+            noaa_url = "https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json"
             noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAIndices')
             noaa.peek()
 
@@ -78,26 +82,26 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
         figure = plt.figure()
         axes = plt.gca()
-
+        dataframe = self.to_dataframe()
         if type == 'sunspot SWO':
-            axes = self.to_dataframe()['sunspot SWO'].plot(**kwargs)
-            self.to_dataframe()['sunspot SWO smooth'].plot(**kwargs)
+            axes = dataframe['sunspot SWO'].plot(**kwargs)
+            dataframe['sunspot SWO smooth'].plot(**kwargs)
             axes.set_ylabel('Sunspot Number')
         elif type == 'sunspot RI':
-            axes = self.to_dataframe()['sunspot RI'].plot(**kwargs)
-            self.to_dataframe()['sunspot RI smooth'].plot(**kwargs)
+            axes = dataframe['sunspot RI'].plot(**kwargs)
+            dataframe['sunspot RI smooth'].plot(**kwargs)
             axes.set_ylabel('Sunspot Number')
         elif type == 'sunspot compare':
-            axes = self.to_dataframe()['sunspot RI'].plot(**kwargs)
-            self.to_dataframe()['sunspot SWO'].plot(**kwargs)
+            axes = dataframe['sunspot RI'].plot(**kwargs)
+            dataframe['sunspot SWO'].plot(**kwargs)
             axes.set_ylabel('Sunspot Number')
         elif type == 'radio':
-            axes = self.to_dataframe()['radio flux'].plot(**kwargs)
-            self.to_dataframe()['radio flux smooth'].plot(**kwargs)
+            axes = dataframe['radio flux'].plot(**kwargs)
+            dataframe['radio flux smooth'].plot(**kwargs)
             axes.set_ylabel('Radio Flux [sfu]')
         elif type == 'geo':
-            axes = self.to_dataframe()['geomagnetic ap'].plot(**kwargs)
-            self.to_dataframe()['geomagnetic ap smooth'].plot(**kwargs)
+            axes = dataframe['geomagnetic ap'].plot(**kwargs)
+            dataframe['geomagnetic ap smooth'].plot(**kwargs)
             axes.set_ylabel('Geomagnetic AP Index')
         else:
             raise ValueError(f'Got unknown plot type "{type}"')
@@ -113,8 +117,19 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
     @classmethod
     def _parse_file(cls, filepath):
+        suffix = Path(filepath).suffix
+        if suffix == '.json':
+            return cls._parse_json_file(filepath)
+        elif suffix == ".txt":
+            return cls._parse_txt_file(filepath)
+        else:
+            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.txt' or '.json'")
+
+    @staticmethod
+    @deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
+    def _parse_txt_file(filepath):
         """
-        Parses an NOAA indices csv file.
+        Parses an NOAA indices text file.
 
         Parameters
         ----------
@@ -154,6 +169,42 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             # TODO: fix header/meta, it's returning rubbish.
             return data, MetaDict({'comments': header}), units
 
+    @staticmethod
+    def _parse_json_file(filepath):
+        """
+        Parses an NOAA indices JSON file.
+
+        Parameters
+        ----------
+        filepath : `str`
+            The path to the file you want to parse.
+        """
+        with open(filepath) as fp:
+            fp.seek(0)
+            data = pd.read_json(fp.read())
+
+        rename = {'ssn': 'sunspot RI',
+                  'smoothed_ssn': 'sunspot RI smooth',
+                  'observed_swpc_ssn': 'sunspot SWO',
+                  'smoothed_swpc_ssn': 'sunspot SWO smooth',
+                  'f10.7': 'radio flux',
+                  'smoothed_f10.7': 'radio flux smooth'}
+        data = data.rename(columns=rename)
+        # Convoluted time index handling
+        data = data.set_index('time-tag')
+        data.index = pd.DatetimeIndex(data.index.values)
+        data.index = pd.DatetimeIndex(parse_time(
+            [x for x in data.index.values]).isot.astype('datetime64'))
+
+        # Add the units data, reported in radio flux values (sfu) originally.
+        units = OrderedDict([('sunspot RI', u.dimensionless_unscaled),
+                             ('sunspot RI smooth', u.dimensionless_unscaled),
+                             ('sunspot SWO', u.dimensionless_unscaled),
+                             ('sunspot SWO smooth', u.dimensionless_unscaled),
+                             ('radio flux', 1e-22*u.W/(u.m**2*u.Hertz)),
+                             ('radio flux smooth', 1e-22*u.W/(u.m**2*u.Hertz))])
+        return data, MetaDict({'comments': ""}), units
+
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """
@@ -185,14 +236,14 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> noaa_url = 'ftp://ftp.swpc.noaa.gov/pub/weekly/Predict.txt'
+    >>> noaa_url = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'  # doctest: +REMOTE_DATA
     >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')  # doctest: +REMOTE_DATA
-    >>> noaa.peek()   # doctest: +SKIP
+    >>> noaa.peek()  # doctest: +SKIP
 
     References
     ----------
     * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products/3-day-geomagnetic-forecast>`_
-    * `Predicted solar indices <http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt>`_
+    * `Predicted solar indices <https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json>`_
     * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
     * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
     """
@@ -200,7 +251,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaapredictindices'
 
-    @peek_show
+    @ peek_show
     def peek(self, **plot_args):
         """
         Plots predicted NOAA Indices as a function of time. An example is shown
@@ -209,7 +260,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         .. plot::
 
             import sunpy.timeseries
-            noaa_url = 'ftp://ftp.swpc.noaa.gov/pub/weekly/Predict.txt'
+            noaa_url = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
             noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')
             noaa.peek()
 
@@ -220,18 +271,16 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
-
         figure = plt.figure()
         axes = plt.gca()
-
-        axes = self.to_dataframe()['sunspot'].plot(color='b', **plot_args)
-        self.to_dataframe()['sunspot low'].plot(linestyle='--', color='b', **plot_args)
-        self.to_dataframe()['sunspot high'].plot(linestyle='--', color='b', **plot_args)
+        dataframe = self.to_dataframe()
+        axes = dataframe['sunspot'].plot(color='b', **plot_args)
+        dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
+        dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Sunspot Number Prediction')
         axes.set_ylabel('Sunspot Number')
-        # axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
@@ -239,10 +288,30 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
         return figure
 
-    @staticmethod
-    def _parse_file(filepath):
+    @ classmethod
+    def _parse_file(cls, filepath):
+        suffix = Path(filepath).suffix
+        if suffix == '.json':
+            return cls._parse_json_file(filepath)
+        elif suffix == ".txt":
+            return cls._parse_txt_file(filepath)
+        else:
+            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.txt' or '.json'")
+
+    @ classmethod
+    def is_datasource_for(cls, **kwargs):
         """
-        Parses an NOAA indices csv file.
+        Determines if header corresponds to an NOAA predict indices
+        `~sunpy.timeseries.TimeSeries`.
+        """
+        if kwargs.get('source', ''):
+            return kwargs.get('source', '').lower().startswith(cls._source)
+
+    @ staticmethod
+    @ deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
+    def _parse_txt_file(filepath):
+        """
+        Parses an NOAA Predict indices text file.
 
         Parameters
         ----------
@@ -280,11 +349,36 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             # Todo: check units used.
             return data, MetaDict({'comments': header}), units
 
-    @classmethod
-    def is_datasource_for(cls, **kwargs):
+    @ staticmethod
+    def _parse_json_file(filepath):
         """
-        Determines if header corresponds to an NOAA predict indices
-        `~sunpy.timeseries.TimeSeries`.
+        Parses an NOAA Predict indices JSON file.
+
+        Parameters
+        ----------
+        filepath : `str`
+            The path to the file you want to parse.
         """
-        if kwargs.get('source', ''):
-            return kwargs.get('source', '').lower().startswith(cls._source)
+        with open(filepath) as fp:
+            fp.seek(0)
+            data = pd.read_json(fp.read())
+        rename = {'predicted_ssn': 'sunspot',
+                  'high_ssn': 'sunspot high',
+                  'low_ssn': 'sunspot low',
+                  'predicted_f10.7': 'radio flux',
+                  'high_f10.7': 'radio flux high',
+                  'low_f10.7': 'radio flux low'}
+        data = data.rename(columns=rename)
+        # Convoluted time index handling
+        data = data.set_index('time-tag')
+        data.index = pd.DatetimeIndex(data.index.values)
+        data.index = pd.DatetimeIndex(parse_time(
+            [x for x in data.index.values]).isot.astype('datetime64'))
+        # Add the units data, reported in radio flux values (sfu) originally.
+        units = OrderedDict([('sunspot', u.dimensionless_unscaled),
+                             ('sunspot high', u.dimensionless_unscaled),
+                             ('sunspot low', u.dimensionless_unscaled),
+                             ('radio flux', 1e-22*u.W/(u.m**2*u.Hertz)),
+                             ('radio flux high', 1e-22*u.W/(u.m**2*u.Hertz)),
+                             ('radio flux low', 1e-22*u.W/(u.m**2*u.Hertz))])
+        return data, MetaDict({'comments': ""}), units

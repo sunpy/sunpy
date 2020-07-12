@@ -18,7 +18,7 @@ class NOAAIndicesClient(GenericClient):
     """
     Provides access to the NOAA solar cycle indices.
 
-    Uses the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/weekly/>`__.
+    Uses the `SWPC NOAA archive <https://services.swpc.noaa.gov/json/solar-cycle/>`__.
     This is a fixed dataset so the result is independent of the time range.
 
     Examples
@@ -44,7 +44,7 @@ class NOAAIndicesClient(GenericClient):
         """
         Helper function:
         """
-        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
+        return ["https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json"]
 
     def _makeimap(self):
         """
@@ -88,7 +88,7 @@ class NOAAPredictClient(GenericClient):
     """
     Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
 
-    Uses this `ftp archive <http://services.swpc.noaa.gov/text/>`__.
+    Uses the `SWPC NOAA archive <https://services.swpc.noaa.gov/json/solar-cycle/>`__.
     This is a fixed prediction so the result is independent of the time range.
 
     Examples
@@ -112,7 +112,7 @@ class NOAAPredictClient(GenericClient):
     @staticmethod
     def _get_default_uri():
         """Return the url to download indices"""
-        return ["http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"]
+        return ["https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json"]
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
