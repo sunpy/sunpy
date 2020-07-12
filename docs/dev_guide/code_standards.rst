@@ -53,8 +53,13 @@ Formatting
 ==========
 
 We enforce a minimum level of code style with our continuous intergration (the name is ``sunpy.sunpy (python_codestyle [linux]``).
-This runs a tool called `https://pre-commit.com/ <https://pre-commit.com/>`__ and you can install and run it on your own computer.
-To do so, you will need to install::
+This runs a tool called `https://pre-commit.com/ <https://pre-commit.com/>`__.
+
+Using "tox" allows you to run these tools without having to setup anything within your own Python virtual environment::
+
+    $ tox -e codestyle
+
+If you want to setup the pre-commit locally, you can do the following::
 
     $ pip install pre-commit
 
@@ -62,7 +67,7 @@ Now you can do::
 
     $ pre-commit run --all-files
 
-which will setup the tools and then run them on all files in the sunpy git repository.
+which will run the tools on all files in the sunpy git repository.
 The pre-commit tools can change some of the files, in other cases it will report problems but will require manual correction.
 If the pre-commit tool changes any files, they will show up as new changes that will need to be committed.
 
