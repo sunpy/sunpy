@@ -672,7 +672,9 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     # Check inputs are of correct type
     longflux = longflux.to(u.W/u.m**2)
     temp = temp.to(u.MK)
-    log10_temp = np.log10(temp.value)
+    # Ignore zero values raising a numpy warning here
+    with np.errstate(invalid='ignore'):
+        log10_temp = np.log10(temp.value)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
