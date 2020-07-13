@@ -19,7 +19,9 @@ def suvi_client():
 
 
 @given(time_attr())
-def test_can_handle_query(suvi_client, time):
+def test_can_handle_query(time):
+    # Don't use the fixture, as hypothesis complains
+    suvi_client = goes.SUVIClient()
     ans1 = suvi_client._can_handle_query(time, a.Instrument.suvi)
     assert ans1 is True
     ans2 = suvi_client._can_handle_query(time, a.Instrument.suvi,

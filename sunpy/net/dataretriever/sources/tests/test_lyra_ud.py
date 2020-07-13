@@ -40,7 +40,8 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 
 @given(range_time('2010-01-06'))
-def test_can_handle_query(LCClient, time):
+def test_can_handle_query(time):
+    LCClient = lyra.LYRAClient()
     ans1 = LCClient._can_handle_query(
         time, Instrument('lyra'))
     assert ans1 is True

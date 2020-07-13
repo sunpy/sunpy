@@ -199,6 +199,9 @@ def test_heliographic_rectangle_top_right(heliographic_test_map):
     heliographic_test_map.draw_rectangle(bottom_left, width=w, height=h, color='cyan')
 
 
+# See https://github.com/sunpy/sunpy/issues/4294 to track this warning. Ideally
+# it should not be filtered, and the cause of it fixed.
+@pytest.mark.filterwarnings(r'ignore:Numpy has detected that you \(may be\) writing to an array with\noverlapping memory')
 @figure_test
 def test_heliographic_grid_annotations(heliographic_test_map):
     heliographic_test_map.plot()
