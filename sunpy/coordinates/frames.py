@@ -377,21 +377,21 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     A coordinate or frame in the Helioprojective Cartesian (HPC) system, which is observer-based.
 
     - The origin is the location of the observer.
-    - ``theta_x`` is the angle relative to the plane containing the Sun-observer line and the Sun's
-      rotation axis, with positive values in the direction of the Sun's west limb.
-    - ``theta_y`` is the angle relative to the Sun's equatorial plane, with positive values in the
-      direction of the Sun's north pole.
+    - ``Tx`` (aka "theta_x") is the angle relative to the plane containing the Sun-observer line
+      and the Sun's rotation axis, with positive values in the direction of the Sun's west limb.
+    - ``Ty`` (aka "theta_y") is the angle relative to the Sun's equatorial plane, with positive
+      values in the direction of the Sun's north pole.
     - ``distance`` is the Sun-observer distance.
 
     This system is frequently used in a projective form without ``distance`` specified.  For
     observations looking very close to the center of the Sun, where the small-angle approximation
-    is appropriate, ``theta_x`` and ``theta_y`` can be approximated as Cartesian components.
+    is appropriate, ``Tx`` and ``Ty`` can be approximated as Cartesian components.
 
     A new instance can be created using the following signatures
     (note that if supplied, ``obstime`` and ``observer`` must be keyword arguments)::
 
-        Helioprojective(theta_x, theta_y, obstime=obstime, observer=observer)
-        Helioprojective(theta_x, theta_y, distance, obstime=obstime, observer=observer)
+        Helioprojective(Tx, Ty, obstime=obstime, observer=observer)
+        Helioprojective(Tx, Ty, distance, obstime=obstime, observer=observer)
 
     Parameters
     ----------
