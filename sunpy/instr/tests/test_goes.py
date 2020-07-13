@@ -65,11 +65,16 @@ def test_goes_event_list():
     assert result[0]['noaa_active_region'] == 11226
 
 
+@pytest.fixture
+def goeslc():
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        return timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
+
+
 @pytest.mark.remote_data
-def test_calculate_temperature_em():
+def test_calculate_temperature_em(goeslc):
     # Create XRSTimeSeries object, then create new one with
     # temperature & EM using with calculate_temperature_em().
-    goeslc = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     goeslc_new = goes.calculate_temperature_em(goeslc)
     # Test correct exception is raised if a XRSTimeSeries object is
     # not inputted.
@@ -82,14 +87,14 @@ def test_calculate_temperature_em():
         satellite=int(goeslc.meta.metas[0]["TELESCOP"].split()[1]), date="2014-01-01")
     # Check that temperature and EM arrays from _goes_chianti_tem()
     # are same as those in new XRSTimeSeries object.
-    assert goeslc_new.data.temperature.all() == temp.value.all()
-    assert goeslc_new.data.em.all() == em.value.all()
+    assert goeslc_new.to_dataframe().temperature.all() == temp.value.all()
+    assert goeslc_new.to_dataframe().em.all() == em.value.all()
     # Check rest of data frame of new XRSTimeSeries object is same
     # as that in original object.
     goeslc_revert = copy.deepcopy(goeslc_new)
-    del goeslc_revert.data["temperature"]
-    del goeslc_revert.data["em"]
-    assert_frame_equal(goeslc_revert.data, goeslc.data)
+    del goeslc_revert.to_dataframe()["temperature"]
+    del goeslc_revert.to_dataframe()["em"]
+    assert_frame_equal(goeslc_revert.to_dataframe(), goeslc.to_dataframe())
 
 
 @pytest.mark.remote_data
@@ -231,12 +236,11 @@ def test_goes_chianti_tem_case8():
 
 @pytest.mark.remote_data
 @pytest.mark.array_compare(file_format='text', reference_dir='./')
-def test_calculate_radiative_loss_rate():
+def test_calculate_radiative_loss_rate(goeslc):
     # Define input variables.
-    goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     not_goeslc = []
-    goeslc_no_em = goes.calculate_temperature_em(goeslc_input)
-    del goeslc_no_em.data["em"]
+    goeslc_no_em = goes.calculate_temperature_em(goeslc)
+    del goeslc_no_em.to_dataframe()["em"]
 
     # Check correct exceptions are raised to incorrect inputs
     with pytest.raises(TypeError):
@@ -244,10 +248,10 @@ def test_calculate_radiative_loss_rate():
 
     # Check function gives correct results.
     # Test case 1: GOESTimeSeries object with only flux data
-    goeslc_test = goes.calculate_radiative_loss_rate(goeslc_input)
+    goeslc_test = goes.calculate_radiative_loss_rate(goeslc)
     exp_data = np.array([1.78100055e+19, 1.66003113e+19, 1.71993065e+19,
                          1.60171768e+19, 1.71993065e+19])
-    np.testing.assert_allclose(goeslc_test.data.rad_loss_rate[:5],
+    np.testing.assert_allclose(goeslc_test.to_dataframe().rad_loss_rate[:5],
                                exp_data)
 
     # Test case 2: GOESTimeSeries object with flux and temperature
@@ -256,7 +260,7 @@ def test_calculate_radiative_loss_rate():
     # we test that the column has been added
     assert "rad_loss_rate" in goes_test.columns
     # Compare every 50th value to save on filesize
-    return np.array(goes_test.data[::50])
+    return np.array(goes_test.to_dataframe()[::50])
 
 
 @pytest.mark.remote_data
@@ -343,14 +347,13 @@ def test_calc_rad_loss_obstime():
 
 
 @pytest.mark.remote_data
-def test_calculate_xray_luminosity():
+def test_calculate_xray_luminosity(goeslc):
     # Check correct exceptions are raised to incorrect inputs
     not_goeslc = []
     with pytest.raises(TypeError):
         goes.calculate_xray_luminosity(not_goeslc)
     # Check function gives correct results.
-    goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
-    goeslc_test = goes.calculate_xray_luminosity(goeslc_input)
+    goeslc_test = goes.calculate_xray_luminosity(goeslc)
     exp_xrsa = u.Quantity([2.8962085e+14, 2.8962085e+14, 2.8962085e+14, 2.8962085e+14,
                            2.8962085e+14], "W")
     exp_xrsb = u.Quantity([5.4654352e+16, 5.3133844e+16, 5.3895547e+16, 5.2375035e+16,
