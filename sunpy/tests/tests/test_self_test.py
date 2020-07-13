@@ -1,6 +1,6 @@
-import importlib
 import os.path
 import warnings
+import importlib
 
 import pytest
 
