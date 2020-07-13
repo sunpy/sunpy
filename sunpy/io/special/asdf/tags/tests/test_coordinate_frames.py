@@ -45,6 +45,9 @@ def coordframe_array(request):
     return frame(*data, obstime='2018-01-01T00:00:00')
 
 
+# Ignore warnings thrown when trying to load the ASDF in a different astropy
+# version to that with which it was created.
+@pytest.mark.filterwarnings('ignore:.*was created with extension.*')
 def test_hgc_100():
     # Test that HeliographicCarrington is populated with Earth as the observer when loading a
     # older schema (1.0.0)

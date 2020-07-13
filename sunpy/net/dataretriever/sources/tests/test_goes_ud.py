@@ -143,7 +143,9 @@ def test_fido(time, instrument):
 @settings(deadline=10000, max_examples=5)
 @pytest.mark.remote_data
 @given(goes_time())
-def test_time_for_url(LCClient, time):
+def test_time_for_url(time):
+    # Create a fresh client, as fixtures don't work with @given
+    LCClient = goes.XRSClient()
     time = time.start.strftime("%Y/%m/%d")
     almost_day = TimeDelta(1*u.day - 1*u.millisecond)
 

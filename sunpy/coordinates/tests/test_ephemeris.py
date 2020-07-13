@@ -124,6 +124,9 @@ def test_get_horizons_coord_array_time():
     assert_quantity_allclose(e[3].radius, 0.9908173*u.AU, atol=5e-7*u.AU)
 
 
+# Ignore the warning hypothesis throws, as in this case we don't care that
+# the fixture isn't reset between tests
+@pytest.mark.filterwarnings('ignore:.*which is reset between function calls but not between test cases.*')
 @pytest.mark.remote_data
 @given(obstime=times())
 @settings(deadline=5000, max_examples=10)
