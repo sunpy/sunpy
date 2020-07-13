@@ -121,7 +121,7 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
                                                 "CHANNEL3": channels[2],
                                                 "CHANNEL4": channels[3]})
     # Assert expected result is returned
-    pandas.util.testing.assert_frame_equal(ts_test.data, dataframe_expected)
+    pandas.testing.assert_frame_equal(ts_test.data, dataframe_expected)
     assert artifact_status_test.keys() == artifact_status_expected.keys()
     np.testing.assert_array_equal(artifact_status_test["lytaf"],
                                   artifact_status_expected["lytaf"])
@@ -139,7 +139,7 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
             lyra_ts, artifacts=["LAR", "Offpoint"],
             force_use_local_lytaf=True)
     # Assert expected result is returned
-    pandas.util.testing.assert_frame_equal(ts_test.data, dataframe_expected)
+    pandas.testing.assert_frame_equal(ts_test.data, dataframe_expected)
 
 
 @pytest.fixture()
