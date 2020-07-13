@@ -286,7 +286,9 @@ class GenericMap(NDData):
             bad_pixel_text += ", ".join(text_list)
 
         # Use a grayscale colormap with histogram equalization (and red for bad values)
-        cmap = cm.get_cmap('gray')
+        # Make a copy of the colormap to avoid modifying the matplotlib instance when
+        # doing set_bad()
+        cmap = copy.copy(cm.get_cmap('gray'))
         cmap.set_bad(color='red')
         norm = ImageNormalize(stretch=HistEqStretch(finite_data))
 

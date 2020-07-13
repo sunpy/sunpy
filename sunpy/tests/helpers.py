@@ -98,7 +98,7 @@ def figure_test(test_function):
         result_image_loc = figure_base_dir / f'{name}.png'
         # Have to set Software to None to prevent Matplotlib injecting it's version number
         plt.savefig(str(result_image_loc), metadata={'Software': None})
-        plt.close()
+        plt.close('all')
 
         # Create hash
         imgdata = open(result_image_loc, "rb")
