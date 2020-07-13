@@ -64,6 +64,9 @@ class TestMap:
         comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE, composite=True)
         assert isinstance(comp, sunpy.map.CompositeMap)
 
+    # Want to check that patterns work, so ignore this warning that comes from
+    # the AIA test data
+    @pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
     def test_patterns(self):
         # Test different Map pattern matching
 
@@ -183,6 +186,8 @@ class TestMap:
         with pytest.raises(OSError, match=(fr"Failed to read *")):
             sunpy.map.Map(files)
 
+    # We want to check errors, so ignore warnings that are thrown
+    @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
     @pytest.mark.parametrize('silence,error,match',
                              [(True, RuntimeError, 'No maps loaded'),
                               (False, sunpy.map.mapbase.MapMetaValidationError,
@@ -239,6 +244,9 @@ def test_map_list_urls_cache():
 
 
 # TODO: Test HMIMap, SXTMap
+#
+# Catch Hinode/XRT warning
+@pytest.mark.filterwarnings('ignore:File may have been truncated')
 @pytest.mark.parametrize('file, mapcls',
                          [[filepath / 'EIT' / "efz20040301.000010_s.fits", sunpy.map.sources.EITMap],
                           [filepath / "lasco_c2_25299383_s.fts", sunpy.map.sources.LASCOMap],
