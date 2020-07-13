@@ -1,0 +1,1 @@
+Fixed the `~sunpy.coordinates.frames.Helioprojective` docstring to be clear about the names of the coordinate components.
