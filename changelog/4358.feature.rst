@@ -1,0 +1,2 @@
+`~sunpy.net.helio.hec.HECClient` now inherits `~sunpy.net.BaseClient` which makes it compatible with ``Fido``.
+Added `~sunpy.net.helio.hec.HECResponse` as a container for data returned from ``HEC`` searches.

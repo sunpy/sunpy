@@ -362,9 +362,10 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                reslist.append(block.client.fetch(block, path=path,
-                                                  downloader=downloader,
-                                                  wait=False, **kwargs))
+                if type(block.client).__name__ != 'HECClient':
+                    reslist.append(block.client.fetch(block, path=path,
+                                                      downloader=downloader,
+                                                      wait=False, **kwargs))
 
         results = downloader.download()
         # Combine the results objects from all the clients into one Results
