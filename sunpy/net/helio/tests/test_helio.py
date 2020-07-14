@@ -266,9 +266,12 @@ def test_link_test_on_urlerror(mock_link_test):
 @pytest.mark.remote_data
 @pytest.fixture(scope="session")
 def client():
-    working_links = list(filter(link_test, webservice_parser()))
-    taverna_link = taverna_parser(working_links[0])[0]
-    return HECClient(taverna_link)
+    try:
+        client = HECClient()
+        return client
+    # If no links are found, the client should raise a ValueError
+    except ValueError:
+        pytest.xfail("No HELIO working links found.")
 
 
 @pytest.mark.remote_data
@@ -298,3 +301,10 @@ def test_time_query(client):
     table_name = b'rhessi_hxr_flare'
     res = client.time_query(start, end, table=table_name, max_records=10)
     assert len(res.array) == 10
+
+
+def test_client_mock_fail(client):
+    """
+    This test will xfail on the offline tests.
+    It just passes if the client is working.
+    """
