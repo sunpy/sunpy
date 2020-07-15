@@ -1,0 +1,2 @@
+Adds support for the extra NOAA JSON time series.
+- (GOES SXR case) New source class NOAAGoesSXRTimeSeries for noaa.py
