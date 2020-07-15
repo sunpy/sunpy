@@ -10,6 +10,6 @@ from sunpy.timeseries.sources.eve import ESPTimeSeries, EVESpWxTimeSeries
 from sunpy.timeseries.sources.fermi_gbm import GBMSummaryTimeSeries
 from sunpy.timeseries.sources.goes import XRSTimeSeries
 from sunpy.timeseries.sources.lyra import LYRATimeSeries
-from sunpy.timeseries.sources.noaa import NOAAIndicesTimeSeries, NOAAPredictIndicesTimeSeries, NOAAGoesSXRTimeSeries
+from sunpy.timeseries.sources.noaa import NOAAIndicesTimeSeries, NOAAPredictIndicesTimeSeries, NOAAGOESXRSTimeSeries
 from sunpy.timeseries.sources.norh import NoRHTimeSeries
 from sunpy.timeseries.sources.rhessi import RHESSISummaryTimeSeries

@@ -19,22 +19,23 @@ from sunpy.util.decorators import deprecated
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
-__all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries', 'NOAAGoesSXRTimeSeries']
+__all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries', 'NOAAGOESXRSTimeSeries']
 
 
-class NOAAGoesSXRTimeSeries(GenericTimeSeries):
+class NOAAGOESXRSTimeSeries(GenericTimeSeries):
     """
-    NOAA Goes soft X-ray (SXR) flux in near-real-time.
+    NOAA GOES X-ray Sensor (XRS) soft X-ray (SXR) flux in near-real-time.
 
     The NOAA Solar Weather Prediction Center (SWPC) provides near-real-time measurements
     of the X-ray flux from GOES satelites.
     The SXR flux as a function of time is used to track the solar activity and solar flares.
     The near-real-time SXR data are provided from <https://services.swpc.noaa.gov/json/goes/>
     in JSON format (updated every 1-minute).
-    The solar SXR measurements are made in the 1-8 Angstrom (0.1-0.8 nm, short channel)
+    The solar SXR measurements are made in the 1-8 Angstrom (0.1-0.8 nm, long channel)
     and 0.5-4.0 Angstrom (0.05-0.4 nm, short channel) passbands.
-    SWPC designates a Primary and a Secondary GOES Satellite for each instrument. Data from the
-    SWPC Primary and Secondary GOES X-ray satellite are provided from two separate sub-directories.
+    SWPC designates a Primary and a Secondary GOES Satellite (e.g. GOES-16/17) for each instrument, 
+    the satellite from which the SXR measurement is made can be found in <https://services.swpc.noaa.gov/json/goes/instrument-sources.json>.
+    Data from the SWPC Primary and Secondary GOES X-ray satellite are provided from two separate sub-directories.
     The final products should be used for preview purposes of the current space weather conditions.
     Use the GOES XRS `~sunpy.timeseries.TimeSeries` source to process GOES/XRS FITS file.
 
@@ -84,18 +85,18 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
         if type == 'GOES-Long_and_Short':
             dataframe_long = self._split_to_dataframe(type='GOES-Long')
             axes = dataframe_long['flux'].plot(marker='', color='red',
-                                               linewidth=1, label="GOES-Long", **plot_args)
+                                               linewidth=1, label="1-8$\AA$", **plot_args)
             dataframe_sort = self._split_to_dataframe(type='GOES-Short')
             dataframe_sort['flux'].plot(marker='', color='blue',
-                                        linewidth=1, label="GOES-Short", **plot_args)
+                                        linewidth=1, label="0.5-4$\AA$", **plot_args)
         elif type == 'GOES-Long':
             dataframe_long = self._split_to_dataframe(type='GOES-Long')
             axes = dataframe_long['flux'].plot(marker='', color='red',
-                                               linewidth=1, label="GOES-Long", **plot_args)
+                                               linewidth=1, label="1-8$\AA$", **plot_args)
         elif type == 'GOES-Short':
             dataframe_sort = self._split_to_dataframe(type='GOES-Short')
             axes = dataframe_sort['flux'].plot(marker='', color='blue',
-                                               linewidth=1, label="GOES-Short", **plot_args)
+                                               linewidth=1, label="0.5-4$\AA$", **plot_args)
         else:
             raise ValueError(f'Got unknown plot type "{type}"')
 
