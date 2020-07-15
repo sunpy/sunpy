@@ -5,6 +5,7 @@ import datetime
 from collections import OrderedDict
 
 import matplotlib.dates
+import matplotlib.ticker as mticker
 import numpy as np
 from matplotlib import pyplot as plt
 from pandas import DataFrame
@@ -94,8 +95,11 @@ class XRSTimeSeries(GenericTimeSeries):
         ax2 = axes.twinx()
         ax2.set_yscale("log")
         ax2.set_ylim(1e-9, 1e-2)
-        ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-        ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+        labels = ['A', 'B', 'C', 'M', 'X']
+        centers = np.logspace(-7.5, -3.5, len(labels))
+        ax2.yaxis.set_minor_locator(mticker.FixedLocator(centers))
+        ax2.set_yticklabels(labels, minor=True)
+        ax2.set_yticklabels([])
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
