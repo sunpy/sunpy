@@ -10,25 +10,79 @@ Overview
 All code must be documented and we follow these style conventions described here:
 
 * `numpydoc <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_
-* `astropy <https://docs.astropy.org/en/latest/development/docrules.html>`_
 
-We recommend familiarizing yourself with these references.
+We recommend familiarizing yourself with this style.
 
-Differences
------------
+Referring to other code
+-----------------------
 
-The current differences we have are as follows:
+To link to other methods, classes, or modules in sunpy you have to use backticks, for example:
 
-We backtick each type in the documentation strings so that they are interlinked by our documentation builder:
+.. code-block:: rst
 
-.. code-block:: python
+    `sunpy.io.file_tools.read_file`
 
-    """
-    Parameters
-    ----------
-    x : `type`
-       Description of parameter x.
-    """
+generates a link like this: `sunpy.io.file_tools.read_file`.
+
+We use the sphinx setting ``default_role = 'obj'`` so that you don't have to use qualifiers like ``:class:``, ``:func:``, ``:meth:`` and the like.
+
+Often, you don't want to show the full package and module name.
+As long as the target is unambiguous you can simply leave them out:
+
+.. code-block:: rst
+
+    `.read_file`
+
+and the link still works: `.read_file`.
+
+If there are multiple code elements with the same name (e.g. ``peek()`` is a method in multiple classes), you'll have to extend the definition:
+
+.. code-block:: rst
+
+    `GenericMap.peek` or `CompositeMap.peek`
+
+These will show up as `GenericMap.peek` or `CompositeMap.peek`.
+To still show only the last segment you can add a tilde as prefix:
+
+.. code-block:: rst
+
+    `~.GenericMap.peek` or `~.CompositeMap.peek`
+
+will render as `~.GenericMap.peek` or `~.CompositeMap.peek`.
+
+Other packages can also be linked via
+`intersphinx <http://www.sphinx-doc.org/en/master/ext/intersphinx.html>`_:
+
+.. code-block:: rst
+
+    `numpy.max`
+
+will return this link: `numpy.max`.
+This works for Python, Numpy and Astropy (full list is in :file:`docs/conf.py`).
+If external linking fails, you can check the full list of referenceable objects with the following
+commands::
+
+    $ python -m sphinx.ext.intersphinx 'https://docs.python.org/3/objects.inv'
+
+If you want to link to a method or function you can add:
+
+.. code-block:: rst
+
+    :func:`numpy.mean`
+
+which will render a link and extra brackets :func:`numpy.mean`.
+If you decide to use ``:meth:`` instead this will also render extra brackets but will not link in this case.
+This is because "numpy.mean" is a function.
+
+If you link to a method of a class, it will work.
+
+.. code-block:: rst
+
+    :meth:`numpy.ndarray.mean`
+
+:meth:`numpy.ndarray.mean` but ``:func:`` will not.
+
+Never add ``:class:`` this will break the linking.
 
 SunPy-Specific Rules
 --------------------
@@ -44,6 +98,7 @@ SunPy-Specific Rules
 
 Documenting Data Sources
 ----------------------------
+
 Subclasses of `~sunpy.map.GenericMap` or `~sunpy.timeseries.TimeSeries` must provide a detailed docstring providing an overview of the data source that the object represents.
 In order to maintain consistency and completeness, the following information must be provided by a data source docstring, if available, and preferably in the following order:
 
@@ -67,7 +122,7 @@ In addition, a reference section must be provided with links to the following re
 * information to interpret metadata keywords such as FITS header reference
 * the data archive
 
-An example docstring can be found in the :ref:`Writing a new Instrument Map Class guide<new_maps_ts_etc>`.
+An example docstring can be found in the :ref:`Writing a new Instrument Map Class guide <new_maps_ts_etc>`.
 
 Sphinx
 ======

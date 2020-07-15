@@ -25,7 +25,7 @@ If you do not currently have a working scientific Python distribution this guide
 Other options are listed later in the :ref:`advanced-install` section.
 
 To install the Miniconda Python distribution follow the instructions at
-`here <https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html`__.
+`here <https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html>`__.
 Although Miniconda makes it simple to switch between Python versions, we recommend that new users install
 the latest Python 3.x version of Miniconda as SunPy only supports Python 3.7+.
 

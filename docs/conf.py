@@ -201,7 +201,7 @@ sphinx_gallery_conf = {
     'gallery_dirs': os.path.join('generated', 'gallery'),
     'default_thumb_file': os.path.join('logo', 'sunpy_icon_128x128.png'),
     'abort_on_example_error': False,
-    'plot_gallery': True,
+    'plot_gallery': 'True',
     'remove_config_comments': True,
     'doc_module': ('sunpy'),
 }

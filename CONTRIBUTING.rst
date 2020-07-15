@@ -84,6 +84,16 @@ The main one is the SunPy repository with where all the known `issues`_ with Sun
 Each issue should have a series of labels that provide information about the nature of the issue.
 If you find an issue you'd like to work on, please make sure to add a comment to let people know that you are working on it! This will make it less likely that effort is duplicated.
 
+.. note::
+
+    sunpy is open source, under the BSD-2 license, and by contributing you are stating that you have the right to and agree to, have your work distributed under the terms of this license.
+
+    If you work at a university or research institution, you will need to check if you can contribute code you have written at work.
+    You should start by checking if there is a Open Source Software Policy (e.g., `Standford's policy <https://otl.stanford.edu/open-source-stanford>`__) for your work place.
+    If not, `OSS-Watch <http://oss-watch.ac.uk/resources/contributing>`__ summaries what you will need to check and who to ask, however this is from a UK point of view.
+    `Standford's guidance <https://otl.stanford.edu/sites/g/files/sbiybj10286/f/otlcopyrightguide.pdf>`__ for example allows someone to contribute and open source their code.
+    If you are unsure if your university or institution allows you to contribute under the BSD-2 license, you should contact the relevant department or administrator that deals with copyright.
+
 If you are unsure where to start we suggest the `Good First Issue label`_.
 These are issues that have been deemed a good way to be eased into SunPy and are achievable with little understanding of the SunPy codebase.
 Please be aware that this does not mean the issue is "easy", just that you do not need to be aware of the underlying structure of SunPy.
