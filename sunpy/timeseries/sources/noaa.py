@@ -20,6 +20,7 @@ from sunpy.visualization import peek_show
 
 __all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries', 'NOAAGoesSXRTimeSeries']
 
+
 class NOAAGoesSXRTimeSeries(GenericTimeSeries):
     """
     NOAA Goes soft X-ray (SXR) flux in near-real-time.
@@ -72,23 +73,23 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
 
         figure = plt.figure()
         axes = plt.gca()
-        #dataframe = self.to_dataframe()
+        # dataframe = self.to_dataframe()
 
         if type == 'GOES-Long_and_Short':
-            dataframe_long = self._split_to_dataframe(type = 'GOES-Long')
+            dataframe_long = self._split_to_dataframe(type='GOES-Long')
             axes = dataframe_long['flux'].plot(marker='', color='red',
                                                linewidth=1, label="GOES-Long", **plot_args)
-            dataframe_sort = self._split_to_dataframe(type = 'GOES-Short')
+            dataframe_sort = self._split_to_dataframe(type='GOES-Short')
             dataframe_sort['flux'].plot(marker='', color='blue',
                                         linewidth=1, label="GOES-Short", **plot_args)
             axes.set_ylabel(r'Flux [$Watts \cdot m^{-2}$]')
         elif type == 'GOES-Long':
-            dataframe_long = self._split_to_dataframe(type = 'GOES-Long')
+            dataframe_long = self._split_to_dataframe(type='GOES-Long')
             axes = dataframe_long['flux'].plot(marker='', color='red',
                                                linewidth=1, label="GOES-Long", **plot_args)
             axes.set_ylabel(r'Flux [$Watts \cdot m^{-2}$]')
         elif type == 'GOES-Short':
-            dataframe_sort = self._split_to_dataframe(type = 'GOES-Short')
+            dataframe_sort = self._split_to_dataframe(type='GOES-Short')
             axes = dataframe_sort['flux'].plot(marker='', color='blue',
                                                linewidth=1, label="GOES-Short", **plot_args)
             axes.set_ylabel(r'Flux [$Watts \cdot m^{-2}$]')
@@ -125,12 +126,12 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
 
         return figure
 
-    def _split_to_dataframe(self,type):
+    def _split_to_dataframe(self, type):
         dataframe_ = self.to_dataframe()
         if type == 'GOES-Long':
-            dataframe = dataframe_[dataframe_['wavelength'] == '0.1-0.8nm']
+            dataframe = dataframe_[dataframe_['wavelength']=='0.1-0.8nm']
         elif type == 'GOES-Short':
-            dataframe = dataframe_[dataframe_['wavelength'] == '0.05-0.4nm']
+            dataframe = dataframe_[dataframe_['wavelength']=='0.05-0.4nm']
         else:
             raise ValueError(f'Got unknown _split type "{type}"')
 
@@ -142,7 +143,6 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
         if suffix != '.json':
             raise ValueError(f"{Path(filepath).name} does not have a suffix of '.json'")
         return cls._parse_json_file(filepath)
-
 
     @staticmethod
     def _parse_json_file(filepath):
