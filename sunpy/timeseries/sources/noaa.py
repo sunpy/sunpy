@@ -129,9 +129,9 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
     def _split_to_dataframe(self, type):
         dataframe_ = self.to_dataframe()
         if type == 'GOES-Long':
-            dataframe = dataframe_[dataframe_['wavelength']=='0.1-0.8nm']
+            dataframe = dataframe_[dataframe_['wavelength'] == '0.1-0.8nm']
         elif type == 'GOES-Short':
-            dataframe = dataframe_[dataframe_['wavelength']=='0.05-0.4nm']
+            dataframe = dataframe_[dataframe_['wavelength'] == '0.05-0.4nm']
         else:
             raise ValueError(f'Got unknown _split type "{type}"')
 
