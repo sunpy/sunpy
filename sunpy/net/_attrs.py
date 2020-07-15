@@ -4,7 +4,7 @@ Implementation of global attrs.
 These are defined in here to keep the `sunpy.net.attrs` namespace clean, and to
 prevent circular imports.
 """
-import collections
+import collections.abc
 
 import astropy.units as u
 
@@ -53,8 +53,8 @@ class Time(Range):
         super().__init__(self.start, self.end)
 
     def __hash__(self):
-        if not (isinstance(self.start, collections.Hashable) and
-                isinstance(self.end, collections.Hashable)):
+        if not (isinstance(self.start, collections.abc.Hashable) and
+                isinstance(self.end, collections.abc.Hashable)):
             # The hash is the hash of the start and end time
             return hash((self.start.jd1, self.start.jd2, self.start.scale,
                          self.end.jd1, self.end.jd2, self.end.scale))
