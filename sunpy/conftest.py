@@ -65,9 +65,10 @@ def sunpy_cache(mocker, tmp_path):
     remote requests.
     """
     from types import MethodType
+
     from sunpy.data.data_manager.cache import Cache
-    from sunpy.data.data_manager.storage import InMemStorage
     from sunpy.data.data_manager.downloader import ParfiveDownloader
+    from sunpy.data.data_manager.storage import InMemStorage
     cache = Cache(
         ParfiveDownloader(),
         InMemStorage(),
@@ -145,7 +146,7 @@ def pytest_unconfigure(config):
         Turn on internet when generating the figure comparison webpage.
         """
         if HAVE_REMOTEDATA:
-            from pytest_remotedata.disable_internet import turn_on_internet, turn_off_internet
+            from pytest_remotedata.disable_internet import turn_off_internet, turn_on_internet
         else:
             def turn_on_internet(): pass
             def turn_off_internet(): pass
