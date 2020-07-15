@@ -1,2 +1,3 @@
 Adds support for the extra NOAA JSON time series.
-- (GOES SXR case) New source class NOAAGoesSXRTimeSeries for noaa.py
+-  New source class: `NOAAGoesSXRTimeSeries` allows to import near-real-time SXR data provided from <https://services.swpc.noaa.gov/json/goes/> in JSON format. Calling .peak() in this class plots the GOES X-ray flux as a function of time.
+-  New timeSeries factory test: 'test_noaa_goes_json_remote' added to check if the remote GOES SXR json files exist and return a 'sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries' instance.

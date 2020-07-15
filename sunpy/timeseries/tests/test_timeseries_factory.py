@@ -215,6 +215,22 @@ class TestTimeSeries:
             'https://umbra.nascom.nasa.gov/goes/fits/2018/go1520180626.fits')
         assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
+    @pytest.mark.remote_data
+    def test_noaa_goes_json_remote(self):
+        # Older format file
+        noaa = sunpy.timeseries.TimeSeries(
+            'https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json', source='noaagoessxr')
+        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries)
+        noaa = sunpy.timeseries.TimeSeries(
+            'https://services.swpc.noaa.gov/json/goes/primary/xrays-3-day.json', source='noaagoessxr')
+        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries)
+        noaa = sunpy.timeseries.TimeSeries(
+            'https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json', source='noaagoessxr')
+        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries)
+        noaa = sunpy.timeseries.TimeSeries(
+            'https://services.swpc.noaa.gov/json/goes/primary/xrays-6-hour.json', source='noaagoessxr')
+        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries)
+
 # =============================================================================
 # Manual TimeSeries Tests
 # =============================================================================

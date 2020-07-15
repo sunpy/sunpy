@@ -5,6 +5,7 @@ from pathlib import Path
 from collections import OrderedDict
 
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 from pandas.io.parsers import read_csv
@@ -24,24 +25,27 @@ __all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries', 'NOAAGoesSXR
 class NOAAGoesSXRTimeSeries(GenericTimeSeries):
     """
     NOAA Goes soft X-ray (SXR) flux in near-real-time.
+
     The NOAA Solar Weather Prediction Center (SWPC) provides near-real-time measurements
     of the X-ray flux from GOES satelites.
     The SXR flux as a function of time is used to track the solar activity and solar flares.
     The near-real-time SXR data are provided from <https://services.swpc.noaa.gov/json/goes/>
-    in JSON format (updated every minute).
+    in JSON format (updated every 1-minute).
     The solar SXR measurements are made in the 1-8 Angstrom (0.1-0.8 nm, short channel)
     and 0.5-4.0 Angstrom (0.05-0.4 nm, short channel) passbands.
     SWPC designates a Primary and a Secondary GOES Satellite for each instrument. Data from the
     SWPC Primary and Secondary GOES X-ray satellite are provided from two separate sub-directories.
     The final products should be used for preview purposes of the current space weather conditions.
     Use the GOES XRS `~sunpy.timeseries.TimeSeries` source to process GOES/XRS FITS file.
+
     Examples
     --------
-    >>> import sunpy.timeseries
+    >>> import sunpy.timeseries   
     >>> noaa_url = "https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json"
     >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='noaagoessxr')
     >>> noaa.peek()
     Works also with: xrays-1-day.json, xrays-3-day.json, xrays-6-hour.json, xrays-7-day.json
+
     References
     ----------
     * `SWPC provided observations from <https://www.swpc.noaa.gov/observations>`_
@@ -55,12 +59,14 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
     def peek(self, type='GOES-Long_and_Short', **plot_args):
         """
         Plots the GOES X-ray flux as a function of time.
+
         An example is shown below.
         .. plot::
             import sunpy.timeseries
             noaa_url = "https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json"
             noaa = sunpy.timeseries.TimeSeries(noaa_url, source='noaagoessxr')
             noaa.peek()
+
         Parameters
         ----------
         type : {'GOES-Long&Short', 'GOES-Long', 'GOES-Short'}, optional
@@ -82,26 +88,25 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
             dataframe_sort = self._split_to_dataframe(type='GOES-Short')
             dataframe_sort['flux'].plot(marker='', color='blue',
                                         linewidth=1, label="GOES-Short", **plot_args)
-            axes.set_ylabel(r'Flux [$Watts \cdot m^{-2}$]')
         elif type == 'GOES-Long':
             dataframe_long = self._split_to_dataframe(type='GOES-Long')
             axes = dataframe_long['flux'].plot(marker='', color='red',
                                                linewidth=1, label="GOES-Long", **plot_args)
-            axes.set_ylabel(r'Flux [$Watts \cdot m^{-2}$]')
         elif type == 'GOES-Short':
             dataframe_sort = self._split_to_dataframe(type='GOES-Short')
             axes = dataframe_sort['flux'].plot(marker='', color='blue',
                                                linewidth=1, label="GOES-Short", **plot_args)
-            axes.set_ylabel(r'Flux [$Watts \cdot m^{-2}$]')
         else:
             raise ValueError(f'Got unknown plot type "{type}"')
 
         axes.set_title('NOAA - GOES Soft X-Ray Flux (1-minute average)')
+        axes.set_ylabel('Watts m$^{-2}$')
         axes.set_yscale('log')
         axes.set_ylim([1e-9, 1e-2])
         axes.grid(True, which='minor', linewidth=0.5)
         axes.grid(True, which='major', linewidth=0.5)
         ymin, ymax = axes.get_ylim()
+        axes.legend()
 
         # Add a color to the classes limits
         ygrid = axes.get_ygridlines()
@@ -120,8 +125,11 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
         ax2 = axes.twinx()
         ax2.set_yscale("log")
         ax2.set_ylim(ymin, ymax)
-        ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-        ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+        labels = ['A', 'B', 'C', 'M', 'X']
+        centers = np.logspace(-7.5, -3.5, len(labels))
+        ax2.yaxis.set_minor_locator(mticker.FixedLocator(centers))
+        ax2.set_yticklabels(labels, minor=True)
+        ax2.set_yticklabels([])
         axes.get_shared_x_axes().join(axes, ax2)
 
         return figure
@@ -180,6 +188,7 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
+
 
 class NOAAIndicesTimeSeries(GenericTimeSeries):
     """
