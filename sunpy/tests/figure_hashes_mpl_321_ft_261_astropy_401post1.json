@@ -28,7 +28,7 @@
     "sunpy.timeseries.tests.test_timeseriesbase.test_eve_peek": "517f18770e29f57d60bdb480bba739124d0b98362d7377c76837944d619fcbbf",
     "sunpy.timeseries.tests.test_timeseriesbase.test_fermi_gbm_peek": "bdf7767e40ff5925ac32aa8b71f66d2f0cf057cdd1a10e911e8a2b5b77f31dbb",
     "sunpy.timeseries.tests.test_timeseriesbase.test_generic_ts_peek": "59e63334b74aaf3595d3702070520c599bc2a970d6915f577a971ea7095da902",
-    "sunpy.timeseries.tests.test_timeseriesbase.test_goes_peek": "066237f4925001eaff073efbf32c4fae3c7fc066467d2633ffe9b6ba69a3e7bc",
+    "sunpy.timeseries.tests.test_timeseriesbase.test_goes_peek": "918569855e7eab40ab258dba0f34364c3af4201af12c6d1910ad200d96be7e43",
     "sunpy.timeseries.tests.test_timeseriesbase.test_lyra_peek": "ddbc764019e115357c727ab1c0fa4d605b31da189e61726a32e52828e1a7d4e0",
     "sunpy.timeseries.tests.test_timeseriesbase.test_noaa_json_ind_peek": "c84b93c4c8202042e0f6f930998718661114d18c6c2902982d3a225afacabbcb",
     "sunpy.timeseries.tests.test_timeseriesbase.test_noaa_json_pre_peek": "d3f194603eb388c1fdb5e149abcc78410e48128e30faffacc923fb57a27e2cfd",
