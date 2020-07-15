@@ -182,7 +182,6 @@ class NOAAGoesSXRTimeSeries(GenericTimeSeries):
             return kwargs.get('source', '').lower().startswith(cls._source)
 
 
-
 class NOAAIndicesTimeSeries(GenericTimeSeries):
     """
     NOAA Solar Cycle monthly indices.
@@ -237,36 +236,28 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         figure = plt.figure()
         axes = plt.gca()
         dataframe = self.to_dataframe()
-        if "sunspot SWO" in dataframe.columns.values:
-            if type == 'sunspot SWO':
-                axes = dataframe['sunspot SWO'].plot(**kwargs)
-                dataframe['sunspot SWO smooth'].plot(**kwargs)
-                axes.set_ylabel('Sunspot Number')
-            elif type == 'sunspot RI':
-                axes = dataframe['sunspot RI'].plot(**kwargs)
-                dataframe['sunspot RI smooth'].plot(**kwargs)
-                axes.set_ylabel('Sunspot Number')
-            elif type == 'sunspot compare':
-                axes = dataframe['sunspot RI'].plot(**kwargs)
-                dataframe['sunspot SWO'].plot(**kwargs)
-                axes.set_ylabel('Sunspot Number')
-            elif type == 'radio':
-                axes = dataframe['radio flux'].plot(**kwargs)
-                dataframe['radio flux smooth'].plot(**kwargs)
-                axes.set_ylabel('Radio Flux [sfu]')
-            elif type == 'geo':
-                axes = dataframe['geomagnetic ap'].plot(**kwargs)
-                dataframe['geomagnetic ap smooth'].plot(**kwargs)
-                axes.set_ylabel('Geomagnetic AP Index')
-            else:
-                raise ValueError(f'Got unknown plot type "{type}"')
+        if type == 'sunspot SWO':
+            axes = dataframe['sunspot SWO'].plot(**kwargs)
+            dataframe['sunspot SWO smooth'].plot(**kwargs)
+            axes.set_ylabel('Sunspot Number')
+        elif type == 'sunspot RI':
+            axes = dataframe['sunspot RI'].plot(**kwargs)
+            dataframe['sunspot RI smooth'].plot(**kwargs)
+            axes.set_ylabel('Sunspot Number')
+        elif type == 'sunspot compare':
+            axes = dataframe['sunspot RI'].plot(**kwargs)
+            dataframe['sunspot SWO'].plot(**kwargs)
+            axes.set_ylabel('Sunspot Number')
+        elif type == 'radio':
+            axes = dataframe['radio flux'].plot(**kwargs)
+            dataframe['radio flux smooth'].plot(**kwargs)
+            axes.set_ylabel('Radio Flux [sfu]')
+        elif type == 'geo':
+            axes = dataframe['geomagnetic ap'].plot(**kwargs)
+            dataframe['geomagnetic ap smooth'].plot(**kwargs)
+            axes.set_ylabel('Geomagnetic AP Index')
         else:
-            dataframe['mean monthly S.I.D.C. sunspot number'].plot(**kwargs)
-            dataframe['smoothed S.I.D.C. sunspot number'].plot(**kwargs)
-            dataframe['mean monthly SWPC/SWO sunspot number'].plot(**kwargs)
-            dataframe['smoothed SWPC/SWO sunspot number'].plot(**kwargs)
-            dataframe['mean monthly 10.7cm radio flux'].plot(**kwargs)
-            dataframe['smoothed 10.7cm radio flux'].plot(**kwargs)
+            raise ValueError(f'Got unknown plot type "{type}"')
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Progression')
@@ -343,12 +334,12 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             fp.seek(0)
             data = pd.read_json(fp.read())
 
-        rename = {'ssn': 'mean monthly S.I.D.C. sunspot number',
-                  'smoothed_ssn': 'smoothed S.I.D.C. sunspot number',
-                  'observed_swpc_ssn': 'mean monthly SWPC/SWO sunspot number',
-                  'smoothed_swpc_ssn': 'smoothed SWPC/SWO sunspot number',
-                  'f10.7': 'mean monthly 10.7cm radio flux',
-                  'smoothed_f10.7': 'smoothed 10.7cm radio flux'}
+        rename = {'ssn': 'sunspot RI',
+                  'smoothed_ssn': 'sunspot RI smooth',
+                  'observed_swpc_ssn': 'sunspot SWO',
+                  'smoothed_swpc_ssn': 'sunspot SWO smooth',
+                  'f10.7': 'radio flux',
+                  'smoothed_f10.7': 'radio flux smooth'}
         data = data.rename(columns=rename)
         # Convoluted time index handling
         data = data.set_index('time-tag')
@@ -357,12 +348,12 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             [x for x in data.index.values]).isot.astype('datetime64'))
 
         # Add the units data, reported in radio flux values (sfu) originally.
-        units = OrderedDict([('mean monthly S.I.D.C. sunspot number', u.dimensionless_unscaled),
-                             ('smoothed S.I.D.C. sunspot number', u.dimensionless_unscaled),
-                             ('mean monthly SWPC/SWO sunspot number', u.dimensionless_unscaled),
-                             ('smoothed SWPC/SWO sunspot number', u.dimensionless_unscaled),
-                             ('mean monthly 10.7cm radio flux', 1e-22*u.W/(u.m**2*u.Hertz)),
-                             ('smoothed 10.7cm radio flux', 1e-22*u.W/(u.m**2*u.Hertz))])
+        units = OrderedDict([('sunspot RI', u.dimensionless_unscaled),
+                             ('sunspot RI smooth', u.dimensionless_unscaled),
+                             ('sunspot SWO', u.dimensionless_unscaled),
+                             ('sunspot SWO smooth', u.dimensionless_unscaled),
+                             ('radio flux', 1e-22*u.W/(u.m**2*u.Hertz)),
+                             ('radio flux smooth', 1e-22*u.W/(u.m**2*u.Hertz))])
         return data, MetaDict({'comments': ""}), units
 
     @classmethod
@@ -424,18 +415,10 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         self._validate_data_for_plotting()
         figure = plt.figure()
         axes = plt.gca()
-        # Old dataframe vs New dataframe
         dataframe = self.to_dataframe()
-        if "sunspot" in dataframe.columns.values:
-            axes = dataframe['sunspot'].plot(color='b', **plot_args)
-            dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
-            dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
-        else:
-            axes = dataframe['predicted sunspot number'].plot(color='b', **plot_args)
-            dataframe['predicted sunspot number high range'].plot(
-                linestyle='--', color='b', **plot_args)
-            dataframe['predicted sunspot number low range'].plot(
-                linestyle='--', color='b', **plot_args)
+        axes = dataframe['sunspot'].plot(color='b', **plot_args)
+        dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
+        dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Sunspot Number Prediction')
@@ -519,12 +502,12 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         with open(filepath) as fp:
             fp.seek(0)
             data = pd.read_json(fp.read())
-        rename = {'predicted_ssn': 'predicted sunspot number',
-                  'high_ssn': 'predicted sunspot number high range',
-                  'low_ssn': 'predicted sunspot number low range',
-                  'predicted_f10.7': 'predicted f10.7cm',
-                  'high_f10.7': 'predicted f10.7cm high range',
-                  'low_f10.7': 'predicted f10.7cm low range'}
+        rename = {'predicted_ssn': 'sunspot',
+                  'high_ssn': 'sunspot high',
+                  'low_ssn': 'sunspot low',
+                  'predicted_f10.7': 'radio flux',
+                  'high_f10.7': 'radio flux high',
+                  'low_f10.7': 'radio flux low'}
         data = data.rename(columns=rename)
         # Convoluted time index handling
         data = data.set_index('time-tag')
@@ -532,10 +515,10 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         data.index = pd.DatetimeIndex(parse_time(
             [x for x in data.index.values]).isot.astype('datetime64'))
         # Add the units data, reported in radio flux values (sfu) originally.
-        units = OrderedDict([('predicted sunspot number', u.dimensionless_unscaled),
-                             ('predicted sunspot number high range', u.dimensionless_unscaled),
-                             ('predicted sunspot number low range', u.dimensionless_unscaled),
-                             ('predicted f10.7cm', 1e-22*u.W/(u.m**2*u.Hertz)),
-                             ('predicted f10.7cm high range', 1e-22*u.W/(u.m**2*u.Hertz)),
-                             ('predicted f10.7cm low range', 1e-22*u.W/(u.m**2*u.Hertz))])
+        units = OrderedDict([('sunspot', u.dimensionless_unscaled),
+                             ('sunspot high', u.dimensionless_unscaled),
+                             ('sunspot low', u.dimensionless_unscaled),
+                             ('radio flux', 1e-22*u.W/(u.m**2*u.Hertz)),
+                             ('radio flux high', 1e-22*u.W/(u.m**2*u.Hertz)),
+                             ('radio flux low', 1e-22*u.W/(u.m**2*u.Hertz))])
         return data, MetaDict({'comments': ""}), units
