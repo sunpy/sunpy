@@ -92,8 +92,12 @@ def download_sample_data(overwrite=False):
         else:
             dl.enqueue_file(url, filename=fname)
 
+    # Increase timeout.
+    timeout = {"total": 10 * 60,
+               "sock_read": 5*60}
+
     if dl.queued_downloads:
-        results = dl.download()
+        results = dl.download(timeouts=timeout)
     else:
         return already_downloaded
 
@@ -102,19 +106,19 @@ def download_sample_data(overwrite=False):
     else:
         log.info('Failed to download one or more sample data files, retrying with a mirror.')
 
-    for retry_url in _base_urls[1:]:
-        dl = Downloader(overwrite=overwrite)
-        for i, err in enumerate(results.errors):
-            file_name = err.filepath_partial().name
-            log.debug(
-                f"Failed to download {_sample_files[file_name]} from {err.url}: {err.exception}")
-            # Update the url to a mirror and requeue the file.
-            new_url = urljoin(retry_url, file_name)
-            dl.enqueue_file(new_url, filename=file_name)
-        results = dl.download()
+    # Try next URL.
+    new_dl = Downloader(overwrite=True)
+    for err in results.errors:
+        file_name = err.filepath_partial().name
+        log.debug(f"Failed to download {_sample_files[file_name]} from {err.url}: {err.exception}")
+        # Update the url to a mirror and requeue the file.
+        new_url = urljoin(_base_urls[1], file_name)
+        log.debug(f"Will redownload using {new_url}")
+        new_dl.enqueue_file(new_url, filename=sampledata_dir/file_name)
+    results = new_dl.download(timeouts=timeout)
 
-        if not results.errors:
-            return results
+    if not results.errors:
+        return results
 
     for err in results.errors:
         file_name = err.filepath_partial().name
