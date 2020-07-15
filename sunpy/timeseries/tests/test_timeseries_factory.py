@@ -36,6 +36,10 @@ noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-tr
 noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated.json')
 noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
 noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
+noaa_goes_xrs_json_filepath_1d = os.path.join(filepath,'xrays-1-day.json')
+noaa_goes_xrs_json_filepath_3d = os.path.join(filepath,'xrays-3-day.json')
+noaa_goes_xrs_json_filepath_7d = os.path.join(filepath,'xrays-7-day.json')
+noaa_goes_xrs_json_filepath_6h = os.path.join(filepath,'xrays-6-hour.json')
 goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
 goes_filepath = os.path.join(filepath, 'go1520110607.fits')
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
@@ -200,6 +204,21 @@ class TestTimeSeries:
                 noaa_pre_txt_filepath, source='NOAAPredictIndices')
         assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
 
+    def test_noaa_sxr_json(self):
+        # Test some NOAAGOESXRS TimeSeries json
+        ts_noaa_sxr = sunpy.timeseries.TimeSeries(
+            noaa_goes_xrs_json_filepath_1d, source='noaagoessxr')
+        assert isinstance(ts_noaa_sxr, sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries)
+        ts_noaa_sxr = sunpy.timeseries.TimeSeries(
+            noaa_goes_xrs_json_filepath_3d, source='noaagoessxr')
+        assert isinstance(ts_noaa_sxr, sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries)
+        ts_noaa_sxr = sunpy.timeseries.TimeSeries(
+            noaa_goes_xrs_json_filepath_7d, source='noaagoessxr')
+        assert isinstance(ts_noaa_sxr, sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries)
+        ts_noaa_sxr = sunpy.timeseries.TimeSeries(
+            noaa_goes_xrs_json_filepath_6h, source='noaagoessxr')
+        assert isinstance(ts_noaa_sxr, sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries)
+
 # ==============================================================================
 # Remote Sources Tests
 # ==============================================================================
@@ -216,20 +235,20 @@ class TestTimeSeries:
         assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     @pytest.mark.remote_data
-    def test_noaa_goes_json_remote(self):
-        # Older format file
+    def test_noaa_goes_sxr_json_remote(self):
+        remote_noaa_goes_json = 'https://services.swpc.noaa.gov/json/goes/primary/'
         noaa = sunpy.timeseries.TimeSeries(
-            'https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json', source='noaagoessxr')
-        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries)
+            remote_noaa_goes_json+'xrays-1-day.json', source='noaagoessxr')
+        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries)
         noaa = sunpy.timeseries.TimeSeries(
-            'https://services.swpc.noaa.gov/json/goes/primary/xrays-3-day.json', source='noaagoessxr')
-        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries)
+            remote_noaa_goes_json+'xrays-3-day.json', source='noaagoessxr')
+        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries)
         noaa = sunpy.timeseries.TimeSeries(
-            'https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json', source='noaagoessxr')
-        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries)
+            remote_noaa_goes_json+'xrays-7-day.json', source='noaagoessxr')
+        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries)
         noaa = sunpy.timeseries.TimeSeries(
-            'https://services.swpc.noaa.gov/json/goes/primary/xrays-6-hour.json', source='noaagoessxr')
-        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries)
+            remote_noaa_goes_json+'xrays-6-hour.json', source='noaagoessxr')
+        assert isinstance(noaa, sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries)
 
 # =============================================================================
 # Manual TimeSeries Tests

@@ -33,15 +33,16 @@ class NOAAGOESXRSTimeSeries(GenericTimeSeries):
     in JSON format (updated every 1-minute).
     The solar SXR measurements are made in the 1-8 Angstrom (0.1-0.8 nm, long channel)
     and 0.5-4.0 Angstrom (0.05-0.4 nm, short channel) passbands.
-    SWPC designates a Primary and a Secondary GOES Satellite (e.g. GOES-16/17) for each instrument, 
-    the satellite from which the SXR measurement is made can be found in <https://services.swpc.noaa.gov/json/goes/instrument-sources.json>.
-    Data from the SWPC Primary and Secondary GOES X-ray satellite are provided from two separate sub-directories.
+    SWPC designates a primary and a secondary GOES Satellite (e.g. GOES-16/17) for each instrument,
+    the satellite from which the SXR measurement is made can be found in 
+    <https://services.swpc.noaa.gov/json/goes/instrument-sources.json>.
+    Data from the primary and secondary GOES satellite are provided from separate sub-directories.
     The final products should be used for preview purposes of the current space weather conditions.
     Use the GOES XRS `~sunpy.timeseries.TimeSeries` source to process GOES/XRS FITS file.
 
     Examples
     --------
-    >>> import sunpy.timeseries   
+    >>> import sunpy.timeseries
     >>> noaa_url = "https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json"
     >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='noaagoessxr')
     >>> noaa.peek()
@@ -85,18 +86,18 @@ class NOAAGOESXRSTimeSeries(GenericTimeSeries):
         if type == 'GOES-Long_and_Short':
             dataframe_long = self._split_to_dataframe(type='GOES-Long')
             axes = dataframe_long['flux'].plot(marker='', color='red',
-                                               linewidth=1, label="1-8$\AA$", **plot_args)
+                                               linewidth=1, label=r'1.0--8.0 $\AA$', **plot_args)
             dataframe_sort = self._split_to_dataframe(type='GOES-Short')
             dataframe_sort['flux'].plot(marker='', color='blue',
-                                        linewidth=1, label="0.5-4$\AA$", **plot_args)
+                                        linewidth=1, label=r'0.5--4.0 $\AA$', **plot_args)
         elif type == 'GOES-Long':
             dataframe_long = self._split_to_dataframe(type='GOES-Long')
             axes = dataframe_long['flux'].plot(marker='', color='red',
-                                               linewidth=1, label="1-8$\AA$", **plot_args)
+                                               linewidth=1, label=r'1.0--8.0 $\AA$', **plot_args)
         elif type == 'GOES-Short':
             dataframe_sort = self._split_to_dataframe(type='GOES-Short')
             axes = dataframe_sort['flux'].plot(marker='', color='blue',
-                                               linewidth=1, label="0.5-4$\AA$", **plot_args)
+                                               linewidth=1, label=r'0.5--4.0 $\AA$', **plot_args)
         else:
             raise ValueError(f'Got unknown plot type "{type}"')
 
@@ -185,7 +186,7 @@ class NOAAGOESXRSTimeSeries(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """
-        Determines if header corresponds to an NOAA GOES soft X-ray timeseries.
+        Determines if header corresponds to an NOAA GOES XRS SXR timeseries.
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)

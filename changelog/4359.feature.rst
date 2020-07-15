@@ -1,3 +1,5 @@
 Adds support for the extra NOAA JSON time series.
 -  New source class: `NOAAGOESXRSTimeSeries` allows to import near-real-time SXR data provided from <https://services.swpc.noaa.gov/json/goes/> in JSON format. Calling .peak() in this class plots the GOES X-ray flux as a function of time.
--  New timeSeries factory test: 'test_noaa_goes_json_remote' added to check if the remote GOES SXR json files exist and return a 'sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries' instance.
+-  New TimeSeries factory test: Added 'test_noaa_sxr_json' and 'test_noaa_goes_json_remote'. Checks that the JSON files imports well and also checks if the remote GOES SXR json files exist and the import can return a 'sunpy.timeseries.sources.noaa.NOAAGOESXRSTimeSeries' instance.
+-  New TimeSeries Base tests: Added a noaa_sxr_json_test_ts and additions in test_units_type, test_meta_type, test_data_type, test_noaa_sxr_json_peek, test_noaa_sxr_json_invalid_peek
+-  Included: Four GOES XRS SXR JSON test files to perform the above tests (xrays-1-day.json, xrays-3-day.json, xrays-7-day.json, xrays-6-hour.json)
