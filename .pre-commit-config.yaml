@@ -72,10 +72,10 @@ repos:
         args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
         exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/timothycrosley/isort
-    rev: 4.3.21-2
+    rev: 5.1.1
     hooks:
       - id: isort
-        args: ['-sp','setup.cfg','-rc']
+        args: ['--sp','setup.cfg']
         exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
