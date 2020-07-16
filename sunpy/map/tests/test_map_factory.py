@@ -16,6 +16,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.data.test
 import sunpy.map
+from sunpy.util.exceptions import SunpyUserWarning
 
 filepath = pathlib.Path(sunpy.data.test.rootdir)
 a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]
@@ -227,7 +228,8 @@ class TestMap:
         # Test save out
         eitmap = sunpy.map.Map(a_fname)
         afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-        eitmap.save(afilename, filetype='fits', overwrite=True)
+        with pytest.warns(SunpyUserWarning, match='The meta key  is not valid ascii'):
+            eitmap.save(afilename, filetype='fits', overwrite=True)
         backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
 
