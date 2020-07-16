@@ -192,7 +192,7 @@ def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, g
 
 def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                    lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
-                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, noaa_sxr_json_test_ts, 
+                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, noaa_sxr_json_test_ts,
                    generic_ts, table_ts):
     assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(esp_test_ts.meta, TimeSeriesMetaData)
@@ -212,7 +212,7 @@ def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
 
 def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                    lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
-                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, noaa_sxr_json_test_ts, 
+                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, noaa_sxr_json_test_ts,
                    generic_ts, table_ts):
     assert isinstance(eve_test_ts.to_dataframe(), DataFrame)
     assert isinstance(esp_test_ts.to_dataframe(), DataFrame)
