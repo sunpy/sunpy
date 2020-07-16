@@ -211,8 +211,10 @@ def test_rsun_meters(generic_map):
 
 
 def test_rsun_obs(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for solar radius'):
-        assert generic_map.rsun_obs == sun.angular_radius(generic_map.date)
+    with pytest.warns(SunpyUserWarning,
+                      match='Missing metadata for solar angular radius: assuming '
+                      'photospheric limb as seen from observer coordinate.'):
+        assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
 
 
 def test_coordinate_system(generic_map):
