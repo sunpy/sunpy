@@ -191,6 +191,9 @@ class TestTimeSeries:
             ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
         assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
 
+    # The pre- data involves dates long in the future, so ignore an ERFA warning
+    # when parsing these dates.
+    @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
     def test_noaa_pre_json(self):
         # Test a NOAAIndices TimeSeries json
         ts_noaa_pre = sunpy.timeseries.TimeSeries(

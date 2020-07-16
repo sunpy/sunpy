@@ -429,6 +429,7 @@ class GenericTimeSeries:
             The plot axes.
         """
         import matplotlib.pyplot as plt
+
         # Get current axes
         if axes is None:
             axes = plt.gca()
@@ -450,6 +451,7 @@ class GenericTimeSeries:
             Any additional plot arguments that should be used when plotting.
         """
         import matplotlib.pyplot as plt
+
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 

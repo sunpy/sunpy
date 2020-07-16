@@ -4,6 +4,7 @@ import pytest
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
+from astropy.utils.exceptions import ErfaWarning
 
 import sunpy.time
 from sunpy.time import is_time_equal
@@ -259,6 +260,7 @@ def test_contains(timerange_a):
     assert timerange.end in timerange
     assert '2014/05/04 15:21' in timerange
     assert '1975/4/13' not in timerange
-    assert '2100/1/1'not in timerange
+    with pytest.warns(ErfaWarning, match='dubious year'):
+        assert '2100/1/1'not in timerange
     assert '2014/05/03 12:00' in timerange
     assert '2014/05/05 21:00' in timerange
