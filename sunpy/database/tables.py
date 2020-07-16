@@ -374,18 +374,16 @@ class DatabaseEntry(DatabaseEntryType, Base):
         """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
-        source = getattr(sr_block, 'source', None)
-        provider = getattr(sr_block, 'provider', None)
-        physobs = getattr(sr_block, 'physobs', None)
+        source = sr_block.get('Source', None)
+        provider = sr_block.get('Provider', None)
+        physobs = sr_block.get('Physobs', None)
         if physobs is not None:
             physobs = str(physobs)
-        instrument = getattr(sr_block, 'instrument', None)
-        time_start = sr_block.time.start.datetime
-        time_end = sr_block.time.end.datetime
+        instrument = sr_block.get('Instrument', None)
+        time_start = sr_block['Time'].start.datetime
+        time_end = sr_block['Time'].end.datetime
 
-        wavelengths = getattr(sr_block, 'wave', None)
-        if wavelengths is None:
-            wavelengths = getattr(sr_block, 'wavelength', np.nan)
+        wavelengths = sr_block.get('Wavelength', np.nan)
         wavelength_temp = {}
         if isinstance(wavelength_temp, tuple):
             # Tuple of values
@@ -411,8 +409,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
         wavemin = final_values['wavemin']
         wavemax = final_values['wavemax']
 
-        # sr_block.url of a QueryResponseBlock attribute is stored in fileid
-        fileid = str(sr_block.url) if sr_block.url is not None else None
+        fileid = sr_block.get('url', None)
         size = None
         return cls(
             source=source, provider=provider, physobs=physobs, fileid=fileid,
