@@ -38,6 +38,7 @@ if sys.version_info < tuple(int(val) for val in __minimum_python_version__.split
 
 def _get_bibtex():
     import textwrap
+
     # Set the bibtex entry to the article referenced in CITATION.rst
     citation_file = os.path.join(os.path.dirname(__file__), 'CITATION.rst')
 
