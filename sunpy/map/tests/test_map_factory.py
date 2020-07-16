@@ -16,6 +16,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.data.test
 import sunpy.map
+from sunpy.util.exceptions import SunpyUserWarning
 
 filepath = pathlib.Path(sunpy.data.test.rootdir)
 a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]
