@@ -35,17 +35,121 @@ It is important that approval for merging the PR is done on the comment thread, 
 Continuous Integration
 ======================
 
-Currently we have a variety of services that respond or activate on an opened pull request:
+Currently we have a variety of services that respond or activate on an opened pull request.
 
-* `pep8speaks <https://github.com/OrkoHunter/pep8speaks>`_: Performs a PEP8 check on any submitted code.
+Comments from bots:
 
-* `CircleCi <https://circleci.com/gh/sunpy/sunpy/>`_: Tests to see if sunpy installs, builds the documentation and runs the figure tests.
+* `pep8speaks <https://github.com/OrkoHunter/pep8speaks>`_: Performs a PEP8 check on any submitted code. This is updated as the code changes.
 
-* Giles: Returns a link if the documentation builds successfully.
+Checks that  appear at the bottom of a pull request:
 
-* `Azure Pipelines <https://dev.azure.com/sunpy/sunpy/_build>`_: Runs our test suite on all three operating systems.
+.. image:: images/checks_pr.png
+   :width: 600
+   :alt: PR checks
 
-* `CodeCov <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage.
+or at the top under the "Checks" tab:
+
+.. image:: images/checks.png
+   :width: 600
+   :alt: PR checks tab
+
+* `figure-tests (CircleCi) <https://circleci.com/gh/sunpy/sunpy/>`_: Runs two figure tests environments ("py38-figure", "py37-figure-devdeps").
+
+* figure_report/figure_tests (Giles): Show the final results of the figure tests.
+
+* figure_report_devdeps (Giles): Show the final results of the figure tests using development packages.
+
+* changelog: absent | found (Giles): If a changelog is needed, this will check and will pass if a changelog with the correct number is found.
+
+* milestone: absent | present (Giles): Will check that the pull request has a milestone assigned.
+
+* `docs/readthedocs.org:sunpy (Read the Docs) <https://readthedocs.org/projects/sunpy/>`_: This builds our documentation.
+
+* `sunpy.sunpy (Azure Pipelines) <https://dev.azure.com/sunpy/sunpy/_build>`_: Runs our test suite on all three operating systems.
+  There are 10 separate checks for this.
+
+* `codecov/patch (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage for the submitted code.
+
+* `codecov/project (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage in sunpy overall.
+
+It is common to see some of these checks fail.
+This can be happen to due a change that has broken a test or a remote server that we use has failed.
+Therefore it is important to check why a task failed and if has a pre-existing issue, it can be safe to ignore on that pull request.
+However, you should try to ensure that as many checks pass before merging.
+
+Understanding Azure Pipelines
+-----------------------------
+
+The vast majority of our tests are run on Azure Pipelines and this means you might have to navigate to the results if you want to check why the tests failed.
+
+The Azure checks on GitHub manifest:
+
+.. image:: images/azure_check_pr.png
+   :width: 600
+   :alt: PR checks tab
+
+This is the main form and there will be one per Azure job ran and a summary one just called "sunpy.sunpy".
+The details text will redirect you to the "Check" tab.
+
+Doing so will show:
+
+.. image:: images/azure_summary_check.png
+   :width: 600
+   :alt: Summary of Azure outputs on Checks tab
+
+You get some statistics that you don't need to worry about and then a series of boxes under the "ANNOTATIONS" heading.
+Unfortunately, when a Azure step fails you sometimes will get "Bash exited with code '1'." which means you have to go to the page to see what happened.
+If the failure is due to a test, you will get a selection of test outputs under this heading.
+
+On the left you should see the entire list of Azure checks.
+
+You can go to a failing check and you will see:
+
+.. image:: images/azure_goto.png
+   :width: 600
+   :alt: Go to Azure Pipelines
+
+which will take you to the Azure Pipelines website.
+This will load up the following:
+
+.. image:: images/azure_steps_in_job.png
+   :width: 600
+   :alt: Build steps in Azure
+
+Here you can see each step that is undertaken during a job on Azure.
+Normally the "Running tox" should be red if the tests have failed.
+You will want to click on this which will load up the output from the test suite.
+
+Our test suite is quite verbose so there is a lot of text loaded.
+The important bits of information should be at the bottom as "pytest" prints out a summary at the end.
+
+.. code:: bash
+
+    ============================================================================= short test summary info =============================================================================
+    SKIPPED [1] d:\a\1\s\.tox\py37\lib\site-packages\pytest_doctestplus\plugin.py:178: unable to import module local('d:\\a\\1\\s\\.tox\\py37\\lib\\site-packages\\sunpy\\io\\setup_package.py')
+    SKIPPED [213] d:\a\1\s\.tox\py37\lib\site-packages\pytest_remotedata\plugin.py:87: need --remote-data option to run
+    SKIPPED [18] d:\a\1\s\.tox\py37\lib\site-packages\_pytest\doctest.py:387: all tests skipped by +SKIP option
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\map\sources\tests\test_source_type.py:21: Glymur can not be imported.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\map\sources\tests\test_source_type.py:30: Glymur can not be imported.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_ana.py:22: ANA is not available.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_ana.py:31: ANA is not available.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_ana.py:40: ANA is not available.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_ana.py:49: ANA is not available.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_ana.py:58: ANA is not available.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_ana.py:67: ANA is not available.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_filetools.py:54: Glymur can not be imported.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_filetools.py:73: Glymur can not be imported.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_filetools.py:106: ANA is not available.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_filetools.py:115: ANA is not available.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_filetools.py:122: ANA is not available.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_jp2.py:11: Glymur can not be imported.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_jp2.py:21: Glymur can not be imported.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_jp2.py:31: Glymur can not be imported.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\net\tests\test_fido.py:298: Windows.
+    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\net\tests\test_helioviewer.py:90: Glymur can not be imported.
+    FAILED ..\..\.tox\py37\lib\site-packages\sunpy\timeseries\sources\noaa.py::sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries
+
+You can then search for the name of the test and it should find the full output from the failed test.
 
 SunPy GitHub Groups
 ===================
@@ -67,8 +171,6 @@ The membership of this group is at the discretion of the Lead Developer, but sha
 
 This group has `subgroups <https://github.com/orgs/sunpy/teams/sunpy-maintainers/teams>`__ for each section of the repository that has `maintainers <https://sunpy.org/team#maintainer-list>`__.
 The members of these groups will automatically be requested to review all PRs which change files in that subpackage.
-
-
 
 SunPy Developers
 ----------------
