@@ -34,7 +34,7 @@ class NOAAGOESXRSTimeSeries(GenericTimeSeries):
     The solar SXR measurements are made in the 1-8 Angstrom (0.1-0.8 nm, long channel)
     and 0.5-4.0 Angstrom (0.05-0.4 nm, short channel) passbands.
     SWPC designates a primary and a secondary GOES Satellite (e.g. GOES-16/17) for each instrument,
-    the satellite from which the SXR measurement is made can be found in 
+    the satellite from which the SXR measurement is made can be found in
     <https://services.swpc.noaa.gov/json/goes/instrument-sources.json>.
     Data from the primary and secondary GOES satellite are provided from separate sub-directories.
     The final products should be used for preview purposes of the current space weather conditions.
@@ -44,8 +44,8 @@ class NOAAGOESXRSTimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.timeseries
     >>> noaa_url = "https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json"
-    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='noaagoessxr')
-    >>> noaa.peek()
+    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='noaagoessxr')  # doctest: +REMOTE_DATA
+    >>> noaa.peek()  # doctest: +SKIP
     Works also with: xrays-1-day.json, xrays-3-day.json, xrays-6-hour.json, xrays-7-day.json
 
     References
