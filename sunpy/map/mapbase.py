@@ -37,7 +37,7 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
 from sunpy.util.decorators import deprecate_positional_args_since, deprecated
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
@@ -838,7 +838,7 @@ class GenericMap(NDData):
         warning_message = "".join(
             [f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
-        warnings.warn(warning_message, SunpyUserWarning)
+        warnings.warn(warning_message, SunpyMetadataWarning, stacklevel=3)
 
         return get_earth(self.date)
 
