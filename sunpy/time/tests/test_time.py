@@ -135,7 +135,8 @@ def test_parse_time_individual_numpy_datetime():
 
 
 def test_parse_time_numpy_datetime_timezone():
-    dt64 = np.datetime64('2014-02-07T16:47:51-0500')
+    with pytest.warns(DeprecationWarning, match='parsing timezone aware datetimes is deprecated'):
+        dt64 = np.datetime64('2014-02-07T16:47:51-0500')
     dt = parse_time(dt64)
 
     assert dt == Time('2014-02-07T21:47:51', format='isot')
@@ -245,6 +246,9 @@ def test_parse_time_leap_second():
     assert dt2.jd == dt3.jd
 
 
+# This warning shouldn't really be ignored; see https://github.com/astropy/astropy/issues/10564
+# for the issue that will help decide how to handle this
+@pytest.mark.filterwarnings('ignore:FITS time strings should no longer have embedded time scale')
 @pytest.mark.parametrize("ts,fmt", [
     (1950.0, 'byear'),
     ('B1950.0', 'byear_str'),

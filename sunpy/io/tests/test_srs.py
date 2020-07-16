@@ -28,6 +28,7 @@ LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name=
                                 unit=u.deg))
 
 
+@pytest.mark.filterwarnings('ignore:dropping mask in Quantity column')
 @pytest.mark.parametrize("path, number_of_rows",
                          [(os.path.join(testpath, elem['file']), elem['rows'])
                           for elem in filenames])
