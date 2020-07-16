@@ -7,7 +7,7 @@ from astropy.time import TimeDelta
 
 import sunpy
 from sunpy import config
-from sunpy.net._attrs import Time, Wavelength
+from sunpy.net import attrs as a
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.parfive_helpers import Downloader
@@ -18,16 +18,6 @@ TIME_FORMAT = config.get("general", "time_format")
 __all__ = ['QueryResponse', 'GenericClient']
 
 
-class QueryResponseBlock(OrderedDict):
-    """
-    Represents each row for the QueryResponse table.
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for k in self:
-            self.__dict__[k.lower()] = self[k]
-
-
 class QueryResponse(BaseQueryResponse):
     """
     A container for files metadata returned by
@@ -36,10 +26,7 @@ class QueryResponse(BaseQueryResponse):
 
     def __init__(self, lst, client=None):
         super().__init__()
-        datalist = []
-        for datablock in lst:
-            datalist.append(QueryResponseBlock(datablock))
-        self._data = datalist
+        self._data = lst
         self._client = client
 
     @property
@@ -117,12 +104,16 @@ class GenericClient(BaseClient):
     """
     baseurl = None
     pattern = None
+    required = {a.Time, a.Instrument}
+    optional = set()
 
     @classmethod
     def _get_match_dict(cls, *args, **kwargs):
         """
-        Returns a dictionary to validate the metadata of searched files using
-        query and registered values for Attrs for the respective client.
+        Constructs a dictionary using the query and registered Attrs that represents
+        all possible values of the extracted metadata for files that matches the query.
+        The returned dictionary is used to validate the metadata of searched files
+        in `:func:~sunpy.util.scraper.Scraper._extract_files_meta`.
 
         Parameters
         ----------
@@ -137,23 +128,25 @@ class GenericClient(BaseClient):
             A dictionary having a `list` of all possible Attr values
             corresponding to an Attr.
         """
-        a = cls.register_values()
+        adict = cls.register_values()
         matchdict = {}
-        for i in a.keys():
+        for i in adict.keys():
             attrname = i.__name__
             matchdict[attrname] = []
-            for val, desc in a[i]:
+            for val, desc in adict[i]:
                 matchdict[attrname].append(val)
         for elem in args:
-            if isinstance(elem, Time):
+            if isinstance(elem, a.Time):
                 timerange = TimeRange(elem.start, elem.end)
                 matchdict['Time'] = timerange
             elif hasattr(elem, 'value'):
                 matchdict[elem.__class__.__name__] = [str(elem.value).lower()]
-            elif isinstance(elem, Wavelength):
+            elif isinstance(elem, a.Wavelength):
                 matchdict['Wavelength'] = elem
             else:
-                raise ValueError("GenericClient can not add {} to the map_ dictionary to pass to the Client.".format(elem.__class__.__name__))
+                raise ValueError(
+                    "GenericClient can not add {} to the map_ dictionary to"
+                    "pass to the Client.".format(elem.__class__.__name__))
         for k in kwargs:
             matchdict[k] = [kwargs[k]]
             if isinstance(kwargs[k], str):
@@ -164,7 +157,8 @@ class GenericClient(BaseClient):
     def pre_search_hook(cls, *args, **kwargs):
         """
         Helper function to return the baseurl, pattern and matchdict
-        for the client required by `search()` before using the scraper.
+        for the client required by `:func:~sunpy.net.dataretriever.GenericClient.search`
+        before using the scraper.
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
         return cls.baseurl, cls.pattern, matchdict
@@ -176,16 +170,10 @@ class GenericClient(BaseClient):
         `sunpy.net.fido_factory.UnifiedDownloaderFactory`
         class uses to dispatch queries to this Client.
         """
-        from sunpy.net import attrs as a
-
-        required = {a.Time, a.Instrument}
         adict = cls.register_values()
-        optional = {i for i in adict.keys()} - required
-        if hasattr(cls, 'required'):
-            required = cls.required
-        if hasattr(cls, 'optional'):
-            optional = cls.optional
-        if not cls.check_attr_types_in_query(query, required, optional):
+        if cls.optional == set():
+            cls.optional = {k for k in adict.keys()} - cls.required
+        if not cls.check_attr_types_in_query(query, cls.required, cls.optional):
             return False
         for key in adict:
             all_vals = [i[0].lower() for i in adict[key]]
@@ -196,8 +184,8 @@ class GenericClient(BaseClient):
 
     def post_search_hook(self, exdict, matchdict):
         """
-        Helper function used after `search()` which makes the
-        extracted metadata representable in a query response table.
+        Helper function used after `:func:~sunpy.net.dataretriever.GenericClient.search`
+        which makes the extracted metadata representable in a query response table.
 
         Parameters
         ----------
@@ -288,7 +276,8 @@ class GenericClient(BaseClient):
         """
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         scraper = Scraper(baseurl, regex=True)
-        filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern, matcher=matchdict)
+        filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern,
+                                                matcher=matchdict)
         metalist = []
         for i in filesmeta:
             map_ = self.post_search_hook(i, matchdict)
