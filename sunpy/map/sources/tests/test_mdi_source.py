@@ -16,7 +16,7 @@ import sunpy.data.test
 from sunpy.coordinates import frames
 from sunpy.map import Map
 from sunpy.map.sources.soho import MDIMap, MDISynopticMap
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 
 @pytest.fixture
@@ -156,5 +156,5 @@ def test_carrington(mdi):
 def test_synoptic_source(mdi_synoptic):
     assert isinstance(mdi_synoptic, MDISynopticMap)
     # Check that the WCS is valid
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
         mdi_synoptic.wcs
