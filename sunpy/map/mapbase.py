@@ -753,11 +753,14 @@ class GenericMap(NDData):
                                                                     None)))
 
         if rsun_arcseconds is None:
-            warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
+            warnings.warn("Missing metadata for solar angular radius: assuming photospheric limb "
+                          "as seen from observer coordinate.",
                           SunpyUserWarning)
-            rsun_arcseconds = sun.angular_radius(self.date).to('arcsec').value
-
-        return u.Quantity(rsun_arcseconds, 'arcsec')
+            dsun = self.dsun
+            rsun = sun._angular_radius(constants.radius, dsun)
+        else:
+            rsun = rsun_arcseconds * u.arcsec
+        return rsun
 
     @property
     def coordinate_system(self):
