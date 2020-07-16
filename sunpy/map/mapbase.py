@@ -739,7 +739,14 @@ class GenericMap(NDData):
 
     @property
     def rsun_obs(self):
-        """Radius of the Sun."""
+        """
+        Angular radius of the Sun.
+
+        Notes
+        -----
+        This value is taken the ``'rsun_obs'``, ``'solar_r'``, or ``radius``
+        FITS keywords.
+        """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
                                                       self.meta.get('radius',
