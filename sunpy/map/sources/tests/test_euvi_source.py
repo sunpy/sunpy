@@ -6,14 +6,11 @@ This particular test file pertains to EUVIMap.
 import os
 import glob
 
-import pytest
-
 import sunpy.data.test
 from sunpy.coordinates import sun
 from sunpy.map import Map
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.sun import constants
-from sunpy.util.exceptions import SunpyUserWarning
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "euvi_20090615_000900_n4euA_s.fts"))
