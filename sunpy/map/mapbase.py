@@ -748,7 +748,8 @@ class GenericMap(NDData):
         Notes
         -----
         This value is taken the ``'rsun_obs'``, ``'solar_r'``, or ``radius``
-        FITS keywords.
+        FITS keywords. If none of these keys are present the photospheric limb
+        as seen from the observer coordinate is returned.
         """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
