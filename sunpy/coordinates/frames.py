@@ -19,7 +19,7 @@ from astropy.time import Time
 
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.decorators import add_common_docstring
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 
 _J2000 = Time('J2000.0', scale='tt')
@@ -490,10 +490,6 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,
                                                           distance=d))
-
-    # Support the previous name for make_3d for now
-    calculate_distance = deprecated('1.1', name="calculate_distance",
-                                    alternative="make_3d")(make_3d)
 
 
 @add_common_docstring(**_frame_parameters())

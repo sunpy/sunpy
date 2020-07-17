@@ -7,13 +7,13 @@ import sys
 import shutil
 from unicodedata import normalize
 from email.parser import FeedParser
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 from urllib.request import urlopen
 
-from sunpy.util import deprecated, replacement_filename
+from sunpy.util import replacement_filename
 
 __all__ = ['slugify', 'get_content_disposition', 'get_filename', 'get_system_filename',
-           'download_file', 'download_fileobj', 'check_download_file']
+           'download_file', 'download_fileobj']
 
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
@@ -198,42 +198,3 @@ def download_file(url, directory, default="file", overwrite=False):
     finally:
         opn.close()
     return path
-
-
-@deprecated("1.1")
-def check_download_file(filename, remotepath, download_dir, remotename=None, replace=False):
-    """
-    Downloads a file from a remotepath to a localpath if it isn't there.
-
-    This function checks whether a file with name ``filename`` exists in the user's local machine.
-    If it doesn't, it downloads the file from ``remotepath``.
-
-    Parameters
-    ----------
-    filename : `str`
-        Name of file.
-    remotepath : `str`
-        URL of the remote location from which filename can be downloaded.
-    download_dir : `str`
-        The files directory.
-    remotename : `str`, optional
-        Filename under which the file is stored remotely.
-        Default is same as filename.
-    replace : `bool`, optional
-        If `True`, file will be downloaded whether or not file already exists locally.
-
-    Examples
-    --------
-    >>> from sunpy.util.net import check_download_file
-    >>> remotepath = "https://www.download_repository.com/downloads/"
-    >>> check_download_file("filename.txt", remotepath, download_dir='.')  # doctest: +SKIP
-    """
-    # Check if file already exists locally.  If not, try downloading it.
-    if replace or not os.path.isfile(os.path.join(download_dir, filename)):
-        # set local and remote file names be the same unless specified
-        # by user.
-        if not isinstance(remotename, str):
-            remotename = filename
-
-        download_file(urljoin(remotepath, remotename),
-                      download_dir, default=filename, overwrite=replace)
