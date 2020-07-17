@@ -742,18 +742,29 @@ class GenericMap(NDData):
 
     @property
     def rsun_obs(self):
-        """Radius of the Sun."""
+        """
+        Angular radius of the Sun.
+
+        Notes
+        -----
+        This value is taken the ``'rsun_obs'``, ``'solar_r'``, or ``radius``
+        FITS keywords. If none of these keys are present the photospheric limb
+        as seen from the observer coordinate is returned.
+        """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
                                                       self.meta.get('radius',
                                                                     None)))
 
         if rsun_arcseconds is None:
-            warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
+            warnings.warn("Missing metadata for solar angular radius: assuming photospheric limb "
+                          "as seen from observer coordinate.",
                           SunpyUserWarning)
-            rsun_arcseconds = sun.angular_radius(self.date).to('arcsec').value
-
-        return u.Quantity(rsun_arcseconds, 'arcsec')
+            dsun = self.dsun
+            rsun = sun._angular_radius(constants.radius, dsun)
+        else:
+            rsun = rsun_arcseconds * u.arcsec
+        return rsun
 
     @property
     def coordinate_system(self):
