@@ -75,7 +75,14 @@ jobs:
       - linux: py38-hypothesis
 
       - linux: py38-conda
-        name: py38_conda
+        name: py38_conda_linux
+        libraries: {}
+
+      - linux: py38-singlethread-conda
+        libraries: {}
+
+      - macos: py38-conda
+        name: py38_conda_macos
         libraries: {}
 
       - linux: py37-oldestdeps
