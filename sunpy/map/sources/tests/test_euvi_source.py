@@ -6,13 +6,11 @@ This particular test file pertains to EUVIMap.
 import os
 import glob
 
-import pytest
-
 import sunpy.data.test
 from sunpy.coordinates import sun
 from sunpy.map import Map
 from sunpy.map.sources.stereo import EUVIMap
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.sun import constants
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "euvi_20090615_000900_n4euA_s.fts"))
@@ -51,8 +49,8 @@ def test_rsun_missing():
     """Tests output if 'rsun' is missing"""
     euvi_no_rsun = Map(fitspath)
     euvi_no_rsun.meta['rsun'] = None
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for solar radius'):
-        assert euvi_no_rsun.rsun_obs.value == sun.angular_radius(euvi.date).to('arcsec').value
+    r = euvi_no_rsun.observer_coordinate.radius
+    assert euvi_no_rsun.rsun_obs == sun._angular_radius(constants.radius, r)
 
 
 def test_norm_clip():
