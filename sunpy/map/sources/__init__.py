@@ -15,7 +15,7 @@ from .iris import SJIMap
 from .mlso import KCorMap
 from .proba2 import SWAPMap
 from .rhessi import RHESSIMap
-from .sdo import AIAMap, HMIMap
+from .sdo import AIAMap, HMIMap, HMISynopticMap
 from .soho import EITMap, LASCOMap, MDIMap
 from .source_type import from_helioviewer_project, source_stretch
 from .stereo import CORMap, EUVIMap, HIMap
