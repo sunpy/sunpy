@@ -2108,6 +2108,33 @@ class GenericMap(NDData):
 
         return ret
 
+    def contour(self, level, **kwargs):
+        """
+        Returns coordinates of the contours for a given level value.
+
+        For details of the contouring algorithm see `skimage.measure.find_contours`.
+
+        Parameters
+        ----------
+        level : float
+            Value along which to find contours in the array.
+        kwargs :
+            Additional keyword arguments are passed to `skimage.measure.find_contours`.
+
+        Returns
+        -------
+        contours: list of (n,2) `~astropy.coordinates.SkyCoord`
+            Coordinates of each contour.
+
+        See also
+        --------
+        `skimage.measure.find_contours`
+        """
+        from skimage import measure
+        contours = measure.find_contours(self.data, level=level, **kwargs)
+        contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
+        return contours
+
 
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
