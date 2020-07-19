@@ -41,7 +41,7 @@ Comments from bots:
 
 * `pep8speaks <https://github.com/OrkoHunter/pep8speaks>`_: Performs a PEP8 check on any submitted code. This is updated as the code changes.
 
-Checks that  appear at the bottom of a pull request:
+Checks that appear at the bottom of a pull request:
 
 .. image:: images/checks_pr.png
    :width: 600
@@ -68,13 +68,13 @@ or at the top under the "Checks" tab:
 * `sunpy.sunpy (Azure Pipelines) <https://dev.azure.com/sunpy/sunpy/_build>`_: Runs our test suite on all three operating systems.
   There are 10 separate checks for this.
 
-* `codecov/patch (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage for the submitted code.
+* `codecov/patch (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage for the submitted code in the pull request.
 
 * `codecov/project (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage in sunpy overall.
 
 It is common to see some of these checks fail.
-This can be happen to due a change that has broken a test or a remote server that we use has failed.
-Therefore it is important to check why a task failed and if has a pre-existing issue, it can be safe to ignore on that pull request.
+This can be happen due to a change that has broken a test (should be fixed) or a remote server has failed (might have to wait for it to come back).
+Therefore it is important to check why a task failed and if has a pre-existing issue, it can be safe to ignore a failing check on that pull request.
 However, you should try to ensure that as many checks pass before merging.
 
 Understanding Azure Pipelines
@@ -88,8 +88,8 @@ The Azure checks on GitHub manifest:
    :width: 600
    :alt: PR checks tab
 
-This is the main form and there will be one per Azure job ran and a summary one just called "sunpy.sunpy".
-The details text will redirect you to the "Check" tab.
+This is the main form and there will be one check per Azure job ran and a summary one just called "sunpy.sunpy".
+The details text will redirect you to the "Checks" tab.
 
 Doing so will show:
 
@@ -102,7 +102,6 @@ Unfortunately, when a Azure step fails you sometimes will get "Bash exited with 
 If the failure is due to a test, you will get a selection of test outputs under this heading.
 
 On the left you should see the entire list of Azure checks.
-
 You can go to a failing check and you will see:
 
 .. image:: images/azure_goto.png
@@ -118,10 +117,11 @@ This will load up the following:
 
 Here you can see each step that is undertaken during a job on Azure.
 Normally the "Running tox" should be red if the tests have failed.
-You will want to click on this which will load up the output from the test suite.
+You will need to click on this so it will load the output from the test suite.
 
-Our test suite is quite verbose so there is a lot of text loaded.
-The important bits of information should be at the bottom as "pytest" prints out a summary at the end.
+Our test suite is very verbose, so there will be a lot of text outputted.
+The important bits of information should be at the bottom as "pytest" prints out a test summary at the end.
+For example:
 
 .. code:: bash
 
@@ -149,7 +149,7 @@ The important bits of information should be at the bottom as "pytest" prints out
     SKIPPED [1] .tox\py37\lib\site-packages\sunpy\net\tests\test_helioviewer.py:90: Glymur can not be imported.
     FAILED ..\..\.tox\py37\lib\site-packages\sunpy\timeseries\sources\noaa.py::sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries
 
-You can then search for the name of the test and it should find the full output from the failed test.
+If you want to find the full test output, you can search the tab for the name of the test out of the ~3 results, one will be that output.
 
 SunPy GitHub Groups
 ===================

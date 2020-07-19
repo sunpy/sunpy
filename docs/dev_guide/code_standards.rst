@@ -53,9 +53,9 @@ Formatting
 ==========
 
 We enforce a minimum level of code style with our continuous intergration (the name is ``sunpy.sunpy (python_codestyle [linux]``).
-This runs a tool called `https://pre-commit.com/ <https://pre-commit.com/>`__.
+This runs a tool called `pre-commit <https://pre-commit.com/>`__.
 
-Using "tox" allows you to run these tools without having to setup anything within your own Python virtual environment::
+Instead of installing this, you can use "tox" (which is used to run the sunpy test suite) to run these tools without having to setup anything within your own Python virtual environment::
 
     $ tox -e codestyle
 
