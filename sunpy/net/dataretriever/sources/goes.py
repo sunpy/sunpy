@@ -117,10 +117,6 @@ class SUVIClient(GenericClient):
                 '{eyear:4d}{emonth:2d}{eday:2d}T{ehour:2d}{eminute:2d}{esecond:2d}Z_{}')
     optional = {a.Wavelength, a.Source, a.Provider, a.Level, a.Physobs, a.goes.SatelliteNumber}
 
-    def pre_search_hook(cls, *args, **kwargs):
-        matchdict = cls._get_match_dict(*args, **kwargs)
-        return cls.baseurl1b, cls.pattern1b, cls.baseurl2, cls.pattern2, matchdict
-
     def post_search_hook(self, i, matchdict):
 
         # extracting start times and end times
@@ -145,7 +141,7 @@ class SUVIClient(GenericClient):
     def search(self, *args, **kwargs):
         supported_waves = [94, 131, 171, 195, 284, 304]*u.Angstrom
         all_waves = []
-        baseurl1b, pattern1b, baseurl2, pattern2, matchdict = self.pre_search_hook(*args, **kwargs)
+        matchdict = self._get_match_dict(*args, **kwargs)
         req_wave = matchdict.get('Wavelength', None)
         if req_wave is not None:
             wmin = req_wave.min.to(u.Angstrom, equivalencies=u.spectral())
@@ -169,11 +165,11 @@ class SUVIClient(GenericClient):
                         formdict['elem'] = 'fe'
                         if wave == 304:
                             formdict['elem'] = 'he'
-                        baseurl = baseurl1b
-                        pattern = pattern1b
+                        baseurl = self.baseurl1b
+                        pattern = self.pattern1b
                     elif str(level) == '2':
-                        baseurl = baseurl2
-                        pattern = pattern2
+                        baseurl = self.baseurl2
+                        pattern = self.pattern2
                     else:
                         raise ValueError(f"Level {level} is not supported.")
                     # formatting baseurl using Level, SatelliteNumber and Wavelength

@@ -48,6 +48,8 @@ class NOAAIndicesClient(GenericClient):
         map_ = self._get_match_dict(*args, **kwargs)
         for key in map_:
             if isinstance(map_[key], list):
+                # uses first value among the list of possible values corresponding to an Attr
+                # returned by `get_match_dict()` to be shown in query response table.
                 map_[key] = map_[key][0]
         map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
         map_['Instrument'] = 'NOAA-Indices'
@@ -96,6 +98,8 @@ class NOAAPredictClient(GenericClient):
         map_ = self._get_match_dict(*args, **kwargs)
         for key in map_:
             if isinstance(map_[key], list):
+                # uses first value among the list of possible values corresponding to an Attr
+                # returned by `get_match_dict()` to be shown in query response table.
                 map_[key] = map_[key][0]
         map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
         map_['Instrument'] = 'NOAA-Predict'
@@ -168,7 +172,7 @@ class SRSClient(GenericClient):
             exdict1 = parse(extractor1, url)
             exdict2 = parse(extractor2, url)
             exdict = (exdict2 if exdict1 is None else exdict1).named
-            map_ = super().post_search_hook(exdict, matchdict)
+            map_ = self.post_search_hook(exdict, matchdict)
             map_['url'] = url
             metalist.append(map_)
         return QueryResponse(metalist, client=self)
