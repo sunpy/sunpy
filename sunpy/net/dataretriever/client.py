@@ -101,11 +101,29 @@ class GenericClient(BaseClient):
     `~sunpy.net.dataretriever.client.GenericClient.fetch` the former generates a
     set of results for files available through the service the client is
     querying and the latter downloads that data.
+
+    Search uses two hooks as helper functions; these are
+    :meth:`~sunpy.net.dataretriever.GenericClient.pre_search_hook` and
+    :meth:`~sunpy.net.dataretriever.GenericClient.post_search_hook`.
+    They help to translate the attrs for scraper before and after the search respectively.
     """
     baseurl = None
+    """
+    A regex string that can match all urls supported by the client.
+    """
     pattern = None
+    """
+    A string which is used to extract the desired metadata from urls correctly,
+    using :func:`~sunpy.extern.parse.parse`
+    """
     required = {a.Time, a.Instrument}
+    """
+    Set of required 'attrs' for client to handle the query.
+    """
     optional = set()
+    """
+    Set of optional 'attrs' that can be specified in the query.
+    """
 
     @classmethod
     def _get_match_dict(cls, *args, **kwargs):
@@ -128,12 +146,12 @@ class GenericClient(BaseClient):
             A dictionary having a `list` of all possible Attr values
             corresponding to an Attr.
         """
-        adict = cls.register_values()
+        regattrs_dict = cls.register_values()
         matchdict = {}
-        for i in adict.keys():
+        for i in regattrs_dict.keys():
             attrname = i.__name__
             matchdict[attrname] = []
-            for val, desc in adict[i]:
+            for val, desc in regattrs_dict[i]:
                 matchdict[attrname].append(val)
         for elem in args:
             if isinstance(elem, a.Time):
@@ -145,7 +163,7 @@ class GenericClient(BaseClient):
                 matchdict['Wavelength'] = elem
             else:
                 raise ValueError(
-                    "GenericClient can not add {} to the map_ dictionary to"
+                    "GenericClient can not add {} to the rowdict dictionary to"
                     "pass to the Client.".format(elem.__class__.__name__))
         for k in kwargs:
             matchdict[k] = [kwargs[k]]
@@ -170,13 +188,13 @@ class GenericClient(BaseClient):
         `sunpy.net.fido_factory.UnifiedDownloaderFactory`
         class uses to dispatch queries to this Client.
         """
-        adict = cls.register_values()
+        regattrs_dict = cls.register_values()
         if cls.optional == set():
-            cls.optional = {k for k in adict.keys()} - cls.required
+            cls.optional = {k for k in regattrs_dict.keys()} - cls.required
         if not cls.check_attr_types_in_query(query, cls.required, cls.optional):
             return False
-        for key in adict:
-            all_vals = [i[0].lower() for i in adict[key]]
+        for key in regattrs_dict:
+            all_vals = [i[0].lower() for i in regattrs_dict[key]]
             for x in query:
                 if isinstance(x, key) and str(x.value).lower() not in all_vals:
                     return False
@@ -197,11 +215,11 @@ class GenericClient(BaseClient):
 
         Returns
         -------
-        map_: `~collections.OrderedDict`
+        rowdict: `~collections.OrderedDict`
             An Ordered Dictionary which is used by `QueryResponse`
             to show results.
         """
-        map_ = OrderedDict()
+        rowdict = OrderedDict()
         almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
         if 'month' in exdict and 'day' in exdict:
             start = parse_time("{}/{}/{}".format(exdict['year'], exdict['month'], exdict['day']))
@@ -209,22 +227,22 @@ class GenericClient(BaseClient):
         elif 'year' in exdict:
             start = parse_time("{}/{}/{}".format(exdict['year'], 1, 1))
             end = parse_time("{}/{}/{}".format(exdict['year'], 12, 31)) + almost_day
-        map_['Time'] = TimeRange(start, end)
-        map_['Start Time'] = start.strftime(TIME_FORMAT)
-        map_['End Time'] = end.strftime(TIME_FORMAT)
-        map_['Instrument'] = matchdict['Instrument'][0].upper()
+        rowdict['Time'] = TimeRange(start, end)
+        rowdict['Start Time'] = start.strftime(TIME_FORMAT)
+        rowdict['End Time'] = end.strftime(TIME_FORMAT)
+        rowdict['Instrument'] = matchdict['Instrument'][0].upper()
         if 'Physobs' in matchdict:
-            map_['Physobs'] = matchdict['Physobs'][0]
-        map_['Source'] = matchdict['Source'][0].upper()
-        map_['Provider'] = matchdict['Provider'][0].upper()
+            rowdict['Physobs'] = matchdict['Physobs'][0]
+        rowdict['Source'] = matchdict['Source'][0].upper()
+        rowdict['Provider'] = matchdict['Provider'][0].upper()
         for k in exdict:
             if k not in ['year', 'month', 'day']:
-                map_[k] = exdict[k]
-        return map_
+                rowdict[k] = exdict[k]
+        return rowdict
 
     def _get_full_filenames(self, qres, filenames, path):
         """
-        Download a set of results.
+        Returns full pathnames for each file in the result.
 
         Parameters
         ----------
@@ -280,8 +298,8 @@ class GenericClient(BaseClient):
                                                 matcher=matchdict)
         metalist = []
         for i in filesmeta:
-            map_ = self.post_search_hook(i, matchdict)
-            metalist.append(map_)
+            rowdict = self.post_search_hook(i, matchdict)
+            metalist.append(rowdict)
         return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,
