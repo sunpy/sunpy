@@ -3,22 +3,23 @@
 Advanced Installation Instructions
 **********************************
 
-This document provides details on things you need to know to install and manage your own scientific Python + sunpy installation.
-If you have never installed or used scientific Python we recommend that you follow the :ref:`Miniconda installation instructions <main-install>`.
+This document provides details on how to install and manage your own scientific Python + sunpy installation.
+If you have never installed/used a scientific Python environment, we recommend that you follow the :ref:`Miniconda installation instructions <main-install>`.
 
-Installing sunpy on top of an existing Scientific Python Environment
+Installing sunpy on top of an existing scientific Python environment
 ====================================================================
 
 These instructions assume you have a scientific Python distribution with access to the ``pip`` command installed.
 
 .. warning::
     Users of the Miniconda python distribution should follow the instructions for :ref:`main-install`.
+    Mixing packages from conda and pip is not recommended.
 
 Prerequisites
 -------------
 
 You will need a C compiler (e.g., ``gcc`` or ``clang``) to be installed as we have a C library within sunpy that is built at install time.
-
+We do provide compiled binaries for sunpy for Linux and Mac OS X (we do not compile our C extension on Windows), so you might not need a C compiler.
 If you use Miniconda, you can get these compilers from there.
 On Linux, using the package manager for your distribution will usually be the easiest route, while on MacOS X you will need the XCode command line tools.
 
@@ -76,7 +77,7 @@ Testing sunpy
     The tests will fail if you do not install all the optional dependencies.
     If you have installed sunpy with conda-forge, you will be missing the ``pytest-mock`` package which will cause the test suite to fail.
 
-The easiest way to test your installed version of sunpy is running correctly is to use the :func:`sunpy.self_test()` function::
+The easiest way to test your installed version of sunpy is running correctly is to use the :func:`sunpy.self_test`::
 
     import sunpy
     sunpy.self_test()

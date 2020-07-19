@@ -24,7 +24,7 @@ To link to other methods, classes, or modules in sunpy you have to use backticks
 
 generates a link like this: `sunpy.io.file_tools.read_file`.
 
-We use the sphinx setting ``default_role = 'obj'`` so that you don't have to use qualifiers like ``:class:``, ``:func:``, ``:meth:`` and the like.
+We use the sphinx setting ``default_role = 'obj'`` so that you don't have to use qualifiers like ``:class:``, ``:func:``, ``:meth:`` (more on this later).
 
 Often, you don't want to show the full package and module name.
 As long as the target is unambiguous you can simply leave them out:
