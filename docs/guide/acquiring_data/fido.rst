@@ -345,4 +345,5 @@ If you want to see the current list of clients you can do::
     RHESSIClient      Provides access to the RHESSI observing summary time series data.
     JSOCClient        This is a client to the JSOC Data Export service.
     VSOClient         Allows queries and downloads from the Virtual Solar Observatory (VSO).
+    HEKClient         Client to interact with the Heliophysics Event Knowledgebase (HEK).
     HECClient         A client class used to interface with and query HELIO webservices.

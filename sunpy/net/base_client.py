@@ -157,6 +157,7 @@ class BaseClient(ABC):
     """
 
     _registry = dict()
+    isMetaClient = False
 
     def __init_subclass__(cls, *args, **kwargs):
         """

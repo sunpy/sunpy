@@ -182,6 +182,11 @@ class _ComparisonParamAttrWrapper:
     def __ne__(self, other):
         return _ParamAttr(self.name, '!=', other)
 
+    def collides(self, other):
+        if isinstance(other, _ComparisonParamAttrWrapper):
+            return True
+        return False
+
 
 class _StringParamAttrWrapper(_ComparisonParamAttrWrapper):
     def like(self, other):
