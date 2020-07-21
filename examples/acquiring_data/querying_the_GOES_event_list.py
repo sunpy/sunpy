@@ -27,13 +27,13 @@ result = client.search(hek.attrs.Time(tstart, tend),
                        hek.attrs.OBS.Observatory == 'GOES')
 
 ###################################################################
-# The result is returned as a `~sunpy.net.hek.hek.HEKTable`.
+# The result is returned as a `~sunpy.net.hek.hek.HEKResponse`.
 # We can print the number of flares and inspect the result information.
 # We can also print the key-values that correspond to the HEK parameters
 # returned in result.
 print(len(result))
 print(result)
-print(result.keys())
+print(result.table.keys())
 
 ###################################################################
 # We can also specify what GOES class flares we want to query.
@@ -49,7 +49,7 @@ result_m1 = client.search(hek.attrs.Time(tstart, tend),
 print(result_m1)
 
 ###################################################################
-# The results returned to the `~sunpy.net.hek.hek.HEKTable`
+# The results returned to the `~sunpy.net.hek.hek.HEKResponse`
 # contain a lot of information and we may only want to keep some main
 # results such as start time, end time, peak time, GOES-class, and
 # active region number. This can be done as so:

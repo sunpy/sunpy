@@ -808,7 +808,7 @@ class Database:
 
         Parameters
         ----------
-        query_result : `HEKTable` or `HEKRow`
+        query_result : `HEKResponse` or `HEKRow`
             The value returned by :meth:`sunpy.net.hek.HEKClient.search`
         client : `sunpy.net.vso.VSOClient`, optional
             VSO Client instance to use for search and download.
