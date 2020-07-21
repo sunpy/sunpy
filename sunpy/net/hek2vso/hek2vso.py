@@ -33,7 +33,7 @@ def translate_results_to_query(results):
 
     Parameters
     ----------
-    results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKTable`
+    results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKResponse`
         The HEK results from a HEK query to be translated.
 
     Examples
@@ -164,7 +164,7 @@ class H2VClient:
 
         Parameters
         ----------
-        hek_results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKTable`
+        hek_results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKResponse`
             The results from a HEK query in the form of a list.
         limit : int
             An approximate limit to the desired number of VSO results.
