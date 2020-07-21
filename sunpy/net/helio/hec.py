@@ -116,6 +116,7 @@ class HECClient(BaseClient):
     """
     A client class used to interface with and query HELIO webservices.
     """
+    isMetaClient = True
 
     def __init__(self, link=None):
         """
