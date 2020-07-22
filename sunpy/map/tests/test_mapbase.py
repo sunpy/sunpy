@@ -26,6 +26,7 @@ import sunpy.sun
 from sunpy.coordinates import sun
 from sunpy.time import parse_time
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 testpath = sunpy.data.test.rootdir
 
@@ -261,7 +262,7 @@ def test_heliographic_longitude_crln(hmi_test_map):
 
 def test_remove_observers(aia171_test_map):
     aia171_test_map._remove_existing_observer_location()
-    with pytest.warns(SunpyUserWarning,
+    with pytest.warns(SunpyMetadataWarning,
                       match='Missing metadata for observer: assuming Earth-based observer.*'):
         aia171_test_map.observer_coordinate
 
@@ -272,7 +273,7 @@ def test_partially_missing_observers(generic_map):
     generic_map.meta['crlt_obs'] = 0
     generic_map.meta['crln_obs'] = 0
     generic_map.meta.pop('dsun_obs')
-    with pytest.warns(SunpyUserWarning,
+    with pytest.warns(SunpyMetadataWarning,
                       match="Missing metadata for observer: assuming Earth-based observer.\n" +
                             "For frame 'heliographic_stonyhurst' the following metadata is missing: dsun_obs\n" +
                             "For frame 'heliographic_carrington' the following metadata is missing: dsun_obs\n"):
@@ -874,7 +875,7 @@ def test_missing_metadata_warnings():
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
-    assert len([w for w in record if w.category is SunpyUserWarning]) == 2
+    assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 2
 
 
 def test_fits_header(aia171_test_map):
