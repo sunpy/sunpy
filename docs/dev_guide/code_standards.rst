@@ -55,9 +55,77 @@ Formatting
 We enforce a minimum level of code style with our continuous intergration (the name is ``sunpy.sunpy (python_codestyle [linux]``).
 This runs a tool called `pre-commit <https://pre-commit.com/>`__.
 
-Instead of installing this, you can use "tox" (which is used to run the sunpy test suite) to run these tools without having to setup anything within your own Python virtual environment::
+The settings and tools we use for the pre-commit can be found in the file `.pre-commit-config.yaml` at the root of the sunpy git repository.
+Some of the checks are:
+* Check (but will not fix) for various PEP8 issues with flake8.
+* Sort all imports in any Python files with isort.
+* Remove any unused variables or imports with autoflake.
+
+We suggest you use "tox" (which is used to run the sunpy test suite) to run these tools without having to setup anything within your own Python virtual environment::
 
     $ tox -e codestyle
+
+What you will see is this output (heavily condensed):
+
+.. code-block:: bash
+
+    codestyle create: /home/<USER>/GitHub/sunpy/.tox/codestyle
+    codestyle run-test: commands[0] | pre-commit install-hooks
+    codestyle run-test: commands[1] | pre-commit run --verbose --all-files --show-diff-on-failure
+    flake8...................................................................Passed
+    - hook id: flake8
+    - duration: 1.35s
+
+    0
+
+    Check for case conflicts.................................................Passed
+    - hook id: check-case-conflict
+    - duration: 0.08s
+    Trim Trailing Whitespace.................................................Failed
+    - hook id: trailing-whitespace
+    - duration: 0.08s
+    - exit code: 1
+    - files were modified by this hook
+
+    Fixing docs/dev_guide/code_standards.rst
+
+    pre-commit hook(s) made changes.
+    If you are seeing this message in CI, reproduce locally with: `pre-commit run --all-files`.
+    To run `pre-commit` as part of git workflow, use `pre-commit install`.
+    All changes made by hooks:
+    diff --git a/docs/dev_guide/code_standards.rst b/docs/dev_guide/code_standards.rst
+    index bed700d90..c6b5df977 100644
+    --- a/docs/dev_guide/code_standards.rst
+    +++ b/docs/dev_guide/code_standards.rst
+    @@ -59,6 +59,8 @@ Instead of installing this, you can use "tox" (which is used to run the sunpy te
+
+        $ tox -e codestyle
+
+    +What you will see
+    +
+    If you want to setup the pre-commit locally, you can do the following::
+
+        $ pip install pre-commit
+    diff --git a/docs/dev_guide/documentation.rst b/docs/dev_guide/documentation.rst
+    index 5cd914047..b1017f77a 100644
+    --- a/docs/dev_guide/documentation.rst
+    +++ b/docs/dev_guide/documentation.rst
+    @@ -39,9 +39,9 @@ If there are multiple code elements with the same name (e.g. ``peek()`` is a met
+
+    .. code-block:: rst
+
+    -    `GenericMap.peek` or `CompositeMap.peek`
+    +    `.GenericMap.peek` or `.CompositeMap.peek`
+
+    -These will show up as `GenericMap.peek` or `CompositeMap.peek`.
+    +These will show up as `.GenericMap.peek` or `.CompositeMap.peek`.
+    To still show only the last segment you can add a tilde as prefix:
+
+    ERROR: InvocationError for command /home/nabil/GitHub/sunpy/.tox/codestyle/bin/pre-commit run --verbose --all-files --show-diff-on-failure (exited with code 1)
+    ___________________________________________________________________________________________ summary ___________________________________________________________________________________________
+    ERROR:   codestyle: commands failed
+
+This will inform you of what checks failed and why, what changes (if any) the command has made to your code.
 
 If you want to setup the pre-commit locally, you can do the following::
 
@@ -71,18 +139,15 @@ which will run the tools on all files in the sunpy git repository.
 The pre-commit tools can change some of the files, in other cases it will report problems but will require manual correction.
 If the pre-commit tool changes any files, they will show up as new changes that will need to be committed.
 
+Automate
+--------
+
 Instead of running the pre-commit command each time you can install the git hook::
 
     $ pre-commit install
 
 which installs a command to `.git/hooks/pre-commit` which will run these tools at the time you do ``git commit`` and means you don't have to run the first command each time.
 We only suggest doing the install step if you are comfortable with git and the pre-commit tool.
-
-The settings and tools we use for the pre-commit can be found in the file `.pre-commit-config.yaml` at the root of the sunpy git repository.
-Some of the checks are:
-* Check (but will not fix) for various PEP8 issues with flake8.
-* Sort all imports in any Python files with isort.
-* Remove any unused variables or imports with autoflake.
 
 Documentation and Testing
 =========================

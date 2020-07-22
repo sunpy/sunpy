@@ -39,9 +39,9 @@ If there are multiple code elements with the same name (e.g. ``peek()`` is a met
 
 .. code-block:: rst
 
-    `GenericMap.peek` or `CompositeMap.peek`
+    `.GenericMap.peek` or `.CompositeMap.peek`
 
-These will show up as `GenericMap.peek` or `CompositeMap.peek`.
+These will show up as `.GenericMap.peek` or `.CompositeMap.peek`.
 To still show only the last segment you can add a tilde as prefix:
 
 .. code-block:: rst

@@ -88,7 +88,7 @@ If you find an issue you'd like to work on, please make sure to add a comment to
 
     sunpy is Free and open-source software (FOSS), under the BSD-2 license. By contributing you are stating that you have the right to and agree to, have your work distributed under the terms of this license.
 
-    If you work at a university or institution, you will need to check if you can contribute code you have written at work.
+    This applies to everyone who wants to contribute on work time no matter who their employer is.
     You should start by checking if there is a Open Source Software Policy (e.g., `Standford's policy <https://otl.stanford.edu/open-source-stanford>`__) for your work place.
     If not, `OSS-Watch <http://oss-watch.ac.uk/resources/contributing>`__ summaries what you will need to check and who to ask, however this more aimed at a United Kingdom readers.
     `Standford's guidance <https://otl.stanford.edu/sites/g/files/sbiybj10286/f/otlcopyrightguide.pdf>`__ for example allows someone to contribute and open source their code.

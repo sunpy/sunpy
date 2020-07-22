@@ -30,6 +30,7 @@ Although Miniconda makes it simple to switch between Python versions, we recomme
 the latest Python 3.x version of Miniconda as SunPy only supports Python 3.7+.
 
 The reason we choose Miniconda over Anaconda, is mainly due to the size as Anaconda comes with a full install of packages you probably do not need and this way you have more direct control over what has been installed into your Python virtual environment.
+Furthermore, you bypass the need for the conda resolver to sort out your root environment which should make "conda" faster to use.
 
 Installing sunpy using Miniconda
 --------------------------------
