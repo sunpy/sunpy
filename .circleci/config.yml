@@ -27,12 +27,13 @@ apt-run: &apt-install
     sudo apt install -y graphviz build-essential libopenjp2-7 python3-dev
 
 jobs:
+
   figure:
     parameters:
       jobname:
         type: string
     docker:
-      - image: circleci/python:3.8.3
+      - image: circleci/python:3.8
     environment:
       TOXENV=<< parameters.jobname >>
     steps:

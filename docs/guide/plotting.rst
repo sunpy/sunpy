@@ -288,8 +288,7 @@ units to plot a AIA image and a zoomed in view of an active region.
                            frame=smap.coordinate_frame)
     top_right = SkyCoord(x0 + length, y0 + length,
                          frame=smap.coordinate_frame)
-    submap = smap.submap(bottom_left, top_right)
-
+    submap = smap.submap(bottom_left, top_right=top_right)
 
     # Create a new matplotlib figure, larger than default.
     fig = plt.figure(figsize=(5,12))
