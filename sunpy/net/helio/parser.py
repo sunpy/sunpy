@@ -88,14 +88,14 @@ def endpoint_parser(link):
     --------
     >>> from sunpy.net.helio import parser
     >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
-    ['http://helio.mssl.ucl.ac.uk/helio-hec/HelioService?wsdl',
-    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioService1_0?wsdl',
-    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioService1_0b?wsdl',
-    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService?wsdl',
-    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService1_0?wsdl',
-    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService1_1?wsdl',
-    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService1_0b?wsdl',
-    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService?wsdl']
+    ['http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0b?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
 
     """
     endpoint_page = link_test(link)
@@ -134,7 +134,7 @@ def taverna_parser(link):
     --------
     >>> from sunpy.net.helio import parser
     >>> parser.taverna_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
-    ['http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService?wsdl']
+    ['http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
 
     """
     endpoints = endpoint_parser(link)
@@ -205,7 +205,7 @@ def wsdl_retriever(service='HEC'):
     --------
     >>> from sunpy.net.helio import parser
     >>> parser.wsdl_retriever()  # doctest: +REMOTE_DATA
-    'http://helio.mssl.ucl.ac.uk/helio_hec/HelioTavernaService?wsdl'
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl'
 
     Notes
     -----

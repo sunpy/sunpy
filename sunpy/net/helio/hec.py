@@ -3,6 +3,7 @@ Access the Helio Event Catalogue
 """
 import io
 import warnings
+from warnings import warn
 
 from lxml import etree
 from requests import Session
@@ -17,9 +18,9 @@ from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.helio import attrs as ha
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
-__all__ = ['HECClient']
+__all__ = ['HECClient', 'HECResponse']
 
 
 def votable_handler(xml_table):
@@ -116,7 +117,7 @@ class HECClient(BaseClient):
     """
     A client class used to interface with and query HELIO webservices.
     """
-    isMetaClient = True
+    ignore_fetch = True
 
     def __init__(self, link=None):
         """
@@ -146,11 +147,8 @@ class HECClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        required = {a.Time, ha.Catalogue}
+        required = {a.Time}
         optional = {ha.MaxRecords, ha.TableName}
-        for x in query:
-            if isinstance(x, ha.Catalogue) and x.value.lower() != 'hec':
-                return False
         return cls.check_attr_types_in_query(query, required, optional)
 
     @classmethod
@@ -164,21 +162,13 @@ class HECClient(BaseClient):
         Used to utilize the service's TimeQuery() method, this is a simple
         interface between the sunpy module library and the web-service's API.
 
-        Parameters
-        ----------
-
-        Returns
-        -------
-        results: `sunpy.net.helio.HECResponse`
-            Table containing the results from the query
-
         Examples
         --------
         >>> from sunpy.net.helio import attrs as ha
         >>> from sunpy.net import attrs as a, Fido
         >>> timerange = a.Time('2005/01/03', '2005/12/03')
-        >>> res = Fido.search(timerange, ha.MaxRecords(10), ha.Catalogue('hec'),
-        ...                   ha.TableName(b'rhessi_hxr_flare'))  # doctest: +REMOTE_DATA
+        >>> res = Fido.search(timerange, ha.MaxRecords(10),
+        ...                   ha.TableName('rhessi_hxr_flare'))  # doctest: +REMOTE_DATA
         >>> res  #doctest: +REMOTE_DATA
         <sunpy.net.fido_factory.UnifiedResponse object at ...>
         Results from 1 Provider:
@@ -208,12 +198,17 @@ class HECClient(BaseClient):
                 qrdict['max_records'] = elem.value
             elif isinstance(elem, ha.TableName):
                 qrdict['table_name'] = elem.value
-            elif not isinstance(elem, ha.Catalogue):
+            else:
                 raise ValueError(
                     "HECClient can not add {} to the map_ dictionary to pass "
                     "to the Client.".format(elem.__class__.__name__))
         qrdict.update(kwargs)
         table = qrdict.get('table_name', None)
+        if table is not None:
+            if isinstance(table, bytes):
+                warn('type `bytes` for table_name is deprecated, use `str` instead.', SunpyDeprecationWarning)
+            else:
+                table = str.encode(table)
         start_time = qrdict.get('Time').start
         end_time = qrdict.get('Time').end
         max_records = qrdict.get('max_records', 10)
