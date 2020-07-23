@@ -157,7 +157,7 @@ class BaseClient(ABC):
     """
 
     _registry = dict()
-    isMetaClient = False
+    ignore_fetch = False
 
     def __init_subclass__(cls, *args, **kwargs):
         """

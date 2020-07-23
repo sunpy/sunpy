@@ -20,7 +20,7 @@ from sunpy.util import dict_keys_same, unique
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.xml import xml_to_dict
 
-__all__ = ['HEKClient', 'HEKTable']
+__all__ = ['HEKClient', 'HEKResponse']
 
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
 
@@ -50,7 +50,7 @@ class HEKClient(BaseClient):
     }
     # Default to full disk.
     attrs.walker.apply(attrs.SpatialRegion(), {}, default)
-    isMetaClient = True
+    ignore_fetch = True
 
     def __init__(self, url=DEFAULT_URL):
         self.url = url
@@ -81,10 +81,30 @@ class HEKClient(BaseClient):
             page += 1
 
     def search(self, *args, **kwargs):
-        """ Retrieves information about HEK records matching the criteria
+        """
+        Retrieves information about HEK records matching the criteria
         given in the query expression. If multiple arguments are passed,
         they are connected with AND. The result of a query is a list of
-        unique HEK Response objects that fulfill the criteria."""
+        unique HEK Response objects that fulfill the criteria.
+
+        Examples
+        -------
+        >>> from sunpy.net import attrs as a, Fido
+        >>> timerange = a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29')
+        >>> res = Fido.search(timerange, a.hek.FL, a.hek.FRM.Name == "SWPC")  # doctest: +REMOTE_DATA
+        >>> res  #doctest: +REMOTE_DATA
+        <sunpy.net.fido_factory.UnifiedResponse object at ...>
+        Results from 1 Provider:
+        <BLANKLINE>
+        2 Results from the HEKClient:
+                 SOL_standard          active ... skel_startc2 sum_overlap_scores
+        ------------------------------ ------ ... ------------ ------------------
+        SOL2011-08-09T07:19:00L227C090   true ...         None                  0
+        SOL2011-08-09T07:48:00L296C073   true ...         None                  0
+        <BLANKLINE>
+        <BLANKLINE>
+
+        """
         query = attr.and_(*args)
 
         data = attrs.walker.create(query, {})
@@ -112,7 +132,7 @@ class HEKClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        required = {attrs.Time}
+        required = {core_attrs.Time}
         optional = {i[1] for i in inspect.getmembers(attrs, inspect.isclass)} - required
         qr = tuple()
         for x in query:
@@ -152,7 +172,7 @@ class HEKResponse(BaseQueryResponse):
             return len(self.table)
 
     def __iter__(self):
-        return (t for t in [self])
+        return (t for t in self.table)
 
     def build_table(self):
         return self.table

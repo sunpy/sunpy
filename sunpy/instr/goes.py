@@ -108,7 +108,8 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     `list`:
         A list of all the flares found for the given time range.
     """
-    # Importing hek here to avoid calling code that relies on optional dependencies.
+    # Importing hek and attrs here to avoid calling code that relies on optional dependencies.
+    from sunpy.net import attrs as a
     from sunpy.net import hek
 
     # use HEK module to search for GOES events
@@ -120,12 +121,12 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     # query the HEK for a list of events detected by the GOES instrument
     # between tstart and tend (using a GOES-class filter)
     if goes_class_filter:
-        result = client.search(hek.attrs.Time(tstart, tend),
+        result = client.search(a.Time(tstart, tend),
                                hek.attrs.EventType(event_type),
                                hek.attrs.FL.GOESCls > goes_class_filter,
                                hek.attrs.OBS.Observatory == 'GOES')
     else:
-        result = client.search(hek.attrs.Time(tstart, tend),
+        result = client.search(a.Time(tstart, tend),
                                hek.attrs.EventType(event_type),
                                hek.attrs.OBS.Observatory == 'GOES')
 

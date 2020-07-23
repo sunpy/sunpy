@@ -6,6 +6,7 @@ Querying the GOES flare event list through the HEK
 How to retrieve the GOES flare event list through use of
 SunPy's Heliophysics Event Knowledgebase (HEK) client.
 """
+from sunpy.net import attrs as a
 from sunpy.net import hek
 
 ###################################################################
@@ -22,7 +23,7 @@ tend = '2013/10/29'
 # We then use the client to query the HEK for a list of events
 # that were detected by the GOES X-ray Sensor (XRS) instrument between
 # `tstart` and `tend`.
-result = client.search(hek.attrs.Time(tstart, tend),
+result = client.search(a.Time(tstart, tend),
                        hek.attrs.EventType(event_type),
                        hek.attrs.OBS.Observatory == 'GOES')
 
@@ -41,7 +42,7 @@ print(result.table.keys())
 # a GOES class > M1.0. This can be achieved by using the FL.GOESCls
 # attribute of the HEK client:
 
-result_m1 = client.search(hek.attrs.Time(tstart, tend),
+result_m1 = client.search(a.Time(tstart, tend),
                           hek.attrs.EventType(event_type),
                           hek.attrs.FL.GOESCls > 'M1.0',
                           hek.attrs.OBS.Observatory == 'GOES')

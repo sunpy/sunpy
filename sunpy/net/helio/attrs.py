@@ -8,6 +8,7 @@ class MaxRecords(SimpleAttr):
     The maximum number of desired records.
     """
 
+
 class TableName(SimpleAttr):
     """
     The table to query from

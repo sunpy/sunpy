@@ -27,7 +27,7 @@ goes = TimeSeries(files)
 # Next lets grab the HEK flare data for this time from the NOAA Space Weather
 # Prediction Center (SWPC)
 client = hek.HEKClient()
-flares_hek = client.search(hek.attrs.Time(tr.start, tr.end),
+flares_hek = client.search(a.Time(tr.start, tr.end),
                            hek.attrs.FL, hek.attrs.FRM.Name == 'SWPC')
 
 ###############################################################################

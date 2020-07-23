@@ -15,7 +15,7 @@ support from the European Space Agency Summer of Code in Space
 SunPy's HEK module is in sunpy.net.  It can be imported into your
 session as follows:
 
-    >>> from sunpy.net import hek
+    >>> from sunpy.net import attrs as a, hek
     >>> client = hek.HEKClient()  # doctest: +REMOTE_DATA
 
 This creates a client that we will use to interact with the HEK.
@@ -32,7 +32,7 @@ http://www.lmsal.com/hek/VOEvent_Spec.html.
     >>> tstart = '2011/08/09 07:23:56'
     >>> tend = '2011/08/09 12:40:29'
     >>> event_type = 'FL'
-    >>> result = client.search(hek.attrs.Time(tstart,tend),hek.attrs.EventType(event_type))  # doctest: +REMOTE_DATA
+    >>> result = client.search(a.Time(tstart,tend),hek.attrs.EventType(event_type))  # doctest: +REMOTE_DATA
 
 The first line defines the search start and end times.  The
 second line specifies the event type, in this 'FL' or flare.  Line 4
@@ -44,7 +44,7 @@ method used to detect the flare.
 
 Let's break down the arguments of client.search.  The first argument::
 
-    hek.attrs.Time(tstart,tend)
+    a.Time(tstart,tend)
 
 sets the start and end times for the query.  The second argument::
 
@@ -194,14 +194,14 @@ Let's say I am only interested in those flares identified by the SSW
 Latest Events tool.  I can retrieve those entries only from the HEK
 with the following command:
 
-    >>> result = client.search( hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.FRM.Name == 'SSW Latest Events')  # doctest: +REMOTE_DATA
+    >>> result = client.search( a.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.FRM.Name == 'SSW Latest Events')  # doctest: +REMOTE_DATA
     >>> len(result)  # doctest: +REMOTE_DATA
     2
 
 We can also retrieve all the entries in the time range which were not
 made by SSW Latest Events with the following command:
 
-    >>> result = client.search( hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type),hek.attrs.FRM.Name != 'SSW Latest Events')  # doctest: +REMOTE_DATA
+    >>> result = client.search( a.Time(tstart,tend), hek.attrs.EventType(event_type),hek.attrs.FRM.Name != 'SSW Latest Events')  # doctest: +REMOTE_DATA
     >>> len(result)  # doctest: +REMOTE_DATA
     19
 
@@ -209,7 +209,7 @@ We are using Python's comparison operators to filter the returns from
 the HEK client.  Other comparisons are possible.  For example, let's
 say I want all the flares that have a peak flux of over 4000.0:
 
-    >>> result = client.search(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.FL.PeakFlux > 4000.0)  # doctest: +REMOTE_DATA
+    >>> result = client.search(a.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.FL.PeakFlux > 4000.0)  # doctest: +REMOTE_DATA
     >>> len(result)  # doctest: +REMOTE_DATA
     1
 
@@ -217,7 +217,7 @@ Multiple comparisons can be included.  For example, let's say I want
 all the flares with a peak flux above 1000 AND west of 800 arcseconds
 from disk center of the Sun
 
-    >>> result = client.search(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.Event.Coord1 > 800, hek.attrs.FL.PeakFlux > 1000.0)  # doctest: +REMOTE_DATA
+    >>> result = client.search(a.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.Event.Coord1 > 800, hek.attrs.FL.PeakFlux > 1000.0)  # doctest: +REMOTE_DATA
 
 Multiple comparison operators can be used to filter the results back
 from the HEK.
@@ -228,7 +228,7 @@ operators.  This makes complex queries easy to create.  However, some
 caution is advisable.  Let's say I want all the flares west of 50
 arcseconds OR have a peak flux over 1000.0:
 
-    >>> result = client.search(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) or (hek.attrs.FL.PeakFlux > 1000.0) )  # doctest: +REMOTE_DATA
+    >>> result = client.search(a.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) or (hek.attrs.FL.PeakFlux > 1000.0) )  # doctest: +REMOTE_DATA
 
 and as a check
 
@@ -246,7 +246,7 @@ flux.  However, because the location of event_coord1 is greater than
 Let's say we want all the flares west of 50 arcseconds AND have a peak
 flux over 1000.0:
 
-    >>> result = client.search(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) and (hek.attrs.FL.PeakFlux > 1000.0) )  # doctest: +REMOTE_DATA
+    >>> result = client.search(a.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) and (hek.attrs.FL.PeakFlux > 1000.0) )  # doctest: +REMOTE_DATA
 
     >>> [elem["fl_peakflux"] for elem in result] # doctest: +REMOTE_DATA
     [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98, 1019.83]
@@ -275,7 +275,7 @@ pass in a list of HEK results and get out the corresponding VSO
 records.  Here are the VSO records returned via the tenth result from
 the HEK query in Section 2 above:
 
-    >>> result = client.search(hek.attrs.Time(tstart,tend),hek.attrs.EventType(event_type))  # doctest: +REMOTE_DATA
+    >>> result = client.search(a.Time(tstart,tend),hek.attrs.EventType(event_type))  # doctest: +REMOTE_DATA
     >>> vso_records = h2v.translate_and_query(result[10])  # doctest: +REMOTE_DATA
     >>> len(vso_records[0])  # doctest: +REMOTE_DATA
     31
@@ -294,7 +294,7 @@ attribute objects to define your search, the results of which are then
 used to generate their corresponding VSO records:
 
    >>> from sunpy.net import hek
-   >>> q = h2v.full_query((hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL')))  # doctest: +REMOTE_DATA
+   >>> q = h2v.full_query((a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL')))  # doctest: +REMOTE_DATA
 
 The full capabilities of the HEK query module can be used in this
 function (see above).
