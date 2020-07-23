@@ -15,6 +15,7 @@ from astropy.time import TimeDelta
 import sunpy.data.sample
 import sunpy.map
 from sunpy.coordinates import frames
+from sunpy.net import attrs as a
 from sunpy.net import hek
 from sunpy.physics.differential_rotation import solar_rotate_coordinate
 from sunpy.time import parse_time
@@ -28,7 +29,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 hek_client = hek.HEKClient()
 start_time = aia_map.date - TimeDelta(2*u.hour)
 end_time = aia_map.date + TimeDelta(2*u.hour)
-responses = hek_client.search(hek.attrs.Time(start_time, end_time),
+responses = hek_client.search(a.Time(start_time, end_time),
                               hek.attrs.CH, hek.attrs.FRM.Name == 'SPoCA')
 
 ##############################################################################

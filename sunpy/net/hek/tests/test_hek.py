@@ -1,7 +1,6 @@
 import pytest
 
 from sunpy.net import attr, attrs, hek
-from sunpy.time import parse_time
 
 
 @pytest.fixture
@@ -16,7 +15,7 @@ def hek_client_creator():
     endTime = '2011/08/09 12:40:29'
     eventType = 'FL'
 
-    hekTime = hek.attrs.Time(startTime, endTime)
+    hekTime = attrs.Time(startTime, endTime)
     hekEvent = hek.attrs.EventType(eventType)
 
     h = hek.HEKClient()
@@ -28,11 +27,11 @@ def test_eventtype_collide():
     with pytest.raises(TypeError):
         hek.attrs.AR & hek.attrs.CE
     with pytest.raises(TypeError):
-        (hek.attrs.AR & hek.attrs.Time((2011, 1, 1),
-                                       (2011, 1, 2))) & hek.attrs.CE
+        (hek.attrs.AR & attrs.Time((2011, 1, 1),
+                                   (2011, 1, 2))) & hek.attrs.CE
         with pytest.raises(TypeError):
-            (hek.attrs.AR | hek.attrs.Time((2011, 1, 1),
-                                           (2011, 1, 2))) & hek.attrs.CE
+            (hek.attrs.AR | attrs.Time((2011, 1, 1),
+                                       (2011, 1, 2))) & hek.attrs.CE
 
 
 def test_eventtype_or():
@@ -103,7 +102,7 @@ def test_hek_client():
     endTime = '2011/08/09 12:40:29'
     eventType = 'FL'
 
-    hekTime = hek.attrs.Time(startTime, endTime)
+    hekTime = attrs.Time(startTime, endTime)
     hekEvent = hek.attrs.EventType(eventType)
 
     h = hek.HEKClient()
@@ -117,7 +116,7 @@ def test_hek_empty_search_result():
     endTime = '1985-05-04 00:00:00'
     eventType = 'FL'
 
-    hekTime = hek.attrs.Time(startTime, endTime)
+    hekTime = attrs.Time(startTime, endTime)
     hekEvent = hek.attrs.EventType(eventType)
 
     h = hek.HEKClient()
@@ -168,8 +167,8 @@ def test_mixed_results_get():
     # To check that the following bug is fixed:
     # https://github.com/sunpy/sunpy/issues/3238
     client = hek.HEKClient()
-    result = client.search(hek.attrs.Time(parse_time('2013/02/01 00:00:00'),
-                                          parse_time('2013/02/01 23:30:00')), hek.attrs.FRM.Name == 'SPoCA')
+    result = client.search(attrs.Time('2013/02/01 00:00:00', '2013/02/01 23:30:00'),
+                           hek.attrs.FRM.Name == 'SPoCA')
     assert isinstance(result, hek.hek.HEKResponse)
     assert len(result) == 89
     assert result[0]["SOL_standard"] == 'SOL2013-01-31T20:13:31L219C160'
@@ -180,8 +179,7 @@ def test_mixed_results_get_2():
     # To check that the following bug is fixed:
     # # https://github.com/sunpy/sunpy/issues/3898
     client = hek.HEKClient()
-    result = client.search(hek.attrs.Time(parse_time('2011/08/09 07:23:56'),
-                                          parse_time('2011/08/09 12:40:29')),
+    result = client.search(attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
                            hek.attrs.EventType("FL"))
     assert isinstance(result, hek.hek.HEKResponse)
     assert len(result) == 19
@@ -196,6 +194,6 @@ def test_mixed_results_get_angstrom():
     tstart = '2014/10/24 20:50'
     tend = '2014/10/25 00:14'
     event_type = 'FL'
-    result = client.search(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
+    result = client.search(attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
     assert len(result) == 13
     assert result[0]["SOL_standard"] == 'SOL2014-10-24T20:53:46L247C106'

@@ -362,7 +362,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                if not block.client.isMetaClient:
+                if not block.client.ignore_fetch:
                     reslist.append(block.client.fetch(block, path=path,
                                                       downloader=downloader,
                                                       wait=False, **kwargs))

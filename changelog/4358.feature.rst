@@ -1,2 +1,2 @@
-`~sunpy.net.helio.hec.HECClient` and  `~sunpy.net.hek.hek.HEKClient` now inherit `~sunpy.net.BaseClient` which makes it compatible with ``Fido``.
-Added `~sunpy.net.helio.hec.HECResponse` and `~sunpy.net.helio.hec.HECResponse` as container for data returned from ``HEC`` and ``HEK`` searches respectively.
+`~sunpy.net.helio.hec.HECClient` and  `~sunpy.net.hek.hek.HEKClient` now inherit `~sunpy.net.BaseClient` which makes them compatible with ``Fido``.
+``ignore_fetch`` is added as a class attribute in `~sunpy.net.BaseClient` to make ``Fido`` know whether to do a fetch for a client search or not.

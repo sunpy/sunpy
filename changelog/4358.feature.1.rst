@@ -1,0 +1,1 @@
+Added `~sunpy.net.helio.hec.HECResponse` and `~sunpy.net.hek.hek.HEKResponse` as container for data returned from ``HEC`` and ``HEK`` searches respectively.
