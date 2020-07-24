@@ -362,10 +362,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                if not block.client.ignore_fetch:
-                    reslist.append(block.client.fetch(block, path=path,
-                                                      downloader=downloader,
-                                                      wait=False, **kwargs))
+                result = block.client.fetch(block, path=path,
+                                            downloader=downloader,
+                                            wait=False, **kwargs)
+                if result is not NotImplemented:
+                    reslist.append(result)
 
         results = downloader.download()
         # Combine the results objects from all the clients into one Results

@@ -12,7 +12,7 @@ import astropy.units as u
 
 import sunpy.net.attrs as a
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 
 @pytest.fixture
@@ -81,8 +81,8 @@ def test_build_table(client):
     table = responses.build_table()
     assert isinstance(table, astropy.table.Table)
 
-    columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-    assert columns == table.colnames
+    columns = ['DATE', 'DATE__OBS', 'TELESCOP', 'INSTRUME', 'WAVELNTH']
+    assert columns == table.colnames[:5]
 
 
 def test_show(client):
@@ -293,12 +293,13 @@ def test_make_recordset(client):
 
 @pytest.mark.remote_data
 def test_search_metadata(client):
-    metadata = client.search_metadata(a.Time('2020-01-01T00:00:00', '2020-01-01T00:02:00'),
-                                      a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
-    assert isinstance(metadata, pd.DataFrame)
-    assert metadata.shape == (11, 176)
-    for i in metadata.index.values:
-        assert (i.startswith('aia.lev1_euv_12s') and i.endswith('[304]'))
+    with pytest.raises(SunpyDeprecationWarning):
+        metadata = client.search_metadata(a.Time('2020-01-01T00:00:00', '2020-01-01T00:02:00'),
+                                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
+        assert isinstance(metadata, pd.DataFrame)
+        assert metadata.shape == (11, 176)
+        for i in metadata.index.values:
+            assert (i.startswith('aia.lev1_euv_12s') and i.endswith('[304]'))
 
 
 @pytest.mark.remote_data

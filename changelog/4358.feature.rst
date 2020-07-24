@@ -1,2 +1,1 @@
-`~sunpy.net.helio.hec.HECClient` and  `~sunpy.net.hek.hek.HEKClient` now inherit `~sunpy.net.BaseClient` which makes them compatible with ``Fido``.
-``ignore_fetch`` is added as a class attribute in `~sunpy.net.BaseClient` to make ``Fido`` know whether to do a fetch for a client search or not.
+`~sunpy.net.helio.hec.HECClient` and  `~sunpy.net.hek.hek.HEKClient` now inherit `~sunpy.net.BaseClient` which makes them compatible with the `~sunpy.net.fido_factory.UnifiedDownloaderFactory` (``Fido``).

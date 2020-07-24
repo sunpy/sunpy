@@ -50,7 +50,6 @@ class HEKClient(BaseClient):
     }
     # Default to full disk.
     attrs.walker.apply(attrs.SpatialRegion(), {}, default)
-    ignore_fetch = True
 
     def __init__(self, url=DEFAULT_URL):
         self.url = url

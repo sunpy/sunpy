@@ -157,7 +157,6 @@ class BaseClient(ABC):
     """
 
     _registry = dict()
-    ignore_fetch = False
 
     def __init_subclass__(cls, *args, **kwargs):
         """
