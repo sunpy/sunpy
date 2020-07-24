@@ -1,1 +1,1 @@
-Since ``HEK`` queries now return a `~sunpy.net.helio.hec.HEKResponse`, `~sunpy.net.hek.HEKTable` is removed.
+HEK client queries now return a `~sunpy.net.helio.hec.HEKResponse`, `~sunpy.net.hek.HEKTable` is removed.

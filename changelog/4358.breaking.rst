@@ -1,1 +1,1 @@
-`:func:~sunpy.net.helio.HECClient.time_query` is removed; ``search`` method defined on the client is expected to be used instead.
+:meth:`~sunpy.net.helio.HECClient.time_query` is removed; :meth:`~sunpy.net.helio.HECClient.search` is expected to be used instead.
