@@ -176,29 +176,40 @@ def test_solar_rotate_coordinate():
         assert isinstance(d.frame, frames.Helioprojective)
 
 
-def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
-
+# Testing using observer inputs
+def test_differential_rotate_observer_all_off_disk(all_off_disk_map):
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
     with pytest.raises(ValueError):
-        dmap = differential_rotate(all_off_disk_map)
+        differential_rotate(all_off_disk_map)
 
+
+def test_differential_rotate_observer_full_disk(aia171_test_map):
     # Test a full disk map
     new_observer = get_earth(aia171_test_map.date + 6*u.hr)
     dmap = differential_rotate(aia171_test_map, observer=new_observer)
     assert dmap.data.shape == aia171_test_map.data.shape
+    assert dmap.date == new_observer.obstime
+    assert dmap.heliographic_latitude == new_observer.lat
+    assert dmap.heliographic_longitude == new_observer.lon
 
+
+def test_differential_rotate_observer_all_on_disk(all_on_disk_map):
     # Test a map that is entirely on disk - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_observer = get_earth(all_on_disk_map.date - 48*u.hr)
     dmap = differential_rotate(all_on_disk_map, observer=new_observer)
     assert dmap.data.shape[1] < all_on_disk_map.data.shape[1]
-
     # This rotated map should have a larger extent in the x direction
     new_observer = get_earth(all_on_disk_map.date + 48*u.hr)
     dmap = differential_rotate(all_on_disk_map, observer=new_observer)
     assert dmap.data.shape[1] > all_on_disk_map.data.shape[1]
+    assert dmap.date == new_observer.obstime
+    assert dmap.heliographic_latitude == new_observer.lat
+    assert dmap.heliographic_longitude == new_observer.lon
 
+
+def test_differential_rotate_observer_straddles_limb(straddles_limb_map):
     # Test a map that straddles the limb - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_observer = get_earth(straddles_limb_map.date + 48*u.hr)
@@ -207,11 +218,54 @@ def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map,
     with np.errstate(invalid='ignore'):
         dmap = differential_rotate(straddles_limb_map, observer=new_observer)
     assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
-
     # The output map should have the positional properties of the observer
     assert dmap.date == new_observer.obstime
     assert dmap.heliographic_latitude == new_observer.lat
     assert dmap.heliographic_longitude == new_observer.lon
+
+
+# ----- Testing with time input -----
+def test_differential_rotate_time_full_disk(aia171_test_map):
+    # Test a full disk map
+    new_time = aia171_test_map.date + 6*u.hr
+    dmap = differential_rotate(aia171_test_map, time=new_time)
+    assert dmap.data.shape == aia171_test_map.data.shape
+    # The output map should have the same time as the new time now.
+    assert dmap.date == new_time
+
+
+def test_differential_rotate_time_all_on_disk(all_on_disk_map):
+    # Test a map that is entirely on disk - triggers sub full disk branches
+    # Rotated map should have a smaller extent in the x - direction
+    new_time = all_on_disk_map.date - 48*u.hr
+    dmap = differential_rotate(all_on_disk_map, time=new_time)
+    assert dmap.data.shape[1] < all_on_disk_map.data.shape[1]
+    # This rotated map should have a larger extent in the x direction
+    new_time = all_on_disk_map.date + 48*u.hr
+    dmap = differential_rotate(all_on_disk_map, time=new_time)
+    assert dmap.data.shape[1] > all_on_disk_map.data.shape[1]
+    # The output map should have the same time as the new time now.
+    assert dmap.date == new_time
+
+
+def test_differential_rotate_time_straddles_limb(straddles_limb_map):
+    # Test a map that straddles the limb - triggers sub full disk branches
+    # Rotated map should have a smaller extent in the x - direction
+    new_time = straddles_limb_map.date + 48*u.hr
+    # Ignore some invalid NaN comparisions within astropy
+    # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
+    with np.errstate(invalid='ignore'):
+        dmap = differential_rotate(straddles_limb_map, time=new_time)
+    assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
+    # The output map should have the same time as the new time now.
+    assert dmap.date == new_time
+
+
+def test_differential_rotate_time_off_disk(all_off_disk_map):
+    # Test a map that is entirely off the disk of the Sun
+    # Should report an error
+    with pytest.raises(ValueError):
+        differential_rotate(all_off_disk_map, time=new_time)
 
 
 # Tests of the helper functions
