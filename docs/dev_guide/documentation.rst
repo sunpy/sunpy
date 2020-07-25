@@ -20,11 +20,11 @@ To link to other methods, classes, or modules in sunpy you have to use backticks
 
 .. code-block:: rst
 
-    `sunpy.io.file_tools.read_file`
+    `sunpy.io.read_file`
 
-generates a link like this: `sunpy.io.file_tools.read_file`.
+generates a link like this: `sunpy.io.read_file`.
 
-We use the sphinx setting ``default_role = 'obj'`` so that you don't have to use qualifiers like ``:class:``, ``:func:``, ``:meth:`` (more on this later).
+We use the sphinx setting ``default_role = 'obj'`` so that you do not nor **SHOULD NOT** use the ``:class:`` qualifier, ``:func:``, ``:meth:`` are different (more on this below).
 
 Often, you don't want to show the full package and module name.
 As long as the target is unambiguous you can simply leave them out:
@@ -55,34 +55,27 @@ Other packages can also be linked via
 
 .. code-block:: rst
 
-    `numpy.max`
+    `numpy.mean`
 
-will return this link: `numpy.max`.
+will return this link: `numpy.mean`.
 This works for Python, Numpy and Astropy (full list is in :file:`docs/conf.py`).
-If external linking fails, you can check the full list of referenceable objects with the following
-commands::
 
-    $ python -m sphinx.ext.intersphinx 'https://docs.python.org/3/objects.inv'
-
-If you want to link to a method or function you can add:
+With Sphinx, if you use ``:func:`` or ``:meth:``, it will add closing brackets to the link.
+If you get the wrong pre-qualifier, it will break the link, so we suggest that you double check if what you are linking is a method or a function.
 
 .. code-block:: rst
 
-    :func:`numpy.mean`
+    :class:`numpy.mean()`
+    :meth:`numpy.mean()`
+    :func:`numpy.mean()`
 
-which will render a link and extra brackets :func:`numpy.mean`.
-If you decide to use ``:meth:`` instead this will also render extra brackets but will not link in this case.
-This is because "numpy.mean" is a function.
+will return two broken links ("class" and "meth") but "func" will work:
 
-If you link to a method of a class, it will work.
+"class": :class:`numpy.mean()`
 
-.. code-block:: rst
+"meth" :meth:`numpy.mean()`
 
-    :meth:`numpy.ndarray.mean`
-
-:meth:`numpy.ndarray.mean` but ``:func:`` will not.
-
-Never add ``:class:`` this will break the linking.
+"func" :func:`numpy.mean()`
 
 SunPy-Specific Rules
 --------------------
