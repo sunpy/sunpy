@@ -343,7 +343,7 @@ If you want to see the current list of clients you can do::
     SRSClient         Provides access to the NOAA SWPC solar region summary data.
     NoRHClient        Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
     RHESSIClient      Provides access to the RHESSI observing summary time series data.
-    HEKClient         Client to interact with the Heliophysics Event Knowledgebase (HEK).
-    HECClient         A client class used to interface with and query HELIO webservices.
-    JSOCClient        This is a client to the JSOC Data Export service.
+    HEKClient         Provides access to the Heliophysics Event Knowledgebase (HEK).
+    HECClient         Provides access to the HELIO webservices.
+    JSOCClient        Provides access to the JSOC Data Export service.
     VSOClient         Allows queries and downloads from the Virtual Solar Observatory (VSO).

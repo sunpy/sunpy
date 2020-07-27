@@ -2,7 +2,6 @@
 Access the Helio Event Catalogue
 """
 import io
-import warnings
 from warnings import warn
 
 from lxml import etree
@@ -10,15 +9,14 @@ from requests import Session
 from zeep import Client
 from zeep.transports import Transport
 
-import astropy.table
 from astropy.io.votable.table import parse_single_table
 
 from sunpy.net import attrs as a
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.net.base_client import BaseClient, BaseQueryResponseTable
 from sunpy.net.helio import attrs as ha
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 __all__ = ['HECClient', 'HECResponse']
 
@@ -57,65 +55,15 @@ def votable_handler(xml_table):
     return votable
 
 
-class HECResponse(BaseQueryResponse):
+class HECResponse(BaseQueryResponseTable):
     """
     A container for data returned from HEC searches.
     """
-    def __init__(self, table=None, client=None):
-        """
-        table : `astropy.table.Table`
-        """
-        super().__init__()
-        self.table = table or astropy.table.QTable()
-        self._client = client
-
-    @property
-    def client(self):
-        return self._client
-
-    @client.setter
-    def client(self, client):
-        self._client = client
-
-    @property
-    def blocks(self):
-        return list(self.table.iterrows)
-
-    def __len__(self):
-        if self.table is None:
-            return 0
-        else:
-            return len(self.table)
-
-    def __getitem__(self, item):
-        if isinstance(item, int):
-            item = slice(item, item + 1)
-        ret = type(self)(self.table[item])
-        ret.client = self._client
-
-        warnings.warn("Downloading of sliced HEC results is not supported. "
-                      "All the files present in the original response will be downloaded.",
-                      SunpyUserWarning)
-        return ret
-
-    def __iter__(self):
-        return (t for t in [self])
-
-    def build_table(self):
-        return self.table
-
-    def response_block_properties(self):
-        """
-        Returns a set of class attributes on all the response blocks.
-        """
-        warnings.warn("The HEC client does not support response block properties.",
-                      SunpyUserWarning)
-        return set()
 
 
 class HECClient(BaseClient):
     """
-    A client class used to interface with and query HELIO webservices.
+    Provides access to the HELIO webservices.
     """
 
     def __init__(self, link=None):

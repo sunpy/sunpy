@@ -19,11 +19,10 @@ result in multiple requests to the server which might make them less efficient.
 import sys
 from warnings import warn
 
-from sunpy.net import attr
+from sunpy.net import _attrs, attr
 from sunpy.net.attrs import Time
 from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyDeprecationWarning
-from .. import _attrs
 
 
 # Ugly hack for the deprecated apply decorator, this needs to be cleaned up

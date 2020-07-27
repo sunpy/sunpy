@@ -1,1 +1,2 @@
-Added `~sunpy.net.helio.hec.HECResponse` and `~sunpy.net.hek.hek.HEKResponse` as container for data returned from "HEC" and "HEK" searches respectively.
+Added `~sunpy.net.base_client.BaseQueryResponseTable` for containing query responses from clients returning tabular data.
+`~sunpy.net.helio.hec.HECResponse`, `~sunpy.net.hek.hek.HEKResponse`, and `~sunpy.net.jsoc.JSOCResponse` are its sublcasses.
