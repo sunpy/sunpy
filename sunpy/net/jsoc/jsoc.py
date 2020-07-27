@@ -20,7 +20,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, BaseQueryResponseTable
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util.decorators import deprecated
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.parfive_helpers import Downloader, Results
 
 __all__ = ['JSOCClient', 'JSOCResponse']
@@ -51,6 +51,12 @@ class JSOCResponse(BaseQueryResponseTable):
                       "All the files present in the original response will be downloaded.",
                       SunpyUserWarning)
         return ret
+
+    def build_table(self):
+        default_columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
+        if all(x in self.table.columns for x in default_columns):
+            return self.table[default_columns]
+        return self.table
 
 
 class JSOCClient(BaseClient):
@@ -99,22 +105,22 @@ class JSOCClient(BaseClient):
         The response object holds the records that your query will return:
 
         >>> print(response)   # doctest: +REMOTE_DATA
-                DATE                DATE__OBS        ... CALVER64
-        -------------------- ----------------------- ... --------
-        2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
-        2014-01-05T17:47:11Z 2014-01-01T00:00:24.20Z ...     4370
-        2014-01-05T17:48:18Z 2014-01-01T00:01:09.20Z ...     4370
-        2014-01-05T17:49:26Z 2014-01-01T00:01:54.20Z ...     4370
-        2014-01-05T17:50:34Z 2014-01-01T00:02:39.20Z ...     4370
-        2014-01-05T17:51:43Z 2014-01-01T00:03:24.20Z ...     4370
-        2014-01-05T17:52:51Z 2014-01-01T00:04:09.20Z ...     4370
-        2014-01-05T17:53:59Z 2014-01-01T00:04:54.20Z ...     4370
-        2014-01-05T17:55:08Z 2014-01-01T00:05:39.20Z ...     4370
-        2014-01-05T17:56:17Z 2014-01-01T00:06:24.20Z ...     4370
-        2014-01-05T17:57:25Z 2014-01-01T00:07:09.20Z ...     4370
-        2014-01-05T17:58:34Z 2014-01-01T00:07:54.20Z ...     4370
-        2014-01-05T17:59:42Z 2014-01-01T00:08:39.20Z ...     4370
-        2014-01-05T18:00:50Z 2014-01-01T00:09:24.20Z ...     4370
+                 T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+        ----------------------- -------- ---------- -------- -------
+        2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:08:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:09:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:09:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:10:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
 
     You can then make the request and download the data::
 
@@ -158,12 +164,12 @@ class JSOCClient(BaseClient):
         The response object holds the records that your query will return:
 
         >>> print(response)  # doctest: +REMOTE_DATA
-               T_REC                  T_OBS          ...       T_REC_epoch
-        -------------------- ----------------------- ... -----------------------
-        2014-01-01T00:00:01Z 2014-01-01T00:00:12.34Z ... 1993.01.01_00:00:04_TAI
-        2014-01-01T00:00:13Z 2014-01-01T00:00:24.34Z ... 1993.01.01_00:00:04_TAI
-        2014-01-01T00:00:25Z 2014-01-01T00:00:36.34Z ... 1993.01.01_00:00:04_TAI
-        2014-01-01T00:00:37Z 2014-01-01T00:00:48.34Z ... 1993.01.01_00:00:04_TAI
+               T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+        -------------------- -------- -------- -------- -------
+        2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
+        2014-01-01T00:00:13Z  SDO/AIA    AIA_3      171    2145
+        2014-01-01T00:00:25Z  SDO/AIA    AIA_3      171    2145
+        2014-01-01T00:00:37Z  SDO/AIA    AIA_3      171    2145
 
     You can then make the request::
 
@@ -235,32 +241,31 @@ class JSOCClient(BaseClient):
             ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
             ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
-                   T_REC                  T_OBS          ...       T_REC_epoch
-            -------------------- ----------------------- ... -----------------------
-            2017-09-06T11:59:59Z 2017-09-06T12:00:08.57Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:00:11Z 2017-09-06T12:00:18.58Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:00:23Z 2017-09-06T12:00:32.49Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:00:35Z 2017-09-06T12:00:42.58Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:00:47Z 2017-09-06T12:00:56.33Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:00:59Z 2017-09-06T12:01:06.58Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:01:11Z 2017-09-06T12:01:20.96Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:01:23Z 2017-09-06T12:01:30.58Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:01:35Z 2017-09-06T12:01:44.91Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:01:47Z 2017-09-06T12:01:54.57Z ... 1993.01.01_00:00:04_TAI
-            2017-09-06T12:01:59Z 2017-09-06T12:02:08.90Z ... 1993.01.01_00:00:04_TAI
+                   T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+            -------------------- -------- -------- -------- -------
+            2017-09-06T11:59:59Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:11Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:23Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:35Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:47Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:59Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:11Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:23Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:35Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:47Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:59Z  SDO/AIA    AIA_4      304    2194
 
         *Example 2*
 
-        Request keyword data of ``hmi.v_45s`` for certain specific keywords only::
+        Request keyword data of ``hmi.v_45s`` and show specific columns only::
 
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-            ...                          a.jsoc.Series('hmi.v_45s'),
-            ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA
+            ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+            >>> print(response.show('T_REC', 'DATAMEAN', 'OBS_VR'))  # doctest: +REMOTE_DATA
                          T_REC               DATAMEAN            OBS_VR
             ----------------------- ------------------ ------------------
             2014.01.01_00:00:45_TAI        1906.518188        1911.202614
@@ -290,14 +295,14 @@ class JSOCClient(BaseClient):
             ...                          a.jsoc.Series('aia.lev1_euv_12s'),
             ...                          a.jsoc.PrimeKey('WAVELNTH','171'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
-                   T_REC                  T_OBS          ...       T_REC_epoch
-            -------------------- ----------------------- ... -----------------------
-            2014-01-01T00:00:01Z 2014-01-01T00:00:12.34Z ... 1993.01.01_00:00:04_TAI
-            2014-01-01T00:00:13Z 2014-01-01T00:00:24.34Z ... 1993.01.01_00:00:04_TAI
-            2014-01-01T00:00:25Z 2014-01-01T00:00:36.34Z ... 1993.01.01_00:00:04_TAI
-            2014-01-01T00:00:37Z 2014-01-01T00:00:48.34Z ... 1993.01.01_00:00:04_TAI
-            2014-01-01T00:00:49Z 2014-01-01T00:01:00.34Z ... 1993.01.01_00:00:04_TAI
-            2014-01-01T00:01:01Z 2014-01-01T00:01:12.34Z ... 1993.01.01_00:00:04_TAI
+                   T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+            -------------------- -------- -------- -------- -------
+            2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:00:13Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:00:25Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:00:37Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:00:49Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:01:01Z  SDO/AIA    AIA_3      171    2145
 
         """
 
@@ -343,7 +348,6 @@ class JSOCClient(BaseClient):
             iargs.update({'meta': True})
             blocks.append(iargs)
             res = res.append(self._lookup_records(iargs))
-        warnings.warn('search_metadata is deprecated', SunpyDeprecationWarning)
         return res
 
     def request_data(self, jsoc_response, method='url', **kwargs):

@@ -81,8 +81,8 @@ def test_build_table(client):
     table = responses.build_table()
     assert isinstance(table, astropy.table.Table)
 
-    columns = ['DATE', 'DATE__OBS', 'TELESCOP', 'INSTRUME', 'WAVELNTH']
-    assert columns == table.colnames[:5]
+    columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
+    assert columns == table.colnames
 
 
 def test_show(client):

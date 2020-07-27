@@ -187,32 +187,6 @@ But, when the same is passed through PrimeKey attribute, it should be passed as 
 other PrimeKey values passed through PrimeKey attribute, must be passed as a string.
 
 
-Manually specifying keyword data to fetch
-=========================================
-
-Upon doing ``Fido.search()`` as described above, only a limited set of keywords are returned in the response
-object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, ``'T_OBS'`` and ``'WAVELNTH'``.
-
-If you want to get a manual set of keywords in the response object, you can pass the set of keywords using
-`~sunpy.net.jsoc.attrs.Keys` attribute.
-
-    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'),
-    ...                   a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS']))  # doctest: +REMOTE_DATA
-
-The parameter passed into ``a.jsoc.Keys()`` can be either a list of strings, or a string with keywords seperated by
-comma and a space. Meaning to say,: ``a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS'])`` and
-``jsoc.attrs.Keys('TELESCOP, INSTRUME, T_OBS')``
-
-both are correct.
-
-Passing an incorrect keyword won't throw an error, but the corresponding column in the table will
-contain ``Invalid KeyLink``.
-
-To get all of the keywords, you can either use the `~sunpy.net.jsoc.JSOCClient.search_metadata` method,
-or alternatively pass ``a.jsoc.Keys('***ALL***')`` with the series name and PrimeKey.
-
-
 Using Segments
 ==============
 In some cases, more than 1 file are present for the same set of query. These data are distinguished by what are called
