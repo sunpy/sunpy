@@ -17,8 +17,9 @@ from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.net.base_client import BaseClient, BaseQueryResponseTable
 from sunpy.net.jsoc.attrs import walker
+from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.parfive_helpers import Downloader, Results
 
@@ -33,71 +34,28 @@ class NotExportedError(Exception):
     pass
 
 
-class JSOCResponse(BaseQueryResponse):
+class JSOCResponse(BaseQueryResponseTable):
     def __init__(self, table=None, client=None):
         """
         table : `astropy.table.Table`
         """
-        super().__init__()
-        self.table = table or astropy.table.QTable()
+        super().__init__(table, client)
         self.query_args = getattr(table, 'query_args', None)
         self.requests = getattr(table, 'requests', None)
-        self._client = client
-
-    @property
-    def client(self):
-        return self._client
-
-    @client.setter
-    def client(self, client):
-        self._client = client
-
-    @property
-    def blocks(self):
-        return list(self.table.iterrows)
-
-    def __len__(self):
-        if self.table is None:
-            return 0
-        else:
-            return len(self.table)
 
     def __getitem__(self, item):
-        if isinstance(item, int):
-            item = slice(item, item + 1)
-        ret = type(self)(self.table[item])
+        ret = super().__getitem__(item)
         ret.query_args = self.query_args
-        ret.requests = self.requests
         ret.client = self._client
-
         warnings.warn("Downloading of sliced JSOC results is not supported. "
                       "All the files present in the original response will be downloaded.",
                       SunpyUserWarning)
         return ret
 
-    def __iter__(self):
-        return (t for t in [self])
-
-    def build_table(self):
-        return self.table
-
-    def append(self, table):
-        if self.table is None:
-            self.table = table
-        else:
-            self.table = astropy.table.vstack([self.table, table])
-
-    def response_block_properties(self):
-        """
-        Returns a set of class attributes on all the response blocks.
-        """
-        warnings.warn("The JSOC client does not support response block properties.", SunpyUserWarning)
-        return set()
-
 
 class JSOCClient(BaseClient):
     """
-    This is a client to the JSOC Data Export service.
+    Provides access to the JSOC Data Export service.
 
     It exposes a similar API to the VSO client, although the underlying model
     is more complex. The JSOC stages data before you can download it, so a JSOC
@@ -355,6 +313,7 @@ class JSOCClient(BaseClient):
         return_results.query_args = blocks
         return return_results
 
+    @deprecated(since="2.1", message="use JSOCClient.search() instead", alternative="JSOCClient.search()")
     def search_metadata(self, *query, **kwargs):
         """
         Get the metadata of all the files obtained in a search query.
