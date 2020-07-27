@@ -264,6 +264,7 @@ def test_differential_rotate_time_straddles_limb(straddles_limb_map):
 def test_differential_rotate_time_off_disk(all_off_disk_map):
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
+    new_time = all_off_disk_map.date + 48*u.hr
     with pytest.raises(ValueError):
         differential_rotate(all_off_disk_map, time=new_time)
 
