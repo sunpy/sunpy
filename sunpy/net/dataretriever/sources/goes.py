@@ -5,7 +5,6 @@
 import os
 from datetime import datetime
 from itertools import compress
-from urllib.parse import urlsplit
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
@@ -68,7 +67,8 @@ class XRSClient(GenericClient):
             12: TimeRange("2002-12-13", "2007-05-08"),
             13: TimeRange("2006-08-01", "2006-08-01"),
             14: TimeRange("2009-12-02", "2010-10-04"),
-            15: TimeRange("2010-09-01", parse_time("now")),
+            15: TimeRange("2010-09-01", "2020-03-04"),
+            16: TimeRange("2020-03-04", parse_time("now"))
         }
 
         results = []
@@ -91,19 +91,19 @@ class XRSClient(GenericClient):
     def _get_time_for_url(self, urls):
         times = []
         for uri in urls:
-            uripath = urlsplit(uri).path
-
-            # Extract the yymmdd or yyyymmdd timestamp
-            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][4:]
-
-            # 1999-01-15 as an integer.
-            if int(datestamp) <= 990115:
-                start = Time.strptime(datestamp, "%y%m%d")
+            if uri.endswith('fits'):
+                datestamp = os.path.basename(uri)[4:12]
             else:
-                start = Time.strptime(datestamp, "%Y%m%d")
+                datestamp = os.path.basename(uri).split('_')[3][1:]
 
-            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-            times.append(TimeRange(start, start + almost_day))
+                # 1999-01-15 as an integer.
+                if int(datestamp) <= 990115:
+                    start = Time.strptime(datestamp, "%y%m%d")
+                else:
+                    start = Time.strptime(datestamp, "%Y%m%d")
+
+                almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+                times.append(TimeRange(start, start + almost_day))
 
         return times
 
@@ -121,16 +121,30 @@ class XRSClient(GenericClient):
         `list`
             The URL(s) for the corresponding timerange.
         """
-        timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
-        if timerange.end < parse_time("1999/01/15"):
-            goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits"
-        elif timerange.start < parse_time("1999/01/15") and timerange.end >= parse_time("1999/01/15"):
-            return self._get_overlap_urls(timerange, **kwargs)
-        else:
-            goes_file = "%Y/go{satellitenumber}%Y%m%d.fits"
 
-        goes_pattern = f"https://umbra.nascom.nasa.gov/goes/fits/{goes_file}"
         satellitenumber = kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start))
+        versiondata = kwargs.get("versiondata", None)  # this is for the old data before it was re-processed by NOAA
+
+        if satellitenumber < 13 or (satellitenumber in [13, 14, 15] and versiondata == 'old'):
+            timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
+            if timerange.end < parse_time("1999/01/15"):
+                goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits"
+            elif timerange.start < parse_time("1999/01/15") and timerange.end >= parse_time("1999/01/15"):
+                return self._get_overlap_urls(timerange, **kwargs)
+            else:
+                goes_file = "%Y/go{satellitenumber}%Y%m%d.fits"
+
+            goes_pattern = f"https://umbra.nascom.nasa.gov/goes/fits/{goes_file}"
+
+        elif satellitenumber in [13, 14, 15]:
+            goes_file = f"sci_gxrs-l2-irrad_g{satellitenumber}_d%Y%m%d_v0-0-0.nc"
+            goes_pattern = f"https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes{satellitenumber}/gxrs-l2-irrad_science/%Y/%m/{goes_file}"
+
+        else:
+            goes_file = "sci_xrsf-l2-flx1s_g{satellitenumber}_d%Y%m%d_v2-0-1.nc"
+            goes_pattern = f"https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{satellitenumber}" \
+                           f"/l2/data/xrsf-l2-flx1s_science/%Y/%m/{goes_file}"
+
         goes_files = Scraper(goes_pattern, satellitenumber=satellitenumber)
 
         return goes_files.filelist(timerange)
@@ -159,7 +173,7 @@ class XRSClient(GenericClient):
         """
         Helper function used to hold information about source.
         """
-        self.map_["source"] = "nasa"
+        self.map_["source"] = "nasa/noaa"
         self.map_["instrument"] = "goes"
         self.map_["physobs"] = "irradiance"
         self.map_["provider"] = "sdac"
@@ -178,7 +192,7 @@ class XRSClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ["Time", "Instrument", "SatelliteNumber"]
+        chkattr = ["Time", "Instrument", "SatelliteNumber", "VersionData"]
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == "Instrument" and x.value.lower() in (
