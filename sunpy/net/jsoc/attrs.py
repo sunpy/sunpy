@@ -1,5 +1,6 @@
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
+from sunpy.util.decorators import deprecated
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 
@@ -12,6 +13,7 @@ class Series(SimpleAttr):
     """
 
 
+@deprecated(since="2.1", message="specify desired keywords as arguments to JSOCResponse.show()")
 class Keys(SimpleAttr):
     """
     Keys choose which keywords to fetch while making a query request.
