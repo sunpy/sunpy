@@ -28,7 +28,12 @@ def LCClient():
       'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
      (TimeRange('2008/06/02', '2008/06/04'),
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
-      'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits')])
+      'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits'),
+     (TimeRange('2020/02/02', '2020/02/04'),
+      'https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/2020/02/'
+      'sci_gxrs-l2-irrad_g15_d20200202_v0-0-0.nc',
+      'https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/2020/02/'
+      'sci_gxrs-l2-irrad_g15_d20200204_v0-0-0.nc')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
@@ -46,6 +51,24 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
     assert len(urls) == 9
     assert urls[0] == url_start
     assert urls[-1] == url_end
+
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize("timerange, url_old, url_new",
+                         [(Time('2013/10/28', '2013/10/29'),
+                           "https://umbra.nascom.nasa.gov/goes/fits/2013/go1520131028.fits",
+                           "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/"
+                           "2013/10/sci_gxrs-l2-irrad_g15_d20131028_v0-0-0.nc")])
+def test_old_data_access(timerange, url_old, url_new):
+    # test first for old data
+    qr = Fido.search(timerange, a.Instrument("XRS"), a.goes.VersionData("old"))
+    urls = [r.url for r in qr.get_response(0)]
+    assert urls[0] == url_old
+
+    # now test for new data
+    qr = Fido.search(timerange, a.Instrument("XRS"))
+    urls = [r.url for r in qr.get_response(0)]
+    assert urls[0] == url_new
 
 
 @given(goes_time())
