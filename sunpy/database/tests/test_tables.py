@@ -56,7 +56,7 @@ def fido_search_result():
     return Fido.search(
         net_attrs.Time("2012/1/1", "2012/1/2"),
         net_attrs.Instrument('lyra') | net_attrs.Instrument('eve') |
-        net_attrs.Instrument('XRS') | net_attrs.Instrument('noaa-indices') |
+        net_attrs.Instrument('XRS')  | net_attrs.Instrument('noaa-indices') |
         net_attrs.Instrument('noaa-predict') |
         (net_attrs.Instrument('norh') & net_attrs.Wavelength(17 * u.GHz)) |
         (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve")) |
@@ -144,8 +144,9 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=0.1, wavemax=30.4)
     # 2 entries from goes
     assert entries[56] == DatabaseEntry(
-        source='nasa', provider='sdac', physobs='irradiance',
-        fileid='https://umbra.nascom.nasa.gov/goes/fits/2012/go1520120101.fits',
+        source='noaa', provider='sdac', physobs='irradiance',
+        fileid='https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/'
+               'gxrs-l2-irrad_science/2012/01/sci_gxrs-l2-irrad_g15_d20120101_v0-0-0.nc',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
