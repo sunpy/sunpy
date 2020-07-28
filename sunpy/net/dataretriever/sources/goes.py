@@ -92,18 +92,18 @@ class XRSClient(GenericClient):
         times = []
         for uri in urls:
             if uri.endswith('fits'):
-                datestamp = os.path.basename(uri)[4:12]
+                datestamp = os.path.splitext(os.path.basename(uri))[0][4:]
             else:
                 datestamp = os.path.basename(uri).split('_')[3][1:]
 
-                # 1999-01-15 as an integer.
-                if int(datestamp) <= 990115:
-                    start = Time.strptime(datestamp, "%y%m%d")
-                else:
-                    start = Time.strptime(datestamp, "%Y%m%d")
+            # 1999-01-15 as an integer.
+            if int(datestamp) <= 990115:
+                start = Time.strptime(datestamp, "%y%m%d")
+            else:
+                start = Time.strptime(datestamp, "%Y%m%d")
 
-                almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-                times.append(TimeRange(start, start + almost_day))
+            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+            times.append(TimeRange(start, start + almost_day))
 
         return times
 
