@@ -213,7 +213,9 @@ class XRSClient(GenericClient):
         adict = {attrs.Instrument: [
             ("GOES", "The Geostationary Operational Environmental Satellite Program."),
             ("XRS", "GOES X-ray Flux")],
-            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number], 
+            attrs.goes.VersionData: [('VersionData', ("If `old` then will use the 13, 14, and 15 " 
+                                     "old calibrated data before NOAA re-processed it"))]}
         return adict
 
 
