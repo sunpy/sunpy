@@ -173,7 +173,7 @@ class XRSClient(GenericClient):
         """
         Helper function used to hold information about source.
         """
-        self.map_["source"] = "nasa/noaa"
+        self.map_["source"] = "noaa"
         self.map_["instrument"] = "goes"
         self.map_["physobs"] = "irradiance"
         self.map_["provider"] = "sdac"
