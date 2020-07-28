@@ -93,14 +93,14 @@ def test_fixed_satellite(LCClient):
                            a.Instrument.xrs)
 
     for resp in ans1:
-        assert "go15" in resp.url
+        assert "g15" in resp.url
 
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
                            a.Instrument.xrs,
                            a.goes.SatelliteNumber(13))
 
     for resp in ans1:
-        assert "go13" in resp.url
+        assert "g13" in resp.url
 
     ans1 = LCClient.search(a.Time("1999/1/13", "1999/1/16"),
                            a.Instrument.xrs,
