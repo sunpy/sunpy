@@ -54,6 +54,7 @@ jobs:
         - openssl-devel
         - freetype-devel
         - libpng-devel
+
     envs:
       - macos: py38
         name: py38_test
