@@ -77,7 +77,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install --user -U tox codecov
+      - run: pip install --user -U tox codecov tox-pypi-filter
       - run: tox
       - run: codecov
       - store_artifacts:
