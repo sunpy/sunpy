@@ -10,6 +10,9 @@ import pkg_resources
 import pytest
 from matplotlib.testing import compare
 
+from astropy.wcs.wcs import FITSFixedWarning
+
+import sunpy.map
 from sunpy.tests import hash
 
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_32bit',
@@ -244,3 +247,12 @@ def no_vso(f):
         return res
 
     return wrapper
+
+
+def fix_map_wcs(smap):
+    # Helper function to fix a WCS and silence the warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=FITSFixedWarning)
+        wcs = smap.wcs
+        wcs.fix()
+    return sunpy.map.Map(smap.data, wcs)

@@ -16,7 +16,7 @@ import sunpy.coordinates
 import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import figure_test, fix_map_wcs
 from sunpy.util.exceptions import SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
@@ -30,7 +30,8 @@ def aia171_test_map():
 
 @pytest.fixture
 def heliographic_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+    m = sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+    return fix_map_wcs(m)
 
 
 @pytest.fixture
