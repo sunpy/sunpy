@@ -4,9 +4,7 @@ Access the Helio Event Catalogue
 import io
 
 from lxml import etree
-from requests import Session
 from zeep import Client
-from zeep.transports import Transport
 
 from astropy.io.votable.table import parse_single_table
 
@@ -69,11 +67,7 @@ class HECClient:
         if link is None:
             # The default wsdl file
             link = parser.wsdl_retriever()
-        # Disable SSL check.
-        session = Session()
-        session.verify = False
-        transport = Transport(session=session)
-        self.hec_client = Client(link, transport=transport)
+        self.hec_client = Client(link)
 
     def time_query(self, start_time, end_time, table=None, max_records=None):
         """
