@@ -10,7 +10,6 @@ import pytest
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-import matplotlib.pyplot as plt
 
 import sunpy
 import sunpy.coordinates

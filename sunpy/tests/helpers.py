@@ -11,6 +11,7 @@ import pytest
 from matplotlib.testing import compare
 
 from astropy.wcs.wcs import FITSFixedWarning
+
 import sunpy.map
 from sunpy.tests import hash
 
