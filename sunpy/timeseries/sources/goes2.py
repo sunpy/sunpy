@@ -11,10 +11,8 @@ from matplotlib import pyplot as plt
 from pandas import DataFrame
 
 import astropy.units as u
-from astropy.time import Time, TimeDelta
 
-import sunpy.io
-from sunpy.time import TimeRange, is_time_in_given_format, parse_time
+from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
@@ -142,9 +140,9 @@ class XRSTimeSeries2(GenericTimeSeries):
 
         if 'xrsa_flux' in hdulist.keys():
             xrsb = hdulist['xrsa_flux']
-            xrsa = hdulist['xrsb_flux']    
+            xrsa = hdulist['xrsb_flux']
 
-        else:  
+        else:
             xrsb = hdulist['a_flux']
             xrsa = hdulist['b_flux']
 
@@ -158,7 +156,7 @@ class XRSTimeSeries2(GenericTimeSeries):
         units = OrderedDict([('xrsa', u.W/u.m**2),
                              ('xrsb', u.W/u.m**2)])
 
-        header = MetaDict(OrderedDict(hdulist.variables))  
+        header = MetaDict(OrderedDict(hdulist.variables))
         return data, header, units
 
     @classmethod
