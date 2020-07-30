@@ -58,6 +58,7 @@ def test_can_handle_query(time):
     assert ans3 is False
 
 
+@pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
 @pytest.mark.remote_data
 def test_no_satellite(LCClient):
     with pytest.raises(ValueError):

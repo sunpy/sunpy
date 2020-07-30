@@ -296,6 +296,7 @@ def test_path(client, tmpdir):
     assert "aia_lev1_171a_2011_06_07t06_33_02_77z_image_lev1.fits" in files[0]
 
 
+@pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
 @pytest.mark.remote_data
 def test_no_download(client):
     """

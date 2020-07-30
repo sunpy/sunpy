@@ -200,6 +200,10 @@ def test_flat(identity):
     assert np.allclose(in_arr, out_arr, rtol=RTOL)
 
 
+# Although a depreaction warning is raised, behaviour is as expected and will
+# continue after the depreaction period, so ignore the warnings
+@pytest.mark.filterwarnings('ignore:Passing `np.nan` to mean no clipping in np.clip has always '
+                            'been unreliable, and is now deprecated')
 def test_nan_skimage_low(identity):
     # Test non-replacement of NaN values for scikit-image rotation with order <= 3
     in_arr = np.array([[np.nan]])
