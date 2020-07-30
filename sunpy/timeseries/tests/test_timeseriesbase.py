@@ -15,6 +15,11 @@ from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
 
+try:
+    from erfa.core import ErfaWarning
+except ModuleNotFoundError:
+    from astropy._erfa.core import ErfaWarning
+
 import sunpy
 import sunpy.data.test
 import sunpy.timeseries
@@ -94,8 +99,10 @@ def noaa_ind_json_test_ts():
 
 @pytest.fixture
 def noaa_pre_json_test_ts():
-    return sunpy.timeseries.TimeSeries(
-        noaa_pre_json_filepath, source='NOAAPredictIndices')
+    # NOAA pre data contains years long into the future, which ERFA complains about
+    with pytest.warns(ErfaWarning, match='dubious year'):
+        return sunpy.timeseries.TimeSeries(
+            noaa_pre_json_filepath, source='NOAAPredictIndices')
 
 
 @pytest.fixture
@@ -790,9 +797,11 @@ def test_noaa_ind_txt_invalid_peek(noaa_ind_txt_test_ts):
 
 
 def test_noaa_pre_json_invalid_peek(noaa_pre_json_test_ts):
-    a = noaa_pre_json_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_pre_json_test_ts.time_range.start - TimeDelta(1*u.day)
-    empty_ts = noaa_pre_json_test_ts.truncate(TimeRange(a, b))
+    # NOAA pre data contains years long into the future, which ERFA complains about
+    with pytest.warns(ErfaWarning, match='dubious year'):
+        a = noaa_pre_json_test_ts.time_range.start - TimeDelta(2*u.day)
+        b = noaa_pre_json_test_ts.time_range.start - TimeDelta(1*u.day)
+        empty_ts = noaa_pre_json_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
