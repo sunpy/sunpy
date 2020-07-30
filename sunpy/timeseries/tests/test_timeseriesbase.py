@@ -15,7 +15,11 @@ import astropy.units as u
 from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
-from astropy._erfa.core import ErfaWarning
+try:
+    from erfa.core import ErfaWarning
+except ModuleNotFoundError:
+    from astropy._erfa.core import ErfaWarning
+
 
 import sunpy
 import sunpy.data.test
