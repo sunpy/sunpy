@@ -3,7 +3,6 @@ import copy
 import glob
 import datetime
 from collections import OrderedDict
-import warnings
 
 import numpy as np
 import pandas as pd
@@ -15,11 +14,11 @@ import astropy.units as u
 from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
+
 try:
     from erfa.core import ErfaWarning
 except ModuleNotFoundError:
     from astropy._erfa.core import ErfaWarning
-
 
 import sunpy
 import sunpy.data.test
