@@ -671,6 +671,9 @@ def test_esp_peek(esp_test_ts):
     esp_test_ts.peek()
 
 
+# This warning is fixed in matplotlib, and the filter can be removed once
+# matplotlib 3.3.1 is released (https://github.com/matplotlib/matplotlib/pull/18101)
+@pytest.mark.filterwarnings('ignore:Support for multi-dimensional indexing.*is deprecated')
 @figure_test
 def test_fermi_gbm_peek(fermi_gbm_test_ts):
     fermi_gbm_test_ts.peek()
