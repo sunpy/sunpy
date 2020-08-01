@@ -22,6 +22,7 @@ if SKIP_GLYMUR:
 else:
     params = [aiaimg, jp2path]
 
+
 # The fixture is parameterized with aiaimg and jp2path.
 @pytest.fixture(scope="module", params=params)
 def createAIAMap(request):
