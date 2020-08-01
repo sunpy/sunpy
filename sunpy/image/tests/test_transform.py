@@ -93,6 +93,8 @@ def test_scipy_rotation(original, angle, k):
 
 dx_values, dy_values = list(range(-100, 101, 100))*3, list(range(-100, 101, 100))*3
 dy_values.sort()
+
+
 @pytest.mark.parametrize("dx, dy", list(zip(dx_values, dy_values)))
 def test_shift(original, dx, dy):
     # Rotation center for all translation tests.

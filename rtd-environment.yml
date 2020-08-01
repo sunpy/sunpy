@@ -1,7 +1,7 @@
-name: sunpy
+name: sunpy_rtd
 channels:
-  - conda-forge
+  - defaults
 dependencies:
   - openjpeg
   - pip
-  - python
+  - python=3.8

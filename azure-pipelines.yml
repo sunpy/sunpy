@@ -54,6 +54,9 @@ jobs:
         - openssl-devel
         - freetype-devel
         - libpng-devel
+        - libffi-devel
+        - python-devel
+
     envs:
       - macos: py36
         name: py36_test
