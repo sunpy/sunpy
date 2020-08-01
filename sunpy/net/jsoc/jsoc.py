@@ -53,10 +53,12 @@ class JSOCResponse(BaseQueryResponseTable):
         return ret
 
     def build_table(self):
+        # remove this check post 2.1
+        if any('keys' in i for i in self.query_args):
+            return self.table
+
         default_columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-        if all(x in self.table.columns for x in default_columns):
-            return self.table[default_columns]
-        return self.table
+        return self.table[default_columns]
 
 
 class JSOCClient(BaseClient):
@@ -768,6 +770,8 @@ class JSOCClient(BaseClient):
             keywords = '**ALL**'
         else:
             keywords = iargs.get('keys', '**ALL**')
+        # keywords should be set only to '**ALL**' post 2.1
+        # all checks done above should be removed.
 
         if 'series' not in iargs:
             error_message = "Series must be specified for a JSOC Query"
@@ -835,6 +839,7 @@ class JSOCClient(BaseClient):
 
         # If the method was called from search_metadata(), return a Pandas Dataframe,
         # otherwise return astropy.table
+        # this check should also be removed post 2.1.
         if isMeta:
             return r
 

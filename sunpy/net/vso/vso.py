@@ -352,7 +352,7 @@ class QueryResponse(BaseQueryResponse):
 
 class VSOClient(BaseClient):
     """
-    Allows queries and downloads from the Virtual Solar Observatory (VSO).
+    Provides access to query and download from Virtual Solar Observatory (VSO).
 
     Parameters
     ----------

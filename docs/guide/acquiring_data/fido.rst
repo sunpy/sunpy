@@ -346,4 +346,4 @@ If you want to see the current list of clients you can do::
     HEKClient         Provides access to the Heliophysics Event Knowledgebase (HEK).
     HECClient         Provides access to the HELIO webservices.
     JSOCClient        Provides access to the JSOC Data Export service.
-    VSOClient         Allows queries and downloads from the Virtual Solar Observatory (VSO).
+    VSOClient         Provides access to query and download from Virtual Solar Observatory (VSO).
