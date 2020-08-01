@@ -207,6 +207,8 @@ def test__default_fmap_function():
 #
 # Setup the test mapsequences that have displacements
 # Pixel displacements have the y-displacement as the first entry
+
+
 @pytest.fixture
 def aia171_test_mc_pixel_displacements():
     return np.asarray([1.6, 10.1])
@@ -252,7 +254,8 @@ def test_calculate_match_template_shift(aia171_test_mc,
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
 
     # Test setting the template as GenericMap
-    submap = aia171_test_map.submap([nx / 4, ny / 4]*u.pix, top_right=[3 * nx / 4, 3 * ny / 4]*u.pix)
+    submap = aia171_test_map.submap(
+        [nx / 4, ny / 4]*u.pix, top_right=[3 * nx / 4, 3 * ny / 4]*u.pix)
     with pytest.warns(SunpyDeprecationWarning):
         test_displacements = calculate_match_template_shift(aia171_test_mc, template=submap)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
