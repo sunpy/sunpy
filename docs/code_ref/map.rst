@@ -111,6 +111,11 @@ demonstrated by the following example.
             super(FutureMap, self).__init__(data, header, **kwargs)
 
             # Any Future Instrument specific keyword manipulation
+            #
+            # If any assumptions are made about metadata that is not present
+            # in the header, a warning MUST be raised to inform the user that
+            # sunpy is modifying the metadata. This can be done using the
+            # _fix_and_warn GenericMap helper method.
 
        # Specify a classmethod that determines if the data-header pair matches
        # the new instrument

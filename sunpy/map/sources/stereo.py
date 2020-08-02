@@ -37,7 +37,8 @@ class EUVIMap(GenericMap):
         self.plot_settings['cmap'] = 'sohoeit{wl:d}'.format(wl=int(self.wavelength.value))
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
-        self.meta['waveunit'] = 'Angstrom'
+        replace_old = self.meta['waveunit'] is None
+        self._fix_and_warn('waveunit', 'Angstrom', replace_old=replace_old)
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword

@@ -1,0 +1,7 @@
+sunpy currently makes a number of assumptions about missing or incorrect values
+stored in files from various sources. Previously it was not always clear what
+or when these assumptions were being made. Now any assumptions raise a warning
+stating which key is being modified, and the new value it is being set to.
+
+In order to prevent these warnings, missing metadata must be explicitly set
+before being loaded by `sunpy.map.Map`.

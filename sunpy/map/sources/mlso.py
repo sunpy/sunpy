@@ -35,10 +35,9 @@ class KCorMap(GenericMap):
         # Fill in some missing info
         self.meta['observatory'] = 'MLSO'
         self.meta['detector'] = 'KCor'
-        self.meta['waveunit'] = 'nanometer'
-        # Since KCor is on Earth, no need to raise the warning in mapbase
-        self.meta['dsun_obs'] = (sun.earth_distance(self.date)).to(u.m).value
-        self.meta['hgln_obs'] = 0.0
+        self._fix_and_warn('waveunit', 'nanometer')
+        self._fix_and_warn('dsun_obs', (sun.earth_distance(self.date)).to(u.m).value)
+        self._fix_and_warn('hgln_obs', 0)
         self._nickname = self.detector
 
         self.plot_settings['cmap'] = self._get_cmap_name()

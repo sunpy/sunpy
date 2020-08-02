@@ -34,24 +34,19 @@ class RHESSIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
-
+        # Fix some broken/misapplied keywords
+        if header['ctype1'] == 'arcsec':
+            header['cunit1'] = 'arcsec'
+            self._fix_and_warn_header(header, 'ctype1', 'HPLN-TAN', replace_old=True)
+        if header['ctype2'] == 'arcsec':
+            header['cunit2'] = 'arcsec'
+            self._fix_and_warn_header(header, 'ctype2', 'HPLT-TAN', replace_old=True)
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
         # TODO Currently (8/29/2011), cannot read fits files containing more
         # than one image (schriste)
-        # Fix some broken/misapplied keywords
-        if self.meta['ctype1'] == 'arcsec':
-            self.meta['cunit1'] = 'arcsec'
-            self.meta['ctype1'] = 'HPLN-TAN'
-        if self.meta['ctype2'] == 'arcsec':
-            self.meta['cunit2'] = 'arcsec'
-            self.meta['ctype2'] = 'HPLT-TAN'
-
-        self.meta['waveunit'] = 'keV'
+        self._fix_and_warn('waveunit', 'keV')
         self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
         self.plot_settings['cmap'] = 'rhessi'
 

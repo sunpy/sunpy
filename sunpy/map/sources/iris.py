@@ -36,13 +36,12 @@ class SJIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        self._fix_and_warn_header(header, 'cunit1', 'arcsec')
+        self._fix_and_warn_header(header, 'cunit2', 'arcsec')
         super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = "SJI"
-        self.meta['waveunit'] = "Angstrom"
+        self._fix_and_warn('waveunit', 'Angstrom')
         self.meta['wavelnth'] = header['twave1']
 
     @classmethod

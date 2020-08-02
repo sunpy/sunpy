@@ -152,7 +152,6 @@ def test_carrington(mdi):
     assert u.allclose(mdi.carrington_latitude, mdi.meta['obs_b0']*u.deg)
 
 
-@pytest.mark.filterwarnings("error")
 def test_synoptic_source(mdi_synoptic):
     assert isinstance(mdi_synoptic, MDISynopticMap)
     # Check that the WCS is valid

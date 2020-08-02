@@ -36,10 +36,8 @@ class EITMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
-
+        self._fix_and_warn_header(header, 'cunit1', 'arcsec')
+        self._fix_and_warn_header(header, 'cunit2', 'arcsec')
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
@@ -175,10 +173,10 @@ class MDIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        self._fix_and_warn_header(header, 'cunit1', 'arcsec')
+        self._fix_and_warn_header(header, 'cunit2', 'arcsec')
         super().__init__(data, header, **kwargs)
+        self._fix_and_warn('waveunit', 'Angstrom', replace_old=True)
 
         # Fill in some missing or broken info
         self._nickname = self.detector + " " + self.measurement
@@ -207,10 +205,6 @@ class MDIMap(GenericMap):
     @property
     def detector(self):
         return "MDI"
-
-    @property
-    def waveunit(self):
-        return "Angstrom"
 
     @property
     def measurement(self):

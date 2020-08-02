@@ -421,6 +421,29 @@ class GenericMap(NDData):
         r = frame.represent_as(UnitSphericalRepresentation)
         return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
 
+    @staticmethod
+    def _fix_and_warn_header(header, key, value, replace_old=False):
+        """
+        Update *key* in *header* with a new *value*, and raise a warning. Any present values
+        are only overritten if *replace_old* is True.
+
+        This modifies *header* in place.
+        """
+        if key not in header:
+            warnings.warn(f'Did not find {key} in header, setting it to "{value}".',
+                          SunpyUserWarning)
+        elif replace_old:
+            warnings.warn(f'Fixing "{key}" header entry by replacing the old value '
+                          f'"{header[key]}" with "{value}".',
+                          SunpyUserWarning)
+        else:
+            return
+
+        header[key] = value
+
+    def _fix_and_warn(self, key, value, replace_old=False):
+        self._fix_and_warn_header(self.meta, key, value, replace_old)
+
     @property
     def _meta_hash(self):
         return self.meta.item_hash()
