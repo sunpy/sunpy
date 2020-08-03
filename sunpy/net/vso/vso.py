@@ -81,6 +81,12 @@ class HashableResponse:
     def __eq__(self, other):
         return self.__hash__() == other.__hash__()
 
+    def __str__(self):
+        return self.data.__str__()
+
+    def __repr__(self):
+        return self.data.__str__()
+
 
 class _Str(str):
 
