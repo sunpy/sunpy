@@ -164,6 +164,7 @@ def test_get_request_tar(client):
     aa = client.get_request(bb, path=path)
     assert isinstance(aa, Results)
 
+
 @pytest.mark.remote_data
 def test_invalid_query(client):
     with pytest.raises(ValueError):
