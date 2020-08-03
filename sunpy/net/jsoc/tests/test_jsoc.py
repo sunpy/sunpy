@@ -152,6 +152,7 @@ def test_get_request(client):
     aa = client.get_request(bb, path=path)
     assert isinstance(aa, Results)
 
+
 @pytest.mark.remote_data
 def test_get_request_tar(client):
     responses = client.search(
@@ -327,6 +328,7 @@ def test_request_data_protocol(client):
     req.wait()
     assert req._d['method'] == 'url_quick'
     assert req._d['protocol'] == 'as-is'
+
 
 @pytest.mark.remote_data
 def test_request_data_method(client):
