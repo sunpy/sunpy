@@ -85,7 +85,7 @@ class HashableResponse:
         return self.data.__str__()
 
     def __repr__(self):
-        return self.data.__str__()
+        return self.data.__repr__()
 
 
 class _Str(str):
