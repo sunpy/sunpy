@@ -1,0 +1,1 @@
+`sunpy.net.jsoc.JSOCClient.request_data` now support additional parameter `download_tar` which allows user to download staged data as single .tar file.
