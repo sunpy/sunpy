@@ -410,7 +410,7 @@ class JSOCClient(BaseClient):
 
         return res
 
-    def request_data(self, jsoc_response, **kwargs):
+    def request_data(self, jsoc_response, download_tar=False, **kwargs):
         """
         Request that JSOC stages the data for download. This method will not
         wait for the request to be staged.
@@ -419,6 +419,10 @@ class JSOCClient(BaseClient):
         ----------
         jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             The results of a query
+
+        download_tar : `bool`, optional
+            If `True` it will request JSOC to provide single .tar file which contains all data
+            If `False` it will request JSOC to provide URL for all files separately
 
         Returns
         -------
@@ -442,8 +446,10 @@ class JSOCClient(BaseClient):
                 error_message = "Protocols other than fits and as-is are "\
                                 "are not supported."
                 raise TypeError(error_message)
-
-            method = 'url' if protocol == 'fits' else 'url_quick'
+            if download_tar:
+                method = 'url-tar'
+            else:
+                method = 'url' if protocol == 'fits' else 'url_quick'
             r = cd.export(ds, method=method, protocol=protocol)
 
             requests.append(r)
@@ -589,16 +595,20 @@ class JSOCClient(BaseClient):
 
         paths = []
         for request in requests:
-            for filename in request.data['filename']:
-                # Ensure we don't duplicate the file extension
-                ext = os.path.splitext(filename)[1]
-                if path.endswith(ext):
-                    fname = path.strip(ext)
-                else:
-                    fname = path
-                fname = fname.format(file=filename)
-                fname = os.path.expanduser(fname)
-                paths.append(fname)
+            if request.method == 'url-tar':
+                fname = path.format(file=Path(request.tarfile).name)
+                paths.append(os.path.expanduser(fname))
+            else:
+                for filename in request.data['filename']:
+                    # Ensure we don't duplicate the file extension
+                    ext = os.path.splitext(filename)[1]
+                    if path.endswith(ext):
+                        fname = path.strip(ext)
+                    else:
+                        fname = path
+                    fname = fname.format(file=filename)
+                    fname = os.path.expanduser(fname)
+                    paths.append(fname)
 
         if max_conn * kwargs['max_splits'] > 10:
             warnings.warn(("JSOC does not support more than 10 parallel connections. " +
@@ -616,7 +626,7 @@ class JSOCClient(BaseClient):
         urls = []
         for request in requests:
             if request.status == 0:
-                if request.protocol == 'as-is':
+                if request.protocol == 'as-is' or request.method == 'url-tar':
                     urls.extend(list(request.urls.url))
                 else:
                     for index, data in request.data.iterrows():
