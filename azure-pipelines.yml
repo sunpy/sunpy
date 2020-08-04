@@ -68,6 +68,10 @@ jobs:
 
       - linux32: py38-32bit
         name: py38_test_32bit
+        libraries:
+          yum:
+            - libopenjp2-7
+            - openssl-devel
 
       - linux: codestyle
         name: python_codestyle
