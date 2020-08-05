@@ -67,8 +67,7 @@ def test_goes_event_list():
 
 @pytest.fixture
 def goeslc():
-    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        return timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
+    return timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
 
 
 @pytest.mark.remote_data
