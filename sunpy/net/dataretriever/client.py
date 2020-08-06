@@ -165,10 +165,6 @@ class GenericClient(BaseClient):
                 raise ValueError(
                     "GenericClient can not add {} to the rowdict dictionary to"
                     "pass to the Client.".format(elem.__class__.__name__))
-        for k in kwargs:
-            matchdict[k] = [kwargs[k]]
-            if isinstance(kwargs[k], str):
-                matchdict[k] = [kwargs[k].lower()]
         return matchdict
 
     @classmethod
@@ -230,11 +226,9 @@ class GenericClient(BaseClient):
         rowdict['Time'] = TimeRange(start, end)
         rowdict['Start Time'] = start.strftime(TIME_FORMAT)
         rowdict['End Time'] = end.strftime(TIME_FORMAT)
-        rowdict['Instrument'] = matchdict['Instrument'][0].upper()
-        if 'Physobs' in matchdict:
-            rowdict['Physobs'] = matchdict['Physobs'][0]
-        rowdict['Source'] = matchdict['Source'][0].upper()
-        rowdict['Provider'] = matchdict['Provider'][0].upper()
+        for k in matchdict:
+            if k != 'Time' and k != 'Wavelength':
+                rowdict[k] = matchdict[k][0].upper()
         for k in exdict:
             if k not in ['year', 'month', 'day']:
                 rowdict[k] = exdict[k]

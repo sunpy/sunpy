@@ -41,8 +41,8 @@ class EVEClient(GenericClient):
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('EVE', 'Extreme ultraviolet Variability Experiment, which is part of the NASA Solar Dynamics Observatory mission.')],
-                 attrs.Level: [('0', 'EVE: The specific EVE client can only return Level 0C data. Any other number will use the VSO Client.')],
                  attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
                  attrs.Source: [('SDO', 'The Solar Dynamics Observatory.')],
-                 attrs.Provider: [('LASP', 'The Laboratory for Atmospheric and Space Physics.')]}
+                 attrs.Provider: [('LASP', 'The Laboratory for Atmospheric and Space Physics.')],
+                 attrs.Level: [('0', 'EVE: The specific EVE client can only return Level 0C data. Any other number will use the VSO Client.')]}
         return adict

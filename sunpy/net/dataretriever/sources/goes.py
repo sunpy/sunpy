@@ -58,10 +58,10 @@ class XRSClient(GenericClient):
         adict = {attrs.Instrument: [
             ("GOES", "The Geostationary Operational Environmental Satellite Program."),
             ("XRS", "GOES X-ray Flux")],
-            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number],
-            attrs.Source: [('NASA', 'The National Aeronautics and Space Administration.')],
             attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
-            attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.')]}
+            attrs.Source: [('NASA', 'The National Aeronautics and Space Administration.')],
+            attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.')],
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
         return adict
 
 

@@ -42,10 +42,10 @@ class LYRAClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('LYRA',
                                      'Lyman Alpha Radiometer is the solar UV radiometer on board Proba-2.')],
-                 attrs.Level: [('1', 'LYRA: Metadata and uncalibrated data daily fits.'),
-                               ('2', 'LYRA: Calibrated data, provided as daily fits.'),
-                               ('3', 'LYRA: Same as level 2 but the calibrated data is averaged over 1 min.')],
                  attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
                  attrs.Source: [('PROBA2', 'The PROBA-2 Satellite')],
-                 attrs.Provider: [('ESA', 'The European Space Agency.')]}
+                 attrs.Provider: [('ESA', 'The European Space Agency.')],
+                 attrs.Level: [('1', 'LYRA: Metadata and uncalibrated data daily fits.'),
+                               ('2', 'LYRA: Calibrated data, provided as daily fits.'),
+                               ('3', 'LYRA: Same as level 2 but the calibrated data is averaged over 1 min.')]}
         return adict
