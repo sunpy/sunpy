@@ -288,6 +288,9 @@ def test_select_table(client, monkeypatch):
     assert client.select_table() is None
 
 
+# Deprecation warning from astropy, fixed in 4.0.2
+# (https://github.com/astropy/astropy/pull/10085)
+@pytest.mark.filterwarnings(r'ignore:tostring\(\) is deprecated')
 @pytest.mark.remote_data
 def test_time_query(client):
     start = '2005/01/03'

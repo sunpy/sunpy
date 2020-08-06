@@ -47,6 +47,7 @@ def test_get_goes_sat_num(suvi_client):
     assert type(suvi_client._get_goes_sat_num(date)) is int
 
 
+@pytest.mark.filterwarnings('ignore:ERFA function')
 def test_get_goes_sat_num_error(suvi_client):
     date = parse_time('1800/06/11 00:00')
     with pytest.raises(ValueError):
