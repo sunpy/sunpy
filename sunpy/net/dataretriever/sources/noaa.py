@@ -42,7 +42,6 @@ class NOAAIndicesClient(GenericClient):
 
     """
     required = {a.Instrument}
-    optional = {a.Time, a.Source, a.Physobs, a.Provider}
 
     def search(self, *args, **kwargs):
         map_ = self._get_match_dict(*args, **kwargs)
@@ -62,7 +61,8 @@ class NOAAIndicesClient(GenericClient):
             ('NOAA-Indices', 'Recent Solar Indices of Observed Monthly Mean Values')],
             attrs.Physobs: [('sunspot number', 'Sunspot Number.')],
             attrs.Source: [('SIDC', 'The Solar Influence Data Analysis Center')],
-            attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')]}
+            attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')],
+            attrs.Time: [('*', 'Time')]}
         return adict
 
 
@@ -92,7 +92,6 @@ class NOAAPredictClient(GenericClient):
 
     """
     required = {a.Instrument}
-    optional = {a.Time, a.Source, a.Physobs, a.Provider}
 
     def search(self, *args, **kwargs):
         map_ = self._get_match_dict(*args, **kwargs)
@@ -112,7 +111,8 @@ class NOAAPredictClient(GenericClient):
             ('NOAA-Predict', 'Predicted Sunspot Number And Radio Flux Values With Expected Ranges.')],
             attrs.Physobs: [('sunspot number', 'Sunspot Number.')],
             attrs.Source: [('ISES', 'The International Space Environmental Services.')],
-            attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')]}
+            attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')],
+            attrs.Time: [('*', 'Time')]}
         return adict
 
 

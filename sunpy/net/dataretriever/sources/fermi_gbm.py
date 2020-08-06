@@ -57,7 +57,5 @@ class GBMClient(GenericClient):
                  attrs.Resolution: [
             ("cspec", "CSPEC 128 channel spectra every 4.096 seconds."),
             ("ctime", "CTIME provides 8 channel spectra every 0.256 seconds.")],
-                 attrs.Detector: [
-            (f"n{x}", f"GBM Detector short name for the detector NAI_{x:02}") for x in range(12)],
-        }
+            attrs.Detector: [(f"n{x}", f"GBM Detector short name for the detector NAI_{x:02}") for x in range(12)]}
         return adict

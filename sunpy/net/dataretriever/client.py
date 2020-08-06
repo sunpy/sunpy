@@ -8,6 +8,7 @@ from astropy.time import TimeDelta
 import sunpy
 from sunpy import config
 from sunpy.net import attrs as a
+from sunpy.net.attr import SimpleAttr
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.parfive_helpers import Downloader
@@ -120,10 +121,6 @@ class GenericClient(BaseClient):
     """
     Set of required 'attrs' for client to handle the query.
     """
-    optional = set()
-    """
-    Set of optional 'attrs' that can be specified in the query.
-    """
 
     @classmethod
     def _get_match_dict(cls, *args, **kwargs):
@@ -150,9 +147,12 @@ class GenericClient(BaseClient):
         matchdict = {}
         for i in regattrs_dict.keys():
             attrname = i.__name__
-            matchdict[attrname] = []
-            for val, desc in regattrs_dict[i]:
-                matchdict[attrname].append(val)
+            # only Attr values that are subclas of Simple Attr are stored as list in matchdict
+            # since complex attrs like Range can't be compared with string matching.
+            if issubclass(i, SimpleAttr):
+                matchdict[attrname] = []
+                for val, desc in regattrs_dict[i]:
+                    matchdict[attrname].append(val)
         for elem in args:
             if isinstance(elem, a.Time):
                 timerange = TimeRange(elem.start, elem.end)
@@ -185,14 +185,13 @@ class GenericClient(BaseClient):
         class uses to dispatch queries to this Client.
         """
         regattrs_dict = cls.register_values()
-        if cls.optional == set():
-            cls.optional = {k for k in regattrs_dict.keys()} - cls.required
-        if not cls.check_attr_types_in_query(query, cls.required, cls.optional):
+        optional = {k for k in regattrs_dict.keys()} - cls.required
+        if not cls.check_attr_types_in_query(query, cls.required, optional):
             return False
         for key in regattrs_dict:
             all_vals = [i[0].lower() for i in regattrs_dict[key]]
             for x in query:
-                if isinstance(x, key) and str(x.value).lower() not in all_vals:
+                if isinstance(x, key) and issubclass(key, SimpleAttr) and str(x.value).lower() not in all_vals:
                     return False
         return True
 
@@ -228,7 +227,11 @@ class GenericClient(BaseClient):
         rowdict['End Time'] = end.strftime(TIME_FORMAT)
         for k in matchdict:
             if k != 'Time' and k != 'Wavelength':
-                rowdict[k] = matchdict[k][0].upper()
+                if k == 'Physobs':
+                    # not changing case for Phsyobs
+                    rowdict[k] = matchdict[k][0]
+                else:
+                    rowdict[k] = matchdict[k][0].upper()
         for k in exdict:
             if k not in ['year', 'month', 'day']:
                 rowdict[k] = exdict[k]
