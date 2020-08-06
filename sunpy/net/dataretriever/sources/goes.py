@@ -115,7 +115,6 @@ class SUVIClient(GenericClient):
     pattern2 = ('{}/goes/goes{SatelliteNumber:2d}/{}/dr_suvi-l{Level}-ci{Wavelength:03d}_g{SatelliteNumber:2d}_s'
                 '{year:4d}{month:2d}{day:2d}T{hour:2d}{minute:2d}{second:2d}Z_e'
                 '{eyear:4d}{emonth:2d}{eday:2d}T{ehour:2d}{eminute:2d}{esecond:2d}Z_{}')
-    optional = {a.Wavelength, a.Source, a.Provider, a.Level, a.Physobs, a.goes.SatelliteNumber}
 
     def post_search_hook(self, i, matchdict):
 
@@ -198,5 +197,6 @@ class SUVIClient(GenericClient):
             attrs.Physobs: [('flux', 'a measure of the amount of radiation received by an object from a given source.')],
             attrs.Provider: [('NOAA', 'The National Oceanic and Atmospheric Administration.')],
             attrs.Level: [('1b', 'Solar images at six wavelengths with image exposures 10 msec or 1 sec.'),
-                          ('2', 'Weighted average of level-1b product files of SUVI.')]}
+                          ('2', 'Weighted average of level-1b product files of SUVI.')],
+            attrs.Wavelength: [('*', 'Wavelength')]}
         return adict

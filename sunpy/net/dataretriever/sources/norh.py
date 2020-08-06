@@ -41,7 +41,6 @@ class NoRHClient(GenericClient):
     """
     baseurl = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
     pattern = '{}/tcx/{year:4d}/{month:2d}/{Wavelength:3l}{:4d}{day:2d}'
-    optional = {a.Wavelength, a.Source, a.Provider}
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
@@ -81,5 +80,6 @@ class NoRHClient(GenericClient):
                                      ('Nobeyama Radio Heliograph is an imaging radio telescope at 17 '
                                       'or 34GHz located at the Nobeyama Solar Radio Observatory.'))],
                  attrs.Source: [('NAOJ', 'The National Astronomical Observatory of Japan')],
-                 attrs.Provider: [('NRO', 'Nobeyama Radio Observatory')]}
+                 attrs.Provider: [('NRO', 'Nobeyama Radio Observatory')],
+                 attrs.Wavelength: [('*', 'Wavelength')]}
         return adict
