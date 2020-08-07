@@ -43,7 +43,7 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
     ----------
     ts : `sunpy.timeseries.TimeSeries`
 
-    artifacts : list of strings
+    artifacts : list
         Sets the artifact types to be removed.  For a list of artifact types
         see reference [1].  For example, if a user wants to remove only large
         angle rotations, listed at reference [1] as LAR, set artifacts=["LAR"].
