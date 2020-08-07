@@ -110,17 +110,17 @@ tags                   A list of :class:`tables.Tag` instances.
   ``observation_time_start``, ``observation_time_end``, ``instrument``,  ``size``,
   ``wavemin``, and ``wavemax`` are set by methods which use the VSO interface. In
   particular, these are :meth:`Database.add_from_vso_query_result`,
-  :meth:`Database.download` and   possibly :meth:`Database.fetch`.
+  and possibly :meth:`Database.fetch`.
 
 * The attributes ``path`` and ``download_time`` are set by the method
-  :meth:`Database.download` and also possibly by :meth:`Database.fetch`.
+  ``Database.download`` and also possibly by :meth:`Database.fetch`.
 
-* ``starred`` is set or changed via :meth:`Database.star` or :meth:`unstar`.
+* ``starred`` is set or changed via :meth:`Database.star` or :meth:`Database.unstar`.
 
 * ``tags`` is set via :meth:`Database.tag` or :meth:`Database.remove_tag`.
 
 * The attribute ``fits_header_entries`` is set by the methods
-  :meth:`Database.download`, :meth:`Database.add_from_dir`, and
+  ``Database.download``, :meth:`Database.add_from_dir`, and
   :meth:`Database.add_from_file`.
 
 2.1 Adding entries from one FITS file
@@ -146,7 +146,7 @@ passing on the value of the received argument (if it was a string)
 or by reading the value of ``file.name`` where ``file`` is the passed argument.
 If the path cannot be determined, it stays as ``None`` (the default value).
 
-``wavemin`` and `wavemax`` are only set if the wavelength unit
+``wavemin`` and ``wavemax`` are only set if the wavelength unit
 of the FITS file can be found out or if the ``default_waveunit`` attribute of
 the database object is set. These values are then
 used to convert from the used units to nanometers. The rationale behind
@@ -359,7 +359,7 @@ values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
     >>> len(database) # doctest: +REMOTE_DATA
     72
 
-Note that the `in` operator only works as expected after the
+Note that the ``in`` operator only works as expected after the
 :meth:`Database.commit` method has been called!
 
 3. Displaying entries in a table
@@ -431,7 +431,7 @@ for more information.
 
 4. Removing entries
 *******************
-`database.remove()` can be used to remove database entries from the SunPy
+`Database.remove()` can be used to remove database entries from the SunPy
 database. It takes a ``tables.DatabaseEntry`` object as argument.
 
 For example, imagine we want to only have database entries which have an
@@ -686,7 +686,7 @@ the simple attributes and the Time attribute work exactly as you expect.
 
 .. note::
 
-  The `near` parameter of :class:`sunpy.net.attrs.Time` is ignored, because
+  The ``near`` parameter of :class:`sunpy.net.attrs.Time` is ignored, because
   it's behaviour is not documented and it is different depending on the
   server which is requested.
 
