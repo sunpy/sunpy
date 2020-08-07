@@ -24,7 +24,7 @@ SunPy supports many different data products from various sources 'out of the
 box'. We shall use SDO's AIA instrument as an example in this tutorial. The
 general way to create a Map from one of the supported data products is with the
 `~sunpy.map.Map` function from the `sunpy.map` submodule.
-`Map <sunpy.map.map_factory.MapFactory` takes either a filename, a list of
+`~sunpy.map.Map` takes either a filename, a list of
 filenames or a data array and header. We can test
 `~sunpy.map.Map` with:
 
@@ -38,7 +38,7 @@ filenames or a data array and header. We can test
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
 
-This returns a map named `aia` which can be manipulated with standard SunPy map commands.
+This returns a map named ``aia`` which can be manipulated with standard SunPy map commands.
 For more information about maps checkout the :doc:`map guide <data_types/maps>`
 and the :ref:`map`.
 
@@ -67,7 +67,7 @@ We've created this timeseries object by passing TimeSeries a string which
 represents the name of a GOES lightcurve file. The
 `.peek() <sunpy.timeseries.GenericTimeSeries.peek>` method plots the timeseries
 data and displays the plot with some default settings. You can also use
-`my_timeseries.plot() <sunpy.timeseries.TimeSeries.plot>` if you want more
+`my_timeseries.plot() <sunpy.timeseries.GenericTimeSeries.plot>` if you want more
 control over the style of the output plot.
 
 For more information about TimeSeries, check out the
@@ -84,7 +84,7 @@ before continuing with this guide.
 
 Let's begin by creating a simple plot of an AIA image. To make things easy,
 SunPy includes several example files which are used throughout the docs. These
-files have names like `sunpy.data.sample.AIA_171_IMAGE` and `sunpy.data.sample.RHESSI_IMAGE`.
+files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE``.
 
 Try typing the below example into your interactive Python shell.
 
@@ -174,7 +174,7 @@ keys.::
                'mean synodic period', 'alpha_0',
                'delta_0'])
 
-You can also use the function `sunpy.constants.print_all()` to print out a table of all of the values
+You can also use the function `sunpy.sun.constants.print_all()` to print out a table of all of the values
 available. These constants are provided as a convenience so that everyone is using the same
 (accepted) values. For more information check out :ref:`sun_code_ref`.
 
@@ -196,7 +196,7 @@ that can be expressed in length units ::
     >>> con.radius
     <<class 'astropy.constants.iau2015.IAU2015'> name='Nominal solar radius' value=695700000.0 uncertainty=0.0 unit='m' reference='IAU 2015 Resolution B 3'>
 
-shows the solar radius in units of meters.  The same physical quantity can be expressed in different units instead using the `.to()` method::
+shows the solar radius in units of meters.  The same physical quantity can be expressed in different units instead using the ``.to()`` method::
 
     >>> con.radius.to('km')
     <Quantity 695700. km>
@@ -208,7 +208,7 @@ or equivalently::
     <Quantity 695700. km>
 
 If, as is sometimes the case, you need just the raw value or the unit from a quantity, you can access these individually
-with the `value` and `unit` attributes, respectively::
+with the ``value`` and ```unit`` attributes, respectively::
 
     >>> r = con.radius.to(u.km)
     >>> r.value

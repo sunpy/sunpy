@@ -61,7 +61,7 @@ Constructing a Basic Query
 
 Let's start with a very simple query.  We could ask for all ``hmi.v_45s`` series data
 between January 1st from 00:00 to 01:00, 2014.
-We can add email address to the search query with the :mod:`jsoc.Notify` attribute.
+We can add email address to the search query with the `sunpy.net.jsoc.attrs.Notify` attribute.
 Please note you can search without this but right now, you can not add the email address after the search.
 
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'),
@@ -481,7 +481,7 @@ Making a query
 Querying JSOC using the JSOC client is very similar to what we were doing with Fido.
 As above, we have to make sure we have an email address registered with JSOC before you are allowed to make a request.
 See `this <http://jsoc.stanford.edu/ajax/register_email.html>`__ to register your email address.
-We can add an email address to the search query with the :mod:`jsoc.Notify` attribute.
+We can add an email address to the search query with the `sunpy.net.jsoc.attrs.Notify` attribute.
 Please note you can search without this but right now, you can not add the email address after the search::
 
     >>> from sunpy.net import attrs as a

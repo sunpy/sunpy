@@ -9,7 +9,7 @@ If you have never installed or used scientific Python we recommend that you foll
 Installing SunPy on top of an existing Scientific Python Environment
 ====================================================================
 
-These instructions assume you have a scientific Python distribution with access to the `pip` command installed.
+These instructions assume you have a scientific Python distribution with access to the ``pip`` command installed.
 
 Prerequisites
 -------------
@@ -19,8 +19,8 @@ On Linux, using the package manager for your distribution will usually be the ea
 
 The `instructions for building Numpy from source <https://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good resource for setting up your environment to build Python packages.
 
-Using `pip`
------------
+Using ``pip``
+-------------
 
 .. warning::
     Users of the Anaconda python distribution should follow the instructions for :ref:`anaconda_install`.
@@ -140,6 +140,6 @@ To run the tests:
 - `pytest-mock <https://github.com/pytest-dev/pytest-mock>`__.
 
 The packages that will be installed as dependencies by default and are the ones
-required to import the core datatypes `~sunpy.map`, `~sunpy.timeseries` and
-`~sunpy.spectra`. These are the strict requirements and the following optional
+required to import the core datatypes `~sunpy.map` and `~sunpy.timeseries`.
+These are the strict requirements and the following optional
 packages:
