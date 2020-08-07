@@ -156,7 +156,7 @@ def calculate_temperature_em(goests, abundances="coronal",
                              download=False, download_dir=None):
     """
     Calculates temperature and emission measure from a
-    `~sunpy.timeseries.XRSTimeSeries`.
+    `~sunpy.timeseries.sources.XRSTimeSeries`.
 
     This function calculates the isothermal temperature and
     corresponding volume emission measure of the solar soft X-ray
@@ -168,7 +168,7 @@ def calculate_temperature_em(goests, abundances="coronal",
 
     Parameters
     ----------
-    goeslc : `~sunpy.timeseries.XRSTimeSeries`
+    goeslc : `~sunpy.timeseries.sources.XRSTimeSeries`
         The TimeSeries containing GOES flux data which **MUST**
         be in units of "W/m^2".
     abundances : {'coronal' | 'photospheric'}, optional
@@ -186,7 +186,7 @@ def calculate_temperature_em(goests, abundances="coronal",
 
     Returns
     -------
-    `~sunpy.timeseries.XRSTimeSeries`
+    `~sunpy.timeseries.sources.XRSTimeSeries`
         Contains same metadata and data as input timeseries with the
         following two additional data columns:
 
@@ -751,7 +751,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
 
     Parameters
     ----------
-    goests : `~sunpy.timeseries.XRSTimeSeries`
+    goests : `~sunpy.timeseries.sources.XRSTimeSeries`
         TimeSeries object containing GOES data.  The units of these
         data MUST be W/m^2 (flux), MK (temperature) and cm^-3
         (emission measure).  If LightCurve object does not contain
@@ -771,7 +771,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
 
     Returns
     -------
-    ts_new : `~sunpy.timeseries.XRSTimeSeries`
+    ts_new : `~sunpy.timeseries.sources.XRSTimeSeries`
         Contains same metadata and data as input LightCurve with the
         following additional data columns:
 
@@ -1031,13 +1031,13 @@ def calculate_xray_luminosity(goests):
 
     Parameters
     ----------
-    goests : `~sunpy.timeseries.XRSTimeSeries`
+    goests : `~sunpy.timeseries.sources.XRSTimeSeries`
         LightCurve object containing GOES flux data which MUST
         be in units of W/m^2.
 
     Returns
     -------
-    ts_new : `~sunpy.timeseries.XRSTimeSeries`
+    ts_new : `~sunpy.timeseries.sources.XRSTimeSeries`
         Contains same metadata and data as input LightCurve with the
         following additional data columns;
 

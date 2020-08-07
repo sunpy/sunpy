@@ -44,11 +44,11 @@ class GreatArc:
 
     Methods
     -------
-    inner_angles : `~astropy.units.rad`
-        Radian angles of the points along the great arc from the start to end
+    inner_angles : `~astropy.units.Quantity`
+        Angles of the points along the great arc from the start to end
         co-ordinate.
 
-    distances : `~astropy.units`
+    distances : `~astropy.units.Quantity`
         Distances of the points along the great arc from the start to end
         co-ordinate.  The units are defined as those returned after transforming
         the co-ordinate system of the start co-ordinate into its Cartesian
@@ -190,8 +190,8 @@ class GreatArc:
 
         Returns
         -------
-        inner_angles : `~astropy.units.rad`
-            Radian angles of the points along the great arc from the start to
+        inner_angles : `~astropy.units.Quantity`
+            Angles of the points along the great arc from the start to
             end co-ordinate.
 
         """
