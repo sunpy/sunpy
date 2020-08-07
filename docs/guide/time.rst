@@ -68,7 +68,7 @@ If we pass some of these strings into `sunpy.time.parse_time()`::
 
 Each of the above returns the same `~astropy.time.Time` object ``<Time object: scale='utc' format='isot' value=2007-05-04T21:08:12.000>``.
 
-We also support ``utime``, which is the amount of seconds from `1979-01-01 00:00:00 UTC`.
+We also support ``utime``, which is the amount of seconds from 1979-01-01 00:00:00 UTC.
 Same as Unix time but this starts 9 years later. The parse_time function also accepts this as input, e.g.::
 
     >>> parse_time(894316092.00000000, format='utime')

@@ -108,7 +108,7 @@ an error will be raised stating that the units are incorrect or missing::
 
 Note that the units of the inputs do not have to be exactly the same as those in the function definition, as long
 as they can be converted to those units. So for instance, passing in a time in minutes still works even though we
-specified `time: u.s`::
+specified ``time: u.s``::
 
   >>> speed(1*u.m, 1*u.minute)
   <Quantity 1. m / min>
@@ -161,7 +161,7 @@ other coordinate frame defined either in Astropy or SunPy, for example::
 
 
 It is also possible to convert three dimensional positions to astrophysical
-frames defined in Astropy, for example `~astropy.coordimates.ICRS`.
+frames defined in Astropy, for example `~astropy.coordinates.ICRS`.
 
   >>> c.transform_to('icrs')
   <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
