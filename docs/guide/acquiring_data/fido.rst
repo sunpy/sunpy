@@ -223,7 +223,7 @@ dimension corresponds to the clients which have returned results and the
 second to the records returned.
 
 For example, the following code returns a response containing LYRA data from
-the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
+the `~sunpy.net.dataretriever.LYRAClient`, and EVE data from the
 `~sunpy.net.vso.VSOClient`::
 
     >>> from sunpy.net import Fido, attrs as a
@@ -232,7 +232,7 @@ the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
 
 If you then wanted to inspect just the LYRA data for the whole time range
 specified in the search, you would index this response to see just the
-results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
+results returned by the `~sunpy.net.dataretriever.LYRAClient`::
 
     >>> results[0, :]  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
@@ -313,7 +313,7 @@ object::
     >>> print(downloaded_files.errors)  # doctest: +SKIP
 
 The transfer can be retried by passing the `parfive.Results` object back to
-`Fido.fetch <sunpy.net.fido_factory.unifieddownloaderfactory.fetch>`::
+`Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
 
     >>> downloaded_files = Fido.fetch(downloaded_files)  # doctest: +SKIP
 
