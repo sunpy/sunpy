@@ -334,7 +334,7 @@ def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
 
     Notes
     -----
-    All other keywords are passed to `scipy.ndimage.interpolation.shift`.
+    All other keywords are passed to `scipy.ndimage.shift`.
 
     Returns
     -------
