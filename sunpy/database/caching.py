@@ -13,7 +13,7 @@ __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 class BaseCache(metaclass=ABCMeta):
     """
     BaseCache is a class that saves and operates on an OrderedDict. It has a
-    certain capacity, stored in the attribute `maxsize`. Whether this
+    certain capacity, stored in the attribute ``maxsize``. Whether this
     capacity is reached, can be checked by using the boolean property
     `is_full`. To implement a custom cache, inherit from this class and
     override the methods ``__getitem__`` and ``__setitem__``.
@@ -26,8 +26,8 @@ class BaseCache(metaclass=ABCMeta):
         self._dict = OrderedDict()
 
     def get(self, key, default=None):  # pragma: no cover
-        """Return the corresponding value to `key` if `key` is in the cache,
-        `default` otherwise. This method has no side-effects, multiple calls
+        """Return the corresponding value to ``key`` if ``key`` is in the cache,
+        ``default`` otherwise. This method has no side-effects, multiple calls
         with the same cache and the same passed key must always return the same
         value.
 
@@ -79,7 +79,7 @@ class BaseCache(metaclass=ABCMeta):
 
     @property
     def is_full(self):
-        """True if the number of items in the cache equals :attr:`maxsize`,
+        """True if the number of items in the cache equals ``self.maxsize``,
         False otherwise.
 
         """

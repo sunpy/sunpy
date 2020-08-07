@@ -592,13 +592,12 @@ class GenericTimeSeries:
 
     def to_dataframe(self, **kwargs):
         """
-        Return a `~pandas.core.frame.DataFrame` of the given
+        Return a `~pandas.DataFrame` of the given
         `~sunpy.timeseries.TimeSeries`.
 
         Returns
         -------
         `~pandas.core.frame.DataFrame`
-            A `~pandas.core.frame.DataFrame` containing the data.
         """
         return self._data
 
