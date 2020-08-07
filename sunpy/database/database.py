@@ -213,17 +213,17 @@ class Database:
         The default value is :class:`sunpy.database.caching.LRUCache`.
     cache_size : int
         The maximum number of database entries, default is no limit.
-    default_waveunit : `str` or `~astropy.units.Unit`, optional
+    default_waveunit : `str` or `~astropy.units.Quantity`, optional
         The wavelength unit that will be used if an entry is added to the
         database but its wavelength unit cannot be found (either in the file or
         the VSO query result block, depending on the way the entry was added).
         If an `~astropy.units.Unit` is passed, it is assigned to ``default_waveunit``.
-        If a `str` is passed, it will be converted to `~astropy.units.Unit` through
-        the `astropy.units.Unit()` initializer, and then assigned to default_waveunit.
-        If an invalid string is passed, `~sunpy.database.WaveunitNotConvertibleError`
+        If a `str` is passed, it will be converted to a `~astropy.units.Quantity` through
+        the `~astropy.units.Quantity` initializer, and then assigned to default_waveunit.
+        If an invalid string is passed, `~sunpy.database.tables.WaveunitNotConvertibleError`
         is raised. If `None` (the default), attempting to add an entry without knowing
         the wavelength unit results in a
-        :exc:`sunpy.database.WaveunitNotFoundError`.
+        :exc:`sunpy.database.tables.WaveunitNotFoundError`.
     """
     """
     Attributes
@@ -375,7 +375,7 @@ class Database:
 
     def commit(self):
         """Flush pending changes and commit the current transaction. This is a
-        shortcut for :meth:`session.commit()`.
+        shortcut for :meth:`sunpy.database.Database.commit`.
 
         """
         self.session.commit()
@@ -490,9 +490,9 @@ class Database:
 
         Examples
         --------
-        The `~sunpy.Database.fetch` method can be used along with the `overwrite=True`
+        The `~sunpy.Database.database.fetch` method can be used along with the ``overwrite=True``
         argument to overwrite and redownload files corresponding to the query, even if
-        its entries are already present in the database. Note that the `overwrite=True`
+        its entries are already present in the database. Note that the ``overwrite=True``
         argument deletes the old matching database entries and new database entries are
         added with information from the redownloaded files.
 
@@ -729,8 +729,9 @@ class Database:
 
         Parameters
         ----------
-        database_entries : iterable of sunpy.database.tables.DatabaseEntry
-            The database entries that will be added to the database.
+        database_entries : list
+            The list of `~sunpy.database.tables.DatabaseEntry`
+            that will be added to the database.
 
         ignore_already_added : bool, optional
             See Database.add
@@ -789,7 +790,7 @@ class Database:
         Parameters
         ----------
         query_result : list
-            The value returned by :meth:`sunpy.net.hek.HEKClient().search`
+            The value returned by :meth:`sunpy.net.hek.HEKClient.search`
 
         ignore_already_added : bool
             See :meth:`sunpy.database.Database.add`.
@@ -808,7 +809,7 @@ class Database:
         Parameters
         ----------
         query_result : `HEKTable` or `HEKRow`
-            The value returned by :meth:`sunpy.net.hek.HEKClient().search`
+            The value returned by :meth:`sunpy.net.hek.HEKClient.search`
         client : `sunpy.net.vso.VSOClient`, optional
             VSO Client instance to use for search and download.
             If not specified a new instance will be created.
@@ -849,7 +850,7 @@ class Database:
         Add new database entries from a VSO query result and download the
         corresponding data files. See :meth:`sunpy.database.Database.download`
         for information about the caching mechanism used and about the
-        parameters `client`, `path`, `progress`.
+        parameters ``client``, ``path``, ``progress``.
 
         Parameters
         ----------
@@ -910,12 +911,13 @@ class Database:
 
     def add_from_dir(self, path, recursive=False, pattern='*',
                      ignore_already_added=False, time_string_parse_format=None):
-        """Search the given directory for FITS files and use their FITS headers
+        """
+        Search the given directory for FITS files and use their FITS headers
         to add new entries to the database. Note that one entry in the database
         is assigned to a list of FITS headers, so not the number of FITS headers
         but the number of FITS files which have been read determine the number
         of database entries that will be added. FITS files are detected by
-        reading the content of each file, the `pattern` argument may be used to
+        reading the content of each file, the ``pattern`` argument may be used to
         avoid reading entire directories if one knows that all FITS files have
         the same filename extension.
 
@@ -930,7 +932,7 @@ class Database:
             searched. The default is `False`, i.e. the given directory is not
             searched recursively.
 
-        pattern : string, optional
+        pattern : str, optional
             The pattern can be used to filter the list of filenames before the
             files are attempted to be read. The default is to collect all
             files. This value is passed to the function :func:`fnmatch.filter`,
@@ -942,7 +944,7 @@ class Database:
         time_string_parse_format : str, optional
             Fallback timestamp format which will be passed to
             `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
-            automatically read the `date-obs` metadata.
+            automatically read the ``date-obs`` metadata.
 
         """
         cmds = CompositeOperation()
@@ -1000,8 +1002,8 @@ class Database:
 
         Parameters
         ----------
-        database_entries : iterable of sunpy.database.tables.DatabaseEntry
-            The database entries that will be removed from the database.
+        database_entries : list
+            The `~sunpy.database.tables.DatabaseEntry` that will be removed from the database.
         """
         cmds = CompositeOperation()
         for database_entry in database_entries:
