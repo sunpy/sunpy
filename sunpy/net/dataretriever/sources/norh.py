@@ -66,12 +66,12 @@ class NoRHClient(GenericClient):
         This method converts 'tca' and 'tcz' in the url's metadata
         to a frequency of '17 GHz' and '34 GHz' respectively.
         """
-        map_ = super().post_search_hook(exdict, matchdict)
-        if map_['Wavelength'] == 'tca':
-            map_['Wavelength'] = 17*u.GHz
-        elif map_['Wavelength'] == 'tcz':
-            map_['Wavelength'] = 34*u.GHz
-        return map_
+        rowdict = super().post_search_hook(exdict, matchdict)
+        if rowdict['Wavelength'] == 'tca':
+            rowdict['Wavelength'] = 17*u.GHz
+        elif rowdict['Wavelength'] == 'tcz':
+            rowdict['Wavelength'] = 34*u.GHz
+        return rowdict
 
     @classmethod
     def register_values(cls):

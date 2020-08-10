@@ -123,19 +123,19 @@ class SUVIClient(GenericClient):
         end = datetime(i['year'], i['month'], i['day'], i['ehour'], i['eminute'], i['esecond'])
         timerange = TimeRange(start, end)
 
-        map_ = OrderedDict()
-        map_['Time'] = timerange
-        map_['Start Time'] = start.strftime(TIME_FORMAT)
-        map_['End Time'] = end.strftime(TIME_FORMAT)
-        map_['Instrument'] = matchdict['Instrument'][0].upper()
-        map_['Physobs'] = matchdict['Physobs'][0]
-        map_['Source'] = matchdict['Source'][0]
-        map_['Provider'] = matchdict['Provider'][0]
-        map_['SatelliteNumber'] = i['SatelliteNumber']
-        map_['Level'] = i['Level']
-        map_['Wavelength'] = i['Wavelength']*u.Angstrom
-        map_['url'] = i['url']
-        return map_
+        rowdict = OrderedDict()
+        rowdict['Time'] = timerange
+        rowdict['Start Time'] = start.strftime(TIME_FORMAT)
+        rowdict['End Time'] = end.strftime(TIME_FORMAT)
+        rowdict['Instrument'] = matchdict['Instrument'][0].upper()
+        rowdict['Physobs'] = matchdict['Physobs'][0]
+        rowdict['Source'] = matchdict['Source'][0]
+        rowdict['Provider'] = matchdict['Provider'][0]
+        rowdict['SatelliteNumber'] = i['SatelliteNumber']
+        rowdict['Level'] = i['Level']
+        rowdict['Wavelength'] = i['Wavelength']*u.Angstrom
+        rowdict['url'] = i['url']
+        return rowdict
 
     def search(self, *args, **kwargs):
         supported_waves = [94, 131, 171, 195, 284, 304]*u.Angstrom
@@ -177,8 +177,8 @@ class SUVIClient(GenericClient):
                     scraper = Scraper(urlpattern)
                     filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern)
                     for i in filesmeta:
-                        map_ = self.post_search_hook(i, matchdict)
-                        metalist.append(map_)
+                        rowdict = self.post_search_hook(i, matchdict)
+                        metalist.append(rowdict)
 
         return QueryResponse(metalist, client=self)
 

@@ -44,15 +44,15 @@ class NOAAIndicesClient(GenericClient):
     required = {a.Instrument}
 
     def search(self, *args, **kwargs):
-        map_ = self._get_match_dict(*args, **kwargs)
-        for key in map_:
-            if isinstance(map_[key], list):
+        rowdict = self._get_match_dict(*args, **kwargs)
+        for key in rowdict:
+            if isinstance(rowdict[key], list):
                 # uses first value among the list of possible values corresponding to an Attr
                 # returned by `get_match_dict()` to be shown in query response table.
-                map_[key] = map_[key][0]
-        map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
-        map_['Instrument'] = 'NOAA-Indices'
-        return QueryResponse([map_], client=self)
+                rowdict[key] = rowdict[key][0]
+        rowdict['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
+        rowdict['Instrument'] = 'NOAA-Indices'
+        return QueryResponse([rowdict], client=self)
 
     @classmethod
     def register_values(cls):
@@ -94,15 +94,15 @@ class NOAAPredictClient(GenericClient):
     required = {a.Instrument}
 
     def search(self, *args, **kwargs):
-        map_ = self._get_match_dict(*args, **kwargs)
-        for key in map_:
-            if isinstance(map_[key], list):
+        rowdict = self._get_match_dict(*args, **kwargs)
+        for key in rowdict:
+            if isinstance(rowdict[key], list):
                 # uses first value among the list of possible values corresponding to an Attr
                 # returned by `get_match_dict()` to be shown in query response table.
-                map_[key] = map_[key][0]
-        map_['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
-        map_['Instrument'] = 'NOAA-Predict'
-        return QueryResponse([map_], client=self)
+                rowdict[key] = rowdict[key][0]
+        rowdict['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
+        rowdict['Instrument'] = 'NOAA-Predict'
+        return QueryResponse([rowdict], client=self)
 
     @classmethod
     def register_values(cls):
@@ -172,9 +172,9 @@ class SRSClient(GenericClient):
             exdict1 = parse(extractor1, url)
             exdict2 = parse(extractor2, url)
             exdict = (exdict2 if exdict1 is None else exdict1).named
-            map_ = self.post_search_hook(exdict, matchdict)
-            map_['url'] = url
-            metalist.append(map_)
+            exdict['url'] = url
+            rowdict = self.post_search_hook(exdict, matchdict)
+            metalist.append(rowdict)
         return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, error_callback=None, **kwargs):

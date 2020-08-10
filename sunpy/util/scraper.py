@@ -139,24 +139,10 @@ class Scraper:
             return matches.end() == matches.endpos
         return False
 
-    def _findDatewith_extractor(self, url):
-        exdict = parse(self.extractor, url).named
-        datetypes = ['year', 'month', 'day']
-        timetypes = ['hour', 'minute', 'second']
-        dtlist = []
-        for d in datetypes:
-            dtlist.append(exdict.get(d, 1))
-        for t in timetypes:
-            dtlist.append(exdict.get(t, 0))
-        dt = datetime.datetime(*dtlist)
-        return Time(dt)
-
     def _extractDateURL(self, url):
         """
         Extracts the date from a particular url following the pattern.
         """
-        if hasattr(self, 'extractor'):
-            return self._findDatewith_extractor(url)
         # remove the user and passwd from files if there:
         url = url.replace("anonymous:data@sunpy.org@", "")
 
