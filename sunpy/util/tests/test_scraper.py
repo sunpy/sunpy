@@ -274,9 +274,9 @@ def test_extract_files_meta():
 
 
 @pytest.mark.parametrize('exdict, start, end', [
-    ({"year" : 2016, "month" : 2}, '2016-02-01 00:00:00', '2016-02-29 23:59:59.999000'),
-    ({'year' : 2019, 'month' : 2, 'day' : 28}, '2019-02-28 00:00:00', '2019-02-28 23:59:59.999000'),
-    ({'year' : 2020, 'month' : 7, 'day' : 31, 'hour' : 23, 'minute' : 59, 'second' : 59},
+    ({"year": 2016, "month": 2}, '2016-02-01 00:00:00', '2016-02-29 23:59:59.999000'),
+    ({'year': 2019, 'month': 2, 'day': 28}, '2019-02-28 00:00:00', '2019-02-28 23:59:59.999000'),
+    ({'year': 2020, 'month': 7, 'day': 31, 'hour': 23, 'minute': 59, 'second': 59},
      '2020-07-31 23:59:59', '2020-07-31 23:59:59.999000')])
 def test_get_timerange_with_extractor(exdict, start, end):
     tr = TimeRange(start, end)
