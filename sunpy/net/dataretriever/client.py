@@ -2,17 +2,15 @@ from pathlib import Path
 from collections import OrderedDict
 
 import astropy.table
-import astropy.units as u
-from astropy.time import TimeDelta
 
 import sunpy
 from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
-from sunpy.time import TimeRange, parse_time
+from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
-from sunpy.util.scraper import Scraper
+from sunpy.util.scraper import Scraper, get_timerange_from_exdict
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -215,13 +213,9 @@ class GenericClient(BaseClient):
             to show results.
         """
         rowdict = OrderedDict()
-        almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-        if 'month' in exdict and 'day' in exdict:
-            start = parse_time("{}/{}/{}".format(exdict['year'], exdict['month'], exdict['day']))
-            end = start + almost_day
-        elif 'year' in exdict:
-            start = parse_time("{}/{}/{}".format(exdict['year'], 1, 1))
-            end = parse_time("{}/{}/{}".format(exdict['year'], 12, 31)) + almost_day
+        tr = get_timerange_from_exdict(exdict)
+        start = tr.start
+        end = tr.end
         rowdict['Time'] = TimeRange(start, end)
         rowdict['Start Time'] = start.strftime(TIME_FORMAT)
         rowdict['End Time'] = end.strftime(TIME_FORMAT)
@@ -233,7 +227,7 @@ class GenericClient(BaseClient):
                 else:
                     rowdict[k] = matchdict[k][0].upper()
         for k in exdict:
-            if k not in ['year', 'month', 'day']:
+            if k not in ['year', 'month', 'day', 'hour', 'minute', 'second']:
                 rowdict[k] = exdict[k]
         return rowdict
 
