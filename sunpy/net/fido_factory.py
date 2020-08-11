@@ -102,9 +102,19 @@ class UnifiedResponse(Sequence):
 
     def get_response(self, i):
         """
-        Get the actual response rather than another UnifiedResponse object.
+        Get the actual responses rather than another UnifiedResponse object.
         """
-        return self._list[i]
+        if isinstance(i, int):
+            return self._list[i]
+        else:
+            client_responses = list()
+            clientname = str(i).lower()
+            for res in self._list:
+                if clientname in res.client.__class__.__name__.lower():
+                    client_responses.append(res)
+            if len(client_responses) == 1:
+                return client_responses[0]
+            return client_responses
 
     def response_block_properties(self):
         """
