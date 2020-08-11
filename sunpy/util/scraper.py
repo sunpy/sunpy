@@ -256,7 +256,7 @@ class Scraper:
                             else:
                                 fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
-                                if self._isvalid_time(fullpath, timerange):
+                                if self._check_timerange(fullpath, timerange):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
@@ -279,7 +279,7 @@ class Scraper:
                 for file_i in ftp.nlst():
                     fullpath = directory + file_i
                     if self._URL_followsPattern(fullpath):
-                        if self._isvalid_time(fullpath, timerange):
+                        if self._check_timerange(fullpath, timerange):
                             filesurls.append(fullpath)
 
         filesurls = [f'ftp://' + "{0.netloc}{0.path}".format(urlsplit(url))
@@ -302,16 +302,28 @@ class Scraper:
             for file_i in os.listdir(directory):
                 fullpath = directory + file_i
                 if self._URL_followsPattern(fullpath):
-                    if self._isvalid_time(fullpath, timerange):
+                    if self._check_timerange(fullpath, timerange):
                         filepaths.append(fullpath)
         filepaths = [prefix + path for path in filepaths]
         self.pattern = pattern
         return filepaths
 
-    def _isvalid_time(self, url, timerange):
+    def _check_timerange(self, url, timerange):
         """
         Checks whether the time extracted from the URL
         is valid according to the given time range.
+
+        Parameters
+        ----------
+        url: `str`
+            URL of the file.
+        timerange : `~sunpy.time.TimeRange`
+            Time interval for which files were searched.
+
+        Returns
+        -------
+        `bool`
+            `True` if URL's time overlaps the given timerange, else `False`.
         """
         if hasattr(self, 'extractor'):
             exdict = parse(self.extractor, url).named
@@ -358,7 +370,7 @@ class Scraper:
 
         Returns
         -------
-        metalist: `list` of `dict`
+        `list` of `dict`
             List of metadata info for all URLs.
         """
         self.extractor = extractor
@@ -391,7 +403,7 @@ def get_timerange_from_exdict(exdict):
 
     Returns
     -------
-    file_timerange: `~sunpy.time.TimeRange`
+    `~sunpy.time.TimeRange`
         The time range of the file.
     """
     datetypes = ['year', 'month', 'day']
@@ -421,6 +433,6 @@ def get_timerange_from_exdict(exdict):
     if "second" in exdict:
         tdelta = 1*u.second
 
-    endTime = startTime + TimeDelta(tdelta - 1*u.millisecond)
+    endTime = startTime + TimeDelta(tdelta) - TimeDelta(1*u.millisecond)
     file_timerange = TimeRange(startTime, endTime)
     return file_timerange
