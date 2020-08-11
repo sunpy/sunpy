@@ -14,7 +14,7 @@ from sunpy.timeseries import TimeSeries
 
 ###############################################################################
 # Let's grab GOES XRS data for a particular time of interest and the HEK flare
-# data for this time from the NOAA Space Weather Prediction Center (SWPC)
+# data for this time from the NOAA Space Weather Prediction Center (SWPC).
 
 tr = a.Time('2011-06-07 04:00', '2011-06-07 12:00')
 results = Fido.search(tr, a.Instrument.xrs | a.hek.FL & (a.hek.FRM.Name == 'SWPC'))
@@ -25,13 +25,13 @@ files = Fido.fetch(results)
 goes = TimeSeries(files)
 
 ###############################################################################
-# Next let's retrieve `~sunpy.net.hek.HEKResponse` from Fido results
+# Next let's retrieve `~sunpy.net.hek.HEKResponse` from the Fido result
 # and then load the first row from HEK results in ``flares_hek``.
 hek_results = results.get_response('hek')
 flares_hek = hek_results[0]
 
 ###############################################################################
-# Lets plot everything together
+# Lets plot everything together.
 fig, ax = plt.subplots()
 goes.plot()
 ax.axvline(parse_time(flares_hek['event_peaktime']).datetime)

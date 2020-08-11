@@ -23,14 +23,16 @@ results = Fido.search(timerange, a.helio.TableName('rhessi_hxr_flare') |
 print(results)
 
 ###################################################################
-# Know we will download the searched records. Since HEK and HELIO
-# clients don't need to fetch any file records, so fetch will
-# ignore them and only download files for JSOC Client.
+# Now we will download the searched records. Since HEK and HELIO
+# clients don't provide files, `Fido.fetch` will
+# ignore them and only download files from JSOC.
 files = Fido.fetch(results)
 print(files)
 
 ###################################################################
 # Now we will extract individual responses from Fido results.
+# We can use ``get_response()`` to specify the name of the desired
+# client. This name is case-insensitive.
 hecresults = results.get_response('hec')
 hekresults = results.get_response('hek')
 jsocresults = results.get_response('jsoc')
@@ -43,8 +45,8 @@ print(hektable)
 
 ###################################################################
 # ``['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']`` are
-# default columns shown in `~sunpy.net.jsoc.JSOCResponse`.
-# To display all columns from JSOC results, we can use ``show()``
+# default columns shown by a JSOC result.
+# To display all columns from a JSOC result, we can use ``show()``
 # without passings any arguments to the method.
 print(jsocresults)
 jsoctable = jsocresults.show()
