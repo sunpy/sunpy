@@ -297,8 +297,8 @@ def test_time_query(client):
     start = '2005/01/03'
     end = '2005/12/03'
     table_name = 'rhessi_hxr_flare'
-    res = client.search(a.Time(start, end), a.TableName(table_name), a.MaxRecords(10))
-    assert len(res.array) == 10
+    res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
+    assert len(res) == 10
 
 
 def test_client_mock_fail(client):
