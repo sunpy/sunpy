@@ -196,6 +196,22 @@ class UnifiedResponse(Sequence):
 
         return ret
 
+    def show(self, *cols):
+        """
+        Displays response tables with desired columns for the Query.
+
+        Parameters
+        ----------
+        \\*cols : `tuple`
+            Name of columns to be shown.
+
+        Returns
+        -------
+        `list` of `astropy.table.Table`
+            A list of tables showing values for specified columns.
+        """
+        return [i.show(*cols) for i in self._list]
+
 
 query_walker = attr.AttrWalker()
 """
