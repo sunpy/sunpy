@@ -104,7 +104,12 @@ class BaseQueryResponse(Sequence):
         table = self.build_table()
         if len(cols) == 0:
             return table
-        return table[list(cols)]
+        tablecols = table.columns
+        valid_cols = []
+        for col in cols:
+            if col in tablecols:
+                valid_cols.append(col)
+        return table[valid_cols]
 
 
 class BaseQueryResponseTable(BaseQueryResponse):
@@ -160,9 +165,14 @@ class BaseQueryResponseTable(BaseQueryResponse):
             self.table = vstack([self.table, table])
 
     def show(self, *cols):
-        if len(cols)==0:
+        if len(cols) == 0:
             return self.table
-        return self.table[list(cols)]
+        tablecols = self.table.columns
+        valid_cols = []
+        for col in cols:
+            if col in tablecols:
+                valid_cols.append(col)
+        return self.table[valid_cols]
 
 
 def _print_client(client, html=False):
