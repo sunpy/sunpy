@@ -88,7 +88,7 @@ The Azure checks on GitHub manifest:
    :width: 600
    :alt: PR checks tab
 
-This is the main form and there will be one check per Azure job ran and a summary one just called "sunpy.sunpy".
+This is the main form. There will be one check per Azure job ran, and a summary one called "sunpy.sunpy".
 The details text will redirect you to the "Checks" tab.
 
 Doing so will show:
