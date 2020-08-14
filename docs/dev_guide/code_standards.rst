@@ -57,7 +57,7 @@ This runs a tool called `pre-commit <https://pre-commit.com/>`__.
 
 The settings and tools we use for the pre-commit can be found in the file `.pre-commit-config.yaml` at the root of the sunpy git repository.
 Some of the checks are:
-* Check (but will not fix) for various PEP8 issues with flake8.
+* Checks (but doesn't fix) various PEP8 issues with flake8.
 * Sort all imports in any Python files with isort.
 * Remove any unused variables or imports with autoflake.
 
@@ -125,7 +125,7 @@ What you will see is this output (heavily condensed):
     ___________________________________________________________________________________________ summary ___________________________________________________________________________________________
     ERROR:   codestyle: commands failed
 
-This will inform you of what checks failed and why, what changes (if any) the command has made to your code.
+This will inform you of what checks failed and why, and what changes (if any) the command has made to your code.
 
 If you want to setup the pre-commit locally, you can do the following::
 
@@ -136,7 +136,7 @@ Now you can do::
     $ pre-commit run --all-files
 
 which will run the tools on all files in the sunpy git repository.
-The pre-commit tools can change some of the files, in other cases it will report problems but will require manual correction.
+The pre-commit tools can change some of the files, but in other cases it will report problems that require manual correction.
 If the pre-commit tool changes any files, they will show up as new changes that will need to be committed.
 
 Automate
