@@ -4,7 +4,6 @@ Sun-specific coordinate calculations
 import numpy as np
 
 import astropy.units as u
-from astropy import _erfa as erfa
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
     ITRS,
@@ -20,6 +19,8 @@ from astropy.coordinates import (
 )
 from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
+# Import erfa via astropy to make sure we are using the same ERFA library as Astropy
+from astropy.coordinates.sky_coordinate import erfa
 from astropy.time import Time
 
 from sunpy import log
