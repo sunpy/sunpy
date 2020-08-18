@@ -30,12 +30,13 @@ def get(key):
 
     Returns
     -------
-    constant : `~astropy.units.Constant`
+    constant : `~astropy.constants.Constant`
 
     See Also
     --------
     `sunpy.sun.constants`
-        Contains the description of ``constants``, which, as a dictionary literal object, does not itself possess a docstring.
+        Contains the description of ``constants``, which, as a dictionary literal object, does not
+        itself possess a docstring.
 
     Examples
     --------
@@ -43,7 +44,9 @@ def get(key):
     >>> constants.get('mass')
     <<class 'astropy.constants.iau2015.IAU2015'> name='Solar mass' value=1.9884754153381438e+30 uncertainty=9.236140093538353e+25 unit='kg' reference='IAU 2015 Resolution B 3 + CODATA 2014'>
     """
-    return constants[key]
+    ret = constants[key]
+    ret.__doc__ = ret.name
+    return ret
 
 
 def find(sub=None):
@@ -116,7 +119,9 @@ if __doc__ is not None:
     __doc__ += _build_docstring()
 
 # Spectral class is not included in physical constants since it is not a number
+#: Spectral classification
 spectral_classification = 'G2V'
+
 au = astronomical_unit = get('mean distance')
 # The following variables from _gets are brought out by making them
 # accessible through a call such as sun.volume
@@ -134,5 +139,7 @@ sfu = get('solar flux unit')
 # Observable parameters
 average_angular_size = get('average angular size')
 sidereal_rotation_rate = get('sidereal rotation rate')
+
+#: Time of the start of the first Carrington rotation
 first_carrington_rotation = Time(get('first Carrington rotation (JD TT)'), format='jd', scale='tt')
 mean_synodic_period = get('mean synodic period')
