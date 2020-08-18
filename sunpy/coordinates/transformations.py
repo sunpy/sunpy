@@ -20,7 +20,6 @@ from contextlib import contextmanager
 import numpy as np
 
 import astropy.units as u
-from astropy._erfa import obl06
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
     HCRS,
@@ -41,6 +40,8 @@ from astropy.coordinates.representation import (
     SphericalRepresentation,
     UnitSphericalRepresentation,
 )
+# Import erfa via astropy to make sure we are using the same ERFA library as Astropy
+from astropy.coordinates.sky_coordinate import erfa
 from astropy.coordinates.transformations import (
     AffineTransform,
     FunctionTransform,
@@ -889,7 +890,7 @@ def _rotation_matrix_obliquity(time):
     """
     Return the rotation matrix from Earth equatorial to ecliptic coordinates
     """
-    return rotation_matrix(obl06(*get_jd12(time, 'tt'))*u.radian, 'x')
+    return rotation_matrix(erfa.obl06(*get_jd12(time, 'tt'))*u.radian, 'x')
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
