@@ -355,7 +355,7 @@ class Scraper:
         except Exception:
             raise
 
-    def _extract_files_meta(self, timerange, extractor, matcher=False):
+    def _extract_files_meta(self, timerange, extractor, matcher=None):
         """
         Returns metadata information contained in URLs.
 
@@ -382,7 +382,7 @@ class Scraper:
                 append = True
                 metadict = metadict.named
                 metadict['url'] = url
-                if matcher:
+                if matcher is not None:
                     for k in metadict:
                         if k in matcher and str(metadict[k]) not in matcher[k]:
                             append = False
@@ -395,6 +395,8 @@ class Scraper:
 def get_timerange_from_exdict(exdict):
     """
     Function to get URL's timerange using extracted metadata.
+    It computes start and end times first using the given
+    dictionary and then returns a timerange.
 
     Parameters
     ----------
@@ -408,11 +410,8 @@ def get_timerange_from_exdict(exdict):
     """
     datetypes = ['year', 'month', 'day']
     timetypes = ['hour', 'minute', 'second', 'millisecond']
-    dtlist = []
-    for d in datetypes:
-        dtlist.append(int(exdict.get(d, 1)))
-    for t in timetypes:
-        dtlist.append(int(exdict.get(t, 0)))
+    dtlist = [int(exdict.get(d, 1)) for d in datetypes]
+    dtlist.extend([int(exdict.get(t, 0)) for t in timetypes])
     startTime = Time(datetime.datetime(*dtlist))
 
     tdelta = 1*u.millisecond

@@ -253,12 +253,14 @@ def test_regex_data():
 
 @pytest.mark.remote_data
 def test_extract_files_meta():
-    baseurl0 = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
-    extractpattern0 = '{}/tcx/{year:4d}/{month:2d}/{wavelength}{:4d}{day:2d}'
-    s0 = Scraper(baseurl0, freq='tca')
-    timerange0 = TimeRange('2020/1/1', '2020/1/2')
-    metalist0 = s0._extract_files_meta(timerange0, extractpattern0)
-    assert metalist0[0]['wavelength'] == 'tca'
+    baseurl0 = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
+    extractpattern0 = '{}/tcx/{year:4d}/{month:2d}/{wave}{:4d}{day:2d}'
+    s0 = Scraper(baseurl0, regex=True)
+    timerange0 = TimeRange('2020/1/1 4:00', '2020/1/2')
+    matchdict = {'wave': ['tca', 'tcz']}
+    metalist0 = s0._extract_files_meta(timerange0, extractpattern0, matcher=matchdict)
+    assert metalist0[0]['wave'] == 'tca'
+    assert metalist0[3]['wave'] == 'tcz'
     assert metalist0[1]['day'] == 2
 
     prefix = r'https://gong2.nso.edu/oQR/zqs/'
