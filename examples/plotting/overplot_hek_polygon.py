@@ -30,7 +30,7 @@ hek_client = hek.HEKClient()
 start_time = aia_map.date - TimeDelta(2*u.hour)
 end_time = aia_map.date + TimeDelta(2*u.hour)
 responses = hek_client.search(a.Time(start_time, end_time),
-                              hek.attrs.CH, hek.attrs.FRM.Name == 'SPoCA')
+                              a.hek.CH, a.hek.FRM.Name == 'SPoCA')
 
 ##############################################################################
 # Let's find the biggest coronal hole within 80 degrees north/south of the

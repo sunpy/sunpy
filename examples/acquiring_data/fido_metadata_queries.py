@@ -31,11 +31,11 @@ print(files)
 
 ###################################################################
 # Now we will extract individual responses from Fido results.
-# We can use ``get_response()`` to specify the name of the desired
-# client. This name is case-insensitive.
-hecresults = results.get_response('hec')
-hekresults = results.get_response('hek')
-jsocresults = results.get_response('jsoc')
+# We can index these results using the client's name.
+# This name is case-insensitive.
+hecresults = results['hec']
+hekresults = results['hek']
+jsocresults = results['jsoc']
 
 ###################################################################
 # "hekresults" has a lot of columns, we can use ``show()``
