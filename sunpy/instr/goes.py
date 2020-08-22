@@ -122,13 +122,13 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     # between tstart and tend (using a GOES-class filter)
     if goes_class_filter:
         result = client.search(a.Time(tstart, tend),
-                               hek.attrs.EventType(event_type),
-                               hek.attrs.FL.GOESCls > goes_class_filter,
-                               hek.attrs.OBS.Observatory == 'GOES')
+                               a.hek.EventType(event_type),
+                               a.hek.FL.GOESCls > goes_class_filter,
+                               a.hek.OBS.Observatory == 'GOES')
     else:
         result = client.search(a.Time(tstart, tend),
-                               hek.attrs.EventType(event_type),
-                               hek.attrs.OBS.Observatory == 'GOES')
+                               a.hek.EventType(event_type),
+                               a.hek.OBS.Observatory == 'GOES')
 
     # want to condense the results of the query into a more manageable
     # dictionary

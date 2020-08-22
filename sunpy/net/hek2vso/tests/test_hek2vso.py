@@ -24,7 +24,7 @@ eventType = "FL"
 instrument = "eit"
 
 hekTime = a.Time(startTime, endTime)
-hekEvent = hek.attrs.EventType(eventType)
+hekEvent = a.hek.EventType(eventType)
 
 
 @pytest.fixture(scope="function")
@@ -101,7 +101,7 @@ def test_members(h2v_client):
 def test_translate_and_query(h2v_client, hek_client):
     h = hek_client
     h2v = h2v_client
-    q = h.search(a.Time(startTime, endTime), hek.attrs.EventType(eventType))
+    q = h.search(a.Time(startTime, endTime), a.hek.EventType(eventType))
     h2v_q = h2v.translate_and_query(q)
 
     assert len(q) == len(h2v_q)
@@ -114,7 +114,7 @@ def test_full_query(h2v_client, hek_client):
     h2v = h2v_client
     h = hek_client
     h2v_q_1 = h2v.full_query(
-        (a.Time(startTime, endTime), hek.attrs.EventType(eventType))
+        (a.Time(startTime, endTime), a.hek.EventType(eventType))
     )
 
     assert h2v.num_of_records > 1
@@ -122,7 +122,7 @@ def test_full_query(h2v_client, hek_client):
     assert len(h2v.hek_results) > 1
 
     h2v._quick_clean()
-    q = h.search(a.Time(startTime, endTime), hek.attrs.EventType(eventType))
+    q = h.search(a.Time(startTime, endTime), a.hek.EventType(eventType))
     h2v_q_2 = h2v.translate_and_query(q)
 
     assert len(h2v_q_1) == len(h2v_q_2)
@@ -139,7 +139,7 @@ def test_full_query(h2v_client, hek_client):
 def test_quick_clean(h2v_client, hek_client):
     h2v = h2v_client
     h2v_q = h2v.full_query(
-        (a.Time(startTime, endTime), hek.attrs.EventType(eventType))
+        (a.Time(startTime, endTime), a.hek.EventType(eventType))
     )
 
     assert h2v.num_of_records != 0
