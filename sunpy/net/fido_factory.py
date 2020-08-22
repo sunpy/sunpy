@@ -305,12 +305,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):
         """
-        Download the records represented by
+        Download the records represented by `~sunpy.net.BaseQueryResponse` or
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
 
         Parameters
         ----------
-        query_results : `sunpy.net.fido_factory.UnifiedResponse`
+        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.BaseQueryResponse`
             Container returned by query method, or multiple.
         path : `str`
             The directory to retrieve the files into. Can refer to any fields
@@ -377,12 +377,19 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         reslist = []
         for query_result in query_results:
-            for block in query_result.responses:
-                result = block.client.fetch(block, path=path,
-                                            downloader=downloader,
-                                            wait=False, **kwargs)
+            if isinstance(query_result, BaseQueryResponse):
+                result = query_result.client.fetch(query_result, path=path,
+                                                   downloader=downloader,
+                                                   wait=False, **kwargs)
                 if result is not NotImplemented:
                     reslist.append(result)
+            else:
+                for block in query_result.responses:
+                    result = block.client.fetch(block, path=path,
+                                                downloader=downloader,
+                                                wait=False, **kwargs)
+                    if result is not NotImplemented:
+                        reslist.append(result)
 
         results = downloader.download()
         # Combine the results objects from all the clients into one Results
