@@ -24,8 +24,8 @@ tend = '2013/10/29'
 # that were detected by the GOES X-ray Sensor (XRS) instrument between
 # `tstart` and `tend`.
 result = client.search(a.Time(tstart, tend),
-                       hek.attrs.EventType(event_type),
-                       hek.attrs.OBS.Observatory == 'GOES')
+                       a.hek.EventType(event_type),
+                       a.hek.OBS.Observatory == 'GOES')
 
 ###################################################################
 # The result is returned as a `~sunpy.net.hek.hek.HEKResponse`.
@@ -43,9 +43,9 @@ print(result.table.keys())
 # attribute of the HEK client:
 
 result_m1 = client.search(a.Time(tstart, tend),
-                          hek.attrs.EventType(event_type),
-                          hek.attrs.FL.GOESCls > 'M1.0',
-                          hek.attrs.OBS.Observatory == 'GOES')
+                          a.hek.EventType(event_type),
+                          a.hek.FL.GOESCls > 'M1.0',
+                          a.hek.OBS.Observatory == 'GOES')
 
 print(result_m1)
 

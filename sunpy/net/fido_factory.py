@@ -77,6 +77,14 @@ class UnifiedResponse(Sequence):
         if isinstance(aslice, slice):
             ret = self._list[aslice]
 
+        # using the client's name for indexing the responses.
+        elif isinstance(aslice, str):
+            ret = []
+            for res in self._list:
+                clientname = res.client.__class__.__name__
+                if aslice.lower() == clientname.lower().split('client')[0]:
+                    ret.append(res)
+
         # Make sure we only have a length two slice.
         elif isinstance(aslice, tuple):
             if len(aslice) > 2:
@@ -88,6 +96,11 @@ class UnifiedResponse(Sequence):
                 client_resp = self._list[aslice[0]]
                 ret = [client_resp[aslice[1]]]
 
+            # Indexing by both client name and responses for multiple clients.
+            elif isinstance(aslice[0], str):
+                resp = self[aslice[0]]._list
+                return UnifiedResponse(*resp)[aslice[1]]
+
             # Indexing both client and records for multiple clients.
             else:
                 intermediate = self._list[aslice[0]]
@@ -98,6 +111,9 @@ class UnifiedResponse(Sequence):
         else:
             raise IndexError("UnifiedResponse objects must be sliced with integers.")
 
+        # if only one response matches, we will return a BaseQueryResponse instance.
+        if len(ret) == 1:
+            return ret[0]
         return UnifiedResponse(*ret)
 
     def get_response(self, i):

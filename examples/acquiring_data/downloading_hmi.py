@@ -23,7 +23,7 @@ print(result)
 
 ###############################################################################
 # We can even look at the values of specific keywords from this result.
-jsoc_result = result.get_response(0)
+jsoc_result = result[0]
 print(jsoc_result.show('T_REC', 'CROTA2'))
 
 ###############################################################################
