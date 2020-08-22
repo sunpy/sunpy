@@ -44,7 +44,7 @@ def translate_results_to_query(results):
     >>> h = HEKClient()  # doctest: +REMOTE_DATA
     >>> h2v = H2VClient()  # doctest: +REMOTE_DATA
     >>> q = h.search(a.Time('2011/08/09 07:23:56',
-    ...             '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))  # doctest: +REMOTE_DATA
+    ...             '2011/08/09 12:40:29'), a.hek.EventType('FL'))  # doctest: +REMOTE_DATA
     >>> len(q)  # doctest: +REMOTE_DATA
     19
 
@@ -83,7 +83,7 @@ def vso_attribute_parse(phrase):
     >>> from sunpy.net.hek2vso import hek2vso, H2VClient
     >>> h = HEKClient()  # doctest: +REMOTE_DATA
     >>> h2v = H2VClient()  # doctest: +REMOTE_DATA
-    >>> q = h.search(a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))  # doctest: +REMOTE_DATA
+    >>> q = h.search(a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), a.hek.EventType('FL'))  # doctest: +REMOTE_DATA
     >>> len(q)  # doctest: +REMOTE_DATA
     19
 
@@ -145,7 +145,7 @@ class H2VClient:
         >>> from sunpy.net import attrs as a, hek, hek2vso
         >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
         >>> q = h2v.full_query((a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
-        ...                    hek.attrs.EventType('FL')))  # doctest: +REMOTE_DATA
+        ...                    a.hek.EventType('FL')))  # doctest: +REMOTE_DATA
         """
         self._quick_clean()
         if progress:
@@ -180,7 +180,7 @@ class H2VClient:
         >>> tstart = '2011/08/09 07:23:56'
         >>> tend = '2011/08/09 12:40:29'
         >>> event_type = 'FL'
-        >>> q = h.search(a.Time(tstart, tend), hek.attrs.EventType(event_type))  # doctest: +REMOTE_DATA
+        >>> q = h.search(a.Time(tstart, tend), a.hek.EventType(event_type))  # doctest: +REMOTE_DATA
         >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
         >>> res = h2v.translate_and_query(q)  # doctest: +REMOTE_DATA
         """

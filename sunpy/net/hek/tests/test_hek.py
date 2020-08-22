@@ -16,7 +16,7 @@ def hek_client_creator():
     eventType = 'FL'
 
     hekTime = attrs.Time(startTime, endTime)
-    hekEvent = hek.attrs.EventType(eventType)
+    hekEvent = attrs.hek.EventType(eventType)
 
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
@@ -25,17 +25,17 @@ def hek_client_creator():
 
 def test_eventtype_collide():
     with pytest.raises(TypeError):
-        hek.attrs.AR & hek.attrs.CE
+        attrs.hek.AR & attrs.hek.CE
     with pytest.raises(TypeError):
-        (hek.attrs.AR & attrs.Time((2011, 1, 1),
-                                   (2011, 1, 2))) & hek.attrs.CE
+        (attrs.hek.AR & attrs.Time((2011, 1, 1),
+                                   (2011, 1, 2))) & attrs.hek.CE
         with pytest.raises(TypeError):
-            (hek.attrs.AR | attrs.Time((2011, 1, 1),
-                                       (2011, 1, 2))) & hek.attrs.CE
+            (attrs.hek.AR | attrs.Time((2011, 1, 1),
+                                       (2011, 1, 2))) & attrs.hek.CE
 
 
 def test_eventtype_or():
-    assert (hek.attrs.AR | hek.attrs.CE).item == "ar,ce"
+    assert (attrs.hek.AR | attrs.hek.CE).item == "ar,ce"
 
 
 def test_paramattr():
@@ -103,7 +103,7 @@ def test_hek_client():
     eventType = 'FL'
 
     hekTime = attrs.Time(startTime, endTime)
-    hekEvent = hek.attrs.EventType(eventType)
+    hekEvent = attrs.hek.EventType(eventType)
 
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
@@ -117,7 +117,7 @@ def test_hek_empty_search_result():
     eventType = 'FL'
 
     hekTime = attrs.Time(startTime, endTime)
-    hekEvent = hek.attrs.EventType(eventType)
+    hekEvent = attrs.hek.EventType(eventType)
 
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
@@ -168,7 +168,7 @@ def test_mixed_results_get():
     # https://github.com/sunpy/sunpy/issues/3238
     client = hek.HEKClient()
     result = client.search(attrs.Time('2013/02/01 00:00:00', '2013/02/01 23:30:00'),
-                           hek.attrs.FRM.Name == 'SPoCA')
+                           attrs.hek.FRM.Name == 'SPoCA')
     assert isinstance(result, hek.hek.HEKResponse)
     assert len(result) == 89
     assert result[0]["SOL_standard"] == 'SOL2013-01-31T20:13:31L219C160'
@@ -180,7 +180,7 @@ def test_mixed_results_get_2():
     # # https://github.com/sunpy/sunpy/issues/3898
     client = hek.HEKClient()
     result = client.search(attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
-                           hek.attrs.EventType("FL"))
+                           attrs.hek.EventType("FL"))
     assert isinstance(result, hek.hek.HEKResponse)
     assert len(result) == 19
     assert result[0]["SOL_standard"] == 'SOL2011-08-08T01:30:04L247C075'
@@ -194,6 +194,6 @@ def test_mixed_results_get_angstrom():
     tstart = '2014/10/24 20:50'
     tend = '2014/10/25 00:14'
     event_type = 'FL'
-    result = client.search(attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
+    result = client.search(attrs.Time(tstart, tend), attrs.hek.EventType(event_type))
     assert len(result) == 13
     assert result[0]["SOL_standard"] == 'SOL2014-10-24T20:53:46L247C106'
