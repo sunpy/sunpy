@@ -19,7 +19,7 @@ from sunpy.net import attrs as a
 timerange = a.Time('2010/8/1 03:40', '2010/8/1 3:40:10')
 results = Fido.search(timerange, a.helio.TableName('rhessi_hxr_flare') |
                       a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
-                      a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify("sunpy@sunpy.org"))
+                      a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify("jsoc@cadair.com"))
 print(results)
 
 ###################################################################
