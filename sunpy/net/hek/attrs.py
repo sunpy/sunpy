@@ -163,9 +163,7 @@ class _ComparisonParamAttrWrapper:
         return _ParamAttr(self.name, '!=', other)
 
     def collides(self, other):
-        if isinstance(other, _ComparisonParamAttrWrapper):
-            return True
-        return False
+        return isinstance(other, _ComparisonParamAttrWrapper)
 
 
 class _StringParamAttrWrapper(_ComparisonParamAttrWrapper):

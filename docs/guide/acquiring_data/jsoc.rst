@@ -187,6 +187,55 @@ But, when the same is passed through PrimeKey attribute, it should be passed as 
 other PrimeKey values passed through PrimeKey attribute, must be passed as a string.
 
 
+Manually specifying keyword data to fetch
+=========================================
+
+Upon doing ``Fido.search()`` as described above, only a limited set of keywords are returned in the response
+object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, ``'T_OBS'`` and ``'WAVELNTH'``.
+
+If you want to get a manual set of keywords in the response object, you can pass the set of keywords using
+:meth:`~sunpy.net.base_client.BaseQueryResponseTable.show` method.
+
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
+    >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')
+    [<QTable length=81>
+    TELESCOP  INSTRUME           T_OBS         
+    str7     str10             str23         
+    -------- ---------- -----------------------
+    SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI
+        ...        ...                     ...
+    SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI]
+
+Passing an incorrect keyword won't throw an error, but the corresponding column in the table will
+not be displayed.
+
+To display all of the columns, we can use ``show()``without passings any arguments.
+
+    >>> res.show()
+    [<QTable length=81>
+            DATE                DATE__OBS        ... CALVER64
+           str20                  str23          ...  int64  
+    -------------------- ----------------------- ... --------
+    2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
+    2014-01-05T17:47:10Z 2014-01-01T00:00:24.20Z ...     4370
+    2014-01-05T17:48:18Z 2014-01-01T00:01:09.20Z ...     4370
+    2014-01-05T17:49:25Z 2014-01-01T00:01:54.20Z ...     4370
+                     ...                     ... ...      ...
+    2014-01-05T17:41:25Z 2014-01-01T00:56:39.20Z ...     4370
+    2014-01-05T17:42:33Z 2014-01-01T00:57:24.20Z ...     4370
+    2014-01-05T17:43:41Z 2014-01-01T00:58:09.20Z ...     4370
+    2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z ...     4370
+    2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370]    
+
+
 Using Segments
 ==============
 In some cases, more than 1 file are present for the same set of query. These data are distinguished by what are called

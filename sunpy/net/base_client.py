@@ -105,10 +105,7 @@ class BaseQueryResponse(Sequence):
         if len(cols) == 0:
             return table
         tablecols = table.columns
-        valid_cols = []
-        for col in cols:
-            if col in tablecols:
-                valid_cols.append(col)
+        valid_cols = [col for col in cols if col in tablecols]
         return table[valid_cols]
 
 
@@ -134,10 +131,10 @@ class BaseQueryResponseTable(BaseQueryResponse):
         return list(self.table.iterrows)
 
     def __len__(self):
-        if self.table is None:
-            return 0
-        else:
+        if self.table:
             return len(self.table)
+        else:
+            return 0
 
     def __getitem__(self, item):
         if isinstance(item, int):
@@ -154,7 +151,7 @@ class BaseQueryResponseTable(BaseQueryResponse):
 
     def response_block_properties(self):
         client_name = self._client.__class__.__name__
-        warn("The {} does not support response block properties.".format(client_name),
+        warn(f"The {client_name} does not support response block properties.",
              SunpyUserWarning)
         return set()
 
@@ -168,10 +165,7 @@ class BaseQueryResponseTable(BaseQueryResponse):
         if len(cols) == 0:
             return self.table
         tablecols = self.table.columns
-        valid_cols = []
-        for col in cols:
-            if col in tablecols:
-                valid_cols.append(col)
+        valid_cols = [col for col in cols if col in tablecols]
         return self.table[valid_cols]
 
 

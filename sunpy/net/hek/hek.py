@@ -133,10 +133,7 @@ class HEKClient(BaseClient):
     def _can_handle_query(cls, *query):
         required = {core_attrs.Time}
         optional = {i[1] for i in inspect.getmembers(attrs, inspect.isclass)} - required
-        qr = tuple()
-        for x in query:
-            if not isinstance(x, attrs.EventType):
-                qr += (x,)
+        qr = tuple(x for x in query if not isinstance(x, attrs.EventType))
         return cls.check_attr_types_in_query(qr, required, optional)
 
 

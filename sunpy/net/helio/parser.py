@@ -218,11 +218,11 @@ def wsdl_retriever(service='HEC'):
     def fail():
         raise ValueError("No online HELIO servers can be found.")
     service_links = webservice_parser(service=service)
-    if service_links is not None:
+    if service_links:
         for link in service_links:
             wsdl_links = taverna_parser(link)
-            if wsdl_links is not None:
+            if wsdl_links:
                 for end_point in wsdl_links:
-                    if end_point is not None and link_test(end_point) is not None:
+                    if end_point and link_test(end_point):
                         return end_point
     fail()
