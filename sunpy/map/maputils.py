@@ -131,8 +131,9 @@ def contains_full_disk(smap):
     A map contains the full disk of the Sun if the following two
     conditions are met: (1) all the coordinates at the edge of the map are
     more than solar angular radius from the center of the Sun and, (2) the
-    map is not all off disk. If both these conditions are met, the
-    function returns `True`. Otherwise, the function returns `False`.
+    location of the boundaries extend across the disk. If both these
+    conditions are met, the function returns `True`. Otherwise, the
+    function returns `False`.
 
     Parameters
     ----------
@@ -154,20 +155,60 @@ def contains_full_disk(smap):
     from the disk itself is present in the data.)
     """
     # Calculate all the edge pixels
-    edges = map_edges(smap)
-    edge_pixels = list(chain.from_iterable([edges[0], edges[1], edges[2], edges[3]]))
-    x = [p[0] for p in edge_pixels] * u.pix
-    y = [p[1] for p in edge_pixels] * u.pix
+    top_, bottom, left_hand_side, right_hand_side = map_edges(smap)
 
-    # Calculate the edge of the world
-    edge_of_world = smap.pixel_to_world(x, y)
+    def _xy(ep):
+        x = [p[0] for p in ep] * u.pix
+        y = [p[1] for p in ep] * u.pix
+        return x, y
 
-    # Calculate the distance of the edge of the world in solar radii
-    coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
+    x, y = _xy(top_)
+    horizontal1 = smap.pixel_to_world(x, y)
 
-    # Test if all the edge pixels are more than one solar radius distant
-    # and that the whole map is not all off disk.
-    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~is_all_off_disk(smap)
+    x, y = _xy(bottom)
+    horizontal2 = smap.pixel_to_world(x, y)
+
+    x, y = _xy(left_hand_side)
+    vertical1 = smap.pixel_to_world(x, y)
+
+    x, y = _xy(right_hand_side)
+    vertical2 = smap.pixel_to_world(x, y)
+
+    radius = smap.rsun_obs
+
+    # Determine the top and bottom edges of the map
+    top = None
+    bot = None
+    if np.all(horizontal1.Ty > radius):
+        top = horizontal1
+    elif np.all(horizontal1.Ty < -radius):
+        bot = horizontal1
+
+    if np.all(horizontal2.Ty > radius):
+        top = horizontal2
+    elif np.all(horizontal2.Ty < -radius):
+        bot = horizontal2
+
+    # If either the top edge
+    if top is None or bot is None:
+        return False
+
+    lhs = None
+    rhs = None
+    if np.all(vertical1.Tx > radius):
+        rhs = vertical1
+    elif np.all(vertical1.Tx < -radius):
+        lhs = vertical1
+
+    if np.all(vertical2.Tx > radius):
+        rhs = vertical2
+    elif np.all(vertical2.Tx < -radius):
+        lhs = vertical2
+
+    if lhs is None or rhs is None:
+        return False
+
+    return np.all(top.Ty > radius) and np.all(bot.Ty < -radius) and np.all(lhs.Tx < -radius) and np.all(rhs.Tx > radius)
 
 
 @u.quantity_input
