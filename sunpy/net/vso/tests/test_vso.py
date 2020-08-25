@@ -341,7 +341,7 @@ def test__parse_waverange(waverange, as_dict):
 
 
 @pytest.mark.parametrize("input, expected", [
-    ('12/01/2017 - 02/10/2018', dict(time_start='12/01/2017', time_end='02/10/2018')),
+    ('12/01/2020 - 02/10/2018', dict(time_start='12/01/2020', time_end='02/10/2018')),
 ])
 def test__parse_date(input, expected):
     assert vso.vso._parse_date(input) == expected
@@ -455,7 +455,7 @@ def test_vso_hmi(client, tmpdir):
     """
     This is a regression test for https://github.com/sunpy/sunpy/issues/2284
     """
-    res = client.search(core_attrs.Time('2017-09-02 23:52:00', '2017-09-02 23:54:00'),
+    res = client.search(core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
                         core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'))
 
     dr = client.make_getdatarequest(res)
@@ -537,7 +537,7 @@ def test_can_handle_query(query, handle):
 
 
 @pytest.mark.remote_data
-def test_vso_attr(client):
+def test_vso_attrs(client):
     """
     Check that the dict is correctly filled.
     """
@@ -564,7 +564,7 @@ def test_vso_repr(client):
 
 @pytest.mark.remote_data
 def test_response_block_properties(client):
-    res = client.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom),
+    res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom),
                         a.Sample(10 * u.minute))
     properties = res.response_block_properties()
     assert len(properties) == 0
