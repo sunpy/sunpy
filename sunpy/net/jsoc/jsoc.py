@@ -58,10 +58,7 @@ class JSOCResponse(BaseQueryResponseTable):
             return self.table
 
         default_columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-        cols_in_table = list()
-        for colname in default_columns:
-            if colname in self.table.colnames:
-                cols_in_table.append(colname)
+        cols_in_table = [colname for colname in default_columns if colname in self.table.colnames]
         return self.table[cols_in_table]
 
 

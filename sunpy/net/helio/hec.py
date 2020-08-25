@@ -151,7 +151,7 @@ class HECClient(BaseClient):
                     "to the Client.".format(elem.__class__.__name__))
         qrdict.update(kwargs)
         table = qrdict.get('table_name', None)
-        if table is not None:
+        if table:
             if isinstance(table, bytes):
                 warn('type `bytes` for table_name is deprecated, use `str` instead.', SunpyDeprecationWarning)
             else:
