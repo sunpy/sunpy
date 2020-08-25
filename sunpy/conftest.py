@@ -54,6 +54,7 @@ def tmp_config_dir(request):
     yield
 
     del os.environ["SUNPY_CONFIGDIR"]
+    tmpdir.cleanup()
     astropy.config.paths.set_temp_config._temp_path = None
     astropy.config.paths.set_temp_cache._temp_path = None
 
