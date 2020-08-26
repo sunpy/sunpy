@@ -2046,7 +2046,11 @@ class GenericMap(NDData):
                               SunpyUserWarning)
 
         # Normal plot
-        plot_settings = copy.deepcopy(self.plot_settings)
+        try:
+            plot_settings = copy.deepcopy(self.plot_settings)
+        except NotImplementedError:
+            # MPL dev at the moment does not support deepcopy and this is a workaround.
+            plot_settings = self.plot_settings
         if 'title' in plot_settings:
             plot_settings_title = plot_settings.pop('title')
         else:
@@ -2075,7 +2079,11 @@ class GenericMap(NDData):
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
-        imshow_args.update(copy.deepcopy(imshow_kwargs))
+        try:
+            imshow_args.update(copy.deepcopy(imshow_kwargs))
+        except NotImplementedError:
+            # MPL dev at the moment does not support deepcopy and this is a workaround.
+            imshow_args.update(imshow_kwargs)
 
         if clip_interval is not None:
             if len(clip_interval) == 2:
