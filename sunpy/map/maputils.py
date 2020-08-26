@@ -159,9 +159,9 @@ def contains_full_disk(smap):
 
     # Helper function to get lists of pixels in the correct format
     def _xy(ep):
-        x = [p[0] for p in ep] * u.pix
-        y = [p[1] for p in ep] * u.pix
-        return x, y
+        _x = [p[0] for p in ep] * u.pix
+        _y = [p[1] for p in ep] * u.pix
+        return _x, _y
 
     # Coordinates of the edges
     x, y = _xy(top_)
