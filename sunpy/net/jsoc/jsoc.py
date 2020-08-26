@@ -447,11 +447,11 @@ class JSOCClient(BaseClient):
             protocol = block.get('protocol', 'fits')
 
             if protocol not in supported_protocols:
-                error_message = "Protocols other than fits and as-is "\
+                error_message = f"Protocols other than {','.join(supported_protocols)} "\
                                 "are not supported."
                 raise TypeError(error_message)
             if method not in supported_methods:
-                error_message = "Methods other than url-tar, url and url-quick "\
+                error_message = f"Methods other than {','.join(supported_methods)} "\
                                 "are not supported."
                 raise TypeError(error_message)
 
