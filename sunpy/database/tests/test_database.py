@@ -93,7 +93,7 @@ def query_result():
 @pytest.fixture
 def download_qr():
     return vso.VSOClient().search(
-        net_attrs.Time('2012-03-29', '2012-03-29'),
+        net_attrs.Time('2020-03-29', '2020-03-29'),
         net_attrs.Instrument('AIA'))
 
 
