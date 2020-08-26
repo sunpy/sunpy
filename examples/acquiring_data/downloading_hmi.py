@@ -21,7 +21,7 @@ from sunpy.net import attrs as a
 # See the JSOC e-mail address registration page
 # `here <http://jsoc.stanford.edu/ajax/register_email.html>`_.
 
-result = Fido.search(a.Time('2014/11/20 00:00:00', '2014/11/20 00:04:00'),
+result = Fido.search(a.Time('2020/01/20 00:00:00', '2020/01/20 00:04:00'),
                      a.jsoc.Series("hmi.M_720s"),
                      a.jsoc.Keys(["T_REC, CROTA2"]),
                      a.jsoc.Notify("jsoc@cadair.com"))

@@ -178,10 +178,12 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
                      epochs=array_time.tdb.jd.tolist())  # Time must be provided in JD TDB
     try:
         result = query.vectors()
-    except Exception:  # Catch and re-raise all exceptions, and also provide query URL if generated
+    except Exception as e:  # Catch and re-raise all exceptions, and also provide query URL if generated
         if query.uri is not None:
             log.error(f"See the raw output from the JPL HORIZONS query at {query.uri}")
-        raise
+        raise e
+    finally:
+        query._session.close()
     log.info(f"Obtained JPL HORIZONS location for {result[0]['targetname']}")
     log.debug(f"See the raw output from the JPL HORIZONS query at {query.uri}")
 

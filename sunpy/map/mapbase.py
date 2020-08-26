@@ -2047,6 +2047,7 @@ class GenericMap(NDData):
 
         # Normal plot
         plot_settings = copy.deepcopy(self.plot_settings)
+
         if 'title' in plot_settings:
             plot_settings_title = plot_settings.pop('title')
         else:

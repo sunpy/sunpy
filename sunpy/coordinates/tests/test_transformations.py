@@ -29,7 +29,6 @@ from sunpy.coordinates import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
-    get_earth,
     sun,
 )
 from sunpy.coordinates.frames import _J2000
