@@ -73,6 +73,15 @@ def test_parse_time_pandas_timestamp():
     assert dt == LANDING
 
 
+def test_parse_time_nanoseconds():
+    # Check that nanosecon precision is retained when parsing pandas timestamps
+    ts = pandas.Timestamp('2020-07-31 00:00:26.166196864')
+    dt = parse_time(ts)
+    assert dt.jd1 == 2459062.0
+    # If nanoseconds are not retained, this value is slightly too low
+    assert dt.jd2 == -0.4996971504992593
+
+
 def test_parse_time_pandas_series():
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.Series(inputs)

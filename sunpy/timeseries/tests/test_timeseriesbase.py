@@ -63,8 +63,7 @@ def esp_test_ts():
 
 @pytest.fixture
 def fermi_gbm_test_ts():
-    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
+    return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
 
 @pytest.fixture
@@ -478,8 +477,7 @@ def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
 @pytest.fixture
 def concatenation_different_data_test_ts(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate
-    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        return eve_test_ts.concatenate(fermi_gbm_test_ts)
+    return eve_test_ts.concatenate(fermi_gbm_test_ts)
 
 
 def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
@@ -737,14 +735,11 @@ def test_esp_invalid_peek(esp_test_ts):
 
 
 def test_fermi_gbm_invalid_peek(fermi_gbm_test_ts):
-    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
-
-    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
+    a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
 
     empty_ts = fermi_gbm_test_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError), pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+    with pytest.raises(ValueError):
         empty_ts.peek()
 
 

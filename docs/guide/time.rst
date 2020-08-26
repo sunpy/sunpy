@@ -91,7 +91,7 @@ For example::
 
     >>> import pandas
     >>> parse_time(pandas.Timestamp('2007-05-04T21:08:12'))  # pandas.Timestamp
-    <Time object: scale='utc' format='datetime' value=2007-05-04 21:08:12>
+    <Time object: scale='utc' format='datetime64' value=2007-05-04T21:08:12.000000000>
 
     >>> time_ranges = [datetime.datetime(2007, 5, i) for i in range(1, 3)]
     >>> parse_time(pandas.Series(time_ranges))  # pandas.Series
