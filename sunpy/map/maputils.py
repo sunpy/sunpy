@@ -154,14 +154,16 @@ def contains_full_disk(smap):
     within the field of the view of the instrument (although no emission
     from the disk itself is present in the data.)
     """
-    # Calculate all the edge pixels
+    # Get the edge pixels
     top_, bottom, left_hand_side, right_hand_side = map_edges(smap)
 
+    # Helper function to get lists of pixels in the correct format
     def _xy(ep):
         x = [p[0] for p in ep] * u.pix
         y = [p[1] for p in ep] * u.pix
         return x, y
 
+    # Coordinates of the edges
     x, y = _xy(top_)
     horizontal1 = smap.pixel_to_world(x, y)
 
@@ -174,41 +176,50 @@ def contains_full_disk(smap):
     x, y = _xy(right_hand_side)
     vertical2 = smap.pixel_to_world(x, y)
 
+    # The radius of the Sun
     radius = smap.rsun_obs
 
-    # Determine the top and bottom edges of the map
+    # Determine which of the inputs are top and bottom edges of the map
     top = None
     bot = None
-    if np.all(horizontal1.Ty > radius):
-        top = horizontal1
-    elif np.all(horizontal1.Ty < -radius):
-        bot = horizontal1
+    h1 = horizontal1.Ty
+    if np.all(h1 > radius):
+        top = h1
+    elif np.all(h1 < -radius):
+        bot = h1
 
-    if np.all(horizontal2.Ty > radius):
-        top = horizontal2
-    elif np.all(horizontal2.Ty < -radius):
-        bot = horizontal2
+    h2 = horizontal2.Ty
+    if np.all(h2 > radius):
+        top = h2
+    elif np.all(h2 < -radius):
+        bot = h2
 
-    # If either the top edge
+    # If neither edge lies further away than a radius then the map
+    # cannot contain the full disk.
     if top is None or bot is None:
         return False
 
+    # Determine which of the inputs are the left and right hand edges of the map
     lhs = None
     rhs = None
-    if np.all(vertical1.Tx > radius):
-        rhs = vertical1
-    elif np.all(vertical1.Tx < -radius):
-        lhs = vertical1
+    v1 = vertical1.Tx
+    if np.all(v1 > radius):
+        rhs = v1
+    elif np.all(v1 < -radius):
+        lhs = v1
 
-    if np.all(vertical2.Tx > radius):
-        rhs = vertical2
-    elif np.all(vertical2.Tx < -radius):
-        lhs = vertical2
+    v2 = vertical2.Tx
+    if np.all(v2 > radius):
+        rhs = v2
+    elif np.all(v2 < -radius):
+        lhs = v2
 
+    # If neither edge lies further away than a radius then the map
+    # cannot contain the full disk.
     if lhs is None or rhs is None:
         return False
 
-    return np.all(top.Ty > radius) and np.all(bot.Ty < -radius) and np.all(lhs.Tx < -radius) and np.all(rhs.Tx > radius)
+    return np.all(top > radius) and np.all(bot < -radius) and np.all(lhs < -radius) and np.all(rhs > radius)
 
 
 @u.quantity_input
