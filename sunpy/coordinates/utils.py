@@ -5,8 +5,9 @@ Miscellaneous utilities related to coordinates
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, SkyCoord, solar_system_ephemeris, get_body
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord, get_body, solar_system_ephemeris
 from astropy.time import Time
+
 from sunpy.coordinates import Heliocentric
 
 __all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalencies']
@@ -414,12 +415,10 @@ def solar_angle_equivalencies(observer, obstime=None):
         if isinstance(Time(obstime), Time):
             observer = get_body(observer, Time(obstime))
         else:
-            raise ValueError(
-                    "Obstime needs to given with solar system body input")
+            raise ValueError("Obstime needs to given with solar system body input")
 
     if not isinstance(observer, SkyCoord):
-        raise ValueError(
-                "Observer needs to be a SkyCoord or a solar system body to astropy.coordinates.get_body()")
+        raise ValueError("Observer needs to be a SkyCoord or a solar system body to astropy.coordinates.get_body()")
 
     obstime = observer.obstime
     sun_coord = get_body("sun", time=obstime)
