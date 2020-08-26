@@ -88,7 +88,7 @@ def _retry_sample_data(results):
             f"Failed to download {_SAMPLE_FILES[file_name]} from {err.url}: {err.exception}")
         # Update the url to a mirror and requeue the file.
         new_url = urljoin(_BASE_URLS[1], file_name)
-        log.debug(f"Will redownload using {new_url}")
+        log.debug(f"Attempting redownload of {_SAMPLE_FILES[file_name]} using {new_url}")
         dl.enqueue_file(new_url, filename=err.filepath_partial)
     extra_results = dl.download()
     for err in extra_results.errors:
