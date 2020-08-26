@@ -330,8 +330,8 @@ class Scraper:
             tr = get_timerange_from_exdict(exdict)
             return (tr.end >= timerange.start and tr.start <= timerange.end)
         else:
-            datehref = self._extractDateURL(url)
-            return (timerange.start <= datehref <= timerange.end)
+            datehref = self._extractDateURL(url).to_datetime()
+            return (timerange.start.to_datetime() <= datehref <= timerange.end.to_datetime())
 
     def _smallerPattern(self, directoryPattern):
         """
