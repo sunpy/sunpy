@@ -90,14 +90,6 @@ def get_earth(time='now'):
     time : {parse_time_types}
         Time to use in a parse_time-compatible format
 
-<<<<<<< HEAD
-=======
-    Keyword Arguments
-    -----------------
-    include_velocity : `bool`
-        If True, include the Earth's velocity in the output coordinate. Defaults to False.
-
->>>>>>> ac20e87f2... Merge pull request #4435 from nabobalis/master
     Returns
     -------
     out : `~astropy.coordinates.SkyCoord`
