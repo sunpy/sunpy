@@ -4,7 +4,7 @@ The following files are available in this module:
 import sys
 from pathlib import Path
 
-from ._sample import _sample_files, download_sample_data
+from ._sample import _SAMPLE_FILES, download_sample_data
 
 files = download_sample_data()
 
@@ -12,7 +12,7 @@ file_list = []
 file_dict = {}
 for f in files:
     name = Path(f).name
-    _key = _sample_files.get(name, None)
+    _key = _SAMPLE_FILES.get(name, None)
     if not _key:
         continue
 
@@ -22,4 +22,4 @@ for f in files:
     # Add filename to the docs
     __doc__ += f'   - ``{_key}``\n'
 
-__all__ = list(_sample_files.values()) + ['file_dict', 'file_list']
+__all__ = list(_SAMPLE_FILES.values()) + ['file_dict', 'file_list']
