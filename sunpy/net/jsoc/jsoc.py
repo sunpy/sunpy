@@ -424,7 +424,8 @@ class JSOCClient(BaseClient):
             Method for requesting JSOC data, can be 'url-tar', 'url' and 'url-quick'
             If 'url-tar' it will request JSOC to provide single .tar file which contains all data
             If 'url' it will request JSOC to provide all data as separate .fits files
-            If 'url-quick' (only with protocol 'as-is') provide all data as spearate files but only if data is online
+            If 'url-quick' (only with protocol 'as-is') provide all data as separate files,
+            but only if data is online.
 
         Returns
         -------
