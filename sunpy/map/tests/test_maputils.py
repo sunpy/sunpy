@@ -22,6 +22,7 @@ from sunpy.map.maputils import (
     on_disk_bounding_coordinates,
     sample_at_coords,
     solar_angular_radius,
+    _convert_pixels,
 )
 
 testpath = sunpy.data.test.rootdir
@@ -175,3 +176,17 @@ def test_data_at_coordinates(aia171_test_map, aia_test_arc):
     intensity_along_arc = aia171_test_map.data[y, x]
     np.testing.assert_almost_equal(data[0], intensity_along_arc[0], decimal=1)
     np.testing.assert_almost_equal(data[-1], intensity_along_arc[-1], decimal=1)
+
+
+def test_convert_pixels(all_off_disk_map):
+    edges = map_edges(all_off_disk_map)
+    # The first edge has pixels that are notionally along the
+    # top of the image.
+    converted = _convert_pixels(edges[0])
+    assert type(converted) is tuple
+    assert len(converted) == 2
+    assert len(converted[0]) == 11
+    assert len(converted[1]) == 11
+    assert np.all(converted[1] == converted[1][0])
+    for i in range(0, len(converted[0])):
+        assert converted[0][i] == i * u.pix

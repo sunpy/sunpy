@@ -14,7 +14,7 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'map_edges', 'solar_angular_radius', 'sample_at_coords',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
            'contains_limb', 'coordinate_is_on_solar_disk',
-           'on_disk_bounding_coordinates']
+           'on_disk_bounding_coordinates', '_convert_pixels']
 
 
 def all_pixel_indices_from_map(smap):
@@ -124,6 +124,28 @@ def sample_at_coords(smap, coordinates):
     return smap.data[smap.wcs.world_to_array_index(coordinates)]
 
 
+def _convert_pixels(edge):
+    """
+    Helper function to convert a list of edge pixels of the form [(x0, y0), (x1, y1),..., (xn,yn)]
+    into the form ([x0, x1,...,xn], [y0, y1,...,yn])
+
+    Parameter
+    ---------
+    edge : ~list
+        A list of pairs of tuples.
+
+    Returns
+    -------
+    pixel_edge : ~tuple
+        A tuple containing two lists.  The first entry is a list containing the first coordinate of
+        each pixel, and similarly for the second entry.
+
+    """
+    x = [p[0] for p in edge.value] * u.pix
+    y = [p[1] for p in edge.value] * u.pix
+    return x, y
+
+
 def contains_full_disk(smap):
     """
     Checks if a map contains the full disk of the Sun.
@@ -157,23 +179,17 @@ def contains_full_disk(smap):
     # Get the edge pixels
     top_, bottom, left_hand_side, right_hand_side = map_edges(smap)
 
-    # Helper function to get lists of pixels in the correct format
-    def _xy(ep):
-        _x = [p[0] for p in ep] * u.pix
-        _y = [p[1] for p in ep] * u.pix
-        return _x, _y
-
     # Coordinates of the edges
-    x, y = _xy(top_)
+    x, y = _convert_pixels(top_)
     horizontal1 = smap.pixel_to_world(x, y)
 
-    x, y = _xy(bottom)
+    x, y = _convert_pixels(bottom)
     horizontal2 = smap.pixel_to_world(x, y)
 
-    x, y = _xy(left_hand_side)
+    x, y = _convert_pixels(left_hand_side)
     vertical1 = smap.pixel_to_world(x, y)
 
-    x, y = _xy(right_hand_side)
+    x, y = _convert_pixels(right_hand_side)
     vertical2 = smap.pixel_to_world(x, y)
 
     # The radius of the Sun
