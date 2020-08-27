@@ -23,10 +23,10 @@ def LCClient():
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
-    [(Time('1995/06/03', '1995/06/05'),
+    [(Time('1995/06/03 1:00', '1995/06/05'),
       'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',
       'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
-     (Time('2008/06/02', '2008/06/04'),
+     (Time('2008/06/02 12:00', '2008/06/04'),
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
@@ -39,7 +39,7 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange, url_start, url_end",
-                         [(a.Time('1999/01/10', '1999/01/20'),
+                         [(a.Time('1999/01/10 00:10', '1999/01/20'),
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits')])
 def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
@@ -63,14 +63,14 @@ def test_can_handle_query(time):
 @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
 @pytest.mark.remote_data
 def test_fixed_satellite(LCClient):
-    ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
+    ans1 = LCClient.search(a.Time("2017/01/01 2:00", "2017/01/02 2:10"),
                            a.Instrument.xrs,
                            a.goes.SatelliteNumber.fifteen)
 
     for resp in ans1:
         assert "go15" in resp['url']
 
-    ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
+    ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02 23:00"),
                            a.Instrument.xrs,
                            a.goes.SatelliteNumber(13))
 
@@ -86,7 +86,7 @@ def test_fixed_satellite(LCClient):
 
 
 @pytest.mark.parametrize("time", [
-    Time('2005/4/27', '2005/4/27'),
+    Time('2005/4/27', '2005/4/27 12:00'),
     Time('2016/2/4', '2016/2/10')])
 @pytest.mark.remote_data
 def test_query(LCClient, time):
@@ -114,7 +114,7 @@ def test_get(LCClient, time, instrument):
 
 @pytest.mark.remote_data
 def test_new_logic(LCClient):
-    qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
+    qr = LCClient.search(Time('2012/10/4 20:20', '2012/10/6'), Instrument('XRS'))
     download_list = LCClient.fetch(qr)
     assert len(download_list) == len(qr)
 

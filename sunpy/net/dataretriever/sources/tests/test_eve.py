@@ -64,8 +64,8 @@ def test_query(LCClient):
     qr1 = LCClient.search(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
-    assert qr1.time_range().start == parse_time('2012/08/09')
-    assert qr1.time_range().end == parse_time('2012/08/10 23:59:59.999')  # includes end.
+    assert qr1.time_range().start == parse_time('2012/08/09').to_datetime()
+    assert qr1.time_range().end == parse_time('2012/08/10 23:59:59.999').to_datetime()
 
 
 @pytest.mark.remote_data
