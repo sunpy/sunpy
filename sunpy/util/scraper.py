@@ -3,6 +3,7 @@ This module provides a web scraper.
 """
 import os
 import re
+import calendar
 import datetime
 import warnings
 from ftplib import FTP
@@ -16,6 +17,7 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 from sunpy.extern.parse import parse
+from sunpy.time import TimeRange
 from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['Scraper']
@@ -254,9 +256,7 @@ class Scraper:
                             else:
                                 fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
-                                datehref = self._extractDateURL(fullpath)
-                                if (datehref.to_datetime() >= timerange.start.to_datetime() and
-                                        datehref.to_datetime() <= timerange.end.to_datetime()):
+                                if self._check_timerange(fullpath, timerange):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
@@ -279,9 +279,7 @@ class Scraper:
                 for file_i in ftp.nlst():
                     fullpath = directory + file_i
                     if self._URL_followsPattern(fullpath):
-                        datehref = self._extractDateURL(fullpath)
-                        if (datehref >= timerange.start and
-                                datehref <= timerange.end):
+                        if self._check_timerange(fullpath, timerange):
                             filesurls.append(fullpath)
 
         filesurls = [f'ftp://' + "{0.netloc}{0.path}".format(urlsplit(url))
@@ -304,12 +302,36 @@ class Scraper:
             for file_i in os.listdir(directory):
                 fullpath = directory + file_i
                 if self._URL_followsPattern(fullpath):
-                    datehref = self._extractDateURL(fullpath)
-                    if (datehref >= timerange.start and datehref <= timerange.end):
+                    if self._check_timerange(fullpath, timerange):
                         filepaths.append(fullpath)
         filepaths = [prefix + path for path in filepaths]
         self.pattern = pattern
         return filepaths
+
+    def _check_timerange(self, url, timerange):
+        """
+        Checks whether the time extracted from the URL
+        is valid according to the given time range.
+
+        Parameters
+        ----------
+        url: `str`
+            URL of the file.
+        timerange : `~sunpy.time.TimeRange`
+            Time interval for which files were searched.
+
+        Returns
+        -------
+        `bool`
+            `True` if URL's time overlaps the given timerange, else `False`.
+        """
+        if hasattr(self, 'extractor'):
+            exdict = parse(self.extractor, url).named
+            tr = get_timerange_from_exdict(exdict)
+            return (tr.end >= timerange.start and tr.start <= timerange.end)
+        else:
+            datehref = self._extractDateURL(url).to_datetime()
+            return (timerange.start.to_datetime() <= datehref <= timerange.end.to_datetime())
 
     def _smallerPattern(self, directoryPattern):
         """
@@ -333,7 +355,7 @@ class Scraper:
         except Exception:
             raise
 
-    def _extract_files_meta(self, timerange, extractor=None):
+    def _extract_files_meta(self, timerange, extractor, matcher=None):
         """
         Returns metadata information contained in URLs.
 
@@ -343,22 +365,73 @@ class Scraper:
             Time interval where to find the directories for a given pattern.
         extractor: `str`
             Pattern to extract metadata by parsing the URL.
+        matcher: `dict`
+            Dictionary to check if extracted metadata is valid.
 
         Returns
         -------
-        metalist: `list` of `dict`
+        `list` of `dict`
             List of metadata info for all URLs.
         """
+        self.extractor = extractor
         urls = self.filelist(timerange)
-        if extractor is None:
-            return [{'url': url} for url in urls]
         metalist = []
         for url in urls:
             metadict = parse(extractor, url)
             if metadict is not None:
+                append = True
                 metadict = metadict.named
-            else:
-                metadict = {}
-            metadict['url'] = url
-            metalist.append(metadict)
+                metadict['url'] = url
+                if matcher is not None:
+                    for k in metadict:
+                        if k in matcher and str(metadict[k]) not in matcher[k]:
+                            append = False
+                            break
+                if append:
+                    metalist.append(metadict)
         return metalist
+
+
+def get_timerange_from_exdict(exdict):
+    """
+    Function to get URL's timerange using extracted metadata.
+    It computes start and end times first using the given
+    dictionary and then returns a timerange.
+
+    Parameters
+    ----------
+    exdict : `dict`
+        Metadata extracted from the file's url.
+
+    Returns
+    -------
+    `~sunpy.time.TimeRange`
+        The time range of the file.
+    """
+    datetypes = ['year', 'month', 'day']
+    timetypes = ['hour', 'minute', 'second', 'millisecond']
+    dtlist = [int(exdict.get(d, 1)) for d in datetypes]
+    dtlist.extend([int(exdict.get(t, 0)) for t in timetypes])
+    startTime = Time(datetime.datetime(*dtlist))
+
+    tdelta = 1*u.millisecond
+    if "year" in exdict:
+        if calendar.isleap(int(exdict['year'])):
+            tdelta = 366*u.day
+        else:
+            tdelta = 365*u.day
+    if "month" in exdict:
+        days_in_month = calendar.monthrange(int(exdict['year']), int(exdict['month']))[1]
+        tdelta = days_in_month*u.day
+    if "day" in exdict:
+        tdelta = 1*u.day
+    if "hour" in exdict:
+        tdelta = 1*u.hour
+    if "minute" in exdict:
+        tdelta = 1*u.minute
+    if "second" in exdict:
+        tdelta = 1*u.second
+
+    endTime = startTime + TimeDelta(tdelta) - TimeDelta(1*u.millisecond)
+    file_timerange = TimeRange(startTime, endTime)
+    return file_timerange
