@@ -58,8 +58,8 @@ def test_query(LCClient, time, instrument):
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 1
     almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end + almost_day
+    assert qr1.time_range().start == time.start.to_datetime()
+    assert qr1.time_range().end == (time.end + almost_day).to_datetime()
 
 
 @pytest.mark.remote_data
