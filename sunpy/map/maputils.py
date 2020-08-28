@@ -1,7 +1,7 @@
 """
 This submodule provides utility functions to act on `sunpy.map.GenericMap` instances.
 """
-from itertools import chain, product
+from itertools import product
 
 import numpy as np
 
@@ -131,15 +131,14 @@ def _convert_pixels(edge):
 
     Parameter
     ---------
-    edge : ~list
+    edge : list
         A list of pairs of tuples.
 
     Returns
     -------
-    pixel_edge : ~tuple
-        A tuple containing two lists.  The first entry is a list containing the first coordinate of
+    tuple
+        A tuple containing two lists. The first entry is a list containing the first coordinate of
         each pixel, and similarly for the second entry.
-
     """
     x = [p[0] for p in edge.value] * u.pix
     y = [p[1] for p in edge.value] * u.pix
@@ -180,17 +179,10 @@ def contains_full_disk(smap):
     top_, bottom, left_hand_side, right_hand_side = map_edges(smap)
 
     # Coordinates of the edges
-    x, y = _convert_pixels(top_)
-    horizontal1 = smap.pixel_to_world(x, y)
-
-    x, y = _convert_pixels(bottom)
-    horizontal2 = smap.pixel_to_world(x, y)
-
-    x, y = _convert_pixels(left_hand_side)
-    vertical1 = smap.pixel_to_world(x, y)
-
-    x, y = _convert_pixels(right_hand_side)
-    vertical2 = smap.pixel_to_world(x, y)
+    horizontal1 = smap.pixel_to_world(_convert_pixels(top_))
+    horizontal2 = smap.pixel_to_world(_convert_pixels(bottom))
+    vertical1 = smap.pixel_to_world(_convert_pixels(left_hand_side))
+    vertical2 = smap.pixel_to_world(_convert_pixels(right_hand_side))
 
     # The radius of the Sun
     radius = smap.rsun_obs
