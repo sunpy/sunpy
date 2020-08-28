@@ -179,10 +179,10 @@ def contains_full_disk(smap):
     top_, bottom, left_hand_side, right_hand_side = map_edges(smap)
 
     # Coordinates of the edges
-    horizontal1 = smap.pixel_to_world(_convert_pixels(top_))
-    horizontal2 = smap.pixel_to_world(_convert_pixels(bottom))
-    vertical1 = smap.pixel_to_world(_convert_pixels(left_hand_side))
-    vertical2 = smap.pixel_to_world(_convert_pixels(right_hand_side))
+    horizontal1 = smap.pixel_to_world(*_convert_pixels(top_))
+    horizontal2 = smap.pixel_to_world(*_convert_pixels(bottom))
+    vertical1 = smap.pixel_to_world(*_convert_pixels(left_hand_side))
+    vertical2 = smap.pixel_to_world(*_convert_pixels(right_hand_side))
 
     # The radius of the Sun
     radius = smap.rsun_obs
