@@ -5,10 +5,10 @@ Miscellaneous utilities related to coordinates
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, SkyCoord, get_body, solar_system_ephemeris
-from astropy.time import Time
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 
-from sunpy.coordinates import Heliocentric
+from sunpy import log
+from sunpy.coordinates import Heliocentric, get_body_heliographic_stonyhurst
 
 __all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalencies']
 
@@ -384,19 +384,17 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
         if isinstance(bottom_left, BaseCoordinateFrame):
             top_right = top_right.frame
 
-    return bottom_left, top_right
+    return bottom_left, top_righty
 
 
-def solar_angle_equivalencies(observer, obstime=None):
+def solar_angle_equivalencies(observer):
     """
     Return the equivalency to convert between arcsec on the Sun and km.
 
     Parameters
     ----------
-    observer : `~astropy.coordinates.SkyCoord` or str inputs to `~astropy.coordinates.get_body()`
+    observer : `~astropy.coordinates.SkyCoord`
         Observer for which equivalency is calculated.
-    obstime : `astropy.time.Time`, optional.
-        Time for which the conversion should be made is inputs to 'observer' is to get_body
 
     Returns
     -------
@@ -404,29 +402,24 @@ def solar_angle_equivalencies(observer, obstime=None):
 
     Examples
     --------
-
-    >>> earth_observer = get_body("earth", Time('2013-10-28'))
+    >>> earth_observer = get_body_heliographic_stonyhurst("earth", "2013-10-28")
     >>> distance_in_km = 725*u.km
     >>> distance_in_km.to(u.arcsec, equivalencies=solar_angle_equivalencies(earth_observer))
-         <Quantity 1.00603718 arcsec>
+    <Quantity 1.00603718 arcsec>
     """
 
-    if observer in solar_system_ephemeris.bodies:
-        if isinstance(Time(obstime), Time):
-            observer = get_body(observer, Time(obstime))
-        else:
-            raise ValueError("Obstime needs to given with solar system body input")
-
-    if not isinstance(observer, SkyCoord):
-        raise ValueError("Observer needs to be a SkyCoord or a solar system body to astropy.coordinates.get_body()")
+    if not isinstance(observer, (SkyCoord, BaseCoordinateFrame)):
+        raise TypeError(
+            "Invalid input, observer must be of type SkyCoord or BaseCoordinateFrame.")
 
     obstime = observer.obstime
-    sun_coord = get_body("sun", time=obstime)
-    sun_earth_distance = sun_coord.separation_3d(observer).to_value(u.m)
+    sun_coord = get_body_heliographic_stonyhurst("sun", time=obstime, observer=observer)
+    sun_observer_distance = sun_coord.separation_3d(observer).to_value(u.m)
 
     equiv = [(u.radian,
               u.meter,
-              lambda x: np.tan(x)*sun_earth_distance,
-              lambda x: np.arctan(x/sun_earth_distance))]
+              lambda x: np.tan(x)*sun_observer_distance,
+              lambda x: np.arctan(x/sun_observer_distance))]
 
+    log.info(f"The equivalency uses an approximate conversion using tangent, this does not approximate well for large angles.")
     return equiv
