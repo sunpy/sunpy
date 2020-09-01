@@ -384,7 +384,7 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
         if isinstance(bottom_left, BaseCoordinateFrame):
             top_right = top_right.frame
 
-    return bottom_left, top_righty
+    return bottom_left, top_right
 
 
 def solar_angle_equivalencies(observer):
