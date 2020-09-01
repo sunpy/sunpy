@@ -420,8 +420,8 @@ class JSOCClient(BaseClient):
         jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             The results of a query
 
-        method : `str`
-            Method for requesting JSOC data, can be 'url-tar', 'url' and 'url-quick'
+        method : {'url', 'url-tar', 'url-quick'}
+            Method for requesting JSOC data, can be 'url-tar', 'url' (the default) and 'url-quick'
             If 'url-tar' it will request JSOC to provide single .tar file which contains all data
             If 'url' it will request JSOC to provide all data as separate .fits files
             If 'url-quick' (only with protocol 'as-is') provide all data as separate files,
