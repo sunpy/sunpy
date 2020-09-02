@@ -1199,6 +1199,8 @@ class GenericMap(NDData):
         lon, lat = self._get_lon_lat(self.center.frame)
         new_meta['crval1'] = lon.value
         new_meta['crval2'] = lat.value
+        new_meta['naxis1'] = new_data.shape[1]
+        new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
