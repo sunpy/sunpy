@@ -572,6 +572,27 @@ class GenericMap(NDData):
         """
         return self.data.max(*args, **kwargs)
 
+    @property
+    def unit(self):
+        """
+        Unit of the map data.
+
+        This is taken from the 'BUNIT' FITS keyword. If no 'BUNIT' entry is
+        present in the metadata then this returns `None`. If the 'BUNIT' value
+        cannot be parsed into a unit a warning is raised, and `None` returned.
+        """
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+        else:
+            unit = u.Unit(unit_str, parse_strict='warn')
+            if isinstance(unit, u.UnrecognizedUnit):
+                warnings.warn(f'Could not parse unit string "{unit_str}". '
+                              'See the above warning for more information',
+                              SunpyMetadataWarning)
+                unit = None
+            return unit
+
 # #### Keyword attribute and other attribute definitions #### #
 
     def _base_name(self):
