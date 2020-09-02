@@ -15,7 +15,7 @@ from sunpy.net.hek import attrs
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
-__all__ = ['HEKClient']
+__all__ = ['HEKClient', 'HEKTable']
 
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
 
