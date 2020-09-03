@@ -71,6 +71,7 @@ jobs:
 
       - linux: codestyle
         name: python_codestyle
+        pytest: false
 
       - linux: py38-hypothesis
 
