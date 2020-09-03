@@ -22,7 +22,7 @@ resources:
     type: github
     endpoint: sunpy
     name: OpenAstronomy/azure-pipelines-templates
-    ref: master
+    ref: pytest_args
 
 trigger:
   branches:
@@ -85,7 +85,7 @@ jobs:
 
       - linux: build_docs
         posargs: " "
-        coverage: false
+        pytest: false
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
 - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
@@ -106,5 +106,5 @@ jobs:
         - py38_test
         - py38_test_online
         - py38_test_32bit
-        - py38_test_oldestdeps
+        - py37_test_oldestdeps
         - py38_conda
