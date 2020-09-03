@@ -12,34 +12,20 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###############################################################################
-# To download the required data, we use
-# `sunpy.net.Fido`, a downloader client,
-# to query the Joint Science Operations Center, or JSOC, where HMI data are stored.
-# First define the search variables, a timerange,
-# a `data series <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`_,
-# keywords, and your e-mail address (to notify you when the download is complete).
-# See the JSOC e-mail address registration page
-# `here <http://jsoc.stanford.edu/ajax/register_email.html>`_.
-
-result = Fido.search(a.Time('2014/11/20 00:00:00', '2014/11/20 00:04:00'),
-                     a.jsoc.Series("hmi.M_720s"),
-                     a.jsoc.Keys(["T_REC, CROTA2"]),
-                     a.jsoc.Notify("jsoc@cadair.com"))
+# To download the required data, we use `sunpy.net.Fido`, a downloader client,
+# to query the Virtual Solar Observatory to acquire HMI data.
+result = Fido.search(a.Time('2020/01/20 00:00:00', '2020/01/20 00:01:00'),
+                     a.Instrument.hmi, a.Physobs.los_magnetic_field)
 
 ###############################################################################
 # Now we can see what results we obtained from our search.
-# Notice we have two files.
 print(result)
 
 ###############################################################################
 # The following shows how to download the results. If we
 # don't provide a path it will download the file into the sunpy data directory.
 # The output provides the path of the downloaded files.
-# The result can be from several data clients, so we have to index the client first
-# and then index the file.
-
-# Slice the first record returned by the first client.
-downloaded_file = Fido.fetch(result[0, 0])
+downloaded_file = Fido.fetch(result)
 print(downloaded_file)
 
 ###############################################################################

@@ -54,6 +54,40 @@ DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 
+class HashableResponse:
+    """
+    Enables hashing of objects returned from `zeep.Client` using the ``fileid`` of a "record item".
+
+    Parameters
+    ----------
+    d : `dict`
+        A "QueryResponseBlock" returned from the `sunpy.net.vso.VSOClient`.
+
+    References
+    ----------
+    * https://stackoverflow.com/a/1305682
+    """
+    def __init__(self, d):
+        self.data = d
+        for a, b in d.items():
+            if isinstance(b, (list, tuple)):
+                setattr(self, a, [HashableResponse(x) if isinstance(x, dict) else x for x in b])
+            else:
+                setattr(self, a, HashableResponse(b) if isinstance(b, dict) else b)
+
+    def __hash__(self):
+        return hash(self.fileid)
+
+    def __eq__(self, other):
+        return self.__hash__() == other.__hash__()
+
+    def __str__(self):
+        return self.data.__str__()
+
+    def __repr__(self):
+        return self.data.__repr__()
+
+
 class _Str(str):
 
     """ Subclass of string that contains a meta attribute for the
@@ -219,8 +253,12 @@ class QueryResponse(BaseQueryResponse):
 
     @classmethod
     def create(cls, queryresult):
-        res = list(iter_sort_response(queryresult))
-        return cls(res, queryresult)
+        unhashed_recs = iter_sort_response(queryresult)
+        hashed_recs = list()
+        for r in unhashed_recs:
+            res_dict = json.loads(json.dumps(serialize_object(r)))
+            hashed_recs.append(HashableResponse(res_dict))
+        return cls(hashed_recs, queryresult)
 
     def total_size(self):
         """ Total size of data in KB. May be less than the actual
@@ -481,7 +519,7 @@ class VSOClient(BaseClient):
         if not name:
             name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 
-        fname = pattern.format(file=name, **serialize_object(queryresponse))
+        fname = pattern.format(file=name, **(queryresponse.data))
 
         return fname
 

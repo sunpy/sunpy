@@ -106,7 +106,7 @@ def get_header(afile):
     Returns
     -------
     headers : `list`
-        A list of `sunpy.io.helper.FileHeader` headers.
+        A list of `sunpy.io.header.FileHeader` headers.
     """
     if isinstance(afile, fits.HDUList):
         hdulist = afile
@@ -193,7 +193,7 @@ def write(fname, data, header, hdu_type=None, **kwargs):
 
 def header_to_fits(header):
     """
-    Convert a header dict to a `~astropy.fits.Header`.
+    Convert a header dict to a `~astropy.io.fits.Header`.
     """
     # Copy the header to avoid modifying it in place
     header = header.copy()

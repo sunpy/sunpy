@@ -12,6 +12,10 @@ from sunpy.net.helio.parser import (
     wsdl_retriever,
 )
 
+# Currently helio makes unverified requests - this filter should be removed when
+# https://github.com/sunpy/sunpy/issues/4401 is fixed
+pytestmark = pytest.mark.filterwarnings('ignore:Unverified HTTPS request is being made')
+
 
 def wsdl_endpoints():
     """
@@ -262,9 +266,12 @@ def test_link_test_on_urlerror(mock_link_test):
 @pytest.mark.remote_data
 @pytest.fixture(scope="session")
 def client():
-    working_links = list(filter(link_test, webservice_parser()))
-    taverna_link = taverna_parser(working_links[0])[0]
-    return HECClient(taverna_link)
+    try:
+        client = HECClient()
+        return client
+    # If no links are found, the client should raise a ValueError
+    except ValueError:
+        pytest.xfail("No HELIO working links found.")
 
 
 @pytest.mark.remote_data
@@ -284,6 +291,9 @@ def test_select_table(client, monkeypatch):
     assert client.select_table() is None
 
 
+# Deprecation warning from astropy, fixed in 4.0.2
+# (https://github.com/astropy/astropy/pull/10085)
+@pytest.mark.filterwarnings(r'ignore:tostring\(\) is deprecated')
 @pytest.mark.remote_data
 def test_time_query(client):
     start = '2005/01/03'
@@ -291,3 +301,10 @@ def test_time_query(client):
     table_name = b'rhessi_hxr_flare'
     res = client.time_query(start, end, table=table_name, max_records=10)
     assert len(res.array) == 10
+
+
+def test_client_mock_fail(client):
+    """
+    This test will xfail on the offline tests.
+    It just passes if the client is working.
+    """

@@ -5,7 +5,7 @@ Using SunPy's HEK module
 The Heliophysics Event Knowledgebase (HEK) is a repository of feature
 and event information about the Sun.  Entries are generated both
 by automated algorithms and human observers.  SunPy accesses this
-information through the `hek` module, which was developed through
+information through the `~sunpy.net.hek` module, which was developed through
 support from the European Space Agency Summer of Code in Space
 (ESA-SOCIS) 2011.
 
@@ -254,8 +254,8 @@ flux over 1000.0:
     [883.2, 883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 In this case none of the peak fluxes are returned with the value
-`None`.  Since we are using an `and` logical operator we need a result
-from the `(hek.attrs.FL.PeakFlux > 1000.0)` filter.  Flares that have
+`None`.  Since we are using an ```and`` logical operator we need a result
+from the ``(hek.attrs.FL.PeakFlux > 1000.0)`` filter.  Flares that have
 `None` for a peak flux cannot provide this, and so are excluded.  The
 `None` type in this context effectively means "Don't know"; in such
 cases the client returns only those results from the HEK that
