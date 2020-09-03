@@ -146,7 +146,7 @@ try:
 
     @convert_time.register(pandas.Timestamp)
     def convert_time_pandasTimestamp(time_string, **kwargs):
-        return Time(time_string.to_pydatetime())
+        return Time(time_string.asm8)
 
     @convert_time.register(pandas.Series)
     def convert_time_pandasSeries(time_string, **kwargs):

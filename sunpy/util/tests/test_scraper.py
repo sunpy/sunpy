@@ -8,7 +8,7 @@ from astropy.time import TimeDelta
 
 from sunpy.data.test import rootdir
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.scraper import Scraper
+from sunpy.util.scraper import Scraper, get_timerange_from_exdict
 
 PATTERN_EXAMPLES = [
     ('%b%y', TimeDelta(31*u.day)),
@@ -253,20 +253,35 @@ def test_regex_data():
 
 @pytest.mark.remote_data
 def test_extract_files_meta():
-    baseurl0 = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
-    extractpattern0 = '{}/tcx/{year:4d}/{month:2d}/{wavelength}{:4d}{day:2d}'
-    s0 = Scraper(baseurl0, freq='tca')
-    timerange0 = TimeRange('2020/1/1', '2020/1/2')
-    metalist0 = s0._extract_files_meta(timerange0, extractpattern0)
-    assert metalist0[0]['wavelength'] == 'tca'
+    baseurl0 = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
+    extractpattern0 = '{}/tcx/{year:4d}/{month:2d}/{wave}{:4d}{day:2d}'
+    s0 = Scraper(baseurl0, regex=True)
+    timerange0 = TimeRange('2020/1/1 4:00', '2020/1/2')
+    matchdict = {'wave': ['tca', 'tcz']}
+    metalist0 = s0._extract_files_meta(timerange0, extractpattern0, matcher=matchdict)
+    assert metalist0[0]['wave'] == 'tca'
+    assert metalist0[3]['wave'] == 'tcz'
     assert metalist0[1]['day'] == 2
 
     prefix = r'https://gong2.nso.edu/oQR/zqs/'
     baseurl1 = prefix + r'%Y%m/mrzqs%y%m%d/mrzqs%y%m%dt%H%Mc(\d){4}_(\d){3}\.fits.gz'
-    extractpattern1 = '{}/zqs/{:6d}/mrzqs{:6d}/mrzqs{:6d}t{:4d}c{CAR_ROT:4d}_{:3d}.fits.gz'
+    extractpattern1 = ('{}/zqs/{year:4d}{month:2d}/mrzqs{:4d}{day:2d}/mrzqs{:6d}t'
+                       '{hour:2d}{minute:2d}c{CAR_ROT:4d}_{:3d}.fits.gz')
     s1 = Scraper(baseurl1, regex=True)
     timerange1 = TimeRange('2020-01-05', '2020-01-05T16:00:00')
     metalist1 = s1._extract_files_meta(timerange1, extractpattern1)
     urls = s1.filelist(timerange1)
     assert metalist1[3]['CAR_ROT'] == 2226
     assert metalist1[-1]['url'] == urls[-1]
+
+
+@pytest.mark.parametrize('exdict, start, end', [
+    ({"year": 2000}, '2000-01-01 00:00:00', '2000-12-31 23:59:59.999000'),
+    ({"year": 2016, "month": 2}, '2016-02-01 00:00:00', '2016-02-29 23:59:59.999000'),
+    ({'year': 2019, 'month': 2, 'day': 28}, '2019-02-28 00:00:00', '2019-02-28 23:59:59.999000'),
+    ({'year': 2020, 'month': 7, 'day': 31, 'hour': 23, 'minute': 59, 'second': 59},
+     '2020-07-31 23:59:59', '2020-07-31 23:59:59.999000')])
+def test_get_timerange_with_extractor(exdict, start, end):
+    tr = TimeRange(start, end)
+    file_timerange = get_timerange_from_exdict(exdict)
+    assert file_timerange == tr

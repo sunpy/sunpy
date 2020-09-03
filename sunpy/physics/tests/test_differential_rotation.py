@@ -228,7 +228,8 @@ def test_differential_rotate_observer_straddles_limb(straddles_limb_map):
 def test_differential_rotate_time_full_disk(aia171_test_map):
     # Test a full disk map
     new_time = aia171_test_map.date + 6*u.hr
-    dmap = differential_rotate(aia171_test_map, time=new_time)
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = differential_rotate(aia171_test_map, time=new_time)
     assert dmap.data.shape == aia171_test_map.data.shape
     # The output map should have the same time as the new time now.
     assert dmap.date == new_time
@@ -238,11 +239,13 @@ def test_differential_rotate_time_all_on_disk(all_on_disk_map):
     # Test a map that is entirely on disk - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_time = all_on_disk_map.date - 48*u.hr
-    dmap = differential_rotate(all_on_disk_map, time=new_time)
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = differential_rotate(all_on_disk_map, time=new_time)
     assert dmap.data.shape[1] < all_on_disk_map.data.shape[1]
     # This rotated map should have a larger extent in the x direction
     new_time = all_on_disk_map.date + 48*u.hr
-    dmap = differential_rotate(all_on_disk_map, time=new_time)
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = differential_rotate(all_on_disk_map, time=new_time)
     assert dmap.data.shape[1] > all_on_disk_map.data.shape[1]
     # The output map should have the same time as the new time now.
     assert dmap.date == new_time
@@ -255,7 +258,8 @@ def test_differential_rotate_time_straddles_limb(straddles_limb_map):
     # Ignore some invalid NaN comparisions within astropy
     # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
     with np.errstate(invalid='ignore'):
-        dmap = differential_rotate(straddles_limb_map, time=new_time)
+        with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+            dmap = differential_rotate(straddles_limb_map, time=new_time)
     assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
     # The output map should have the same time as the new time now.
     assert dmap.date == new_time

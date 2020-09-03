@@ -124,6 +124,7 @@ def test_wrong_hash_error(manager, storage):
         'file_hash': 'aa',
         'url': 'url1'
     })
+
     @manager.require('test_file', ['url1', 'url2'], 'asdf')
     def foo():
         pass

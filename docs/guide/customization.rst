@@ -57,7 +57,7 @@ Dynamic settings
 
 You can also dynamically change the default settings in a python script or
 interactively from the python shell. All of the settings are stored in a
-Python ConfigParser instance called :data:`sunpy.config`, which is global to
+Python ConfigParser instance called ``sunpy.config``, which is global to
 the sunpy package. Settings can be modified directly, for example::
 
     import sunpy
