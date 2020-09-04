@@ -127,6 +127,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             adjusted_image = np.nan_to_num(adjusted_image)
 
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-                                               mode='constant', cval=missing)
+                                               mode='constant', cval=missing,
+                                               preserve_range=True)
 
     return rotated_image
