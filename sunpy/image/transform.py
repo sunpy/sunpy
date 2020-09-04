@@ -1,6 +1,7 @@
 """
 Functions for geometrical image transformation and warping.
 """
+import numbers
 import warnings
 
 import numpy as np
@@ -113,9 +114,10 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         skmatrix[:2, 2] = shift
         tform = skimage.transform.AffineTransform(skmatrix)
 
-        # Transform the image using the skimage function
-        if not np.issubdtype(image.dtype, np.float64):
-            warnings.warn("Input data has been cast to float64.", SunpyUserWarning)
+        if issubclass(image.dtype.type, numbers.Integral):
+            warnings.warn("Integer input data has been cast to float64, "
+                          "which is required for the skikit-image transform.",
+                          SunpyUserWarning)
             adjusted_image = image.astype(np.float64)
         else:
             adjusted_image = image.copy()
@@ -125,6 +127,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             adjusted_image = np.nan_to_num(adjusted_image)
 
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-                                               mode='constant', cval=missing)
+                                               mode='constant', cval=missing,
+                                               preserve_range=True)
 
     return rotated_image
