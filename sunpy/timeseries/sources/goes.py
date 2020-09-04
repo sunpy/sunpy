@@ -2,8 +2,9 @@
 This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
 """
 import datetime
-from collections import OrderedDict
 from pathlib import Path
+from collections import OrderedDict
+
 import matplotlib.dates
 import matplotlib.ticker as mticker
 import numpy as np
@@ -14,7 +15,7 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 import sunpy.io
-from sunpy.time import TimeRange, is_time_in_given_format, parse_time
+from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
@@ -129,9 +130,9 @@ class XRSTimeSeries(GenericTimeSeries):
             hdus = sunpy.io.read_file(filepath)
             return cls._parse_hdus(hdus)
         elif Path(filepath).suffix == '.nc':
-            return cls._parse_netcdf(filepath)    
+            return cls._parse_netcdf(filepath)
         else:
-            return ValueError(f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")        
+            return ValueError(f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
 
     @classmethod
     def _parse_hdus(cls, hdulist):
@@ -188,16 +189,16 @@ class XRSTimeSeries(GenericTimeSeries):
     def _parse_netcdf(filepath):
         """
         Parses the netCDF GOES files to return the data, header and associated units.
-        
+
         Parameters
         ----------
         filepath : `~str`
             The path of the file to parse
         """
-        import h5netcdf 
+        import h5netcdf
 
-        f = h5netcdf.File(filepath)
-        
+        h5netcdf.File(filepath)
+
 
 
 
