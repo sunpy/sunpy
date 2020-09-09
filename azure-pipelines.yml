@@ -22,7 +22,7 @@ resources:
     type: github
     endpoint: sunpy
     name: OpenAstronomy/azure-pipelines-templates
-    ref: pytest_args
+    ref: master
 
 trigger:
   branches:
