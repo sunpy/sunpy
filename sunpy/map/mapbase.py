@@ -586,17 +586,17 @@ class GenericMap(NDData):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-        else:
-            unit = u.Unit(unit_str, format='fits', parse_strict='silent')
-            if isinstance(unit, u.UnrecognizedUnit):
-                warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                              f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                              'with sunpy.map.Map.\n'
-                              'See https://fits.gsfc.nasa.gov/fits_standard.html for'
-                              'the FITS unit standards.',
-                              SunpyMetadataWarning)
-                unit = None
-            return unit
+
+        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
+        if isinstance(unit, u.UnrecognizedUnit):
+            warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                          'with sunpy.map.Map.\n'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'the FITS unit standards.',
+                          SunpyMetadataWarning)
+            unit = None
+        return unit
 
 # #### Keyword attribute and other attribute definitions #### #
 
