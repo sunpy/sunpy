@@ -176,13 +176,27 @@ def contains_full_disk(smap):
 def contains_solar_center(smap):
     """
     Returns `True` if smap contains the solar center.
+
+    This is the case if and only if the solar center is inside the edges of the map. This
+    is checked by seeing if the sign of both the x and y coordintaes of the corners are opposite
+    (ie. the (0, 0) point is contained within the map).
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        A map in helioprojective Cartesian coordinates.
+
+    Returns
+    -------
+    bool
+        True if the map contains the solar center.
     """
     bottom_left = smap.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
     top_right = smap.pixel_to_world(*(u.Quantity(smap.dimensions) - 0.5 * u.pix))
     # Test if the x and y component of the coordinate changes sign along
     # both axes, to check if (0, 0) is contained in the map
-    return ((np.sign(bottom_left.Tx) != np.sign(top_right.Tx)) and
-            (np.sign(bottom_left.Ty) != np.sign(top_right.Ty)))
+    return ((bottom_left.Tx * top_right.Tx <= 0 * u.deg) and
+            (bottom_left.Ty * top_right.Ty <= 0 * u.deg))
 
 
 @u.quantity_input
