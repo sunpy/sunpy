@@ -48,6 +48,7 @@ jobs:
     libraries:
       apt:
         - libopenjp2-7
+        - graphviz
       brew:
         - openjpeg
       yum:
