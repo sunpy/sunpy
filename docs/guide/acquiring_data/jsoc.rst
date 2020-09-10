@@ -198,7 +198,7 @@ If you want to get a manual set of keywords in the response object, you can pass
 
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
-    >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')
+    >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')  # doctest: +REMOTE_DATA
     [<QTable length=81>
     TELESCOP  INSTRUME           T_OBS
     str7     str10             str23
@@ -219,7 +219,7 @@ not be displayed.
 
 To display all of the columns, we can use ``show()``without passings any arguments.
 
-    >>> res.show()
+    >>> res.show()  # doctest: +REMOTE_DATA
     [<QTable length=81>
             DATE                DATE__OBS        ... CALVER64
            str20                  str23          ...  int64
