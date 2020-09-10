@@ -143,4 +143,3 @@ To run the tests:
 - `pytest-cov <https://github.com/pytest-dev/pytest-cov>`__.
 
 - `pytest-mock <https://github.com/pytest-dev/pytest-mock>`__.
-
