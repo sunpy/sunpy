@@ -126,13 +126,9 @@ def sample_at_coords(smap, coordinates):
 
 def _edge_coordinates(smap):
     # Calculate all the edge pixels
-    edges = map_edges(smap)
-    edge_pixels = list(chain.from_iterable([edges[0], edges[1], edges[2], edges[3]]))
-    x = [p[0] for p in edge_pixels] * u.pix
-    y = [p[1] for p in edge_pixels] * u.pix
-
+    edge_pixels = np.concatenate((*map_edges(smap), ))
     # Calculate the edge of the world
-    return smap.pixel_to_world(x, y)
+    return smap.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
 
 
 def contains_full_disk(smap):
@@ -195,8 +191,8 @@ def contains_solar_center(smap):
     top_right = smap.pixel_to_world(*(u.Quantity(smap.dimensions) - 0.5 * u.pix))
     # Test if the x and y component of the coordinate changes sign along
     # both axes, to check if (0, 0) is contained in the map
-    return ((bottom_left.Tx * top_right.Tx <= 0 * u.deg) and
-            (bottom_left.Ty * top_right.Ty <= 0 * u.deg))
+    return ((bottom_left.Tx * top_right.Tx <= 0 * u.deg**2) and
+            (bottom_left.Ty * top_right.Ty <= 0 * u.deg**2))
 
 
 @u.quantity_input
