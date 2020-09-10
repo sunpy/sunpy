@@ -167,7 +167,19 @@ def contains_full_disk(smap):
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the whole map is not all off disk.
-    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~is_all_off_disk(smap)
+    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and contains_solar_center(smap)
+
+
+def contains_solar_center(smap):
+    """
+    Returns `True` if smap contains the solar center.
+    """
+    bottom_left = smap.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
+    top_right = smap.pixel_to_world(*(u.Quantity(smap.dimensions) - 0.5 * u.pix))
+    # Test if the x and y component of the coordinate changes sign along
+    # both axes, to check if (0, 0) is contained in the map
+    return ((np.sign(bottom_left.Tx) != np.sign(top_right.Tx)) and
+            (np.sign(bottom_left.Ty) != np.sign(top_right.Ty)))
 
 
 @u.quantity_input
