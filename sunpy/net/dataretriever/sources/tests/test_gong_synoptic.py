@@ -6,7 +6,6 @@ from sunpy.net import attrs as a
 from sunpy.net._attrs import Instrument, Time
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
-from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -16,21 +15,22 @@ def GSClient():
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
-    (TimeRange('2020/1/30', '2020/2/1'),
+    (a.Time('2020/1/30', '2020/2/1'),
      'https://gong2.nso.edu/oQR/zqs/202001/mrzqs200130/mrzqs200130t0004c2227_349.fits.gz',
      'https://gong2.nso.edu/oQR/zqs/202001/mrzqs200131/mrzqs200131t2314c2227_323.fits.gz'
      ),
-    (TimeRange('2020/4/21', '2020/4/22'),
+    (a.Time('2020/4/21', '2020/4/22'),
      'https://gong2.nso.edu/oQR/zqs/202004/mrzqs200421/mrzqs200421t0004c2230_348.fits.gz',
      'https://gong2.nso.edu/oQR/zqs/202004/mrzqs200421/mrzqs200421t2314c2230_335.fits.gz'
      ),
-    (TimeRange('2006/9/19', '2006/9/19 22:00'),
+    (a.Time('2006/9/19', '2006/9/19 22:00'),
      'https://gong2.nso.edu/oQR/zqs/200609/mrzqs060919/mrzqs060919t1154c2048_323.fits.gz',
      'https://gong2.nso.edu/oQR/zqs/200609/mrzqs060919/mrzqs060919t1754c2048_320.fits.gz'
      )
 ])
 def test_get_url_for_time_range(GSClient, timerange, url_start, url_end):
-    urls = GSClient._get_url_for_timerange(timerange)
+    qresponse = GSClient.search(timerange)
+    urls = [i['url'] for i in qresponse]
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -50,17 +50,6 @@ def test_can_handle_query(query, result):
     assert gong_synoptic.GongSynopticClient._can_handle_query(*query) == result
 
 
-@pytest.mark.parametrize("time", [
-    Time('2015/8/27', '2015/8/27 12:00'),
-    Time('2020/2/4', '2020/2/5')])
-@pytest.mark.remote_data
-def test_query(GSClient, time):
-    qr1 = GSClient.search(time, Instrument('gong'))
-    assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
-
-
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument", [
     (Time('2013/8/27', '2013/8/27'), Instrument('gong')),
@@ -68,6 +57,7 @@ def test_query(GSClient, time):
 ])
 def test_get(GSClient, time, instrument):
     qr1 = GSClient.search(time, instrument)
+    assert isinstance(qr1, QueryResponse)
     download_list = GSClient.fetch(qr1)
     assert len(download_list) == len(qr1)
 
