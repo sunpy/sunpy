@@ -45,6 +45,8 @@ TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 
+_META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata'
+
 __all__ = ['GenericMap']
 
 
@@ -572,6 +574,30 @@ class GenericMap(NDData):
         """
         return self.data.max(*args, **kwargs)
 
+    @property
+    def unit(self):
+        """
+        Unit of the map data.
+
+        This is taken from the 'BUNIT' FITS keyword. If no 'BUNIT' entry is
+        present in the metadata then this returns `None`. If the 'BUNIT' value
+        cannot be parsed into a unit a warning is raised, and `None` returned.
+        """
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+
+        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
+        if isinstance(unit, u.UnrecognizedUnit):
+            warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                          'with sunpy.map.Map.\n'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'the FITS unit standards.',
+                          SunpyMetadataWarning)
+            unit = None
+        return unit
+
 # #### Keyword attribute and other attribute definitions #### #
 
     def _base_name(self):
@@ -1019,8 +1045,7 @@ class GenericMap(NDData):
 
         if err_message:
             err_message.append(
-                'See https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
-                'instructions on how to add missing metadata.')
+                f'See {_META_FIX_URL} for instructions on how to add missing metadata.')
             raise MapMetaValidationError('\n'.join(err_message))
 
         for meta_property in ('waveunit', ):

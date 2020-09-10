@@ -97,7 +97,8 @@ def generic_map():
         'obsrvtry': 'Foo',
         'detector': 'bar',
         'wavelnth': 10,
-        'waveunit': 'm'
+        'waveunit': 'm',
+        'bunit': 'ct/s',
     }
     return sunpy.map.Map((data, header))
 
@@ -173,6 +174,13 @@ def test_mean(generic_map):
 
 def test_std(generic_map):
     assert generic_map.std() == 0
+
+
+def test_unit(generic_map):
+    assert generic_map.unit == u.ct / u.s
+    generic_map.meta['bunit'] = 'not a unit'
+    with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string "not a unit"'):
+        assert generic_map.unit is None
 
 
 # ==============================================================================
