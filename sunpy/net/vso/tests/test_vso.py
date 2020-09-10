@@ -26,7 +26,7 @@ class MockQRRecord:
                  extent_type=None):
         self.size = size
         self.time = MockObject(start=start_time, end=end_time)
-        self.source = va.Source(source)
+        self.source = a.Source(source)
         self.instrument = core_attrs.Instrument(instrument)
         self.extent = MockObject(type=None if extent_type is None else extent_type.type)
 
@@ -107,12 +107,12 @@ def test_simpleattr_create(client):
 def test_simpleattr_and_duplicate():
     attr = core_attrs.Instrument('foo')
     pytest.raises(TypeError, lambda: attr & core_attrs.Instrument('bar'))
-    attr |= va.Source('foo')
+    attr |= a.Source('foo')
     pytest.raises(TypeError, lambda: attr & core_attrs.Instrument('bar'))
-    otherattr = core_attrs.Instrument('foo') | va.Source('foo')
+    otherattr = core_attrs.Instrument('foo') | a.Source('foo')
     pytest.raises(TypeError, lambda: attr & otherattr)
     pytest.raises(TypeError, lambda: (attr | otherattr) & core_attrs.Instrument('bar'))
-    tst = core_attrs.Instrument('foo') & va.Source('foo')
+    tst = core_attrs.Instrument('foo') & a.Source('foo')
     pytest.raises(TypeError, lambda: tst & tst)
 
 
@@ -141,7 +141,7 @@ def test_complexattr_and_duplicate():
     attr = core_attrs.Time((2011, 1, 1), (2011, 1, 1, 1))
     pytest.raises(TypeError,
                   lambda: attr & core_attrs.Time((2011, 2, 1), (2011, 2, 1, 1)))
-    attr |= va.Source('foo')
+    attr |= a.Source('foo')
     pytest.raises(TypeError,
                   lambda: attr & core_attrs.Time((2011, 2, 1), (2011, 2, 1, 1)))
 
@@ -155,9 +155,9 @@ def test_complexattr_or_eq():
 
 def test_attror_and():
     attr = core_attrs.Instrument('foo') | core_attrs.Instrument('bar')
-    one = attr & va.Source('bar')
-    other = ((core_attrs.Instrument('foo') & va.Source('bar')) |
-             (core_attrs.Instrument('bar') & va.Source('bar')))
+    one = attr & a.Source('bar')
+    other = ((core_attrs.Instrument('foo') & a.Source('bar')) |
+             (core_attrs.Instrument('bar') & a.Source('bar')))
     assert one == other
 
 
@@ -383,7 +383,7 @@ def test_QueryResponse_build_table_defaults(mock_build_client):
     # Check values we did set by default in 'MockQRRecord'
     source_ = table['Source'].data
     assert len(source_) == 1
-    assert source_[0][:-16] == str(va.Source('SOHO'))[:-16]
+    assert source_[0][:-16] == str(a.Source('SOHO'))[:-16]
 
     instrument_ = table['Instrument'].data
     assert len(instrument_) == 1
@@ -529,7 +529,7 @@ def test_incorrect_content_disposition(client):
 @pytest.mark.parametrize("query, handle", [
     ((a.Time("2011/01/01", "2011/01/02"),), True),
     ((a.Physobs.los_magnetic_field,), False),
-    ((a.Time("2011/01/01", "2011/01/02"), a.vso.Provider("SDAC"),), True),
+    ((a.Time("2011/01/01", "2011/01/02"), a.Provider("SDAC"),), True),
     ((a.jsoc.Series("wibble"), a.Physobs.los_magnetic_field,), False),
 ])
 def test_can_handle_query(query, handle):
