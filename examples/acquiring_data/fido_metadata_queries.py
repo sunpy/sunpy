@@ -20,12 +20,13 @@ timerange = a.Time('2010/8/1 03:40', '2010/8/1 3:40:10')
 results = Fido.search(timerange, a.helio.TableName('rhessi_hxr_flare') |
                       a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
                       a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify("jsoc@cadair.com"))
-print(results)
 
 ###################################################################
 # ``results`` is a `~sunpy.net.fido_factory.UnifiedResponse` object that
-# contains records returned from querying various clients separated by ``|``
-# in the search.
+# contains records returned from querying various clients by "Fido.search".
+print(results)
+
+###################################################################
 # Now we will download the searched records. Since HEK and HELIO
 # clients don't provide files, `Fido.fetch` will
 # ignore them and only download files from JSOC.
