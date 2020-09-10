@@ -121,13 +121,15 @@ def test_new_logic(LCClient):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
-    "time, instrument",
-    [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes)])
-def test_fido(time, instrument):
-    qr = Fido.search(time, Instrument('XRS'))
+    "time, instrument, expected_num_files",
+    [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes, 4),
+     (a.Time('2013-10-28 01:00', '2013-10-28 03:00'), a.Instrument('XRS'), 1)])
+def test_fido(time, instrument, expected_num_files):
+    qr = Fido.search(time, instrument)
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+    assert len(response) == expected_num_files
 
 
 def test_attr_reg():
