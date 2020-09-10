@@ -200,8 +200,8 @@ If you want to get a manual set of keywords in the response object, you can pass
     ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
     >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')
     [<QTable length=81>
-    TELESCOP  INSTRUME           T_OBS         
-    str7     str10             str23         
+    TELESCOP  INSTRUME           T_OBS
+    str7     str10             str23
     -------- ---------- -----------------------
     SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
     SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI
@@ -222,7 +222,7 @@ To display all of the columns, we can use ``show()``without passings any argumen
     >>> res.show()
     [<QTable length=81>
             DATE                DATE__OBS        ... CALVER64
-           str20                  str23          ...  int64  
+           str20                  str23          ...  int64
     -------------------- ----------------------- ... --------
     2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
     2014-01-05T17:47:10Z 2014-01-01T00:00:24.20Z ...     4370
@@ -233,7 +233,7 @@ To display all of the columns, we can use ``show()``without passings any argumen
     2014-01-05T17:42:33Z 2014-01-01T00:57:24.20Z ...     4370
     2014-01-05T17:43:41Z 2014-01-01T00:58:09.20Z ...     4370
     2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z ...     4370
-    2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370]    
+    2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370]
 
 
 Using Segments
