@@ -64,9 +64,11 @@ or at the top under the "Checks" tab:
 * milestone: absent | present (Giles): Will check that the pull request has a milestone assigned.
 
 * `docs/readthedocs.org:sunpy (Read the Docs) <https://readthedocs.org/projects/sunpy/>`_: This builds our documentation.
+  This primary check is to ensure the documentation has rendered correctly.
+  Warnings are not checked on this build but under Azure Pipelines (see below).
 
 * `sunpy.sunpy (Azure Pipelines) <https://dev.azure.com/sunpy/sunpy/_build>`_: Runs our test suite on all three operating systems.
-  There are 10 separate checks for this.
+  There are 11 separate checks for this.
 
 * `codecov/patch (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage for the submitted code in the pull request.
 
