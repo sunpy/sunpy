@@ -81,5 +81,5 @@ class NoRHClient(GenericClient):
                                       'or 34GHz located at the Nobeyama Solar Radio Observatory.'))],
                  attrs.Source: [('NAOJ', 'The National Astronomical Observatory of Japan')],
                  attrs.Provider: [('NRO', 'Nobeyama Radio Observatory')],
-                 attrs.Wavelength: [('*', 'Wavelength')]}
+                 attrs.Wavelength: [('*',)]}
         return adict

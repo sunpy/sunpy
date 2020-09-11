@@ -62,7 +62,7 @@ class NOAAIndicesClient(GenericClient):
             attrs.Physobs: [('sunspot number', 'Sunspot Number.')],
             attrs.Source: [('SIDC', 'The Solar Influence Data Analysis Center')],
             attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')],
-            attrs.Time: [('*', 'Time')]}
+            attrs.Time: [('*',)]}
         return adict
 
 
@@ -112,7 +112,7 @@ class NOAAPredictClient(GenericClient):
             attrs.Physobs: [('sunspot number', 'Sunspot Number.')],
             attrs.Source: [('ISES', 'The International Space Environmental Services.')],
             attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')],
-            attrs.Time: [('*', 'Time')]}
+            attrs.Time: [('*',)]}
         return adict
 
 
