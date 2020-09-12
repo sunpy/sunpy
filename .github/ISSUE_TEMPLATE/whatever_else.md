@@ -1,6 +1,6 @@
 ---
 name: Anything else
-about: If it does not fit under the below sections.
+about: If it does not fit under the above sections.
 ---
 
 <!--
