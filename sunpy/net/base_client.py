@@ -128,6 +128,10 @@ def _print_client(client, html=False):
     t = Table(names=["Attr Type", "Name", "Description"],
               dtype=["U80", "U80", "U80"])
     for client_key in attrs.keys():
+        # Work around for * attrs having one length.
+        if len(attrs[client_key]) == 1 and attrs[client_key][0] == "*":
+            t.add_row((client_key.__name__, "All", "All valid values"))
+            continue
         for name, desc in attrs[client_key]:
             t.add_row((client_key.__name__, name, desc))
     lines = [class_name, dedent(client.__doc__.partition("\n\n")[0])]
