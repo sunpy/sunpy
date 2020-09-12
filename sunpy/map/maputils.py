@@ -1,7 +1,7 @@
 """
 This submodule provides utility functions to act on `sunpy.map.GenericMap` instances.
 """
-from itertools import chain, product
+from itertools import product
 
 import numpy as np
 
@@ -125,8 +125,13 @@ def sample_at_coords(smap, coordinates):
 
 
 def _edge_coordinates(smap):
+    edges = map_edges(smap)
     # Calculate all the edge pixels
-    edge_pixels = np.concatenate((*map_edges(smap), ))
+    edge_pixels = np.concatenate(edges)
+    # Need this line for compatability with numpy<1.17, where
+    # the unit attribute is not propagated to edge_pixels in the above line.
+    # This can be removed when sunpy depends on numpy>=1.17
+    edge_pixels = edge_pixels.value * edges[0].unit
     # Calculate the edge of the world
     return smap.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
 
