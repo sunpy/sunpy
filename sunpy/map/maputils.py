@@ -291,11 +291,11 @@ def contains_limb(smap):
     Checks if a map contains any part of the solar limb or equivalently whether
     the map contains both on-disk and off-disk pixels.
 
-    The check is performed by calculating the angular distance of every pixel from
-    the center of the Sun.  If at least one pixel is on disk (less than the solar
-    angular radius) and at least one pixel is off disk (greater than the solar
-    angular distance), the function returns `True`. Otherwise, the function
-    returns `False`.
+    The check is performed by calculating the angular distance of the edge pixels from
+    the center of the Sun. If at least one edge pixel is on disk (less than the solar
+    angular radius) and at least one edge pixel is off disk (greater than the solar
+    angular distance), or the map contains the full disk, the function returns `True`.
+    Otherwise, the function returns `False`.
 
     Parameters
     ----------
@@ -314,7 +314,9 @@ def contains_limb(smap):
     within the field of view of the instrument, but the solar disk itself is not imaged.
     For such images this function will return `True`.
     """
-    on_disk = coordinate_is_on_solar_disk(all_coordinates_from_map(smap))
+    if contains_full_disk(smap):
+        return True
+    on_disk = coordinate_is_on_solar_disk(_edge_coordinates(smap))
     return np.logical_and(np.any(on_disk), np.any(~on_disk))
 
 
