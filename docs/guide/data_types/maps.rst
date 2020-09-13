@@ -283,6 +283,17 @@ elsewhere, you can use either of the following::
 Python makes use of pointers so if you want to alter the data and keep the
 original data in the map intact make sure to copy it.
 
+To create a complete copy of a Map object that is entirely independent of the original,
+use the built-in `copy https://docs.python.org/3/library/copy.html`_ module's deepcopy
+method, like so::
+
+    >>> import copy   # doctest: +REMOTE_DATA
+    >>> my_map_deepcopy = copy.deepcopy(my_map)   # doctest: +REMOTE_DATA
+
+A deepcopy ensures that any changes in the original Map object are not reflected in the
+copied object and vice versa. Note that this is different from simply copying the data of
+the Map object - this copies all of the other attributes and methods as well.
+
 Some basic statistical functions on the data array are also passed through to Map
 objects::
 
@@ -294,7 +305,7 @@ objects::
     427.02252
 
 but you can also access all the other `~numpy.ndarray` functions and attributes
-but accessing the data array directly. For example::
+by accessing the data array directly. For example::
 
     >>> my_map.data.std()  # doctest: +REMOTE_DATA
     826.41016
