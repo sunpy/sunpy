@@ -356,6 +356,7 @@ def cached_property_based_on(meth):
         """
         prop: the property method being decorated
         """
+        @wraps(outer)
         def inner(instance):
             """
             instance: the class instance of the property being decorated
