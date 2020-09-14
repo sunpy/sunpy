@@ -279,12 +279,12 @@ class MapSequence:
 
         Returns
         -------
-        ani : `matplotlib.animation.FuncAnimation`
+        `matplotlib.animation.FuncAnimation`
             A FuncAnimation instance.
 
         See Also
         --------
-        sunpy.visualization.mapsequenceanimator.MapSequenceAnimator
+        `sunpy.visualization.mapsequenceanimator.MapSequenceAnimator`
 
         Examples
         --------
