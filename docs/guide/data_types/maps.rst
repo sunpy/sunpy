@@ -284,7 +284,7 @@ Python makes use of pointers so if you want to alter the data and keep the
 original data in the map intact make sure to copy it.
 
 To create a complete copy of a Map object that is entirely independent of the original,
-use the built-in `copy https://docs.python.org/3/library/copy.html`__ module's deepcopy
+use the built-in `copy.deepcopy`
 method, like so::
 
     >>> import copy   # doctest: +REMOTE_DATA
