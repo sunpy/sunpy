@@ -274,9 +274,17 @@ class MapSequence:
             Animation interval in ms
 
         plot_function : function
-            A function to be called as each map is plotted. Any variables
-            returned from the function will have their ``remove()`` method called
-            at the start of the next frame so that they are removed from the plot.
+            A function to be called as each map is plotted.
+            For more information see `sunpy.visualization.MapSequenceAnimator`.
+
+        Returns
+        -------
+        ani : `matplotlib.animation.FuncAnimation`
+            A FuncAnimation instance.
+
+        See Also
+        --------
+        sunpy.visualization.mapsequenceanimator.MapSequenceAnimator
 
         Examples
         --------

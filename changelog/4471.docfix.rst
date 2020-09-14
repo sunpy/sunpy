@@ -1,0 +1,2 @@
+Add information about plot_function signature and return type to
+:func:`~sunpy.map.mapsequence.plot`.
