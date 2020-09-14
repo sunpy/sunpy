@@ -325,3 +325,52 @@ def deprecate_positional_args_since(since, keyword_only=False):
             return f(**kwargs)
         return inner_f
     return deprecate_positional_args
+
+
+_NOT_FOUND = object()
+
+
+def cached_property_based_on(meth):
+    """
+    A decorator to cache the value of a property based on the output of a
+    different callable.
+
+    This decorator caches the value of ``meth(instance)`` and ``prop(instance)``.
+    When the decorated property is accessed, ``meth(instance)`` is recomputed.
+    If this returns the same as its cached value, the cached value of ``prop``
+    is returned. Otherwise both ``meth`` and ``prop`` are recomputed, cached,
+    and the new value of ``prop`` is returned.
+
+    Parameters
+    ----------
+    meth : callable
+        A function that takes exactly one argument (a class instance) and
+        returns an arbitrary output. Changes in the output are used to decide
+        whether or not to recompute the property.
+
+    Notes
+    -----
+    The cached value of ``meth(instance)`` is stored under the key ``meth.__name__``.
+    """
+    def outer(prop):
+        """
+        prop: the property method being decorated
+        """
+        def inner(instance):
+            """
+            instance: the class instance of the property being decorated
+            """
+            cache = instance.__dict__
+            # Check if our caching method has changed ouptut
+            new_cache_val = meth(instance)
+            old_cache_val = cache.get(meth.__name__, _NOT_FOUND)
+            if old_cache_val is _NOT_FOUND or new_cache_val != old_cache_val:
+                # Recompute
+                new_val = prop(instance)
+                cache[prop.__name__] = new_val
+                # Set new cache value
+                cache[meth.__name__] = new_cache_val
+
+            return cache[prop.__name__]
+        return inner
+    return outer

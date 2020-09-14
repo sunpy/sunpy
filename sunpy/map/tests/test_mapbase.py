@@ -903,7 +903,7 @@ def test_bad_coordframe_repr(generic_map):
 def test_non_str_key():
     header = {'cunit1': 'arcsec',
               'cunit2': 'arcsec',
-              None: None,  # Cannot parse this into WCS
+              'None': None,  # Cannot parse this into WCS
               }
     with pytest.raises(ValueError, match='All MetaDict keys must be strings'):
         sunpy.map.GenericMap(np.zeros((10, 10)), header)
