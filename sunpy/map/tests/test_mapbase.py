@@ -904,13 +904,22 @@ def test_bad_coordframe_repr(generic_map):
         assert 'Unknown' in generic_map.__repr__()
 
 
+def test_non_str_key():
+    header = {'cunit1': 'arcsec',
+              'cunit2': 'arcsec',
+              None: None,  # Cannot parse this into WCS
+              }
+    with pytest.raises(ValueError, match='All MetaDict keys must be strings'):
+        m = sunpy.map.GenericMap(np.zeros((10, 10)), header)
+
+
 def test_bad_header_final_fallback():
     # Checks that if a WCS cannot be constructed from the
     # header, a warning is raised and a simple WCS is created
     # instead
     header = {'cunit1': 'arcsec',
               'cunit2': 'arcsec',
-              None: None,  # Cannot parse this into WCS
+              'None': None,  # Cannot parse this into WCS
               }
     m = sunpy.map.GenericMap(np.zeros((10, 10)), header)
     with pytest.warns(UserWarning,
