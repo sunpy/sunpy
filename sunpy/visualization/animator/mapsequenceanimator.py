@@ -37,7 +37,7 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
     plot_function : `function`
         A function to call when each `~sunpy.map.Map` is plotted, the function must have
         the signature ``(fig, axes, smap)`` where ``fig`` and ``axes`` are the figure and
-        axes objects of the plot and ``smap`` is the current frames `~sunpy.map.Map` object.
+        axes objects of the plot and ``smap`` is the current frame's `~sunpy.map.Map` object.
         Any objects returned from this function will have their ``remove()`` method
         called at the start of the next frame to clear them from the plot.
 
