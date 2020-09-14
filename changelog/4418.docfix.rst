@@ -1,0 +1,2 @@
+Added `sunpy.data.data_manager.downloader`, `sunpy.data.data_manager.storage`,
+and `sunpy.net.hek.HEKTable` to the docs.

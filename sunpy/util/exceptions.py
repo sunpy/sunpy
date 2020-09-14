@@ -8,7 +8,7 @@ but rather in the particular package.
 from astropy.utils.exceptions import AstropyWarning
 
 __all__ = ["SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
-           "SunpyPendingDeprecationWarning"]
+           "SunpyPendingDeprecationWarning", "SunpyMetadataWarning"]
 
 
 class SunpyWarning(AstropyWarning):
@@ -26,6 +26,15 @@ class SunpyUserWarning(UserWarning, SunpyWarning):
     The primary warning class for Sunpy.
 
     Use this if you do not need a specific type of warning.
+    """
+
+
+class SunpyMetadataWarning(UserWarning):
+    """
+    Warning class for cases metadata is missing.
+
+    This does not inherit from SunpyWarning because we want to use
+    stacklevel=3 to show the user where the issue occurred in their code.
     """
 
 

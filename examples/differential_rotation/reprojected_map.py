@@ -1,7 +1,7 @@
 """
-==================
-Reprojecting a Map
-==================
+=============================
+Differentially rotating a map
+=============================
 
 How to apply differential rotation to a Map.
 

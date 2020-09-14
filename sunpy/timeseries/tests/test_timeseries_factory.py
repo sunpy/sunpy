@@ -96,8 +96,7 @@ class TestTimeSeries:
 
     def test_implicit_fermi_gbm(self):
         # Test a GBMSummary TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
+        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_implicit_norh(self):
@@ -107,14 +106,12 @@ class TestTimeSeries:
 
     def test_implicit_goes(self):
         # Test a GOES TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_implicit_goes_com(self):
         # Test a GOES TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com)
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_implicit_lyra(self):
@@ -149,8 +146,7 @@ class TestTimeSeries:
 
     def test_fermi_gbm(self):
         # Test a GBMSummary TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
+        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_norh(self):
@@ -160,14 +156,12 @@ class TestTimeSeries:
 
     def test_goes(self):
         # Test a GOES TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_goes_com(self):
         # Test a GOES TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_lyra(self):

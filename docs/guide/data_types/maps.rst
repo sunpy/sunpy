@@ -12,7 +12,7 @@ Creating maps
 =============
 To make things easy, SunPy can download several example files which are used
 throughout the docs. These files have names like
-`~sunpy.data.sample.AIA_171_IMAGE` and `~sunpy.data.sample.RHESSI_IMAGE`. To
+``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE``. To
 create a `~sunpy.map.Map` from the the sample AIA image
 type the following into your Python shell::
 
@@ -42,33 +42,33 @@ from a data source that is not explicitly supported in SunPy.) To do this you ne
 `sunpy.map.Map` with both the data array as well as appropriate
 meta information. The meta information is important as it informs the `sunpy.map.Map`
 of the correct coordinate information associated with the data array. The meta information should be provided to
-`sunpy.map.Map` in the form of a header as a `dict` or `MetaDict <sunpy.util.MetaDict>`.
+`sunpy.map.Map` in the form of a header as a `dict` or `~sunpy.util.MetaDict`.
 
 The keys that are required for the header information follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_. SunPy now provides a map header helper function to assist the user in creating a header that contains the correct meta information
 to generate a `sunpy.map.Map`.
 
-The helper functionality includes a `meta_keywords <sunpy.map.header_helper.meta_keywords>` function
+The helper functionality includes a `~sunpy.map.meta_keywords` function
 that will return a `dict` of all the current meta keywords and their descriptions currently used by
 `sunpy.map.Map` to make a map::
 
-    >>> from sunpy.map import header_helper
+    >>> from sunpy.map import meta_keywords
 
-    >>> header_helper.meta_keywords() # doctest: +SKIP
+    >>> meta_keywords() # doctest: +SKIP
     {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
      'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
      'crval1': 'Coordinate value at reference point on naxis1 **required'
      ...
 
-The `header_helper <sunpy.map.header_helper>` functionality also includes a utility function
-`make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` that will return a header with the
+There is also functionality also includes a utility function
+`~sunpy.map.make_fitswcs_header` that will return a header with the
 appropiate FITS keywords once the map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames`
 is passed. The `astropy.coordinates.SkyCoord` is defined by the user, and contains information on the reference frame,
-reference coordinate and observer location. The function returns a `sunpy.utils.MetaDict <sunpy.utils.MetaDict>`.
+reference coordinate and observer location. The function returns a `sunpy.util.MetaDict`.
 The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.
 
-The `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` function also takes optional keywords arguments including ``reference_pixel`` and ``scale`` which describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinate.SkyCoord`) and the spatial scale of the pixels, respectively. If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
+The `~sunpy.map.make_fitswcs_header` function also takes optional keywords arguments including ``reference_pixel`` and ``scale`` which describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinates.SkyCoord`) and the spatial scale of the pixels, respectively. If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
 
-Here's an example of creating a header from some generic data and an `astropy.coordinate.SkyCoord`::
+Here's an example of creating a header from some generic data and an `astropy.coordinates.SkyCoord`::
 
 
     >>> import numpy as np
@@ -80,7 +80,7 @@ Here's an example of creating a header from some generic data and an `astropy.co
 
     >>> data = np.arange(0,100).reshape(10,10)
     >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
-    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord)
+    >>> header = sunpy.map.make_fitswcs_header(data, coord)
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
@@ -104,19 +104,19 @@ Here's an example of creating a header from some generic data and an `astropy.co
     rsun_obs: 965.3723815059902
 
 
-From this we can see now that the function returned a `sunpy.utils.MetaDict` that populated
+From this we can see now that the function returned a `sunpy.util.MetaDict` that populated
 the standard FITS keywords with information provided by the passed `astropy.coordinates.SkyCoord`,
 and the data array. Since the ``reference_pixel`` and keywords were not passed in the example above, the
 values of ``crpix`` and ``cdelt`` were set to the default values.
 
-These keywords can be passed to the function in the form of an `astropy.units.Quanity` with associated units.
+These keywords can be passed to the function in the form of an `astropy.units.Quantity` with associated units.
 Here's another example of passing ``reference_pixel`` and ``scale`` to the function::
 
 .. doctest-requires:: astropy<=4.0
 
-    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
-    ...                                                      reference_pixel=u.Quantity([5, 5]*u.pixel),
-    ...                                                      scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
+    >>> header = sunpy.map.make_fitswcs_header(data, coord,
+    ...                                        reference_pixel=u.Quantity([5, 5]*u.pixel),
+    ...                                        scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
@@ -141,20 +141,20 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
 
 As we can see, a list of WCS and observer meta information is contained within the generated headers,
 however we may want to include other meta information including the observatory name, the wavelength and
-waveunit of the observation. Any of the keywords listed in `header_helper.meta_keywords` can be passed
-to the `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` and will then populate the returned MetaDict header.
-Furthermore, the following observation keywords can be passed to the `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>`
+waveunit of the observation. Any of the keywords listed in ``header_helper.meta_keywords`` can be passed
+to the `~sunpy.map.make_fitswcs_header` and will then populate the returned MetaDict header.
+Furthermore, the following observation keywords can be passed to the `~sunpy.map.make_fitswcs_header`
 function and will be translated to the FITS standard: ``observtory``, ``instrument``,``telescope``, ``wavelength``, ``exposure``.
 
 An example of creating a header with these additional keywords::
 
 .. doctest-requires:: astropy<=4.0
 
-    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
-    ...                                                      reference_pixel = u.Quantity([5, 5]*u.pixel),
-    ...                                                      scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
-    ...                                                      telescope = 'Test case', instrument = 'UV detector',
-    ...                                                      wavelength = 1000*u.angstrom)
+    >>> header = sunpy.map.make_fitswcs_header(data, coord,
+    ...                                        reference_pixel = u.Quantity([5, 5]*u.pixel),
+    ...                                        scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
+    ...                                        telescope = 'Test case', instrument = 'UV detector',
+    ...                                        wavelength = 1000*u.angstrom)
     >>> header  # doctest: +SKIP
     MetaDict([('wcsaxes', 2),
           ('crpix1', 5.0),
@@ -283,6 +283,17 @@ elsewhere, you can use either of the following::
 Python makes use of pointers so if you want to alter the data and keep the
 original data in the map intact make sure to copy it.
 
+To create a complete copy of a Map object that is entirely independent of the original,
+use the built-in `copy.deepcopy`
+method, like so::
+
+    >>> import copy   # doctest: +REMOTE_DATA
+    >>> my_map_deepcopy = copy.deepcopy(my_map)   # doctest: +REMOTE_DATA
+
+A deepcopy ensures that any changes in the original Map object are not reflected in the
+copied object and vice versa. Note that this is different from simply copying the data of
+the Map object - this copies all of the other attributes and methods as well.
+
 Some basic statistical functions on the data array are also passed through to Map
 objects::
 
@@ -294,7 +305,7 @@ objects::
     427.02252
 
 but you can also access all the other `~numpy.ndarray` functions and attributes
-but accessing the data array directly. For example::
+by accessing the data array directly. For example::
 
     >>> my_map.data.std()  # doctest: +REMOTE_DATA
     826.41016
@@ -348,9 +359,9 @@ plot changes the default AIA color table to use an inverse Grey color table.
     plt.colorbar()
     plt.show()
 
-You can view or make changes to the default settings through the `~sunpy.map.GenericMap.plot_settings`
+You can view or make changes to the default settings through the ``sunpy.map.GenericMap.plot_settings``
 dictionary. In the following example we change the title of the plot by changing the
-`~sunpy.map.GenericMap.plot_settings` property.
+``sunpy.map.GenericMap.plot_settings`` property.
 
 .. plot::
     :include-source:
@@ -375,7 +386,7 @@ to better visualize structures in the image. Matplotlib handles this colormappin
 process through the `~matplotlib.colors` module. This process involves two steps:
 the data array is first mapped onto the range 0-1 using an instance of
 `~matplotlib.colors.Normalize` or a subclass; then this number is mapped to a
-color using an instance of a subclass of a `~matplotlib.colors.colormap`.
+color using an instance of a subclass of a `~matplotlib.colors.Colormap`.
 
 SunPy provides the colormaps for each mission as defined by the mission teams.
 The Map object chooses the appropriate colormap for you when it is created as

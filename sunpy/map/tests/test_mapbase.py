@@ -26,6 +26,7 @@ import sunpy.sun
 from sunpy.coordinates import sun
 from sunpy.time import parse_time
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 testpath = sunpy.data.test.rootdir
 
@@ -96,7 +97,8 @@ def generic_map():
         'obsrvtry': 'Foo',
         'detector': 'bar',
         'wavelnth': 10,
-        'waveunit': 'm'
+        'waveunit': 'm',
+        'bunit': 'ct/s',
     }
     return sunpy.map.Map((data, header))
 
@@ -174,6 +176,13 @@ def test_std(generic_map):
     assert generic_map.std() == 0
 
 
+def test_unit(generic_map):
+    assert generic_map.unit == u.ct / u.s
+    generic_map.meta['bunit'] = 'not a unit'
+    with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string "not a unit"'):
+        assert generic_map.unit is None
+
+
 # ==============================================================================
 # Test the default value of a load of properties
 # TODO: Test the header keyword extraction
@@ -213,8 +222,10 @@ def test_rsun_meters(generic_map):
 
 
 def test_rsun_obs(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for solar radius'):
-        assert generic_map.rsun_obs == sun.angular_radius(generic_map.date)
+    with pytest.warns(SunpyUserWarning,
+                      match='Missing metadata for solar angular radius: assuming '
+                      'photospheric limb as seen from observer coordinate.'):
+        assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
 
 
 def test_coordinate_system(generic_map):
@@ -259,7 +270,7 @@ def test_heliographic_longitude_crln(hmi_test_map):
 
 def test_remove_observers(aia171_test_map):
     aia171_test_map._remove_existing_observer_location()
-    with pytest.warns(SunpyUserWarning,
+    with pytest.warns(SunpyMetadataWarning,
                       match='Missing metadata for observer: assuming Earth-based observer.*'):
         aia171_test_map.observer_coordinate
 
@@ -270,7 +281,7 @@ def test_partially_missing_observers(generic_map):
     generic_map.meta['crlt_obs'] = 0
     generic_map.meta['crln_obs'] = 0
     generic_map.meta.pop('dsun_obs')
-    with pytest.warns(SunpyUserWarning,
+    with pytest.warns(SunpyMetadataWarning,
                       match="Missing metadata for observer: assuming Earth-based observer.\n" +
                             "For frame 'heliographic_stonyhurst' the following metadata is missing: dsun_obs\n" +
                             "For frame 'heliographic_carrington' the following metadata is missing: dsun_obs\n"):
@@ -587,8 +598,11 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
     assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
     assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
     assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
+    assert resampled_map.meta['naxis1'] == new_dimensions[0].value
+    assert resampled_map.meta['naxis2'] == new_dimensions[1].value
     for key in generic_map.meta:
-        if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1', 'crval2'):
+        if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1',
+                       'crval2', 'naxis1', 'naxis2'):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
 
@@ -872,7 +886,7 @@ def test_missing_metadata_warnings():
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
-    assert len([w for w in record if w.category is SunpyUserWarning]) == 2
+    assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 2
 
 
 def test_fits_header(aia171_test_map):
@@ -1080,3 +1094,18 @@ def test_submap_inputs(generic_map2, coords):
     for args, kwargs in inputs:
         smap = generic_map2.submap(*args, **kwargs)
         assert u.allclose(smap.dimensions, (3, 3) * u.pix)
+
+
+def test_contour(simple_map):
+    data = np.ones((3, 3))
+    data[1, 1] = 2
+    simple_map = sunpy.map.Map(data, simple_map.meta)
+    # 2 is the central pixel of the map, so contour half way between 1 and 2
+    contours = simple_map.contour(1.5)
+    assert len(contours) == 1
+    contour = contours[0]
+    assert contour.observer.lat == simple_map.observer_coordinate.frame.lat
+    assert contour.observer.lon == simple_map.observer_coordinate.frame.lon
+    assert contour.obstime == simple_map.date
+    assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
+    assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)

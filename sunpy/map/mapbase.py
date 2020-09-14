@@ -37,13 +37,15 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
 from sunpy.util.decorators import deprecate_positional_args_since, deprecated
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
+
+_META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata'
 
 __all__ = ['GenericMap']
 
@@ -572,6 +574,30 @@ class GenericMap(NDData):
         """
         return self.data.max(*args, **kwargs)
 
+    @property
+    def unit(self):
+        """
+        Unit of the map data.
+
+        This is taken from the 'BUNIT' FITS keyword. If no 'BUNIT' entry is
+        present in the metadata then this returns `None`. If the 'BUNIT' value
+        cannot be parsed into a unit a warning is raised, and `None` returned.
+        """
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+
+        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
+        if isinstance(unit, u.UnrecognizedUnit):
+            warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                          'with sunpy.map.Map.\n'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'the FITS unit standards.',
+                          SunpyMetadataWarning)
+            unit = None
+        return unit
+
 # #### Keyword attribute and other attribute definitions #### #
 
     def _base_name(self):
@@ -742,18 +768,29 @@ class GenericMap(NDData):
 
     @property
     def rsun_obs(self):
-        """Radius of the Sun."""
+        """
+        Angular radius of the Sun.
+
+        Notes
+        -----
+        This value is taken the ``'rsun_obs'``, ``'solar_r'``, or ``radius``
+        FITS keywords. If none of these keys are present the photospheric limb
+        as seen from the observer coordinate is returned.
+        """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
                                                       self.meta.get('radius',
                                                                     None)))
 
         if rsun_arcseconds is None:
-            warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
+            warnings.warn("Missing metadata for solar angular radius: assuming photospheric limb "
+                          "as seen from observer coordinate.",
                           SunpyUserWarning)
-            rsun_arcseconds = sun.angular_radius(self.date).to('arcsec').value
-
-        return u.Quantity(rsun_arcseconds, 'arcsec')
+            dsun = self.dsun
+            rsun = sun._angular_radius(constants.radius, dsun)
+        else:
+            rsun = rsun_arcseconds * u.arcsec
+        return rsun
 
     @property
     def coordinate_system(self):
@@ -812,7 +849,7 @@ class GenericMap(NDData):
                     fake_observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, sc.radius,
                                                            obstime=sc.obstime)
                     fake_frame = sc.frame.replicate(observer=fake_observer)
-                    hgs = fake_frame.transform_to(HeliographicStonyhurst)
+                    hgs = fake_frame.transform_to(HeliographicStonyhurst(obstime=sc.obstime))
 
                     # HeliographicStonyhurst doesn't need an observer, but adding the observer
                     # facilitates a conversion back to HeliographicCarrington
@@ -827,7 +864,7 @@ class GenericMap(NDData):
         warning_message = "".join(
             [f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
-        warnings.warn(warning_message, SunpyUserWarning)
+        warnings.warn(warning_message, SunpyMetadataWarning, stacklevel=3)
 
         return get_earth(self.date)
 
@@ -1008,8 +1045,7 @@ class GenericMap(NDData):
 
         if err_message:
             err_message.append(
-                'See https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
-                'instructions on how to add missing metadata.')
+                f'See {_META_FIX_URL} for instructions on how to add missing metadata.')
             raise MapMetaValidationError('\n'.join(err_message))
 
         for meta_property in ('waveunit', ):
@@ -1191,6 +1227,8 @@ class GenericMap(NDData):
         lon, lat = self._get_lon_lat(self.center.frame)
         new_meta['crval1'] = lon.value
         new_meta['crval2'] = lat.value
+        new_meta['naxis1'] = new_data.shape[1]
+        new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
@@ -2038,7 +2076,11 @@ class GenericMap(NDData):
                               SunpyUserWarning)
 
         # Normal plot
-        plot_settings = copy.deepcopy(self.plot_settings)
+        try:
+            plot_settings = copy.deepcopy(self.plot_settings)
+        except NotImplementedError:
+            # MPL dev at the moment does not support deepcopy and this is a workaround.
+            plot_settings = self.plot_settings
         if 'title' in plot_settings:
             plot_settings_title = plot_settings.pop('title')
         else:
@@ -2067,7 +2109,11 @@ class GenericMap(NDData):
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
-        imshow_args.update(copy.deepcopy(imshow_kwargs))
+        try:
+            imshow_args.update(copy.deepcopy(imshow_kwargs))
+        except NotImplementedError:
+            # MPL dev at the moment does not support deepcopy and this is a workaround.
+            imshow_args.update(imshow_kwargs)
 
         if clip_interval is not None:
             if len(clip_interval) == 2:
@@ -2107,6 +2153,33 @@ class GenericMap(NDData):
                 plt.sci(ret)
 
         return ret
+
+    def contour(self, level, **kwargs):
+        """
+        Returns coordinates of the contours for a given level value.
+
+        For details of the contouring algorithm see `skimage.measure.find_contours`.
+
+        Parameters
+        ----------
+        level : float
+            Value along which to find contours in the array.
+        kwargs :
+            Additional keyword arguments are passed to `skimage.measure.find_contours`.
+
+        Returns
+        -------
+        contours: list of (n,2) `~astropy.coordinates.SkyCoord`
+            Coordinates of each contour.
+
+        See also
+        --------
+        `skimage.measure.find_contours`
+        """
+        from skimage import measure
+        contours = measure.find_contours(self.data, level=level, **kwargs)
+        contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
+        return contours
 
 
 class InvalidHeaderInformation(ValueError):

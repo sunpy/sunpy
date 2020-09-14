@@ -12,7 +12,7 @@ from sunpy.net import attrs as a
 from sunpy.net import vso
 from sunpy.net.vso import QueryResponse
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.vso import VSOClient, build_client, get_online_vso_url
+from sunpy.net.vso.vso import HashableResponse, VSOClient, build_client, get_online_vso_url
 from sunpy.tests.mocks import MockObject
 from sunpy.time import TimeRange, parse_time
 
@@ -26,7 +26,7 @@ class MockQRRecord:
                  extent_type=None):
         self.size = size
         self.time = MockObject(start=start_time, end=end_time)
-        self.source = va.Source(source)
+        self.source = a.Source(source)
         self.instrument = core_attrs.Instrument(instrument)
         self.extent = MockObject(type=None if extent_type is None else extent_type.type)
 
@@ -107,12 +107,12 @@ def test_simpleattr_create(client):
 def test_simpleattr_and_duplicate():
     attr = core_attrs.Instrument('foo')
     pytest.raises(TypeError, lambda: attr & core_attrs.Instrument('bar'))
-    attr |= va.Source('foo')
+    attr |= a.Source('foo')
     pytest.raises(TypeError, lambda: attr & core_attrs.Instrument('bar'))
-    otherattr = core_attrs.Instrument('foo') | va.Source('foo')
+    otherattr = core_attrs.Instrument('foo') | a.Source('foo')
     pytest.raises(TypeError, lambda: attr & otherattr)
     pytest.raises(TypeError, lambda: (attr | otherattr) & core_attrs.Instrument('bar'))
-    tst = core_attrs.Instrument('foo') & va.Source('foo')
+    tst = core_attrs.Instrument('foo') & a.Source('foo')
     pytest.raises(TypeError, lambda: tst & tst)
 
 
@@ -141,7 +141,7 @@ def test_complexattr_and_duplicate():
     attr = core_attrs.Time((2011, 1, 1), (2011, 1, 1, 1))
     pytest.raises(TypeError,
                   lambda: attr & core_attrs.Time((2011, 2, 1), (2011, 2, 1, 1)))
-    attr |= va.Source('foo')
+    attr |= a.Source('foo')
     pytest.raises(TypeError,
                   lambda: attr & core_attrs.Time((2011, 2, 1), (2011, 2, 1, 1)))
 
@@ -155,9 +155,9 @@ def test_complexattr_or_eq():
 
 def test_attror_and():
     attr = core_attrs.Instrument('foo') | core_attrs.Instrument('bar')
-    one = attr & va.Source('bar')
-    other = ((core_attrs.Instrument('foo') & va.Source('bar')) |
-             (core_attrs.Instrument('bar') & va.Source('bar')))
+    one = attr & a.Source('bar')
+    other = ((core_attrs.Instrument('foo') & a.Source('bar')) |
+             (core_attrs.Instrument('bar') & a.Source('bar')))
     assert one == other
 
 
@@ -296,6 +296,7 @@ def test_path(client, tmpdir):
     assert "aia_lev1_171a_2011_06_07t06_33_02_77z_image_lev1.fits" in files[0]
 
 
+@pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
 @pytest.mark.remote_data
 def test_no_download(client):
     """
@@ -340,7 +341,7 @@ def test__parse_waverange(waverange, as_dict):
 
 
 @pytest.mark.parametrize("input, expected", [
-    ('12/01/2017 - 02/10/2018', dict(time_start='12/01/2017', time_end='02/10/2018')),
+    ('12/01/2020 - 02/10/2018', dict(time_start='12/01/2020', time_end='02/10/2018')),
 ])
 def test__parse_date(input, expected):
     assert vso.vso._parse_date(input) == expected
@@ -382,7 +383,7 @@ def test_QueryResponse_build_table_defaults(mock_build_client):
     # Check values we did set by default in 'MockQRRecord'
     source_ = table['Source'].data
     assert len(source_) == 1
-    assert source_[0][:-16] == str(va.Source('SOHO'))[:-16]
+    assert source_[0][:-16] == str(a.Source('SOHO'))[:-16]
 
     instrument_ = table['Instrument'].data
     assert len(instrument_) == 1
@@ -454,7 +455,7 @@ def test_vso_hmi(client, tmpdir):
     """
     This is a regression test for https://github.com/sunpy/sunpy/issues/2284
     """
-    res = client.search(core_attrs.Time('2017-09-02 23:52:00', '2017-09-02 23:54:00'),
+    res = client.search(core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
                         core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'))
 
     dr = client.make_getdatarequest(res)
@@ -501,6 +502,19 @@ def test_build_client_params():
 
 
 @pytest.mark.remote_data
+def test_vso_post_search(client):
+    timerange = a.Time(('2020-01-01 00:01:05'), ('2020-01-01 00:01:10'))
+    results = client.search(timerange, a.Instrument('aia') | a.Instrument('hmi'))
+    trange_filter = a.Time(('2020-01-01 00:01:05'), ('2020-01-01 00:01:07'))
+    wave_filter = a.Wavelength(131 * u.Angstrom)
+    res_filtered = results.search(trange_filter & a.Instrument('aia') & wave_filter)
+    for rec in res_filtered:
+        assert parse_time(rec.time.start) <= parse_time(trange_filter.end)
+        assert rec.instrument.lower() == 'aia'
+        assert (float(rec.wave.wavemax) == 131.0 or float(rec.wave.wavemin) == 131.0)
+
+
+@pytest.mark.remote_data
 def test_incorrect_content_disposition(client):
     results = client.search(
         core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
@@ -515,7 +529,7 @@ def test_incorrect_content_disposition(client):
 @pytest.mark.parametrize("query, handle", [
     ((a.Time("2011/01/01", "2011/01/02"),), True),
     ((a.Physobs.los_magnetic_field,), False),
-    ((a.Time("2011/01/01", "2011/01/02"), a.vso.Provider("SDAC"),), True),
+    ((a.Time("2011/01/01", "2011/01/02"), a.Provider("SDAC"),), True),
     ((a.jsoc.Series("wibble"), a.Physobs.los_magnetic_field,), False),
 ])
 def test_can_handle_query(query, handle):
@@ -523,7 +537,7 @@ def test_can_handle_query(query, handle):
 
 
 @pytest.mark.remote_data
-def test_vso_attr(client):
+def test_vso_attrs(client):
     """
     Check that the dict is correctly filled.
     """
@@ -550,7 +564,23 @@ def test_vso_repr(client):
 
 @pytest.mark.remote_data
 def test_response_block_properties(client):
-    res = client.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom),
+    res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom),
                         a.Sample(10 * u.minute))
     properties = res.response_block_properties()
     assert len(properties) == 0
+
+
+def test_HashableResponse():
+    d0 = {'instrument': 'HMI', 'wave': {'wavemin': '6173', 'wavemax': '6174'}, 'fileid': 'fid1'}
+    d1 = {'instrument': 'AIA', 'wave': {'wavemin': '304', 'wavemax': '304'}, 'fileid': 'fid1'}
+    d2 = {'instrument': 'AIA', 'wave': {'wavemin': '131', 'wavemax': '131'}, 'fileid': 'fid2'}
+    dicts = [d0, d1, d2]
+    hashRecs = list()
+    for d in dicts:
+        hashRecs.append(HashableResponse(d))
+    assert d0['wave']['wavemax'] == hashRecs[0].wave.wavemax == '6174'
+    assert d2['fileid'] == hashRecs[2].fileid
+    assert hashRecs[0].__eq__(hashRecs[2]) is False
+    assert hashRecs[0] == hashRecs[1]
+    assert hashRecs[1].__hash__() != hashRecs[2].__hash__()
+    assert len(set(hashRecs)) == 2

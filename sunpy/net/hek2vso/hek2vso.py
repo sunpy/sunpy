@@ -91,7 +91,7 @@ def vso_attribute_parse(phrase):
     try:
         query = [a.Time(phrase['event_starttime'],
                         phrase['event_endtime']),
-                 a.vso.Source(phrase['obs_observatory']),
+                 a.Source(phrase['obs_observatory']),
                  a.Instrument(phrase['obs_instrument'])]
         avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
         query.append(a.Wavelength(avg_wave_len, avg_wave_len))

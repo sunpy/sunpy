@@ -26,8 +26,7 @@ from sunpy.util.exceptions import SunpyDeprecationWarning
 from .. import _attrs
 from .. import attr as _attr
 
-__all__ = ['Extent', 'Field', 'Provider', 'Source', 'Pixels',
-           'Filter', 'Quicklook', 'PScale']
+__all__ = ['Extent', 'Field', 'Pixels', 'Filter', 'Quicklook', 'PScale']
 
 _TIMEFORMAT = '%Y%m%d%H%M%S'
 
@@ -62,40 +61,6 @@ class Extent(_attr.DataAttr):
 
     def collides(self, other):
         return isinstance(other, self.__class__)
-
-
-class Provider(_attr.SimpleAttr):
-    """
-    Specifies the VSO data provider to search for data for.
-
-    Parameters
-    ----------
-    value : str
-
-    Notes
-    -----
-    More information about each source may be found within in the VSO Registry.
-    For a list of sources see
-    https://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
-    """
-
-
-class Source(_attr.SimpleAttr):
-    """
-    Data sources that VSO can search on.
-
-    Parameters
-    ----------
-    value : str
-
-    Notes
-    -----
-    More information about each source may be found within in the VSO Registry.
-    User Interface programmers should note that some names may be encoded as
-    UTF-8. Please note that 'Source' is used internally by VSO to represent
-    what the VSO Data Model refers to as 'Observatory'.  For a list of sources
-    see https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
-    """
 
 
 class Pixels(_attr.SimpleAttr):
@@ -320,11 +285,13 @@ def _(attr, results):
         if
         it.wave.wavemax is not None
         and
-        attr.min <= it.wave.wavemax.to(u.angstrom, equivalencies=u.spectral())
+        attr.min <= u.Quantity(it.wave.wavemax, unit=it.wave.waveunit).to(
+            u.angstrom, equivalencies=u.spectral())
         and
         it.wave.wavemin is not None
         and
-        attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
+        attr.max >= u.Quantity(it.wave.wavemin, unit=it.wave.waveunit).to(
+            u.angstrom, equivalencies=u.spectral())
     }
 
 
@@ -363,7 +330,7 @@ class _DeprecatedAttr:
         super().__init__(*args, **kwargs)
 
 
-_deprecated_names = ['Time', 'Instrument', 'Wavelength',
+_deprecated_names = ['Time', 'Instrument', 'Wavelength', 'Source', 'Provider',
                      'Level', 'Sample', 'Detector', 'Resolution', 'Physobs']
 
 for _name in _deprecated_names:

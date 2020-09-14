@@ -93,6 +93,8 @@ def test_scipy_rotation(original, angle, k):
 
 dx_values, dy_values = list(range(-100, 101, 100))*3, list(range(-100, 101, 100))*3
 dy_values.sort()
+
+
 @pytest.mark.parametrize("dx, dy", list(zip(dx_values, dy_values)))
 def test_shift(original, dx, dy):
     # Rotation center for all translation tests.
@@ -200,6 +202,10 @@ def test_flat(identity):
     assert np.allclose(in_arr, out_arr, rtol=RTOL)
 
 
+# Although a depreaction warning is raised, behaviour is as expected and will
+# continue after the depreaction period, so ignore the warnings
+@pytest.mark.filterwarnings('ignore:Passing `np.nan` to mean no clipping in np.clip has always '
+                            'been unreliable, and is now deprecated')
 def test_nan_skimage_low(identity):
     # Test non-replacement of NaN values for scikit-image rotation with order <= 3
     in_arr = np.array([[np.nan]])
@@ -226,6 +232,14 @@ def test_nan_scipy(identity):
 def test_int(identity):
     # Test casting of integer array to float array
     in_arr = np.array([[100]], dtype=int)
-    with pytest.warns(SunpyUserWarning, match='Input data has been cast to float64.'):
+    with pytest.warns(SunpyUserWarning, match='Integer input data has been cast to float64'):
         out_arr = affine_transform(in_arr, rmatrix=identity)
     assert np.issubdtype(out_arr.dtype, np.floating)
+
+
+def test_float32(identity):
+    # Check that float32 input remains as float32 output
+    # Test casting of integer array to float array
+    in_arr = np.array([[100]], dtype=np.float32)
+    out_arr = affine_transform(in_arr, rmatrix=identity)
+    assert np.issubdtype(out_arr.dtype, np.float32)
