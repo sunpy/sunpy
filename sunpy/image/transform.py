@@ -59,13 +59,17 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     an alternative affine transformation. The two transformations use different
     algorithms and thus do not give identical output.
 
-    When using for `skimage.transform.warp` with order >= 4 or using
-    `scipy.ndimage.affine_transform` at all, "NaN" values will
-    replaced with zero prior to rotation. No attempt is made to retain the NaN
-    values.
+    When using `skimage.transform.warp` with order >= 4 or using
+    `scipy.ndimage.affine_transform` at all, "NaN" values will be replaced with
+    zero prior to rotation. No attempt is made to retain the "NaN" values except when
+    the entire image consists of "NaN" values only and `skimage.transform.warp` is used,
+    where it is passed down as it is.
 
     Input arrays with integer data are cast to float 64 and can be re-cast using
     `numpy.ndarray.astype` if desired.
+
+    In the case of `skimage.transform.warp`, the image is normalized to [0, 1]
+    before passing it to the function. It is later rescaled back to the original range.
 
     Although this function is analogous to the IDL's ``rot`` function, it does not
     use the same algorithm as the IDL ``rot`` function.
@@ -116,7 +120,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
         if issubclass(image.dtype.type, numbers.Integral):
             warnings.warn("Integer input data has been cast to float64, "
-                          "which is required for the skikit-image transform.",
+                          "which is required for the scikit-image transform.",
                           SunpyUserWarning)
             adjusted_image = image.astype(np.float64)
         else:
@@ -126,8 +130,27 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                           SunpyUserWarning)
             adjusted_image = np.nan_to_num(adjusted_image)
 
+        # Scale image to range [0, 1] if it is valid (not made up entirely of NaNs)
+        is_nan_image = np.all(np.isnan(adjusted_image))
+        if is_nan_image:
+            adjusted_missing = missing
+        else:
+            im_min = np.nanmin(adjusted_image)
+            adjusted_image -= im_min
+            im_max = np.nanmax(adjusted_image)
+            if im_max > 0:
+                adjusted_image /= im_max
+                adjusted_missing = (missing - im_min) / im_max
+            else:
+                adjusted_missing = missing - im_min
+
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-                                               mode='constant', cval=missing,
-                                               preserve_range=True)
+            mode='constant', cval=adjusted_missing, preserve_range=True)
+
+        # Convert the image back to its original range if it is valid
+        if not is_nan_image:
+            if im_max > 0:
+                rotated_image *= im_max
+            rotated_image += im_min
 
     return rotated_image
