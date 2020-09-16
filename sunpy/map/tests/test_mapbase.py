@@ -910,7 +910,7 @@ def test_non_str_key():
               None: None,  # Cannot parse this into WCS
               }
     with pytest.raises(ValueError, match='All MetaDict keys must be strings'):
-        m = sunpy.map.GenericMap(np.zeros((10, 10)), header)
+        sunpy.map.GenericMap(np.zeros((10, 10)), header)
 
 
 def test_wcs_isot(aia171_test_map):
