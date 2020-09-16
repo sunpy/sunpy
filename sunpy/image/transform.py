@@ -145,7 +145,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                 adjusted_missing = missing - im_min
 
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-            mode='constant', cval=adjusted_missing, preserve_range=True)
+                                               mode='constant', cval=adjusted_missing, preserve_range=True)
 
         # Convert the image back to its original range if it is valid
         if not is_nan_image:
