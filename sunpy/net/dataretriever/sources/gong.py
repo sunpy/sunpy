@@ -1,9 +1,9 @@
 from sunpy.net.dataretriever import GenericClient
 
-__all__ = ['GongSynopticClient']
+__all__ = ['GONGClient']
 
 
-class GongSynopticClient(GenericClient):
+class GONGClient(GenericClient):
     """
     Provides access to the Magnetogram products of NSO-GONG synoptic Maps.
 
@@ -18,7 +18,7 @@ class GongSynopticClient(GenericClient):
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    3 Results from the GongSynopticClient:
+    3 Results from the GONGClient:
          Start Time           End Time      Instrument ... Source ExtentType
     ------------------- ------------------- ---------- ... ------ ----------
     2019-12-31 22:14:00 2019-12-31 22:14:59       GONG ...    NSO   SYNOPTIC
@@ -33,14 +33,10 @@ class GongSynopticClient(GenericClient):
     pattern = '{}/zqs/{year:4d}{month:2d}/mrzqs{:4d}{day:2d}/mrzqs{:6d}t{hour:2d}{minute:2d}c{}'
 
     @classmethod
-    def _attrs_module(cls):
-        return 'gong_synoptic', 'sunpy.net.dataretriever.attrs.gong_synoptic'
-
-    @classmethod
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [("GONG", "Global Oscillation Network Group.")],
                  attrs.Physobs: [("LOS_MAGNETIC_FIELD", "Line of sight magnetic field")],
                  attrs.Source: [('NSO', 'National Solar Observatory.')],
-                 attrs.gong_synoptic.ExtentType: [("SYNOPTIC", "Coverage of a complete solar rotation synthesized over time")]}
+                 attrs.ExtentType: [("SYNOPTIC", "Coverage of a complete solar rotation synthesized over time")]}
         return adict

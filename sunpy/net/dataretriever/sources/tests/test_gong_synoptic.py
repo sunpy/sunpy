@@ -1,6 +1,6 @@
 import pytest
 
-import sunpy.net.dataretriever.sources.gong_synoptic as gong_synoptic
+import sunpy.net.dataretriever.sources.gong as gong
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net._attrs import Instrument, Time
@@ -10,7 +10,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 
 @pytest.fixture
 def GSClient():
-    return gong_synoptic.GongSynopticClient()
+    return gong.GONGClient()
 
 
 @pytest.mark.remote_data
@@ -41,13 +41,13 @@ def test_get_url_for_time_range(GSClient, timerange, url_start, url_end):
     [((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong')), True),
      ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('goes')), False),
      ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong'), a.Physobs('LOS_MAGNETIC_FIELD'),
-       a.gong_synoptic.ExtentType('synoptic')), True),
+       a.ExtentType('synoptic')), True),
      ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong'),
-       a.gong_synoptic.ExtentType('synoptic')), True),
+       a.ExtentType('synoptic')), True),
      ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong'),
-       a.gong_synoptic.ExtentType('FULL_DISK')), False)])
+       a.ExtentType('FULL_DISK')), False)])
 def test_can_handle_query(query, result):
-    assert gong_synoptic.GongSynopticClient._can_handle_query(*query) == result
+    assert gong.GONGClient._can_handle_query(*query) == result
 
 
 @pytest.mark.remote_data
@@ -77,7 +77,7 @@ def test_fido(time, instrument):
 
 def test_attr_reg():
     assert a.Instrument.gong == a.Instrument("GONG")
-    assert a.gong_synoptic.ExtentType.synoptic == a.gong_synoptic.ExtentType("SYNOPTIC")
+    assert a.ExtentType.synoptic == a.ExtentType("SYNOPTIC")
 
 
 def test_client_repr(GSClient):
@@ -85,4 +85,4 @@ def test_client_repr(GSClient):
     Repr check
     """
     output = str(GSClient)
-    assert output[:50] == 'sunpy.net.dataretriever.sources.gong_synoptic.Gong'
+    assert output[:50] == 'sunpy.net.dataretriever.sources.gong.GONGClient\n\nP'
