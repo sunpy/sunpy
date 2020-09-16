@@ -20,11 +20,11 @@ attrs specific to them, under:
 * `a.vso <sunpy.net.vso.attrs>`
 * `a.jsoc <sunpy.net.jsoc.attrs>`
 * `a.goes <sunpy.net.dataretriever.attrs.goes>`
-* `a.gong_synoptic <sunpy.net.dataretriever.attrs.gong_synoptic>`
 
 """
 from ._attrs import (
     Detector,
+    ExtentType,
     Instrument,
     Level,
     Physobs,
@@ -37,8 +37,8 @@ from ._attrs import (
 )
 
 # Trick the docs into thinking these attrs are defined in here.
-for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs, Source, Provider):
+for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs, Source, Provider, ExtentType):
     _a.__module__ = __name__
 
-__all__ = ['Time', 'Instrument', 'Wavelength', 'Level',
+__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'ExtentType',
            'Sample', 'Detector', 'Resolution', 'Physobs', 'Source', 'Provider']

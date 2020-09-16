@@ -1,3 +1,3 @@
-from . import goes, gong_synoptic
+from . import goes
 
-__all__ = ['goes', 'gong_synoptic']
+__all__ = ['goes']
