@@ -26,14 +26,14 @@ class XRSClient(GenericClient):
     to re-processed GOES 13, 14 and 15. For satellite numbers > 13
     the XRSClient searches the NOAA archive, and returns the re-processed
     science-quality data for GOES 13, 14 and 15, and also the new GOES-R series 16 and 17.
-        
+
     Note - the new science quality factors have scaling factors removed for 13, 14 and 15
-    and they are not added to GOES 16 AND 17. This means the peak flux will be different to 
+    and they are not added to GOES 16 AND 17. This means the peak flux will be different to
     the older data.
 
     See the following readmes about the data
 
-    * Reprocessed 13, 14, 15 : 
+    * Reprocessed 13, 14, 15 :
         https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf
 
     * GOES-R 16, 17 :
@@ -74,7 +74,7 @@ class XRSClient(GenericClient):
     # GOES XRS data for GOES-R Series - 16, 17
     baseurl_r = (r"https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber}"
                  r"/l2/data/xrsf-l2-flx1s_science/%Y/%m/sci_xrsf-l2-flx1s_g{SatelliteNumber}_d%Y%m%d_v2-0-1.nc")
-                 
+
     pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-flx1s_science/{year:4d}/"
                  "{month:2d}/sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_v2-0-1.nc")
 
@@ -95,14 +95,14 @@ class XRSClient(GenericClient):
         if i['url'].endswith('.fits'):
             rowdict['Provider'] = matchdict['Provider'][0]
         else:
-            rowdict['Provider'] = matchdict['Provider'][1]          
+            rowdict['Provider'] = matchdict['Provider'][1]
 
         return rowdict
 
     @classmethod
     def search(self, *args, **kwargs):
         matchdict = self._get_match_dict(*args, **kwargs)
-        
+
         metalist = []
         # the data before the re-processed GOES 13, 14, 15 dara
         if matchdict['Time'].end<'2009-09-01':
@@ -110,7 +110,7 @@ class XRSClient(GenericClient):
             filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_old, matcher=matchdict)
             for i in filemeta:
                 rowdict = self.post_search_hook(i, matchdict)
-                metalist.append(rowdict) 
+                metalist.append(rowdict)
 
         # if for some reason a user wants the old data
         elif (matchdict['Time'].end>='2009-09-01' and matchdict.get('VersionData')==['old']):
@@ -118,9 +118,9 @@ class XRSClient(GenericClient):
             filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_old, matcher=matchdict)
             for i in filemeta:
                 rowdict = self.post_search_hook(i, matchdict)
-                metalist.append(rowdict)    
+                metalist.append(rowdict)
 
-        # new data from NOAA                                                        
+        # new data from NOAA
         else:
             for sat in [16, 17]:
                 formdict = {'SatelliteNumber':sat}
@@ -129,8 +129,8 @@ class XRSClient(GenericClient):
                 filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_r, matcher=matchdict)
                 for i in filemeta:
                     rowdict = self.post_search_hook(i, matchdict)
-                    metalist.append(rowdict)  
-            
+                    metalist.append(rowdict)
+
             for sat in [13, 14, 15]:
                 formdict = {'SatelliteNumber':sat}
                 urlpattern = self.baseurl_new.format(**formdict)
@@ -138,8 +138,8 @@ class XRSClient(GenericClient):
                 filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_new, matcher=matchdict)
                 for i in filemeta:
                     rowdict = self.post_search_hook(i, matchdict)
-                    metalist.append(rowdict)                                                               
-                                                                   
+                    metalist.append(rowdict)
+
         return QueryResponse(metalist, client=self)
 
     @classmethod
@@ -159,7 +159,7 @@ class XRSClient(GenericClient):
                              ('NOAA', 'The National Oceanic and Atmospheric Administration')],
             attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number],
             attrs.goes.VersionData: [('normal', 'normal'), ('old', 'before re-processing'), ('re-processed', 're-processed')]}
-       
+
         return adict
 
 class SUVIClient(GenericClient):
