@@ -214,9 +214,9 @@ class DatabaseEntry(DatabaseEntryType, Base):
         to a specific data product. The association of fileid to the specific
         data may change sometime, if the fileid always points to the latest
         calibrated data.
-    observation_time_start : datetime
+    observation_time_start : datetime.datetime
         The date and time when the observation of the data started.
-    observation_time_end : datetime
+    observation_time_end : datetime.datetime
         The date and time when the observation of the data ended.
     instrument : str
         The instrument which was used to observe the data.
@@ -233,7 +233,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
         files they are located.
     path : str
         A local file path where the according FITS file is saved.
-    download_time : datetime
+    download_time : datetime.datetime
         The date and time when the files connected to a query have been
         downloaded. Note: this is not the date and time when this entry has
         been added to a database!
@@ -374,16 +374,16 @@ class DatabaseEntry(DatabaseEntryType, Base):
         """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
-        source = getattr(sr_block, 'source', None)
-        provider = getattr(sr_block, 'provider', None)
-        physobs = getattr(sr_block, 'physobs', None)
+        source = sr_block.get('Source', None)
+        provider = sr_block.get('Provider', None)
+        physobs = sr_block.get('Physobs', None)
         if physobs is not None:
             physobs = str(physobs)
-        instrument = getattr(sr_block, 'instrument', None)
-        time_start = sr_block.time.start.datetime
-        time_end = sr_block.time.end.datetime
+        instrument = sr_block.get('Instrument', None)
+        time_start = sr_block['Time'].start.datetime
+        time_end = sr_block['Time'].end.datetime
 
-        wavelengths = getattr(sr_block, 'wave', None)
+        wavelengths = sr_block.get('Wavelength', np.nan)
         wavelength_temp = {}
         if isinstance(wavelength_temp, tuple):
             # Tuple of values
@@ -409,8 +409,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
         wavemin = final_values['wavemin']
         wavemax = final_values['wavemax']
 
-        # sr_block.url of a QueryResponseBlock attribute is stored in fileid
-        fileid = str(sr_block.url) if sr_block.url is not None else None
+        fileid = sr_block.get('url', None)
         size = None
         return cls(
             source=source, provider=provider, physobs=physobs, fileid=fileid,
@@ -572,17 +571,17 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> entries = entries_from_fido_search_result(sr) # doctest: +REMOTE_DATA
     >>> entry = next(entries) # doctest: +REMOTE_DATA
     >>> entry.source # doctest: +REMOTE_DATA
-    'Proba2'
+    'PROBA2'
     >>> entry.provider # doctest: +REMOTE_DATA
-    'esa'
+    'ESA'
     >>> entry.physobs # doctest: +REMOTE_DATA
     'irradiance'
     >>> entry.fileid # doctest: +REMOTE_DATA
     'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
     >>> entry.observation_time_start, entry.observation_time_end # doctest: +REMOTE_DATA
-    (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0))
+    (datetime.datetime(2012, 1, 1, 0, 0),  datetime.datetime(2012, 1, 1, 23, 59, 59, 999000))
     >>> entry.instrument # doctest: +REMOTE_DATA
-    'lyra'
+    'LYRA'
 
     """
     for entry in sr:
@@ -605,12 +604,12 @@ def entries_from_file(file, default_waveunit=None,
     # (which would make strptime freak out, if I remember correctly).
     """Use the headers of a FITS file to generate an iterator of
     :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
-    information will be saved in the attribute `fits_header_entries`. If the
+    information will be saved in the attribute ``fits_header_entries``. If the
     key INSTRUME, WAVELNTH or DATE-OBS / DATE_OBS is available, the attribute
-    `instrument`, `wavemin` and `wavemax` or `observation_time_start` is set,
-    respectively. If the wavelength unit can be read, the values of `wavemin`
-    and `wavemax` are converted to nm (nanometres). The value of the `file`
-    parameter is used to set the attribute `path` of each generated database
+    ``instrument``, ``wavemin`` and ``wavemax`` or ``observation_time_start`` is set,
+    respectively. If the wavelength unit can be read, the values of ``wavemin``
+    and ``wavemax`` are converted to nm (nanometres). The value of the ``file``
+    parameter is used to set the attribute ``path`` of each generated database
     entry.
 
     Parameters
@@ -627,19 +626,19 @@ def entries_from_file(file, default_waveunit=None,
     time_string_parse_format : str, optional
         Fallback timestamp format which will be passed to
         `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
-        automatically read the `date-obs` metadata.
+        automatically read the ``date-obs`` metadata.
 
     Raises
     ------
-    sunpy.database.WaveunitNotFoundError
-        If `default_waveunit` is not given and the wavelength unit cannot
+    sunpy.database.tables.WaveunitNotFoundError
+        If ``default_waveunit`` is not given and the wavelength unit cannot
         be found in one of the FITS headers
 
-    sunpy.WaveunitNotConvertibleError
+    sunpy.database.tables.WaveunitNotConvertibleError
         If a wavelength unit could be found but cannot be used to create an
         instance of the type ``astropy.units.Unit``. This can be the case
-        for example if a FITS header has the key `WAVEUNIT` with the value
-        `nonsense`.
+        for example if a FITS header has the key ``WAVEUNIT`` with the value
+        ``nonsense``.
 
     Examples
     --------
@@ -725,7 +724,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
                      default_waveunit=None, time_string_parse_format=None):
     """Search the given directory for FITS files and use the corresponding FITS
     headers to generate instances of :class:`DatabaseEntry`. FITS files are
-    detected by reading the content of each file, the `pattern` argument may be
+    detected by reading the content of each file, the ``pattern`` argument may be
     used to avoid reading entire directories if one knows that all FITS files
     have the same filename extension.
 
@@ -740,7 +739,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
         default is `False`, i.e. the given directory is not searched
         recursively.
 
-    pattern : string, optional
+    pattern : str, optional
         The pattern can be used to filter the list of filenames before the
         files are attempted to be read. The default is to collect all files.
         This value is passed to the function :func:`fnmatch.filter`, see its
@@ -753,7 +752,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     time_string_parse_format : str, optional
         Fallback timestamp format which will be passed to
         `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
-        automatically read the `date-obs` metadata.
+        automatically read the ``date-obs`` metadata.
 
     Returns
     -------
@@ -798,11 +797,11 @@ def _create_display_table(database_entries, columns=None, sort=False):
 
     Parameters
     ----------
-    database_entries : iterable of :class:`DatabaseEntry` instances
-        The database entries will be the rows in the resulting table.
+    database_entries : list
+        The :class:`DatabaseEntry`s will be the rows in the resulting table.
 
-    columns : iterable of str
-        The columns that will be displayed in the resulting table. Possible
+    columns : list
+        The column name strings that will be displayed in the resulting table. Possible
         values for the strings are all attributes of :class:`DatabaseEntry`.
 
     sort : bool (optional)

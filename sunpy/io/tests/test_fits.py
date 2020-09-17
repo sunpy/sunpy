@@ -21,6 +21,11 @@ AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
 SWAP_LEVEL1_IMAGE = os.path.join(testpath, 'SWAP/resampled1_swap.fits')
 
 
+# Some of the tests iamges contain an invalid BLANK keyword; ignore the warning
+# raised by this
+pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
+
+
 @pytest.mark.parametrize(
     'fname, hdus, length',
     [(RHESSI_IMAGE, None, 4),

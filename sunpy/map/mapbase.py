@@ -45,6 +45,8 @@ TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 
+_META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata'
+
 __all__ = ['GenericMap']
 
 
@@ -572,6 +574,30 @@ class GenericMap(NDData):
         """
         return self.data.max(*args, **kwargs)
 
+    @property
+    def unit(self):
+        """
+        Unit of the map data.
+
+        This is taken from the 'BUNIT' FITS keyword. If no 'BUNIT' entry is
+        present in the metadata then this returns `None`. If the 'BUNIT' value
+        cannot be parsed into a unit a warning is raised, and `None` returned.
+        """
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+
+        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
+        if isinstance(unit, u.UnrecognizedUnit):
+            warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                          'with sunpy.map.Map.\n'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'the FITS unit standards.',
+                          SunpyMetadataWarning)
+            unit = None
+        return unit
+
 # #### Keyword attribute and other attribute definitions #### #
 
     def _base_name(self):
@@ -823,7 +849,7 @@ class GenericMap(NDData):
                     fake_observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, sc.radius,
                                                            obstime=sc.obstime)
                     fake_frame = sc.frame.replicate(observer=fake_observer)
-                    hgs = fake_frame.transform_to(HeliographicStonyhurst)
+                    hgs = fake_frame.transform_to(HeliographicStonyhurst(obstime=sc.obstime))
 
                     # HeliographicStonyhurst doesn't need an observer, but adding the observer
                     # facilitates a conversion back to HeliographicCarrington
@@ -1019,8 +1045,7 @@ class GenericMap(NDData):
 
         if err_message:
             err_message.append(
-                'See https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
-                'instructions on how to add missing metadata.')
+                f'See {_META_FIX_URL} for instructions on how to add missing metadata.')
             raise MapMetaValidationError('\n'.join(err_message))
 
         for meta_property in ('waveunit', ):
@@ -1202,6 +1227,8 @@ class GenericMap(NDData):
         lon, lat = self._get_lon_lat(self.center.frame)
         new_meta['crval1'] = lon.value
         new_meta['crval2'] = lat.value
+        new_meta['naxis1'] = new_data.shape[1]
+        new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
@@ -2049,7 +2076,11 @@ class GenericMap(NDData):
                               SunpyUserWarning)
 
         # Normal plot
-        plot_settings = copy.deepcopy(self.plot_settings)
+        try:
+            plot_settings = copy.deepcopy(self.plot_settings)
+        except NotImplementedError:
+            # MPL dev at the moment does not support deepcopy and this is a workaround.
+            plot_settings = self.plot_settings
         if 'title' in plot_settings:
             plot_settings_title = plot_settings.pop('title')
         else:
@@ -2078,7 +2109,11 @@ class GenericMap(NDData):
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
-        imshow_args.update(copy.deepcopy(imshow_kwargs))
+        try:
+            imshow_args.update(copy.deepcopy(imshow_kwargs))
+        except NotImplementedError:
+            # MPL dev at the moment does not support deepcopy and this is a workaround.
+            imshow_args.update(imshow_kwargs)
 
         if clip_interval is not None:
             if len(clip_interval) == 2:

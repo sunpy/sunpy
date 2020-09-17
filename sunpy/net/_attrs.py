@@ -14,7 +14,7 @@ from sunpy.util.decorators import add_common_docstring
 from .attr import Range, SimpleAttr
 
 __all__ = ['Physobs', 'Resolution', 'Detector', 'Sample',
-           'Level', 'Instrument', 'Wavelength', 'Time']
+           'Level', 'Instrument', 'Wavelength', 'Time', 'Source', 'Provider']
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -242,4 +242,38 @@ class Physobs(SimpleAttr):
     More information about the values of physobs used by the VSO
     registry can be found at
     https://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
+    """
+
+
+class Provider(SimpleAttr):
+    """
+    Specifies the data provider to search for data using Fido.
+
+    Parameters
+    ----------
+    value : str
+        A keyword describing the Provider for the data.
+
+    Notes
+    -----
+    For VSO, more information about each provider may be found within in the VSO Registry.
+    See `VSO providers <https://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER>`__.
+    """
+
+
+class Source(SimpleAttr):
+    """
+    Data sources that Fido can search with.
+
+    Parameters
+    ----------
+    value : str
+        A keyword describing the Data Source.
+
+    Notes
+    -----
+    For VSO, more information about each source may be found within in the VSO Registry.
+    See `VSO sources <https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE>`__.
+    Please note that 'Source' is used internally by VSO to represent
+    what the VSO Data Model refers to as 'Observatory'.
     """

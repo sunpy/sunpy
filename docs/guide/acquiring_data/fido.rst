@@ -62,19 +62,6 @@ Using ``Instrument`` as the first example, if you print the object::
 You get a full list of known values, a description and what "Clients" support those values (if you want to use a specific data source).
 This is supported for most attributes including the client specific ones.
 
-For VSO::
-
-    >>> print(a.vso.Provider)
-    sunpy.net.vso.attrs.Provider
-    <BLANKLINE>
-    Specifies the VSO data provider to search for data for.
-    <BLANKLINE>
-    Attribute Name Client Full Name                                   Description
-    -------------- ------ --------- --------------------------------------------------------------------------------
-    hao            VSO    HAO       High Altitude Observatory, NCAR
-    jsoc           VSO    JSOC      SDO Joint Science Operations Center
-    kis            VSO    KIS       Kiepenheuer-Institut für Sonnenphysik
-    ...
 
 For JSOC::
 
@@ -98,7 +85,7 @@ Searching for Data Using Fido
 
 For example::
 
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra) # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra, a.Level.two) # doctest: +REMOTE_DATA
 
 this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
@@ -113,11 +100,11 @@ variable set to the Fido search, in this case, result::
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the LYRAClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+         Start Time           End Time      Instrument ... Source Provider Level
+    ------------------- ------------------- ---------- ... ------ -------- -----
+    2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     2
+    2012-03-05 00:00:00 2012-03-05 23:59:59       LYRA ... PROBA2      ESA     2
+    2012-03-06 00:00:00 2012-03-06 23:59:59       LYRA ... PROBA2      ESA     2
     <BLANKLINE>
     <BLANKLINE>
 
@@ -133,11 +120,11 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the NoRHClient:
-         Start Time           End Time      Source Instrument   Wavelength
-    ------------------- ------------------- ------ ---------- --------------
-    2012-03-04 00:00:00 2012-03-05 00:00:00   NAOJ       NORH 17000000.0 kHz
-    2012-03-05 00:00:00 2012-03-06 00:00:00   NAOJ       NORH 17000000.0 kHz
-    2012-03-06 00:00:00 2012-03-07 00:00:00   NAOJ       NORH 17000000.0 kHz
+         Start Time           End Time      Instrument Source Provider Wavelength
+    ------------------- ------------------- ---------- ------ -------- ----------
+    2012-03-04 00:00:00 2012-03-04 23:59:59       NORH   NAOJ      NRO   17.0 GHz
+    2012-03-05 00:00:00 2012-03-05 23:59:59       NORH   NAOJ      NRO   17.0 GHz
+    2012-03-06 00:00:00 2012-03-06 23:59:59       NORH   NAOJ      NRO   17.0 GHz
     <BLANKLINE>
     <BLANKLINE>
 
@@ -193,10 +180,11 @@ operator would::
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 3 Providers:
     <BLANKLINE>
-    1 Results from the LYRAClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-04 02:00:00 Proba2       lyra        nan
+    2 Results from the LYRAClient:
+         Start Time           End Time      Instrument ... Source Provider Level
+    ------------------- ------------------- ---------- ... ------ -------- -----
+    2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     2
+    2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     3
     <BLANKLINE>
     3 Results from the VSOClient:
        Start Time [1]       End Time [1]    Source ...     Type    Wavelength [2]
@@ -207,9 +195,9 @@ operator would::
     2012-03-04 01:45:40 2012-03-04 02:09:00 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
     <BLANKLINE>
     1 Results from the RHESSIClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     rhessi        nan
+         Start Time           End Time      Instrument ... Source Provider
+    ------------------- ------------------- ---------- ... ------ --------
+    2012-03-04 00:00:00 2012-03-04 23:59:59     RHESSI ... RHESSI     NASA
     <BLANKLINE>
     <BLANKLINE>
 
@@ -223,26 +211,26 @@ dimension corresponds to the clients which have returned results and the
 second to the records returned.
 
 For example, the following code returns a response containing LYRA data from
-the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
+the `~sunpy.net.dataretriever.LYRAClient`, and EVE data from the
 `~sunpy.net.vso.VSOClient`::
 
     >>> from sunpy.net import Fido, attrs as a
-    >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"),
+    >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Level.two,
     ...                       a.Instrument.lyra | a.Instrument.eve)  # doctest: +REMOTE_DATA
 
 If you then wanted to inspect just the LYRA data for the whole time range
 specified in the search, you would index this response to see just the
-results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
+results returned by the `~sunpy.net.dataretriever.LYRAClient`::
 
     >>> results[0, :]  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the LYRAClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+         Start Time           End Time      Instrument ... Source Provider Level
+    ------------------- ------------------- ---------- ... ------ -------- -----
+    2012-01-01 00:00:00 2012-01-01 23:59:59       LYRA ... PROBA2      ESA     2
+    2012-01-02 00:00:00 2012-02-02 23:59:59       LYRA ... PROBA2      ESA     2
     <BLANKLINE>
     <BLANKLINE>
 
@@ -253,10 +241,10 @@ Or, equivalently::
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the LYRAClient:
-         Start Time           End Time      Source Instrument Wavelength
-    ------------------- ------------------- ------ ---------- ----------
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+         Start Time           End Time      Instrument ... Source Provider Level
+    ------------------- ------------------- ---------- ... ------ -------- -----
+    2012-01-01 00:00:00 2012-01-01 23:59:59       LYRA ... PROBA2      ESA     2
+    2012-01-02 00:00:00 2012-02-02 23:59:59       LYRA ... PROBA2      ESA     2
     <BLANKLINE>
     <BLANKLINE>
 
@@ -313,7 +301,7 @@ object::
     >>> print(downloaded_files.errors)  # doctest: +SKIP
 
 The transfer can be retried by passing the `parfive.Results` object back to
-`Fido.fetch <sunpy.net.fido_factory.unifieddownloaderfactory.fetch>`::
+`Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
 
     >>> downloaded_files = Fido.fetch(downloaded_files)  # doctest: +SKIP
 

@@ -15,6 +15,11 @@ from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
 
+try:
+    from erfa.core import ErfaWarning
+except ModuleNotFoundError:
+    from astropy._erfa.core import ErfaWarning
+
 import sunpy
 import sunpy.data.test
 import sunpy.timeseries
@@ -63,8 +68,7 @@ def esp_test_ts():
 
 @pytest.fixture
 def fermi_gbm_test_ts():
-    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
+    return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
 
 @pytest.fixture
@@ -94,8 +98,10 @@ def noaa_ind_json_test_ts():
 
 @pytest.fixture
 def noaa_pre_json_test_ts():
-    return sunpy.timeseries.TimeSeries(
-        noaa_pre_json_filepath, source='NOAAPredictIndices')
+    # NOAA pre data contains years long into the future, which ERFA complains about
+    with pytest.warns(ErfaWarning, match='dubious year'):
+        return sunpy.timeseries.TimeSeries(
+            noaa_pre_json_filepath, source='NOAAPredictIndices')
 
 
 @pytest.fixture
@@ -478,8 +484,7 @@ def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
 @pytest.fixture
 def concatenation_different_data_test_ts(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate
-    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        return eve_test_ts.concatenate(fermi_gbm_test_ts)
+    return eve_test_ts.concatenate(fermi_gbm_test_ts)
 
 
 def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
@@ -666,6 +671,9 @@ def test_esp_peek(esp_test_ts):
     esp_test_ts.peek()
 
 
+# This warning is fixed in matplotlib, and the filter can be removed once
+# matplotlib 3.3.1 is released (https://github.com/matplotlib/matplotlib/pull/18101)
+@pytest.mark.filterwarnings('ignore:Support for multi-dimensional indexing.*is deprecated')
 @figure_test
 def test_fermi_gbm_peek(fermi_gbm_test_ts):
     fermi_gbm_test_ts.peek()
@@ -737,14 +745,11 @@ def test_esp_invalid_peek(esp_test_ts):
 
 
 def test_fermi_gbm_invalid_peek(fermi_gbm_test_ts):
-    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
-
-    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
+    a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
 
     empty_ts = fermi_gbm_test_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError), pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+    with pytest.raises(ValueError):
         empty_ts.peek()
 
 
@@ -790,9 +795,11 @@ def test_noaa_ind_txt_invalid_peek(noaa_ind_txt_test_ts):
 
 
 def test_noaa_pre_json_invalid_peek(noaa_pre_json_test_ts):
-    a = noaa_pre_json_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_pre_json_test_ts.time_range.start - TimeDelta(1*u.day)
-    empty_ts = noaa_pre_json_test_ts.truncate(TimeRange(a, b))
+    # NOAA pre data contains years long into the future, which ERFA complains about
+    with pytest.warns(ErfaWarning, match='dubious year'):
+        a = noaa_pre_json_test_ts.time_range.start - TimeDelta(2*u.day)
+        b = noaa_pre_json_test_ts.time_range.start - TimeDelta(1*u.day)
+        empty_ts = noaa_pre_json_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 

@@ -8,7 +8,7 @@ subclass. All these subclasses are then registered with the `sunpy.net.Fido` fac
 class, so do not need to be called individually.
 """
 
-from .client import GenericClient, QueryResponse, QueryResponseBlock
+from .client import GenericClient, QueryResponse
 from .sources.eve import EVEClient
 from .sources.fermi_gbm import GBMClient
 from .sources.goes import SUVIClient, XRSClient
@@ -17,6 +17,6 @@ from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 
-__all__ = ['QueryResponseBlock', 'QueryResponse', 'GenericClient',
-           'EVEClient', 'XRSClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
-           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', 'GBMClient']
+__all__ = ['QueryResponse', 'GenericClient', 'EVEClient', 'GBMClient',
+           'XRSClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
+           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', ]

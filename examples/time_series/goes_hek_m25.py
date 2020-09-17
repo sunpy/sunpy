@@ -34,9 +34,9 @@ flares_hek = client.search(hek.attrs.Time(tr.start, tr.end),
 # Lets plot everything together
 fig, ax = plt.subplots()
 goes.plot()
-ax.axvline(parse_time(flares_hek[0].get('event_peaktime')).plot_date)
-ax.axvspan(parse_time(flares_hek[0].get('event_starttime')).plot_date,
-           parse_time(flares_hek[0].get('event_endtime')).plot_date,
+ax.axvline(parse_time(flares_hek[0].get('event_peaktime')).datetime)
+ax.axvspan(parse_time(flares_hek[0].get('event_starttime')).datetime,
+           parse_time(flares_hek[0].get('event_endtime')).datetime,
            alpha=0.2, label=flares_hek[0].get('fl_goescls'))
 ax.legend(loc=2)
 ax.set_yscale('log')
