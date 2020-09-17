@@ -58,3 +58,5 @@ class Generate(Directive):
 
 def setup(app):
     app.add_directive('generate', Generate)
+
+    return {'parallel_read_safe': True, 'parallel_write_safe': True}

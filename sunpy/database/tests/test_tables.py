@@ -55,12 +55,11 @@ def fido_search_result():
     # No JSOC query
     return Fido.search(
         net_attrs.Time("2012/1/1", "2012/1/2"),
-        net_attrs.Instrument('lyra') | net_attrs.Instrument('eve') |
+        net_attrs.Instrument('lyra') & net_attrs.Level.two | net_attrs.Instrument('eve') |
         net_attrs.Instrument('XRS') | net_attrs.Instrument('noaa-indices') |
         net_attrs.Instrument('noaa-predict') |
         (net_attrs.Instrument('norh') & net_attrs.Wavelength(17 * u.GHz)) |
-        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve")) |
-        (net_attrs.Instrument('EVE') & net_attrs.Level(0))
+        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve"))
     )
 
 
@@ -74,15 +73,15 @@ def query_result():
 def qr_with_none_waves():
     return vso.VSOClient().search(
         net_attrs.Time('20121224T120049.8', '20121224T120049.8'),
-        vso.attrs.Provider('SDAC'), net_attrs.Instrument('VIRGO'))
+        net_attrs.Provider('SDAC'), net_attrs.Instrument('VIRGO'))
 
 
 @pytest.fixture
 def qr_block_with_missing_physobs():
     return vso.VSOClient().search(
         net_attrs.Time('20130805T120000', '20130805T121000'),
-        net_attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
-        vso.attrs.Provider('SSC'), net_attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
+        net_attrs.Instrument('SWAVES'), net_attrs.Source('STEREO_A'),
+        net_attrs.Provider('SSC'), net_attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
 
 
 @pytest.fixture
@@ -127,14 +126,23 @@ def test_entries_from_fido_search_result(fido_search_result):
     assert len(entries) == 66
     # First 2 entries are from lyra
     assert entries[0] == DatabaseEntry(
-        source='Proba2', provider='esa', physobs='irradiance',
+        source='PROBA2', provider='ESA', physobs='irradiance',
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
-        instrument='lyra')
-    # 54 entries from EVE
+        instrument='LYRA')
+    # 2 entries from eve, level 0
     assert entries[2] == DatabaseEntry(
+        source='SDO', provider='LASP', physobs='irradiance',
+        fileid=("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook"
+                "/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt"),
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
+        wavemin=np.nan, wavemax=np.nan,
+        instrument='EVE')
+    # 54 entries from EVE
+    assert entries[4] == DatabaseEntry(
         source='SDO', provider='LASP', physobs='irradiance',
         fileid='EVE_L1_esp_2012001_00',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
@@ -143,57 +151,49 @@ def test_entries_from_fido_search_result(fido_search_result):
         instrument='EVE',
         wavemin=0.1, wavemax=30.4)
     # 2 entries from goes
-    assert entries[56] == DatabaseEntry(
-        source='noaa', provider='sdac', physobs='irradiance',
-        fileid='https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/'
-               'gxrs-l2-irrad_science/2012/01/sci_gxrs-l2-irrad_g15_d20120101_v0-0-0.nc',
+
+    assert entries[58] == DatabaseEntry(
+        source='NASA', provider='SDAC', physobs='irradiance',
+        fileid='https://umbra.nascom.nasa.gov/goes/fits/2012/go1520120101.fits',
+
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
-        instrument='goes')
+        instrument='XRS')
     # 1 entry from noaa-indices
-    assert entries[58] == DatabaseEntry(
-        source='sdic', provider='swpc', physobs='sunspot number',
+    assert entries[60] == DatabaseEntry(
+        source='SIDC', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
         wavemin=np.nan, wavemax=np.nan,
-        instrument='noaa-indices')
+        instrument='NOAA-Indices')
     # 1 entry from noaa-predict
-    assert entries[59] == DatabaseEntry(
-        source='ises', provider='swpc', physobs='sunspot number',
+    assert entries[61] == DatabaseEntry(
+        source='ISES', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
         wavemin=np.nan, wavemax=np.nan,
-        instrument='noaa-predict')
+        instrument='NOAA-Predict')
     # 2 entries from norh
-    assert entries[60] == DatabaseEntry(
-        source='NAOJ', provider='NRO', physobs="",
+    assert entries[62] == DatabaseEntry(
+        source='NAOJ', provider='NRO', physobs=None,
         fileid=("ftp://solar-pub.nao.ac.jp/"
                 "pub/nsro/norh/data/tcx/2012/01/tca120101"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=17634850.470588233, wavemax=17634850.470588233,
         instrument='NORH')
     # 1 entry from rhessi
-    assert entries[62] == DatabaseEntry(
-        source="rhessi", provider='nasa', physobs='irradiance',
+    assert entries[64] == DatabaseEntry(
+        source="RHESSI", provider='NASA', physobs='summary_lightcurve',
         fileid=("https://hesperia.gsfc.nasa.gov/"
                 "hessidata/metadata/catalog/hsi_obssumm_20120101_032.fits"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
-        instrument='rhessi')
-    # 2 entries from eve, level 0
-    assert entries[64] == DatabaseEntry(
-        source='SDO', provider='LASP', physobs='irradiance',
-        fileid=("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook"
-                "/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt"),
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
-        wavemin=np.nan, wavemax=np.nan,
-        instrument='eve')
+        instrument='RHESSI')
 
 
 @pytest.mark.remote_data
@@ -215,12 +215,12 @@ def test_from_fido_search_result_block(fido_search_result):
     entry = DatabaseEntry._from_fido_search_result_block(
         fido_search_result[0, 0][0].get_response(0).blocks[0])
     expected_entry = DatabaseEntry(
-        source='Proba2', provider='esa', physobs='irradiance',
+        source='PROBA2', provider='ESA', physobs='irradiance',
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
-        instrument='lyra')
+        instrument='LYRA')
     assert entry == expected_entry
 
 

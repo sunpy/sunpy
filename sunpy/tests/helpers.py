@@ -10,6 +10,9 @@ import pkg_resources
 import pytest
 from matplotlib.testing import compare
 
+from astropy.wcs.wcs import FITSFixedWarning
+
+import sunpy.map
 from sunpy.tests import hash
 
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_32bit',
@@ -203,6 +206,10 @@ def _generate_fig_html(fname):
     diff_image = figure_base_dir / "difference_images" / generated_image.name
     diff_image.parent.mkdir(parents=True, exist_ok=True)
     if baseline_image_exists:
+        result = compare.compare_images(str(baseline_image), str(generated_image), tol=0)
+        # Result is None if the images are the same
+        if result is None:
+            return ''
         compare.save_diff_image(str(baseline_image), str(generated_image), str(diff_image))
 
     html_block = ('<tr>'
@@ -240,3 +247,12 @@ def no_vso(f):
         return res
 
     return wrapper
+
+
+def fix_map_wcs(smap):
+    # Helper function to fix a WCS and silence the warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=FITSFixedWarning)
+        wcs = smap.wcs
+        wcs.fix()
+    return sunpy.map.Map(smap.data, wcs)

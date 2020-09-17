@@ -230,6 +230,7 @@ def test_HEE_creation():
                                obstime=parse_time('2018-12-21'),
                                representation_type='cartesian')
 
+
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
 @pytest.mark.parametrize("args, kwargs", two_D_parameters[:4] +

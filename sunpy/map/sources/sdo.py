@@ -52,6 +52,9 @@ class AIAMap(GenericMap):
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
+        # DN/s is not a FITS standard unit, so convert to counts/second
+        if self.meta.get('bunit', None) == 'DN/s':
+            self.meta['bunit'] = 'ct/s'
 
     @property
     def _supported_observer_coordinates(self):

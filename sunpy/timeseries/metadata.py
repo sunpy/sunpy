@@ -173,7 +173,7 @@ class TimeSeriesMetaData:
             the TimeSeries gets truncated this may change appropriately.
         columns : `list`
             A list of the column name strings that the metadata is relevant for.
-        metadata : `~sunpy.util.metadata.MetaDict` or `OrderedDict` or `dict`
+        metadata : `~sunpy.util.metadata.MetaDict` or `collections.OrderedDict` or `dict`
             The object holding the metadata.
         """
         # Parameters
@@ -365,7 +365,7 @@ class TimeSeriesMetaData:
 
         Parameters
         ----------
-        dictionary : `dict`, `OrderedDict`, `~sunpy.util.metadata.MetaDict`
+        dictionary : `dict`, `collections.OrderedDict`, `~sunpy.util.metadata.MetaDict`
             The second `~sunpy.timeseries.TimeSeriesMetaData` object.
         time : {parse_time_types}, optional
             A `~sunpy.time.parse_time` parsable string that you need metadata for.

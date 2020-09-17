@@ -41,7 +41,7 @@ def unique(itr, key=None):
                 items.add(x)
 
 
-def replacement_filename(path):
+def replacement_filename(path: str) -> str:
     """
     Return a replacement path if input path is currently in use.
 
