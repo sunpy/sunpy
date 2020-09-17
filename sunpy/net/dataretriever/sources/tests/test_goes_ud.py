@@ -29,11 +29,11 @@ def LCClient():
      (Time('2008/06/02 12:00', '2008/06/04'),
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits'),
-     (TimeRange('2020/02/02', '2020/02/04'),
-      'https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/2020/02/'
-      'sci_gxrs-l2-irrad_g15_d20200202_v0-0-0.nc',
-      'https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/2020/02/'
-      'sci_gxrs-l2-irrad_g15_d20200204_v0-0-0.nc')])
+     (Time('2020/08/02', '2020/08/04'),
+      'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
+      'goes16/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g16_d20200802_v2-0-1.nc',
+      'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
+      'goes17/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g17_d20200804_v2-0-1.nc')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
@@ -64,12 +64,12 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
 def test_old_data_access(timerange, url_old, url_new):
     # test first for old data
     qr = Fido.search(timerange, a.Instrument("XRS"), a.goes.VersionData("old"))
-    urls = [r.url for r in qr.get_response(0)]
+    urls = [r['url'] for r in qr.get_response(0)]
     assert urls[0] == url_old
 
     # now test for new data
     qr = Fido.search(timerange, a.Instrument("XRS"))
-    urls = [r.url for r in qr.get_response(0)]
+    urls = [r['url'] for r in qr.get_response(0)]
     assert urls[0] == url_new
 
 
@@ -94,7 +94,6 @@ def test_fixed_satellite(LCClient):
 
         assert "go15" in resp['url']
 
-
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02 23:00"),
                            a.Instrument.xrs,
                            a.goes.SatelliteNumber(13))
@@ -102,7 +101,6 @@ def test_fixed_satellite(LCClient):
     for resp in ans1:
 
         assert "go13" in resp['url']
-
 
     ans1 = LCClient.search(a.Time("1999/1/13", "1999/1/16"),
                            a.Instrument.xrs,
@@ -186,8 +184,8 @@ def mock_query_object(LCClient):
         'End Time': parse_time(end),
         'Instrument': 'GOES',
         'Physobs': 'irradiance',
-        'Source': 'NASA',
-        'Provider': 'SDAC',
+        'Source': 'GOES',
+        'Provider': 'NOAA',
         'SatelliteNumber': '15',
         'url': 'https://umbra.nascom.nasa.gov/goes/fits/2016/go1520160101.fits'
     }
