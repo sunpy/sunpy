@@ -374,16 +374,16 @@ class DatabaseEntry(DatabaseEntryType, Base):
         """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
-        source = getattr(sr_block, 'source', None)
-        provider = getattr(sr_block, 'provider', None)
-        physobs = getattr(sr_block, 'physobs', None)
+        source = sr_block.get('Source', None)
+        provider = sr_block.get('Provider', None)
+        physobs = sr_block.get('Physobs', None)
         if physobs is not None:
             physobs = str(physobs)
-        instrument = getattr(sr_block, 'instrument', None)
-        time_start = sr_block.time.start.datetime
-        time_end = sr_block.time.end.datetime
+        instrument = sr_block.get('Instrument', None)
+        time_start = sr_block['Time'].start.datetime
+        time_end = sr_block['Time'].end.datetime
 
-        wavelengths = getattr(sr_block, 'wave', None)
+        wavelengths = sr_block.get('Wavelength', np.nan)
         wavelength_temp = {}
         if isinstance(wavelength_temp, tuple):
             # Tuple of values
@@ -409,8 +409,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
         wavemin = final_values['wavemin']
         wavemax = final_values['wavemax']
 
-        # sr_block.url of a QueryResponseBlock attribute is stored in fileid
-        fileid = str(sr_block.url) if sr_block.url is not None else None
+        fileid = sr_block.get('url', None)
         size = None
         return cls(
             source=source, provider=provider, physobs=physobs, fileid=fileid,
@@ -572,17 +571,17 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> entries = entries_from_fido_search_result(sr) # doctest: +REMOTE_DATA
     >>> entry = next(entries) # doctest: +REMOTE_DATA
     >>> entry.source # doctest: +REMOTE_DATA
-    'Proba2'
+    'PROBA2'
     >>> entry.provider # doctest: +REMOTE_DATA
-    'esa'
+    'ESA'
     >>> entry.physobs # doctest: +REMOTE_DATA
     'irradiance'
     >>> entry.fileid # doctest: +REMOTE_DATA
     'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
     >>> entry.observation_time_start, entry.observation_time_end # doctest: +REMOTE_DATA
-    (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0))
+    (datetime.datetime(2012, 1, 1, 0, 0),  datetime.datetime(2012, 1, 1, 23, 59, 59, 999000))
     >>> entry.instrument # doctest: +REMOTE_DATA
-    'lyra'
+    'LYRA'
 
     """
     for entry in sr:

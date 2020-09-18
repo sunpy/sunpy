@@ -232,6 +232,14 @@ def test_nan_scipy(identity):
 def test_int(identity):
     # Test casting of integer array to float array
     in_arr = np.array([[100]], dtype=int)
-    with pytest.warns(SunpyUserWarning, match='Input data has been cast to float64.'):
+    with pytest.warns(SunpyUserWarning, match='Integer input data has been cast to float64'):
         out_arr = affine_transform(in_arr, rmatrix=identity)
     assert np.issubdtype(out_arr.dtype, np.floating)
+
+
+def test_float32(identity):
+    # Check that float32 input remains as float32 output
+    # Test casting of integer array to float array
+    in_arr = np.array([[100]], dtype=np.float32)
+    out_arr = affine_transform(in_arr, rmatrix=identity)
+    assert np.issubdtype(out_arr.dtype, np.float32)
