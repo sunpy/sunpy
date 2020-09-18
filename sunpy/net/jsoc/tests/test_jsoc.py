@@ -146,8 +146,29 @@ def test_get_request(client):
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
-
     bb = client.request_data(responses)
+    path = tempfile.mkdtemp()
+    aa = client.get_request(bb, path=path)
+    assert isinstance(aa, Results)
+
+
+@pytest.mark.remote_data
+def test_get_request_tar(client):
+    responses = client.search(
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
+    bb = client.request_data(responses, method='url-tar')
+    bb.wait()
+    path = tempfile.mkdtemp()
+    aa = client.get_request(bb, path=path)
+    assert isinstance(aa, Results)
+
+    responses = client.search(
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
+        a.jsoc.Protocol('as-is'))
+    bb = client.request_data(responses, method='url-tar')
+    bb.wait()
     path = tempfile.mkdtemp()
     aa = client.get_request(bb, path=path)
     assert isinstance(aa, Results)
@@ -316,6 +337,26 @@ def test_request_data_protocol(client):
     req = client.request_data(responses)
     req.wait()
     assert req._d['method'] == 'url_quick'
+    assert req._d['protocol'] == 'as-is'
+
+
+@pytest.mark.remote_data
+def test_request_data_method(client):
+    responses = client.search(
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
+    req = client.request_data(responses, method='url-tar')
+    req.wait()
+    assert req._d['method'] == 'url-tar'
+    assert req._d['protocol'] == 'fits'
+
+    responses = client.search(
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
+        a.jsoc.Protocol('as-is'))
+    req = client.request_data(responses, method='url-tar')
+    req.wait()
+    assert req._d['method'] == 'url-tar'
     assert req._d['protocol'] == 'as-is'
 
 

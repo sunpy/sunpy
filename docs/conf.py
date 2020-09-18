@@ -67,7 +67,7 @@ sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
 linkcheck_ignore = [r"https://doi.org/\d+",
-                    r"https://riot.im/\d+",
+                    r"https://element.io/\d+",
                     r"https://github.com/\d+",
                     r"https://docs.sunpy.org/\d+"]
 linkcheck_anchors = False

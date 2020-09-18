@@ -410,7 +410,7 @@ class JSOCClient(BaseClient):
 
         return res
 
-    def request_data(self, jsoc_response, **kwargs):
+    def request_data(self, jsoc_response, method='url', **kwargs):
         """
         Request that JSOC stages the data for download. This method will not
         wait for the request to be staged.
@@ -419,6 +419,13 @@ class JSOCClient(BaseClient):
         ----------
         jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             The results of a query
+
+        method : {'url', 'url-tar', 'url-quick'}
+            Method for requesting JSOC data, can be 'url-tar', 'url' (the default) and 'url-quick'
+            If 'url-tar' it will request JSOC to provide single .tar file which contains all data
+            If 'url' it will request JSOC to provide all data as separate .fits files
+            If 'url-quick' (only with protocol 'as-is') provide all data as separate files,
+            but only if data is online.
 
         Returns
         -------
@@ -432,18 +439,25 @@ class JSOCClient(BaseClient):
 
         requests = []
         self.query_args = jsoc_response.query_args
+        supported_protocols = {'fits', 'as-is'}
+        supported_methods = {'url-tar', 'url', 'url-quick'}
         for block in jsoc_response.query_args:
 
             ds = self._make_recordset(**block)
             cd = drms.Client(email=block.get('notify', ''))
             protocol = block.get('protocol', 'fits')
 
-            if protocol != 'fits' and protocol != 'as-is':
-                error_message = "Protocols other than fits and as-is are "\
+            if protocol not in supported_protocols:
+                error_message = f"Protocols other than {','.join(supported_protocols)} "\
+                                "are not supported."
+                raise TypeError(error_message)
+            if method not in supported_methods:
+                error_message = f"Methods other than {','.join(supported_methods)} "\
                                 "are not supported."
                 raise TypeError(error_message)
 
-            method = 'url' if protocol == 'fits' else 'url_quick'
+            if method != 'url-tar':
+                method = 'url' if protocol == 'fits' else 'url_quick'
             r = cd.export(ds, method=method, protocol=protocol)
 
             requests.append(r)
@@ -589,16 +603,20 @@ class JSOCClient(BaseClient):
 
         paths = []
         for request in requests:
-            for filename in request.data['filename']:
-                # Ensure we don't duplicate the file extension
-                ext = os.path.splitext(filename)[1]
-                if path.endswith(ext):
-                    fname = path.strip(ext)
-                else:
-                    fname = path
-                fname = fname.format(file=filename)
-                fname = os.path.expanduser(fname)
-                paths.append(fname)
+            if request.method == 'url-tar':
+                fname = path.format(file=Path(request.tarfile).name)
+                paths.append(os.path.expanduser(fname))
+            else:
+                for filename in request.data['filename']:
+                    # Ensure we don't duplicate the file extension
+                    ext = os.path.splitext(filename)[1]
+                    if path.endswith(ext):
+                        fname = path.strip(ext)
+                    else:
+                        fname = path
+                    fname = fname.format(file=filename)
+                    fname = os.path.expanduser(fname)
+                    paths.append(fname)
 
         if max_conn * kwargs['max_splits'] > 10:
             warnings.warn(("JSOC does not support more than 10 parallel connections. " +
@@ -616,7 +634,7 @@ class JSOCClient(BaseClient):
         urls = []
         for request in requests:
             if request.status == 0:
-                if request.protocol == 'as-is':
+                if request.protocol == 'as-is' or request.method == 'url-tar':
                     urls.extend(list(request.urls.url))
                 else:
                     for index, data in request.data.iterrows():
