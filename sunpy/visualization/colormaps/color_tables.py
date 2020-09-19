@@ -273,10 +273,9 @@ def hmi_mag_color_table():
 
 
 def stereo_hi_color_table(camera):
-    if camera in [1, 2]:
-        return cmap_from_rgb_file(f'STEREO HI{camera}', f'hi{camera}.csv')
-    else:
+    if camera not in [1, 2]:
         raise ValueError("Valid HI cameras are 1 and 2")
+    return cmap_from_rgb_file(f'STEREO HI{camera}', f'hi{camera}.csv')
 
 
 @u.quantity_input
@@ -304,6 +303,11 @@ def cmap_from_rgb_file(name, fname):
     """
     Create a colormap from a RGB .csv file.
 
+    The .csv file must have 3  equal-length columns of integer data, with values
+    between 0 and 255, which are the red, green, and blue values for the colormap.
+
+    Parameters
+    ----------
     name : str
         Name of the colormap.
     fname : str
