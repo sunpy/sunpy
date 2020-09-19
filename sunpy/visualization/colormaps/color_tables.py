@@ -279,6 +279,27 @@ def stereo_hi_color_table(camera):
         raise ValueError("Valid HI cameras are 1 and 2")
 
 
+@u.quantity_input
+def suvi_color_table(wavelength: u.angstrom):
+    """
+    Returns one of the fundamental color tables for SUVI images.
+    SUVI uses AIA color tables.
+    """
+    try:
+        if wavelength == 195*u.angstrom:
+            r, g, b = aia_wave_dict[193*u.angstrom]
+        elif wavelength == 284*u.angstrom:
+            r, g, b = aia_wave_dict[335*u.angstrom]
+        else:
+            r, g, b = aia_wave_dict[wavelength]
+    except KeyError:
+        raise ValueError(
+            "Invalid SUVI wavelength. Valid values are "
+            "94, 131, 171, 195, 284, 304."
+        )
+    return _cmap_from_rgb(r, g, b, 'GOES-R SUVI {:s}'.format(str(wavelength)))
+
+
 def cmap_from_rgb_file(name, fname):
     """
     Create a colormap from a RGB .csv file.
@@ -312,24 +333,3 @@ def create_cdict(r, g, b):
     cdict = {name: list(zip(i, el / 255.0, el / 255.0))
              for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}
     return cdict
-
-
-@u.quantity_input
-def suvi_color_table(wavelength: u.angstrom):
-    """
-    Returns one of the fundamental color tables for SUVI images.
-    SUVI uses AIA color tables.
-    """
-    try:
-        if wavelength == 195*u.angstrom:
-            r, g, b = aia_wave_dict[193*u.angstrom]
-        elif wavelength == 284*u.angstrom:
-            r, g, b = aia_wave_dict[335*u.angstrom]
-        else:
-            r, g, b = aia_wave_dict[wavelength]
-    except KeyError:
-        raise ValueError(
-            "Invalid SUVI wavelength. Valid values are "
-            "94, 131, 171, 195, 284, 304."
-        )
-    return _cmap_from_rgb(r, g, b, 'GOES-R SUVI {:s}'.format(str(wavelength)))
