@@ -49,7 +49,8 @@ class AIAMap(GenericMap):
         # Fill in some missing info
         self.meta['detector'] = self.meta.get('detector', "AIA")
         if 'bunit' not in self.meta and 'pixlunit' in self.meta:
-            self.meta['bunit'] = self.meta['pixlunit']  # PIXLUNIT is not a FITS standard keyword
+            # PIXLUNIT is not a FITS standard keyword
+            self.meta['bunit'] = self.meta['pixlunit']
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
