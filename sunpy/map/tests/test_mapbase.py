@@ -370,7 +370,10 @@ def test_save(aia171_test_map, generic_map):
     aiamap.save(afilename, filetype='fits', overwrite=True)
     loaded_save = sunpy.map.Map(afilename)
     assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
-    assert loaded_save.meta == aiamap.meta
+    # Compare metadata without considering ordering of keys
+    assert loaded_save.meta.keys() == aiamap.meta.keys()
+    for k in aiamap.meta:
+        assert loaded_save.meta[k] == aiamap.meta[k]
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
