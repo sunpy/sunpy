@@ -7,8 +7,6 @@ submodule is focused on routines that process calibrated data.
 
 .. automodapi:: sunpy.instr
 
-.. automodapi:: sunpy.instr.aia
-
 .. automodapi:: sunpy.instr.fermi
 
 .. automodapi:: sunpy.instr.goes

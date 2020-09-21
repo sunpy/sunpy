@@ -67,7 +67,7 @@ sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
 linkcheck_ignore = [r"https://doi.org/\d+",
-                    r"https://riot.im/\d+",
+                    r"https://element.io/\d+",
                     r"https://github.com/\d+",
                     r"https://docs.sunpy.org/\d+"]
 linkcheck_anchors = False
@@ -161,6 +161,7 @@ intersphinx_mapping = {
     "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
     "parfive": ("https://parfive.readthedocs.io/en/latest/", None),
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
+    "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
 }
 
 # -- Options for HTML output ---------------------------------------------------

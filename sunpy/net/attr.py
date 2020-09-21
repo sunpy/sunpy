@@ -123,7 +123,11 @@ class AttrMeta(type):
         To tab complete in Python we need to add to the `__dir__()` return.
         So we add all the registered values for this subclass of Attr to the output.
         """
-        return super().__dir__() + self._attr_registry[self].name
+        custom_attrs = list(set(self._attr_registry[self].name))
+        # "all" can be registered as a documentation helper, but isn't a valid attr
+        if "all" in custom_attrs:
+            custom_attrs.remove("all")
+        return super().__dir__() + custom_attrs
 
     def __repr__(self):
         """
