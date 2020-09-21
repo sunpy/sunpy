@@ -125,13 +125,12 @@ def sample_at_coords(smap, coordinates):
 
 
 def _edge_coordinates(smap):
-    edges = map_edges(smap)
     # Calculate all the edge pixels
-    edge_pixels = np.concatenate(edges)
-    # Need this line for compatability with numpy<1.17, where
-    # the unit attribute is not propagated to edge_pixels in the above line.
-    # This can be removed when sunpy depends on numpy>=1.17
-    edge_pixels = edge_pixels.value * edges[0].unit
+    edges = map_edges(smap)
+    # We need to strip the units from edges before handing it to np.concatenate,
+    # as the .unit attribute is not propagated in np.concatenate for numpy<1.17
+    # When sunpy depends on numpy>=1.17 this unit replacing code can be removed
+    edge_pixels = u.Quantity(np.concatenate(edges).value, unit=u.pix, copy=False)
     # Calculate the edge of the world
     return smap.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
 
