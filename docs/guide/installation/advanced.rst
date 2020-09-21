@@ -23,8 +23,8 @@ We do provide compiled binaries for sunpy for Linux and Mac OS X (we do not comp
 If you use Miniconda, you can get these compilers from there.
 On Linux, using the package manager for your distribution will usually be the easiest route, while on MacOS X you will need the XCode command line tools.
 
-Using `pip`
------------
+Using ``pip``
+-------------
 
 .. note::
     We strongly recommend using a `Python virtual environment <https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/>`__ so any Python packages you install will be kept separate from your Operating System Python.
