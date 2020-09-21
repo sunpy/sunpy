@@ -60,11 +60,7 @@ def aia_color_table(wavelength: u.angstrom):
         raise ValueError("Invalid AIA wavelength. Valid values are "
                          "1600,1700,4500,94,131,171,193,211,304,335.")
 
-    # Now create the color dictionary in the correct format
-    cdict = create_cdict(r, g, b)
-
-    return colors.LinearSegmentedColormap(
-        'SDO AIA {:s}'.format(str(wavelength)), cdict)
+    return _cmap_from_rgb(r, g, b, 'SDO AIA {:s}'.format(str(wavelength)))
 
 
 @u.quantity_input
@@ -126,20 +122,14 @@ def sxt_color_table(sxt_filter):
     except KeyError:
         raise ValueError("Invalid SXT filter type number. Valid values are "
                          "'al', 'wh'.")
-
-    # Now create the color dictionary in the correct format
-    cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap(
-        'Yohkoh SXT {:s}'.format(sxt_filter.title()), cdict)
+    return _cmap_from_rgb(r, g, b, 'Yohkoh SXT {:s}'.format(sxt_filter.title()))
 
 
 def xrt_color_table():
     """
     Returns the color table used for all Hinode XRT images.
     """
-    # Now create the color dictionary in the correct format
-    cdict = create_cdict(r0, g0, b0)
-    return colors.LinearSegmentedColormap('Hinode XRT', cdict)
+    return _cmap_from_rgb(r0, g0, b0, 'Hinode XRT')
 
 
 def cor_color_table(number):
@@ -185,8 +175,7 @@ def sot_color_table(measurement):
             "Invalid (or not supported) SOT type. Valid values are: "
             "intensity")
 
-    cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap(f'Hinode SOT {measurement:s}', cdict)
+    return _cmap_from_rgb(r, g, b, f'Hinode SOT {measurement:s}')
 
 
 def iris_sji_color_table(measurement, aialike=False):
@@ -243,11 +232,7 @@ def iris_sji_color_table(measurement, aialike=False):
         raise ValueError("Invalid IRIS SJI waveband.  Valid values are \n" +
                          str(list(color_table.keys())))
 
-    # Now create the color dictionary in the correct format
-    cdict = create_cdict(r, g, b)
-    # Return the color table
-    return colors.LinearSegmentedColormap(f'IRIS SJI {measurement:s}',
-                                          cdict)
+    return _cmap_from_rgb(r, g, b, f'IRIS SJI {measurement:s}')
 
 
 def hmi_mag_color_table():
@@ -288,41 +273,9 @@ def hmi_mag_color_table():
 
 
 def stereo_hi_color_table(camera):
-    if camera in [1, 2]:
-        return cmap_from_rgb_file(f'STEREO HI{camera}', f'hi{camera}.csv')
-    else:
+    if camera not in [1, 2]:
         raise ValueError("Valid HI cameras are 1 and 2")
-
-
-def cmap_from_rgb_file(name, fname):
-    """
-    Create a colormap from a RGB .csv file.
-
-    name : str
-        Name of the colormap.
-    fname : str
-        Filename of data file. Relative to the sunpy colormap data directory.
-
-    Returns
-    -------
-    cmap : matplotlib.colors.LinearSegmentedColormap
-    """
-    data = np.loadtxt(cmap_data_dir / fname, delimiter=',')
-    if data.shape[1] != 3:
-        raise RuntimeError(f'RGB data files must have 3 columns (got {data.shape[1]})')
-    cdict = create_cdict(data[:, 0], data[:, 1], data[:, 2])
-    return colors.LinearSegmentedColormap(name, cdict)
-
-
-def create_cdict(r, g, b):
-    """
-    Create the color tuples in the correct format.
-    """
-    i = np.linspace(0, 1, r0.size)
-
-    cdict = {name: list(zip(i, el / 255.0, el / 255.0))
-             for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}
-    return cdict
+    return cmap_from_rgb_file(f'STEREO HI{camera}', f'hi{camera}.csv')
 
 
 @u.quantity_input
@@ -343,8 +296,44 @@ def suvi_color_table(wavelength: u.angstrom):
             "Invalid SUVI wavelength. Valid values are "
             "94, 131, 171, 195, 284, 304."
         )
+    return _cmap_from_rgb(r, g, b, 'GOES-R SUVI {:s}'.format(str(wavelength)))
 
-    # Now create the color dictionary in the correct format
+
+def cmap_from_rgb_file(name, fname):
+    """
+    Create a colormap from a RGB .csv file.
+
+    The .csv file must have 3  equal-length columns of integer data, with values
+    between 0 and 255, which are the red, green, and blue values for the colormap.
+
+    Parameters
+    ----------
+    name : str
+        Name of the colormap.
+    fname : str
+        Filename of data file. Relative to the sunpy colormap data directory.
+
+    Returns
+    -------
+    cmap : matplotlib.colors.LinearSegmentedColormap
+    """
+    data = np.loadtxt(cmap_data_dir / fname, delimiter=',')
+    if data.shape[1] != 3:
+        raise RuntimeError(f'RGB data files must have 3 columns (got {data.shape[1]})')
+    return _cmap_from_rgb(data[:, 0], data[:, 1], data[:, 2], name)
+
+
+def _cmap_from_rgb(r, g, b, name):
     cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap(
-        'GOES-R SUVI {:s}'.format(str(wavelength)), cdict)
+    return colors.LinearSegmentedColormap(name, cdict)
+
+
+def create_cdict(r, g, b):
+    """
+    Create the color tuples in the correct format.
+    """
+    i = np.linspace(0, 1, r0.size)
+
+    cdict = {name: list(zip(i, el / 255.0, el / 255.0))
+             for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}
+    return cdict
