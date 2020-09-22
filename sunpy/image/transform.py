@@ -61,9 +61,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     When using `skimage.transform.warp` with order >= 4 or using
     `scipy.ndimage.affine_transform` at all, "NaN" values will be replaced with
-    zero prior to rotation. No attempt is made to retain the "NaN" values except when
-    the entire image consists of "NaN" values only and `skimage.transform.warp` is used,
-    where it is passed down as it is.
+    zero prior to rotation. No attempt is made to retain the "NaN" values.
 
     Input arrays with integer data are cast to float 64 and can be re-cast using
     `numpy.ndarray.astype` if desired.
@@ -119,8 +117,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         tform = skimage.transform.AffineTransform(skmatrix)
 
         if issubclass(image.dtype.type, numbers.Integral):
-            warnings.warn("Integer input data has been cast to float64, "
-                          "which is required for the scikit-image transform.",
+            warnings.warn("Integer input data has been cast to float64.",
                           SunpyUserWarning)
             adjusted_image = image.astype(np.float64)
         else:
@@ -142,10 +139,11 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                 adjusted_image /= im_max
                 adjusted_missing = (missing - im_min) / im_max
             else:
+                # The input array is all one value (aside from NaNs), so no scaling is needed
                 adjusted_missing = missing - im_min
 
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-                                               mode='constant', cval=adjusted_missing, preserve_range=True)
+                                               mode='constant', cval=adjusted_missing)
 
         # Convert the image back to its original range if it is valid
         if not is_nan_image:
