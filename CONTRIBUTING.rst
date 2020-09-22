@@ -91,7 +91,7 @@ If you find an issue you'd like to work on, please make sure to add a comment to
     This applies to everyone who wants to contribute during work time no matter who their employer is.
     You should start by checking if there is a Open Source Software Policy (e.g., `Standford's policy <https://otl.stanford.edu/open-source-stanford>`__) for your work place.
     If not, `OSS-Watch <http://oss-watch.ac.uk/resources/contributing>`__ summaries what you will need to check and who to ask, however this resource is aimed at a UK readers.
-   As an example, `Standford's guidance <https://otl.stanford.edu/sites/g/files/sbiybj10286/f/otlcopyrightguide.pdf>`__ allows someone to contribute and open source their code.
+    As an example, `Standford's guidance <https://otl.stanford.edu/sites/g/files/sbiybj10286/f/otlcopyrightguide.pdf>`__ allows someone to contribute and open source their code.
     If you are unsure if your university or institution allows you to contribute under the BSD-2 license, you should contact the relevant department or administrator that deals with copyright at your institution.
 
 If you are unsure where to start we suggest the `Good First Issue label`_.
