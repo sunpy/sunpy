@@ -255,7 +255,7 @@ class GenericMap(NDData):
                                tmf=TIME_FORMAT)
 
     def __str__(self):
-        return object.__str__(self) + "\n" + self._text_summary() + "\n" + self.data.__str__()
+        return f"{self._text_summary()}\n{self.data.__repr__()}"
 
     def __repr__(self):
         return f"{object.__repr__(self)}\n{self}"
