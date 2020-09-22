@@ -1109,3 +1109,4 @@ def test_print_map(generic_map):
     assert object.__repr__(generic_map) in out_repr
     out_str = generic_map.__str__()
     assert isinstance(out_str, str)
+    assert out_str in out_repr
