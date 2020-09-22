@@ -31,7 +31,6 @@ The project citation should be to the `SunPy paper`_, and the software citation 
 
 You can also get this information with ``sunpy.__citation__``.
 
-
 Other SunPy publications
 ########################
 
@@ -52,10 +51,7 @@ The SunPy v1.0.8 code was reviewed by `The Journal of Open Source Software (JOSS
       journal = {Journal of Open Source Software}
     }
 
-
 A paper about version v0.5 of SunPy was published in `Computational Science & Discovery <https://iopscience.iop.org/article/10.1088/1749-4699/8/1/014009>`__.
-
-
 
 Acknowledging SunPy in Posters and Talks
 ----------------------------------------
@@ -65,8 +61,7 @@ For websites please link the image to `sunpy.org`_.
 Other versions of the logo are available in the `sunpy-logo repository`_.
 
 .. _SunPy paper: https://doi.org/10.3847/1538-4357/ab4f7a
-.. _SunPy JOSS paper: https://doi.org/10.21105/joss.01832
-.. _Sunpy logo: https://sunpy.org/about/#acknowledging
+.. _Sunpy logo: https://github.com/sunpy/sunpy-logo/blob/master/sunpy_logo.svg
 .. _sunpy.org: https://sunpy.org/
 .. _sunpy-logo repository: https://github.com/sunpy/sunpy-logo/
 .. _Zenodo DOI: https://doi.org/10.5281/zenodo.591887

@@ -6,11 +6,15 @@ Thank you.
 Please be aware that everyone has to follow our code of conduct:
 https://github.com/sunpy/sunpy/blob/master/CODE_OF_CONDUCT.rst
 
+Furthermore, you might need to check with your work place if you are allowed to contribute code:
+https://docs.sunpy.org/en/latest/dev_guide/newcomers.html#code
+
 Also these comments are hidden when you submit this github pull request.
 
 We have several automatic features that run when a pull request is open.
 They can appear daunting but do not worry about them!
-Here is a brief explanation of them: https://docs.sunpy.org/en/latest/dev_guide/pr_review_procedure.html#continuous-integration.
+Here is a brief explanation of them:
+https://docs.sunpy.org/en/latest/dev_guide/pr_review_procedure.html#continuous-integration.
 -->
 
 ### Description
