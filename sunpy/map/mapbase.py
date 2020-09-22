@@ -1537,7 +1537,7 @@ class GenericMap(NDData):
     @add_common_docstring(rotation_function_names=_rotation_function_names)
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=np.nan, use_scipy=None, *, method='scipy', clip=True):
+               recenter=False, missing=0.0, method='skimage', use_scipy=False):
         """
         Returns a new rotated and rescaled map.
 
@@ -1555,11 +1555,18 @@ class GenericMap(NDData):
         ----------
         angle : `~astropy.units.Quantity`
             The angle (degrees) to rotate counterclockwise.
-        rmatrix : array-like
-            2x2 linear transformation rotation matrix.
-        order : int
-            Interpolation order to be used.  The precise meaning depends on the
-            rotation method specified by ``method``.
+        rmatrix : 2x2
+            Linear transformation rotation matrix.
+        order : int 0-5
+            Interpolation order to be used. When using scikit-image this
+            parameter is passed into :func:`skimage.transform.warp` (e.g., 4
+            corresponds to bi-quartic interpolation).
+            When using scipy it is passed into
+            :func:`scipy.ndimage.interpolation.affine_transform` where it
+            controls the order of the spline. Faster performance may be
+            obtained at the cost of accuracy by using lower values.
+            When using cv2, only order=0,1,3 are supported. Other values of `order`
+            will raise an error.
             Default: 4
         scale : float
             A scale factor for the image, default is no scaling
@@ -1567,15 +1574,18 @@ class GenericMap(NDData):
             If True, position the axis of rotation at the center of the new map
             Default: `False`
         missing : float
-            The value to use for pixels in the output map that are beyond the extent
-            of the input map.
-            Default: `numpy.nan`
-        method : {{{rotation_function_names}}}, optional
-            Rotation function to use.  Defaults to ``'scipy'``.
-        clip : `bool`, optional
-            If `True`, clips the pixel values of the output image to the range of the
-            input image (including the value of ``missing``, if used).
-            Defaults to `True`.
+            The numerical value to fill any missing points after rotation.
+            Default: 0.0
+        method : `str` or function(), optional
+            1. If `str`: ``'skimage'``, ``'scipy'``, or ``'cv2'``
+            If ``'skimage'``, uses :func:`skimage.transform.warp`.
+            If ``'scipy'``, uses :func:`scipy.ndimage.interpolation.affine_transform`.
+            If ``'cv2'``, uses :func:`cv2.warpAffine`.
+            2. Elif function, uses user-defined function to perform affine transform.
+            See `notes` for function requirements.
+            Default: ``'skimage'``: Will attempt to use :func:`skimage.transform.warp`;
+            on ImportError, will use :func:`scipy.ndimage.interpolation.affine_transform`.
+            (This behavior is identical to the now-deprecated ``use_scipy=False``)
 
         Returns
         -------
@@ -1593,8 +1603,14 @@ class GenericMap(NDData):
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
-        See :func:`sunpy.image.transform.affine_transform` for details on each of the
-        rotation functions.
+        See :func:`sunpy.image.transform.affine_transform` for details on the
+        ``scipy``, ``skimage`` and ``cv2`` transformations, situations when the underlying data
+        is modified prior to rotation, and differences from IDL's rot().
+
+        If a custom function is passed to ``method``, it must accept the same arguments
+        as :func:`sunpy.image.transform.affine_transform` (except for ``method=``) and
+        return the same type of output.
+        See :func:`sunpy.image.transform.affine_transform` for details.
         """
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a rotation matrix.")
@@ -1666,7 +1682,7 @@ class GenericMap(NDData):
                                     order=order, scale=scale,
                                     image_center=pixel_center,
                                     recenter=recenter, missing=missing,
-                                    method=method, clip=clip)
+                                    method=method, use_scipy=use_scipy).T
 
         if recenter:
             new_reference_pixel = pixel_array_center

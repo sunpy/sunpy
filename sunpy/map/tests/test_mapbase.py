@@ -1432,103 +1432,23 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
 
 
 @figure_test
-def test_derotating_nonpurerotation_pcij(aia171_test_map):
-    # The following map has a a PCij matrix that is not a pure rotation
-    weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)
+def test_rotation_methods(aia171_test_map):
+    aia_map = sunpy.map.Map(aia171_test_map)
+    map_r_sk = aia_map.rotate(angle=30*u.deg, order=3, recenter=True, method='skimage')
+    map_r_sci = aia_map.rotate(angle=30*u.deg, order=3, recenter=True, method='scipy')
+    map_r_cv = aia_map.rotate(angle=30*u.deg, order=3, recenter=True, method='cv2')
 
-    # De-rotating the map by its PCij matrix should result in a normal-looking map
-    derotated_map = weird_map.rotate()
+    import matplotlib.pyplot as plt
 
-    fig = Figure(figsize=(8, 4))
+    from sunpy.visualization.colormaps import cm as sunpy_cm
 
-    ax1 = fig.add_subplot(121, projection=weird_map)
-    weird_map.plot(axes=ax1, title='Map with a non-pure-rotation PCij matrix')
+    fig, axs = plt.subplots(1, 3)
 
-    ax2 = fig.add_subplot(122, projection=derotated_map)
-    derotated_map.plot(axes=ax2, title='De-rotated map')
+    img0 = axs[0].imshow(map_r_sk.data, vmin=0, vmax=3000, cmap=sunpy_cm.cmap)
+    axs[0].set_title("Sklearn")
 
-    return fig
+    img1 = axs[1].imshow(map_r_sci.data, vmin=0, vmax=3000, cmap=sunpy_cm.cmap)
+    axs[1].set_title("Scipy")
 
-
-# This function is used in the arithmetic tests below
-def check_arithmetic_value_and_units(map_new, data_expected):
-    assert u.allclose(map_new.quantity, data_expected)
-    assert map_new.unit.is_equivalent(data_expected.unit)
-
-
-@pytest.mark.parametrize('value', [
-    10 * u.ct,
-    10 * u.mct,
-    u.Quantity([10], u.ct),
-    u.Quantity(np.random.rand(128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.mct),
-])
-def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
-    new_map = aia171_test_map + value
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity + value)
-    new_map = value + aia171_test_map
-    check_arithmetic_value_and_units(new_map, value + aia171_test_map.quantity)
-    new_map = aia171_test_map - value
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity - value)
-    new_map = value - aia171_test_map
-    check_arithmetic_value_and_units(new_map, value - aia171_test_map.quantity)
-
-
-@pytest.mark.parametrize('value', [
-    10 * u.ct,
-    u.Quantity([10], u.ct),
-    u.Quantity(np.random.rand(128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.ct),
-    10.0,
-    np.random.rand(128),
-    np.random.rand(128, 128),
-])
-def test_map_arithmetic_multiplication_division(aia171_test_map, value):
-    new_map = aia171_test_map * value
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity * value)
-    new_map = value * aia171_test_map
-    check_arithmetic_value_and_units(new_map, value * aia171_test_map.quantity)
-    new_map = aia171_test_map / value
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity / value)
-    with pytest.warns(RuntimeWarning, match='divide by zero encountered in true_divide'):
-        new_map = value / aia171_test_map
-        check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
-
-
-def test_map_arithmetic_pow(aia171_test_map):
-    new_map = aia171_test_map ** 2
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity ** 2)
-
-
-def test_map_arithmetic_neg(aia171_test_map):
-    new_map = -aia171_test_map
-    check_arithmetic_value_and_units(new_map, -aia171_test_map.quantity)
-
-
-@pytest.mark.parametrize('value,warn_context', [
-    ('map', pytest.warns(RuntimeWarning)),
-    ('foobar', contextlib.nullcontext()),
-    (None, contextlib.nullcontext()),
-    (['foo', 'bar'], contextlib.nullcontext()),
-])
-def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn_context):
-    value = aia171_test_map if value == 'map' else value
-    with pytest.raises(TypeError):
-        _ = aia171_test_map + value
-    with pytest.raises(TypeError):
-        _ = aia171_test_map * value
-    with pytest.raises(TypeError):
-        # A runtime warning is thrown when dividing by zero in the case of
-        # the map test
-        with warn_context:
-            _ = value / aia171_test_map
-
-
-def test_parse_fits_units():
-    # Check that we parse a BUNIT of G correctly.
-    out_unit = GenericMap._parse_fits_unit("Gauss")
-    assert out_unit == u.G
-
-    out_unit = GenericMap._parse_fits_unit("G")
-    assert out_unit == u.G
+    img2 = axs[2].imshow(map_r_cv.data, vmin=0, vmax=3000, cmap=sunpy_cm.cmap)
+    axs[2].set_title("OpenCV")

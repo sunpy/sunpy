@@ -187,6 +187,7 @@ intersphinx_mapping = {
     "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
     "astropy": ("https://docs.astropy.org/en/stable/", None),
     "astroquery": ("https://astroquery.readthedocs.io/en/latest/", None),
+    "cv2": ("https://docs.opencv.org/master/d6/d00/tutorial_py_root.html", None),
     "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
     "mpl_animators": ("https://docs.sunpy.org/projects/mpl-animators/en/stable/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
