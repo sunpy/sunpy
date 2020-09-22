@@ -1,6 +1,6 @@
 ---
-name: Feature request
-about: Suggest a way to improve sunpy
+name: Performance Suggestions
+about: If you have found a slow aspect of sunpy and would like it improved.
 ---
 
 <!--
@@ -19,6 +19,15 @@ If not please go ahead and open an issue!
 
 ### Description
 <!--
-Provide a general description of the feature you would like.
-If you prefer, you can also suggest a draft design or API.
+Provide a general description of what the issue is.
 -->
+
+### Code Example
+<!--
+Please include **code** that reproduces the issue whenever possible.
+The best reproductions are self-contained scripts with minimal dependencies.
+-->
+
+```python
+Code goes here
+```

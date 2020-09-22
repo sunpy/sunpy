@@ -1,0 +1,2 @@
+``sunpy.cm`` has been removed. All of the functionality in this module can
+now be found in `sunpy.visualization.colormaps`.
