@@ -1,2 +1,2 @@
-Fixed :meth:`~sunpy.image.transform.affine_transform` to scale images to [0, 1] before
+Fixed :func:`~sunpy.image.transform.affine_transform` to scale images to [0, 1] before
 passing them to :func:`skimage.transform.warp` and later rescale them back.
