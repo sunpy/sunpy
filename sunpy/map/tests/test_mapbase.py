@@ -1104,5 +1104,7 @@ def test_contour(simple_map):
 
 
 def print_map(generic_map):
-    out = generic_map.__repr__()
-    assert isinstance(out, str)
+    out_repr = generic_map.__repr__()
+    assert isinstance(out_repr, str)
+    out_str = generic_map.__str__()
+    assert isinstance(out_str, str)
