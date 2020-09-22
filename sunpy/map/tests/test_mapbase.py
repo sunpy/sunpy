@@ -890,7 +890,7 @@ def test_bad_coordframe_repr(generic_map):
     generic_map.meta['CTYPE2'] = "STUART2"
     with pytest.warns(UserWarning,
                       match="Could not determine coordinate frame from map metadata"):
-        assert 'Unknown' in generic_map.__str__()
+        assert 'Unknown' in generic_map.__repr__()
 
 
 def test_bad_header_final_fallback():
