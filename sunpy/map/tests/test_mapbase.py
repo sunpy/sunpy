@@ -1103,7 +1103,7 @@ def test_contour(simple_map):
     assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
 
 
-def print_map(generic_map):
+def test_print_map(generic_map):
     out_repr = generic_map.__repr__()
     assert isinstance(out_repr, str)
     out_str = generic_map.__str__()
