@@ -18,6 +18,11 @@ def LCClient():
     return noaa.NOAAIndicesClient()
 
 
+@pytest.fixture
+def SRSClient():
+    return noaa.SRSClient()
+
+
 def mock_query_object(start_date, end_date):
     """
     Creation of a QueryResponse object, and prefill some
@@ -168,6 +173,14 @@ def test_srs_current_year():
     res = Fido.fetch(qr)
     assert len(res) == 1
     assert res.data[0].endswith(f"{year}0101SRS.txt")
+
+
+@pytest.mark.filterwarnings('ignore:ERFA function')
+def test_srs_out_of_range(SRSClient):
+    res = SRSClient.search(a.Time('1995/01/01', '1995/02/01'))
+    assert len(res) == 0
+    res = SRSClient.search(a.Time('2995/01/01', '2995/02/01'))
+    assert len(res) == 0
 
 
 def test_attr_reg():
