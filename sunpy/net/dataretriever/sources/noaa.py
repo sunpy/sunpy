@@ -164,6 +164,11 @@ class SRSClient(GenericClient):
 
     Uses the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/warehouse/>`__.
 
+    Notes
+    -----
+    Data pre-1996 is in free-form text, which cannot be parsed by sunpy, and
+    therefore only results from 1996 onwards are returned by this client.
+
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
@@ -188,14 +193,17 @@ class SRSClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
         total_days = int(timerange.days.value) + 1
         all_dates = timerange.split(total_days)
-        today_year = Time.now().strftime('%Y')
+        today_year = int(Time.now().strftime('%Y'))
         for day in all_dates:
-            if today_year == day.end.strftime('%Y'):
+            end_year = int(day.end.strftime('%Y'))
+            if end_year > today_year or end_year < 1996:
+                continue
+            elif end_year == today_year:
                 suffix = '{}/SRS/{}SRS.txt'.format(
-                    day.end.strftime('%Y'), day.end.strftime('%Y%m%d'))
+                    end_year, day.end.strftime('%Y%m%d'))
             else:
                 suffix = '{}/{}_SRS.tar.gz'.format(
-                    day.end.strftime('%Y'), day.end.strftime('%Y'))
+                    end_year, day.end.strftime('%Y'))
             url = base_url + suffix
             result.append(url)
         return result
