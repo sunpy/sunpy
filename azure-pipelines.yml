@@ -83,24 +83,24 @@ jobs:
         pytest: false
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
-# - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
-- template: publish.yml@OpenAstronomy
-  parameters:
-    # Only Upload to PyPI on tags
-    ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
-      pypi_connection_name : 'PyPI'
-    test_extras: 'dev'
-    test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
-    submodules: false
+- ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
+  - template: publish.yml@OpenAstronomy
+    parameters:
+      # Only Upload to PyPI on tags
+      ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
+        pypi_connection_name : 'PyPI'
+      test_extras: 'dev'
+      test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
+      submodules: false
 
-    targets:
-      - wheels_cp3[78]-manylinux*
-      - wheels_cp3[78]-macosx*
-      - sdist
-    dependsOn:
-      - py37_test
-      - py38_test
-      - py38_test_online
-      - py38_test_32bit
-      - py37_test_oldestdeps
-      - py38_conda
+      targets:
+        - wheels_cp3[78]-manylinux*x86_64
+        - wheels_cp3[78]-macosx*
+        - sdist
+      dependsOn:
+        - py37_test
+        - py38_test
+        - py38_test_online
+        - py38_test_32bit
+        - py37_test_oldestdeps
+        - py38_conda
