@@ -19,8 +19,9 @@ including ones created using custom FITS files.
 """
 
 import asdf
-import sunpy.map
+
 import sunpy.data.sample
+import sunpy.map
 
 ################################################################################
 # We begin by creating an `~sunpy.map.sources.sdo.AIAMap` object using the
@@ -29,7 +30,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 aia_map.peek()
 
 ################################################################################
-# We can now save this object to an asdf file to use later. Saving it like this 
+# We can now save this object to an asdf file to use later. Saving it like this
 # allows us to preserve all of the metadata of the object along with the actual
 # array data. When we load the asdf again, we get an identical
 # `~sunpy.map.sources.sdo.AIAMap` object.
