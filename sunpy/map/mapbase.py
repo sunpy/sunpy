@@ -1236,7 +1236,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-                   recenter=False, missing=0.0, method='skimage'):
+               recenter=False, missing=0.0, method='skimage'):
         """
         Returns a new rotated and rescaled map.
 
@@ -1298,12 +1298,12 @@ class GenericMap(NDData):
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
         See :func:`sunpy.image.transform.affine_transform` for details on the
-        `scipy` and `skimage` transformations, situations when the underlying data 
+        `scipy` and `skimage` transformations, situations when the underlying data
         is modified prior to rotation, and differences from IDL's rot().
 
         If a custom function is passed to `method`, it must accept the same arguments
-        as `sunpy.image.transform.affine_transform` (except for `method=`) and 
-        return the same type of output. 
+        as `sunpy.image.transform.affine_transform` (except for `method=`) and
+        return the same type of output.
         See `sunpy.image.transform.affine_transform` for details.
         """
         # Put the import here to reduce sunpy.map import time

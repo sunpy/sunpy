@@ -17,9 +17,9 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     """
     Rotates, shifts and scales an image.
 
-    Will use one of `skimage.transform.warp`, `scipy.ndimage.interpolation.affine_transform`, 
-    or a passed-in custom method as selected by `method=`. 
-    If the appropriate library is not installed, will default 
+    Will use one of `skimage.transform.warp`, `scipy.ndimage.interpolation.affine_transform`,
+    or a passed-in custom method as selected by `method=`.
+    If the appropriate library is not installed, will default
     to `scipy.ndimage.interpolation.affine_transform`.
 
     Parameters
@@ -31,7 +31,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     order : `int` 0-5, optional
         Interpolation order to be used, defaults to 3. When using scikit-image this parameter
         is passed into `skimage.transform.warp` (e.g., 3 corresponds to bi-cubic interpolation).
-        When using scipy it is passed into`scipy.ndimage.interpolation.affine_transform` 
+        When using scipy it is passed into`scipy.ndimage.interpolation.affine_transform`
         where it controls the order of the spline.
     scale : `float`
         A scale factor for the image with the default being no scaling.
@@ -61,7 +61,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     This algorithm uses an affine transformation as opposed to a polynomial
     geometrical transformation, which by default is `skimage.transform.warp`.
     One can specify using `scipy.ndimage.interpolation.affine_transform`  as an alternative
-    affine transformation. The two transformations use different algorithms 
+    affine transformation. The two transformations use different algorithms
     and thus do not give identical output.
 
     When using for `skimage.transform.warp` with order >= 4 or using
@@ -95,17 +95,23 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             raise ValueError("`method` {} not supported.".format(method))
     if not isinstance(method, types.FunctionType):
         raise ValueError("argument `method` must be a string or function")
-        
+    
     # do affine transform with selected method
     try:
-        rotated_image = method(image=image, rmatrix=rmatrix, order=order, scale=scale, missing=missing, image_center=image_center, recenter=recenter)
+        rotated_image = method(image=image, rmatrix=rmatrix,
+                               order=order, scale=scale,
+                               missing=missing, image_center=image_center,
+                               recenter=recenter)
     except (ImportError, NameError):
-        warnings.warn('library in affine transform `method` was not found. Using `scipy` method'
-                      , SunpyUserWarning)
-        rotated_image = _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter)
+        warnings.warn('library in affine transform `method` was not found. Using `scipy` method',
+                      SunpyUserWarning)
+        rotated_image = _scipy_affine_transform(image, rmatrix, order,
+                                                scale, missing, image_center,
+                                                recenter)
         
     return rotated_image
-    
+
+
 def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter):
     """
     Apply `skimage.transform.warp` to `image`
@@ -133,7 +139,7 @@ def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_cente
     
     rmatrix = rmatrix / scale
 
-    shift =_calculate_shift(image, rmatrix, image_center, recenter)
+    shift = _calculate_shift(image, rmatrix, image_center, recenter)
     
     # Make the rotation matrix 3x3 to include translation of the image
     skmatrix = np.zeros((3, 3))
@@ -169,7 +175,7 @@ def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_cente
         else:
             # The input array is all one value (aside from NaNs), so no scaling is needed
             adjusted_missing = missing - im_min
-                
+            
     rotated_image = warp(adjusted_image, tform, order=order,
                          mode='constant', cval=adjusted_missing)
     
@@ -180,6 +186,7 @@ def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_cente
         rotated_image += im_min
 
     return rotated_image
+
 
 def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter):
     """
@@ -203,7 +210,7 @@ def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center,
     recenter : `bool` or array-like, optional
         Move the axis of rotation to the center of the array or recenter coords.
         Defaults to `True` i.e., recenter to the center of the array.
-        
+
     """
     rmatrix = rmatrix / scale
     shift = _calculate_shift(image, rmatrix, image_center, recenter)
@@ -215,6 +222,7 @@ def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center,
     return scipy.ndimage.interpolation.affine_transform(
         np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
         mode='constant', cval=missing).T
+
 
 def _calculate_shift(image, rmatrix, image_center=None, recenter=False):
     """
@@ -245,7 +253,7 @@ def _calculate_shift(image, rmatrix, image_center=None, recenter=False):
     i.e. |cos(angle) -sin(angle)|
          |sin(angle)  cos(angle)|
     2. Rotation matrix has already been scaled by a scale factor, if applicable
-    3. Coordinate system of offset array [a,b] is such that image is shifted 
+    3. Coordinate system of offset array [a,b] is such that image is shifted
     `a` pixels to the left and `b` pixels up.
     """
     
