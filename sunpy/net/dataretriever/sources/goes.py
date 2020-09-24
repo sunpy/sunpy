@@ -63,7 +63,6 @@ class XRSClient(GenericClient):
     baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
     pattern_old = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
 
-
     # GOES XRS 13, 14, 15 from NOAA (re-processed data)
     baseurl_new = (r"https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/"
                    r"goes{SatelliteNumber}/gxrs-l2-irrad_science/%Y/%m/sci_gxrs-l2-irrad_g{SatelliteNumber}_d%Y%m%d_v0-0-0\.nc")
@@ -78,10 +77,7 @@ class XRSClient(GenericClient):
     pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-flx1s_science/{year:4d}/"
                  "{month:2d}/sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_v2-0-1.nc")
 
-
-    @classmethod
     def post_search_hook(self, i, matchdict):
-
         tr = get_timerange_from_exdict(i)
         rowdict = OrderedDict()
         rowdict['Time'] = TimeRange(tr.start, tr.end)
@@ -99,7 +95,6 @@ class XRSClient(GenericClient):
 
         return rowdict
 
-    @classmethod
     def search(self, *args, **kwargs):
         matchdict = self._get_match_dict(*args, **kwargs)
 
@@ -113,7 +108,7 @@ class XRSClient(GenericClient):
                 metalist.append(rowdict)
 
         # if for some reason a user wants the old data
-        elif (matchdict['Time'].end>='2009-09-01' and matchdict.get('VersionData')==['old']):
+        elif (matchdict['Time'].end>='2009-09-01' and matchdict['Provider']==['sdac']):
             scraper = Scraper(self.baseurl_old, regex=True)
             filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_old, matcher=matchdict)
             for i in filemeta:
@@ -123,7 +118,7 @@ class XRSClient(GenericClient):
         # new data from NOAA
         else:
             for sat in [16, 17]:
-                formdict = {'SatelliteNumber':sat}
+                formdict = {'SatelliteNumber': sat}
                 urlpattern = self.baseurl_r.format(**formdict)
                 scraper = Scraper(urlpattern)
                 filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_r, matcher=matchdict)
@@ -132,7 +127,7 @@ class XRSClient(GenericClient):
                     metalist.append(rowdict)
 
             for sat in [13, 14, 15]:
-                formdict = {'SatelliteNumber':sat}
+                formdict = {'SatelliteNumber': sat}
                 urlpattern = self.baseurl_new.format(**formdict)
                 scraper = Scraper(urlpattern)
                 filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_new, matcher=matchdict)
@@ -155,12 +150,12 @@ class XRSClient(GenericClient):
             ("XRS", "GOES X-ray Sensor")],
             attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
             attrs.Source: [("GOES", "The Geostationary Operational Environmental Satellite Program.")],
-            attrs.Provider: [('NASA', 'The National Aeronautics and Space Administration.'),
-                             ('NOAA', 'The National Oceanic and Atmospheric Administration')],
-            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number],
-            attrs.goes.VersionData: [('normal', 'normal'), ('old', 'before re-processing'), ('re-processed', 're-processed')]}
+            attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.'),
+                             ('NOAA', 'The National Oceanic and Atmospheric Administration.')],
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
 
         return adict
+
 
 class SUVIClient(GenericClient):
     """
