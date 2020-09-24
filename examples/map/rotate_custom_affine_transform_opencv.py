@@ -130,8 +130,9 @@ map_r_cv = aia_map.rotate(order=3, recenter=True, method=cv_rotate)
 
 # Since skimage, scipy, and cv all use different algorithms, we need a basis for comparison:
 # what is an acceptable margin of difference in the data arrays?
-# We can use the [Symmetric Mean Absolute Percentage Error](https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error)
-# (the third equation in the link). This is a bit rudimentary, since we are looking
+# We can use the Symmetric Mean Absolute Percentage Error
+# (https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error;
+# the third equation in the link). This is a bit rudimentary, since we are looking
 # at all of the pixels (and not just the solar disk), but it works for a quick approach.
 
 # SymmetricMeanAbsolutePercentageError

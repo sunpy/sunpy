@@ -227,7 +227,7 @@ def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center,
 def _calculate_shift(image, rmatrix, image_center=None, recenter=False):
     """
     Returns the offset into the array where the transform is applied.
-    
+
     Parameters
     ----------
     image: `numpy.ndarray`
@@ -245,10 +245,10 @@ def _calculate_shift(image, rmatrix, image_center=None, recenter=False):
     -------
     tuple :
        Offset into array where transform is applied, based on rotation and image center.
-    
+
     Notes
     -----
-    Assumptions: 
+    Assumptions:
     1. Rotation, as defined in rmatrix, is counterclockwise.
     i.e. |cos(angle) -sin(angle)|
          |sin(angle)  cos(angle)|
