@@ -4,6 +4,7 @@ This module provies metadata support for `~sunpy.timeseries.TimeSeries`.
 import copy
 import warnings
 import itertools
+from collections.abc import Iterable
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
@@ -338,22 +339,36 @@ class TimeSeriesMetaData:
 
     def concatenate(self, tsmetadata2):
         """
-        Combine the metadata from a `~sunpy.timeseries.TimeSeriesMetaData` with
-        the current `~sunpy.timeseries.TimeSeriesMetaData` and return as a new
-        `~sunpy.timeseries.TimeSeriesMetaData`.
+        Combine the metadata from a `~sunpy.timeseries.TimeSeriesMetaData` or an
+        iterable containing multiple `~sunpy.timeseries.TimeSeriesMetaData`
+        with the current `~sunpy.timeseries.TimeSeriesMetaData` and return it as
+        a new `~sunpy.timeseries.TimeSeriesMetaData`.
 
         Parameters
         ----------
-        tsmetadata2 : `~sunpy.timeseries.TimeSeriesMetaData`
-            The second TimeSeriesMetaData object.
+        tsmetadata2 : `~sunpy.timeseries.TimeSeriesMetaData` or `collections.abc.Iterable`
+            The second `~sunpy.timeseries.metadata.TimeSeriesMetaData` object or an iterable
+            containing multiple `~sunpy.timeseries.metadata.TimeSeriesMetaData` objects.
         """
+        # Check if the type of the object passed is valid
+        if not isinstance(tsmetadata2, (TimeSeriesMetaData, Iterable)):
+            raise TypeError(f"Invalid type: {type(tsmetadata2)}")
+
+        # If an individual TimeSeriesMetaData object is to be appended, wrap it in a list
+        # Else, it must already be an iterable, so check if all items within it are valid
+        if isinstance(tsmetadata2, TimeSeriesMetaData):
+            tsmetadata2 = [tsmetadata2]
+        elif not all(isinstance(item, TimeSeriesMetaData) for item in tsmetadata2):
+            raise TypeError("Invalid type within iterable")
+
         # Create a copy of the metadata
         meta = TimeSeriesMetaData(copy.copy(self.metadata))
 
-        # Append each metadata entry from the second TimeSeriesMetaData object
+        # Append each metadata entry of each TimeSeriesMetaData object from the iterable
         # to the original TimeSeriesMetaData object.
-        for entry in tsmetadata2.metadata:
-            meta.append(entry[0], entry[1], entry[2])
+        for series in tsmetadata2:
+            for entry in series.metadata:
+                meta.append(entry[0], entry[1], entry[2])
 
         return meta
 
