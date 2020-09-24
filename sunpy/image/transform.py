@@ -89,9 +89,10 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     if isinstance(method, str):
         if method == 'skimage':
             method = _skimage_affine_transform
-        else:
+        elif method == 'scipy':
             method = _scipy_affine_transform
-            
+        else:
+            raise ValueError("`method` {} not supported.".format(method))
     if not isinstance(method, types.FunctionType):
         raise ValueError("argument `method` must be a string or function")
         
