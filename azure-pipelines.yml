@@ -1,10 +1,4 @@
 name: $(BuildDefinitionName)_$(Date:yyyyMMdd)$(Rev:.rr)
-variables:
-  CI_NAME: Azure Pipelines
-  CI_BUILD_ID: $(Build.BuildId)
-  CI_BUILD_URL: "https://dev.azure.com/sunpy/sunpy/_build/results?buildId=$(Build.BuildId)"
-  CIBW_BUILD: cp36-* cp37-* cp38-*
-  CIBW_SKIP: "*-win32 *-manylinux1_i686"
 
 schedules:
   - cron: "0 0 * * *"
@@ -12,8 +6,7 @@ schedules:
     branches:
       include:
       - master
-      - 1.0
-      - 1.1
+      - 2.0
     always: true
 
 resources:
@@ -99,9 +92,10 @@ jobs:
       test_extras: 'dev'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
       submodules: false
+
       targets:
-        - wheels_linux
-        - wheels_macos
+        - wheels_cp3[78]-manylinux*x86_64
+        - wheels_cp3[78]-macosx*
         - sdist
       dependsOn:
         - py36_test
