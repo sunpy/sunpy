@@ -13,6 +13,12 @@ class Instrument(attr.SimpleAttr):
     """
 
 
+class Time(attr.Range):
+    """
+    Dummy Time Class.
+    """
+
+
 def EmptyAttr():
     AttrMeta._attr_registry = defaultdict(make_tuple)
 
@@ -321,3 +327,9 @@ def test_asterisk_attrs(ALL):
     attr.Attr.update_values({GenericClient: {Instrument: [('*')]}})
     assert Instrument.all == ALL
     assert "Instrument(all: All values of this type are supported.)" in repr(Instrument.all)
+
+
+def test_asterisk_attrs_time():
+    # This checks we can submit * for time/wavelength (both are ranges)
+    attr.Attr.update_values({GenericClient: {Time: [('*')]}})
+    assert "all       All values of this type are supported." in repr(Time)
