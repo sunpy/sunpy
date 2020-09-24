@@ -14,7 +14,7 @@ test_help = """\
 Running tests is no longer done using 'python setup.py test'.
 
 Instead you will need to run:
-    tox -e offline
+    tox -e py38
 if you don't already have tox installed, you can install it with:
     pip install tox
 if you only want to run part of the test suite, you can also use pytest directly with:

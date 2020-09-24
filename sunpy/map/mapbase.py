@@ -35,7 +35,7 @@ from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import expand_list
+from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import deprecate_positional_args_since, deprecated
 from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
@@ -185,7 +185,7 @@ class GenericMap(NDData):
             warnings.warn("This file contains more than 2 dimensions. "
                           "Data will be truncated to the first two dimensions.", SunpyUserWarning)
 
-        super().__init__(data, meta=header, **kwargs)
+        super().__init__(data, meta=MetaDict(header), **kwargs)
 
         # Correct possibly missing meta keywords
         self._fix_date()
