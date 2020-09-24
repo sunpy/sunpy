@@ -33,6 +33,7 @@ from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, ge
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy import log
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
@@ -1421,6 +1422,15 @@ class GenericMap(NDData):
             A new map instance is returned representing to specified
             sub-region.
 
+        Notes
+        -----
+        The rectangle is defined in pixel space. If coordinate input is given,
+        it is first transformed into pixel space, and the pixel indices of
+        top_right and bottom_left are used as the corners of the rectangle.
+
+        If top_right is below or to the left of bottom_left, a message is logged
+        at the debug level to the sunpy logger.
+
         Examples
         --------
         >>> import astropy.units as u
@@ -1544,12 +1554,10 @@ class GenericMap(NDData):
         x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
         y_pixels = u.Quantity([bottom_left[1], top_right[1]]).to_value(u.pix)
         if x_pixels[0] > x_pixels[1]:
-            warnings.warn("The rectangle is inverted in the left/right direction,  "
-                          "which may lead to unintended behavior.", SunpyUserWarning)
+            log.debug("The rectangle is inverted in the left/right direction.")
 
         if y_pixels[0] > y_pixels[1]:
-            warnings.warn("The rectangle is inverted in the bottom/top direction, "
-                          "which may lead to unintended behavior.", SunpyUserWarning)
+            log.debug("The rectangle is inverted in the bottom/top direction.")
         # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
         y_pixels.sort()
