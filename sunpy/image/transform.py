@@ -17,10 +17,10 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     """
     Rotates, shifts and scales an image.
 
-    Will use one of `skimage.transform.warp`, `scipy.ndimage.affine_transform`, 
+    Will use one of `skimage.transform.warp`, `scipy.ndimage.interpolation.affine_transform`, 
     or a passed-in custom method as selected by `method=`. 
     If the appropriate library is not installed, will default 
-    to `scipy.ndimage.affine_transform`.
+    to `scipy.ndimage.interpolation.affine_transform`.
 
     Parameters
     ----------
@@ -31,8 +31,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     order : `int` 0-5, optional
         Interpolation order to be used, defaults to 3. When using scikit-image this parameter
         is passed into `skimage.transform.warp` (e.g., 3 corresponds to bi-cubic interpolation).
-        When using scipy it is passed into
-        `scipy.ndimage.affine_transform` where it controls the order of the spline.
+        When using scipy it is passed into`scipy.ndimage.interpolation.affine_transform` 
+        where it controls the order of the spline.
     scale : `float`
         A scale factor for the image with the default being no scaling.
     image_center : tuple, optional
@@ -60,12 +60,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     -----
     This algorithm uses an affine transformation as opposed to a polynomial
     geometrical transformation, which by default is `skimage.transform.warp`.
-    One can specify using `scipy.ndimage.affine_transform`  as an alternative 
+    One can specify using `scipy.ndimage.interpolation.affine_transform`  as an alternative
     affine transformation. The two transformations use different algorithms 
     and thus do not give identical output.
 
     When using for `skimage.transform.warp` with order >= 4 or using
-    `scipy.ndimage.affine_transform` at all, "NaN" values will
+    `scipy.ndimage.interpolation.affine_transform` at all, "NaN" values will
     replaced with zero prior to rotation. No attempt is made to retain the NaN
     values.
 
@@ -182,7 +182,7 @@ def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_cente
 
 def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter):
     """
-    Apply `scipy.ndimage.affine_transform` to `image`
+    Apply `scipy.ndimage.interpolation.affine_transform` to `image`
 
     Parameters
     ----------
