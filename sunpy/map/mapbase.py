@@ -1236,7 +1236,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, use_scipy=False):
+                   recenter=False, missing=0.0, method='skimage'):
         """
         Returns a new rotated and rescaled map.
 
@@ -1273,11 +1273,13 @@ class GenericMap(NDData):
         missing : float
             The numerical value to fill any missing points after rotation.
             Default: 0.0
-        use_scipy : bool
-            If True, forces the rotation to use
-            :func:`scipy.ndimage.interpolation.affine_transform`, otherwise it
-            uses the :func:`skimage.transform.warp`.
-            Default: False, unless scikit-image can't be imported
+        method : `string` or function(), optional
+        1. If `string`: `skimage` or `scipy`
+        If `scipy`, uses :func:`scipy.ndimage.interpolation.affine_transform`.
+        If `skimage`, uses :func:`skimage.transform.warp`.
+        2. Elif function, uses user-defined function to perform affine transform.
+        See `notes` for function requirements.
+        Default: `skimage`; otherwise on ImportError, will use `scipy`.
 
         Returns
         -------
@@ -1296,8 +1298,13 @@ class GenericMap(NDData):
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
         See :func:`sunpy.image.transform.affine_transform` for details on the
-        transformations, situations when the underlying data is modified prior
-        to rotation, and differences from IDL's rot().
+        `scipy` and `skimage` transformations, situations when the underlying data 
+        is modified prior to rotation, and differences from IDL's rot().
+
+        If a custom function is passed to `method`, it must accept the same arguments
+        as `sunpy.image.transform.affine_transform` (except for `method=`) and 
+        return the same type of output. 
+        See `sunpy.image.transform.affine_transform` for details.
         """
         # Put the import here to reduce sunpy.map import time
         from sunpy.image.transform import affine_transform
@@ -1364,7 +1371,7 @@ class GenericMap(NDData):
                                     order=order, scale=scale,
                                     image_center=np.flipud(pixel_center),
                                     recenter=recenter, missing=missing,
-                                    use_scipy=use_scipy).T
+                                    method=method).T
 
         if recenter:
             new_reference_pixel = pixel_array_center
