@@ -425,7 +425,7 @@ class GenericMap(NDData):
         return self.meta.item_hash()
 
     @property
-    @cached_property_based_on(_meta_hash)
+    @cached_property_based_on('_meta_hash')
     def wcs(self):
         """
         The `~astropy.wcs.WCS` property of the map.

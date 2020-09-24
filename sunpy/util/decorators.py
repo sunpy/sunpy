@@ -330,23 +330,23 @@ def deprecate_positional_args_since(since, keyword_only=False):
 _NOT_FOUND = object()
 
 
-def cached_property_based_on(meth):
+def cached_property_based_on(attr_name):
     """
     A decorator to cache the value of a property based on the output of a
-    different callable.
+    different class attribute.
 
-    This decorator caches the value of ``meth(instance)`` and ``prop(instance)``.
-    When the decorated property is accessed, ``meth(instance)`` is recomputed.
-    If this returns the same as its cached value, the cached value of ``prop``
-    is returned. Otherwise both ``meth`` and ``prop`` are recomputed, cached,
-    and the new value of ``prop`` is returned.
+    This decorator caches the values of ``getattr(instance, method)`` and
+    ``prop(instance)``. When the decorated property is accessed,
+    ``getattr(instance, method)`` is called. If this returns the same as its
+    cached value, the cached value of ``prop`` is returned. Otherwise both
+    ``meth`` and ``prop`` are recomputed, cached, and the new value of ``prop``
+    is returned.
 
     Parameters
     ----------
-    meth : callable
-        A function that takes exactly one argument (a class instance) and
-        returns an arbitrary output. Changes in the output are used to decide
-        whether or not to recompute the property.
+    attr_name :
+        The name of the attribute, on which changes are checked for. The actual
+        attribute is accessed using ``getattr(attr_name, instance)``.
 
     Notes
     -----
@@ -359,19 +359,25 @@ def cached_property_based_on(meth):
         @wraps(outer)
         def inner(instance):
             """
-            instance: the class instance of the property being decorated
+            Parameters
+            ----------
+            instance:
+                Any class instance that has the property ``prop``,
+                and attribute ``attr``.
             """
             cache = instance.__dict__
-            # Check if our caching method has changed ouptut
-            new_cache_val = meth(instance)
-            old_cache_val = cache.get(meth.__name__, _NOT_FOUND)
-            if old_cache_val is _NOT_FOUND or new_cache_val != old_cache_val:
-                # Recompute
-                new_val = prop(instance)
-                cache[prop.__name__] = new_val
-                # Set new cache value
-                cache[meth.__name__] = new_cache_val
+            prop_key = prop.__name__
 
-            return cache[prop.__name__]
+            # Check if our caching method has changed ouptut
+            new_attr_val = getattr(instance, attr_name)
+            old_attr_val = cache.get(attr_name, _NOT_FOUND)
+            if old_attr_val is _NOT_FOUND or new_attr_val != old_attr_val:
+                # Store the new attribute value
+                cache[attr_name] = new_attr_val
+                # Recompute the property
+                new_val = prop(instance)
+                cache[prop_key] = new_val
+
+            return cache[prop_key]
         return inner
     return outer
