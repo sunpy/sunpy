@@ -1275,8 +1275,8 @@ class GenericMap(NDData):
             Default: 0.0
         method : `string` or function(), optional
         1. If `string`: `skimage` or `scipy`
-        If `scipy`, uses :func:`scipy.ndimage.interpolation.affine_transform`.
         If `skimage`, uses :func:`skimage.transform.warp`.
+        If `scipy`, uses :func:`scipy.ndimage.interpolation.affine_transform`.
         2. Elif function, uses user-defined function to perform affine transform.
         See `notes` for function requirements.
         Default: `skimage`; otherwise on ImportError, will use `scipy`.

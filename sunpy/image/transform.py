@@ -98,87 +98,13 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     # do affine transform with selected method
     try:
         rotated_image = method(image=image, rmatrix=rmatrix, order=order, scale=scale, missing=missing, image_center=image_center, recenter=recenter)
-    except ImportError:
-        warnings.warn('method library was not found. Using `scipy.ndimage.affine_transform`'
+    except (ImportError, NameError):
+        warnings.warn('library in affine transform `method` was not found. Using `scipy` method'
                       , SunpyUserWarning)
         rotated_image = _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter)
         
     return rotated_image
     
-def _opencv_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter):
-    """
-    Apply cv2.warpAffine to `image`
-
-    Parameters
-    ----------
-    image: `numpy.ndarray`
-        2D image to be rotated
-    rmatrix : `numpy.ndarray` that is 2x2
-        Linear transformation rotation matrix.
-    order : `int` 0-5
-        Interpolation order to be used
-    scale : `float`
-        A scale factor for the image
-    missing : `float`
-        The value to replace any missing data after the transformation.
-    shift : `sequence`
-        Offset into the image where the transform is applied. Should contain one
-        value for each axis of `image`.
-        
-    NOTE: `cv2.warpAffine` uses a different coordinate system than its `skimage` 
-    and `scipy` counterparts; this function is designed to take in arguments utilizing 
-    the `skimage` and `scipy` reference frame and convert them to the `cv2` frame.
-    """
-
-    import cv2
-
-    # Flags for converting input order to appropriate cv2 interpolation flag
-    # As of Sept. 2020, OpenCV warpAffine does not support order 2,4,5
-    _CV_ORDER_FLAGS = {
-        0: cv2.INTER_NEAREST,
-        1: cv2.INTER_LINEAR,
-        2: cv2.INTER_CUBIC,
-        3: cv2.INTER_CUBIC,
-        4: cv2.INTER_CUBIC,
-        5: cv2.INTER_CUBIC
-    }
-    
-    # needed to convert missing from np.dtype to native type
-    # required for warpAffine input
-    try:
-        missing = missing.tolist()
-    except AttributeError:
-        pass
-
-    # convert order to appropriate cv2 flag
-    if order not in [0,1,3]:
-        warnings.warn("Input order {} not supported. Setting order to 3 for openCV rotation.",
-                      SunpyUserWarning)
-    order = _CV_ORDER_FLAGS[max(0,min(order,5))]
-
-    # get appropriate cv transform matrix
-    # slight amount of voodoo here, but the results are essentially the same as skimage
-
-    shift =_calculate_shift(image, rmatrix/scale, image_center, recenter)    
-    rmatrix = rmatrix*scale
-    
-    trans = np.eye(3,3)
-    rot_scale = np.eye(3,3)
-    trans[:2,2] = [-shift[0],-shift[1]]
-    rot_scale[:2,:2] = rmatrix.T
-    rmatrix = (rot_scale @ trans)[:2]
-
-    if issubclass(image.dtype.type, numbers.Integral):
-        warnings.warn("Integer input data has been cast to float64, "
-                      "which is required for the opencv2-image transform.",
-                      SunpyUserWarning)
-        adjusted_image = image.astype(np.float64)
-    else:
-        adjusted_image = image.copy()
-        
-    h,w = adjusted_image.shape
-    return cv2.warpAffine(adjusted_image, rmatrix, (w,h), flags=order,borderMode=cv2.BORDER_CONSTANT, borderValue=missing)
-
 def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter):
     """
     Apply `skimage.transform.warp` to `image`
@@ -195,9 +121,12 @@ def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_cente
         A scale factor for the image
     missing : `float`
         The value to replace any missing data after the transformation.
-    shift : `sequence`
-        Offset into the image where the transform is applied. Should contain one
-        value for each axis of `image`. 
+    image_center : tuple, optional
+        The point in the image to rotate around (axis of rotation).
+        Defaults to the center of the array.
+    recenter : `bool` or array-like, optional
+        Move the axis of rotation to the center of the array or recenter coords.
+        Defaults to `True` i.e., recenter to the center of the array.
     """
     from skimage.transform import AffineTransform, warp
     
@@ -267,9 +196,12 @@ def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center,
         A scale factor for the image
     missing : `float`
         The value to replace any missing data after the transformation.
-    shift : `sequence`
-        Offset into the image where the transform is applied. Should contain one
-        value for each axis of `image`.
+    image_center : tuple, optional
+        The point in the image to rotate around (axis of rotation).
+        Defaults to the center of the array.
+    recenter : `bool` or array-like, optional
+        Move the axis of rotation to the center of the array or recenter coords.
+        Defaults to `True` i.e., recenter to the center of the array.
         
     """
     rmatrix = rmatrix / scale
