@@ -80,14 +80,14 @@ def test_scipy_rotation(original, angle, k):
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = affine_transform(original, rmatrix=rmatrix, use_scipy=True)
+    rot = affine_transform(original, rmatrix=rmatrix, method='scipy')
     assert compare_results(expected, rot, allclose=False)
 
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=derot_matrix, use_scipy=True)
+    derot = affine_transform(rot, rmatrix=derot_matrix, method='scipy')
     assert compare_results(original, derot, allclose=False)
 
 
@@ -225,7 +225,7 @@ def test_nan_scipy(identity):
     # Test replacement of NaN values for scipy rotation
     in_arr = np.array([[np.nan]])
     with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for SciPy rotation.'):
-        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True)
+        out_arr = affine_transform(in_arr, rmatrix=identity, method='scipy')
     assert not np.all(np.isnan(out_arr))
 
 

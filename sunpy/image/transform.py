@@ -95,7 +95,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             raise ValueError("`method` {} not supported.".format(method))
     if not isinstance(method, types.FunctionType):
         raise ValueError("argument `method` must be a string or function")
-    
+
     # do affine transform with selected method
     try:
         rotated_image = method(image=image, rmatrix=rmatrix,
@@ -108,7 +108,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         rotated_image = _scipy_affine_transform(image, rmatrix, order,
                                                 scale, missing, image_center,
                                                 recenter)
-        
+
     return rotated_image
 
 
@@ -136,11 +136,11 @@ def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_cente
         Defaults to `True` i.e., recenter to the center of the array.
     """
     from skimage.transform import AffineTransform, warp
-    
+
     rmatrix = rmatrix / scale
 
     shift = _calculate_shift(image, rmatrix, image_center, recenter)
-    
+
     # Make the rotation matrix 3x3 to include translation of the image
     skmatrix = np.zeros((3, 3))
     skmatrix[:2, :2] = rmatrix
@@ -175,10 +175,10 @@ def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_cente
         else:
             # The input array is all one value (aside from NaNs), so no scaling is needed
             adjusted_missing = missing - im_min
-            
+
     rotated_image = warp(adjusted_image, tform, order=order,
                          mode='constant', cval=adjusted_missing)
-    
+
     # Convert the image back to its original range if it is valid
     if not is_nan_image:
         if im_max > 0:
@@ -214,7 +214,7 @@ def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center,
     """
     rmatrix = rmatrix / scale
     shift = _calculate_shift(image, rmatrix, image_center, recenter)
-    
+
     if np.any(np.isnan(image)):
         warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
 
@@ -256,7 +256,7 @@ def _calculate_shift(image, rmatrix, image_center=None, recenter=False):
     3. Coordinate system of offset array [a,b] is such that image is shifted
     `a` pixels to the left and `b` pixels up.
     """
-    
+
     # Make sure the image center is an array and is where it's supposed to be
     array_center = (np.array(image.shape)[::-1] - 1) / 2.0
 

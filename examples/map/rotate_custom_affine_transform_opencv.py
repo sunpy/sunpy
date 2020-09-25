@@ -49,7 +49,7 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     Uses `cv2.warpAffine` to do the affine transform on input `image` in same manner
     as sunpy's default `skimage.transform.warp`.
     """
-    
+
     # Flags for converting input order from `integer` to the appropriate interpolation flag
     # As of Sept. 2020, OpenCV warpAffine does not support order 2,4,5
     _CV_ORDER_FLAGS = {
@@ -63,7 +63,7 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
 
     # convert order to appropriate cv2 flag
     order = _CV_ORDER_FLAGS[max(0, min(order, 5))]
-    
+
     # needed to convert `missing` from potentially a np.dtype
     # to the native `int` type required for cv2.warpAffine
     try:
@@ -73,7 +73,7 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
 
     # calculate image shift in the same manner as skimage/scipy methods
     # adapted from sunpy.transform source code
-    
+
     # Make sure the image center is an array and is where it's supposed to be
     array_center = (np.array(image.shape)[::-1] - 1) / 2.0
 
@@ -94,26 +94,26 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     displacement = np.dot(rmatrix/scale, rot_center)
     shift = image_center - displacement
     ###
-    
+
     # get appropriate cv transform matrix
     # (with a slight amount of voodoo to adjust for different coordinate systems)
     rmatrix = rmatrix*scale
-    
+
     trans = np.eye(3, 3)
     rot_scale = np.eye(3, 3)
     trans[:2, 2] = [-shift[0], -shift[1]]
     rot_scale[:2, :2] = rmatrix.T
     rmatrix = (rot_scale @ trans)[:2]
-    
+
     # cast input image to float, if needed
     # code adapted from sunpy.transform source code
     if issubclass(image.dtype.type, numbers.Integral):
         adjusted_image = image.astype(np.float64)
     else:
         adjusted_image = image.copy()
-        
+
     h, w = adjusted_image.shape
-    
+
     # equivalent to skimage.transform.warp(adjusted_image, tform, order=order,
     #                                     mode='constant', cval=adjusted_missing)
     return cv2.warpAffine(adjusted_image, rmatrix, (w, h), flags=order,
