@@ -171,10 +171,21 @@ intersphinx_mapping = {
 
 from sunpy_sphinx_theme.conf import *  # NOQA
 
+html_sidebars = {
+    "*": ["docsidebar.html"],
+    "code_ref/**": ["docsidebar.html"],
+    "dev_guide/**": ["docsidebar.html"],
+    "guide/**": ["docsidebar.html"],
+    "whatsnew/**": ["docsidebar.html"],
+    "generated/modules/**": ["docsidebar.html"],
+    "generated/gallery/**": ["gallery_sidebar.html"],
+    }
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
+templates_path += ["_templates"]
 
 # Render inheritance diagrams in SVG
 graphviz_output_format = "svg"

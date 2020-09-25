@@ -1,0 +1,25 @@
+{% set toctree = toctree(maxdepth=2, collapse=True, includehidden=True) %}
+{% if toctree %}
+{% if logo %}
+<div class="sidelogo">
+    <img class="sidelogo" src="{{ pathto('_static/' + logo, 1) }}">
+</div>
+{% else %}
+<div class="sidenologo"></div>
+{% endif %}
+<p class="doc-title">
+    <a style="padding-left: 0" href="{{ pathto('index') }}">{{ project|e }} {{ release|e }}</a>
+</p>
+<form class="navbar-form navbar-right" action="{{ pathto('search') }}" method="get">
+    <div class="form-group">
+        <label>
+            <input type="text" name="q" class="form-control" placeholder="Search" />
+        </label>
+    </div>
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+</form>
+{{ toctree }}
+{% else %}
+<div class="local-toc">{{ toc }}</div>
+{% endif %}
