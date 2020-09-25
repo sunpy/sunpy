@@ -351,14 +351,14 @@ class TimeSeriesMetaData:
             containing multiple `~sunpy.timeseries.metadata.TimeSeriesMetaData` objects.
         """
         # Check if the type of the object passed is valid
-        if not isinstance(tsmetadata2, (TimeSeriesMetaData, Iterable)):
-            raise TypeError(f"Invalid type: {type(tsmetadata2)}")
+        if not isinstance(tsmetadata2, (self.__class__, Iterable)):
+            raise TypeError(f"Invalid type provided: {type(tsmetadata2)}")
 
-        # If an individual TimeSeriesMetaData object is to be appended, wrap it in a list
+        # If an individual TimeSeriesMetaData object is to be concatenated, wrap it in a list
         # Else, it must already be an iterable, so check if all items within it are valid
-        if isinstance(tsmetadata2, TimeSeriesMetaData):
+        if isinstance(tsmetadata2, self.__class__):
             tsmetadata2 = [tsmetadata2]
-        elif not all(isinstance(item, TimeSeriesMetaData) for item in tsmetadata2):
+        elif not all(isinstance(series, self.__class__) for series in tsmetadata2):
             raise TypeError("Invalid type within iterable")
 
         # Create a copy of the metadata
