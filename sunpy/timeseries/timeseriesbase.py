@@ -406,7 +406,9 @@ class GenericTimeSeries:
         # Add all the new units to the dictionary.
         units = OrderedDict()
         units.update(self.units)
-        units.update({k: v for unit in list(series.units for series in otherts) for k, v in unit.items()})
+        units.update(
+            {k: v for unit in list(series.units for series in otherts) for k, v in unit.items()}
+        )
 
         # If sources match then build similar TimeSeries.
         if all(self.__class__ == series.__class__ for series in otherts):
