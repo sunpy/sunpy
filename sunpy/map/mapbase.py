@@ -28,12 +28,11 @@ from astropy.visualization.wcsaxes import WCSAxes
 import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
-from sunpy import config
+from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
-from sunpy import log
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
