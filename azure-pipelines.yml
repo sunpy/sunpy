@@ -94,8 +94,8 @@ jobs:
       submodules: false
 
       targets:
-        - wheels_cp3[78]-manylinux*x86_64
-        - wheels_cp3[78]-macosx*
+        - wheels_cp3[678]-manylinux*x86_64
+        - wheels_cp3[678]-macosx*
         - sdist
       dependsOn:
         - py36_test
