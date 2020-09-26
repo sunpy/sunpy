@@ -22,7 +22,6 @@ from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util import SunpyUserWarning
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -99,15 +98,13 @@ def noaa_pre_json_test_ts():
 
 @pytest.fixture
 def noaa_ind_txt_test_ts():
-    with pytest.warns(SunpyDeprecationWarning):
-        return sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
+    return sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
 
 
 @pytest.fixture
 def noaa_pre_txt_test_ts():
-    with pytest.warns(SunpyDeprecationWarning):
-        return sunpy.timeseries.TimeSeries(
-            noaa_pre_txt_filepath, source='NOAAPredictIndices')
+    return sunpy.timeseries.TimeSeries(
+        noaa_pre_txt_filepath, source='NOAAPredictIndices')
 
 
 @pytest.fixture
