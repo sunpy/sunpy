@@ -1,3 +1,0 @@
-The floating point precision of input to `sunpy.image.transform.affine_transform`
-is now preserved. Previously all input was cast to `numpy.float64`, which could
-cause large increases in memory use for 32 bit data.

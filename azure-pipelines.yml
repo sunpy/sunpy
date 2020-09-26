@@ -1,10 +1,4 @@
 name: $(BuildDefinitionName)_$(Date:yyyyMMdd)$(Rev:.rr)
-variables:
-  CI_NAME: Azure Pipelines
-  CI_BUILD_ID: $(Build.BuildId)
-  CI_BUILD_URL: "https://dev.azure.com/sunpy/sunpy/_build/results?buildId=$(Build.BuildId)"
-  CIBW_BUILD: cp36-* cp37-* cp38-*
-  CIBW_SKIP: "*-win32 *-manylinux1_i686"
 
 schedules:
   - cron: "0 0 * * *"
@@ -12,8 +6,7 @@ schedules:
     branches:
       include:
       - master
-      - 1.0
-      - 1.1
+      - 2.0
     always: true
 
 resources:
@@ -48,6 +41,7 @@ jobs:
     libraries:
       apt:
         - libopenjp2-7
+        - graphviz
       brew:
         - openjpeg
       yum:
@@ -73,6 +67,7 @@ jobs:
 
       - linux: codestyle
         name: python_codestyle
+        pytest: false
 
       - linux: py36-conda
         name: py36_conda
@@ -82,6 +77,10 @@ jobs:
         name: py36_test_oldestdeps
 
       - linux: py38-devdeps
+
+      - linux: build_docs
+        posargs: " "
+        pytest: false
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
 - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
@@ -93,9 +92,10 @@ jobs:
       test_extras: 'dev'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
       submodules: false
+
       targets:
-        - wheels_linux
-        - wheels_macos
+        - wheels_cp3[678]-manylinux*x86_64
+        - wheels_cp3[678]-macosx*
         - sdist
       dependsOn:
         - py36_test

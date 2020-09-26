@@ -7,6 +7,11 @@ version: 2
 conda:
   environment: rtd-environment.yml
 
+sphinx:
+  builder: html
+  configuration: docs/conf.py
+  fail_on_warning: false
+
 python:
    install:
       - method: pip
