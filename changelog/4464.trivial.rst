@@ -1,2 +1,1 @@
-Changes __repr__ function in sunpy.map.mapbase .
-Added __str__ function in sunpy.map.mapbase .
+Improved the output when you print a sunpy Map.
