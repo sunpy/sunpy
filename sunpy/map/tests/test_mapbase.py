@@ -584,6 +584,8 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
         assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
         assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
+        assert resampled_map.meta['naxis1'] == new_dimensions[0].value
+        assert resampled_map.meta['naxis2'] == new_dimensions[1].value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1',
                        'crval2', 'naxis1', 'naxis2'):
