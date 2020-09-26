@@ -491,8 +491,6 @@ pixel_corners = [
 ]
 
 
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the left/right direction')
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 @pytest.mark.parametrize('rect, submap_out', pixel_corners)
 def test_submap_pixel(simple_map, rect, submap_out):
     # Check that result is the same specifying corners either way round
@@ -505,8 +503,6 @@ def test_submap_pixel(simple_map, rect, submap_out):
 # The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when
 # converting to world coordinates due to round-off error when round-tripping
 # through pixel_to_world -> world_to_pixel
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the left/right direction')
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 @pytest.mark.parametrize('rect, submap_out', pixel_corners[:2] + pixel_corners[3:])
 def test_submap_world(simple_map, rect, submap_out):
     # Check that coordinates behave the same way
@@ -1073,7 +1069,6 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
                                      frame=generic_map2.coordinate_frame))
 
 
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 def test_submap_inputs(generic_map2, coords):
     bl_coord, tr_coord, bl_tr_coord = coords
 
