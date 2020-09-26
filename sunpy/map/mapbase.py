@@ -421,6 +421,7 @@ class GenericMap(NDData):
         r = frame.represent_as(UnitSphericalRepresentation)
         return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
 
+    @property
     def _meta_hash(self):
         return self.meta.item_hash()
 

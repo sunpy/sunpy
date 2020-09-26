@@ -144,6 +144,22 @@ def test_wcs(aia171_test_map):
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
 
 
+def test_wcs_cache(aia171_test_map):
+    wcs1 = aia171_test_map.wcs
+    wcs2 = aia171_test_map.wcs
+    # Check that without any changes to the header, retreiving the wcs twice
+    # returns the same object instead of recomputing the wcs
+    assert wcs1 is wcs2
+
+    # Change the header and make sure the wcs is re-computed
+    new_crpix = 20
+    assert new_crpix != wcs2.wcs.crpix[0]
+    aia171_test_map.meta['crpix1'] = new_crpix
+
+    new_wcs = aia171_test_map.wcs
+    assert new_wcs.wcs.crpix[0] == new_crpix
+
+
 def test_header_immutability(aia171_test_map):
     # Check that accessing the wcs of a map doesn't modify the meta data
     assert 'KEYCOMMENTS' in aia171_test_map.meta
