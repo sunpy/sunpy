@@ -1098,3 +1098,12 @@ def test_contour(simple_map):
     assert contour.obstime == simple_map.date
     assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
+
+
+def test_print_map(generic_map):
+    out_repr = generic_map.__repr__()
+    assert isinstance(out_repr, str)
+    assert object.__repr__(generic_map) in out_repr
+    out_str = generic_map.__str__()
+    assert isinstance(out_str, str)
+    assert out_str in out_repr
