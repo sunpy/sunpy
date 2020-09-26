@@ -1,3 +1,64 @@
+Sunpy 2.0.2 (2020-09-26)
+========================
+
+Bug Fixes
+---------
+
+- Fixed a bug in `~sunpy.net.dataretriever.sources.goes.XRSClient._get_url_for_timerange` which returned incorrect URLs
+  because of not using ``**kwargs`` in the client's ``_get_overlap_urls()`` method. (`#4288 <https://github.com/sunpy/sunpy/pull/4288>`__)
+- Data products from `~sunpy.net.dataretriever.NOAAIndicesClient` and
+  `~sunpy.net.dataretriever.NOAAPredictClient` have been updated to download
+  new JSON files. The old text files which the data used to come in no longer
+  exist. The new JSON files for `~sunpy.net.dataretriever.NOAAIndicesClient`
+  now do not have the following columns:
+  - Geomagnetic Observed and Smoothed
+  - Sunspot Numbers Ratio (RI/SW)
+
+  Both `sunpy.timseries.sources.NOAAIndicesTimeSeries` and
+  `sunpy.timseries.sources.NOAAPredictIndicesTimeSeries` have been updated to
+  support the new JSON files. Loading the old text files is still supported,
+  but support for this will be removed in a future version of sunpy. (`#4340 <https://github.com/sunpy/sunpy/pull/4340>`__)
+- The flare class labels in GOES ``peek()`` plots are now drawn at the center of
+  the flare classes. Previously they were (ambiguously) drawn on the boundaries. (`#4364 <https://github.com/sunpy/sunpy/pull/4364>`__)
+- `sunpy.GenericMap.rsun_obs` no longer assumes the observer is at Earth if
+   ``rsun_obs`` was not present in the map metadata. The sun-observer
+   distance is now taken directly from the observer coordinate. If the observer
+   coordinate is not present, this defaults to the Earth, retaining previous
+   behaviour. (`#4375 <https://github.com/sunpy/sunpy/pull/4375>`__)
+- Nanosecond precision is now retained when using `~sunpy.time.parse_time` with
+  a `~pandas.Timestamp`. (`#4409 <https://github.com/sunpy/sunpy/pull/4409>`__)
+- Fixed a bug where SunPy could not be successfully imported if the default text encoding of the running environment was unable to handle non-ASCII characters. (`#4422 <https://github.com/sunpy/sunpy/pull/4422>`__)
+- `sunpy.net.dataretriever.sources.noaa.SRSClient` now correctly returns zero
+  results for queries in the future or before 1996, which is when data is first
+  available. (`#4432 <https://github.com/sunpy/sunpy/pull/4432>`__)
+- Fixes issue where NAXISn is not updated after invoking :meth:`.GenericMap.resample` (`#4445 <https://github.com/sunpy/sunpy/pull/4445>`__)
+- The floating point precision of input to `sunpy.image.transform.affine_transform`
+  is now preserved. Previously all input was cast to `numpy.float64`, which could
+  cause large increases in memory use for 32 bit data. (`#4452 <https://github.com/sunpy/sunpy/pull/4452>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Added information on what went wrong when `sunpy.map.GenericMap.wcs` fails to parse
+  a FITS header into a WCS. (`#4335 <https://github.com/sunpy/sunpy/pull/4335>`__)
+- Fixed the `~sunpy.coordinates.frames.Helioprojective` docstring to be clear about the names of the coordinate components. (`#4351 <https://github.com/sunpy/sunpy/pull/4351>`__)
+- The following functions in `sunpy.map` have had their performance greatly increased,
+  with runtimes typically improving by a factor of 20x. This has been achieved by
+  improving many of the checks so that they only require checking the edge pixels of a
+  map as opposed to all of the pixels.
+
+  - :func:`~sunpy.map.contains_full_disk`
+  - :func:`~sunpy.map.is_all_off_disk`
+  - :func:`~sunpy.map.is_all_on_disk`
+  - :func:`~sunpy.map.contains_limb` (`#4463 <https://github.com/sunpy/sunpy/pull/4463>`__)
+- Improved the output when you print a sunpy Map. (`#4464 <https://github.com/sunpy/sunpy/pull/4464>`__)
+- If the ``top_right`` corner given to :meth:`sunpy.map.Map.submap` is
+  below or to the right of the ``bottom_left`` corner, a warning is no longer
+  raised (as the rectangle is still well defined), but a message is still logged
+  at the debug level to the sunpy logger. (`#4491 <https://github.com/sunpy/sunpy/pull/4491>`__)
+
+
 Sunpy v2.0.1 (2020-06-13)
 =========================
 

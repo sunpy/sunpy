@@ -1,1 +1,0 @@
-Improved the output when you print a sunpy Map.
