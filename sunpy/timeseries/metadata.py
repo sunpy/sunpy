@@ -337,7 +337,7 @@ class TimeSeriesMetaData:
         # Return a TimeSeriesMetaData object
         return TimeSeriesMetaData(meta=metadata)
 
-    def concatenate(self, tsmetadata2):
+    def concatenate(self, others):
         """
         Combine the metadata from a `~sunpy.timeseries.TimeSeriesMetaData` or an
         iterable containing multiple `~sunpy.timeseries.TimeSeriesMetaData`
@@ -346,27 +346,30 @@ class TimeSeriesMetaData:
 
         Parameters
         ----------
-        tsmetadata2 : `~sunpy.timeseries.TimeSeriesMetaData` or `collections.abc.Iterable`
+        others : `~sunpy.timeseries.TimeSeriesMetaData` or `collections.abc.Iterable`
             The second `~sunpy.timeseries.metadata.TimeSeriesMetaData` object or an iterable
             containing multiple `~sunpy.timeseries.metadata.TimeSeriesMetaData` objects.
         """
-        # Check if the type of the object passed is valid
-        if not isinstance(tsmetadata2, (self.__class__, Iterable)):
-            raise TypeError(f"Invalid type provided: {type(tsmetadata2)}")
-
         # If an individual TimeSeriesMetaData object is to be concatenated, wrap it in a list
-        # Else, it must already be an iterable, so check if all items within it are valid
-        if isinstance(tsmetadata2, self.__class__):
-            tsmetadata2 = [tsmetadata2]
-        elif not all(isinstance(series, self.__class__) for series in tsmetadata2):
-            raise TypeError("Invalid type within iterable")
+        # Else if it is an iterable, check if all items within it are valid
+        # Else, data provided is invalid
+        if isinstance(others, self.__class__):
+            others = [others]
+        elif isinstance(others, Iterable):
+            if not all(isinstance(series, self.__class__) for series in others):
+                raise TypeError("Invalid type within iterable. Iterable must only contain "
+                                "TimeSeriesMetaData objects.")
+        else:
+            raise TypeError(f"Invalid type provided: {type(others)}. "
+                            "Please provide a TimeSeriesMetaData object or "
+                            "an iterable containing TimeSeriesMetaData objects.")
 
         # Create a copy of the metadata
         meta = TimeSeriesMetaData(copy.copy(self.metadata))
 
         # Append each metadata entry of each TimeSeriesMetaData object from the iterable
         # to the original TimeSeriesMetaData object.
-        for series in tsmetadata2:
+        for series in others:
             for entry in series.metadata:
                 meta.append(entry[0], entry[1], entry[2])
 
