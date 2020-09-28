@@ -1,1 +1,2 @@
-
+# until https://github.com/pytest-dev/pytest-rerunfailures/pull/129 is out
+pytest<6.1
