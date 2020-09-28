@@ -172,13 +172,16 @@ def test_concatenate_list(basic_ascending_append_md, basic_3_md, basic_4_md, com
 
 def test_concatenate_invalid_type(basic_ascending_append_md):
     concatenated = copy.deepcopy(basic_ascending_append_md)
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="Invalid type provided: <class 'int'>. "
+                                        "Please provide a TimeSeriesMetaData object or "
+                                        "an iterable containing TimeSeriesMetaData objects."):
         concatenated = concatenated.concatenate(100)
 
 
 def test_concatenate_invalid_type_within_list(basic_ascending_append_md):
     concatenated = copy.deepcopy(basic_ascending_append_md)
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="Invalid type within iterable. Iterable must only contain "
+                                        "TimeSeriesMetaData objects."):
         concatenated = concatenated.concatenate([100])
 
 
