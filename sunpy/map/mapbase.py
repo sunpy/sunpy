@@ -36,7 +36,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import deprecate_positional_args_since, deprecated
+from sunpy.util.decorators import cached_property_based_on, deprecate_positional_args_since, deprecated
 from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -422,6 +422,11 @@ class GenericMap(NDData):
         return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
 
     @property
+    def _meta_hash(self):
+        return self.meta.item_hash()
+
+    @property
+    @cached_property_based_on('_meta_hash')
     def wcs(self):
         """
         The `~astropy.wcs.WCS` property of the map.
