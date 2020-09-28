@@ -115,6 +115,22 @@ class MetaDict(OrderedDict):
         OrderedDict.__delitem__(self, key.lower())
         self._prune_keycomments()
 
+    def item_hash(self):
+        """
+        Create a hash based on the stored items.
+
+        This relies on all the items themselves being hashable. For this reason
+        the 'keycomments' item, which is a dict, is excluded from the hash.
+
+        If creating the hash fails, returns `None`.
+        """
+        self_copy = self.copy()
+        self_copy.pop('keycomments', None)
+        try:
+            return hash(frozenset(self_copy.items()))
+        except Exception:
+            return
+
     def get(self, key, default=None):
         """
         Override ``.get()`` indexing.
