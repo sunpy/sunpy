@@ -467,14 +467,15 @@ def test_hek_query_download(monkeypatch, database, tmpdir):
 
     def mock_parfive_download(obj, *args, **kwargs):
 
-        assert obj.http_queue.qsize() == 10
-        assert obj.ftp_queue.qsize() == 0
+        assert obj.queued_downloads == 10
 
         queue = obj.http_queue
+        if not isinstance(queue, list):
+            queue = list(queue._queue)
         obj_records = []
 
-        while not queue.empty():
-            url = queue.get_nowait().keywords['url']
+        for item in queue:
+            url = item.keywords['url']
             obj_records.append(url[-24:])
 
         assert obj_records == records

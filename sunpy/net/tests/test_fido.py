@@ -408,11 +408,15 @@ def test_retry(mock_retry):
 
 
 def results_generator(dl):
-    http = list(dl.http_queue._queue)
-    ftp = list(dl.ftp_queue._queue)
+    http = dl.http_queue
+    ftp = dl.ftp_queue
+    # Handle compatibility with parfive 1.0
+    if not isinstance(dl.http_queue, list):
+        http = list(dl.http_queue._queue)
+        ftp = list(dl.ftp_queue._queue)
 
     outputs = []
-    for url in http+ftp:
+    for url in http + ftp:
         outputs.append(pathlib.Path(url.keywords['url'].split("/")[-1]))
 
     return Results(outputs)
