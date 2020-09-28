@@ -184,7 +184,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         `sunpy.util.metadict.MetaDict`) with only `astropy.units` for
         values.
         """
-        warnings.simplefilter('always', Warning)
         result = True
 
         # It must be a dictionary

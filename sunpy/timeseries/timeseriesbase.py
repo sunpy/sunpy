@@ -61,7 +61,9 @@ class GenericTimeSeries:
     >>> times = parse_time("now") - TimeDelta(np.arange(24 * 60)*u.minute)
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
     >>> df = pd.DataFrame(intensity, index=times, columns=['intensity'])
-    >>> ts = TimeSeries(df)
+    >>> header = {}
+    >>> units = {'intensity': u.W/u.m**2}
+    >>> ts = TimeSeries(df, header, units)
     >>> ts.peek()  # doctest: +SKIP
 
     References
