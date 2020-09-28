@@ -209,7 +209,8 @@ sphinx_gallery_conf = {
     ]),
     'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': os.path.join('generated', 'gallery'),
-    'default_thumb_file': os.path.join('logo', 'sunpy_icon_128x128.png'),
+    # html_favicon comes from the theme
+    "default_thumb_file": html_favicon,
     'abort_on_example_error': False,
     'plot_gallery': True,
     'remove_config_comments': True,
