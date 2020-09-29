@@ -512,6 +512,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
         Examples
         --------
+
+        .. minigallery:: sunpy.coordinates.Helioprojective.assume_spherical_screen
+
         >>> import astropy.units as u
         >>> from sunpy.coordinates import Helioprojective
         >>> h = Helioprojective(range(7)*u.arcsec*319, [0]*7*u.arcsec,
@@ -530,7 +533,6 @@ class Helioprojective(SunPyBaseCoordinateFrame):
              ( 638., 0., 1.00125872), ( 957., 0., 1.00125872),
              (1276., 0., 1.00125872), (1595., 0., 1.00125872),
              (1914., 0., 1.00125872)]>
-
 
         >>> with Helioprojective.assume_spherical_screen(h.observer, only_off_disk=True):
         ...     print(h.make_3d())
