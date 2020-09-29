@@ -59,7 +59,7 @@ def angular_radius(t='now'):
 
 
 def _angular_radius(sol_radius, distance):
-    solar_semidiameter_rad = np.arcsin(sol_radius / distance)
+    solar_semidiameter_rad = np.arctan(sol_radius / distance)
     return Angle(solar_semidiameter_rad.to(u.arcsec))
 
 
