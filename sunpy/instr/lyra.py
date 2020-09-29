@@ -109,16 +109,16 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
         warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
              SunpyDeprecationWarning)
     # Remove artifacts from time series
-    data_columns = ts.data.columns
+    data_columns = ts.to_dataframe().columns
     time, channels, artifact_status = _remove_lytaf_events(
-        ts.data.index,
-        channels=[np.asanyarray(ts.data[col]) for col in data_columns],
+        ts.to_dataframe().index,
+        channels=[np.asanyarray(ts.to_dataframe()[col]) for col in data_columns],
         artifacts=artifacts, return_artifacts=True, lytaf_path=lytaf_path,
         force_use_local_lytaf=force_use_local_lytaf)
     # Create new copy copy of timeseries and replace data with
     # artifact-free time series.
     ts_new = copy.deepcopy(ts)
-    ts_new.data = pandas.DataFrame(
+    ts_new._data = pandas.DataFrame(
         index=time, data={col: channels[i]
                           for i, col in enumerate(data_columns)})
     if return_artifacts:

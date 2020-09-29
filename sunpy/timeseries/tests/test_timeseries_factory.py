@@ -46,6 +46,7 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 
 class TestTimeSeries:
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_concatenate_same_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
@@ -60,6 +61,7 @@ class TestTimeSeries:
         ts_from_list.columns == sunpy.timeseries.TimeSeries(
             a_list_of_many[0], source='EVE', concatenate=True).columns
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_concatenate_different_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
@@ -73,6 +75,7 @@ class TestTimeSeries:
         ts_from_list.columns == sunpy.timeseries.TimeSeries(
             a_list_of_many[0], source='EVE', concatenate=True).columns
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_generate_list_of_ts(self):
         # Test making a list TimeSeries from multiple files
         ts_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE')
@@ -80,6 +83,7 @@ class TestTimeSeries:
         for ts in ts_list:
             assert isinstance(ts, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_generate_from_glob(self):
         # Test making a TimeSeries from a glob
         ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(
@@ -221,14 +225,15 @@ class TestTimeSeries:
         base = parse_time(datetime.datetime.today())
         times = base - TimeDelta(np.arange(24*60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        units = {'intensity': u.W/u.m**2}
         data = DataFrame(intensity, index=times, columns=['intensity'])
 
         # Use a FITS file HDU using sunpy.io
         hdulist = sunpy.io.read_file(goes_filepath)
         meta = hdulist[0].header
         meta_md = MetaDict(OrderedDict(meta))
-        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta)
-        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md)
+        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta, units)
+        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md, units)
         assert ts_hdu_meta == ts_md_meta
 
         # Use a FITS file HDU using astropy.io
@@ -236,8 +241,8 @@ class TestTimeSeries:
         meta = hdulist[0].header
         hdulist.close()
         meta_md = MetaDict(sunpy.io.header.FileHeader(meta))
-        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta)
-        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md)
+        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta, units)
+        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md, units)
         assert ts_hdu_meta == ts_md_meta
 
     def test_generic_construction_basic(self):
@@ -275,7 +280,8 @@ class TestTimeSeries:
         meta = MetaDict({'key': 'value'})
 
         # Create TS omitting units input arguments
-        ts_1 = sunpy.timeseries.TimeSeries(data, meta)
+        with pytest.warns(SunpyUserWarning, match='Unknown units for intensity'):
+            ts_1 = sunpy.timeseries.TimeSeries(data, meta)
         assert isinstance(ts_1, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
         assert ts_1.columns == ['intensity']
         assert ts_1.units == OrderedDict([('intensity', u.dimensionless_unscaled)])
@@ -322,7 +328,7 @@ class TestTimeSeries:
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
         meta = MetaDict({'key': 'value'})
         meta2 = MetaDict({'key2': 'value2'})
 
@@ -352,7 +358,7 @@ class TestTimeSeries:
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
         meta = MetaDict({'key': 'value'})
         meta2 = MetaDict({'key2': 'value2'})
 
