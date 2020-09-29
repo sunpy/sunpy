@@ -4,7 +4,6 @@ This module provies the `~sunpy.timeseries.TimeSeriesFactory` class.
 import os
 import copy
 import glob
-import warnings
 from collections import OrderedDict
 from urllib.request import urlopen
 

@@ -5,7 +5,6 @@ import sys
 from collections import OrderedDict
 
 import pandas
-from matplotlib import pyplot as plt
 
 import astropy.units as u
 from astropy.time import TimeDelta
