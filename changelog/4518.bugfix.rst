@@ -1,0 +1,1 @@
+Fixed a calculation bug with :func:`sunpy.coordinates.sun.angular_radius` that resulted in an inaccuracy of ~0.01 arcseconds.
