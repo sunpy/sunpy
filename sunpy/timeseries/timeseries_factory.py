@@ -4,7 +4,6 @@ This module provies the `~sunpy.timeseries.TimeSeriesFactory` class.
 import os
 import copy
 import glob
-import warnings
 from collections import OrderedDict
 from urllib.request import urlopen
 
@@ -184,7 +183,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         `sunpy.util.metadict.MetaDict`) with only `astropy.units` for
         values.
         """
-        warnings.simplefilter('always', Warning)
         result = True
 
         # It must be a dictionary

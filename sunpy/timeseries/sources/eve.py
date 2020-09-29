@@ -73,10 +73,9 @@ class ESPTimeSeries(GenericTimeSeries):
 
         names = ('Flux \n 0.1-7nm', 'Flux \n 18nm', 'Flux \n 26nm', 'Flux \n 30nm', 'Flux \n 36nm')
 
-        figure = plt.figure()
-        axes = plt.gca()
-        axes = self.to_dataframe().plot(ax=axes, subplots=True, sharex=True, **kwargs)
-        plt.xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
+        axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
+
+        axes[-1].set_xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
 
         axes[0].set_title(title)
         for i, ax in enumerate(axes):
@@ -84,10 +83,11 @@ class ESPTimeSeries(GenericTimeSeries):
             ax.legend(loc='upper right')
         axes[-1].set_xlabel('Time (UT) ' + str(self.to_dataframe().index[0])[0:11])
         axes[-1].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
-        plt.tight_layout()
-        plt.subplots_adjust(hspace=0.05)
 
-        return figure
+        fig = axes[0].get_figure()
+        fig.tight_layout()
+        fig.subplots_adjust(hspace=0.05)
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
