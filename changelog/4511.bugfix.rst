@@ -1,0 +1,2 @@
+Several ``warnings.simplefilter('always', Warning)`` warning filters in
+`sunpy.timeseries` have been removed. 
