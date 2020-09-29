@@ -29,7 +29,7 @@
     "sunpy.timeseries.tests.test_timeseriesbase.test_fermi_gbm_peek": "a0addeae9ec0eda509c976e9058b2d90fa748b2c3d4a64df43b3a064d85f34d9",
     "sunpy.timeseries.tests.test_timeseriesbase.test_generic_ts_peek": "73a71e717b7dd0dd345f0f8a8bfa7f06387607417b3ecd123adfd8f630f93d51",
     "sunpy.timeseries.tests.test_timeseriesbase.test_goes_peek": "5e8a20ed592398ac710798e7995ba7da158743d974820508656b2ba3bf62e152",
-    "sunpy.timeseries.tests.test_timeseriesbase.test_lyra_peek": "f97e0dbbbda228673bb7543f962388cdfd8396fcf00cbeb4e5a65559db173da4",
+    "sunpy.timeseries.tests.test_timeseriesbase.test_lyra_peek": "d134646089aa9cb217b798e61fbfbfdcf6acf50a18f9292e95294d2cae6d24ea",
     "sunpy.timeseries.tests.test_timeseriesbase.test_noaa_json_ind_peek": "1bea3a56178db101abca168bc51e127b7b96f9eed58d74e3d19b6ffc14643e80",
     "sunpy.timeseries.tests.test_timeseriesbase.test_noaa_json_pre_peek": "4c4a4a299ed04547a70ea8da89871e05a897d5f8937d5cefc0359d04cf079c04",
     "sunpy.timeseries.tests.test_timeseriesbase.test_noaa_txt_ind_peek": "01fa7e5baa13f996f686d18505f177f0884deb394384a129522aa18f9c6b61ac",
