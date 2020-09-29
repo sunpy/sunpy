@@ -80,11 +80,8 @@ class LYRATimeSeries(GenericTimeSeries):
 
         lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
                      ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
-        figure = plt.figure()
-        plt.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
-        axes = plt.gca()
 
-        axes = self.to_dataframe().plot(ax=axes, subplots=True, sharex=True, **kwargs)
+        axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
 
         for i, name in enumerate(self.to_dataframe().columns):
             if names < 3:
@@ -98,7 +95,9 @@ class LYRATimeSeries(GenericTimeSeries):
         for axe in axes:
             axe.locator_params(axis='y', nbins=6)
 
-        return figure
+        fig = axes[0].get_figure()
+        fig.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
