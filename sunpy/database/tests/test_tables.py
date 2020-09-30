@@ -84,7 +84,8 @@ def qr_block_with_missing_physobs():
     return vso.VSOClient().search(
         net_attrs.Time('20130805T120000', '20130805T121000'),
         net_attrs.Instrument('SWAVES'), net_attrs.Source('STEREO_A'),
-        net_attrs.Provider('SSC'), net_attrs.Wavelength(10 * u.kHz, 160 * u.kHz),
+        net_attrs.Provider('SSC'), net_attrs.Wavelength(
+            10 * u.kHz, 160 * u.kHz),
         response_format="legacy")[0]
 
 
@@ -256,7 +257,8 @@ def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs)
 @pytest.mark.remote_data
 def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     # See issue #766.
-    entry = DatabaseEntry._from_query_result_block(qr_block_with_kev_unit.blocks[0])
+    entry = DatabaseEntry._from_query_result_block(
+        qr_block_with_kev_unit.blocks[0])
     assert entry.source == 'RHESSI'
     assert entry.provider == 'LSSP'
     assert entry.fileid in ['/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
@@ -424,7 +426,7 @@ def test_entries_from_dir_recursively_true():
         entries = list(entries_from_dir(testdir, True,
                                         default_waveunit='angstrom',
                                         time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 127
+    assert len(entries) == 91
 
 
 def test_entries_from_dir_recursively_false():
@@ -432,7 +434,7 @@ def test_entries_from_dir_recursively_false():
         entries = list(entries_from_dir(testdir, False,
                                         default_waveunit='angstrom',
                                         time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 106
+    assert len(entries) == 70
 
 
 @pytest.mark.remote_data
