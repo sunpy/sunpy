@@ -109,7 +109,7 @@ def simple_map():
     # each direction
     data = np.arange(9).reshape((3, 3))
     ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg',
-                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.m,
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
                                            frame='heliographic_stonyhurst'))
     ref_pix = [1, 1] * u.pix
     scale = [2, 1] * u.arcsec / u.pix

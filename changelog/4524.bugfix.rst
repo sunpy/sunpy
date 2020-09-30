@@ -1,0 +1,3 @@
+All calculations of the angular radius of the Sun now use the same underlying code with the correct calculation.
+The inaccuracies were at the level of ~0.01 arcseconds.
+A previous fix to :func:`sunpy.coordinates.sun.angular_radius` was incorrect and has been reverted.
