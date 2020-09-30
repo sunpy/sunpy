@@ -1,0 +1,1 @@
+Added a gallery example for drawing rectangles on maps.

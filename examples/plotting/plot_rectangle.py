@@ -59,7 +59,13 @@ aia_1.plot()
 ax_2 = fig.add_subplot(222, projection=aia_2)
 bottom_left = SkyCoord(-400*u.arcsec, -300*u.arcsec, frame=aia_2.coordinate_frame)
 top_right = SkyCoord(300*u.arcsec, 200*u.arcsec, frame=aia_2.coordinate_frame)
-aia_2.draw_rectangle(bottom_left, top_right=top_right, axes=ax_2, color='green', linestyle='--')
+aia_2.draw_rectangle(
+    bottom_left,
+    top_right=top_right,
+    axes=ax_2,
+    color="green",
+    linestyle="--",
+)
 aia_1.plot()
 
 # bottom_left, width, height
@@ -67,7 +73,14 @@ ax_3 = fig.add_subplot(223, projection=aia_3)
 bottom_left = SkyCoord(-500*u.arcsec, -200*u.arcsec, frame=aia_3.coordinate_frame)
 width = 700 * u.arcsec
 height = 500 * u.arcsec
-aia_3.draw_rectangle(bottom_left, width=width, height=height, axes=ax_3, color='yellow', linestyle='-.')
+aia_3.draw_rectangle(
+    bottom_left,
+    width=width,
+    height=height,
+    axes=ax_3,
+    color="yellow",
+    linestyle="-.",
+)
 aia_3.plot()
 
 # pixel coordinates
@@ -75,7 +88,13 @@ ax_4 = fig.add_subplot(224, projection=aia_4)
 bottom_left_pixel = [400, 400] * u.pixel
 top_right_pixel = [700, 600] * u.pixel
 aia_submap = aia_4.submap(bottom_left_pixel, top_right=top_right_pixel)
-aia_4.draw_rectangle(aia_submap.bottom_left_coord, top_right=aia_submap.top_right_coord, axes=ax_4, color='red', linestyle=':')
+aia_4.draw_rectangle(
+    aia_submap.bottom_left_coord,
+    top_right=aia_submap.top_right_coord,
+    axes=ax_4,
+    color="red",
+    linestyle=":",
+)
 aia_4.plot()
 
 plt.show()
