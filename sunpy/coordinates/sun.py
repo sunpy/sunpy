@@ -50,6 +50,11 @@ def angular_radius(t='now'):
     """
     Return the angular radius of the Sun as viewed from Earth.
 
+    The tangent vector from the Earth to the edge of the Sun forms a
+    right-angle triangle with the radius of the Sun as the far side and the
+    Sun-Earth distance as the hypotenuse.  Thus, the sine of the angular
+    radius of the Sun is ratio of these two distances.
+
     Parameters
     ----------
     t : {parse_time_types}
@@ -59,7 +64,7 @@ def angular_radius(t='now'):
 
 
 def _angular_radius(sol_radius, distance):
-    solar_semidiameter_rad = np.arctan(sol_radius / distance)
+    solar_semidiameter_rad = np.arcsin(sol_radius / distance)
     return Angle(solar_semidiameter_rad.to(u.arcsec))
 
 

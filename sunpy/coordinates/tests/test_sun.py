@@ -73,14 +73,14 @@ def test_angular_radius(t2):
     # See https://archive.org/details/131123ExplanatorySupplementAstronomicalAlmanac/page/n212/mode/1up
     assert_quantity_allclose(sun.angular_radius(t2),
                              Angle('0d15m44.61s') / (6.96e5*u.km) * radius,  # scale to IAU radius
-                             atol=0.01*u.arcsec)
+                             atol=0.005*u.arcsec)
 
     # Regression-only test
-    assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.864*u.arcsec, atol=1e-3*u.arcsec)
+    assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.875*u.arcsec, atol=1e-3*u.arcsec)
     with pytest.warns(ErfaWarning):
         assert_quantity_allclose(sun.angular_radius("2043/03/01"),
-                                 968.319*u.arcsec, atol=1e-3*u.arcsec)
-    assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.032*u.arcsec, atol=1e-3*u.arcsec)
+                                 968.330*u.arcsec, atol=1e-3*u.arcsec)
+    assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.042*u.arcsec, atol=1e-3*u.arcsec)
 
 
 def test_mean_obliquity_of_ecliptic(t1, t2):
