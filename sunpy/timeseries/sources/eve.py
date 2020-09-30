@@ -197,7 +197,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 
-        figure = plt.figure()
+        fig = plt.figure()
         # Choose title if none was specified
         if "title" not in kwargs and column is None:
             if len(self.to_dataframe().columns) > 1:
@@ -217,7 +217,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
             data.plot(**kwargs)
 
-        return figure
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
