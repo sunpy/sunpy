@@ -101,4 +101,4 @@ Code of Conduct
 
 When you are interacting with the SunPy community you are asked to follow our `Code of Conduct`_.
 
-.. _Code of Conduct: https://docs.sunpy.org/en/latest/code_of_conduct.html
+.. _Code of Conduct: https://sunpy.org/coc
