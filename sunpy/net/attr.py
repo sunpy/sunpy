@@ -31,7 +31,7 @@ from sunpy.util.util import get_width
 
 _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 # Matches any number.
-NUMBER_REGEX = re.compile(r"(\d+(?:\.\d+)?)")
+NUMBER_REGEX = re.compile(r"^(\d+$|\d(?:\.\d+)?)")
 
 __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
            'ValueAttr', 'and_', 'or_', 'AttrWalker']
@@ -223,57 +223,55 @@ class Attr(metaclass=AttrMeta):
         (<sunpy.net.attrs.Instrument(AIA: AIA is in Space.) object at 0x...>,
         <sunpy.net.attrs.Instrument(HMI: HMI is next to AIA.) object at 0x...>)
         """
-        for client in adict.keys():
-            for attr, attr_values in adict[client].items():
-                if isiterable(attr_values) and not isinstance(attr_values, str):
-                    for pair in attr_values:
-                        if len(pair) != 2:
-                            if len(pair) == 1:
-                                # Special case handling for * aka all values allowed.
-                                if pair[0] == "*":
-                                    pair = ["all", "All values of this type are supported."]
-                                else:
-                                    raise ValueError(
-                                        f'Invalid value given for * registration: {attr_values}.')
-                            else:
-                                raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
-                        p = inflect.engine()
-                        # Sanitize part one: Check if the name is has a number in it
-                        if NUMBER_REGEX.match(pair[0]):
-                            # Now check if the entire name is a number
-                            if len(pair[0]) == NUMBER_REGEX.match(pair[0]).span()[1]:
-                                # This turns that number into its name
-                                name = p.number_to_words(pair[0])
-                            # What if just the first character is
-                            elif NUMBER_REGEX.match(pair[0][0]):
-                                name = p.number_to_words(pair[0][0])
-                                # Then we append the rest of the name here with a _ to break it up.
-                                if pair[0][1:]:
-                                    name = name + "_" + pair[0][1:]
-                            else:
-                                # Give up
-                                name = pair[0]
-                        else:
-                            name = pair[0]
-                        # Sanitize part two: remove punctuation and replace it with _
-                        name = ''.join(
-                            char if char not in string.punctuation else "_" for char in name).lower()
-                        # Sanitize name, we remove all special characters and make it all lower case
-                        name = ''.join(char for char in name if char.isidentifier()
-                                       or char.isnumeric()).lower()
-                        if keyword.iskeyword(name):
-                            # Attribute name has been appended with `_`
-                            # to make it a valid identifier since its a python keyword.
-                            name = name + '_'
-                        if not name.isidentifier():
-                            raise ValueError(f'Unable to figure out {pair}')
-                        cls._attr_registry[attr][0].append(name)
-                        cls._attr_registry[attr][1].append(client.__name__.replace("Client", ""))
-                        cls._attr_registry[attr][2].append(pair[0])
-                        cls._attr_registry[attr][3].append(pair[1])
-                else:
+        for client, attr_dict in adict.items():
+            for attr, attr_values in attr_dict.items():
+                if not isiterable(attr_values) or isinstance(attr_values, str):
                     raise ValueError(f"Invalid input value: {attr_values} for key: {repr(attr)}. "
                                      "The value is not iterable or just a string.")
+
+                attr_tuple = cls._attr_registry[attr]
+
+                for pair in attr_values:
+                    if len(pair) > 2:
+                        raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
+                    elif len(pair) == 1:
+                        if pair[0] != "*":
+                            raise ValueError(
+                                f'Invalid value given for * registration: {attr_values}.')
+                        # Special case handling for * aka all values allowed.
+                        pair = ["all", "All values of this type are supported."]
+
+                    # Sanitize part one: Check if the name is has a number in it
+                    number_match = NUMBER_REGEX.match(pair[0])
+                    p = inflect.engine()
+                    try:
+                        number_str = number_match.group(1)
+                        name = p.number_to_words(number_str)
+                        if number_str != number_match.string:
+                            name = name + "_" + number_match.string[number_match.end(1):]
+                    except AttributeError:
+                        name = pair[0]
+
+                    # Sanitize part two: remove punctuation and replace it with _
+                    name = ''.join(char if char not in string.punctuation else "_"
+                                   for char in name)
+                    # Sanitize name, we remove all special characters
+                    name = ''.join(char for char in name
+                                   if char.isidentifier() or char.isnumeric())
+                    # Make name lower case
+                    name = name.lower()
+
+                    if keyword.iskeyword(name):
+                        # Attribute name has been appended with `_`
+                        # to make it a valid identifier since its a python keyword.
+                        name = name + '_'
+                    if not name.isidentifier():
+                        raise ValueError(f'Unable to figure out {pair}')
+
+                    attr_tuple[0].append(name)
+                    attr_tuple[1].append(client.__name__.replace("Client", ""))
+                    attr_tuple[2].append(pair[0])
+                    attr_tuple[3].append(pair[1])
 
 
 class DataAttr(Attr):
