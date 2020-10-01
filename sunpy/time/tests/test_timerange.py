@@ -266,9 +266,11 @@ def test_contains(timerange_a):
     assert '2014/05/03 12:00' in timerange
     assert '2014/05/05 21:00' in timerange
 
+
 def test_get_dates_daylist_less_24_hours():
     starttime = datetime(2020, 1, 1, 12)
     endtime = datetime(2020, 1, 2, 11)
     interval = sunpy.time.TimeRange(starttime, endtime)
     daylist = interval.get_dates()
     assert len(daylist) == 2
+    
