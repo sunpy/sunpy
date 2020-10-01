@@ -76,8 +76,6 @@ Here's an example of creating a header from some generic data and an `astropy.co
     >>> from sunpy.coordinates import frames
     >>> from astropy.coordinates import SkyCoord
 
-.. doctest-requires:: astropy<=4.0
-
     >>> data = np.arange(0,100).reshape(10,10)
     >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
     >>> header = sunpy.map.make_fitswcs_header(data, coord)
@@ -94,14 +92,13 @@ Here's an example of creating a header from some generic data and an `astropy.co
     ctype2: HPLT-TAN
     crval1: 0.0
     crval2: 0.0
-    lonpole: 180.0
-    latpole: 0.0
+    ...
     date-obs: 2013-10-28T00:00:00.000
     hgln_obs: 0.0
     hglt_obs: 4.7711570596394
     dsun_obs: 148644585949.49176
     rsun_ref: 695700000.0
-    rsun_obs: 965.3723815059902
+    rsun_obs: 965.3829548285768
 
 
 From this we can see now that the function returned a `sunpy.util.MetaDict` that populated
@@ -111,8 +108,6 @@ values of ``crpix`` and ``cdelt`` were set to the default values.
 
 These keywords can be passed to the function in the form of an `astropy.units.Quantity` with associated units.
 Here's another example of passing ``reference_pixel`` and ``scale`` to the function::
-
-.. doctest-requires:: astropy<=4.0
 
     >>> header = sunpy.map.make_fitswcs_header(data, coord,
     ...                                        reference_pixel=u.Quantity([5, 5]*u.pixel),
@@ -130,14 +125,13 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     ctype2: HPLT-TAN
     crval1: 0.0
     crval2: 0.0
-    lonpole: 180.0
-    latpole: 0.0
+    ...
     date-obs: 2013-10-28T00:00:00.000
     hgln_obs: 0.0
     hglt_obs: 4.7711570596394
     dsun_obs: 148644585949.49176
     rsun_ref: 695700000.0
-    rsun_obs: 965.3723815059902
+    rsun_obs: 965.3829548285768
 
 As we can see, a list of WCS and observer meta information is contained within the generated headers,
 however we may want to include other meta information including the observatory name, the wavelength and
@@ -147,8 +141,6 @@ Furthermore, the following observation keywords can be passed to the `~sunpy.map
 function and will be translated to the FITS standard: ``observtory``, ``instrument``,``telescope``, ``wavelength``, ``exposure``.
 
 An example of creating a header with these additional keywords::
-
-.. doctest-requires:: astropy<=4.0
 
     >>> header = sunpy.map.make_fitswcs_header(data, coord,
     ...                                        reference_pixel = u.Quantity([5, 5]*u.pixel),
@@ -167,14 +159,13 @@ An example of creating a header with these additional keywords::
           ('ctype2', 'HPLT-TAN'),
           ('crval1', 0.0),
           ('crval2', 0.0),
-          ('lonpole', 180.0),
-          ('latpole', 0.0),
+          ...
           ('date-obs', '2013-10-28T00:00:00.000'),
           ('hgln_obs', 0.0),
           ('hglt_obs', 4.7711570596394015),
           ('dsun_obs', 148644585949.4918),
           ('rsun_ref', 695700.0),
-          ('rsun_obs', 965.3723815059902),
+          ('rsun_obs', 965.3829548285768),
           ('instrume', 'Test case'),
           ('wavelnth', 1000),
           ('detector', 'UV detector'),
