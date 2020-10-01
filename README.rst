@@ -84,7 +84,7 @@ If you would like to get involved, start by joining the `SunPy mailing list`_ an
 Stop by our chat room `#sunpy:openastronomy.org`_ if you have any questions.
 Help is always welcome so let us know what you like to work on, or check out the `issues page`_ for the list of known outstanding items.
 
-For more information on contributing to SunPy, please read our `Newcomers' guide`_.
+For more information on contributing to SunPy, please read our `Newcomer's guide`_.
 
 .. |Open Source Helpers| image:: https://www.codetriage.com/sunpy/sunpy/badges/users.svg
    :target: https://www.codetriage.com/sunpy/sunpy
