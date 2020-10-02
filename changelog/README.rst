@@ -21,7 +21,7 @@ Each file should be named like ``<PULL REQUEST>.<TYPE>[.<COUNTER>].rst``, where 
 * ``breaking``: A change which requires users to change code and is not backwards compatible. (Not to be used for removal of deprecated features.)
 * ``feature``: New user facing features and any new behavior.
 * ``bugfix``: Fixes a reported bug.
-* ``doc``: Documentation addition or improvement, like rewording an entire session or adding missing docs.
+* ``docfix``: Documentation addition or improvement, like rewording an entire session or adding missing docs.
 * ``removal``: Feature deprecation and/or feature removal.
 * ``trivial``: A change which has no user facing effect or is tiny change.
 
