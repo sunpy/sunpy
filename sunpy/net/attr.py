@@ -175,7 +175,9 @@ class Attr(metaclass=AttrMeta):
         raise NotImplementedError
 
     def __eq__(self, other):
-        return dict(vars(self)) == dict(vars(other))
+        if not isinstance(other, Attr):
+            return False
+        return set(vars(self).items()) == set(vars(other).items())
 
     @classmethod
     def update_values(cls, adict):
@@ -498,7 +500,7 @@ class ValueAttr(DataAttr):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return self.attrs == other.attrs
+        return set(self.attrs) == set(other.attrs)
 
     def collides(self, other):
         if not isinstance(other, self.__class__):
