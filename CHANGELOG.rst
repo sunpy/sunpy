@@ -5,7 +5,9 @@ Bug Fixes
 ---------
 - Reverted changes to printing `~sunpy.map.Map` (`#4464 <https://github.com/sunpy/sunpy/pull/4464>`__),
   as this could introduce new errors for maps with invalid FITS metadata.
-
+- All calculations of the angular radius of the Sun now use the same underlying code with the accurate calculation.
+  The previous inaccuracy was a relative error of ~0.001% (0.01 arcseconds) for an observer at 1 AU, but could be as large as ~0.5% for Parker Solar Probe perihelia. (`#4524 <https://github.com/sunpy/sunpy/pull/4524>`__)
+  
 
 Sunpy 2.0.2 (2020-09-26)
 ========================
@@ -44,6 +46,33 @@ Bug Fixes
 - The floating point precision of input to `sunpy.image.transform.affine_transform`
   is now preserved. Previously all input was cast to `numpy.float64`, which could
   cause large increases in memory use for 32 bit data. (`#4452 <https://github.com/sunpy/sunpy/pull/4452>`__)
+
+
+Improved Documentation
+----------------------
+
+- Add links to Thompson 2006 paper on solar coordinates to synoptic map example. (`#3549 <https://github.com/sunpy/sunpy/pull/3549>`__)
+- Clarified the meaning of ``.bottom_left_coord`` and ``.top_right_coord`` in
+  `sunpy.map.GenericMap`. (`#3706 <https://github.com/sunpy/sunpy/pull/3706>`__)
+- Added a list of possible signatures to
+  `sunpy.timeseries.metadata.TimeSeriesMetaData`. (`#3709 <https://github.com/sunpy/sunpy/pull/3709>`__)
+- Added `sunpy.data.manager`, `sunpy.data.cache`, `sunpy.net.Fido`, `sunpy.map.Map`,
+  and `sunpy.timeseries.TimeSeries` to the docs. (`#4098 <https://github.com/sunpy/sunpy/pull/4098>`__)
+- Clarified spline option for `sunpy.map.Map.resampling`. (`#4136 <https://github.com/sunpy/sunpy/pull/4136>`__)
+- Updated the gallery example :ref:`sphx_glr_generated_gallery_plotting_solar_cycle_example.py` to retrieve data using `~sunpy.net.Fido`. (`#4169 <https://github.com/sunpy/sunpy/pull/4169>`__)
+- Fixed example usage of :func:`~sunpy.io.fits.read` to account for the fact that it returns a list
+  of data-header pairs rather than the data-header pairs directly. (`#4183 <https://github.com/sunpy/sunpy/pull/4183>`__)
+- Added `SunPyBaseCoordinateFrame` and `BaseHeliographic` to the documentation. (`#4274 <https://github.com/sunpy/sunpy/pull/4274>`__)
+- `TimeRange` had a ``.__contains__`` method and this is now documented. (`#4372 <https://github.com/sunpy/sunpy/pull/4372>`__)
+- Revamped sunpy installation documentation. (`#4378 <https://github.com/sunpy/sunpy/pull/4378>`__)
+- Revamped sunpy pull request review developer documentation. (`#4378 <https://github.com/sunpy/sunpy/pull/4378>`__)
+- Fixed broken documentation links in the guide. (`#4414 <https://github.com/sunpy/sunpy/pull/4414>`__)
+- Fixed miscellaneous links in the API documentation. (`#4415 <https://github.com/sunpy/sunpy/pull/4415>`__)
+- Added `sunpy.data.data_manager.downloader`, `sunpy.data.data_manager.storage`,
+  and `sunpy.net.hek.HEKTable` to the docs. (`#4418 <https://github.com/sunpy/sunpy/pull/4418>`__)
+- Added documentation for copying Map objects using the copy module's deepcopy method. (`#4470 <https://github.com/sunpy/sunpy/pull/4470>`__)
+- Added information about the :meth:`~sunpy.map.mapsequence.plot` return type. (`#4472 <https://github.com/sunpy/sunpy/pull/4472>`__)
+- Added a gallery example for saving and loading sunpy Maps using asdf. (`#4494 <https://github.com/sunpy/sunpy/pull/4494>`__)
 
 
 Trivial/Internal Changes
