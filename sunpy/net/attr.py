@@ -157,7 +157,7 @@ class Attr(metaclass=AttrMeta):
         if self.collides(other):
             return NotImplemented
         if isinstance(other, AttrAnd):
-            return AttrAnd([self] + list(other.attrs))
+            return AttrAnd([self, *other.attrs])
         return AttrAnd([self, other])
 
     def __hash__(self):
@@ -168,7 +168,7 @@ class Attr(metaclass=AttrMeta):
         if self == other:
             return self
         if isinstance(other, AttrOr):
-            return AttrOr([self] + list(other.attrs))
+            return AttrOr([self, *other.attrs])
         return AttrOr([self, other])
 
     def collides(self, other):
@@ -409,10 +409,10 @@ class AttrAnd(Attr):
         if any(other.collides(elem) for elem in self.attrs):
             return NotImplemented
         if isinstance(other, AttrAnd):
-            return AttrAnd(self.attrs + other.attrs)
+            return AttrAnd([*self.attrs, other.attrs])
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
-        return AttrAnd(self.attrs + [other])
+        return AttrAnd([*self.attrs, other])
 
     __rand__ = __and__
 
@@ -440,8 +440,8 @@ class AttrOr(Attr):
 
     def __or__(self, other):
         if isinstance(other, AttrOr):
-            return AttrOr(self.attrs + other.attrs)
-        return AttrOr(self.attrs + [other])
+            return AttrOr([*self.attrs, *other.attrs])
+        return AttrOr([*self.attrs, other])
 
     __ror__ = __or__
 
