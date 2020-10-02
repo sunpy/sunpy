@@ -7,7 +7,7 @@ Bug Fixes
   as this could introduce new errors for maps with invalid FITS metadata.
 - All calculations of the angular radius of the Sun now use the same underlying code with the accurate calculation.
   The previous inaccuracy was a relative error of ~0.001% (0.01 arcseconds) for an observer at 1 AU, but could be as large as ~0.5% for Parker Solar Probe perihelia. (`#4524 <https://github.com/sunpy/sunpy/pull/4524>`__)
-  
+
 
 Sunpy 2.0.2 (2020-09-26)
 ========================
