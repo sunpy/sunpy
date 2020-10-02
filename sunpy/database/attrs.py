@@ -85,14 +85,12 @@ class Tag(Attr):
 
 
 class Path(Attr):
-    def __init__(self, value):
+    def __init__(self, value, inverted=False):
         self.value = value
-        self.inverted = False
+        self.inverted = inverted
 
     def __invert__(self):
-        path = self.__class__(self.value)
-        path.inverted = True
-        return path
+        return self.__class__(self.value, True)
 
     def collides(self, other):  # pragma: no cover
         return isinstance(other, self.__class__)
@@ -125,15 +123,13 @@ class DownloadTime(Range):
 
 
 class FitsHeaderEntry(Attr):
-    def __init__(self, key, value):
+    def __init__(self, key, value, inverted=False):
         self.key = key
         self.value = value
-        self.inverted = False
+        self.inverted = inverted
 
     def __invert__(self):
-        entry = self.__class__(self.key, self.value)
-        entry.inverted = True
-        return entry
+        return self.__class__(self.key, self.value, True)
 
     def collides(self, other):  # pragma: no cover
         return False
