@@ -57,32 +57,29 @@ def _print_attrs(attr, html=False):
     `str`
         String with the registered attributes.
     """
-    class_name = f"{attr.__module__+'.' or ''}{attr.__name__}"
     attrs = attr._attr_registry[attr]
-    sorted_attrs = make_tuple()
     # Only sort the attrs if any have been registered
-    if attrs.name:
-        sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs))))
-    names = sorted_attrs.name
-    clients = sorted_attrs.client
-    names_long = sorted_attrs.name_long
-    descs = sorted_attrs.desc
-    descs = [x[:77] + '...' if len(x) > 80 else x for x in descs]
-    lines = []
-    t = Table(names=["Attribute Name", "Client", "Full Name",
-                     "Description"], dtype=["U80", "U80", "U80", "U80"])
-    for name, client, name_long, desc in zip(names, clients, names_long, descs):
-        t.add_row((name, client, name_long, desc))
-    lines.insert(0, class_name)
+    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) \
+        if attrs.name else make_tuple()
+    *other_row_data, descs = sorted_attrs
+    descs = [dsc[:77] + ('...' if len(dsc) > 80 else '') for dsc in descs]
+    table = Table(names=["Attribute Name", "Client", "Full Name",
+                         "Description"], dtype=["U80", "U80", "U80", "U80"],
+                  data=[*other_row_data, descs])
+
+    class_name = f"{(attr.__module__ + '.') or ''}{attr.__name__}"
+    lines = [class_name]
     # If the attr lacks a __doc__ this will error and prevent this from returning anything.
     try:
-        lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
+        lines.append(dedent(attr.__doc__.partition("\n\n")[0]) + "\n")
     except AttributeError:
         pass
-    if html:
-        lines = [f"<p>{line}</p>" for line in lines]
+
+    format_line = "<p>{line}</p>" if html else "{line}"
     width = -1 if html else get_width()
-    lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+
+    lines = [*[format_line.format(line=l) for l in lines],
+             *table.pformat_all(show_dtype=False, max_width=width, align="<", html=html)]
     return '\n'.join(lines)
 
 
@@ -133,7 +130,7 @@ class AttrMeta(type):
         """
         Returns the normal repr plus the pretty attr __str__.
         """
-        return type.__repr__(self) + "\n" + str(self)
+        return f"{type.__repr__(self)}\n{str(self)}"
 
     def __str__(self):
         """
@@ -346,16 +343,17 @@ class SimpleAttr(DataAttr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
+        obj_placeholder = " object "
         attr_reg = AttrMeta._attr_registry[self.__class__]
-        new_repr = object.__repr__(self).split(" object ")
+        new_repr = object.__repr__(self).split(obj_placeholder)
         # If somehow the idx isn't in the attr reg, we still want it to print it
         # repr without error.
         try:
             idx = attr_reg.name_long.index(self.value)
-            new_repr.insert(1, f"({self.value}: {attr_reg.desc[idx]})")
+            obj_value_repr = f"({self.value}: {attr_reg.desc[idx]})"
         except ValueError:
-            new_repr.insert(1, f": {self.value}")
-        new_repr.insert(2, " object ")
+            obj_value_repr = f": {self.value}"
+        new_repr = [new_repr[0], obj_value_repr, obj_placeholder, new_repr[1]]
         return textwrap.fill("".join(new_repr), 100)
 
 
