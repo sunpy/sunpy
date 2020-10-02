@@ -1083,12 +1083,3 @@ def test_submap_inputs(generic_map2, coords):
     for args, kwargs in inputs:
         smap = generic_map2.submap(*args, **kwargs)
         assert u.allclose(smap.dimensions, (3, 3) * u.pix)
-
-
-def test_print_map(generic_map):
-    out_repr = generic_map.__repr__()
-    assert isinstance(out_repr, str)
-    assert object.__repr__(generic_map) in out_repr
-    out_str = generic_map.__str__()
-    assert isinstance(out_str, str)
-    assert out_str in out_repr

@@ -254,11 +254,8 @@ class GenericMap(NDData):
                                                     self._reference_latitude)),
                                tmf=TIME_FORMAT)
 
-    def __str__(self):
-        return f"{self._text_summary()}\n{self.data.__repr__()}"
-
     def __repr__(self):
-        return f"{object.__repr__(self)}\n{self}"
+        return object.__repr__(self) + "\n" + self._text_summary() + "\n" + self.data.__repr__()
 
     def _repr_html_(self):
         """

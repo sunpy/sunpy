@@ -1,1 +1,0 @@
-`TimeRange` had a ``.__contains__`` method and this is now documented.
