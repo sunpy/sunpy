@@ -1,3 +1,12 @@
+Sunpy 2.0.3 (2020-10-02)
+========================
+
+Bug Fixes
+---------
+- Reverted changes to printing `~sunpy.map.Map` (`#4464 <https://github.com/sunpy/sunpy/pull/4464>`__),
+  as this could introduce new errors for maps with invalid FITS metadata.
+
+
 Sunpy 2.0.2 (2020-09-26)
 ========================
 
