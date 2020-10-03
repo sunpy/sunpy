@@ -274,4 +274,3 @@ def test_get_dates_daylist_less_24_hours():
     assert len(daylist) == 2
     assert daylist[0] == day_one
     assert daylist[1] == day_two
-    
