@@ -251,8 +251,7 @@ class Attr(metaclass=AttrMeta):
                         name = pair[0]
 
                     # Sanitize part two: remove punctuation and replace it with _
-                    name = ''.join(char if char not in string.punctuation else "_"
-                                   for char in name)
+                    name = re.sub('[%s]' % re.escape(string.punctuation), '_', name)
                     # Sanitize name, we remove all special characters
                     name = ''.join(char for char in name
                                    if char.isidentifier() or char.isnumeric())
@@ -263,8 +262,6 @@ class Attr(metaclass=AttrMeta):
                         # Attribute name has been appended with `_`
                         # to make it a valid identifier since its a python keyword.
                         name = name + '_'
-                    if not name.isidentifier():
-                        raise ValueError(f'Unable to figure out {pair}')
 
                     attr_tuple[0].append(name)
                     attr_tuple[1].append(client.__name__.replace("Client", ""))
