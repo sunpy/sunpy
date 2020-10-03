@@ -63,7 +63,7 @@ class _BooleanAttr:
 
 class Starred(_BooleanAttr, Attr):
     def __init__(self):
-        _BooleanAttr.__init__(self, True, self.__class__)
+        super().__init__(True, self.__class__)
 
 
 class Tag(Attr):
@@ -144,11 +144,8 @@ walker = AttrWalker()
 
 @walker.add_creator(AttrOr)
 def _create(wlk, root, session):
-    entries = set()
-    for attr in root.attrs:
-        # make sure to add only new entries to the set to avoid duplicates
-        entries.update(set(wlk.create(attr, session)) - entries)
-    return list(entries)
+    entries = [set(wlk.create(attr, session)) for attr in root.attrs]
+    return list(set.union(*entries))
 
 
 @walker.add_creator(AttrAnd)
@@ -157,62 +154,63 @@ def _create(wlk, root, session):
     return list(set.intersection(*entries))
 
 
+def _inverter_helper(query, inverted):
+    return not_(query) if inverted else query
+
+
 @walker.add_creator(ValueAttr)
 def _create(wlk, root, session):
     query = session.query(DatabaseEntry)
     for key, value in root.attrs.items():
-        typ = key[0]
+        typ = key[0].lower()
         if typ == 'tag':
             criterion = TableTag.name.in_([value])
+            base_query = DatabaseEntry.tags.any(criterion)
             # `key[1]` is here the `inverted` attribute of the tag. That means
             # that if it is True, the given tag must not be included in the
             # resulting entries.
-            if key[1]:
-                query = query.filter(~DatabaseEntry.tags.any(criterion))
-            else:
-                query = query.filter(DatabaseEntry.tags.any(criterion))
+            query = query.filter(_inverter_helper(base_query, key[1]))
+
         elif typ == 'fitsheaderentry':
             key, val, inverted = value
             key_criterion = TableFitsHeaderEntry.key == key
             value_criterion = TableFitsHeaderEntry.value == val
-            if inverted:
-                query = query.filter(not_(and_(
-                    DatabaseEntry.fits_header_entries.any(key_criterion),
-                    DatabaseEntry.fits_header_entries.any(value_criterion))))
-            else:
-                query = query.filter(and_(
-                    DatabaseEntry.fits_header_entries.any(key_criterion),
-                    DatabaseEntry.fits_header_entries.any(value_criterion)))
+            base_query = and_(
+                DatabaseEntry.fits_header_entries.any(key_criterion),
+                DatabaseEntry.fits_header_entries.any(value_criterion))
+            query = query.filter(_inverter_helper(base_query, inverted))
+
         elif typ == 'download time':
             start, end, inverted = value
-            if inverted:
-                query = query.filter(
-                    ~DatabaseEntry.download_time.between(start, end))
-            else:
-                query = query.filter(
-                    DatabaseEntry.download_time.between(start, end))
+            base_query = DatabaseEntry.download_time.between(start, end)
+            query = query.filter(_inverter_helper(base_query, inverted))
+
         elif typ == 'path':
             path, inverted = value
+            base_query = _inverter_helper(DatabaseEntry.path == path, inverted)
             if inverted:
-                query = query.filter(or_(
-                    DatabaseEntry.path != path, DatabaseEntry.path == None))  # NOQA
-            else:
-                query = query.filter(DatabaseEntry.path == path)
+                base_query = or_(base_query, DatabaseEntry.path == None) # NOQA
+            query = query.filter(base_query)
+
         elif typ == 'wave':
             wavemin, wavemax, waveunit = value
             query = query.filter(and_(
                 DatabaseEntry.wavemin >= wavemin,
                 DatabaseEntry.wavemax <= wavemax))
+
         elif typ == 'time':
-            start, end, near = value
+            start, end, _ = value
             query = query.filter(and_(
                 DatabaseEntry.observation_time_start < end,
                 DatabaseEntry.observation_time_end > start))
-        else:
-            if typ.lower() not in SUPPORTED_SIMPLE_VSO_ATTRS.union(SUPPORTED_NONVSO_ATTRS):
-                raise NotImplementedError(
-                    f"The attribute {typ!r} is not yet supported to query a database.")
+
+        elif typ in (SUPPORTED_SIMPLE_VSO_ATTRS | SUPPORTED_NONVSO_ATTRS):
             query = query.filter_by(**{typ: value})
+
+        else:
+            raise NotImplementedError(
+                f"The attribute {typ!r} is not yet supported to query a database.")
+
     return query.all()
 
 
@@ -245,7 +243,7 @@ def _convert(attr):
 
 @walker.add_converter(SimpleAttr)
 def _convert(attr):
-    return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
+    return ValueAttr({(attr.__class__.__name__.lower(), ): tuple(attr.value)})
 
 
 @walker.add_converter(core_attrs.Wavelength)
