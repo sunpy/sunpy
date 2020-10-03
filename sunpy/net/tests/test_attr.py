@@ -329,6 +329,12 @@ def test_asterisk_attrs(ALL):
     assert "Instrument(all: All values of this type are supported.)" in repr(Instrument.all)
 
 
+def test_single_pair_argument_attrs(ALL):
+    # This checks we can submit * to mean all attrs.
+    with pytest.raises(ValueError):
+        attr.Attr.update_values({GenericClient: {Instrument: [("not star")]}})
+
+
 def test_asterisk_attrs_time():
     # This checks we can submit * for time/wavelength (both are ranges)
     attr.Attr.update_values({GenericClient: {Time: [('*')]}})
