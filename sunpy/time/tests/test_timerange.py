@@ -271,5 +271,9 @@ def test_get_dates_daylist_less_24_hours():
     endtime = datetime(2020, 1, 2, 11)
     interval = sunpy.time.TimeRange(starttime, endtime)
     daylist = interval.get_dates()
+    day_one = Time("2020-01-01T00:00:00.000")
+    day_two = Time("2020-01-02T00:00:00.000")
     assert len(daylist) == 2
+    assert daylist[0] == day_one
+    assert daylist[1] == day_two
     
