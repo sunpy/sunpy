@@ -172,17 +172,18 @@ def _inverter_helper(query, inverted):
 def _create(wlk, root, session):
     query = session.query(DatabaseEntry)
     for key, value in root.attrs.items():
-        typ = key[0].lower()
+        # `key[1]` is here the `inverted` attribute of the tag. That means
+        # that if it is True, the given tag must not be included in the
+        # resulting entries.
+        typ, inverted = key[0].lower(), key[1]
+
         if typ == Tag.type_name:
-            criterion = TableTag.name.in_([value])
+            criterion = TableTag.name.in_(value)
             base_query = DatabaseEntry.tags.any(criterion)
-            # `key[1]` is here the `inverted` attribute of the tag. That means
-            # that if it is True, the given tag must not be included in the
-            # resulting entries.
-            query = query.filter(_inverter_helper(base_query, key[1]))
+            query = query.filter(_inverter_helper(base_query, inverted))
 
         elif typ == FitsHeaderEntry.type_name:
-            key, val, inverted = value
+            key, val = value
             key_criterion = TableFitsHeaderEntry.key == key
             value_criterion = TableFitsHeaderEntry.value == val
             base_query = and_(
@@ -191,12 +192,12 @@ def _create(wlk, root, session):
             query = query.filter(_inverter_helper(base_query, inverted))
 
         elif typ == DownloadTime.type_name:
-            start, end, inverted = value
+            start, end = value
             base_query = DatabaseEntry.download_time.between(start, end)
             query = query.filter(_inverter_helper(base_query, inverted))
 
         elif typ == Path.type_name:
-            path, inverted = value
+            path, = value
             base_query = _inverter_helper(DatabaseEntry.path == path, inverted)
             if inverted:
                 base_query = or_(base_query, DatabaseEntry.path == None)  # NOQA
@@ -215,7 +216,8 @@ def _create(wlk, root, session):
                 DatabaseEntry.observation_time_end > start))
 
         elif typ in (SUPPORTED_SIMPLE_VSO_ATTRS | SUPPORTED_NONVSO_ATTRS):
-            query = query.filter_by(**{typ: value})
+            query_value, = value
+            query = query.filter_by(**{typ: query_value})
 
         else:
             raise NotImplementedError(
@@ -224,44 +226,65 @@ def _create(wlk, root, session):
     return query.all()
 
 
+def _convert_decorator(specify_invertible=False):
+    def decorator(convert_func):
+        def func_wrapper(attr):
+            if specify_invertible:
+                params_with_flag = convert_func(attr)
+                params = params_with_flag[:-1]
+                invert_flag = params_with_flag[-1]
+            else:
+                params = convert_func(attr)
+                invert_flag = False
+            return ValueAttr({(attr.type_name, invert_flag): params})
+        return func_wrapper
+    return decorator
+
+
 @walker.add_converter(Tag)
+@_convert_decorator(specify_invertible=True)
 def _convert(attr):
-    return ValueAttr({(Tag.type_name, attr.inverted): attr.tagname})
+    return attr.tagname, attr.inverted
 
 
 @walker.add_converter(Starred)
+@_convert_decorator()
 def _convert(attr):
-    return ValueAttr({(Starred.type_name, ): attr.value})
+    return attr.value,
 
 
 @walker.add_converter(Path)
+@_convert_decorator(specify_invertible=True)
 def _convert(attr):
-    return ValueAttr({(Path.type_name, ): (attr.value, attr.inverted)})
+    return attr.value, attr.inverted
 
 
 @walker.add_converter(DownloadTime)
+@_convert_decorator(specify_invertible=True)
 def _convert(attr):
-    return ValueAttr({
-        (DownloadTime.type_name, ): (attr.start, attr.end, attr.inverted)})
+    return attr.start, attr.end, attr.inverted
 
 
 @walker.add_converter(FitsHeaderEntry)
+@_convert_decorator(specify_invertible=True)
 def _convert(attr):
-    return ValueAttr(
-        {(FitsHeaderEntry.type_name, ): (attr.key, attr.value, attr.inverted)})
+    return attr.key, attr.value, attr.inverted
 
 
 @walker.add_converter(SimpleAttr)
+@_convert_decorator()
 def _convert(attr):
-    return ValueAttr({(attr.type_name, ): attr.value})
+    return attr.value,
 
 
 @walker.add_converter(core_attrs.Wavelength)
+@_convert_decorator()
 def _convert(attr):
-    return ValueAttr({(attr.type_name, ): (attr.min.value, attr.max.value, str(attr.unit))})
+    return attr.min.value, attr.max.value, str(attr.unit)
 
 
 @walker.add_converter(core_attrs.Time)
+@_convert_decorator()
 def _convert(attr):
-    near = None if not attr.near else attr.near.datetime
-    return ValueAttr({(attr.type_name, ): (attr.start.datetime, attr.end.datetime, near)})
+    near = attr.near.datetime if attr.near else None
+    return attr.start.datetime, attr.end.datetime, near
