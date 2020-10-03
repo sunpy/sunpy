@@ -352,6 +352,10 @@ class SimpleAttr(DataAttr):
         new_repr = [new_repr[0], obj_value_repr, obj_placeholder, new_repr[1]]
         return textwrap.fill("".join(new_repr), 100)
 
+    @property
+    def type_name(self):
+        return self.__class__.__name__.lower()
+
 
 class Range(DataAttr):
     """

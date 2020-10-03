@@ -62,11 +62,15 @@ class _BooleanAttr:
 
 
 class Starred(_BooleanAttr, Attr):
+    type_name = "starred"
+
     def __init__(self):
         super().__init__(True, self.__class__)
 
 
 class Tag(Attr):
+    type_name = "tag"
+
     def __init__(self, tagname):
         self.tagname = tagname
         self.inverted = False
@@ -85,6 +89,8 @@ class Tag(Attr):
 
 
 class Path(Attr):
+    type_name = 'path'
+
     def __init__(self, value, inverted=False):
         self.value = value
         self.inverted = inverted
@@ -103,6 +109,8 @@ class Path(Attr):
 # TODO: support excluding ranges as soon as
 # attr.Range.__xor__ is fixed / renamed
 class DownloadTime(Range):
+    type_name = 'download time'
+
     def __init__(self, start, end):
         self.start = parse_time(start).datetime
         self.end = parse_time(end).datetime
@@ -123,6 +131,8 @@ class DownloadTime(Range):
 
 
 class FitsHeaderEntry(Attr):
+    type_name = "fitsheaderentry"
+
     def __init__(self, key, value, inverted=False):
         self.key = key
         self.value = value
@@ -163,7 +173,7 @@ def _create(wlk, root, session):
     query = session.query(DatabaseEntry)
     for key, value in root.attrs.items():
         typ = key[0].lower()
-        if typ == 'tag':
+        if typ == Tag.type_name:
             criterion = TableTag.name.in_([value])
             base_query = DatabaseEntry.tags.any(criterion)
             # `key[1]` is here the `inverted` attribute of the tag. That means
@@ -171,7 +181,7 @@ def _create(wlk, root, session):
             # resulting entries.
             query = query.filter(_inverter_helper(base_query, key[1]))
 
-        elif typ == 'fitsheaderentry':
+        elif typ == FitsHeaderEntry.type_name:
             key, val, inverted = value
             key_criterion = TableFitsHeaderEntry.key == key
             value_criterion = TableFitsHeaderEntry.value == val
@@ -180,25 +190,25 @@ def _create(wlk, root, session):
                 DatabaseEntry.fits_header_entries.any(value_criterion))
             query = query.filter(_inverter_helper(base_query, inverted))
 
-        elif typ == 'download time':
+        elif typ == DownloadTime.type_name:
             start, end, inverted = value
             base_query = DatabaseEntry.download_time.between(start, end)
             query = query.filter(_inverter_helper(base_query, inverted))
 
-        elif typ == 'path':
+        elif typ == Path.type_name:
             path, inverted = value
             base_query = _inverter_helper(DatabaseEntry.path == path, inverted)
             if inverted:
                 base_query = or_(base_query, DatabaseEntry.path == None)  # NOQA
             query = query.filter(base_query)
 
-        elif typ == 'wave':
+        elif typ == core_attrs.Wavelength.type_name:
             wavemin, wavemax, waveunit = value
             query = query.filter(and_(
                 DatabaseEntry.wavemin >= wavemin,
                 DatabaseEntry.wavemax <= wavemax))
 
-        elif typ == 'time':
+        elif typ == core_attrs.Time.type_name:
             start, end, _ = value
             query = query.filter(and_(
                 DatabaseEntry.observation_time_start < end,
@@ -216,42 +226,42 @@ def _create(wlk, root, session):
 
 @walker.add_converter(Tag)
 def _convert(attr):
-    return ValueAttr({('tag', attr.inverted): attr.tagname})
+    return ValueAttr({(Tag.type_name, attr.inverted): attr.tagname})
 
 
 @walker.add_converter(Starred)
 def _convert(attr):
-    return ValueAttr({('starred', ): attr.value})
+    return ValueAttr({(Starred.type_name, ): attr.value})
 
 
 @walker.add_converter(Path)
 def _convert(attr):
-    return ValueAttr({('path', ): (attr.value, attr.inverted)})
+    return ValueAttr({(Path.type_name, ): (attr.value, attr.inverted)})
 
 
 @walker.add_converter(DownloadTime)
 def _convert(attr):
     return ValueAttr({
-        ('download time', ): (attr.start, attr.end, attr.inverted)})
+        (DownloadTime.type_name, ): (attr.start, attr.end, attr.inverted)})
 
 
 @walker.add_converter(FitsHeaderEntry)
 def _convert(attr):
     return ValueAttr(
-        {('fitsheaderentry', ): (attr.key, attr.value, attr.inverted)})
+        {(FitsHeaderEntry.type_name, ): (attr.key, attr.value, attr.inverted)})
 
 
 @walker.add_converter(SimpleAttr)
 def _convert(attr):
-    return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
+    return ValueAttr({(attr.type_name, ): attr.value})
 
 
 @walker.add_converter(core_attrs.Wavelength)
 def _convert(attr):
-    return ValueAttr({('wave', ): (attr.min.value, attr.max.value, str(attr.unit))})
+    return ValueAttr({(attr.type_name, ): (attr.min.value, attr.max.value, str(attr.unit))})
 
 
 @walker.add_converter(core_attrs.Time)
 def _convert(attr):
     near = None if not attr.near else attr.near.datetime
-    return ValueAttr({('time', ): (attr.start.datetime, attr.end.datetime, near)})
+    return ValueAttr({(attr.type_name, ): (attr.start.datetime, attr.end.datetime, near)})

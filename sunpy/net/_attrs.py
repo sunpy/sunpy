@@ -35,6 +35,7 @@ class Time(Range):
         functionality.
 
     """
+    type_name = "time"
 
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, TimeRange):
@@ -81,6 +82,8 @@ class Time(Range):
 
 
 class Wavelength(Range):
+    type_name = 'wave'
+
     def __init__(self, wavemin, wavemax=None):
         """
         Specifies the wavelength or spectral energy range of the detector.
