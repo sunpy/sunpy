@@ -75,10 +75,10 @@ def _print_attrs(attr, html=False):
     except AttributeError:
         pass
 
-    format_line = "<p>{line}</p>" if html else "{line}"
+    format_line = "<p>{}</p>" if html else "{}"
     width = -1 if html else get_width()
 
-    lines = [*[format_line.format(line=l) for l in lines],
+    lines = [*[format_line.format(line) for line in lines],
              *table.pformat_all(show_dtype=False, max_width=width, align="<", html=html)]
     return '\n'.join(lines)
 
@@ -173,7 +173,7 @@ class Attr(metaclass=AttrMeta):
     def __eq__(self, other):
         if not isinstance(other, Attr):
             return False
-        return set(vars(self).items()) == set(vars(other).items())
+        return vars(self) == vars(other)
 
     @classmethod
     def update_values(cls, adict):
