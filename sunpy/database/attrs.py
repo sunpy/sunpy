@@ -189,7 +189,7 @@ def _create(wlk, root, session):
             path, inverted = value
             base_query = _inverter_helper(DatabaseEntry.path == path, inverted)
             if inverted:
-                base_query = or_(base_query, DatabaseEntry.path == None) # NOQA
+                base_query = or_(base_query, DatabaseEntry.path == None)  # NOQA
             query = query.filter(base_query)
 
         elif typ == 'wave':
@@ -243,7 +243,7 @@ def _convert(attr):
 
 @walker.add_converter(SimpleAttr)
 def _convert(attr):
-    return ValueAttr({(attr.__class__.__name__.lower(), ): tuple(attr.value)})
+    return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
 
 
 @walker.add_converter(core_attrs.Wavelength)
