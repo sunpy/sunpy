@@ -405,10 +405,11 @@ class TimeRange:
         """
         Return all partial days contained within the time range.
         """
+        delta = self.end.to_datetime().date() - self.start.to_datetime().date()
         dates = []
         dates = [
             parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
-            for i in range(int(self.days.value) + 1)
+            for i in range(delta.days + 1)
         ]
         return dates
 
