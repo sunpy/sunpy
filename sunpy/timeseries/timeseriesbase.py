@@ -401,13 +401,18 @@ class GenericTimeSeries:
                 return self
 
         # Check the sources match if specified.
-        if same_source:
-            if isinstance(others, Iterable):
-                if not all(isinstance(series, self.__class__) for series in others):
-                    raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
-            else:
-                if not isinstance(others, self.__class__):
-                    raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
+        if (
+            same_source
+            and isinstance(others, Iterable)
+            and not all(isinstance(series, self.__class__) for series in others)
+        ):
+            raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
+        elif (
+            same_source
+            and not isinstance(others, Iterable)
+            and not isinstance(others, self.__class__)
+        ):
+            raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
 
         # If an iterable is not provided, it must be a TimeSeries object, so wrap it in a list.
         if not isinstance(others, Iterable):
