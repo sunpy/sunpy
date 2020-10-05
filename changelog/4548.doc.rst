@@ -1,0 +1,1 @@
+Added description for a counter-intuitive section in the 'Differentially rotating a map' example.
