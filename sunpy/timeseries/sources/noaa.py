@@ -31,10 +31,10 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
     * The RI sunspot number is the official International Sunspot Number and is
       issued by the `Solar Influence Data Analysis Center (SDIC)
-      <http://sidc.oma.be>`_ in Brussels, Belgium.
+      <http://sidc.oma.be>`__ in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
     * Radio flux at 10.7 cm is produced by
-      `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+      `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`__ and the units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
     .. note::
