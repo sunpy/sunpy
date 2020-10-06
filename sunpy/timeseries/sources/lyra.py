@@ -91,8 +91,11 @@ class LYRATimeSeries(GenericTimeSeries):
 
         axes[0].set_title("LYRA ({0:{1}})".format(self.to_dataframe().index[0], TIME_FORMAT))
         axes[-1].set_xlabel("Time")
-        for axe in axes:
-            axe.locator_params(axis='y', nbins=6)
+        for ax in axes:
+            ax.locator_params(axis='y', nbins=6)
+
+        fig = axes[-1].get_figure()
+        fig.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
 
         fig = axes[0].get_figure()
         fig.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)

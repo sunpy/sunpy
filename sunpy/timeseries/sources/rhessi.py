@@ -89,32 +89,31 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
                           'tab:brown')
         colors = kwargs.pop('colors', default_colors)
 
-        figure = plt.figure()
-        axes = plt.gca()
+        fig, ax = plt.subplots()
 
         for color, (item, frame) in zip(itertools.cycle(colors),
                                         self.to_dataframe().items()):
-            axes.plot(self.to_dataframe().index, frame.values,
-                      color=color, label=item, **kwargs)
+            ax.plot(self.to_dataframe().index, frame.values,
+                    color=color, label=item, **kwargs)
 
-        axes.set_yscale("log")
-        axes.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
+        ax.set_yscale("log")
+        ax.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
 
-        axes.set_title(title)
-        axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
+        ax.set_title(title)
+        ax.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
 
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
-        axes.legend()
+        ax.yaxis.grid(True, 'major')
+        ax.xaxis.grid(False, 'major')
+        ax.legend()
 
         # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
         formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
-        axes.xaxis.set_major_formatter(formatter)
+        ax.xaxis.set_major_formatter(formatter)
 
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M:%S')
-        figure.autofmt_xdate()
+        ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M:%S')
+        fig.autofmt_xdate()
 
-        return figure
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
