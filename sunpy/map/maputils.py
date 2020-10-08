@@ -101,6 +101,10 @@ def solar_angular_radius(coordinates):
     angle : `~astropy.units.Quantity`
         The solar angular radius.
     """
+
+    if not isinstance(coordinates.frame, Helioprojective):
+        raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
+        
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
@@ -122,6 +126,10 @@ def sample_at_coords(smap, coordinates):
         A `numpy.array` corresponding to the data obtained from the map,
         at the input coordinates.
     """
+
+    if not isinstance(coordinates.frame, Helioprojective):
+        raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
+
     return smap.data[smap.wcs.world_to_array_index(coordinates)]
 
 
