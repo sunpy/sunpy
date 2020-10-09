@@ -81,6 +81,16 @@ def map_edges(smap):
 
 
 @u.quantity_input
+def _is_coordinate_frame_helioprojective(coordinates):
+	#Checks if the coordinate system is Helioprojective or not,
+	#if coordinates.frame is Helioprojective True is returned
+	if isinstance(coordinates.frame, Helioprojective):
+		return True
+        #raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
+    else:
+    	return False
+
+
 def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
@@ -102,10 +112,10 @@ def solar_angular_radius(coordinates):
         The solar angular radius.
     """
 
-    if not isinstance(coordinates.frame, Helioprojective):
-        raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
-        
-    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
+    if(_is_coordinate_frame_helioprojective(coordinates)):
+    	return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)	
+    else:
+    	raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
 
 
 def sample_at_coords(smap, coordinates):
@@ -127,10 +137,10 @@ def sample_at_coords(smap, coordinates):
         at the input coordinates.
     """
 
-    if not isinstance(coordinates.frame, Helioprojective):
-        raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
-
-    return smap.data[smap.wcs.world_to_array_index(coordinates)]
+    if(_is_coordinate_frame_helioprojective(coordinates)):
+    	return smap.data[smap.wcs.world_to_array_index(coordinates)]
+    else:
+    	raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
 
 
 def _edge_coordinates(smap):
@@ -230,11 +240,12 @@ def coordinate_is_on_solar_disk(coordinates):
         Returns `True` if the coordinate is on disk, `False` otherwise.
     """
 
-    if not isinstance(coordinates.frame, Helioprojective):
-        raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
-    # Calculate the angle of every pixel from the center of the Sun and compare it the angular
-    # radius of the Sun.
-    return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < solar_angular_radius(coordinates)
+    if(_is_coordinate_frame_helioprojective(coordinates)):
+    	# Calculate the angle of every pixel from the center of the Sun and compare it the angular
+	    # radius of the Sun.
+    	return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < solar_angular_radius(coordinates)
+    else:
+	    raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
 
 
 def is_all_off_disk(smap):
