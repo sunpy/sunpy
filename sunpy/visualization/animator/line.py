@@ -108,9 +108,11 @@ class LineAnimator(ArrayAnimator):
                 self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]),
                                                  plot_axis_index)
         if ylim is None:
-            ylim = (data.min(), data.max())
+            data_is_finite = np.isfinite(data)
+            ylim = (data[data_is_finite].min(), data[data_is_finite].max())
         if xlim is None:
-            xlim = (self.xdata.min(), self.xdata.max())
+            xdata_is_finite = np.isfinite(xdata)
+            xlim = (self.xdata[xdata_is_finite].min(), self.xdata[xdata_is_finite].max())
         self.ylim = ylim
         self.xlim = xlim
         self.xlabel = xlabel
