@@ -407,7 +407,7 @@ class AttrAnd(Attr):
         if any(other.collides(elem) for elem in self.attrs):
             return NotImplemented
         if isinstance(other, AttrAnd):
-            return AttrAnd([*self.attrs, other.attrs])
+            return AttrAnd([*self.attrs, *other.attrs])
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
         return AttrAnd([*self.attrs, other])
