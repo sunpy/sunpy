@@ -16,6 +16,7 @@ import astropy.units as u
 from astropy.utils.misc import isiterable
 
 from sunpy import config
+from sunpy import log
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.jsoc.attrs import walker
@@ -646,6 +647,7 @@ class JSOCClient(BaseClient):
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
                 print(print_message.format(len(urls), request._d['size']))
             for aurl, fname in zip(urls, paths):
+                log.debug(f'Adding {aurl} to download queue.')
                 downloader.enqueue_file(aurl, filename=fname, **kwargs)
 
         if dl_set and not wait:
