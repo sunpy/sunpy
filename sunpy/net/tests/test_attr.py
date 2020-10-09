@@ -329,10 +329,13 @@ def test_asterisk_attrs(ALL):
     assert "Instrument(all: All values of this type are supported.)" in repr(Instrument.all)
 
 
-def test_single_pair_argument_attrs(ALL):
-    # This checks we can submit * to mean all attrs.
+@pytest.mark.parametrize("wrong_name", [
+    ("not star", ), ("*whoops", )
+])
+def test_single_pair_argument_attrs(wrong_name):
+    # We can submit * to mean all attrs, but this is the only exception
     with pytest.raises(ValueError):
-        attr.Attr.update_values({GenericClient: {Instrument: [("not star")]}})
+        attr.Attr.update_values({GenericClient: {Instrument: [wrong_name]}})
 
 
 def test_asterisk_attrs_time():
