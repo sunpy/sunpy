@@ -1,0 +1,1 @@
+Several functions in `sunpy.map.maputils` now properly check if the provided coordinate is in the expected `~sunpy.coordinates.frames.Helioprojective` frame.
