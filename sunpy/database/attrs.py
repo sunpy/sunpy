@@ -227,6 +227,21 @@ def _create(wlk, root, session):
 
 
 def _convert_decorator(specify_invertible=False):
+    """
+    Given a converter for the walker this function creates a ValueAttr
+    standardized for the _create.
+
+    Parameters
+    ----------
+    specify_invertible : bool
+        Specify if the decorated function returns the inverted parameter as last one.
+
+    Returns
+    -------
+    `Callable`
+        Decorator that wraps the result of the function in a
+        `ValueAttr({(type_name, invertible), (*list_of_parameters)})`.
+    """
     def decorator(convert_func):
         def func_wrapper(attr):
             if specify_invertible:

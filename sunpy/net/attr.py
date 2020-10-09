@@ -239,7 +239,7 @@ class Attr(metaclass=AttrMeta):
                         # Special case handling for * aka all values allowed.
                         pair = ["all", "All values of this type are supported."]
 
-                    # Sanitize part one: Check if the name is has a number in it
+                    # Sanitize part one: Check if the name has a number in it
                     number_match = NUMBER_REGEX.match(pair[0])
                     p = inflect.engine()
                     try:
@@ -342,8 +342,8 @@ class SimpleAttr(DataAttr):
         obj_placeholder = " object "
         attr_reg = AttrMeta._attr_registry[self.__class__]
         new_repr = object.__repr__(self).split(obj_placeholder)
-        # If somehow the idx isn't in the attr reg, we still want it to print it
-        # repr without error.
+        # If somehow the idx isn't in the attr reg,
+        # we still want it to print it repr without error.
         try:
             idx = attr_reg.name_long.index(self.value)
             obj_value_repr = f"({self.value}: {attr_reg.desc[idx]})"

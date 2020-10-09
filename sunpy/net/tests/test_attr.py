@@ -333,7 +333,7 @@ def test_asterisk_attrs(ALL):
     ("not star", ), ("*whoops", )
 ])
 def test_single_pair_argument_attrs(wrong_name):
-    # We can submit * to mean all attrs, but this is the only exception
+    # This checks that other single string entries fail.
     with pytest.raises(ValueError):
         attr.Attr.update_values({GenericClient: {Instrument: [wrong_name]}})
 
