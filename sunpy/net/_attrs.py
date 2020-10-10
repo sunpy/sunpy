@@ -47,7 +47,7 @@ class Time(Range):
 
         if self.start > self.end:
             raise ValueError("End time must be after start time.")
-        self.near = parse_time(near) if near is not None else None
+        self.near = parse_time(near) if near else None
 
         super().__init__(self.start, self.end)
 
@@ -77,8 +77,7 @@ class Time(Range):
         return type(self)(self.start - timedelta, self.start + timedelta)
 
     def __repr__(self):
-        return f'<sunpy.net.attrs.Time({self.start.iso}, {self.end.iso}' \
-               f'{(", " + self.near.iso) if self.near else ""})>'
+        return f'<sunpy.net.attrs.Time({self.start.iso}, {self.end.iso}{(", " + self.near.iso) if self.near else ""})>'
 
 
 class Wavelength(Range):

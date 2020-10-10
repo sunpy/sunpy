@@ -59,8 +59,7 @@ def _print_attrs(attr, html=False):
     """
     attrs = attr._attr_registry[attr]
     # Only sort the attrs if any have been registered
-    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) \
-        if attrs.name else make_tuple()
+    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
     *other_row_data, descs = sorted_attrs
     descs = [dsc[:77] + ('...' if len(dsc) > 80 else '') for dsc in descs]
     table = Table(names=["Attribute Name", "Client", "Full Name",
