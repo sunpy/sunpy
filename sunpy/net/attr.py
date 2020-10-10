@@ -62,8 +62,8 @@ def _print_attrs(attr, html=False):
     sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
     *other_row_data, descs = sorted_attrs
     descs = [dsc[:77] + ('...' if len(dsc) > 80 else '') for dsc in descs]
-    table = Table(names=["Attribute Name", "Client", "Full Name",
-                         "Description"], dtype=["U80", "U80", "U80", "U80"],
+    table = Table(names=["Attribute Name", "Client", "Full Name", "Description"], 
+                  dtype=["U80", "U80", "U80", "U80"],
                   data=[*other_row_data, descs])
 
     class_name = f"{(attr.__module__ + '.') or ''}{attr.__name__}"
