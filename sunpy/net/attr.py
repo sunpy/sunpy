@@ -61,7 +61,7 @@ def _print_attrs(attr, html=False):
     # Only sort the attrs if any have been registered
     sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
     *other_row_data, descs = sorted_attrs
-    descs = [dsc[:77] + '...' if len(dsc) > 80 else dsc) for dsc in descs]
+    descs = [(dsc[:77] + '...') if len(dsc) > 80 else dsc for dsc in descs]
     table = Table(names=["Attribute Name", "Client", "Full Name", "Description"], 
                   dtype=["U80", "U80", "U80", "U80"],
                   data=[*other_row_data, descs])
