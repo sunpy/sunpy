@@ -497,7 +497,7 @@ class ValueAttr(DataAttr):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return set(self.attrs) == set(other.attrs)
+        return self.attrs == other.attrs
 
     def collides(self, other):
         if not isinstance(other, self.__class__):
