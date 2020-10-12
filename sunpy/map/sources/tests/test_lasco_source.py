@@ -15,6 +15,7 @@ from sunpy.map.sources.soho import LASCOMap
 
 path = sunpy.data.test.rootdir
 
+
 @pytest.fixture
 def lasco():
     fitspath = glob.glob(os.path.join(path, "lasco_c2_25299383_s.fts"))
@@ -23,7 +24,8 @@ def lasco():
 
 @pytest.fixture
 def lasco_helioviewer():
-    jp2path = glob.glob(os.path.join(path, "2013_05_13__16_54_06_137__SOHO_LASCO_C3_white-light.jp2"))
+    jp2path = glob.glob(os.path.join(
+        path, "2013_05_13__16_54_06_137__SOHO_LASCO_C3_white-light.jp2"))
     return Map(jp2path)
 
 
