@@ -17,7 +17,7 @@ cor = Map(fitspath)
 # COR Tests
 
 
-def test_fitstoEIT():
+def test_fitstoCOR():
     """Tests the creation of CORMap using FITS."""
     assert isinstance(cor, CORMap)
 
