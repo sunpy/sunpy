@@ -18,6 +18,7 @@ lasco = Map(fitspath)
 jp2path = glob.glob(os.path.join(path, "2013_05_13__16_54_06_137__SOHO_LASCO_C3_white-light.jp2"))
 lasco_helioviewer = Map(jp2path)
 
+
 # LASCO Tests
 
 
@@ -49,6 +50,8 @@ def test_norm_clip():
 
 
 def test_helioviewer_rotation():
-    """Tests that rotation metadata is correctly removed for JPEG2000 images provided by Helioviewer.org."""
-    np.testing.assert_allclose(lasco.rotation_matrix, [[0.999966, -0.008296], [0.008296, 0.999966]], rtol=1e-6)
+    """Tests that rotation metadata is correctly removed
+    for JPEG2000 images provided by Helioviewer.org."""
+    np.testing.assert_allclose(lasco.rotation_matrix,
+                               [[0.999966, -0.008296], [0.008296, 0.999966]], rtol=1e-6)
     np.testing.assert_array_equal(lasco_helioviewer.rotation_matrix, [[1., 0.], [0., 1.]])
