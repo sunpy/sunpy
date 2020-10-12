@@ -6,6 +6,7 @@ This particular test file pertains to LASCOMap.
 import os
 import glob
 
+import numpy as np
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.soho import LASCOMap
@@ -13,6 +14,9 @@ from sunpy.map.sources.soho import LASCOMap
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "lasco_c2_25299383_s.fts"))
 lasco = Map(fitspath)
+
+jp2path = glob.glob(os.path.join(path, "2013_05_13__16_54_06_137__SOHO_LASCO_C3_white-light.jp2"))
+lasco_helioviewer = Map(jp2path)
 
 # LASCO Tests
 
@@ -42,3 +46,9 @@ def test_observatory():
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
     assert not lasco.plot_settings['norm'].clip
+
+
+def test_helioviewer_rotation():
+    """Tests that rotation metadata is correctly removed for JPEG2000 images provided by Helioviewer.org."""
+    np.testing.assert_allclose(lasco.rotation_matrix, [[0.999966, -0.008296], [0.008296, 0.999966]], rtol=1e-6)
+    np.testing.assert_array_equal(lasco_helioviewer.rotation_matrix, [[1., 0.], [0., 1.]])
