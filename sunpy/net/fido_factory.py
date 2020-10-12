@@ -364,7 +364,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             for block in query_result.responses:
                 reslist.append(block.client.fetch(block, path=path,
                                                   downloader=downloader,
-                                                  wait=False, **kwargs))
+                                                  wait=False, max_conn=max_conn,
+                                                  **kwargs))
 
         results = downloader.download()
         # Combine the results objects from all the clients into one Results
