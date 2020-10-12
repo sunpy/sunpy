@@ -524,7 +524,7 @@ class VSOClient(BaseClient):
         return fname
 
     def fetch(self, query_response, path=None, methods=None, site=None,
-              progress=True, overwrite=False, downloader=None, wait=True):
+              progress=True, max_conn=5, overwrite=False, downloader=None, wait=True):
         """
         Download data specified in the query_response.
 
@@ -569,6 +569,9 @@ class VSOClient(BaseClient):
             If `True` show a progress bar showing how many of the total files
             have been downloaded. If `False`, no progress bars will be shown at all.
 
+        max_conn : `int`, optional
+            Maximum number of download connections.
+
         overwrite : `bool` or `str`, optional
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
@@ -602,7 +605,7 @@ class VSOClient(BaseClient):
         dl_set = True
         if not downloader:
             dl_set = False
-            downloader = Downloader(progress=progress)
+            downloader = Downloader(progress=progress, max_conn=max_conn)
 
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:

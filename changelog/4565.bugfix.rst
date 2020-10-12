@@ -1,4 +1,4 @@
 The ``max_conn`` argument to :meth:`Fido.fetch` is now correctly handed to
 client fetch methods. This means clients that create their own downloader
-(e.g. the JSOC client) now properly respect ``max_conn`` when it is user
-specified.
+(e.g. the JSOC and VSO clients) now properly respect ``max_conn`` when it is
+user specified.
