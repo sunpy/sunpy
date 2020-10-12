@@ -105,6 +105,22 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     return Longitude(rotation.to(u.deg))
 
 
+def _validate_observer_args(initial_obstime, observer, time):
+    if (observer is not None) and (time is not None):
+        raise ValueError(
+            "Either the 'observer' or the 'time' keyword must be specified, "
+            "but not both simultaneously.")
+    elif observer is not None:
+        # Check that the new_observer is specified correctly.
+        if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
+            raise ValueError(
+                "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
+        if observer.obstime is None:
+            raise ValueError("The observer 'obstime' property must not be None.")
+    elif observer is None and time is None:
+        raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
+
+
 def _get_new_observer(initial_obstime, observer, time):
     """
     Helper function that interprets the possible ways of specifying the
@@ -144,17 +160,9 @@ def _get_new_observer(initial_obstime, observer, time):
         is not None the output has the same type as the "observer" keyword.  In all cases
         the output is specified in the heliographic Stonyhurst coordinate system.
     """
+    _validate_observer_args(initial_obstime, observer, time)
     # Check the input and create the new observer
-    if (observer is not None) and (time is not None):
-        raise ValueError(
-            "Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously.")
-    elif observer is not None:
-        # Check that the new_observer is specified correctly.
-        if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
-            raise ValueError(
-                "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
-        if observer.obstime is None:
-            raise ValueError("The observer 'obstime' property must not be None.")
+    if observer is not None:
         new_observer = observer
     elif time is not None:
         warnings.warn("Using 'time' assumes an Earth-based observer.")
@@ -164,8 +172,6 @@ def _get_new_observer(initial_obstime, observer, time):
             new_observer_time = parse_time(time)
 
         new_observer = get_body("earth", new_observer_time)
-    else:
-        raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
 
     return new_observer
 
