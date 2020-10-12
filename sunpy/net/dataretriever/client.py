@@ -294,7 +294,7 @@ class GenericClient(BaseClient):
         return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,
-              progress=True, downloader=None, wait=True):
+              progress=True, max_conn=5, downloader=None, wait=True):
         """
         Download a set of results.
 
@@ -314,6 +314,8 @@ class GenericClient(BaseClient):
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
             have been downloaded. If `False`, no progress bar will be shown.
+        max_conn : `int`, optional
+            Maximum number of download connections.
         downloader : `parfive.Downloader`, optional
             The download manager to use.
         wait : `bool`, optional
@@ -337,7 +339,8 @@ class GenericClient(BaseClient):
         dl_set = True
         if not downloader:
             dl_set = False
-            downloader = Downloader(progress=progress, overwrite=overwrite)
+            downloader = Downloader(progress=progress, overwrite=overwrite,
+                                    max_conn=max_conn)
 
         for url, filename in zip(urls, paths):
             downloader.enqueue_file(url, filename=filename)

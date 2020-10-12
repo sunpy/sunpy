@@ -239,7 +239,7 @@ class BaseClient(ABC):
             Replace files with the same name if True.
         progress : `bool`, optional
             Print progress info to terminal.
-        max_conns : `int`, optional
+        max_conn : `int`, optional
             Maximum number of download connections.
         downloader : `parfive.Downloader`, optional
             The download manager to use.
