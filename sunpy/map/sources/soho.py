@@ -126,7 +126,8 @@ class LASCOMap(GenericMap):
 
         # for Helioviewer images, clear rotation metadata
         if 'helioviewer' in self.meta:
-            log.debug("LASCOMap: Cleaning up CROTAn keywords because the map has already been rotated by Helioviewer")
+            log.debug("LASCOMap: Cleaning up CROTAn keywords "
+                      "because the map has already been rotated by Helioviewer")
             self.meta.pop('crota')
             self.meta.pop('crota1')
             self.meta['crota2'] = 0
