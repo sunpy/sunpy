@@ -124,8 +124,11 @@ class LASCOMap(GenericMap):
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
-        # for Helioviewer images, clear rotation metadata
-        if 'helioviewer' in self.meta:
+        # For Helioviewer images, clear rotation metadata, as these have already been rotated.
+        # Also check that all CROTAn keywords exist to make sure that it's an untouched
+        # Helioviewer file.
+        if 'helioviewer' in self.meta \
+            and 'crota' in self.meta and 'crota1' in self.meta and 'crota2' in self.meta:
             log.debug("LASCOMap: Cleaning up CROTAn keywords "
                       "because the map has already been rotated by Helioviewer")
             self.meta.pop('crota')
