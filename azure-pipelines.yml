@@ -51,8 +51,8 @@ jobs:
         - libpng-devel
 
     envs:
-      - macos: py38
-        name: py38_test
+      - macos: py39
+        name: py39_test
         posargs: -n=1
 
       - windows: py37
@@ -100,7 +100,7 @@ jobs:
         - sdist
       dependsOn:
         - py37_test
-        - py38_test
+        - py39_test
         - py38_test_online
         - py38_test_32bit
         - py37_test_oldestdeps
