@@ -618,18 +618,16 @@ class JSOCClient(BaseClient):
                     fname = os.path.expanduser(fname)
                     paths.append(fname)
 
-        if max_conn * kwargs['max_splits'] > 10:
-            warnings.warn(("JSOC does not support more than 10 parallel connections. " +
-                           "Changing the number of parallel connections to 8."), SunpyUserWarning)
-            kwargs['max_splits'] = 2
-            max_conn = 4
-
         dl_set = True
         if not downloader:
             dl_set = False
             downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=max_conn)
-        else:
-            downloader.max_conn = max_conn
+
+        if max_conn * kwargs['max_splits'] > 10:
+            warnings.warn(("JSOC does not support more than 10 parallel connections. " +
+                           "Changing the number of parallel connections to 8."), SunpyUserWarning)
+            kwargs['max_splits'] = 2
+            downloader.max_conn = 4
 
         urls = []
         for request in requests:
