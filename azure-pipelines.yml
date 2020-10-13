@@ -50,37 +50,8 @@ jobs:
         - libpng-devel
 
     envs:
-      - macos: py38
-        name: py38_test
-        posargs: -n=1
-
-      - windows: py37
-        name: py37_test
-
-      - linux: py38-online
-        name: py38_test_online
-
       - linux32: py38-32bit
         name: py38_test_32bit
-
-      - linux: codestyle
-        name: python_codestyle
-        pytest: false
-
-      - linux: py38-hypothesis
-
-      - linux: py38-conda
-        name: py38_conda
-        libraries: {}
-
-      - linux: py37-oldestdeps
-        name: py37_test_oldestdeps
-
-      - linux: py38-devdeps
-
-      - linux: build_docs
-        posargs: " "
-        pytest: false
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
 - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
