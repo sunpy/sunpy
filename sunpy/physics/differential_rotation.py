@@ -5,7 +5,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, get_body
-from astropy.time import TimeDelta
+from astropy.time import Time, TimeDelta
 
 from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective
 from sunpy.map import (
@@ -171,6 +171,7 @@ def _get_new_observer(initial_obstime, observer, time):
         else:
             new_observer_time = parse_time(time)
 
+        print('New observer time:', new_observer_time.jd1, new_observer_time.jd2)
         new_observer = get_body("earth", new_observer_time)
 
     return new_observer
@@ -513,8 +514,11 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     if is_all_off_disk(smap):
         raise ValueError("The entire map is off disk. No data to differentially rotate.")
 
+    if isinstance(time, Time):
+        print('Input time:', time.jd1, time.jd2)
     # Get the new observer
     new_observer = _get_new_observer(smap.date, observer, time)
+    print('New obs:', new_observer.obstime.jd1, new_observer.obstime.jd2)
 
     # Only this function needs scikit image
     from skimage import transform
