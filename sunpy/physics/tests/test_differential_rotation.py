@@ -232,6 +232,8 @@ def test_differential_rotate_time_full_disk(aia171_test_map):
         dmap = differential_rotate(aia171_test_map, time=new_time)
     assert dmap.data.shape == aia171_test_map.data.shape
     # The output map should have the same time as the new time now.
+    print(dmap.date.jd1, dmap.date.jd2)
+    print(new_time.jd1, new_time.jd2)
     assert dmap.date == new_time
 
 
