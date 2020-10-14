@@ -12,6 +12,7 @@ import pytest
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.soho import LASCOMap
+from sunpy.tests.helpers import skip_glymur
 
 path = sunpy.data.test.rootdir
 
@@ -59,6 +60,7 @@ def test_norm_clip(lasco):
     assert not lasco.plot_settings['norm'].clip
 
 
+@skip_glymur
 def test_helioviewer_rotation(lasco, lasco_helioviewer):
     """Tests that rotation metadata is correctly removed
     for JPEG2000 images provided by Helioviewer.org."""
