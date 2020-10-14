@@ -128,7 +128,7 @@ class LASCOMap(GenericMap):
         # Also check that all CROTAn keywords exist to make sure that it's an untouched
         # Helioviewer file.
         if 'helioviewer' in self.meta \
-            and 'crota' in self.meta and 'crota1' in self.meta and 'crota2' in self.meta:
+                and 'crota' in self.meta and 'crota1' in self.meta and 'crota2' in self.meta:
             log.debug("LASCOMap: Cleaning up CROTAn keywords "
                       "because the map has already been rotated by Helioviewer")
             self.meta.pop('crota')
