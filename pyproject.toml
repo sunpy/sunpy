@@ -78,7 +78,12 @@ build-backend = 'setuptools.build_meta'
 
     [[tool.towncrier.type]]
       directory = "doc"
-      name = "Improved Documentation"
+      name = "Added/Improved Documentation"
+      showcontent = true
+
+    [[tool.towncrier.type]]
+      directory = "docfix"
+      name = "Documentation Fixes"
       showcontent = true
 
     [[tool.towncrier.type]]
