@@ -1,0 +1,1 @@
+The keyword `clip_interval` is now used more extensively in gallery examples when plotting the sample AIA image (e.g., :ref:`sphx_glr_generated_gallery_plotting_aia_example.py`).

@@ -34,7 +34,7 @@ great_arc = GreatArc(start, end)
 # Plot the great arc on the Sun.
 fig = plt.figure()
 ax = plt.subplot(projection=m)
-m.plot(axes=ax)
+m.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
 ax.plot_coord(great_arc.coordinates(), color='c')
 plt.show()
 

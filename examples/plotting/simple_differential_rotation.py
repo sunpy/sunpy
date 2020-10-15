@@ -64,7 +64,7 @@ future_date = aia_map.date + dt
 
 fig = plt.figure()
 ax = plt.subplot(projection=aia_map)
-aia_map.plot()
+aia_map.plot(clip_interval=(1, 99.99)*u.percent)
 ax.set_title('The effect of {} days of differential rotation'.format(dt.to(u.day).value))
 aia_map.draw_grid()
 
