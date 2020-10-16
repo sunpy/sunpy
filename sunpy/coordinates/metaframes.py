@@ -12,7 +12,7 @@ from sunpy import log
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from .frames import HeliocentricInertial, SunPyBaseCoordinateFrame
+from .frames import HeliocentricInertial
 from .offset_frame import NorthOffsetFrame
 from .transformations import _transformation_debug
 
@@ -180,10 +180,6 @@ class RotatedSunFrame:
             # If a SkyCoord is provided, use the underlying frame
             if hasattr(base_frame, 'frame'):
                 base_frame = base_frame.frame
-
-            # The base frame needs to be a SunPy frame to have the overridden size() property
-            if not isinstance(base_frame, SunPyBaseCoordinateFrame):
-                raise TypeError("Only SunPy coordinate frames are currently supported.")
 
             newcls = _make_rotatedsun_cls(base_frame.__class__)
             return newcls.__new__(newcls, *args, **kwargs)
