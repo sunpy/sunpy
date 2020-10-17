@@ -80,10 +80,10 @@ def figure_test(test_function):
     @wraps(test_function)
     def wrapper(*args, **kwargs):
         if not os.path.exists(hash.HASH_LIBRARY_FILE):
-            pytest.xfail(f'Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}')
+            raise RuntimeError(f'Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}')
         # figure_base_dir is a pytest fixture defined on use.
         if figure_base_dir is None:
-            pytest.xfail("No directory to save figures to found")
+            raise RuntimeError("No directory to save figures to found")
 
         name = "{}.{}".format(test_function.__module__,
                               test_function.__name__)
