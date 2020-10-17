@@ -19,6 +19,7 @@ including ones created using custom FITS files.
 """
 
 import asdf
+import astropy.units as u
 
 import sunpy.data.sample
 import sunpy.map
@@ -27,7 +28,7 @@ import sunpy.map
 # We begin by creating an `~sunpy.map.sources.sdo.AIAMap` object using the
 # sample data.
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-aia_map.peek()
+aia_map.peek(clip_interval=(1, 99.99)*u.percent)
 
 ################################################################################
 # We can now save this object to an asdf file to use later. Saving it like this
@@ -49,4 +50,4 @@ with asdf.AsdfFile(tree) as asdf_file:
 # Astropy, SunPy and asdf installed. We can reload it like so:
 with asdf.open("sunpy_map.asdf") as asdf_file:
     reloaded_aia_map = asdf_file['aia_map']
-    reloaded_aia_map.peek()
+    reloaded_aia_map.peek(clip_interval=(1, 99.99)*u.percent)

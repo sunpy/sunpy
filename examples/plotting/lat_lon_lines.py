@@ -53,7 +53,7 @@ hpc_lat0 = lat0.transform_to(aia.coordinate_frame)
 # grid as well for comparison.
 fig = plt.figure()
 ax = plt.subplot(projection=aia)
-aia.plot()
+aia.plot(clip_interval=(1, 99.99)*u.percent)
 ax.plot_coord(hpc_lat0, color="C0")
 ax.plot_coord(hpc_lon0, color="C0")
 aia.draw_grid()
