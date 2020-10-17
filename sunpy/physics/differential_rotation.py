@@ -597,7 +597,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     out_meta = deepcopy(smap.meta)
     if out_meta.get('date_obs', False):
         del out_meta['date_obs']
-    out_meta['date-obs'] = new_observer.obstime.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    out_meta['date-obs'] = new_observer.obstime.isot
 
     # Need to update the observer location for the output map.
     # Remove all the possible observer keys
