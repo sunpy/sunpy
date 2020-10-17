@@ -20,7 +20,7 @@ from sunpy.net import attrs as a
 timerange = a.Time('2002/05/24 11:06', '2002/05/24 11:07')
 instrument = a.Instrument.lasco
 detector = a.Detector.c2
-result = Fido.search(timerange, instrument)
+result = Fido.search(timerange, instrument, detector)
 
 ###############################################################################
 # Let's inspect the result
