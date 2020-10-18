@@ -23,3 +23,4 @@ Code Reference
    timeseries
    util
    visualization
+   stability

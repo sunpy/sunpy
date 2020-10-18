@@ -4,6 +4,8 @@
 Developer's Guide
 *****************
 
+{% if is_development %}
+
 This article describes the guidelines to be followed by developers working on SunPy.
 If you are thinking of contributing to SunPy please read the following carefully.
 
@@ -13,17 +15,24 @@ This goes over the basics and has links to useful tutorials on git.
 .. toctree::
    :maxdepth: 2
 
-   newcomers
-   code_standards
-   documentation
-   tests
-   pr_review_procedure
-   example_gallery
-   units_quantities
-   new_objects
-   maintainer_workflow
-   logger
-   remote_data
-   config
-   funding
-   stability
+   contents/newcomers
+   contents/code_standards
+   contents/ntdocumentation
+   contents/tests
+   contents/pr_review_procedure
+   contents/example_gallery
+   contents/units_quantities
+   contents/new_objects
+   contents/maintainer_workflow
+   contents/logger
+   contents/remote_data
+   contents/config
+   contents/funding
+
+{%else%}
+
+Please go `here <https://docs.sunpy.org/en/latest/dev_guide/index.html>`__ for our up to date developer’s guide.
+
+{%endif%}
+
+
