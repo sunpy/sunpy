@@ -67,7 +67,7 @@ However if you want to develop sunpy we would strongly recommend reading :ref:`n
     You can read more about how to do this in the `pip documentation <https://pip.pypa.io/en/stable/user_guide/#user-installs>`__.
 
     Do **not** install sunpy or other third-party packages using ``sudo``.
-    
+
 sunpy's Requirements
 ********************
 
