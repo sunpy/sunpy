@@ -1,0 +1,1 @@
+`~sunpy.coordinates.sun.apparent_longitude()` and `~sunpy.coordinates.sun.apparent_latitude()` functions will now use `~astropy.coordinates.GeocentricTrueEcliptic` coordinates
