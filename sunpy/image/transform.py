@@ -11,7 +11,7 @@ from sunpy.util.exceptions import SunpyUserWarning, SunpyDeprecationWarning
 
 __all__ = ['affine_transform']
 
-#TODO: add deprecation for `use_scipy`
+# TODO: add deprecation for `use_scipy`
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                      recenter=False, missing=0.0, method='none', use_scipy=False):
     """
@@ -95,11 +95,13 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     (identical to the parent affine_transform, without the `method` argument),
     and it must return the new rotated, scaled, translated image.
 
-    """
-    _allowed_methods = {'scipy':_scipy_affine_transform, 'skimage':_skimage_affine_transform, 'cv2':_opencv_affine_transform}
     
+
+    """
+    _allowed_methods = {'scipy': _scipy_affine_transform, 'skimage': _skimage_affine_transform,
+                        'cv2': _opencv_affine_transform}
+
     if isinstance(method, str):
-        # TO BE DEPRECATED IN FUTURE
         if method == 'none':
             if use_scipy:
                 warnings.warn("Argument `use_scipy` has been deprecated."
@@ -120,8 +122,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                                   'Future versions will throw an ImportError and cease execution.',
                                   SunpyDeprecationWarning)
                     method = _scipy_affine_transform
-        # END DEPRECATION MARKER
-        else: 
+
+        else:
             try:
                 method = _allowed_methods[method]
             except KeyError:
@@ -138,8 +140,9 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                                recenter=recenter)
     except ImportError:
         raise ImportError("Selected method not installed.")
-    
+
     return rotated_image
+
 
 def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter):
     """
@@ -254,6 +257,7 @@ def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center,
         np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
         mode='constant', cval=missing).T
 
+
 def _opencv_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter):
     """
     Apply cv2.warpAffine to `image`
@@ -292,7 +296,8 @@ def _opencv_affine_transform(image, rmatrix, order, scale, missing, image_center
     try:
         order = _CV_ORDER_FLAGS[order]
     except KeyError:
-        warnings.warn("input order={} not supported in openCV. order has been cast to 3".format(order),
+        warnings.warn("input order={} not supported in openCV."
+                      " order has been cast to 3".format(order),
                       SunpyUserWarning)
         order = _CV_ORDER_FLAGS[3]
 
@@ -332,6 +337,7 @@ def _opencv_affine_transform(image, rmatrix, order, scale, missing, image_center
     #                                     mode='constant', cval=missing)
     return cv2.warpAffine(adjusted_image, rmatrix, (w, h), flags=order,
                           borderMode=cv2.BORDER_CONSTANT, borderValue=missing)
+
 
 def _calculate_shift(image, rmatrix, image_center=None, recenter=False):
     """
