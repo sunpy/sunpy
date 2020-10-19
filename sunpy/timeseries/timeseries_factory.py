@@ -4,6 +4,7 @@ This module provies the `~sunpy.timeseries.TimeSeriesFactory` class.
 import os
 import copy
 import glob
+import pathlib
 from collections import OrderedDict
 from urllib.request import urlopen
 
@@ -140,7 +141,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         if 'source' not in kwargs.keys() or not kwargs['source']:
             try:
-                pairs = read_file(fname, **kwargs)
+                pairs = read_file(os.fspath(fname), **kwargs)
 
                 new_pairs = []
                 for pair in pairs:
@@ -247,6 +248,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         * tuples of (data, header, unit) (1)
         * data, header not in a tuple (1)
         * filename, which will be read
+        * pathlib.PosixPath, which is the filepath to a file to be read.
         * directory, from which all files will be read
         * glob, from which all files will be read
         * url, which will be downloaded and read
@@ -324,6 +326,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 result = self._read_file(path, **kwargs)
                 data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
 
+            # pathlib.Path
+            elif (isinstance(arg, pathlib.PosixPath)):
+                result = self._read_file(arg.expanduser())
+                data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
+
             # Directory
             elif (isinstance(arg, str) and
                   os.path.isdir(os.path.expanduser(arg))):
@@ -359,6 +366,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 path = download_file(url, get_and_create_download_dir())
                 result = self._read_file(path, **kwargs)
                 data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
+
             else:
                 raise NoMatchError("File not found or invalid input")
             i += 1
