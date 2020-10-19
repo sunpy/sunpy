@@ -17,5 +17,4 @@ Documentation :any:`index <genindex>` and :any:`Module <modindex>` index.
   generated/gallery/index
   dev_guide/index
   whatsnew/index
-  code_of_conduct
   about

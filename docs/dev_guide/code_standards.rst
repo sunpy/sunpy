@@ -36,7 +36,7 @@ Coding Style/Conventions
   We allow relative imports within a module to avoid circular import chains.
 
 * The ``import numpy as np``, ``import matplotlib as mpl``, and ``import matplotlib.pyplot as plt`` naming conventions should be used wherever relevant.
-  ``from packagename import *`` should never be used (expect in ``__init__.py``)
+  ``from packagename import *`` should never be used (except in ``__init__.py``)
 
 * Classes should either use direct variable access, or Python’s property mechanism for setting object instance variables.
 

@@ -69,6 +69,8 @@ def test_apparent_latitude(t1, t2):
 def test_angular_radius(t2):
     # Validate against a published value from the Astronomical Almanac (2013, C13)
     # The Astromomical Almanac uses a slightly different radius for the Sun (6.96e5 km)
+    # The Astronomical Almanac also uses a small-angle approximation
+    # See https://archive.org/details/131123ExplanatorySupplementAstronomicalAlmanac/page/n212/mode/1up
     assert_quantity_allclose(sun.angular_radius(t2),
                              Angle('0d15m44.61s') / (6.96e5*u.km) * radius,  # scale to IAU radius
                              atol=0.005*u.arcsec)

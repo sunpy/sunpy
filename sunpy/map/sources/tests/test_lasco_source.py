@@ -17,7 +17,7 @@ lasco = Map(fitspath)
 # LASCO Tests
 
 
-def test_fitstoEIT():
+def test_fitstoLASCO():
     """Tests the creation of LASCOMap using FITS."""
     assert isinstance(lasco, LASCOMap)
 

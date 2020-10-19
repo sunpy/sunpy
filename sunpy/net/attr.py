@@ -31,7 +31,7 @@ from sunpy.util.util import get_width
 
 _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 # Matches any number.
-NUMBER_REGEX = re.compile(r"(\d+(?:\.\d+)?)")
+NUMBER_REGEX = re.compile(r"^(\d+$|\d(?:\.\d+)?)")
 
 __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
            'ValueAttr', 'and_', 'or_', 'AttrWalker']
@@ -57,32 +57,28 @@ def _print_attrs(attr, html=False):
     `str`
         String with the registered attributes.
     """
-    class_name = f"{attr.__module__+'.' or ''}{attr.__name__}"
     attrs = attr._attr_registry[attr]
-    sorted_attrs = make_tuple()
     # Only sort the attrs if any have been registered
-    if attrs.name:
-        sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs))))
-    names = sorted_attrs.name
-    clients = sorted_attrs.client
-    names_long = sorted_attrs.name_long
-    descs = sorted_attrs.desc
-    descs = [x[:77] + '...' if len(x) > 80 else x for x in descs]
-    lines = []
-    t = Table(names=["Attribute Name", "Client", "Full Name",
-                     "Description"], dtype=["U80", "U80", "U80", "U80"])
-    for name, client, name_long, desc in zip(names, clients, names_long, descs):
-        t.add_row((name, client, name_long, desc))
-    lines.insert(0, class_name)
+    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
+    *other_row_data, descs = sorted_attrs
+    descs = [(dsc[:77] + '...') if len(dsc) > 80 else dsc for dsc in descs]
+    table = Table(names=["Attribute Name", "Client", "Full Name", "Description"],
+                  dtype=["U80", "U80", "U80", "U80"],
+                  data=[*other_row_data, descs])
+
+    class_name = f"{(attr.__module__ + '.') or ''}{attr.__name__}"
+    lines = [class_name]
     # If the attr lacks a __doc__ this will error and prevent this from returning anything.
     try:
-        lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
+        lines.append(dedent(attr.__doc__.partition("\n\n")[0]) + "\n")
     except AttributeError:
         pass
-    if html:
-        lines = [f"<p>{line}</p>" for line in lines]
+
+    format_line = "<p>{}</p>" if html else "{}"
     width = -1 if html else get_width()
-    lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+
+    lines = [*[format_line.format(line) for line in lines],
+             *table.pformat_all(show_dtype=False, max_width=width, align="<", html=html)]
     return '\n'.join(lines)
 
 
@@ -112,10 +108,10 @@ class AttrMeta(type):
         registry = self._attr_registry[self]
         # All the attribute names under that type(Attr)
         names = registry.name
-        if item in names:
+        try:
             # We return Attr(name_long) to create the Attr requested.
             return self(registry.name_long[names.index(item)])
-        else:
+        except ValueError:
             raise AttributeError(f'This attribute, {item} is not defined, please register it.')
 
     def __dir__(self):
@@ -123,17 +119,16 @@ class AttrMeta(type):
         To tab complete in Python we need to add to the `__dir__()` return.
         So we add all the registered values for this subclass of Attr to the output.
         """
-        custom_attrs = list(set(self._attr_registry[self].name))
+        custom_attrs = set(self._attr_registry[self].name)
         # "all" can be registered as a documentation helper, but isn't a valid attr
-        if "all" in custom_attrs:
-            custom_attrs.remove("all")
-        return super().__dir__() + custom_attrs
+        custom_attrs.discard("all")
+        return super().__dir__() + list(custom_attrs)
 
     def __repr__(self):
         """
         Returns the normal repr plus the pretty attr __str__.
         """
-        return type.__repr__(self) + "\n" + str(self)
+        return f"{type.__repr__(self)}\n{str(self)}"
 
     def __str__(self):
         """
@@ -157,7 +152,7 @@ class Attr(metaclass=AttrMeta):
         if self.collides(other):
             return NotImplemented
         if isinstance(other, AttrAnd):
-            return AttrAnd([self] + list(other.attrs))
+            return AttrAnd([self, *other.attrs])
         return AttrAnd([self, other])
 
     def __hash__(self):
@@ -168,14 +163,16 @@ class Attr(metaclass=AttrMeta):
         if self == other:
             return self
         if isinstance(other, AttrOr):
-            return AttrOr([self] + list(other.attrs))
+            return AttrOr([self, *other.attrs])
         return AttrOr([self, other])
 
     def collides(self, other):
         raise NotImplementedError
 
     def __eq__(self, other):
-        return dict(vars(self)) == dict(vars(other))
+        if not isinstance(other, Attr):
+            return False
+        return vars(self) == vars(other)
 
     @classmethod
     def update_values(cls, adict):
@@ -223,57 +220,52 @@ class Attr(metaclass=AttrMeta):
         (<sunpy.net.attrs.Instrument(AIA: AIA is in Space.) object at 0x...>,
         <sunpy.net.attrs.Instrument(HMI: HMI is next to AIA.) object at 0x...>)
         """
-        for client in adict.keys():
-            for attr, attr_values in adict[client].items():
-                if isiterable(attr_values) and not isinstance(attr_values, str):
-                    for pair in attr_values:
-                        if len(pair) != 2:
-                            if len(pair) == 1:
-                                # Special case handling for * aka all values allowed.
-                                if pair[0] == "*":
-                                    pair = ["all", "All values of this type are supported."]
-                                else:
-                                    raise ValueError(
-                                        f'Invalid value given for * registration: {attr_values}.')
-                            else:
-                                raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
-                        p = inflect.engine()
-                        # Sanitize part one: Check if the name is has a number in it
-                        if NUMBER_REGEX.match(pair[0]):
-                            # Now check if the entire name is a number
-                            if len(pair[0]) == NUMBER_REGEX.match(pair[0]).span()[1]:
-                                # This turns that number into its name
-                                name = p.number_to_words(pair[0])
-                            # What if just the first character is
-                            elif NUMBER_REGEX.match(pair[0][0]):
-                                name = p.number_to_words(pair[0][0])
-                                # Then we append the rest of the name here with a _ to break it up.
-                                if pair[0][1:]:
-                                    name = name + "_" + pair[0][1:]
-                            else:
-                                # Give up
-                                name = pair[0]
-                        else:
-                            name = pair[0]
-                        # Sanitize part two: remove punctuation and replace it with _
-                        name = ''.join(
-                            char if char not in string.punctuation else "_" for char in name).lower()
-                        # Sanitize name, we remove all special characters and make it all lower case
-                        name = ''.join(char for char in name if char.isidentifier()
-                                       or char.isnumeric()).lower()
-                        if keyword.iskeyword(name):
-                            # Attribute name has been appended with `_`
-                            # to make it a valid identifier since its a python keyword.
-                            name = name + '_'
-                        if not name.isidentifier():
-                            raise ValueError(f'Unable to figure out {pair}')
-                        cls._attr_registry[attr][0].append(name)
-                        cls._attr_registry[attr][1].append(client.__name__.replace("Client", ""))
-                        cls._attr_registry[attr][2].append(pair[0])
-                        cls._attr_registry[attr][3].append(pair[1])
-                else:
+        for client, attr_dict in adict.items():
+            for attr, attr_values in attr_dict.items():
+                if not isiterable(attr_values) or isinstance(attr_values, str):
                     raise ValueError(f"Invalid input value: {attr_values} for key: {repr(attr)}. "
                                      "The value is not iterable or just a string.")
+
+                attr_tuple = cls._attr_registry[attr]
+
+                for pair in attr_values:
+                    if len(pair) > 2:
+                        raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
+                    elif len(pair) == 1:
+                        if pair[0] != "*":
+                            raise ValueError(
+                                f'Invalid value given for * registration: {attr_values}.')
+                        # Special case handling for * aka all values allowed.
+                        pair = ["all", "All values of this type are supported."]
+
+                    # Sanitize part one: Check if the name has a number in it
+                    number_match = NUMBER_REGEX.match(pair[0])
+                    p = inflect.engine()
+                    try:
+                        number_str = number_match.group(1)
+                        name = p.number_to_words(number_str)
+                        if number_str != number_match.string:
+                            name = name + "_" + number_match.string[number_match.end(1):]
+                    except AttributeError:
+                        name = pair[0]
+
+                    # Sanitize part two: remove punctuation and replace it with _
+                    name = re.sub('[%s]' % re.escape(string.punctuation), '_', name)
+                    # Sanitize name, we remove all special characters
+                    name = ''.join(char for char in name
+                                   if char.isidentifier() or char.isnumeric())
+                    # Make name lower case
+                    name = name.lower()
+
+                    if keyword.iskeyword(name):
+                        # Attribute name has been appended with `_`
+                        # to make it a valid identifier since its a python keyword.
+                        name = name + '_'
+
+                    attr_tuple[0].append(name)
+                    attr_tuple[1].append(client.__name__.replace("Client", ""))
+                    attr_tuple[2].append(pair[0])
+                    attr_tuple[3].append(pair[1])
 
 
 class DataAttr(Attr):
@@ -346,17 +338,22 @@ class SimpleAttr(DataAttr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
+        obj_placeholder = " object "
         attr_reg = AttrMeta._attr_registry[self.__class__]
-        new_repr = object.__repr__(self).split(" object ")
-        # If somehow the idx isn't in the attr reg, we still want it to print it
-        # repr without error.
+        new_repr = object.__repr__(self).split(obj_placeholder)
+        # If somehow the idx isn't in the attr reg,
+        # we still want it to print it repr without error.
         try:
             idx = attr_reg.name_long.index(self.value)
-            new_repr.insert(1, f"({self.value}: {attr_reg.desc[idx]})")
+            obj_value_repr = f"({self.value}: {attr_reg.desc[idx]})"
         except ValueError:
-            new_repr.insert(1, f": {self.value}")
-        new_repr.insert(2, " object ")
+            obj_value_repr = f": {self.value}"
+        new_repr = [new_repr[0], obj_value_repr, obj_placeholder, new_repr[1]]
         return textwrap.fill("".join(new_repr), 100)
+
+    @property
+    def type_name(self):
+        return self.__class__.__name__.lower()
 
 
 class Range(DataAttr):
@@ -409,10 +406,10 @@ class AttrAnd(Attr):
         if any(other.collides(elem) for elem in self.attrs):
             return NotImplemented
         if isinstance(other, AttrAnd):
-            return AttrAnd(self.attrs + other.attrs)
+            return AttrAnd([*self.attrs, *other.attrs])
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
-        return AttrAnd(self.attrs + [other])
+        return AttrAnd([*self.attrs, other])
 
     __rand__ = __and__
 
@@ -440,8 +437,8 @@ class AttrOr(Attr):
 
     def __or__(self, other):
         if isinstance(other, AttrOr):
-            return AttrOr(self.attrs + other.attrs)
-        return AttrOr(self.attrs + [other])
+            return AttrOr([*self.attrs, *other.attrs])
+        return AttrOr([*self.attrs, other])
 
     __ror__ = __or__
 

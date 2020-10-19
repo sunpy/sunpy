@@ -8,7 +8,7 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates import Helioprojective
+from sunpy.coordinates import Helioprojective, sun
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'map_edges', 'solar_angular_radius', 'sample_at_coords',
@@ -85,9 +85,10 @@ def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
 
-    The tangent of the angular size of the Sun is equal to the radius
-    of the Sun divided by the distance between the observer and the
-    center of the Sun.
+    The tangent vector from the observer to the edge of the Sun forms a
+    right-angle triangle with the radius of the Sun as the far side and the
+    Sun-observer distance as the hypotenuse.  Thus, the sine of the angular
+    radius of the Sun is ratio of these two distances.
 
     Parameters
     ----------
@@ -100,7 +101,7 @@ def solar_angular_radius(coordinates):
     angle : `~astropy.units.Quantity`
         The solar angular radius.
     """
-    return np.arctan(coordinates.rsun / coordinates.observer.radius)
+    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
 def sample_at_coords(smap, coordinates):
