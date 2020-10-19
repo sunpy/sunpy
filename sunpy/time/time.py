@@ -195,6 +195,17 @@ def convert_time_astropy(time_string, **kwargs):
     return time_string
 
 
+@convert_time.register(list)
+def convert_time_list(time_list, format=None, **kwargs):
+    item = time_list[0]
+    if isinstance(item, str):
+        if not format:
+            format = _get_time_fmt(item)
+        return Time.strptime(time_list, format, **kwargs)
+
+    return convert_time.dispatch(object)(time_list, format, **kwargs)
+
+
 @convert_time.register(str)
 def convert_time_str(time_string, **kwargs):
     # remove trailing zeros and the final dot to allow any
@@ -219,6 +230,17 @@ def convert_time_str(time_string, **kwargs):
 
     # when no format matches, call default fucntion
     return convert_time.dispatch(object)(time_string, **kwargs)
+
+
+def _get_time_fmt(time_string):
+    """
+    Try all the formats in TIME_FORMAT_LIST to work out which one applies to
+    the time string.
+    """
+    for time_format in TIME_FORMAT_LIST:
+        ts, _ = _regex_parse_time(time_string, time_format)
+        if ts is not None:
+            return time_format
 
 
 def _variables_for_parse_time_docstring():
