@@ -243,6 +243,23 @@ def test_array_animator_wcs_coord_params(wcs_4d):
 
 
 @figure_test
+def test_array_animator_wcs_coord_params_no_ticks(wcs_4d):
+
+    coord_params = {
+        'hpln': {
+            'format_unit': u.deg,
+            'major_formatter': 'hh:mm:ss',
+            'axislabel': 'Longitude',
+            'ticks': False
+        }
+    }
+
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'], coord_params=coord_params)
+    return a.fig
+
+
+@figure_test
 def test_array_animator_wcs_coord_params_grid(wcs_4d):
     pytest.importorskip("astropy", minversion="4.0dev26173")
 
