@@ -11,8 +11,8 @@ from astropy.coordinates import (
     Angle,
     Distance,
     GeocentricMeanEcliptic,
-    HeliocentricMeanEcliptic,
     GeocentricTrueEcliptic,
+    HeliocentricMeanEcliptic,
     Latitude,
     Longitude,
     SkyCoord,
@@ -199,8 +199,7 @@ def apparent_longitude(t='now'):
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
     coord = sun.transform_to(GeocentricTrueEcliptic(equinox=time))
 
-    # Astropy's GeocentricMeanEcliptic already includes aberration, so only add nutation
-    # change to "Astropy's GeocentricTrueEcliptic already includes both aberration and nutation"?
+    # Astropy's GeocentricTrueEcliptic includes both aberration and nutation
     lon = coord.lon
 
     return Longitude(lon)
@@ -243,8 +242,7 @@ def apparent_latitude(t='now'):
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
     coord = sun.transform_to(GeocentricTrueEcliptic(equinox=time))
 
-    # Astropy's GeocentricMeanEcliptic does not include nutation, but the contribution is negligible
-    # change to "Astropy's GeocentricTrueEcliptic already includes both aberration and nutation"?
+    # Astropy's GeocentricTrueEcliptic includes both aberration and nutation
     lat = coord.lat
 
     return Latitude(lat)
