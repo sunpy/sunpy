@@ -21,6 +21,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     `cv2.warpAffine`, or a passed-in custom method as selected by `method=`.
     If the appropriate library is not installed, will raise ImportError.
 
+    See `notes` for description of algorithm and definition of coordinate system.
+
     Parameters
     ----------
     image : `numpy.ndarray`
@@ -90,13 +92,24 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     Then optionally it uses a bicubic convolution interpolation
     algorithm to map the original to target pixel values.
 
+    Method
+    ------
     If a custom transform function is passed to `method`, it must have the function signature:
     `foo(image,rmatrix,order,scale,missing,image_center,recenter)`
     (identical to the parent affine_transform, without the `method` argument),
     and it must return the new rotated, scaled, translated image.
 
-    
+    Each of the built-in methods are defined such that
+    `rmatrix` = | cos(a) | -sin(a) | goes counterclockwise by an angle a
+                | sin(a) |  cos(a) |
+    and the rotation axis is defined by `image_center`.
 
+    Since the built-in methods, by default, apply rotation about (0,0) (the upper left corner
+    of the original image), a helper function `_calculate_shift` is provided
+    to calculate an appropriate shift for the image such that the combined
+    translation, rotation, and scaling yields the correct result.
+    (see :func:`image.transform._calculate_shift` for details)
+    `shift` = [a,b] such that the image is translated `a` pixels left, and `b` pixels up.
     """
     _allowed_methods = {'scipy': _scipy_affine_transform, 'skimage': _skimage_affine_transform,
                         'cv2': _opencv_affine_transform}
@@ -368,6 +381,7 @@ def _calculate_shift(image, rmatrix, image_center=None, recenter=False):
     i.e. |cos(angle) -sin(angle)|
          |sin(angle)  cos(angle)|
     2. Rotation matrix has already been scaled by a scale factor, if applicable
+    (NOTE: the appropriate scaling is usually rmatrix/scale)
     3. Coordinate system of offset array [a,b] is such that image is shifted
     `a` pixels to the left and `b` pixels up.
     """
