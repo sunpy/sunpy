@@ -4,7 +4,7 @@
 # # Using a Custom Affine Transform in the Sunpy Map rotate() function
 # #### (with OpenCV)
 # ----------
-# How to construct a custom affine transform for in `map.rotate`.
+# How to construct a custom affine transform for `map.rotate`.
 # Requires OpenCV (cv2) Python library.
 
 import sunpy.data.sample
@@ -14,12 +14,15 @@ import numpy as np
 import cv2
 
 #############################
-# Rotating a map in sunpy (via `map.rotate()`) uses the `skimage` or `scipy` libraries by default.
+# Rotating a map in sunpy (via `map.rotate()`) has a choice between three libraries:
+# `scipy`, `skimage`, and `cv2` (OpenCV).
 # However, the `method=` argument in `sunpy.map.rotate` can accept a custom function designed
-# to use an external library. Here, we will define an affine transform function
-# with the OpenCV library.
-# Our custom method must have a similar function call to `sunpy.image.transform.affine_transform`
-# and return the same output, namely the rotated, scaled, and transformed image.
+# to use an external library. Here, we illustrate this process by defining a function
+# with the OpenCV library; this will be identical to the built-in `cv2` option.
+
+# First, our custom method must have a similar function call to
+# `sunpy.image.transform.affine_transform` and return the same output,
+# namely the rotated, scaled, and transformed image.
 # The required arguments are:
 
 # Parameters
@@ -71,37 +74,22 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     except AttributeError:
         pass
 
-    # calculate image shift in the same manner as skimage/scipy methods
-    # adapted from sunpy.transform source code
-
-    # Make sure the image center is an array and is where it's supposed to be
-    array_center = (np.array(image.shape)[::-1] - 1) / 2.0
-
-    if image_center is not None:
-        image_center = np.asanyarray(image_center)
-    else:
-        image_center = array_center
-
-    # Determine center of rotation based on use (or not) of the recenter keyword
-    if recenter:
-        rot_center = array_center
-    else:
-        rot_center = image_center
-
     # OpenCV applies the shift+rotation operations in a different order(?); we need to calculate
     # translation using `rmatrix/scale`, but scale+rotation with `rmatrix*scale`
     # in order to match what skimage/scipy do
-    displacement = np.dot(rmatrix/scale, rot_center)
-    shift = image_center - displacement
-    ###
+
+    shift = _calculate_shift(image, rmatrix/scale, image_center, recenter)
 
     # get appropriate cv transform matrix
-    # (with a slight amount of voodoo to adjust for different coordinate systems)
     rmatrix = rmatrix*scale
 
     trans = np.eye(3, 3)
     rot_scale = np.eye(3, 3)
+
+    # openCV defines the translation matrix as [right, down]
+    # but `_calculate_shift` returns [left,up], so we have to adjust
     trans[:2, 2] = [-shift[0], -shift[1]]
+
     rot_scale[:2, :2] = rmatrix.T
     rmatrix = (rot_scale @ trans)[:2]
 
@@ -120,39 +108,12 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
                           borderMode=cv2.BORDER_CONSTANT, borderValue=missing)
 
 
-# Now we want to test our implementation!
+# Now we test our implementation against the built-in openCV method
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
-map_r_sk = aia_map.rotate(order=3, recenter=True, method='skimage')
-map_r_sci = aia_map.rotate(order=3, recenter=True, method='scipy')
-map_r_cv = aia_map.rotate(order=3, recenter=True, method=cv_rotate)
+map_r_cv = aia_map.rotate(order=3, recenter=True, method='cv2')
+map_r_cv2 = aia_map.rotate(order=3, recenter=True, method=cv_rotate)
+
+assert map_r_cv.data == map_r_cv2.data
 
 
-# Since skimage, scipy, and cv all use different algorithms, we need a basis for comparison:
-# what is an acceptable margin of difference in the data arrays?
-# We can use the Symmetric Mean Absolute Percentage Error
-# (https://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error;
-# the third equation in the link). This is a bit rudimentary, since we are looking
-# at all of the pixels (and not just the solar disk), but it works for a quick approach.
-
-# SymmetricMeanAbsolutePercentageError
-# returns between 0-100% of average error between arr1 and arr2
-def smape(arr1, arr2):
-    eps = np.finfo(np.float64).eps
-    return ((np.abs(arr1-arr2) / (np.maximum(np.abs(arr1)+np.abs(arr2), eps))).mean() * 100)
-
-
-print("sk vs. sci", smape(map_r_sk.data, map_r_sci.data))
-print("sci vs. cv", smape(map_r_sci.data, map_r_cv.data))
-print("sk vs. cv", smape(map_r_sk.data, map_r_cv.data))
-
-# This essentially means that the average difference between every pixel in the `skimage` and
-# `scipy` images is about 1.9\%, and the `cv2` implementation results in about a 1.3-1.4\%
-# average difference in the final rotated image. So, our `openCV` implementation is at least within
-# the accepted difference between `scipy` and `skimage`.
-
-# A visual comparison:
-
-map_r_sk.peek()
-map_r_sci.peek()
-map_r_cv.peek()
