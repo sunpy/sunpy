@@ -80,7 +80,6 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
 
     shift = _calculate_shift(image, rmatrix/scale, image_center, recenter)
 
-    # get appropriate cv transform matrix
     rmatrix = rmatrix*scale
 
     trans = np.eye(3, 3)
@@ -90,6 +89,7 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     # but `_calculate_shift` returns [left,up], so we have to adjust
     trans[:2, 2] = [-shift[0], -shift[1]]
 
+    # CV rotation is defined clockwise, so we transpose rmatrix
     rot_scale[:2, :2] = rmatrix.T
     rmatrix = (rot_scale @ trans)[:2]
 
