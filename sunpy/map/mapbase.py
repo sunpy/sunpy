@@ -1235,8 +1235,9 @@ class GenericMap(NDData):
         return new_map
 
     @u.quantity_input
+    # TODO: add deprecation for `use_scipy` argument
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, method='skimage'):
+               recenter=False, missing=0.0, method='none', use_scipy=False):
         """
         Returns a new rotated and rescaled map.
 
@@ -1264,6 +1265,8 @@ class GenericMap(NDData):
             :func:`scipy.ndimage.interpolation.affine_transform` where it
             controls the order of the spline. Faster performance may be
             obtained at the cost of accuracy by using lower values.
+            When using cv2, only order=0,1,3 are supported. Other values of `order`
+            will be cast to `order=3` (bi-cubic interpolation).
             Default: 4
         scale : float
             A scale factor for the image, default is no scaling
@@ -1274,12 +1277,18 @@ class GenericMap(NDData):
             The numerical value to fill any missing points after rotation.
             Default: 0.0
         method : `string` or function(), optional
-        1. If `string`: `skimage` or `scipy`
-        If `skimage`, uses :func:`skimage.transform.warp`.
-        If `scipy`, uses :func:`scipy.ndimage.interpolation.affine_transform`.
-        2. Elif function, uses user-defined function to perform affine transform.
-        See `notes` for function requirements.
-        Default: `skimage`; otherwise on ImportError, will use `scipy`.
+            1. If `string`: `skimage`, `scipy`, or `cv2'
+            If `skimage`, uses :func:`skimage.transform.warp`.
+            If `scipy`, uses :func:`scipy.ndimage.interpolation.affine_transform`.
+            If `cv2`, uses :func:`cv2.warpAffine`.
+            2. Elif function, uses user-defined function to perform affine transform.
+            See `notes` for function requirements.
+            Default: `none`: Will attempt to use :func:`skimage.transform.warp`;
+            on ImportError, will use :func:`scipy.ndimage.interpolation.affine_transform`.
+            (This behavior is identical to the now-deprecated `use_scipy=False`)
+            (Option `none` will be deprecated in future releases. Please explicitly set method.)
+    use_scipy : `bool`, to be deprecated
+        Equivalent to setting `method=scipy`; please do that instead.
 
         Returns
         -------
@@ -1371,7 +1380,7 @@ class GenericMap(NDData):
                                     order=order, scale=scale,
                                     image_center=np.flipud(pixel_center),
                                     recenter=recenter, missing=missing,
-                                    method=method).T
+                                    method=method, use_scipy=use_scipy).T
 
         if recenter:
             new_reference_pixel = pixel_array_center

@@ -6,21 +6,20 @@ import warnings
 import types
 
 import numpy as np
-import scipy.ndimage.interpolation
 
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning, SunpyDeprecationWarning
 
 __all__ = ['affine_transform']
 
+#TODO: add deprecation for `use_scipy`
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
-                     recenter=False, missing=0.0, method='skimage'):
+                     recenter=False, missing=0.0, method='none', use_scipy=False):
     """
     Rotates, shifts and scales an image.
 
     Will use one of `skimage.transform.warp`, `scipy.ndimage.interpolation.affine_transform`,
-    or a passed-in custom method as selected by `method=`.
-    If the appropriate library is not installed, will default
-    to `scipy.ndimage.interpolation.affine_transform`.
+    `cv2.warpAffine`, or a passed-in custom method as selected by `method=`.
+    If the appropriate library is not installed, will raise ImportError.
 
     Parameters
     ----------
@@ -33,6 +32,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         is passed into `skimage.transform.warp` (e.g., 3 corresponds to bi-cubic interpolation).
         When using scipy it is passed into`scipy.ndimage.interpolation.affine_transform`
         where it controls the order of the spline.
+        When using openCV, it is converted into the appropriate flag; only order=0,1,3
+        is supported; order=2,4,5 will be converted to bi-cubic (order = 3) interpolation.
     scale : `float`
         A scale factor for the image with the default being no scaling.
     image_center : tuple, optional
@@ -43,13 +44,19 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Defaults to `True` i.e., recenter to the center of the array.
     missing : `float`, optional
         The value to replace any missing data after the transformation.
-    method : `string` or :func:, optional
-        1. If `string`: `skimage` or `scipy`
-        If `scipy`, uses :func:`scipy.ndimage.interpolation.affine_transform`.
+    method : `string` or function(), optional
+        1. If `string`: `skimage`, `scipy`, or `cv2'
         If `skimage`, uses :func:`skimage.transform.warp`.
-        2. Elif :func:, uses user-defined function to perform affine transform.
+        If `scipy`, uses :func:`scipy.ndimage.interpolation.affine_transform`.
+        If `cv2`, uses :func:`cv2.warpAffine`.
+        2. Elif function, uses user-defined function to perform affine transform.
         See `notes` for function requirements.
-        Default: `skimage`; otherwise on ImportError, will use `scipy`.
+        Default: `none`: Will attempt to use :func:`skimage.transform.warp`;
+        on ImportError, will use :func:`scipy.ndimage.interpolation.affine_transform`.
+        (This behavior is identical to the now-deprecated `use_scipy=False`)
+        (Option `none` will be deprecated in future releases. Please explicitly set method.)
+    use_scipy : `bool`, to be deprecated
+        Equivalent to setting `method=scipy`; please do that instead.
 
     Returns
     -------
@@ -60,14 +67,17 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     -----
     This algorithm uses an affine transformation as opposed to a polynomial
     geometrical transformation, which by default is `skimage.transform.warp`.
-    One can specify using `scipy.ndimage.interpolation.affine_transform`  as an alternative
-    affine transformation. The two transformations use different algorithms
-    and thus do not give identical output.
+    One can specify using `scipy.ndimage.interpolation.affine_transform` or
+    `cv2.warpAffine` as alternative affine transformations. The transformations
+    use different algorithms and thus do not give identical output.
 
     When using for `skimage.transform.warp` with order >= 4 or using
     `scipy.ndimage.interpolation.affine_transform` at all, "NaN" values will
     replaced with zero prior to rotation. No attempt is made to retain the NaN
     values.
+
+    When using `cv2.warpAffine`, only order=0,1,3 are supported. order=2,4,5 will
+    be cast to order = 3 (bi-cubic interpolation).
 
     Input arrays with integer data are cast to float 64 and can be re-cast using
     `numpy.ndarray.astype` if desired.
@@ -86,13 +96,37 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     and it must return the new rotated, scaled, translated image.
 
     """
+    _allowed_methods = {'scipy':_scipy_affine_transform, 'skimage':_skimage_affine_transform, 'cv2':_opencv_affine_transform}
+    
     if isinstance(method, str):
-        if method == 'skimage':
-            method = _skimage_affine_transform
-        elif method == 'scipy':
-            method = _scipy_affine_transform
-        else:
-            raise ValueError("`method` {} not supported.".format(method))
+        # TO BE DEPRECATED IN FUTURE
+        if method == 'none':
+            if use_scipy:
+                warnings.warn("Argument `use_scipy` has been deprecated."
+                              " Please set `method='scipy'`",
+                              SunpyDeprecationWarning)
+                method = _scipy_affine_transform
+            else:
+                warnings.warn("Setting `method='none'` will be deprecated in future releases."
+                              " Please set explicit method",
+                              SunpyDeprecationWarning)
+                try:
+                    import skimage
+                    method = _skimage_affine_transform
+                except ImportError:
+                    warnings.warn('`skimage` could not be imported. Using `scipy` instead',
+                                  SunpyUserWarning)
+                    warnings.warn('This fallback behavior will be deprecated. '
+                                  'Future versions will throw an ImportError and cease execution.',
+                                  SunpyDeprecationWarning)
+                    method = _scipy_affine_transform
+        # END DEPRECATION MARKER
+        else: 
+            try:
+                method = _allowed_methods[method]
+            except KeyError:
+                raise ValueError("`method` {} not supported.".format(method))
+
     if not isinstance(method, types.FunctionType):
         raise ValueError("argument `method` must be a string or function")
 
@@ -102,15 +136,10 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                                order=order, scale=scale,
                                missing=missing, image_center=image_center,
                                recenter=recenter)
-    except (ImportError, NameError):
-        warnings.warn('library in affine transform `method` was not found. Using `scipy` method',
-                      SunpyUserWarning)
-        rotated_image = _scipy_affine_transform(image, rmatrix, order,
-                                                scale, missing, image_center,
-                                                recenter)
-
+    except ImportError:
+        raise ImportError("Selected method not installed.")
+    
     return rotated_image
-
 
 def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter):
     """
@@ -212,6 +241,8 @@ def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center,
         Defaults to `True` i.e., recenter to the center of the array.
 
     """
+    import scipy.ndimage.interpolation
+
     rmatrix = rmatrix / scale
     shift = _calculate_shift(image, rmatrix, image_center, recenter)
 
@@ -223,6 +254,84 @@ def _scipy_affine_transform(image, rmatrix, order, scale, missing, image_center,
         np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
         mode='constant', cval=missing).T
 
+def _opencv_affine_transform(image, rmatrix, order, scale, missing, image_center, recenter):
+    """
+    Apply cv2.warpAffine to `image`
+
+    Parameters
+    ----------
+    image: `numpy.ndarray`
+        2D image to be rotated
+    rmatrix : `numpy.ndarray` that is 2x2
+        Linear transformation rotation matrix.
+    order : `int` 0-5
+        Interpolation order to be used
+    scale : `float`
+        A scale factor for the image
+    missing : `float`
+        The value to replace any missing data after the transformation.
+    image_center : tuple, optional
+        The point in the image to rotate around (axis of rotation).
+        Defaults to the center of the array.
+    recenter : `bool` or array-like, optional
+        Move the axis of rotation to the center of the array or recenter coords.
+        Defaults to `True` i.e., recenter to the center of the array.
+
+    """
+    import cv2
+
+    # Flags for converting input order from `integer` to the appropriate interpolation flag
+    # As of Sept. 2020, OpenCV warpAffine does not support order 2,4,5
+    _CV_ORDER_FLAGS = {
+        0: cv2.INTER_NEAREST,
+        1: cv2.INTER_LINEAR,
+        3: cv2.INTER_CUBIC,
+    }
+
+    # convert order to appropriate cv2 flag
+    try:
+        order = _CV_ORDER_FLAGS[order]
+    except KeyError:
+        warnings.warn("input order={} not supported in openCV. order has been cast to 3".format(order),
+                      SunpyUserWarning)
+        order = _CV_ORDER_FLAGS[3]
+
+    # needed to convert `missing` from potentially a np.dtype
+    # to the native `int` type required for cv2.warpAffine
+    try:
+        missing = missing.tolist()
+    except AttributeError:
+        pass
+
+    # OpenCV applies the shift+rotation operations in a different order; we need to calculate
+    # translation using `rmatrix/scale`, but scale+rotation with `rmatrix*scale`
+    # in order to match what skimage/scipy do
+    shift = _calculate_shift(image, rmatrix/scale, image_center, recenter)
+
+    # get appropriate cv transform matrix
+    # (with a slight amount of voodoo to adjust for different coordinate systems)
+    rmatrix = rmatrix*scale
+
+    trans = np.eye(3, 3)
+    rot_scale = np.eye(3, 3)
+    trans[:2, 2] = [-shift[0], -shift[1]]
+    rot_scale[:2, :2] = rmatrix.T
+    rmatrix = (rot_scale @ trans)[:2]
+
+    if issubclass(image.dtype.type, numbers.Integral):
+        warnings.warn("Integer input data has been cast to float64, "
+                      "for the openCV transform.",
+                      SunpyUserWarning)
+        adjusted_image = image.astype(np.float64)
+    else:
+        adjusted_image = image.copy()
+
+    h, w = adjusted_image.shape
+
+    # equivalent to skimage.transform.warp(adjusted_image, tform, order=order,
+    #                                     mode='constant', cval=missing)
+    return cv2.warpAffine(adjusted_image, rmatrix, (w, h), flags=order,
+                          borderMode=cv2.BORDER_CONSTANT, borderValue=missing)
 
 def _calculate_shift(image, rmatrix, image_center=None, recenter=False):
     """
