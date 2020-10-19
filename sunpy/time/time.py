@@ -199,10 +199,9 @@ def convert_time_astropy(time_string, **kwargs):
 def convert_time_list(time_list, format=None, **kwargs):
     item = time_list[0]
     # If we have a list of strings, need to get the correct format from our
-    # list of custom formats
-    if isinstance(item, str):
-        if not format:
-            format = _get_time_fmt(item)
+    # list of custom formats.
+    if isinstance(item, str) and format is None:
+        format = _get_time_fmt(item)
         return Time.strptime(time_list, format, **kwargs)
 
     # Otherwise return the default method
