@@ -41,9 +41,16 @@ out_frame = Helioprojective(observer='earth', obstime=out_time)
 
 ##############################################################################
 # For the reprojection, the definition of the target frame can be
-# counter-intuitive.  We will be transforming from the original frame to the
-# `~sunpy.coordinates.metaframes.RotatedSunFrame` version of the output frame
-# with ``rotated_time`` set to the time of the original frame.
+# counter-intuitive. Reprojection should be performed between two frames that
+# point to inertial locations at the same time, but ``out_frame`` is not at
+# the same time as the original frame (``out_time`` versus ``in_time``).
+# The `~sunpy.coordinates.metaframes.RotatedSunFrame` metaframe allows one to
+# specify coordinates in a coordinate frame at one time (here, ``out_frame``)
+# to refer to inertial locations at a different time (here, ``in_time``,
+# which is supplied through the keyword argument ``rotated_time``).
+# `~sunpy.coordinates.metaframes.RotatedSunFrame` will account for the
+# appropriate amount of solar (differential) rotation for the time
+# difference between ``out_time`` and ``in_time``.
 
 rot_frame = RotatedSunFrame(base=out_frame, rotated_time=in_time)
 print(rot_frame)

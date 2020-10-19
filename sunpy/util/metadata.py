@@ -9,8 +9,7 @@ __all__ = ['MetaDict']
 
 class MetaDict(OrderedDict):
     """
-    A class to hold metadata associated with a `sunpy.map.Map
-    <sunpy.map.map_factory.MapFactory.__call__>` derivative.
+    A class to hold metadata associated with a `sunpy.map.Map` derivative.
 
     This class handles everything in lower case. This allows case
     insensitive indexing.
@@ -34,11 +33,14 @@ class MetaDict(OrderedDict):
             args = list(args)
             adict = args[0]
             if isinstance(adict, list) or isinstance(adict, tuple):
-                tags = OrderedDict((k.lower(), v) for k, v in adict)
+                items = adict
             elif isinstance(adict, dict):
-                tags = OrderedDict((k.lower(), v) for k, v in adict.items())
+                items = adict.items()
             else:
                 raise TypeError("Can not create a MetaDict from this type input")
+
+            self._check_str_keys(items)
+            tags = OrderedDict((k.lower(), v) for k, v in items)
             args[0] = tags
 
         super().__init__(*args)
@@ -46,6 +48,17 @@ class MetaDict(OrderedDict):
         # Use `copy=True` to avoid mutating the caller's keycomments
         # dictionary (if they provided one).
         self._prune_keycomments(copy=True)
+
+    @staticmethod
+    def _check_str_keys(items):
+        bad_keys = []
+        for k, v in items:
+            if not isinstance(k, str):
+                bad_keys.append(str(k))
+        if len(bad_keys):
+            raise ValueError('All MetaDict keys must be strings, '
+                             'found the following non-compliant keys: ' +
+                             ', '.join(bad_keys))
 
     def _prune_keycomments(self, copy=False):
         """
@@ -101,6 +114,22 @@ class MetaDict(OrderedDict):
         """
         OrderedDict.__delitem__(self, key.lower())
         self._prune_keycomments()
+
+    def item_hash(self):
+        """
+        Create a hash based on the stored items.
+
+        This relies on all the items themselves being hashable. For this reason
+        the 'keycomments' item, which is a dict, is excluded from the hash.
+
+        If creating the hash fails, returns `None`.
+        """
+        self_copy = self.copy()
+        self_copy.pop('keycomments', None)
+        try:
+            return hash(frozenset(self_copy.items()))
+        except Exception:
+            return
 
     def get(self, key, default=None):
         """
