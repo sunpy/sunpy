@@ -79,23 +79,22 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 
-        figure = plt.figure()
-        axes = plt.gca()
+        fig, ax = plt.subplots()
         data_lab = self.to_dataframe().columns.values
 
         for d in data_lab:
-            axes.plot(self.to_dataframe().index, self.to_dataframe()[d], label=d, **kwargs)
+            ax.plot(self.to_dataframe().index, self.to_dataframe()[d], label=d, **kwargs)
 
-        axes.set_yscale("log")
-        axes.set_title('Fermi GBM Summary data ' + str(self.meta.get(
+        ax.set_yscale("log")
+        ax.set_title('Fermi GBM Summary data ' + str(self.meta.get(
             'DETNAM').values()))
-        axes.set_xlabel('Start time: ' + self.to_dataframe().index[0].strftime(
+        ax.set_xlabel('Start time: ' + self.to_dataframe().index[0].strftime(
             '%Y-%m-%d %H:%M:%S UT'))
-        axes.set_ylabel('Counts/s/keV')
-        axes.legend()
-        figure.autofmt_xdate()
+        ax.set_ylabel('Counts/s/keV')
+        ax.legend()
+        fig.autofmt_xdate()
 
-        return figure
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):

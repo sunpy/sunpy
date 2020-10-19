@@ -155,8 +155,8 @@ Then change to the :file:`docs/` directory and run::
 
 For more information on how to use Sphinx, consult the `Sphinx documentation <http://www.sphinx-doc.org/en/stable/contents.html>`_.
 
-SunPy-Specific Additions
-------------------------
+Special Sphinx directives
+-------------------------
 
 ``minigallery`` directive
 ^^^^^^^^^^^^^^^^^^^^^^^^^

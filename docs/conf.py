@@ -159,7 +159,7 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "skimage": ("https://scikit-image.org/docs/stable/", None),
     "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
-    "parfive": ("https://parfive.readthedocs.io/en/latest/", None),
+    "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
     "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
 }
@@ -208,7 +208,8 @@ sphinx_gallery_conf = {
     ]),
     'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': os.path.join('generated', 'gallery'),
-    'default_thumb_file': os.path.join('logo', 'sunpy_icon_128x128.png'),
+    # Comes from the theme.
+    "default_thumb_file": os.path.join(html_static_path[0], "img", "sunpy_icon_128x128.png"),
     'abort_on_example_error': False,
     'plot_gallery': 'True',
     'remove_config_comments': True,
