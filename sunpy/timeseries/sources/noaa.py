@@ -4,7 +4,6 @@ This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 from pathlib import Path
 from collections import OrderedDict
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pandas.io.parsers import read_csv
@@ -31,9 +30,11 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
     * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
     * The RI sunspot number is the official International Sunspot Number and is
-      issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+      issued by the `Solar Influence Data Analysis Center (SDIC)
+      <http://sidc.oma.be>`__ in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
-    * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+    * Radio flux at 10.7 cm is produced by
+      `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`__ and the units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
     .. note::
@@ -80,8 +81,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 
-        figure = plt.figure()
-        axes = plt.gca()
         dataframe = self.to_dataframe()
         if type == 'sunspot SWO':
             axes = dataframe['sunspot SWO'].plot(**kwargs)
@@ -113,7 +112,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        return figure
+        fig = axes.get_figure()
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -271,8 +271,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
-        figure = plt.figure()
-        axes = plt.gca()
         dataframe = self.to_dataframe()
         axes = dataframe['sunspot'].plot(color='b', **plot_args)
         dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
@@ -286,7 +284,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        return figure
+        fig = axes.get_figure()
+        return fig
 
     @ classmethod
     def _parse_file(cls, filepath):

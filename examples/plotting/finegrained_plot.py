@@ -36,7 +36,7 @@ title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 
 fig = plt.figure(figsize=(6, 6))
 ax = plt.subplot(projection=aiamap_sub)
-aiamap_sub.plot()
+aiamap_sub.plot(clip_interval=(1, 99.99)*u.percent)
 aiamap_sub.draw_limb(color='white', linewidth=2, linestyle='dashed')
 
 # To have more control over the Heliographic Stonyhurst grid,
