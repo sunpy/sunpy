@@ -114,6 +114,6 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 map_r_cv = aia_map.rotate(order=3, recenter=True, method='cv2')
 map_r_cv2 = aia_map.rotate(order=3, recenter=True, method=cv_rotate)
 
-assert map_r_cv.data == map_r_cv2.data
+assert np.allclose(a,b)
 
 
