@@ -327,7 +327,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
 
             # pathlib.Path
-            elif (isinstance(arg, pathlib.PosixPath)):
+            elif (isinstance(arg, pathlib.Path)):
                 result = self._read_file(arg.expanduser())
                 data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
 
