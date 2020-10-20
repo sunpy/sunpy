@@ -337,6 +337,11 @@ def test_parse_time_list_2():
     assert np.all(parse_time(tstrings) == Time(tstrings))
 
 
+def test_parse_time_list_3():
+    tstrings = ['2001-Jan-01', '2001-Jan-02', '2001-Jan-03']
+    assert np.all(parse_time(tstrings) == Time.strptime(tstrings, '%Y-%b-%d'))
+
+
 def test_is_time():
     assert time.is_time(datetime.utcnow()) is True
     assert time.is_time('2017-02-14 08:08:12.999') is True
