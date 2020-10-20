@@ -1,14 +1,14 @@
 """
-================
+==============================================================================
 Create a Helioprojective Map from observations in the RA-DEC coordinate system
-================
+==============================================================================
 
 How to create a `~sunpy.map.Map` in Helioprojective Coordinate Frame from radio observations
 in ICRS (RA-DEC).
 
-In this example a LOFAR FITS file (make from CASA) is read in and the WCS
+In this example a LOFAR FITS file (made from CASA) is read in, the WCS
 header information is then used to make a new header with the information in
-Helioprojective and a `~sunpy.map.Map` is made.
+Helioprojective, and a `~sunpy.map.Map` is made.
 
 The LOFAR example file has a WCS in celestial coordinates i.e. Right Ascension and
 Declination (RA-DEC). For many solar studies we may want to plot this data in some
@@ -51,13 +51,11 @@ frequency = header['crval3']*u.Hz
 ###############################################################################
 # To create a new `~sunpy.map.Map` header we need convert the reference coordinate
 # in RA-DEC to Helioprojective. To do this we will first create an `astropy.coordinates.SkyCoord`
-# of the reference coordinate from the header information. LOFAR observation are in
-# the J2000 epoch (this information is in the header).
+# of the reference coordinate from the header information.
 reference_coord = SkyCoord(header['crval1']*u.deg, header['crval2']*u.deg,
                            frame='gcrs',
                            obstime=obstime,
-                           distance=sun.earth_distance(obstime),
-                           equinox='J2000')
+                           distance=sun.earth_distance(obstime))
 
 ###########################################################################
 # To convert the reference coordinate to Helioprojective we need the location of the
@@ -87,7 +85,7 @@ P1 = sun.P(obstime)
 # Now we can use this information to create a new header using the helper
 # function `~sunpy.map.make_fitswcs_header()`. This will create a MetaDict
 # which we contain all the necessay WCS information to create a `~sunpy.map.Map`.
-# What we provide to this includes a reference coordinate (in HPC), the spatial
+# We provide a reference coordinate (in HPC), the spatial
 # scale of the observation (i.e. `cdelt1` and `cdelt2`), and the rotation angle (P1).
 # Note that here, 1 is subtracted from the crpix1 and crpix2 values, this is because
 # the `reference_pixel` keyword in ~sunpy.map.make_fitswcs_header` is zero indexed rather
@@ -101,11 +99,11 @@ new_header = sunpy.map.make_fitswcs_header(data, reference_coord_arcsec,
                                            observatory='LOFAR')
 
 ##########################################################################
-# Let's now inspect the new header
+# Let's inspect the new header
 print(new_header)
 
 ##########################################################################
-# Lets now create a `~sunpy.map.Map`
+# Lets create a `~sunpy.map.Map`
 lofar_map = sunpy.map.Map(data, new_header)
 
 ##########################################################################
@@ -117,14 +115,15 @@ lofar_map.draw_limb()
 plt.show()
 
 ##########################################################################
-# We can now rotate the image and create a submap in the field of view of interest.
+# We can now rotate the image so that solar north is pointing up and create
+# a submap in the field of view of interest.
 lofar_map_rotate = lofar_map.rotate()
 bl = SkyCoord(-1500*u.arcsec, -1500*u.arcsec, frame=lofar_map_rotate.coordinate_frame)
 tr = SkyCoord(1500*u.arcsec, 1500*u.arcsec, frame=lofar_map_rotate.coordinate_frame)
 lofar_submap = lofar_map_rotate.submap(bl, tr)
 
 ##########################################################################
-# Now lets plot this map, and overplot the contours
+# Now lets plot this map, and overplot some contours
 fig = plt.figure()
 ax = fig.add_subplot(projection=lofar_submap)
 lofar_submap.plot(cmap='viridis')
