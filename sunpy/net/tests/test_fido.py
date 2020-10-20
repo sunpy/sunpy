@@ -21,7 +21,7 @@ from sunpy.net import jsoc
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
-from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, time_attr
+from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, srs_time, time_attr
 from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.tests.helpers import no_vso, skip_windows
@@ -40,6 +40,8 @@ def offline_query(draw, instrument=offline_instruments()):
     # If we have AttrAnd then we don't have GOES
     if isinstance(query, a.Instrument) and query.value == 'goes':
         query &= draw(goes_time())
+    elif isinstance(query, a.Instrument) and query.value == 'soon':
+        query &= draw(srs_time())
     else:
         query = attr.and_(query, draw(time_attr()))
     return query
@@ -415,11 +417,15 @@ def test_retry(mock_retry):
 
 
 def results_generator(dl):
-    http = list(dl.http_queue._queue)
-    ftp = list(dl.ftp_queue._queue)
+    http = dl.http_queue
+    ftp = dl.ftp_queue
+    # Handle compatibility with parfive 1.0
+    if not isinstance(dl.http_queue, list):
+        http = list(dl.http_queue._queue)
+        ftp = list(dl.ftp_queue._queue)
 
     outputs = []
-    for url in http+ftp:
+    for url in http + ftp:
         outputs.append(pathlib.Path(url.keywords['url'].split("/")[-1]))
 
     return Results(outputs)

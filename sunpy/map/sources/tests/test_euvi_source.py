@@ -21,7 +21,7 @@ euvi = Map(fitspath)
 
 
 # EUVI Tests
-def test_fitstoEIT():
+def test_fitstoEUVI():
     """Tests the creation of EUVIMap using FITS."""
     assert isinstance(euvi, EUVIMap)
 

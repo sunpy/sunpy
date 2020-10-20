@@ -109,7 +109,7 @@ def simple_map():
     # each direction
     data = np.arange(9).reshape((3, 3))
     ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg',
-                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.m,
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
                                            frame='heliographic_stonyhurst'))
     ref_pix = [1, 1] * u.pix
     scale = [2, 1] * u.arcsec / u.pix
@@ -142,6 +142,22 @@ def test_wcs(aia171_test_map):
     assert set(wcs.wcs.ctype) == {
         aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2}
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
+
+
+def test_wcs_cache(aia171_test_map):
+    wcs1 = aia171_test_map.wcs
+    wcs2 = aia171_test_map.wcs
+    # Check that without any changes to the header, retreiving the wcs twice
+    # returns the same object instead of recomputing the wcs
+    assert wcs1 is wcs2
+
+    # Change the header and make sure the wcs is re-computed
+    new_crpix = 20
+    assert new_crpix != wcs2.wcs.crpix[0]
+    aia171_test_map.meta['crpix1'] = new_crpix
+
+    new_wcs = aia171_test_map.wcs
+    assert new_wcs.wcs.crpix[0] == new_crpix
 
 
 def test_header_immutability(aia171_test_map):
@@ -370,7 +386,10 @@ def test_save(aia171_test_map, generic_map):
     aiamap.save(afilename, filetype='fits', overwrite=True)
     loaded_save = sunpy.map.Map(afilename)
     assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
-    assert loaded_save.meta == aiamap.meta
+    # Compare metadata without considering ordering of keys
+    assert loaded_save.meta.keys() == aiamap.meta.keys()
+    for k in aiamap.meta:
+        assert loaded_save.meta[k] == aiamap.meta[k]
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
@@ -488,8 +507,6 @@ pixel_corners = [
 ]
 
 
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the left/right direction')
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 @pytest.mark.parametrize('rect, submap_out', pixel_corners)
 def test_submap_pixel(simple_map, rect, submap_out):
     # Check that result is the same specifying corners either way round
@@ -502,8 +519,6 @@ def test_submap_pixel(simple_map, rect, submap_out):
 # The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when
 # converting to world coordinates due to round-off error when round-tripping
 # through pixel_to_world -> world_to_pixel
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the left/right direction')
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 @pytest.mark.parametrize('rect, submap_out', pixel_corners[:2] + pixel_corners[3:])
 def test_submap_world(simple_map, rect, submap_out):
     # Check that coordinates behave the same way
@@ -901,22 +916,13 @@ def test_bad_coordframe_repr(generic_map):
         assert 'Unknown' in generic_map.__repr__()
 
 
-def test_bad_header_final_fallback():
-    # Checks that if a WCS cannot be constructed from the
-    # header, a warning is raised and a simple WCS is created
-    # instead
+def test_non_str_key():
     header = {'cunit1': 'arcsec',
               'cunit2': 'arcsec',
               None: None,  # Cannot parse this into WCS
               }
-    m = sunpy.map.GenericMap(np.zeros((10, 10)), header)
-    with pytest.warns(UserWarning,
-                      match="Unable to treat `.meta` as a FITS header, assuming a simple WCS."):
-        m.wcs
-        assert list(m.wcs.wcs.ctype) == ['HPLN-', 'HPLT-']
-        assert (m.wcs.wcs.crval == [0.0, 0.0]).all()
-        assert (m.wcs.wcs.crpix == [5.5, 5.5]).all()
-        assert (m.wcs.wcs.cdelt == [1.0, 1.0]).all()
+    with pytest.raises(ValueError, match='All MetaDict keys must be strings'):
+        sunpy.map.GenericMap(np.zeros((10, 10)), header)
 
 
 def test_wcs_isot(aia171_test_map):
@@ -1079,7 +1085,6 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
                                      frame=generic_map2.coordinate_frame))
 
 
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 def test_submap_inputs(generic_map2, coords):
     bl_coord, tr_coord, bl_tr_coord = coords
 
@@ -1109,3 +1114,12 @@ def test_contour(simple_map):
     assert contour.obstime == simple_map.date
     assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
+
+
+def test_print_map(generic_map):
+    out_repr = generic_map.__repr__()
+    assert isinstance(out_repr, str)
+    assert object.__repr__(generic_map) in out_repr
+    out_str = generic_map.__str__()
+    assert isinstance(out_str, str)
+    assert out_str in out_repr

@@ -28,15 +28,15 @@ from astropy.visualization.wcsaxes import WCSAxes
 import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
-from sunpy import config
+from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import expand_list
-from sunpy.util.decorators import deprecate_positional_args_since, deprecated
+from sunpy.util import MetaDict, expand_list
+from sunpy.util.decorators import cached_property_based_on, deprecate_positional_args_since, deprecated
 from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -185,7 +185,7 @@ class GenericMap(NDData):
             warnings.warn("This file contains more than 2 dimensions. "
                           "Data will be truncated to the first two dimensions.", SunpyUserWarning)
 
-        super().__init__(data, meta=header, **kwargs)
+        super().__init__(data, meta=MetaDict(header), **kwargs)
 
         # Correct possibly missing meta keywords
         self._fix_date()
@@ -256,8 +256,11 @@ class GenericMap(NDData):
                                                     self._reference_latitude)),
                                tmf=TIME_FORMAT)
 
+    def __str__(self):
+        return f"{self._text_summary()}\n{self.data.__repr__()}"
+
     def __repr__(self):
-        return object.__repr__(self) + "\n" + self._text_summary() + "\n" + self.data.__repr__()
+        return f"{object.__repr__(self)}\n{self}"
 
     def _repr_html_(self):
         """
@@ -419,6 +422,11 @@ class GenericMap(NDData):
         return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
 
     @property
+    def _meta_hash(self):
+        return self.meta.item_hash()
+
+    @property
+    @cached_property_based_on('_meta_hash')
     def wcs(self):
         """
         The `~astropy.wcs.WCS` property of the map.
@@ -1451,6 +1459,15 @@ class GenericMap(NDData):
             A new map instance is returned representing to specified
             sub-region.
 
+        Notes
+        -----
+        The rectangle is defined in pixel space. If coordinate input is given,
+        it is first transformed into pixel space, and the pixel indices of
+        top_right and bottom_left are used as the corners of the rectangle.
+
+        If top_right is below or to the left of bottom_left, a message is logged
+        at the debug level to the sunpy logger.
+
         Examples
         --------
         >>> import astropy.units as u
@@ -1574,12 +1591,10 @@ class GenericMap(NDData):
         x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
         y_pixels = u.Quantity([bottom_left[1], top_right[1]]).to_value(u.pix)
         if x_pixels[0] > x_pixels[1]:
-            warnings.warn("The rectangle is inverted in the left/right direction,  "
-                          "which may lead to unintended behavior.", SunpyUserWarning)
+            log.debug("The rectangle is inverted in the left/right direction.")
 
         if y_pixels[0] > y_pixels[1]:
-            warnings.warn("The rectangle is inverted in the bottom/top direction, "
-                          "which may lead to unintended behavior.", SunpyUserWarning)
+            log.debug("The rectangle is inverted in the bottom/top direction.")
         # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
         y_pixels.sort()

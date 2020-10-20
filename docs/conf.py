@@ -138,21 +138,30 @@ napoleon_google_docstring = False
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/',
-               (None, 'http://www.astropy.org/astropy-data/intersphinx/python3.inv')),
-    'numpy': ('https://numpy.org/doc/stable/',
-              (None, 'http://www.astropy.org/astropy-data/intersphinx/numpy.inv')),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/',
-              (None, 'http://www.astropy.org/astropy-data/intersphinx/scipy.inv')),
-    'matplotlib': ('https://matplotlib.org/',
-                   (None, 'http://www.astropy.org/astropy-data/intersphinx/matplotlib.inv')),
-    'astropy': ('https://docs.astropy.org/en/stable/', None),
-    'sqlalchemy': ('https://docs.sqlalchemy.org/en/latest/', None),
-    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-    'skimage': ('https://scikit-image.org/docs/stable/', None),
-    'drms': ('https://docs.sunpy.org/projects/drms/en/stable/', None),
-    'parfive': ('https://parfive.readthedocs.io/en/latest/', None),
-    'reproject': ('https://reproject.readthedocs.io/en/stable/', None),
+    "python": (
+        "https://docs.python.org/3/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/python3.inv"),
+    ),
+    "numpy": (
+        "https://numpy.org/doc/stable/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/numpy.inv"),
+    ),
+    "scipy": (
+        "https://docs.scipy.org/doc/scipy/reference/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/scipy.inv"),
+    ),
+    "matplotlib": (
+        "https://matplotlib.org/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/matplotlib.inv"),
+    ),
+    "astropy": ("https://docs.astropy.org/en/stable/", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "skimage": ("https://scikit-image.org/docs/stable/", None),
+    "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
+    "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
+    "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
+    "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
 }
 
 # -- Options for HTML output ---------------------------------------------------
@@ -199,7 +208,8 @@ sphinx_gallery_conf = {
     ]),
     'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': os.path.join('generated', 'gallery'),
-    'default_thumb_file': os.path.join('logo', 'sunpy_icon_128x128.png'),
+    # Comes from the theme.
+    "default_thumb_file": os.path.join(html_static_path[0], "img", "sunpy_icon_128x128.png"),
     'abort_on_example_error': False,
     'plot_gallery': 'True',
     'remove_config_comments': True,
