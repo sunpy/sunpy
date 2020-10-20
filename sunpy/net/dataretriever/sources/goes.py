@@ -59,10 +59,9 @@ class XRSClient(GenericClient):
     <BLANKLINE>
 
     """
-    # GOES XRS data from NASA servers upto GOES 15. The reprocessed 13, 14, 15 data should be taken from NOAA server
+    # GOES XRS data from NASA servers upto GOES 15. The reprocessed 13, 14, 15 data should be taken from NOAA server.
     baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
     pattern_old = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
-
 
     # GOES XRS 13, 14, 15 from NOAA (re-processed data)
     baseurl_new = (r"https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/"
@@ -78,69 +77,87 @@ class XRSClient(GenericClient):
     pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-flx1s_science/{year:4d}/"
                  "{month:2d}/sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_v2-0-1.nc")
 
-
-    @classmethod
     def post_search_hook(self, i, matchdict):
-
         tr = get_timerange_from_exdict(i)
         rowdict = OrderedDict()
-        rowdict['Time'] = TimeRange(tr.start, tr.end)
-        rowdict['Start Time'] = tr.start.strftime(TIME_FORMAT)
-        rowdict['End Time'] = tr.end.strftime(TIME_FORMAT)
-        rowdict['Instrument'] = matchdict['Instrument'][0].upper()
-        rowdict['SatelliteNumber'] = i['SatelliteNumber']
-        rowdict['Physobs'] = matchdict['Physobs'][0]
-        rowdict['url'] = i['url']
-        rowdict['Source'] = matchdict['Source'][0]
-        if i['url'].endswith('.fits'):
-            rowdict['Provider'] = matchdict['Provider'][0]
+        rowdict["Time"] = TimeRange(tr.start, tr.end)
+        rowdict["Start Time"] = tr.start.strftime(TIME_FORMAT)
+        rowdict["End Time"] = tr.end.strftime(TIME_FORMAT)
+        rowdict["Instrument"] = matchdict["Instrument"][0].upper()
+        rowdict["SatelliteNumber"] = i["SatelliteNumber"]
+        rowdict["Physobs"] = matchdict["Physobs"][0]
+        rowdict["url"] = i["url"]
+        rowdict["Source"] = matchdict["Source"][0]
+        if i["url"].endswith(".fits"):
+            rowdict["Provider"] = matchdict["Provider"][0]
         else:
-            rowdict['Provider'] = matchdict['Provider'][1]
+            rowdict["Provider"] = matchdict["Provider"][1]
 
         return rowdict
 
-    @classmethod
     def search(self, *args, **kwargs):
+
         matchdict = self._get_match_dict(*args, **kwargs)
 
-        metalist = []
-        # the data before the re-processed GOES 13, 14, 15 dara
-        if matchdict['Time'].end<'2009-09-01':
-            scraper = Scraper(self.baseurl_old, regex=True)
-            filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_old, matcher=matchdict)
-            for i in filemeta:
-                rowdict = self.post_search_hook(i, matchdict)
-                metalist.append(rowdict)
+        # this is for the case when the timerange overlaps with the provider change.
+        if matchdict["Time"].start<"2009-09-01" and matchdict["Time"].end>="2009-09-01":
+            matchdict_before, matchdict_after = matchdict.copy(), matchdict.copy()
+            matchdict_before["Time"] = TimeRange(matchdict_before["Time"].start, '2009-08-31')
+            matchdict_after["Time"] = TimeRange('2009-09-01', matchdict_after["Time"].end)
 
-        # if for some reason a user wants the old data
-        elif (matchdict['Time'].end>='2009-09-01' and matchdict.get('VersionData')==['old']):
-            scraper = Scraper(self.baseurl_old, regex=True)
-            filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_old, matcher=matchdict)
-            for i in filemeta:
-                rowdict = self.post_search_hook(i, matchdict)
-                metalist.append(rowdict)
+            metalist_before = self._get_metalist(matchdict_before)
+            metalist_after = self._get_metalist(matchdict_after)
+            metalist = metalist_before + metalist_after
 
-        # new data from NOAA
         else:
-            for sat in [16, 17]:
-                formdict = {'SatelliteNumber':sat}
-                urlpattern = self.baseurl_r.format(**formdict)
-                scraper = Scraper(urlpattern)
-                filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_r, matcher=matchdict)
-                for i in filemeta:
-                    rowdict = self.post_search_hook(i, matchdict)
-                    metalist.append(rowdict)
-
-            for sat in [13, 14, 15]:
-                formdict = {'SatelliteNumber':sat}
-                urlpattern = self.baseurl_new.format(**formdict)
-                scraper = Scraper(urlpattern)
-                filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_new, matcher=matchdict)
-                for i in filemeta:
-                    rowdict = self.post_search_hook(i, matchdict)
-                    metalist.append(rowdict)
+            metalist = self._get_metalist(matchdict)
 
         return QueryResponse(metalist, client=self)
+
+    def _get_metalist(self, matchdict):
+        """
+        Function to get the list of OrderDicts.
+        This makes it easier for when searching for overlapping providers.
+        """
+        metalist = []
+        # the data before the re-processed GOES 13, 14, 15 data.
+        if matchdict["Time"].end<"2009-09-01":
+            scraper = Scraper(self.baseurl_old, regex=True)
+            filemeta = scraper._extract_files_meta(matchdict["Time"], extractor=self.pattern_old, matcher=matchdict)
+            for i in filemeta:
+                rowdict = self.post_search_hook(i, matchdict)
+                metalist.append(rowdict)
+
+        # if for some reason a user wants the old data.
+        elif (matchdict["Time"].end>="2009-09-01" and matchdict["Provider"]==["sdac"]):
+            scraper = Scraper(self.baseurl_old, regex=True)
+            filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_old, matcher=matchdict)
+            for i in filemeta:
+                rowdict = self.post_search_hook(i, matchdict)
+                metalist.append(rowdict)
+
+        # new data from NOAA.
+        else:
+            if matchdict["Time"].end>="2017-02-07":
+                for sat in [16, 17]:
+                    formdict = {"SatelliteNumber": sat}
+                    urlpattern = self.baseurl_r.format(**formdict)
+                    scraper = Scraper(urlpattern)
+                    filemeta = scraper._extract_files_meta(matchdict["Time"], extractor=self.pattern_r, matcher=matchdict)
+                    for i in filemeta:
+                        rowdict = self.post_search_hook(i, matchdict)
+                        metalist.append(rowdict)
+
+            for sat in [13, 14, 15]:
+                formdict = {"SatelliteNumber": sat}
+                urlpattern = self.baseurl_new.format(**formdict)
+                scraper = Scraper(urlpattern)
+                filemeta = scraper._extract_files_meta(matchdict["Time"], extractor=self.pattern_new, matcher=matchdict)
+                for i in filemeta:
+                    rowdict = self.post_search_hook(i, matchdict)
+                    metalist.append(rowdict)
+
+        return metalist
 
     @classmethod
     def _attrs_module(cls):
@@ -155,12 +172,12 @@ class XRSClient(GenericClient):
             ("XRS", "GOES X-ray Sensor")],
             attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
             attrs.Source: [("GOES", "The Geostationary Operational Environmental Satellite Program.")],
-            attrs.Provider: [('NASA', 'The National Aeronautics and Space Administration.'),
-                             ('NOAA', 'The National Oceanic and Atmospheric Administration')],
-            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number],
-            attrs.goes.VersionData: [('normal', 'normal'), ('old', 'before re-processing'), ('re-processed', 're-processed')]}
+            attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.'),
+                             ('NOAA', 'The National Oceanic and Atmospheric Administration.')],
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
 
         return adict
+
 
 class SUVIClient(GenericClient):
     """

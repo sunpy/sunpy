@@ -56,14 +56,28 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
 
 
 @pytest.mark.remote_data
+@pytest.mark.parametrize("timerange, url_start, url_end",
+                         [(a.Time("2009/08/30 00:10", "2009/09/02"),
+                           "https://umbra.nascom.nasa.gov/goes/fits/2009/go1020090830.fits",
+                           "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/"
+                           "2009/09/sci_gxrs-l2-irrad_g14_d20090902_v0-0-0.nc")])
+def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
+    qresponse = LCClient.search(timerange, a.goes.SatelliteNumber.ten)
+    urls = [i['url'] for i in qresponse]
+    assert len(urls) == 4
+    assert urls[0] == url_start
+    assert urls[-1] == url_end
+
+
+@pytest.mark.remote_data
 @pytest.mark.parametrize("timerange, url_old, url_new",
-                         [(Time('2013/10/28', '2013/10/29'),
+                         [(a.Time('2013/10/28', '2013/10/29'),
                            "https://umbra.nascom.nasa.gov/goes/fits/2013/go1520131028.fits",
-                           "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/"
-                           "2013/10/sci_gxrs-l2-irrad_g15_d20131028_v0-0-0.nc")])
+                           "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes13/gxrs-l2-irrad_science/"
+                           "2013/10/sci_gxrs-l2-irrad_g13_d20131028_v0-0-0.nc")])
 def test_old_data_access(timerange, url_old, url_new):
     # test first for old data
-    qr = Fido.search(timerange, a.Instrument("XRS"), a.goes.VersionData("old"))
+    qr = Fido.search(timerange, a.Instrument("XRS"), a.Provider("SDAC"))
     urls = [r['url'] for r in qr.get_response(0)]
     assert urls[0] == url_old
 
@@ -92,7 +106,7 @@ def test_fixed_satellite(LCClient):
 
     for resp in ans1:
 
-        assert "go15" in resp['url']
+        assert "g15" in resp['url']
 
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02 23:00"),
                            a.Instrument.xrs,
@@ -100,7 +114,7 @@ def test_fixed_satellite(LCClient):
 
     for resp in ans1:
 
-        assert "go13" in resp['url']
+        assert "g13" in resp['url']
 
     ans1 = LCClient.search(a.Time("1999/1/13", "1999/1/16"),
                            a.Instrument.xrs,
@@ -148,7 +162,7 @@ def test_new_logic(LCClient):
 @pytest.mark.parametrize(
     "time, instrument, expected_num_files",
     [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes, 4),
-     (a.Time('2013-10-28 01:00', '2013-10-28 03:00'), a.Instrument('XRS'), 1)])
+     (a.Time('2013-10-28 01:00', '2013-10-28 03:00'), a.Instrument('XRS'), 2)])
 def test_fido(time, instrument, expected_num_files):
     qr = Fido.search(time, instrument)
     assert isinstance(qr, UnifiedResponse)
