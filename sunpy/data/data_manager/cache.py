@@ -157,16 +157,17 @@ class Cache:
         def download(url):
             path = self._cache_dir / get_filename(urlopen(url), url)
             # replacement_filename returns a string and we want a Path object
-            path = Path(replacement_filename(path))
+            path = Path(replacement_filename(str(path)))
             self._downloader.download(url, path)
             shahash = hash_file(path)
             return path, shahash, url
 
+        errors = []
         for url in urls:
             try:
                 return download(url)
             except Exception as e:
-                warn(e, SunpyUserWarning)
-                error = e
+                warn(f"{e}", SunpyUserWarning)
+                errors.append(f"{e}")
         else:
-            raise RuntimeError from error
+            raise RuntimeError(errors)

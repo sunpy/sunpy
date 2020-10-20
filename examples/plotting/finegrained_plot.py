@@ -21,7 +21,7 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 bottom_left = SkyCoord(-400*u.arcsec, -900*u.arcsec, frame=aiamap.coordinate_frame)
 top_right = SkyCoord(800*u.arcsec, 700*u.arcsec, frame=aiamap.coordinate_frame)
-aiamap_sub = aiamap.submap(bottom_left, top_right)
+aiamap_sub = aiamap.submap(bottom_left, top_right=top_right)
 
 title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 
@@ -36,7 +36,7 @@ title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 
 fig = plt.figure(figsize=(6, 6))
 ax = plt.subplot(projection=aiamap_sub)
-aiamap_sub.plot()
+aiamap_sub.plot(clip_interval=(1, 99.99)*u.percent)
 aiamap_sub.draw_limb(color='white', linewidth=2, linestyle='dashed')
 
 # To have more control over the Heliographic Stonyhurst grid,

@@ -10,6 +10,9 @@ import pkg_resources
 import pytest
 from matplotlib.testing import compare
 
+from astropy.wcs.wcs import FITSFixedWarning
+
+import sunpy.map
 from sunpy.tests import hash
 
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_32bit',
@@ -80,10 +83,10 @@ def figure_test(test_function):
     @wraps(test_function)
     def wrapper(*args, **kwargs):
         if not os.path.exists(hash.HASH_LIBRARY_FILE):
-            pytest.xfail(f'Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}')
+            raise RuntimeError(f'Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}')
         # figure_base_dir is a pytest fixture defined on use.
         if figure_base_dir is None:
-            pytest.xfail("No directory to save figures to found")
+            raise RuntimeError("No directory to save figures to found")
 
         name = "{}.{}".format(test_function.__module__,
                               test_function.__name__)
@@ -96,8 +99,9 @@ def figure_test(test_function):
         # Save the image that was generated
         figure_base_dir.mkdir(exist_ok=True)
         result_image_loc = figure_base_dir / f'{name}.png'
-        plt.savefig(str(result_image_loc))
-        plt.close()
+        # Have to set Software to None to prevent Matplotlib injecting it's version number
+        plt.savefig(str(result_image_loc), metadata={'Software': None})
+        plt.close('all')
 
         # Create hash
         imgdata = open(result_image_loc, "rb")
@@ -108,9 +112,10 @@ def figure_test(test_function):
         if name not in hash.hash_library:
             pytest.fail(f"Hash not present: {name}")
 
-        if hash.hash_library[name] != figure_hash:
-            raise RuntimeError('Figure hash does not match expected hash.\n'
-                               'New image generated and placed at {}'.format(result_image_loc))
+        expected_hash = hash.hash_library[name]
+        if expected_hash != figure_hash:
+            raise RuntimeError(f'Figure hash ({figure_hash}) does not match expected hash ({expected_hash}).\n'
+                               f'New image generated and placed at {result_image_loc}')
 
     return wrapper
 
@@ -181,7 +186,9 @@ table, th, td {
 def _generate_fig_html(fname):
     generated_image = figure_base_dir / (fname + '.png')
 
-    envname = os.environ.get("TOXENV", "figure_py36")
+    envname = os.environ.get("TOX_ENV_NAME", None)
+    if envname is None:
+        raise RuntimeError("Could not find a TOXENV environment variable")
     # Download baseline image
     baseline_url = f'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/sunpy-master/figures/{envname}/'
     baseline_image_url = baseline_url + generated_image.name
@@ -199,6 +206,10 @@ def _generate_fig_html(fname):
     diff_image = figure_base_dir / "difference_images" / generated_image.name
     diff_image.parent.mkdir(parents=True, exist_ok=True)
     if baseline_image_exists:
+        result = compare.compare_images(str(baseline_image), str(generated_image), tol=0)
+        # Result is None if the images are the same
+        if result is None:
+            return ''
         compare.save_diff_image(str(baseline_image), str(generated_image), str(diff_image))
 
     html_block = ('<tr>'
@@ -236,3 +247,12 @@ def no_vso(f):
         return res
 
     return wrapper
+
+
+def fix_map_wcs(smap):
+    # Helper function to fix a WCS and silence the warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=FITSFixedWarning)
+        wcs = smap.wcs
+        wcs.fix()
+    return sunpy.map.Map(smap.data, wcs)

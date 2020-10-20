@@ -9,7 +9,6 @@ from astropy.time import TimeDelta
 
 from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective
 from sunpy.map import (
-    all_coordinates_from_map,
     contains_full_disk,
     coordinate_is_on_solar_disk,
     is_all_off_disk,
@@ -106,6 +105,22 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     return Longitude(rotation.to(u.deg))
 
 
+def _validate_observer_args(initial_obstime, observer, time):
+    if (observer is not None) and (time is not None):
+        raise ValueError(
+            "Either the 'observer' or the 'time' keyword must be specified, "
+            "but not both simultaneously.")
+    elif observer is not None:
+        # Check that the new_observer is specified correctly.
+        if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
+            raise ValueError(
+                "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
+        if observer.obstime is None:
+            raise ValueError("The observer 'obstime' property must not be None.")
+    elif observer is None and time is None:
+        raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
+
+
 def _get_new_observer(initial_obstime, observer, time):
     """
     Helper function that interprets the possible ways of specifying the
@@ -145,17 +160,9 @@ def _get_new_observer(initial_obstime, observer, time):
         is not None the output has the same type as the "observer" keyword.  In all cases
         the output is specified in the heliographic Stonyhurst coordinate system.
     """
+    _validate_observer_args(initial_obstime, observer, time)
     # Check the input and create the new observer
-    if (observer is not None) and (time is not None):
-        raise ValueError(
-            "Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously.")
-    elif observer is not None:
-        # Check that the new_observer is specified correctly.
-        if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
-            raise ValueError(
-                "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
-        if observer.obstime is None:
-            raise ValueError("The observer 'obstime' property must not be None.")
+    if observer is not None:
         new_observer = observer
     elif time is not None:
         warnings.warn("Using 'time' assumes an Earth-based observer.")
@@ -165,8 +172,6 @@ def _get_new_observer(initial_obstime, observer, time):
             new_observer_time = parse_time(time)
 
         new_observer = get_body("earth", new_observer_time)
-    else:
-        raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
 
     return new_observer
 
@@ -531,7 +536,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
 
             # Create a submap that excludes the off disk emission that does
             # not need to be rotated.
-            smap = smap.submap(bottom_left, top_right)
+            smap = smap.submap(bottom_left, top_right=top_right)
         bottom_left = smap.bottom_left_coord
         top_right = smap.top_right_coord
 
@@ -592,7 +597,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     out_meta = deepcopy(smap.meta)
     if out_meta.get('date_obs', False):
         del out_meta['date_obs']
-    out_meta['date-obs'] = new_observer.obstime.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    out_meta['date-obs'] = new_observer.obstime.isot
 
     # Need to update the observer location for the output map.
     # Remove all the possible observer keys
@@ -615,6 +620,6 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
             ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
         out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
             ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
-        return smap._new_instance(out_data, out_meta).submap(rotated_bl, rotated_tr)
+        return smap._new_instance(out_data, out_meta).submap(rotated_bl, top_right=rotated_tr)
     else:
         return smap._new_instance(out_data, out_meta)

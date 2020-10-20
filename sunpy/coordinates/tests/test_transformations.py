@@ -5,6 +5,7 @@ import astropy
 import astropy.units as u
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
+    ICRS,
     Angle,
     CartesianDifferential,
     CartesianRepresentation,
@@ -28,7 +29,6 @@ from sunpy.coordinates import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
-    get_earth,
     sun,
 )
 from sunpy.coordinates.frames import _J2000
@@ -48,7 +48,7 @@ def test_hcc_to_hgs():
     lon = 20 * u.deg
     observer = HeliographicStonyhurst(lat=lat, lon=lon)
     hcc_in = Heliocentric(x=0*u.km, y=0*u.km, z=1*u.km, observer=observer)
-    hgs_out = hcc_in.transform_to(HeliographicStonyhurst)
+    hgs_out = hcc_in.transform_to(HeliographicStonyhurst())
 
     assert_quantity_allclose(hgs_out.lat, lat)
     assert_quantity_allclose(hgs_out.lon, lon)
@@ -753,13 +753,25 @@ def test_array_obstime():
     assert isinstance(t2.frame, Helioprojective)
 
 
-_frameset1 = [HeliographicStonyhurst, HeliocentricInertial]
-_frameset2 = [HeliographicCarrington, Heliocentric, Helioprojective]
+_frames_wo_observer = [HeliographicStonyhurst, HeliocentricInertial,
+                       HeliocentricEarthEcliptic, GeocentricSolarEcliptic,
+                       GeocentricEarthEquatorial]
 
 
-@pytest.mark.parametrize("start_class", _frameset1 + _frameset2)
-@pytest.mark.parametrize("end_class", _frameset1)
-def test_no_obstime_on_one_end(start_class, end_class):
+@pytest.mark.parametrize("frame_class", _frames_wo_observer)
+def test_convert_error_with_no_obstime(frame_class):
+    # For most transformations, we do not allow `obstime` to be `None`
+    frame = frame_class(CartesianRepresentation(0, 0, 0)*u.km, obstime=None)
+
+    with pytest.raises(ConvertError, match=r".*obstime.*"):
+        ICRS(0*u.deg, 0*u.deg, 0*u.AU).transform_to(frame)
+
+    with pytest.raises(ConvertError, match=r".*obstime.*"):
+        frame.transform_to(ICRS())
+
+
+# Convenience function to check whether a transformation succeeds if the target `obstime` is `None`
+def assert_no_obstime_on_target_end(start_class, end_class):
     start_obstime = Time("2001-01-01")
 
     if hasattr(start_class, 'observer'):
@@ -768,8 +780,31 @@ def test_no_obstime_on_one_end(start_class, end_class):
     else:
         coord = start_class(CartesianRepresentation(0, 0, 0)*u.km, obstime=start_obstime)
 
-    result = coord.transform_to(end_class)
+    result = coord.transform_to(end_class(obstime=None))
     assert result.obstime == start_obstime
+
+
+# We currently allow the target `obstime` to be `None` for the transformation subgraph
+# below `HeliographicStonyhurst`, but this may change in the future
+_frameset1 = [HeliographicStonyhurst, HeliocentricInertial]
+_frameset2 = [HeliographicCarrington, Heliocentric, Helioprojective]
+
+
+@pytest.mark.parametrize("start_class", _frameset1 + _frameset2)
+@pytest.mark.parametrize("end_class", _frameset1)
+def test_no_obstime_on_target_end_hgs_subgraph(start_class, end_class):
+    assert_no_obstime_on_target_end(start_class, end_class)
+
+
+# We currently allow the target `obstime` to be `None` for the transformation subgraph
+# below `HeliocentricEarthEcliptic`, but this may change in the future
+_frameset3 = [HeliocentricEarthEcliptic, GeocentricSolarEcliptic]
+
+
+@pytest.mark.parametrize("start_class", _frameset3)
+@pytest.mark.parametrize("end_class", _frameset3)
+def test_no_obstime_on_target_end_hee_subgraph(start_class, end_class):
+    assert_no_obstime_on_target_end(start_class, end_class)
 
 
 def test_transform_with_sun_center():

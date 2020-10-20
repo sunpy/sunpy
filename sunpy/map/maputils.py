@@ -1,14 +1,14 @@
 """
 This submodule provides utility functions to act on `sunpy.map.GenericMap` instances.
 """
-from itertools import chain, product
+from itertools import product
 
 import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates import Helioprojective
+from sunpy.coordinates import Helioprojective, sun
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'map_edges', 'solar_angular_radius', 'sample_at_coords',
@@ -85,9 +85,10 @@ def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
 
-    The tangent of the angular size of the Sun is equal to the radius
-    of the Sun divided by the distance between the observer and the
-    center of the Sun.
+    The tangent vector from the observer to the edge of the Sun forms a
+    right-angle triangle with the radius of the Sun as the far side and the
+    Sun-observer distance as the hypotenuse.  Thus, the sine of the angular
+    radius of the Sun is ratio of these two distances.
 
     Parameters
     ----------
@@ -100,7 +101,7 @@ def solar_angular_radius(coordinates):
     angle : `~astropy.units.Quantity`
         The solar angular radius.
     """
-    return np.arctan(coordinates.rsun / coordinates.observer.radius)
+    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
 def sample_at_coords(smap, coordinates):
@@ -122,6 +123,17 @@ def sample_at_coords(smap, coordinates):
         at the input coordinates.
     """
     return smap.data[smap.wcs.world_to_array_index(coordinates)]
+
+
+def _edge_coordinates(smap):
+    # Calculate all the edge pixels
+    edges = map_edges(smap)
+    # We need to strip the units from edges before handing it to np.concatenate,
+    # as the .unit attribute is not propagated in np.concatenate for numpy<1.17
+    # When sunpy depends on numpy>=1.17 this unit replacing code can be removed
+    edge_pixels = u.Quantity(np.concatenate(edges).value, unit=u.pix, copy=False)
+    # Calculate the edge of the world
+    return smap.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
 
 
 def contains_full_disk(smap):
@@ -153,21 +165,39 @@ def contains_full_disk(smap):
     within the field of the view of the instrument (although no emission
     from the disk itself is present in the data.)
     """
-    # Calculate all the edge pixels
-    edges = map_edges(smap)
-    edge_pixels = list(chain.from_iterable([edges[0], edges[1], edges[2], edges[3]]))
-    x = [p[0] for p in edge_pixels] * u.pix
-    y = [p[1] for p in edge_pixels] * u.pix
-
-    # Calculate the edge of the world
-    edge_of_world = smap.pixel_to_world(x, y)
-
+    edge_of_world = _edge_coordinates(smap)
     # Calculate the distance of the edge of the world in solar radii
     coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the whole map is not all off disk.
-    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~is_all_off_disk(smap)
+    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and contains_solar_center(smap)
+
+
+def contains_solar_center(smap):
+    """
+    Returns `True` if smap contains the solar center.
+
+    This is the case if and only if the solar center is inside the edges of the map. This
+    is checked by seeing if the sign of both the x and y coordintaes of the corners are opposite
+    (ie. the (0, 0) point is contained within the map).
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        A map in helioprojective Cartesian coordinates.
+
+    Returns
+    -------
+    bool
+        True if the map contains the solar center.
+    """
+    bottom_left = smap.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
+    top_right = smap.pixel_to_world(*(u.Quantity(smap.dimensions) - 0.5 * u.pix))
+    # Test if the x and y component of the coordinate changes sign along
+    # both axes, to check if (0, 0) is contained in the map
+    return ((bottom_left.Tx * top_right.Tx <= 0 * u.deg**2) and
+            (bottom_left.Ty * top_right.Ty <= 0 * u.deg**2))
 
 
 @u.quantity_input
@@ -203,10 +233,8 @@ def is_all_off_disk(smap):
     """
     Checks if none of the coordinates in the `~sunpy.map.GenericMap` are on the solar disk.
 
-    The check is performed by calculating the angle of every pixel from
-    the center of the Sun. If they are all greater than the angular
-    radius of the Sun, then the function returns `True`. Otherwise, the function
-    returns `False`.
+    This is done by checking if the edges of the map do not contain the solar limb, and
+    checking that the solar center is not in the map.
 
     Parameters
     ----------
@@ -225,14 +253,20 @@ def is_all_off_disk(smap):
     within the field of view of the instrument, but the solar disk itself is not imaged.
     For such images this function will return `False`.
     """
-    return np.all(~coordinate_is_on_solar_disk(all_coordinates_from_map(smap)))
+    edge_of_world = _edge_coordinates(smap)
+    # Calculate the distance of the edge of the world in solar radii
+    coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
+
+    # Test if all the edge pixels are more than one solar radius distant
+    # and that the solar center is
+    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~contains_solar_center(smap)
 
 
 def is_all_on_disk(smap):
     """
     Checks if all of the coordinates in the `~sunpy.map.GenericMap` are on the solar disk.
 
-    The check is performed by calculating the angle of every pixel from
+    The check is performed by calculating the angle of the edges of the map from
     the center of the Sun. If they are all less than the angular
     radius of the Sun, then the function returns `True`. Otherwise, the function
     returns `False`.
@@ -248,7 +282,8 @@ def is_all_on_disk(smap):
         Returns `True` if all map coordinates have an angular radius less than
         the angular radius of the Sun.
     """
-    return np.all(coordinate_is_on_solar_disk(all_coordinates_from_map(smap)))
+    edge_of_world = _edge_coordinates(smap)
+    return np.all(coordinate_is_on_solar_disk(edge_of_world))
 
 
 def contains_limb(smap):
@@ -256,11 +291,11 @@ def contains_limb(smap):
     Checks if a map contains any part of the solar limb or equivalently whether
     the map contains both on-disk and off-disk pixels.
 
-    The check is performed by calculating the angular distance of every pixel from
-    the center of the Sun.  If at least one pixel is on disk (less than the solar
-    angular radius) and at least one pixel is off disk (greater than the solar
-    angular distance), the function returns `True`. Otherwise, the function
-    returns `False`.
+    The check is performed by calculating the angular distance of the edge pixels from
+    the center of the Sun. If at least one edge pixel is on disk (less than the solar
+    angular radius) and at least one edge pixel is off disk (greater than the solar
+    angular distance), or the map contains the full disk, the function returns `True`.
+    Otherwise, the function returns `False`.
 
     Parameters
     ----------
@@ -279,7 +314,9 @@ def contains_limb(smap):
     within the field of view of the instrument, but the solar disk itself is not imaged.
     For such images this function will return `True`.
     """
-    on_disk = coordinate_is_on_solar_disk(all_coordinates_from_map(smap))
+    if contains_full_disk(smap):
+        return True
+    on_disk = coordinate_is_on_solar_disk(_edge_coordinates(smap))
     return np.logical_and(np.any(on_disk), np.any(~on_disk))
 
 

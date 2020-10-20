@@ -2,7 +2,6 @@ import os
 import json
 import pathlib
 import tempfile
-import warnings
 import importlib
 
 import pytest
@@ -13,7 +12,6 @@ import astropy.config.paths
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
 from sunpy.tests.helpers import generate_figure_webpage, new_hash_library
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -56,6 +54,7 @@ def tmp_config_dir(request):
     yield
 
     del os.environ["SUNPY_CONFIGDIR"]
+    tmpdir.cleanup()
     astropy.config.paths.set_temp_config._temp_path = None
     astropy.config.paths.set_temp_cache._temp_path = None
 
@@ -67,9 +66,10 @@ def sunpy_cache(mocker, tmp_path):
     remote requests.
     """
     from types import MethodType
+
     from sunpy.data.data_manager.cache import Cache
-    from sunpy.data.data_manager.storage import InMemStorage
     from sunpy.data.data_manager.downloader import ParfiveDownloader
+    from sunpy.data.data_manager.storage import InMemStorage
     cache = Cache(
         ParfiveDownloader(),
         InMemStorage(),
@@ -147,7 +147,7 @@ def pytest_unconfigure(config):
         Turn on internet when generating the figure comparison webpage.
         """
         if HAVE_REMOTEDATA:
-            from pytest_remotedata.disable_internet import turn_on_internet, turn_off_internet
+            from pytest_remotedata.disable_internet import turn_off_internet, turn_on_internet
         else:
             def turn_on_internet(): pass
             def turn_off_internet(): pass
@@ -158,7 +158,3 @@ def pytest_unconfigure(config):
 
         print('All images from image tests can be found in {}'.format(figure_base_dir.resolve()))
         print("The corresponding hash library is {}".format(hashfile.resolve()))
-
-
-def pytest_sessionstart(session):
-    warnings.simplefilter("error", SunpyDeprecationWarning)

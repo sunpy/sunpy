@@ -38,13 +38,15 @@ class MapSequence:
     derotate : `bool`
         Apply a derotation to the data. Default to False.
 
-    To coalign a mapsequence so that solar features remain on the same pixels,
-    please see the "Coalignment of MapSequences" note below.
-
     Attributes
     ----------
     maps : `list`
         This attribute holds the list of Map instances obtained from parameter args.
+
+    Notes
+    -----
+    To coalign a mapsequence so that solar features remain on the same pixels,
+    please see the "Coalignment of MapSequences" note below.
 
     Examples
     --------
@@ -272,9 +274,17 @@ class MapSequence:
             Animation interval in ms
 
         plot_function : function
-            A function to be called as each map is plotted. Any variables
-            returned from the function will have their ``remove()`` method called
-            at the start of the next frame so that they are removed from the plot.
+            A function to be called as each map is plotted.
+            For more information see `sunpy.visualization.MapSequenceAnimator`.
+
+        Returns
+        -------
+        `matplotlib.animation.FuncAnimation`
+            A FuncAnimation instance.
+
+        See Also
+        --------
+        `sunpy.visualization.mapsequenceanimator.MapSequenceAnimator`
 
         Examples
         --------

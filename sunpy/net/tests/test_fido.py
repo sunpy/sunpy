@@ -2,6 +2,7 @@ import os
 import pathlib
 from stat import S_IREAD, S_IRGRP, S_IROTH
 from unittest import mock
+from collections import OrderedDict
 
 import hypothesis.strategies as st
 import pytest
@@ -20,7 +21,7 @@ from sunpy.net import jsoc
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
-from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, time_attr
+from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, srs_time, time_attr
 from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.tests.helpers import no_vso, skip_windows
@@ -39,6 +40,8 @@ def offline_query(draw, instrument=offline_instruments()):
     # If we have AttrAnd then we don't have GOES
     if isinstance(query, a.Instrument) and query.value == 'goes':
         query &= draw(goes_time())
+    elif isinstance(query, a.Instrument) and query.value == 'soon':
+        query &= draw(srs_time())
     else:
         query = attr.and_(query, draw(time_attr()))
     return query
@@ -94,8 +97,12 @@ def check_response(query, unifiedresp):
     for block in unifiedresp.responses:
         res_tr = block.time_range()
         for res in block:
-            assert res.time.start in res_tr
-            assert query_instr.lower() == res.instrument.lower()
+            if isinstance(res, OrderedDict) or isinstance(res, dict):
+                assert res['Time'].start in res_tr
+                assert query_instr.lower() == res['Instrument'].lower()
+            else:
+                assert res.time.start in res_tr
+                assert query_instr.lower() == res.instrument.lower()
 
 
 @pytest.mark.remote_data
@@ -103,10 +110,10 @@ def test_save_path(tmpdir):
     qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level.zero)
 
     # Test when path is str
-    files = Fido.fetch(qr, path=str(tmpdir / "{instrument}" / "{level}"))
+    files = Fido.fetch(qr, path=str(tmpdir / "{Instrument}" / "{Level}"))
     for f in files:
         assert str(tmpdir) in f
-        assert f"eve{os.path.sep}0" in f
+        assert f"EVE{os.path.sep}0" in f
 
 
 @pytest.mark.remote_data
@@ -115,11 +122,11 @@ def test_save_path_pathlib(tmpdir):
 
     # Test when path is pathlib.Path
     target_dir = tmpdir.mkdir("down")
-    path = pathlib.Path(target_dir, "{instrument}", "{level}")
+    path = pathlib.Path(target_dir, "{Instrument}", "{Level}")
     files = Fido.fetch(qr, path=path)
     for f in files:
         assert target_dir.strpath in f
-        assert f"eve{os.path.sep}0" in f
+        assert f"EVE{os.path.sep}0" in f
 
 
 @pytest.mark.remote_data
@@ -200,14 +207,15 @@ def test_unifiedresponse_slicing_reverse():
 @pytest.mark.remote_data
 def test_tables_single_response():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra, a.Level.two)
     tables = results.tables
 
     assert isinstance(tables, list)
     assert isinstance(tables[0], Table)
     assert len(tables) == 1
 
-    columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    columns = ['Start Time', 'End Time', 'Instrument', 'Physobs',
+               'Source', 'Provider', 'Level']
     assert columns == tables[0].colnames
     assert len(tables[0]) == 5
 
@@ -221,11 +229,14 @@ def test_tables_multiple_response():
     assert all(isinstance(t, Table) for t in tables)
     assert len(tables) == 2
 
-    columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
-    assert columns == tables[0].colnames and columns == tables[1].colnames
+    columns0 = ['Start Time', 'End Time', 'Instrument', 'Physobs',
+                'Source', 'Provider', 'Level']
+    columns1 = ['Start Time', 'End Time', 'Instrument', 'Physobs',
+                'Source', 'Provider']
+    assert columns0 == tables[0].colnames and columns1 == tables[1].colnames
 
-    assert all(entry == 'lyra' for entry in tables[0]['Instrument'])
-    assert all(entry == 'rhessi' for entry in tables[1]['Instrument'])
+    assert all(entry == 'LYRA' for entry in tables[0]['Instrument'])
+    assert all(entry == 'RHESSI' for entry in tables[1]['Instrument'])
 
 
 @pytest.mark.remote_data
@@ -406,11 +417,15 @@ def test_retry(mock_retry):
 
 
 def results_generator(dl):
-    http = list(dl.http_queue._queue)
-    ftp = list(dl.ftp_queue._queue)
+    http = dl.http_queue
+    ftp = dl.ftp_queue
+    # Handle compatibility with parfive 1.0
+    if not isinstance(dl.http_queue, list):
+        http = list(dl.http_queue._queue)
+        ftp = list(dl.ftp_queue._queue)
 
     outputs = []
-    for url in http+ftp:
+    for url in http + ftp:
         outputs.append(pathlib.Path(url.keywords['url'].split("/")[-1]))
 
     return Results(outputs)

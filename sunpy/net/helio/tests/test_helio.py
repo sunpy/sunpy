@@ -12,6 +12,10 @@ from sunpy.net.helio.parser import (
     wsdl_retriever,
 )
 
+# Currently helio makes unverified requests - this filter should be removed when
+# https://github.com/sunpy/sunpy/issues/4401 is fixed
+pytestmark = pytest.mark.filterwarnings('ignore:Unverified HTTPS request is being made')
+
 
 def wsdl_endpoints():
     """
@@ -88,10 +92,10 @@ def wsdl_urls():
     """
     No `Taverna` links, just `WSDL`
     """
-    return ('http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl',
-            'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService?wsdl',
-            'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
-            'http://helio.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl')
+    return ('http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService?wsdl',
+            'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService?wsdl',
+            'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService1_1?wsdl',
+            'http://helio.ucl.ac.uk/helio-hec/HelioLongQueryService1_0b?wsdl')
 
 
 @mock.patch('sunpy.net.helio.parser.link_test', return_value=None)
@@ -260,10 +264,14 @@ def test_link_test_on_urlerror(mock_link_test):
 
 
 @pytest.mark.remote_data
-@pytest.fixture
+@pytest.fixture(scope="session")
 def client():
-    link = 'http://helio.mssl.ucl.ac.uk:80/helio_hec/HelioTavernaService?wsdl'
-    return HECClient(link)
+    try:
+        client = HECClient()
+        return client
+    # If no links are found, the client should raise a ValueError
+    except ValueError:
+        pytest.xfail("No HELIO working links found.")
 
 
 @pytest.mark.remote_data
@@ -283,6 +291,9 @@ def test_select_table(client, monkeypatch):
     assert client.select_table() is None
 
 
+# Deprecation warning from astropy, fixed in 4.0.2
+# (https://github.com/astropy/astropy/pull/10085)
+@pytest.mark.filterwarnings(r'ignore:tostring\(\) is deprecated')
 @pytest.mark.remote_data
 def test_time_query(client):
     start = '2005/01/03'
@@ -290,3 +301,10 @@ def test_time_query(client):
     table_name = b'rhessi_hxr_flare'
     res = client.time_query(start, end, table=table_name, max_records=10)
     assert len(res.array) == 10
+
+
+def test_client_mock_fail(client):
+    """
+    This test will xfail on the offline tests.
+    It just passes if the client is working.
+    """

@@ -1,1 +1,0 @@
-Changed padding value of an example in the example gallery to fix the overlap of titles and x-label axes.

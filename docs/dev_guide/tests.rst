@@ -43,7 +43,7 @@ Each method uses the widely-used ``pytest`` framework and are detailed below.
 The primary method is to use `tox`_, which is a generic virtualenv management and test command line tool.
 We have several environments within our "tox.ini" file and you can list them::
 
-    $ tox -l
+    $ tox -v -l
 
 Then you can run any of them doing::
 
@@ -154,7 +154,7 @@ If we place this in a ``test.py`` file and then run::
 The result is::
 
     ============================= test session starts ==============================
-    python: platform darwin -- Python 3.6.0 -- pytest-3.2.0
+    python: platform darwin -- Python 3.8.3 -- pytest-3.2.0
     test object 1: /Users/username/tmp/test.py
 
     test.py F

@@ -200,3 +200,35 @@ def test_client_repr(LCClient):
     """
     output = str(LCClient)
     assert output[:50] == 'sunpy.net.dataretriever.sources.rhessi.RHESSIClien'
+
+
+def mock_query_object(LCClient):
+    """
+    Creating a Query Response object and prefilling it with some information
+    """
+    # Creating a Query Response Object
+    start = '2016/1/1'
+    end = '2016/1/1 23:59:59'
+    obj = {
+        'Time': TimeRange(parse_time(start), parse_time(end)),
+        'Start Time': parse_time(start),
+        'End Time': parse_time(end),
+        'Instrument': 'RHESSI',
+        'Physobs': 'irradiance',
+        'Source': 'RHESSI',
+        'Provider': 'NASA',
+        'url': ('https://hesperia.gsfc.nasa.gov/hessidata/metadata/'
+                'catalog/hsi_obssumm_20160101_078.fits')
+    }
+    results = QueryResponse([obj], client=LCClient)
+    return results
+
+
+def test_show(LCClient):
+    mock_qr = mock_query_object(LCClient)
+    qrshow0 = mock_qr.show()
+    qrshow1 = mock_qr.show('Start Time', 'Instrument')
+    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source', 'Provider']
+    assert qrshow0.colnames == allcols
+    assert qrshow1.colnames == ['Start Time', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'RHESSI'

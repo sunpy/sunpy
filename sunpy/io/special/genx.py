@@ -126,7 +126,7 @@ def read_genx(filename):
     written by Sun Microsystems, Inc. June 1987.
 
     SolarSoft genx writer creates structures to store the values together with
-    the variable names. It use the `size` IDL function to include the data
+    the variable names. It use the ``size`` IDL function to include the data
     type, dimension and number of elements that each variable contains.
 
     Parameters
@@ -136,7 +136,7 @@ def read_genx(filename):
 
     Returns
     -------
-    output : `OrderedDict`
+    output : `~collections.OrderedDict`
         A dictionary with possibly nested dictionaries with the data in
         the genx file.
 

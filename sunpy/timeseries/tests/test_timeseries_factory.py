@@ -18,6 +18,7 @@ import sunpy.timeseries
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -31,8 +32,10 @@ fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
 rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
-noaa_ind_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
-noaa_pre_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
+noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
+noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated.json')
+noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
+noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
 goes_filepath = os.path.join(filepath, 'go1520110607.fits')
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
@@ -43,6 +46,7 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 
 class TestTimeSeries:
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_concatenate_same_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
@@ -57,6 +61,7 @@ class TestTimeSeries:
         ts_from_list.columns == sunpy.timeseries.TimeSeries(
             a_list_of_many[0], source='EVE', concatenate=True).columns
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_concatenate_different_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
@@ -70,6 +75,7 @@ class TestTimeSeries:
         ts_from_list.columns == sunpy.timeseries.TimeSeries(
             a_list_of_many[0], source='EVE', concatenate=True).columns
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_generate_list_of_ts(self):
         # Test making a list TimeSeries from multiple files
         ts_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE')
@@ -77,6 +83,7 @@ class TestTimeSeries:
         for ts in ts_list:
             assert isinstance(ts, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_generate_from_glob(self):
         # Test making a TimeSeries from a glob
         ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(
@@ -89,8 +96,7 @@ class TestTimeSeries:
 
     def test_implicit_fermi_gbm(self):
         # Test a GBMSummary TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
+        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_implicit_norh(self):
@@ -100,14 +106,12 @@ class TestTimeSeries:
 
     def test_implicit_goes(self):
         # Test a GOES TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_implicit_goes_com(self):
         # Test a GOES TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com)
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_implicit_lyra(self):
@@ -142,8 +146,7 @@ class TestTimeSeries:
 
     def test_fermi_gbm(self):
         # Test a GBMSummary TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
+        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_norh(self):
@@ -153,14 +156,12 @@ class TestTimeSeries:
 
     def test_goes(self):
         # Test a GOES TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_goes_com(self):
         # Test a GOES TimeSeries
-        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_lyra(self):
@@ -173,14 +174,31 @@ class TestTimeSeries:
         ts_rhessi = sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
         assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries)
 
-    def test_noaa_ind(self):
-        # Test a NOAAPredictIndices TimeSeries
-        ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_filepath, source='NOAAIndices')
+    def test_noaa_ind_json(self):
+        # Test a NOAAPredictIndices TimeSeries json
+        ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_json_filepath, source='NOAAIndices')
         assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
 
-    def test_noaa_pre(self):
-        # Test a NOAAIndices TimeSeries
-        ts_noaa_pre = sunpy.timeseries.TimeSeries(noaa_pre_filepath, source='NOAAPredictIndices')
+    def test_noaa_ind_txt(self):
+        # Test a NOAAPredictIndices TimeSeries txt
+        with pytest.warns(SunpyDeprecationWarning):
+            ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
+        assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
+
+    # The pre- data involves dates long in the future, so ignore an ERFA warning
+    # when parsing these dates.
+    @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
+    def test_noaa_pre_json(self):
+        # Test a NOAAIndices TimeSeries json
+        ts_noaa_pre = sunpy.timeseries.TimeSeries(
+            noaa_pre_json_filepath, source='NOAAPredictIndices')
+        assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
+
+    def test_noaa_pre_txt(self):
+        # Test a NOAAIndices TimeSeries txt
+        with pytest.warns(SunpyDeprecationWarning):
+            ts_noaa_pre = sunpy.timeseries.TimeSeries(
+                noaa_pre_txt_filepath, source='NOAAPredictIndices')
         assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
 
 # ==============================================================================
@@ -207,14 +225,15 @@ class TestTimeSeries:
         base = parse_time(datetime.datetime.today())
         times = base - TimeDelta(np.arange(24*60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        units = {'intensity': u.W/u.m**2}
         data = DataFrame(intensity, index=times, columns=['intensity'])
 
         # Use a FITS file HDU using sunpy.io
         hdulist = sunpy.io.read_file(goes_filepath)
         meta = hdulist[0].header
         meta_md = MetaDict(OrderedDict(meta))
-        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta)
-        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md)
+        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta, units)
+        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md, units)
         assert ts_hdu_meta == ts_md_meta
 
         # Use a FITS file HDU using astropy.io
@@ -222,8 +241,8 @@ class TestTimeSeries:
         meta = hdulist[0].header
         hdulist.close()
         meta_md = MetaDict(sunpy.io.header.FileHeader(meta))
-        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta)
-        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md)
+        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta, units)
+        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md, units)
         assert ts_hdu_meta == ts_md_meta
 
     def test_generic_construction_basic(self):
@@ -261,7 +280,8 @@ class TestTimeSeries:
         meta = MetaDict({'key': 'value'})
 
         # Create TS omitting units input arguments
-        ts_1 = sunpy.timeseries.TimeSeries(data, meta)
+        with pytest.warns(SunpyUserWarning, match='Unknown units for intensity'):
+            ts_1 = sunpy.timeseries.TimeSeries(data, meta)
         assert isinstance(ts_1, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
         assert ts_1.columns == ['intensity']
         assert ts_1.units == OrderedDict([('intensity', u.dimensionless_unscaled)])
@@ -308,7 +328,7 @@ class TestTimeSeries:
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
         meta = MetaDict({'key': 'value'})
         meta2 = MetaDict({'key2': 'value2'})
 
@@ -338,7 +358,7 @@ class TestTimeSeries:
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
         meta = MetaDict({'key': 'value'})
         meta2 = MetaDict({'key2': 'value2'})
 

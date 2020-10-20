@@ -1,0 +1,2 @@
+Colormap data has been moved to individual .csv files in the
+:file:`sunpy/visualization/colormaps/data` directory.

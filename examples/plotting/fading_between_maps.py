@@ -16,6 +16,8 @@ time from the same observation point.
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
+import astropy.units as u
+
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE, AIA_1600_IMAGE
 
@@ -40,7 +42,7 @@ fig = plt.figure()
 ax = fig.add_axes([0.1, 0.2, 0.9, 0.7], projection=map_171)
 
 im_1600 = map_1600.plot(axes=ax)
-im_171 = map_171.plot(axes=ax, alpha=0.5)
+im_171 = map_171.plot(axes=ax, alpha=0.5, clip_interval=(1, 99.99)*u.percent)
 ax.set_title('AIA 171 + 1600')
 
 # Add the slider axes

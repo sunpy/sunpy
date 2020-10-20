@@ -4,7 +4,6 @@ Sun-specific coordinate calculations
 import numpy as np
 
 import astropy.units as u
-from astropy import _erfa as erfa
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
     ITRS,
@@ -12,6 +11,7 @@ from astropy.coordinates import (
     Angle,
     Distance,
     GeocentricMeanEcliptic,
+    GeocentricTrueEcliptic,
     HeliocentricMeanEcliptic,
     Latitude,
     Longitude,
@@ -20,6 +20,8 @@ from astropy.coordinates import (
 )
 from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
+# Import erfa via astropy to make sure we are using the same ERFA library as Astropy
+from astropy.coordinates.sky_coordinate import erfa
 from astropy.time import Time
 
 from sunpy import log
@@ -50,13 +52,22 @@ def angular_radius(t='now'):
     """
     Return the angular radius of the Sun as viewed from Earth.
 
+    The tangent vector from the Earth to the edge of the Sun forms a
+    right-angle triangle with the radius of the Sun as the far side and the
+    Sun-Earth distance as the hypotenuse.  Thus, the sine of the angular
+    radius of the Sun is ratio of these two distances.
+
     Parameters
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     """
-    solar_semidiameter_rad = constants.radius / earth_distance(t)
-    return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
+    return _angular_radius(constants.radius, earth_distance(t))
+
+
+def _angular_radius(sol_radius, distance):
+    solar_semidiameter_rad = np.arcsin(sol_radius / distance)
+    return Angle(solar_semidiameter_rad.to(u.arcsec))
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -186,12 +197,10 @@ def apparent_longitude(t='now'):
     """
     time = parse_time(t)
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
-    coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
+    coord = sun.transform_to(GeocentricTrueEcliptic(equinox=time))
 
-    # Astropy's GeocentricMeanEcliptic already includes aberration, so only add nutation
-    jd1, jd2 = get_jd12(time, 'tt')
-    nut_lon, _ = erfa.nut06a(jd1, jd2)*u.radian
-    lon = coord.lon + nut_lon
+    # Astropy's GeocentricTrueEcliptic includes both aberration and nutation
+    lon = coord.lon
 
     return Longitude(lon)
 
@@ -231,9 +240,9 @@ def apparent_latitude(t='now'):
     """
     time = parse_time(t)
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
-    coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
+    coord = sun.transform_to(GeocentricTrueEcliptic(equinox=time))
 
-    # Astropy's GeocentricMeanEcliptic does not include nutation, but the contribution is negligible
+    # Astropy's GeocentricTrueEcliptic includes both aberration and nutation
     lat = coord.lat
 
     return Latitude(lat)
@@ -462,10 +471,10 @@ def B0(time='now'):
 
     Returns
     -------
-    out : `~astropy.coordinates.Angle`
+    out : `~astropy.coordinates.Latitude`
         The position angle
     """
-    return Angle(get_earth(time).lat)
+    return Latitude(get_earth(time).lat)
 
 
 # Function returns a SkyCoord's longitude in the de-tilted frame (HCRS rotated so that the Sun's

@@ -3,6 +3,7 @@ Test Generic Map
 """
 import os
 
+import matplotlib.colors as mcolor
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
@@ -15,7 +16,7 @@ import sunpy.coordinates
 import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import figure_test, fix_map_wcs
 from sunpy.util.exceptions import SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
@@ -29,7 +30,8 @@ def aia171_test_map():
 
 @pytest.fixture
 def heliographic_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+    m = sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+    return fix_map_wcs(m)
 
 
 @pytest.fixture
@@ -45,6 +47,22 @@ def aia171_test_map_with_mask(aia171_test_map):
 @figure_test
 def test_plot_aia171(aia171_test_map):
     aia171_test_map.plot()
+
+
+@figure_test
+def test_plot_rotated_aia171(aia171_test_map):
+    # Check that plotting a rotated map and a rectangle works as expected
+
+    # Set rotation metadata
+    aia171_test_map.meta['CROTA2'] = 45
+    # Plot map
+    aia171_test_map.plot()
+    # Plot rectangle
+    bottom_left = SkyCoord(
+        0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    w = 100 * u.arcsec
+    h = 200 * u.arcsec
+    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
 
 
 @figure_test
@@ -182,7 +200,19 @@ def test_heliographic_rectangle_top_right(heliographic_test_map):
     heliographic_test_map.draw_rectangle(bottom_left, width=w, height=h, color='cyan')
 
 
+# See https://github.com/sunpy/sunpy/issues/4294 to track this warning. Ideally
+# it should not be filtered, and the cause of it fixed.
+@pytest.mark.filterwarnings(r'ignore:Numpy has detected that you \(may be\) writing to an array with\noverlapping memory')
 @figure_test
 def test_heliographic_grid_annotations(heliographic_test_map):
     heliographic_test_map.plot()
     heliographic_test_map.draw_grid(annotate=False)
+
+
+def test_plot_norm_error(aia171_test_map):
+    # Check that duplicating vmin, vmax raises an error
+    norm = mcolor.Normalize(vmin=0, vmax=1)
+    with pytest.raises(ValueError, match='Cannot manually specify vmin'):
+        aia171_test_map.plot(norm=norm, vmin=0)
+    with pytest.raises(ValueError, match='Cannot manually specify vmax'):
+        aia171_test_map.plot(norm=norm, vmax=0)

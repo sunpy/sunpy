@@ -4,8 +4,6 @@ Alpha Radiometer) instrument on Proba-2.
 """
 import csv
 import copy
-import urllib
-import os.path
 import sqlite3
 import datetime
 from warnings import warn
@@ -19,7 +17,7 @@ from astropy.time import Time
 from sunpy.data import cache
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.decorators import add_common_docstring
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
@@ -28,7 +26,6 @@ LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 __all__ = ['remove_lytaf_events_from_timeseries',
            'get_lytaf_events',
            'get_lytaf_event_types',
-           'download_lytaf_database',
            'split_series_using_lytaf']
 
 
@@ -43,7 +40,7 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
     ----------
     ts : `sunpy.timeseries.TimeSeries`
 
-    artifacts : list of strings
+    artifacts : list
         Sets the artifact types to be removed.  For a list of artifact types
         see reference [1].  For example, if a user wants to remove only large
         angle rotations, listed at reference [1] as LAR, set artifacts=["LAR"].
@@ -112,16 +109,16 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
         warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
              SunpyDeprecationWarning)
     # Remove artifacts from time series
-    data_columns = ts.data.columns
+    data_columns = ts.to_dataframe().columns
     time, channels, artifact_status = _remove_lytaf_events(
-        ts.data.index,
-        channels=[np.asanyarray(ts.data[col]) for col in data_columns],
+        ts.to_dataframe().index,
+        channels=[np.asanyarray(ts.to_dataframe()[col]) for col in data_columns],
         artifacts=artifacts, return_artifacts=True, lytaf_path=lytaf_path,
         force_use_local_lytaf=force_use_local_lytaf)
     # Create new copy copy of timeseries and replace data with
     # artifact-free time series.
     ts_new = copy.deepcopy(ts)
-    ts_new.data = pandas.DataFrame(
+    ts_new._data = pandas.DataFrame(
         index=time, data={col: channels[i]
                           for i, col in enumerate(data_columns)})
     if return_artifacts:
@@ -540,18 +537,6 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     all_event_types = [event_type[0] for event_types in all_event_types
                        for event_type in event_types]
     return all_event_types
-
-
-@deprecated("1.1")
-def download_lytaf_database(lytaf_dir=''):
-    """
-    download latest Proba2 pointing database from Proba2 Science Center.
-    """
-    url = 'http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
-    destination = os.path.join(lytaf_dir, 'annotation_ppt.db')
-    urllib.request.urlretrieve(url, destination)
-
-    return
 
 
 def split_series_using_lytaf(timearray, data, lytaf):

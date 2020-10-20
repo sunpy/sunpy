@@ -146,19 +146,12 @@ def show_colormaps(search=None):
         A string to search for in the names of the color maps (e.g. aia, EIT,
         171). Case insensitive.
 
-    Returns
-    -------
-    None : none
-
     Examples
     --------
     >>> import sunpy.visualization.colormaps as cm
-    >>> cm.show_colormaps()
-    >>> cm.show_colormaps(search='aia')
-    >>> cm.show_colormaps(search='171')
-
-    References
-    ----------
+    >>> cm.show_colormaps()  # doctest: +IGNORE_WARNINGS
+    >>> cm.show_colormaps(search='aia')  # doctest: +IGNORE_WARNINGS
+    >>> cm.show_colormaps(search='171')  # doctest: +IGNORE_WARNINGS
     """
 
     if search is not None:

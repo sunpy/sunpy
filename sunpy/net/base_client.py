@@ -85,6 +85,25 @@ class BaseQueryResponse(Sequence):
     def _repr_html_(self):
         return self.build_table()._repr_html_()
 
+    def show(self, *cols):
+        """
+        Returns response tables with desired columns for the Query.
+
+        Parameters
+        ----------
+        \\*cols : `tuple`
+            Name of columns to be shown.
+
+        Returns
+        -------
+        `astropy.table.Table`
+            A table showing values for specified columns.
+        """
+        table = self.build_table()
+        if len(cols) == 0:
+            return table
+        return table[list(cols)]
+
 
 def _print_client(client, html=False):
     """
@@ -109,6 +128,10 @@ def _print_client(client, html=False):
     t = Table(names=["Attr Type", "Name", "Description"],
               dtype=["U80", "U80", "U80"])
     for client_key in attrs.keys():
+        # Work around for * attrs having one length.
+        if len(attrs[client_key]) == 1 and attrs[client_key][0] == "*":
+            t.add_row((client_key.__name__, "All", "All valid values"))
+            continue
         for name, desc in attrs[client_key]:
             t.add_row((client_key.__name__, name, desc))
     lines = [class_name, dedent(client.__doc__.partition("\n\n")[0])]

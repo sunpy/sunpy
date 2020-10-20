@@ -74,12 +74,11 @@ def fido_search_result():
     # No JSOC query
     return Fido.search(
         net_attrs.Time("2012/1/1", "2012/1/2"),
-        net_attrs.Instrument('lyra') | net_attrs.Instrument('eve') |
+        net_attrs.Instrument('lyra') & net_attrs.Level.two | net_attrs.Instrument('eve') |
         net_attrs.Instrument('XRS') | net_attrs.Instrument('noaa-indices') |
         net_attrs.Instrument('noaa-predict') |
         (net_attrs.Instrument('norh') & net_attrs.Wavelength(17*units.GHz)) |
-        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve")) |
-        (net_attrs.Instrument('EVE') & net_attrs.Level(0))
+        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve"))
     )
 
 
@@ -93,7 +92,7 @@ def query_result():
 @pytest.fixture
 def download_qr():
     return vso.VSOClient().search(
-        net_attrs.Time('2012-03-29', '2012-03-29'),
+        net_attrs.Time('2020-03-29', '2020-03-29'),
         net_attrs.Instrument('AIA'))
 
 
@@ -467,14 +466,15 @@ def test_hek_query_download(monkeypatch, database, tmpdir):
 
     def mock_parfive_download(obj, *args, **kwargs):
 
-        assert obj.http_queue.qsize() == 10
-        assert obj.ftp_queue.qsize() == 0
+        assert obj.queued_downloads == 10
 
         queue = obj.http_queue
+        if not isinstance(queue, list):
+            queue = list(queue._queue)
         obj_records = []
 
-        while not queue.empty():
-            url = queue.get_nowait().keywords['url']
+        for item in queue:
+            url = item.keywords['url']
             obj_records.append(url[-24:])
 
         assert obj_records == records
@@ -1107,8 +1107,8 @@ def test_split_database(split_function_database, database):
         split_function_database, database, net_attrs.Instrument('EIA'))
 
     observed_source_entries = split_function_database.search(
-        vso.attrs.Provider('xyz'), sortby='id')
-    observed_destination_entries = database.search(vso.attrs.Provider('xyz'))
+        net_attrs.Provider('xyz'), sortby='id')
+    observed_destination_entries = database.search(net_attrs.Provider('xyz'))
 
     assert observed_source_entries == [
         DatabaseEntry(id=1, instrument='RHESSI', provider='xyz'),

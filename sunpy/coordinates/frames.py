@@ -10,8 +10,10 @@ import astropy.units as u
 from astropy.coordinates import Attribute, ConvertError
 from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMapping
 from astropy.coordinates.representation import (
+    CartesianDifferential,
     CartesianRepresentation,
     CylindricalRepresentation,
+    SphericalDifferential,
     SphericalRepresentation,
     UnitSphericalRepresentation,
 )
@@ -19,12 +21,13 @@ from astropy.time import Time
 
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.decorators import add_common_docstring
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 
 _J2000 = Time('J2000.0', scale='tt')
 
-__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
+__all__ = ['SunPyBaseCoordinateFrame', 'BaseHeliographic',
+           'HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective',
            'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
            'HeliocentricInertial', 'GeocentricEarthEquatorial']
@@ -90,12 +93,25 @@ def _frame_parameters():
 
 class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     """
+    Base class for sunpy coordinate frames.
+
+    This class is not intended to be used directly and has no transformations defined.
+
     * Defines the frame attribute ``obstime`` for observation time.
     * Defines a default longitude wrap angle of 180 degrees, which can be overridden via the class
       variable ``_wrap_angle``.
     * Inject a nice way of representing the object which the coordinate represents.
     """
     obstime = TimeFrameAttributeSunPy()
+
+    default_representation = SphericalRepresentation
+    default_differential = SphericalDifferential
+
+    frame_specific_representation_info = {
+        SphericalDifferential: [RepresentationMapping('d_lon', 'd_lon', u.arcsec/u.s),
+                                RepresentationMapping('d_lat', 'd_lat', u.arcsec/u.s),
+                                RepresentationMapping('d_distance', 'd_distance', u.km/u.s)],
+    }
 
     _wrap_angle = 180*u.deg
 
@@ -149,24 +165,13 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
 
     This class is not intended to be used directly and has no transformations defined.
     """
-    default_representation = SphericalRepresentation
-
     frame_specific_representation_info = {
-        SphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                        framename='lon',
-                                                        defaultunit=u.deg),
-                                  RepresentationMapping(reprname='lat',
-                                                        framename='lat',
-                                                        defaultunit=u.deg),
-                                  RepresentationMapping(reprname='distance',
-                                                        framename='radius',
-                                                        defaultunit=None)],
-        CartesianRepresentation: [RepresentationMapping(reprname='x',
-                                                        framename='x'),
-                                  RepresentationMapping(reprname='y',
-                                                        framename='y'),
-                                  RepresentationMapping(reprname='z',
-                                                        framename='z')]
+        SphericalRepresentation: [RepresentationMapping('lon', 'lon', u.deg),
+                                  RepresentationMapping('lat', 'lat', u.deg),
+                                  RepresentationMapping('distance', 'radius', None)],
+        SphericalDifferential: [RepresentationMapping('d_lon', 'd_lon', u.arcsec/u.s),
+                                RepresentationMapping('d_lat', 'd_lat', u.arcsec/u.s),
+                                RepresentationMapping('d_distance', 'd_radius', u.km/u.s)],
     }
 
     def __init__(self, *args, **kwargs):
@@ -358,6 +363,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
         (5., 8.66025404, 10.)>
     """
     default_representation = CartesianRepresentation
+    default_differential = CartesianDifferential
 
     frame_specific_representation_info = {
         CylindricalRepresentation: [RepresentationMapping('phi', 'psi', u.deg)]
@@ -372,21 +378,21 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     A coordinate or frame in the Helioprojective Cartesian (HPC) system, which is observer-based.
 
     - The origin is the location of the observer.
-    - ``theta_x`` is the angle relative to the plane containing the Sun-observer line and the Sun's
-      rotation axis, with positive values in the direction of the Sun's west limb.
-    - ``theta_y`` is the angle relative to the Sun's equatorial plane, with positive values in the
-      direction of the Sun's north pole.
+    - ``Tx`` (aka "theta_x") is the angle relative to the plane containing the Sun-observer line
+      and the Sun's rotation axis, with positive values in the direction of the Sun's west limb.
+    - ``Ty`` (aka "theta_y") is the angle relative to the Sun's equatorial plane, with positive
+      values in the direction of the Sun's north pole.
     - ``distance`` is the Sun-observer distance.
 
     This system is frequently used in a projective form without ``distance`` specified.  For
     observations looking very close to the center of the Sun, where the small-angle approximation
-    is appropriate, ``theta_x`` and ``theta_y`` can be approximated as Cartesian components.
+    is appropriate, ``Tx`` and ``Ty`` can be approximated as Cartesian components.
 
     A new instance can be created using the following signatures
     (note that if supplied, ``obstime`` and ``observer`` must be keyword arguments)::
 
-        Helioprojective(theta_x, theta_y, obstime=obstime, observer=observer)
-        Helioprojective(theta_x, theta_y, distance, obstime=obstime, observer=observer)
+        Helioprojective(Tx, Ty, obstime=obstime, observer=observer)
+        Helioprojective(Tx, Ty, distance, obstime=obstime, observer=observer)
 
     Parameters
     ----------
@@ -426,25 +432,15 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     <SkyCoord (Helioprojective: obstime=2011-01-05T00:00:50.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         (137.87948623, -275.75878762, 1.00000112)>
     """
-    default_representation = SphericalRepresentation
-
     frame_specific_representation_info = {
-        SphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                        framename='Tx',
-                                                        defaultunit=u.arcsec),
-                                  RepresentationMapping(reprname='lat',
-                                                        framename='Ty',
-                                                        defaultunit=u.arcsec),
-                                  RepresentationMapping(reprname='distance',
-                                                        framename='distance',
-                                                        defaultunit=None)],
-
-        UnitSphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                            framename='Tx',
-                                                            defaultunit=u.arcsec),
-                                      RepresentationMapping(reprname='lat',
-                                                            framename='Ty',
-                                                            defaultunit=u.arcsec)],
+        SphericalRepresentation: [RepresentationMapping('lon', 'Tx', u.arcsec),
+                                  RepresentationMapping('lat', 'Ty', u.arcsec),
+                                  RepresentationMapping('distance', 'distance', None)],
+        SphericalDifferential: [RepresentationMapping('d_lon', 'd_Tx', u.arcsec/u.s),
+                                RepresentationMapping('d_lat', 'd_Ty', u.arcsec/u.s),
+                                RepresentationMapping('d_distance', 'd_distance', u.km/u.s)],
+        UnitSphericalRepresentation: [RepresentationMapping('lon', 'Tx', u.arcsec),
+                                      RepresentationMapping('lat', 'Ty', u.arcsec)],
     }
 
     rsun = Attribute(default=_RSUN.to(u.km))
@@ -486,10 +482,6 @@ class Helioprojective(SunPyBaseCoordinateFrame):
                                                           lat=lat,
                                                           distance=d))
 
-    # Support the previous name for make_3d for now
-    calculate_distance = deprecated('1.1', name="calculate_distance",
-                                    alternative="make_3d")(make_3d)
-
 
 @add_common_docstring(**_frame_parameters())
 class HeliocentricEarthEcliptic(SunPyBaseCoordinateFrame):
@@ -508,7 +500,6 @@ class HeliocentricEarthEcliptic(SunPyBaseCoordinateFrame):
     {distance_sun}
     {common}
     """
-    default_representation = SphericalRepresentation
 
 
 @add_common_docstring(**_frame_parameters())
@@ -532,7 +523,6 @@ class GeocentricSolarEcliptic(SunPyBaseCoordinateFrame):
     -----
     Aberration due to Earth motion is not included.
     """
-    default_representation = SphericalRepresentation
 
 
 @add_common_docstring(**_frame_parameters())
@@ -558,7 +548,6 @@ class HeliocentricInertial(SunPyBaseCoordinateFrame):
     plane with the ecliptic plane, not on the intersection of the celestial equatorial plane with
     the ecliptic plane.
     """
-    default_representation = SphericalRepresentation
 
 
 @add_common_docstring(**_frame_parameters())
@@ -583,6 +572,4 @@ class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
     -----
     Aberration due to Earth motion is not included.
     """
-    default_representation = SphericalRepresentation
-
     equinox = TimeFrameAttributeSunPy(default=_J2000)

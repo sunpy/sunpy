@@ -5,6 +5,7 @@ import datetime
 from collections import OrderedDict
 
 import matplotlib.dates
+import matplotlib.ticker as mticker
 import numpy as np
 from matplotlib import pyplot as plt
 from pandas import DataFrame
@@ -75,40 +76,42 @@ class XRSTimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 
-        figure = plt.figure()
-        axes = plt.gca()
+        fig, ax = plt.subplots()
 
         dates = matplotlib.dates.date2num(parse_time(self.to_dataframe().index).datetime)
 
-        axes.plot_date(dates, self.to_dataframe()['xrsa'], '-',
-                       label=r'0.5--4.0 $\AA$', color='blue', lw=2, **kwargs)
-        axes.plot_date(dates, self.to_dataframe()['xrsb'], '-',
-                       label=r'1.0--8.0 $\AA$', color='red', lw=2, **kwargs)
+        ax.plot_date(dates, self.to_dataframe()['xrsa'], '-',
+                     label=r'0.5--4.0 $\AA$', color='blue', lw=2, **kwargs)
+        ax.plot_date(dates, self.to_dataframe()['xrsb'], '-',
+                     label=r'1.0--8.0 $\AA$', color='red', lw=2, **kwargs)
 
-        axes.set_yscale("log")
-        axes.set_ylim(1e-9, 1e-2)
-        axes.set_title(title)
-        axes.set_ylabel('Watts m$^{-2}$')
-        axes.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
+        ax.set_yscale("log")
+        ax.set_ylim(1e-9, 1e-2)
+        ax.set_title(title)
+        ax.set_ylabel('Watts m$^{-2}$')
+        ax.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
 
-        ax2 = axes.twinx()
+        ax2 = ax.twinx()
         ax2.set_yscale("log")
         ax2.set_ylim(1e-9, 1e-2)
-        ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-        ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+        labels = ['A', 'B', 'C', 'M', 'X']
+        centers = np.logspace(-7.5, -3.5, len(labels))
+        ax2.yaxis.set_minor_locator(mticker.FixedLocator(centers))
+        ax2.set_yticklabels(labels, minor=True)
+        ax2.set_yticklabels([])
 
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
-        axes.legend()
+        ax.yaxis.grid(True, 'major')
+        ax.xaxis.grid(False, 'major')
+        ax.legend()
 
         # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
         formatter = matplotlib.dates.DateFormatter('%H:%M')
-        axes.xaxis.set_major_formatter(formatter)
+        ax.xaxis.set_major_formatter(formatter)
 
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-        figure.autofmt_xdate()
+        ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
+        fig.autofmt_xdate()
 
-        return figure
+        return fig
 
     # TODO: is this part of the DL pipeline? If so delete.
     @staticmethod

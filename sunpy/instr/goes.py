@@ -156,7 +156,7 @@ def calculate_temperature_em(goests, abundances="coronal",
                              download=False, download_dir=None):
     """
     Calculates temperature and emission measure from a
-    `~sunpy.timeseries.XRSTimeSeries`.
+    `~sunpy.timeseries.sources.XRSTimeSeries`.
 
     This function calculates the isothermal temperature and
     corresponding volume emission measure of the solar soft X-ray
@@ -168,7 +168,7 @@ def calculate_temperature_em(goests, abundances="coronal",
 
     Parameters
     ----------
-    goeslc : `~sunpy.timeseries.XRSTimeSeries`
+    goeslc : `~sunpy.timeseries.sources.XRSTimeSeries`
         The TimeSeries containing GOES flux data which **MUST**
         be in units of "W/m^2".
     abundances : {'coronal' | 'photospheric'}, optional
@@ -186,7 +186,7 @@ def calculate_temperature_em(goests, abundances="coronal",
 
     Returns
     -------
-    `~sunpy.timeseries.XRSTimeSeries`
+    `~sunpy.timeseries.sources.XRSTimeSeries`
         Contains same metadata and data as input timeseries with the
         following two additional data columns:
 
@@ -672,7 +672,9 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     # Check inputs are of correct type
     longflux = longflux.to(u.W/u.m**2)
     temp = temp.to(u.MK)
-    log10_temp = np.log10(temp.value)
+    # Ignore zero values raising a numpy warning here
+    with np.errstate(invalid='ignore'):
+        log10_temp = np.log10(temp.value)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -749,7 +751,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
 
     Parameters
     ----------
-    goests : `~sunpy.timeseries.XRSTimeSeries`
+    goests : `~sunpy.timeseries.sources.XRSTimeSeries`
         TimeSeries object containing GOES data.  The units of these
         data MUST be W/m^2 (flux), MK (temperature) and cm^-3
         (emission measure).  If LightCurve object does not contain
@@ -769,7 +771,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
 
     Returns
     -------
-    ts_new : `~sunpy.timeseries.XRSTimeSeries`
+    ts_new : `~sunpy.timeseries.sources.XRSTimeSeries`
         Contains same metadata and data as input LightCurve with the
         following additional data columns:
 
@@ -1029,13 +1031,13 @@ def calculate_xray_luminosity(goests):
 
     Parameters
     ----------
-    goests : `~sunpy.timeseries.XRSTimeSeries`
+    goests : `~sunpy.timeseries.sources.XRSTimeSeries`
         LightCurve object containing GOES flux data which MUST
         be in units of W/m^2.
 
     Returns
     -------
-    ts_new : `~sunpy.timeseries.XRSTimeSeries`
+    ts_new : `~sunpy.timeseries.sources.XRSTimeSeries`
         Contains same metadata and data as input LightCurve with the
         following additional data columns;
 
@@ -1357,7 +1359,6 @@ def flux_to_flareclass(goesflux: u.watt/u.m**2):
 
 
 def _assert_chrono_order(obstime):
-    chrono_check = np.array(obstime) - np.roll(obstime, 1)
-    chrono_check = chrono_check[1:]
+    chrono_check = obstime[1:] - obstime[:-1]
     if not all(val > TimeDelta(0*u.day) for val in chrono_check):
         raise ValueError("Elements of obstime must be in chronological order.")

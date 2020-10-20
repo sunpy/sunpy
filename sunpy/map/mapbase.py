@@ -28,21 +28,24 @@ from astropy.visualization.wcsaxes import WCSAxes
 import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
-from sunpy import config
+from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import expand_list
-from sunpy.util.decorators import deprecate_positional_args_since
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util import MetaDict, expand_list
+from sunpy.util.decorators import cached_property_based_on, deprecate_positional_args_since, deprecated
+from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
+from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
+
+_META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata'
 
 __all__ = ['GenericMap']
 
@@ -182,7 +185,7 @@ class GenericMap(NDData):
             warnings.warn("This file contains more than 2 dimensions. "
                           "Data will be truncated to the first two dimensions.", SunpyUserWarning)
 
-        super().__init__(data, meta=header, **kwargs)
+        super().__init__(data, meta=MetaDict(header), **kwargs)
 
         # Correct possibly missing meta keywords
         self._fix_date()
@@ -253,8 +256,11 @@ class GenericMap(NDData):
                                                     self._reference_latitude)),
                                tmf=TIME_FORMAT)
 
+    def __str__(self):
+        return f"{self._text_summary()}\n{self.data.__repr__()}"
+
     def __repr__(self):
-        return object.__repr__(self) + "\n" + self._text_summary() + "\n" + self.data.__repr__()
+        return f"{object.__repr__(self)}\n{self}"
 
     def _repr_html_(self):
         """
@@ -285,7 +291,9 @@ class GenericMap(NDData):
             bad_pixel_text += ", ".join(text_list)
 
         # Use a grayscale colormap with histogram equalization (and red for bad values)
-        cmap = cm.get_cmap('gray')
+        # Make a copy of the colormap to avoid modifying the matplotlib instance when
+        # doing set_bad()
+        cmap = copy.copy(cm.get_cmap('gray'))
         cmap.set_bad(color='red')
         norm = ImageNormalize(stretch=HistEqStretch(finite_data))
 
@@ -414,6 +422,11 @@ class GenericMap(NDData):
         return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
 
     @property
+    def _meta_hash(self):
+        return self.meta.item_hash()
+
+    @property
+    @cached_property_based_on('_meta_hash')
     def wcs(self):
         """
         The `~astropy.wcs.WCS` property of the map.
@@ -425,8 +438,9 @@ class GenericMap(NDData):
             warnings.simplefilter("ignore", SunpyUserWarning)
             try:
                 w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
-            except Exception:
-                warnings.warn("Unable to treat `.meta` as a FITS header, assuming a simple WCS.")
+            except Exception as e:
+                warnings.warn("Unable to treat `.meta` as a FITS header, assuming a simple WCS. "
+                              f"The exception raised was:\n{e}")
                 w2 = astropy.wcs.WCS(naxis=2)
 
         # If the FITS header is > 2D pick the first 2 and move on.
@@ -530,6 +544,7 @@ class GenericMap(NDData):
         return self.data.dtype
 
     @property
+    @deprecated(since="2.1", message="Use map.data.size instead", alternative="map.data.size")
     def size(self):
         """
         The number of pixels in the array of the map.
@@ -566,6 +581,30 @@ class GenericMap(NDData):
         Calculate the maximum value of the data array.
         """
         return self.data.max(*args, **kwargs)
+
+    @property
+    def unit(self):
+        """
+        Unit of the map data.
+
+        This is taken from the 'BUNIT' FITS keyword. If no 'BUNIT' entry is
+        present in the metadata then this returns `None`. If the 'BUNIT' value
+        cannot be parsed into a unit a warning is raised, and `None` returned.
+        """
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+
+        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
+        if isinstance(unit, u.UnrecognizedUnit):
+            warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                          'with sunpy.map.Map.\n'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'the FITS unit standards.',
+                          SunpyMetadataWarning)
+            unit = None
+        return unit
 
 # #### Keyword attribute and other attribute definitions #### #
 
@@ -737,18 +776,29 @@ class GenericMap(NDData):
 
     @property
     def rsun_obs(self):
-        """Radius of the Sun."""
+        """
+        Angular radius of the Sun.
+
+        Notes
+        -----
+        This value is taken the ``'rsun_obs'``, ``'solar_r'``, or ``radius``
+        FITS keywords. If none of these keys are present the photospheric limb
+        as seen from the observer coordinate is returned.
+        """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
                                                       self.meta.get('radius',
                                                                     None)))
 
         if rsun_arcseconds is None:
-            warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
+            warnings.warn("Missing metadata for solar angular radius: assuming photospheric limb "
+                          "as seen from observer coordinate.",
                           SunpyUserWarning)
-            rsun_arcseconds = sun.angular_radius(self.date).to('arcsec').value
-
-        return u.Quantity(rsun_arcseconds, 'arcsec')
+            dsun = self.dsun
+            rsun = sun._angular_radius(constants.radius, dsun)
+        else:
+            rsun = rsun_arcseconds * u.arcsec
+        return rsun
 
     @property
     def coordinate_system(self):
@@ -807,7 +857,7 @@ class GenericMap(NDData):
                     fake_observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, sc.radius,
                                                            obstime=sc.obstime)
                     fake_frame = sc.frame.replicate(observer=fake_observer)
-                    hgs = fake_frame.transform_to(HeliographicStonyhurst)
+                    hgs = fake_frame.transform_to(HeliographicStonyhurst(obstime=sc.obstime))
 
                     # HeliographicStonyhurst doesn't need an observer, but adding the observer
                     # facilitates a conversion back to HeliographicCarrington
@@ -822,7 +872,7 @@ class GenericMap(NDData):
         warning_message = "".join(
             [f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
-        warnings.warn(warning_message, SunpyUserWarning)
+        warnings.warn(warning_message, SunpyMetadataWarning, stacklevel=3)
 
         return get_earth(self.date)
 
@@ -1003,8 +1053,7 @@ class GenericMap(NDData):
 
         if err_message:
             err_message.append(
-                'See https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
-                'instructions on how to add missing metadata.')
+                f'See {_META_FIX_URL} for instructions on how to add missing metadata.')
             raise MapMetaValidationError('\n'.join(err_message))
 
         for meta_property in ('waveunit', ):
@@ -1186,6 +1235,8 @@ class GenericMap(NDData):
         lon, lat = self._get_lon_lat(self.center.frame)
         new_meta['crval1'] = lon.value
         new_meta['crval2'] = lat.value
+        new_meta['naxis1'] = new_data.shape[1]
+        new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
@@ -1408,6 +1459,15 @@ class GenericMap(NDData):
             A new map instance is returned representing to specified
             sub-region.
 
+        Notes
+        -----
+        The rectangle is defined in pixel space. If coordinate input is given,
+        it is first transformed into pixel space, and the pixel indices of
+        top_right and bottom_left are used as the corners of the rectangle.
+
+        If top_right is below or to the left of bottom_left, a message is logged
+        at the debug level to the sunpy logger.
+
         Examples
         --------
         >>> import astropy.units as u
@@ -1520,34 +1580,21 @@ class GenericMap(NDData):
             [268.24377, 254.83157, 268.24377, 321.89252],
             [249.99167, 265.14267, 274.61206, 240.5223 ]], dtype=float32)
         """
-        if not isinstance(bottom_left, u.Quantity):
-            bottom_left, top_right = get_rectangle_coordinates(bottom_left,
-                                                               top_right=top_right,
-                                                               width=width,
-                                                               height=height)
-
-            bottom_left = self.world_to_pixel(bottom_left)
-            top_right = self.world_to_pixel(top_right)
-
-        elif ([arg is not None for arg in (top_right, width, height)]
-              not in [[True, False, False], [False, True, True]]):
-            raise ValueError("If bottom_left is not a SkyCoord either top_right alone or "
-                             "both width and height must be specified.")
-
-        elif (not all([arg is None or (isinstance(arg, u.Quantity) and arg.unit.is_equivalent(u.pix))
-                       for arg in (bottom_left, top_right, width, height)])):
-            raise TypeError("When bottom_left is not a SkyCoord, any values of top_right, "
-                            "width or height specified must be Quantity objects in units of pixels.")
-
-        elif bottom_left.shape != (2,) or (top_right is not None and top_right.shape != (2,)):
-            raise ValueError(
-                "Both bottom_left and top_right when specified as Quantity objects must have shape (2,)")
-
-        elif height is not None and width is not None:
-            top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
+        # Check that we have been given a valid combination of inputs
+        # [False, False, False] is valid if bottom_left contains the two corner coords
+        if ([arg is not None for arg in (top_right, width, height)]
+                not in [[True, False, False], [False, False, False], [False, True, True]]):
+            raise ValueError("Either top_right alone or both width and height must be specified.")
+        # parse input arguments
+        bottom_left, top_right = self._parse_submap_input(bottom_left, top_right, width, height)
 
         x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
-        y_pixels = u.Quantity([top_right[1], bottom_left[1]]).to_value(u.pix)
+        y_pixels = u.Quantity([bottom_left[1], top_right[1]]).to_value(u.pix)
+        if x_pixels[0] > x_pixels[1]:
+            log.debug("The rectangle is inverted in the left/right direction.")
+
+        if y_pixels[0] > y_pixels[1]:
+            log.debug("The rectangle is inverted in the bottom/top direction.")
         # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
         y_pixels.sort()
@@ -1591,6 +1638,49 @@ class GenericMap(NDData):
         # Create new map with the modification
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
+
+    @seconddispatch
+    def _parse_submap_input(self, bottom_left, top_right, width, height):
+        """
+        Should take any valid input to submap() and return bottom_left and
+        top_right in pixel coordinates.
+        """
+
+    @_parse_submap_input.register(u.Quantity)
+    def _parse_submap_quantity_input(self, bottom_left, top_right, width, height):
+        if top_right is None and width is None:
+            raise ValueError('Either top_right alone or both width and height must be specified '
+                             'when bottom_left is a Quantity')
+        if bottom_left.shape != (2, ):
+            raise ValueError('bottom_left must have shape (2, ) when specified as a Quantity')
+        if top_right is not None:
+            if top_right.shape != (2, ):
+                raise ValueError('top_right must have shape (2, ) when specified as a Quantity')
+            if not top_right.unit.is_equivalent(u.pix):
+                raise TypeError("When bottom_left is a Quantity, top_right "
+                                "must be a Quantity in units of pixels.")
+            # Have bottom_left and top_right in pixels already, so no need to do
+            # anything else
+        else:
+            if not (width.unit.is_equivalent(u.pix) and
+                    height.unit.is_equivalent(u.pix)):
+                raise TypeError("When bottom_left is a Quantity, width and height "
+                                "must be a Quantity in units of pixels.")
+            # Add width and height to get top_right
+            top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
+        return bottom_left, top_right
+
+    @_parse_submap_input.register(SkyCoord)
+    def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
+        # Use helper function to get top_right as a SkyCoord
+        bottom_left, top_right = get_rectangle_coordinates(bottom_left,
+                                                           top_right=top_right,
+                                                           width=width,
+                                                           height=height)
+        # Convert cordinates to pixels
+        bottom_left = self.world_to_pixel(bottom_left)
+        top_right = self.world_to_pixel(top_right)
+        return bottom_left, top_right
 
     @u.quantity_input
     def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):
@@ -1786,6 +1876,13 @@ class GenericMap(NDData):
                        axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
+
+        This draws a rectangle that has corners at ``(bottom_left, top_right)``,
+        and has sides parallel to coordinate axes of the map.
+
+        If ``width`` and ``height`` are specified, they are respectively added to the
+        longitude and latitude of the ``bottom_left`` coordinate to calculate a
+        ``top_right`` coordinate.
 
         Parameters
         ----------
@@ -1994,7 +2091,11 @@ class GenericMap(NDData):
                               SunpyUserWarning)
 
         # Normal plot
-        plot_settings = copy.deepcopy(self.plot_settings)
+        try:
+            plot_settings = copy.deepcopy(self.plot_settings)
+        except NotImplementedError:
+            # MPL dev at the moment does not support deepcopy and this is a workaround.
+            plot_settings = self.plot_settings
         if 'title' in plot_settings:
             plot_settings_title = plot_settings.pop('title')
         else:
@@ -2023,7 +2124,11 @@ class GenericMap(NDData):
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
-        imshow_args.update(copy.deepcopy(imshow_kwargs))
+        try:
+            imshow_args.update(copy.deepcopy(imshow_kwargs))
+        except NotImplementedError:
+            # MPL dev at the moment does not support deepcopy and this is a workaround.
+            imshow_args.update(imshow_kwargs)
 
         if clip_interval is not None:
             if len(clip_interval) == 2:
@@ -2034,6 +2139,19 @@ class GenericMap(NDData):
 
             imshow_args['vmin'] = vmin
             imshow_args['vmax'] = vmax
+
+        if 'norm' in imshow_args:
+            norm = imshow_args['norm']
+            if 'vmin' in imshow_args:
+                if norm.vmin is not None:
+                    raise ValueError('Cannot manually specify vmin, as the norm '
+                                     'already has vmin set')
+                norm.vmin = imshow_args.pop('vmin')
+            if 'vmax' in imshow_args:
+                if norm.vmax is not None:
+                    raise ValueError('Cannot manually specify vmax, as the norm '
+                                     'already has vmax set')
+                norm.vmax = imshow_args.pop('vmax')
 
         if self.mask is None:
             ret = axes.imshow(self.data, **imshow_args)
@@ -2050,6 +2168,33 @@ class GenericMap(NDData):
                 plt.sci(ret)
 
         return ret
+
+    def contour(self, level, **kwargs):
+        """
+        Returns coordinates of the contours for a given level value.
+
+        For details of the contouring algorithm see `skimage.measure.find_contours`.
+
+        Parameters
+        ----------
+        level : float
+            Value along which to find contours in the array.
+        kwargs :
+            Additional keyword arguments are passed to `skimage.measure.find_contours`.
+
+        Returns
+        -------
+        contours: list of (n,2) `~astropy.coordinates.SkyCoord`
+            Coordinates of each contour.
+
+        See also
+        --------
+        `skimage.measure.find_contours`
+        """
+        from skimage import measure
+        contours = measure.find_contours(self.data, level=level, **kwargs)
+        contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
+        return contours
 
 
 class InvalidHeaderInformation(ValueError):

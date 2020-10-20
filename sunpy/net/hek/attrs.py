@@ -211,6 +211,7 @@ def _a(wlk, root, state, dct):
     state[Contains] += n
     return dct
 
+
 @walker.add_creator(
     Time, SpatialRegion, EventType, _ParamAttr, attr.AttrAnd, Contains)
 def _c(wlk, root, state):

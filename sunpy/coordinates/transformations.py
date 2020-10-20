@@ -20,7 +20,6 @@ from contextlib import contextmanager
 import numpy as np
 
 import astropy.units as u
-from astropy._erfa import obl06
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
     HCRS,
@@ -41,6 +40,8 @@ from astropy.coordinates.representation import (
     SphericalRepresentation,
     UnitSphericalRepresentation,
 )
+# Import erfa via astropy to make sure we are using the same ERFA library as Astropy
+from astropy.coordinates.sky_coordinate import erfa
 from astropy.coordinates.transformations import (
     AffineTransform,
     FunctionTransform,
@@ -197,11 +198,13 @@ def _observers_are_equal(obs_1, obs_2):
 
     # obs_1 != obs_2
     if obs_1 is None:
-        raise ConvertError("The source observer is set to None, but the destination observer is "
-                           f"{obs_2}.")
+        raise ConvertError("The source observer is set to None, but the transformation requires "
+                           "the source observer to be specified, as the destination observer "
+                           f"is set to {obs_2}.")
     if obs_2 is None:
-        raise ConvertError("The destination observer is set to None, but the source observer is "
-                           f"{obs_2}.")
+        raise ConvertError("The destination observer is set to None, but the transformation "
+                           "requires the destination observer to be specified, as the "
+                           f"source observer is set to {obs_1}.")
     if isinstance(obs_1, str):
         raise ConvertError("The source observer needs to have `obstime` set because the "
                            "destination observer is different.")
@@ -686,9 +689,13 @@ def hme_to_hee(hmecoord, heeframe):
     """
     Convert from Heliocentric Mean Ecliptic to Heliocentric Earth Ecliptic
     """
+    if heeframe.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Convert to the HME frame with mean equinox of date at the HEE obstime, through HCRS
     int_frame = HeliocentricMeanEcliptic(obstime=heeframe.obstime, equinox=heeframe.obstime)
-    int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
+    int_coord = hmecoord.transform_to(HCRS(obstime=hmecoord.obstime)).transform_to(int_frame)
 
     # Rotate the intermediate coord to the HEE frame
     total_matrix = _rotation_matrix_hme_to_hee(int_frame)
@@ -704,6 +711,10 @@ def hee_to_hme(heecoord, hmeframe):
     """
     Convert from Heliocentric Earth Ecliptic to Heliocentric Mean Ecliptic
     """
+    if heecoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     int_frame = HeliocentricMeanEcliptic(obstime=heecoord.obstime, equinox=heecoord.obstime)
 
     # Rotate the HEE coord to the intermediate frame
@@ -712,7 +723,7 @@ def hee_to_hme(heecoord, hmeframe):
     int_coord = int_frame.realize_frame(int_repr)
 
     # Convert to the HME frame through HCRS
-    return int_coord.transform_to(HCRS).transform_to(hmeframe)
+    return int_coord.transform_to(HCRS(obstime=int_coord.obstime)).transform_to(hmeframe)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -724,8 +735,10 @@ def hee_to_hee(from_coo, to_frame):
     """
     if np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
+    elif to_frame.obstime is None:
+        return from_coo
     else:
-        return from_coo.transform_to(HCRS).transform_to(to_frame)
+        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -735,22 +748,25 @@ def hee_to_gse(heecoord, gseframe):
     """
     Convert from Heliocentric Earth Ecliptic to Geocentric Solar Ecliptic
     """
-    # Use an intermediate frame of HEE at the GSE observation time
-    int_frame = HeliocentricEarthEcliptic(obstime=gseframe.obstime)
-    int_coord = heecoord.transform_to(int_frame)
+    # First transform the HEE coord to the GSE obstime
+    int_coord = _transform_obstime(heecoord, gseframe.obstime)
 
-    # Get the Sun-Earth vector in the intermediate frame
-    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
-    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+    if int_coord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    # Import here to avoid a circular import
+    from .sun import earth_distance
 
     # Find the Earth-object vector in the intermediate frame
+    sun_earth_int = earth_distance(int_coord.obstime) * CartesianRepresentation(1, 0, 0)
     earth_object_int = int_coord.cartesian - sun_earth_int
 
     # Flip the vector in X and Y, but leave Z untouched
     # (The additional transpose operations are to handle both scalar and array inputs)
     newrepr = CartesianRepresentation((earth_object_int.xyz.T * [-1, -1, 1]).T)
 
-    return gseframe.realize_frame(newrepr)
+    return gseframe._replicate(newrepr, obstime=int_coord.obstime)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -760,23 +776,25 @@ def gse_to_hee(gsecoord, heeframe):
     """
     Convert from Geocentric Solar Ecliptic to Heliocentric Earth Ecliptic
     """
-    # Use an intermediate frame of HEE at the GSE observation time
-    int_frame = HeliocentricEarthEcliptic(obstime=gsecoord.obstime)
+    # First transform the GSE coord to the HEE obstime
+    int_coord = _transform_obstime(gsecoord, heeframe.obstime)
 
-    # Get the Sun-Earth vector in the intermediate frame
-    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
-    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+    if int_coord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
 
-    # Find the Earth-object vector in the intermediate frame
-    # Flip the vector in X and Y, but leave Z untouched
-    # (The additional transpose operations are to handle both scalar and array inputs)
-    earth_object_int = CartesianRepresentation((gsecoord.cartesian.xyz.T * [-1, -1, 1]).T)
+    # Import here to avoid a circular import
+    from .sun import earth_distance
 
     # Find the Sun-object vector in the intermediate frame
-    sun_object_int = sun_earth_int + earth_object_int
-    int_coord = int_frame.realize_frame(sun_object_int)
+    earth_sun_int = earth_distance(int_coord.obstime) * CartesianRepresentation(1, 0, 0)
+    sun_object_int = int_coord.cartesian - earth_sun_int
 
-    return int_coord.transform_to(heeframe)
+    # Flip the vector in X and Y, but leave Z untouched
+    # (The additional transpose operations are to handle both scalar and array inputs)
+    newrepr = CartesianRepresentation((sun_object_int.xyz.T * [-1, -1, 1]).T)
+
+    return heeframe._replicate(newrepr, obstime=int_coord.obstime)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -789,7 +807,8 @@ def gse_to_gse(from_coo, to_frame):
     if np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
-        return from_coo.transform_to(HeliocentricEarthEcliptic).transform_to(to_frame)
+        heecoord = from_coo.transform_to(HeliocentricEarthEcliptic(obstime=from_coo.obstime))
+        return heecoord.transform_to(to_frame)
 
 
 def _rotation_matrix_hgs_to_hci(obstime):
@@ -822,6 +841,10 @@ def hgs_to_hci(hgscoord, hciframe):
     # First transform the HGS coord to the HCI obstime
     int_coord = _transform_obstime(hgscoord, hciframe.obstime)
 
+    if int_coord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Rotate from HGS to HCI
     total_matrix = _rotation_matrix_hgs_to_hci(int_coord.obstime)
     newrepr = int_coord.cartesian.transform(total_matrix)
@@ -838,6 +861,10 @@ def hci_to_hgs(hcicoord, hgsframe):
     """
     # First transform the HCI coord to the HGS obstime
     int_coord = _transform_obstime(hcicoord, hgsframe.obstime)
+
+    if int_coord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
 
     # Rotate from HCI to HGS
     total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hci(int_coord.obstime))
@@ -864,7 +891,7 @@ def _rotation_matrix_obliquity(time):
     """
     Return the rotation matrix from Earth equatorial to ecliptic coordinates
     """
-    return rotation_matrix(obl06(*get_jd12(time, 'tt'))*u.radian, 'x')
+    return rotation_matrix(erfa.obl06(*get_jd12(time, 'tt'))*u.radian, 'x')
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -874,9 +901,13 @@ def hme_to_gei(hmecoord, geiframe):
     """
     Convert from Heliocentric Mean Ecliptic to Geocentric Earth Equatorial
     """
+    if geiframe.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Use an intermediate frame of HME at the GEI observation time, through HCRS
     int_frame = HeliocentricMeanEcliptic(obstime=geiframe.obstime, equinox=geiframe.equinox)
-    int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
+    int_coord = hmecoord.transform_to(HCRS(obstime=int_frame.obstime)).transform_to(int_frame)
 
     # Get the Sun-Earth vector in the intermediate frame
     sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
@@ -899,6 +930,10 @@ def gei_to_hme(geicoord, hmeframe):
     """
     Convert from Geocentric Earth Equatorial to Heliocentric Mean Ecliptic
     """
+    if geicoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
     # Use an intermediate frame of HME at the GEI observation time
     int_frame = HeliocentricMeanEcliptic(obstime=geicoord.obstime, equinox=geicoord.equinox)
 
@@ -915,7 +950,7 @@ def gei_to_hme(geicoord, hmeframe):
     int_coord = int_frame.realize_frame(sun_object_int)
 
     # Convert to the final frame through HCRS
-    return int_coord.transform_to(HCRS).transform_to(hmeframe)
+    return int_coord.transform_to(HCRS(obstime=int_coord.obstime)).transform_to(hmeframe)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -928,7 +963,7 @@ def gei_to_gei(from_coo, to_frame):
     if np.all((from_coo.equinox == to_frame.equinox) and (from_coo.obstime == to_frame.obstime)):
         return to_frame.realize_frame(from_coo.data)
     else:
-        return from_coo.transform_to(HCRS).transform_to(to_frame)
+        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
 
 
 def _make_sunpy_graph():

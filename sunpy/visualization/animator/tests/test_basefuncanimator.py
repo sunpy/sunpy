@@ -1,6 +1,4 @@
-import warnings
 from functools import partial
-from itertools import product
 
 import matplotlib.animation as mplanim
 import matplotlib.axes as maxes
@@ -9,15 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
-import astropy.units as u
-import astropy.wcs
-
-import sunpy.data.test
-import sunpy.map
 from sunpy.tests.helpers import figure_test
-from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyDeprecationWarning
-from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, ImageAnimatorWCS, LineAnimator, base
+from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, base
 
 
 class FuncAnimatorTest(BaseFuncAnimator):
@@ -200,23 +191,3 @@ def test_lineanimator_figure():
     ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata])
 
     return ani.fig
-
-
-@figure_test
-def test_imageanimator_figure():
-    AIA_171 = sunpy.data.test.get_test_filepath('aia_171_level1.fits')
-    KCOR = sunpy.data.test.get_test_filepath('20181209_180305_kcor_l1.5_rebinned.fits')
-    map_seuence = sunpy.map.Map(AIA_171, KCOR, sequence=True)
-    sequence_array = map_seuence.as_array()
-    wcs_input_dict = {f'{key}{n+1}': map_seuence.all_meta()[0].get(f'{key}{n}')
-                      for n, key in product([1, 2], ['CTYPE', 'CUNIT', 'CDELT'])}
-    t0, t1 = map(parse_time, [k['date-obs'] for k in map_seuence.all_meta()])
-    time_diff = (t1 - t0).to(u.s)
-    wcs_input_dict.update(
-        {'CTYPE1': 'Time', 'CUNIT1': time_diff.unit.name, 'CDELT1': time_diff.value})
-    wcs = astropy.wcs.WCS(wcs_input_dict)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", SunpyDeprecationWarning)
-        wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1])
-
-    return wcs_anim.fig

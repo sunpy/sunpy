@@ -18,33 +18,36 @@ def LCClient():
     return noaa.NOAAIndicesClient()
 
 
+@pytest.fixture
+def SRSClient():
+    return noaa.SRSClient()
+
+
 def mock_query_object(start_date, end_date):
     """
     Creation of a QueryResponse object, and prefill some
     downloaded data from noaa.NOAAIndicesClient().fetch(Time('20 ..)
     """
-    # Create a mock QueryResponse object
-    map_ = {
-        'TimeRange': TimeRange(parse_time(start_date), parse_time(end_date)),
-        'Time_start': parse_time(start_date),
-        'Time_end': parse_time(end_date),
-        'source': 'sdic',
-        'instrument': 'noaa-indices',
-        'physobs': 'sunspot number',
-        'provider': 'swpc'
+    # Create a mock Query Response object
+    start = parse_time(start_date)
+    end = parse_time(end_date)
+    obj = {
+        'Time': TimeRange(parse_time(start), parse_time(end)),
+        'Instrument': 'NOAA-Indices',
+        'Physobs': 'sunspot number',
+        'Source': 'SIDC',
+        'Provider': 'SWPC',
+        'url': 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
     }
-
-    resp = QueryResponse.create(map_,
-                                noaa.NOAAIndicesClient()._get_url_for_timerange(None),
-                                client=noaa.NOAAIndicesClient())
-    return resp
+    results = QueryResponse([obj], client=noaa.NOAAIndicesClient())
+    return results
 
 
 @pytest.mark.remote_data
 def test_fetch_working(LCClient, tmpdir):
     """
     Tests if the online server for noaa is working.
-    Uses the url : ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
+    Uses the url : https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json
     """
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
                           Instrument('noaa-indices'))
@@ -57,12 +60,12 @@ def test_fetch_working(LCClient, tmpdir):
     mock_qr = mock_qr.blocks[0]
     qr = qr1.blocks[0]
 
-    assert mock_qr.source == qr.source
-    assert mock_qr.provider == qr.provider
-    assert mock_qr.physobs == qr.physobs
-    assert mock_qr.instrument == qr.instrument
-    assert mock_qr.url == qr.url
-    assert mock_qr.time == qr.time
+    assert mock_qr['Source'] == qr['Source']
+    assert mock_qr['Provider'] == qr['Provider']
+    assert mock_qr['Physobs'] == qr['Physobs']
+    assert mock_qr['Instrument'] == qr['Instrument']
+    assert mock_qr['url'] == qr['url']
+    assert mock_qr['Time'] == qr['Time']
 
     # Assert if the timerange is same
     assert qr1.time_range() == TimeRange('2012/10/4', '2012/10/6')
@@ -70,19 +73,20 @@ def test_fetch_working(LCClient, tmpdir):
     target_dir = tmpdir.mkdir("down")
     download_list = LCClient.fetch(qr1, path=target_dir)
     assert len(download_list) == len(qr1)
-    assert download_list[0].split('/')[-1] == 'RecentIndices.txt'
+    assert download_list[0].split('/')[-1] == 'observed-solar-cycle-indices.json'
 
 
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
-    [(TimeRange('1995/06/03', '1995/06/04'),
-      'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
-      'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt'),
-     (TimeRange('2008/06/01', '2008/06/02'),
-      'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
-      'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt')])
+    [(Time('1995/06/03', '1995/06/04'),
+      'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
+      'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'),
+     (Time('2008/06/01', '2008/06/02'),
+      'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
+      'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
+    resp = LCClient.search(timerange)
+    urls = [i['url'] for i in resp]
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -128,8 +132,8 @@ def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path, LCClient):
     # Downloader.enqueue_file method with the correct arguments. Everything
     # that happens after this point should either be tested in the
     # GenericClient tests or in parfive itself.
-    assert mock_enqueue.called_once_with(("ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt",
-                                          path / "RecentIndices.txt"))
+    assert mock_enqueue.called_once_with(("https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json",
+                                          path / "observed-solar-cycle-indices.json"))
 
 
 @no_vso
@@ -150,8 +154,8 @@ def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, LCClient):
     # Downloader.enqueue_file method with the correct arguments. Everything
     # that happens after this point should either be tested in the
     # GenericClient tests or in parfive itself.
-    assert mock_enqueue.called_once_with(("ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt",
-                                          path / "RecentIndices.txt"))
+    assert mock_enqueue.called_once_with(("https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json",
+                                          path / "observed-solar-cycle-indices.json"))
 
 
 @pytest.mark.remote_data
@@ -171,6 +175,14 @@ def test_srs_current_year():
     assert res.data[0].endswith(f"{year}0101SRS.txt")
 
 
+@pytest.mark.filterwarnings('ignore:ERFA function')
+def test_srs_out_of_range(SRSClient):
+    res = SRSClient.search(a.Time('1995/01/01', '1995/02/01'))
+    assert len(res) == 0
+    res = SRSClient.search(a.Time('2995/01/01', '2995/02/01'))
+    assert len(res) == 0
+
+
 def test_attr_reg():
     assert a.Instrument.noaa_indices == a.Instrument("NOAA-Indices")
     assert a.Instrument.noaa_predict == a.Instrument("NOAA-Predict")
@@ -184,3 +196,13 @@ def test_client_repr(LCClient):
     """
     output = str(LCClient)
     assert output[:50] == 'sunpy.net.dataretriever.sources.noaa.NOAAIndicesCl'
+
+
+def test_show(LCClient):
+    mock_qr = mock_query_object('2012/10/4', '2012/10/6')
+    qrshow0 = mock_qr.show()
+    qrshow1 = mock_qr.show('Source', 'Instrument')
+    allcols = ['Instrument', 'Physobs', 'Source', 'Provider']
+    assert qrshow0.colnames == allcols
+    assert qrshow1.colnames == ['Source', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'NOAA-Indices'

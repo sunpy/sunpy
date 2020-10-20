@@ -10,6 +10,10 @@ from astropy.wcs import WCS
 from sunpy.tests.helpers import figure_test
 from sunpy.visualization.animator.wcs import ArrayAnimatorWCS
 
+# See https://github.com/astropy/astropy/pull/10400
+pytestmark = pytest.mark.filterwarnings('ignore:target cannot be converted to ICRS, so will not be '
+                                        'set on SpectralCoord')
+
 
 @pytest.fixture
 def wcs_4d():
@@ -230,6 +234,23 @@ def test_array_animator_wcs_coord_params(wcs_4d):
             'major_formatter': 'hh:mm:ss',
             'axislabel': 'Longitude',
             'ticks': {'spacing': 10*u.arcsec}
+        }
+    }
+
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'], coord_params=coord_params)
+    return a.fig
+
+
+@figure_test
+def test_array_animator_wcs_coord_params_no_ticks(wcs_4d):
+
+    coord_params = {
+        'hpln': {
+            'format_unit': u.deg,
+            'major_formatter': 'hh:mm:ss',
+            'axislabel': 'Longitude',
+            'ticks': False
         }
     }
 

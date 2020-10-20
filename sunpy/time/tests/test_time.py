@@ -73,6 +73,15 @@ def test_parse_time_pandas_timestamp():
     assert dt == LANDING
 
 
+def test_parse_time_nanoseconds():
+    # Check that nanosecon precision is retained when parsing pandas timestamps
+    ts = pandas.Timestamp('2020-07-31 00:00:26.166196864')
+    dt = parse_time(ts)
+    assert dt.jd1 == 2459062.0
+    # If nanoseconds are not retained, this value is slightly too low
+    assert dt.jd2 == -0.4996971504992593
+
+
 def test_parse_time_pandas_series():
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.Series(inputs)
@@ -135,7 +144,8 @@ def test_parse_time_individual_numpy_datetime():
 
 
 def test_parse_time_numpy_datetime_timezone():
-    dt64 = np.datetime64('2014-02-07T16:47:51-0500')
+    with pytest.warns(DeprecationWarning, match='parsing timezone aware datetimes is deprecated'):
+        dt64 = np.datetime64('2014-02-07T16:47:51-0500')
     dt = parse_time(dt64)
 
     assert dt == Time('2014-02-07T21:47:51', format='isot')
@@ -245,6 +255,9 @@ def test_parse_time_leap_second():
     assert dt2.jd == dt3.jd
 
 
+# This warning shouldn't really be ignored; see https://github.com/astropy/astropy/issues/10564
+# for the issue that will help decide how to handle this
+@pytest.mark.filterwarnings('ignore:FITS time strings should no longer have embedded time scale')
 @pytest.mark.parametrize("ts,fmt", [
     (1950.0, 'byear'),
     ('B1950.0', 'byear_str'),

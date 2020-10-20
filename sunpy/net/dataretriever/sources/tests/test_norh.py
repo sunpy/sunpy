@@ -10,6 +10,7 @@ from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import range_time, time_attr
+from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 
 
@@ -20,28 +21,30 @@ def LCClient():
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
-    (TimeRange('2012/4/21', '2012/4/21'),
+    (a.Time('2012/4/21', '2012/4/21'),
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421',
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421'
      ),
-    (TimeRange('2012/12/1', '2012/12/2'),
+    (a.Time('2012/12/1', '2012/12/2'),
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121201',
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121202'
      ),
-    (TimeRange('2012/3/7', '2012/3/14'),
+    (a.Time('2012/3/7', '2012/3/14'),
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120307',
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120314'
      )
 ])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange, wavelength=17*u.GHz)
+    qresponse = LCClient.search(timerange, a.Wavelength(17*u.GHz))
+    urls = [i['url'] for i in qresponse]
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
 
 @given(time_attr())
-def test_can_handle_query(LCClient, time):
+def test_can_handle_query(time):
+    LCClient = norh.NoRHClient()
     ans1 = LCClient._can_handle_query(time, a.Instrument.norh)
     assert ans1 is True
     ans1 = LCClient._can_handle_query(time, a.Instrument.norh,
@@ -55,7 +58,8 @@ def test_can_handle_query(LCClient, time):
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
 @given(time=range_time(Time('1992-6-1')))
 @settings(max_examples=2, deadline=50000)
-def test_query(LCClient, time, wave):
+def test_query(time, wave):
+    LCClient = norh.NoRHClient()
     qr1 = LCClient.search(time, a.Instrument.norh, wave)
     assert isinstance(qr1, QueryResponse)
     # Not all hypothesis queries are going to produce results, and
@@ -67,25 +71,6 @@ def test_query(LCClient, time, wave):
         #  and the end time equal or smaller.
         # hypothesis can give same start-end, but the query will give you from start to end (so +1)
         assert qr1.time_range().end <= time.end + TimeDelta(1*u.day)
-
-
-# Don't use time_attr here for speed.
-def test_query_no_wave(LCClient):
-    with pytest.raises(ValueError):
-        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh)
-
-
-def test_wavelength_range(LCClient):
-    with pytest.raises(ValueError):
-        LCClient.search(
-            a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh,
-            a.Wavelength(17 * u.GHz, 34 * u.GHz))
-
-
-def test_query_wrong_wave(LCClient):
-    with pytest.raises(ValueError):
-        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh,
-                        a.Wavelength(50*u.GHz))
 
 
 @pytest.mark.remote_data
@@ -119,3 +104,37 @@ def test_client_repr(LCClient):
     """
     output = str(LCClient)
     assert output[:50] == 'sunpy.net.dataretriever.sources.norh.NoRHClient\n\nP'
+
+
+def mock_query_object(LCClient):
+    """
+    Creating a Query Response object and prefilling it with some information
+    """
+    # Creating a Query Response Object
+    start = '2016/1/1'
+    end = '2016/1/1 23:59:59'
+    wave = 17*u.GHz
+    obj = {
+        'Time': TimeRange(parse_time(start), parse_time(end)),
+        'Start Time': parse_time(start),
+        'End Time': parse_time(end),
+        'Instrument': 'NORH',
+        'Source': 'NAOJ',
+        'Provider': 'NRO',
+        'Wavelength': wave,
+        'url': 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/01/tca160101'
+    }
+    results = QueryResponse([obj], client=LCClient)
+    return results
+
+
+def test_show(LCClient):
+    mock_qr = mock_query_object(LCClient)
+    qrshow0 = mock_qr.show()
+    qrshow1 = mock_qr.show('Wavelength', 'Instrument')
+    allcols = ['Start Time', 'End Time', 'Instrument', 'Source',
+               'Provider', 'Wavelength']
+    assert qrshow0.colnames == allcols
+    assert qrshow1.colnames == ['Wavelength', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'NORH'
+    assert qrshow1['Wavelength'][0] == 17*u.GHz

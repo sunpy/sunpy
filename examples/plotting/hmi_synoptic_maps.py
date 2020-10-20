@@ -10,7 +10,6 @@ more common Helioprojective coordinate system, it is in Heliographic Carrington
 coordinates and in a non-trivial Cylindrical Equal Area projection.
 """
 import matplotlib.pyplot as plt
-import numpy as np
 
 from astropy.utils.data import download_file
 
@@ -23,30 +22,7 @@ filename = download_file(
 syn_map = sunpy.map.Map(filename)
 
 ###############################################################################
-# There are a couple of oddities with this file, firstly the value of 'CUNIT2':
-print(syn_map.meta['CUNIT2'])
-
-###############################################################################
-# That is not a unit! What this is telling us is that the latitude coordinate
-# is actually the sine of latitude. This is a cyclindrical equal area (CEA)
-# projection, which can be checed by looking at the CTYPE keywords.
-print(syn_map.meta['CTYPE1'])
-print(syn_map.meta['CTYPE2'])
-
-###############################################################################
-# With reference to the Thompson (2006) paper
-# section 5.5 (https://doi.org/10.1051/0004-6361:20054262),
-# CUNIT2 should be in degrees and CDELT2 should be 180/pi times the spacing in
-# sin(latitude).
-#
-# In addition the value of CDELT1 has the wrong sign so let's also fix this.
-syn_map.meta['CUNIT2'] = 'degree'
-syn_map.meta['CDELT2'] = 180 / np.pi * syn_map.meta['CDELT2']
-
-syn_map.meta['CDELT1'] *= -1
-
-###############################################################################
-# Let's also fix the plot settings
+# Let's fix the plot settings
 syn_map.plot_settings['cmap'] = 'hmimag'
 syn_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 

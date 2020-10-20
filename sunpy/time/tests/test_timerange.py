@@ -1,9 +1,10 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
+from astropy.utils.exceptions import ErfaWarning
 
 import sunpy.time
 from sunpy.time import is_time_equal
@@ -259,6 +260,19 @@ def test_contains(timerange_a):
     assert timerange.end in timerange
     assert '2014/05/04 15:21' in timerange
     assert '1975/4/13' not in timerange
-    assert '2100/1/1'not in timerange
+    with pytest.warns(ErfaWarning, match='dubious year'):
+        assert '2100/1/1'not in timerange
     assert '2014/05/03 12:00' in timerange
     assert '2014/05/05 21:00' in timerange
+
+
+def test_get_dates_daylist_less_24_hours():
+    starttime = datetime(2020, 1, 1, 12)
+    endtime = datetime(2020, 1, 2, 11)
+    interval = sunpy.time.TimeRange(starttime, endtime)
+    daylist = interval.get_dates()
+    day_one = Time("2020-01-01T00:00:00.000")
+    day_two = Time("2020-01-02T00:00:00.000")
+    assert len(daylist) == 2
+    assert daylist[0] == day_one
+    assert daylist[1] == day_two

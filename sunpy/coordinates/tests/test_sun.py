@@ -10,6 +10,7 @@ from astropy.time import Time
 from astropy.utils.exceptions import ErfaWarning
 
 from sunpy.coordinates import sun
+from sunpy.sun.constants import radius
 from .helpers import assert_longitude_allclose
 
 # Ignore warnings that astropy throws when trying and failing to update ephemeris
@@ -65,14 +66,21 @@ def test_apparent_latitude(t1, t2):
     assert_quantity_allclose(sun.apparent_latitude(t2), Angle('-0.42s'), atol=0.005*u.arcsec)
 
 
-def test_angular_radius():
+def test_angular_radius(t2):
+    # Validate against a published value from the Astronomical Almanac (2013, C13)
+    # The Astromomical Almanac uses a slightly different radius for the Sun (6.96e5 km)
+    # The Astronomical Almanac also uses a small-angle approximation
+    # See https://archive.org/details/131123ExplanatorySupplementAstronomicalAlmanac/page/n212/mode/1up
+    assert_quantity_allclose(sun.angular_radius(t2),
+                             Angle('0d15m44.61s') / (6.96e5*u.km) * radius,  # scale to IAU radius
+                             atol=0.005*u.arcsec)
+
     # Regression-only test
-    # The Astronomical Almanac publishes values, but I don't know what physical radius they use
-    assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.871*u.arcsec, atol=1e-3*u.arcsec)
+    assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.875*u.arcsec, atol=1e-3*u.arcsec)
     with pytest.warns(ErfaWarning):
         assert_quantity_allclose(sun.angular_radius("2043/03/01"),
-                                 968.326*u.arcsec, atol=1e-3*u.arcsec)
-    assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.039*u.arcsec, atol=1e-3*u.arcsec)
+                                 968.330*u.arcsec, atol=1e-3*u.arcsec)
+    assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.042*u.arcsec, atol=1e-3*u.arcsec)
 
 
 def test_mean_obliquity_of_ecliptic(t1, t2):

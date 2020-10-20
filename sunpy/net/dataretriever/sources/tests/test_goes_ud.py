@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given, settings
+from hypothesis import given
 
 import astropy.units as u
 from astropy.time import TimeDelta
@@ -23,14 +23,15 @@ def LCClient():
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
-    [(TimeRange('1995/06/03', '1995/06/05'),
+    [(Time('1995/06/03 1:00', '1995/06/05'),
       'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',
       'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
-     (TimeRange('2008/06/02', '2008/06/04'),
+     (Time('2008/06/02 12:00', '2008/06/04'),
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
+    qresponse = LCClient.search(timerange)
+    urls = [i['url'] for i in qresponse]
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -38,12 +39,13 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange, url_start, url_end",
-                         [(TimeRange('1999/01/10', '1999/01/20'),
+                         [(a.Time('1999/01/10 00:10', '1999/01/20'),
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits')])
 def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange)
-    assert len(urls) == 9
+    qresponse = LCClient.search(timerange, a.goes.SatelliteNumber.ten)
+    urls = [i['url'] for i in qresponse]
+    assert len(urls) == 14
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
@@ -58,30 +60,33 @@ def test_can_handle_query(time):
     assert ans3 is False
 
 
-@pytest.mark.remote_data
-def test_no_satellite(LCClient):
-    with pytest.raises(ValueError):
-        LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
-
-
+@pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
 @pytest.mark.remote_data
 def test_fixed_satellite(LCClient):
-    ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
-                           a.Instrument.xrs)
+    ans1 = LCClient.search(a.Time("2017/01/01 2:00", "2017/01/02 2:10"),
+                           a.Instrument.xrs,
+                           a.goes.SatelliteNumber.fifteen)
 
     for resp in ans1:
-        assert "go15" in resp.url
+        assert "go15" in resp['url']
 
-    ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
+    ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02 23:00"),
                            a.Instrument.xrs,
                            a.goes.SatelliteNumber(13))
 
     for resp in ans1:
-        assert "go13" in resp.url
+        assert "go13" in resp['url']
+
+    ans1 = LCClient.search(a.Time("1999/1/13", "1999/1/16"),
+                           a.Instrument.xrs,
+                           a.goes.SatelliteNumber(8))
+
+    for resp in ans1:
+        assert "go08" in resp['url']
 
 
 @pytest.mark.parametrize("time", [
-    Time('2005/4/27', '2005/4/27'),
+    Time('2005/4/27', '2005/4/27 12:00'),
     Time('2016/2/4', '2016/2/10')])
 @pytest.mark.remote_data
 def test_query(LCClient, time):
@@ -97,14 +102,6 @@ def test_query(LCClient, time):
 
 
 @pytest.mark.remote_data
-def test_query_error(LCClient):
-    times = [a.Time("1983-05-01", "1983-05-02")]
-    for time in times:
-        with pytest.raises(ValueError):
-            LCClient.search(time, Instrument('XRS'))
-
-
-@pytest.mark.remote_data
 @pytest.mark.parametrize("time, instrument", [
     (Time('1983/06/17', '1983/06/18'), Instrument('XRS')),
     (Time('2012/10/4', '2012/10/6'), Instrument('XRS')),
@@ -117,33 +114,22 @@ def test_get(LCClient, time, instrument):
 
 @pytest.mark.remote_data
 def test_new_logic(LCClient):
-    qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
+    qr = LCClient.search(Time('2012/10/4 20:20', '2012/10/6'), Instrument('XRS'))
     download_list = LCClient.fetch(qr)
     assert len(download_list) == len(qr)
 
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
-    "time, instrument",
-    [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes)])
-def test_fido(time, instrument):
-    qr = Fido.search(time, Instrument('XRS'))
+    "time, instrument, expected_num_files",
+    [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes, 4),
+     (a.Time('2013-10-28 01:00', '2013-10-28 03:00'), a.Instrument('XRS'), 1)])
+def test_fido(time, instrument, expected_num_files):
+    qr = Fido.search(time, instrument)
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
-
-
-@settings(deadline=10000, max_examples=5)
-@pytest.mark.remote_data
-@given(goes_time())
-def test_time_for_url(LCClient, time):
-    time = time.start.strftime("%Y/%m/%d")
-    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
-
-    tr = TimeRange(time, almost_day)
-    url = LCClient._get_url_for_timerange(tr)
-    times = LCClient._get_time_for_url(url)
-    assert all([tr == t2 for t2 in times])
+    assert len(response) == expected_num_files
 
 
 def test_attr_reg():
@@ -158,3 +144,36 @@ def test_client_repr(LCClient):
     """
     output = str(LCClient)
     assert output[:50] == 'sunpy.net.dataretriever.sources.goes.XRSClient\n\nPr'
+
+
+def mock_query_object(LCClient):
+    """
+    Creating a Query Response object and prefilling it with some information
+    """
+    # Creating a Query Response Object
+    start = '2016/1/1'
+    end = '2016/1/1 23:59:59'
+    obj = {
+        'Time': TimeRange(parse_time(start), parse_time(end)),
+        'Start Time': parse_time(start),
+        'End Time': parse_time(end),
+        'Instrument': 'GOES',
+        'Physobs': 'irradiance',
+        'Source': 'NASA',
+        'Provider': 'SDAC',
+        'SatelliteNumber': '15',
+        'url': 'https://umbra.nascom.nasa.gov/goes/fits/2016/go1520160101.fits'
+    }
+    results = QueryResponse([obj], client=LCClient)
+    return results
+
+
+def test_show(LCClient):
+    mock_qr = mock_query_object(LCClient)
+    qrshow0 = mock_qr.show()
+    qrshow1 = mock_qr.show('Start Time', 'Instrument')
+    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
+               'Provider', 'SatelliteNumber']
+    assert qrshow0.colnames == allcols
+    assert qrshow1.colnames == ['Start Time', 'Instrument']
+    assert qrshow0['Instrument'][0] == 'GOES'

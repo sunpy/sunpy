@@ -1,5 +1,7 @@
 """SDO Map subclass definitions"""
 
+import numpy as np
+
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
 from astropy.visualization import AsinhStretch
@@ -8,7 +10,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
-__all__ = ['AIAMap', 'HMIMap']
+__all__ = ['AIAMap', 'HMIMap', 'HMISynopticMap']
 
 
 class AIAMap(GenericMap):
@@ -42,14 +44,22 @@ class AIAMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
         self.meta['detector'] = self.meta.get('detector', "AIA")
+        if 'bunit' not in self.meta and 'pixlunit' in self.meta:
+            # PIXLUNIT is not a FITS standard keyword
+            self.meta['bunit'] = self.meta['pixlunit']
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
+        # DN is not a FITS standard unit, so convert to counts
+        if self.meta.get('bunit', None) == 'DN':
+            self.meta['bunit'] = 'ct'
+        if self.meta.get('bunit', None) == 'DN/s':
+            self.meta['bunit'] = 'ct/s'
 
     @property
     def _supported_observer_coordinates(self):
@@ -95,7 +105,7 @@ class HMIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = self.meta.get('detector', "HMI")
         self._nickname = self.detector
@@ -117,4 +127,32 @@ class HMIMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an HMI image"""
-        return str(header.get('instrume', '')).startswith('HMI')
+        return (str(header.get('TELESCOP', '')).endswith('HMI') and
+                not HMISynopticMap.is_datasource_for(data, header))
+
+
+class HMISynopticMap(HMIMap):
+
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
+
+        if self.meta['cunit1'] == 'Degree':
+            self.meta['cunit1'] = 'degree'
+
+        if self.meta['cunit2'] == 'Sine Latitude':
+            self.meta['cunit2'] = 'degree'
+
+            # Since, this map uses the cylindrical equal-area (CEA) projection,
+            # the spacing should be modified to 180/pi times the original value
+            # Reference: Section 5.5, Thompson 2006
+            self.meta['cdelt2'] = 180 / np.pi * self.meta['cdelt2']
+            self.meta['cdelt1'] = np.abs(self.meta['cdelt1'])
+
+    @classmethod
+    def is_datasource_for(cls, data, header, **kwargs):
+        """
+        Determines if header corresponds to an HMI synoptic map.
+        """
+        return (str(header.get('TELESCOP', '')).endswith('HMI') and
+                str(header.get('CONTENT', '')) ==
+                'Carrington Synoptic Chart Of Br Field')

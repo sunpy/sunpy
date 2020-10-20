@@ -82,11 +82,11 @@ def lyra_ts():
     lyrats = timeseries.TimeSeries(
         os.path.join(rootdir, 'lyra_20150101-000000_lev3_std_truncated.fits.gz'),
         source='LYRA')
-    lyrats.data = pandas.DataFrame(index=TIME,
-                                   data={"CHANNEL1": CHANNELS[0],
-                                         "CHANNEL2": CHANNELS[1],
-                                         "CHANNEL3": CHANNELS[0],
-                                         "CHANNEL4": CHANNELS[1]})
+    lyrats._data = pandas.DataFrame(index=TIME,
+                                    data={"CHANNEL1": CHANNELS[0],
+                                          "CHANNEL2": CHANNELS[1],
+                                          "CHANNEL3": CHANNELS[0],
+                                          "CHANNEL4": CHANNELS[1]})
     return lyrats
 
 
@@ -109,10 +109,10 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
     # Generate expected data by calling _remove_lytaf_events and
     # constructing expected dataframe manually.
     time, channels, artifact_status_expected = lyra._remove_lytaf_events(
-        lyra_ts.data.index, channels=[np.asanyarray(lyra_ts.data["CHANNEL1"]),
-                                      np.asanyarray(lyra_ts.data["CHANNEL2"]),
-                                      np.asanyarray(lyra_ts.data["CHANNEL3"]),
-                                      np.asanyarray(lyra_ts.data["CHANNEL4"])],
+        lyra_ts.to_dataframe().index, channels=[np.asanyarray(lyra_ts.to_dataframe()["CHANNEL1"]),
+                                                np.asanyarray(lyra_ts.to_dataframe()["CHANNEL2"]),
+                                                np.asanyarray(lyra_ts.to_dataframe()["CHANNEL3"]),
+                                                np.asanyarray(lyra_ts.to_dataframe()["CHANNEL4"])],
         artifacts=["LAR", "Offpoint"], return_artifacts=True,
         force_use_local_lytaf=True)
     dataframe_expected = pandas.DataFrame(index=time,
@@ -121,7 +121,7 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
                                                 "CHANNEL3": channels[2],
                                                 "CHANNEL4": channels[3]})
     # Assert expected result is returned
-    pandas.util.testing.assert_frame_equal(ts_test.data, dataframe_expected)
+    pandas.testing.assert_frame_equal(ts_test.to_dataframe(), dataframe_expected)
     assert artifact_status_test.keys() == artifact_status_expected.keys()
     np.testing.assert_array_equal(artifact_status_test["lytaf"],
                                   artifact_status_expected["lytaf"])
@@ -139,7 +139,7 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
             lyra_ts, artifacts=["LAR", "Offpoint"],
             force_use_local_lytaf=True)
     # Assert expected result is returned
-    pandas.util.testing.assert_frame_equal(ts_test.data, dataframe_expected)
+    pandas.testing.assert_frame_equal(ts_test.to_dataframe(), dataframe_expected)
 
 
 @pytest.fixture()
@@ -175,7 +175,7 @@ def test_remove_lytaf_events_1(local_cache):
                                  "not_removed": LYTAF_TEST[1],
                                  "not_found": ["Offpoint"]}
     # Assert test values are same as expected
-    assert time_test.all() == time_expected.all()
+    assert (time_test == time_expected).all()
     assert (channels_test[0]).all() == (channels_expected[0]).all()
     assert (channels_test[1]).all() == (channels_expected[1]).all()
     assert artifacts_status_test.keys() == artifacts_status_expected.keys()
@@ -196,7 +196,7 @@ def test_remove_lytaf_events_1(local_cache):
             TIME, artifacts=["LAR", "Offpoint"],
             return_artifacts=True, force_use_local_lytaf=True)
     # Assert test values are same as expected
-    assert time_test.all() == time_expected.all()
+    assert (time_test == time_expected).all()
     assert artifacts_status_test.keys() == artifacts_status_expected.keys()
     np.testing.assert_array_equal(artifacts_status_test["lytaf"],
                                   artifacts_status_expected["lytaf"])

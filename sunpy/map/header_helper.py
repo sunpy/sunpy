@@ -5,7 +5,7 @@ import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates import frames
+from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
 
 __all__ = ['meta_keywords', 'make_fitswcs_header']
@@ -222,9 +222,9 @@ def get_observer_meta(observer, rsun: (u.Mm, None)):
     coord_meta['hgln_obs'] = observer.lon.to_value(u.deg)
     coord_meta['hglt_obs'] = observer.lat.to_value(u.deg)
     coord_meta['dsun_obs'] = observer.radius.to_value(u.m)
-    if rsun:
+    if rsun is not None:
         coord_meta['rsun_ref'] = rsun.to_value(u.m)
-        coord_meta['rsun_obs'] = np.arctan(rsun / observer.radius).to_value(u.arcsec)
+        coord_meta['rsun_obs'] = sun._angular_radius(rsun, observer.radius).to_value(u.arcsec)
 
     return coord_meta
 

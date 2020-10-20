@@ -1,0 +1,202 @@
+.. doctest-skip-all
+
+.. _whatsnew-2.0:
+
+************************
+What's New in SunPy 2.0?
+************************
+
+Overview
+========
+
+The SunPy project is pleased to announce the 2.0 release of the sunpy package.
+
+
+Increase in required package versions
+=====================================
+
+We have bumped the minimum version of several packages we depend on:
+
+* numpy>=1.15.0
+* scipy>=1.0.0
+* matplotlib>=2.2.2
+* astropy>=3.2
+* parfive>=1.1.0
+
+Search Attributes
+=================
+
+To search with `~sunpy.net.Fido`, you need to specify attributes to search against.
+Before sunpy 2.0, you had to supply values, as the following example demonstrates::
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument("norh"),
+    ...             a.Wavelength(17*u.GHz))
+
+There was no way to know if the value was correct, but now we have a extenstive list of supported values from the clients and servers we can request data from.
+
+Using `~sunpy.net.attrs.Instrument` as an example, if you print the object::
+
+    >>> print(a.Instrument)
+    sunpy.net.attrs.Instrument
+    <BLANKLINE>
+    Specifies the Instrument name for the search.
+    <BLANKLINE>
+           Attribute Name          Client          Full Name                                           Description
+    --------------------------- ----------- ------------------------ --------------------------------------------------------------------------------
+    aia                         VSO         AIA                      Atmospheric Imaging Assembly
+    bbi                         VSO         BBI                      None
+    bcs                         VSO         BCS                      Bragg Crystal Spectrometer
+    bic_hifi                    VSO         BIC-HIFI                 None
+    bigbear                     VSO         Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
+    ...
+
+This will list the name of value you should use, what data source will supply that data and a description.
+Furthermore, you can use tab completion to auto-fill the attribute name, for example by typing ``a.Instrument.<TAB>``.
+
+So now you can do the following instead::
+
+    Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh, a.Wavelength(17*u.GHz))
+
+
+aiaprep is now deprecated
+=========================
+
+With the release of the new `aiapy <https://aiapy.readthedocs.io>`__ package, `sunpy.instr.aia.aiaprep` will be removed in version 2.1.
+Equivalent functionality is provided by the `register` function in aiapy. For more
+details, see the `example on registering and aligning level 1 AIA images <https://aiapy.readthedocs.io/en/latest/generated/gallery/prepping_level_1_data.html>`_
+in the aiapy documentation.
+
+Fixes and clarification to pixel indexing
+=========================================
+
+sunpy uses zero-based indexing when referring to pixels, where the center of the bottom left pixel of a map is at ``[0, 0] * u.pix``.
+Several parts of the API have been updated to make sure this is consistently the case across the package.
+In particular:
+
+- `sunpy.map.GenericMap.top_right_coord` previously had an off-by-one error in the calculation of the top right coordinate.
+  This has been fixed.
+- `sunpy.map.GenericMap.center` previously had an off-by-one error in the calculation of the coordinate of the center of a map.
+  This has been fixed.
+- `sunpy.map.GenericMap.reference_pixel` now returns a zero-based reference pixel.
+  This is one pixel less than the previously returned value.
+  Note that this means the ``reference_pixel`` now does **not** have the same value as the FITS ``CRPIX`` values, which are one-based indices.
+- `sunpy.map.make_fitswcs_header` now correctly interprets the `reference_pixel` argument as being zero-based, in previous releases it incorrectly interpreted the `reference_pixel` as one-based
+
+Standardization of `~sunpy.map.GenericMap.submap` and `~sunpy.map.GenericMap.draw_rectangle`
+============================================================================================
+
+Both `~sunpy.map.GenericMap.submap` and `~sunpy.map.GenericMap.draw_rectangle` allow specification of "rectangles" in world (spherical) coordinates.
+In versions prior to 2.0 you passed the coordinates of the rectangle to ``draw_rectangle`` as a bottom left coordinate, and a height and width, but for submap you passed it as a bottom left and a top right.
+In 2.0 the way you call both methods has changed, to accept a bottom left and then either width and height or a top right coordinate.
+As part of this change, the ``top_right``, ``width``, and ``height`` arguments **must** always be keyword arguments, i.e. ``width=10*u.arcsec``
+
+This change allows you to give the same rectangle specification to `~sunpy.map.GenericMap.submap` as to `~sunpy.map.GenericMap.draw_rectangle`.
+Which is especially useful when you wish to plot a cropped area of a map, along with it's context in the parent map::
+
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> import matplotlib.pyplot as plt
+
+    >>> import sunpy.map
+    >>> from sunpy.data.sample import AIA_171_IMAGE
+
+    >>> aia = sunpy.map.Map(AIA_171_IMAGE)
+
+    >>> bottom_left = SkyCoord(-100 * u.arcsec, -100 * u.arcsec, frame=aia.coordinate_frame)
+    >>> width = 500 * u.arcsec
+    >>> height = 300 * u.arcsec
+
+    >>> sub_aia = aia.submap(bottom_left, width=width, height=height)
+
+    >>> fig = plt.figure()
+    >>> ax1 = fig.add_subplot(1, 2, 1, projection=aia)
+    >>> aia.plot(axes=ax1)
+    >>> aia.draw_rectangle(bottom_left, width=width, height=height)
+
+    >>> ax2 = fig.add_subplot(1, 2, 2, projection=sub_aia)
+    >>> sub_aia.plot(axes=ax2)
+
+
+Both these methods delegate the input parsing to a new utility function `sunpy.coordinates.utils.get_rectangle_coordinates`.
+
+Graphical overview for Map and MapSequence
+==========================================
+
+There are new methods to produce graphical overviews for `Map <sunpy.map.map_factory.MapFactory>` and `~sunpy.map.MapSequence` instances: :meth:`~sunpy.map.GenericMap.quicklook` and :meth:`~sunpy.map.MapSequence.quicklook`, respectively.
+This graphical overview opens the default web browser and uses `HTML <https://en.wikipedia.org/wiki/HTML>`__ to show a table of metadata, a histogram of the pixel values in the data, and a  `histogram-equalized <https://en.wikipedia.org/wiki/Histogram_equalization>`__ image of the data.
+Here's an example of the output for a `~sunpy.map.MapSequence` instance:
+
+.. generate:: html
+    :html_border:
+
+    from sunpy.map import Map
+    import sunpy.data.sample
+    seq = Map(sunpy.data.sample.HMI_LOS_IMAGE,
+              sunpy.data.sample.AIA_1600_IMAGE,
+              sunpy.data.sample.EIT_195_IMAGE,
+              sequence=True)
+    print(seq._repr_html_())
+
+If you are using `Jupyter Notebook <https://jupyter.org/>`__, there is no need to call these methods explicitly to see this graphical overview.
+If you type just the name of the instance, the graphical overview is shown within the notebook itself as a rich representation of the instance, instead of the typical text representation.
+
+Differential rotation in the coordinate framework
+=================================================
+
+The rotation rate of solar features varies with heliographic latitude, this rotation is called "differential rotation".
+SunPy has already included functionality in the `sunpy.physics.differential_rotation` module to transform coordinates and `Maps <sunpy.map.GenericMap>` to account for the rotation of the Sun.
+SunPy now provides differential-rotation functionality integrated directly into the `coordinate framework <sunpy.coordinates>` using the `~sunpy.coordinates.metaframes.RotatedSunFrame` class.
+Here are examples of using this class:
+
+.. minigallery:: sunpy.coordinates.RotatedSunFrame
+
+
+A detailed write-up of how to use `~sunpy.coordinates.metaframes.RotatedSunFrame` can be found :ref:`at the RotatedSunFrame documentation<sunpy-coordinates-rotatedsunframe>`.
+
+Changes to Carrington coordinates
+=================================
+
+We have refined our approach for heliographic Carrington coordinates to best support high-resolution imagery of the Sun, including from observatories that are at distances from the Sun that is significantly different from 1 AU (e.g., `Solar Orbiter <https://en.wikipedia.org/wiki/Solar_Orbiter>`__).
+Our `~sunpy.coordinates.frames.HeliographicCarrington` coordinate frame is now expressly intended for the co-alignment of images of the Sun's surface from different observatories.
+`~sunpy.coordinates.frames.HeliographicCarrington` now requires the specification of the observer location (Earth or otherwise) because the light travel time between the Sun and the observer is accounted for.
+SunPy output now matches the calculations by `JPL Horizons <https://ssd.jpl.nasa.gov/?horizons>`__ and `SPICE <https://naif.jpl.nasa.gov/naif/>`__.
+There may be small differences compared to Carrington coordinates computed by groups that do not use modern parameter values or the same assumptions for the methodology.
+
+Importantly, the Carrington longitude that is now calculated (including using :func:`sunpy.coordinates.sun.L0`) will not match earlier versions of SunPy.
+A detailed write-up of the calculation approach and comparisons to other resources can be found :ref:`at carrington's functionality documentation<sunpy-coordinates-carrington>`.
+
+Download behind proxies
+=======================
+
+With the release of parfive 1.1, sunpy has been patched to be able to utilize proxy servers when downloading files.
+
+* Proxy URL is read from the environment variables `HTTP_PROXY` or `HTTPS_PROXY`.
+* Proxy Authentication `proxy_auth` should be passed as a `aiohttp.BasicAuth` object, explicitly by the user.
+* Proxy Headers `proxy_headers` should be passed as `dict` object, explicitly by the user.
+
+For example if you use a bash terminal:
+
+.. code-block:: bash
+
+    $ HTTP_PROXY=http://user:password@proxyserver.com:3128
+    $ HTTPS_PROXY=https://user:password@proxyserver.com:3128
+    $ export HTTP_PROXY
+    $ export HTTPS_PROXY
+
+these will be used to enable downloads through a proxy.
+
+Citation update
+===============
+
+A paper discussing sunpy 1.0 was accepted in The Astrophysical Journal and you can find the bibtex for it by running::
+
+    >>> import sunpy
+    >>> sunpy.__citation__
+
+or `accessing the website directly <https://iopscience.iop.org/article/10.3847/1538-4357/ab4f7a>`__.
+
+Previous update: sunpy 1.1
+==========================
+
+In case you never updated to the intermediate release (sunpy 1.1) the whatsnew contains the major changes from that release: :ref:`whatsnew-1.1`

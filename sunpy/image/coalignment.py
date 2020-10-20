@@ -27,12 +27,12 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.map.mapbase import GenericMap
-from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning, deprecated
+from sunpy.util import SunpyUserWarning
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
-           'repair_image_nonfinite', 'check_for_nonfinite_entries',
+           'check_for_nonfinite_entries',
            'apply_shifts', 'mapsequence_coalign_by_match_template',
            'calculate_match_template_shift']
 
@@ -47,7 +47,7 @@ def _default_fmap_function(data):
     return np.float64(data)
 
 
-def calculate_shift(this_layer, template, repair_nonfinite=True):
+def calculate_shift(this_layer, template):
     """
     Calculates the pixel shift required to put the template in the "best"
     position on a layer.
@@ -66,22 +66,10 @@ def calculate_shift(this_layer, template, repair_nonfinite=True):
         Pixel shifts ``(yshift, xshift)`` relative to the offset of the template
         to the input array.
     """
-    if repair_nonfinite:
-        # Repair any NANs, Infs, etc in the layer and the template
-        # This behaviour is deprecated
-        warnings.warn('The repairing of nonfinite values is deprecated '
-                      'and will be removed in future versions. '
-                      'You can disable this behaviour by setting the '
-                      'repair_nonfinite kwarg to False.', SunpyDeprecationWarning)
-        this_layer = repair_image_nonfinite(this_layer)
-        template = repair_image_nonfinite(template)
-    else:
-        # Warn user if any NANs, Infs, etc are present in the layer or the template
-        check_for_nonfinite_entries(this_layer, template)
-
+    # Warn user if any NANs, Infs, etc are present in the layer or the template
+    check_for_nonfinite_entries(this_layer, template)
     # Calculate the correlation array matching the template to this layer
     corr = match_template_to_layer(this_layer, template)
-
     # Calculate the y and x shifts in pixels
     return find_best_match_location(corr)
 
@@ -324,56 +312,6 @@ def check_for_nonfinite_entries(layer_image, template_image):
                       'local mean.', SunpyUserWarning)
 
 
-@deprecated("1.1")
-def repair_image_nonfinite(image):
-    """
-    Return a new image in which all the nonfinite entries of the original image
-    have been replaced by the local mean.
-
-    Parameters
-    ----------
-    image : `numpy.ndarray`
-        A two-dimensional `numpy.ndarray`.
-
-    Returns
-    -------
-    `numpy.ndarray`
-        A two-dimensional `numpy.ndarray` of the same shape as the input
-        that has all the non-finite entries replaced by a local mean. The
-        algorithm repairs one non-finite entry at every pass. At each pass,
-        the next non-finite value is replaced by the mean of its finite
-        valued nearest neighbors.
-    """
-    repaired_image = deepcopy(image)
-    nx = repaired_image.shape[1]
-    ny = repaired_image.shape[0]
-    bad_index = np.where(np.logical_not(np.isfinite(repaired_image)))
-    while bad_index[0].size != 0:
-        by = bad_index[0][0]
-        bx = bad_index[1][0]
-
-        # x locations taking in to account the boundary
-        x = bx
-        if bx == 0:
-            x = 1
-        if bx == nx - 1:
-            x = nx - 2
-
-        # y locations taking in to account the boundary
-        y = by
-        if by == 0:
-            y = 1
-        if by == ny - 1:
-            y = ny - 2
-
-        # Get the sub array around the bad index, and find the local mean
-        # ignoring nans
-        subarray = repaired_image[y - 1: y + 2, x - 1: x + 2]
-        repaired_image[by, bx] = np.mean(subarray[np.isfinite(subarray)])
-        bad_index = np.where(np.logical_not(np.isfinite(repaired_image)))
-    return repaired_image
-
-
 @u.quantity_input
 def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
     """
@@ -396,7 +334,7 @@ def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
 
     Notes
     -----
-    All other keywords are passed to `scipy.ndimage.interpolation.shift`.
+    All other keywords are passed to `scipy.ndimage.shift`.
 
     Returns
     -------
@@ -434,8 +372,7 @@ def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
 
 
 def calculate_match_template_shift(mc, template=None, layer_index=0,
-                                   func=_default_fmap_function,
-                                   repair_nonfinite=True):
+                                   func=_default_fmap_function):
     """
     Calculate the arcsecond shifts necessary to co-register the layers in a
     `~sunpy.map.MapSequence` according to a template taken from that
@@ -505,8 +442,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
         this_layer = func(m.data)
 
         # Calculate the y and x shifts in pixels
-        yshift, xshift = calculate_shift(this_layer, tplate,
-                                         repair_nonfinite=repair_nonfinite)
+        yshift, xshift = calculate_shift(this_layer, tplate)
 
         # Keep shifts in pixels
         yshift_keep[i] = yshift
@@ -528,7 +464,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 # Coalignment by matching a template
 def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
                                           func=_default_fmap_function, clip=True,
-                                          shift=None, repair_nonfinite=True, **kwargs):
+                                          shift=None, **kwargs):
     """
     Co-register the layers in a `~sunpy.map.MapSequence` according to a
     template taken from that `~sunpy.map.MapSequence`. This method REQUIRES
@@ -607,8 +543,7 @@ def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
     if shift is None:
         shifts = calculate_match_template_shift(mc, template=template,
                                                 layer_index=layer_index,
-                                                func=func,
-                                                repair_nonfinite=repair_nonfinite)
+                                                func=func)
         xshift_arcseconds = shifts['x']
         yshift_arcseconds = shifts['y']
     else:

@@ -26,6 +26,10 @@ class TimeRange:
        Regardless of how a `sunpy.time.TimeRange` is constructed it will always
        provide a positive time range where the start time is before the end time.
 
+       `~sunpy.time.TimeRange.__contains__` has been implemented which means you can
+       check if a time is within the time range you have created.
+       Please see the example section below.
+
     Parameters
     ----------
     a : {parse_time_types}
@@ -54,6 +58,13 @@ class TimeRange:
                576000.0 minutes or
                34560000.0 seconds
     <BLANKLINE>
+    >>> time1 = '2014/5/5 12:11'
+    >>> time2 = '2012/5/5 12:11'
+    >>> time_range = TimeRange('2014/05/04 13:54', '2018/02/03 12:12')
+    >>> time1 in time_range
+    True
+    >>> time2 in time_range
+    False
     """
 
     def __init__(self, a, b=None, format=None):
@@ -394,10 +405,11 @@ class TimeRange:
         """
         Return all partial days contained within the time range.
         """
+        delta = self.end.to_datetime().date() - self.start.to_datetime().date()
         dates = []
         dates = [
             parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
-            for i in range(int(self.days.value) + 1)
+            for i in range(delta.days + 1)
         ]
         return dates
 

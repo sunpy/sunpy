@@ -39,12 +39,12 @@ if on_rtd:
 
 # -- Non stdlib imports --------------------------------------------------------
 
-import ruamel.yaml as yaml
-from sphinx_gallery.sorting import ExplicitOrder
-from sphinx_gallery.sorting import ExampleTitleSortKey
+import ruamel.yaml as yaml  # NOQA
+from sphinx_gallery.sorting import ExplicitOrder  # NOQA
+from sphinx_gallery.sorting import ExampleTitleSortKey  # NOQA
 
-import sunpy
-from sunpy import __version__
+import sunpy  # NOQA
+from sunpy import __version__  # NOQA
 
 # -- Project information -------------------------------------------------------
 
@@ -62,12 +62,12 @@ is_development = '.dev' in __version__
 # in the CI, especially RTD.
 ori_level = sunpy.log.level
 sunpy.log.setLevel("DEBUG")
-import sunpy.data.sample  # isort:skip
+import sunpy.data.sample  # NOQA
 sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
 linkcheck_ignore = [r"https://doi.org/\d+",
-                    r"https://riot.im/\d+",
+                    r"https://element.io/\d+",
                     r"https://github.com/\d+",
                     r"https://docs.sunpy.org/\d+"]
 linkcheck_anchors = False
@@ -85,29 +85,28 @@ rst_epilog = """
 
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
-suppress_warnings = ['app.add_directive',]
+suppress_warnings = ['app.add_directive', ]
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.inheritance_diagram',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.doctest',
-    'sphinx.ext.mathjax',
+    'matplotlib.sphinxext.plot_directive',
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_gallery.gen_gallery',
-    'sunpy.util.sphinx.doctest',
-    'matplotlib.sphinxext.plot_directive',
-    'sunpy.util.sphinx.minigallery',
-    'sunpy.util.sphinx.generate',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
+    'sphinx.ext.inheritance_diagram',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
     'sunpy.util.sphinx.changelog',
+    'sunpy.util.sphinx.doctest',
+    'sunpy.util.sphinx.generate',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -139,21 +138,30 @@ napoleon_google_docstring = False
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/',
-               (None, 'http://www.astropy.org/astropy-data/intersphinx/python3.inv')),
-    'numpy': ('https://numpy.org/doc/stable/',
-              (None, 'http://www.astropy.org/astropy-data/intersphinx/numpy.inv')),
-    'scipy': ('https://docs.scipy.org/doc/scipy/reference/',
-              (None, 'http://www.astropy.org/astropy-data/intersphinx/scipy.inv')),
-    'matplotlib': ('https://matplotlib.org/',
-                   (None, 'http://www.astropy.org/astropy-data/intersphinx/matplotlib.inv')),
-    'astropy': ('https://docs.astropy.org/en/stable/', None),
-    'sqlalchemy': ('https://docs.sqlalchemy.org/en/latest/', None),
-    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-    'skimage': ('https://scikit-image.org/docs/stable/', None),
-    'drms': ('https://docs.sunpy.org/projects/drms/en/stable/', None),
-    'parfive': ('https://parfive.readthedocs.io/en/latest/', None),
-    'reproject': ('https://reproject.readthedocs.io/en/stable/', None),
+    "python": (
+        "https://docs.python.org/3/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/python3.inv"),
+    ),
+    "numpy": (
+        "https://numpy.org/doc/stable/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/numpy.inv"),
+    ),
+    "scipy": (
+        "https://docs.scipy.org/doc/scipy/reference/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/scipy.inv"),
+    ),
+    "matplotlib": (
+        "https://matplotlib.org/",
+        (None, "http://www.astropy.org/astropy-data/intersphinx/matplotlib.inv"),
+    ),
+    "astropy": ("https://docs.astropy.org/en/stable/", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "skimage": ("https://scikit-image.org/docs/stable/", None),
+    "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
+    "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
+    "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
+    "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
 }
 
 # -- Options for HTML output ---------------------------------------------------
@@ -161,7 +169,7 @@ intersphinx_mapping = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-from sunpy_sphinx_theme.conf import *
+from sunpy_sphinx_theme.conf import *  # NOQA
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -196,14 +204,16 @@ sphinx_gallery_conf = {
         '../examples/differential_rotation',
         '../examples/saving_and_loading_data',
         '../examples/computer_vision_techniques',
+        '../examples/developer_tools'
     ]),
     'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': os.path.join('generated', 'gallery'),
-    'default_thumb_file': os.path.join('logo', 'sunpy_icon_128x128.png'),
+    # Comes from the theme.
+    "default_thumb_file": os.path.join(html_static_path[0], "img", "sunpy_icon_128x128.png"),
     'abort_on_example_error': False,
-    'plot_gallery': True,
+    'plot_gallery': 'True',
     'remove_config_comments': True,
-    'doc_module': ('sunpy')
+    'doc_module': ('sunpy'),
 }
 
 # -- Stability Page ------------------------------------------------------------
@@ -214,6 +224,7 @@ with open('./dev_guide/sunpy_stability.yaml', 'r') as estability:
 html_context = {
     'sunpy_modules': sunpy_modules
 }
+
 
 def rstjinja(app, docname, source):
     """
@@ -229,8 +240,8 @@ def rstjinja(app, docname, source):
         )
         source[0] = rendered
 
-# -- Sphinx setup --------------------------------------------------------------
 
+# -- Sphinx setup --------------------------------------------------------------
 def setup(app):
     # Generate the stability page
     app.connect("source-read", rstjinja)

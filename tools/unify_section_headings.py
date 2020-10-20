@@ -63,8 +63,8 @@ def replace_header_chars(filename):
 
 
 if __name__ == "__main__":
-    from pathlib import Path
     from glob import glob
+    from pathlib import Path
     here = Path(__file__).parent.absolute()
     rst_files = glob(str(here/Path("../docs/**/*rst")), recursive=True)
     [replace_header_chars(filename) for filename in rst_files]

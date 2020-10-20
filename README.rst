@@ -7,7 +7,7 @@
 .. |Latest Version| image:: https://img.shields.io/pypi/v/sunpy.svg
    :target: https://pypi.python.org/pypi/sunpy/
 .. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=openastronomy.modular.im
-   :target: https://openastronomy.riot.im/#/room/#sunpy:openastronomy.org
+   :target: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
 .. |codecov| image:: https://codecov.io/gh/sunpy/sunpy/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/sunpy
 .. |Research software impact| image:: http://depsy.org/api/package/pypi/sunpy/badge.svg
@@ -101,4 +101,4 @@ Code of Conduct
 
 When you are interacting with the SunPy community you are asked to follow our `Code of Conduct`_.
 
-.. _Code of Conduct: https://docs.sunpy.org/en/latest/code_of_conduct.html
+.. _Code of Conduct: https://sunpy.org/coc
