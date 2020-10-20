@@ -4,7 +4,6 @@ This module provies the `~sunpy.timeseries.TimeSeriesFactory` class.
 import os
 import copy
 import glob
-import pathlib
 from collections import OrderedDict
 from urllib.request import urlopen
 
@@ -327,7 +326,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
 
             # pathlib.Path
-            elif (isinstance(arg, pathlib.Path)):
+            elif (isinstance(arg, os.PathLike)):
                 result = self._read_file(arg.expanduser())
                 data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
 
