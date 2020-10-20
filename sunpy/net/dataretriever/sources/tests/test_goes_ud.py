@@ -57,7 +57,7 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange, url_start, url_end",
-                         [(a.Time("2009/08/30 00:10', '2009/09/02"),
+                         [(a.Time("2009/08/30 00:10", "2009/09/02"),
                            "https://umbra.nascom.nasa.gov/goes/fits/2009/go1020090830.fits",
                            "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/"
                            "2009/09/sci_gxrs-l2-irrad_g14_d20090902_v0-0-0.nc")])
