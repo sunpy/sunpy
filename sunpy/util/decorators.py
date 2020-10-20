@@ -325,3 +325,59 @@ def deprecate_positional_args_since(since, keyword_only=False):
             return f(**kwargs)
         return inner_f
     return deprecate_positional_args
+
+
+_NOT_FOUND = object()
+
+
+def cached_property_based_on(attr_name):
+    """
+    A decorator to cache the value of a property based on the output of a
+    different class attribute.
+
+    This decorator caches the values of ``getattr(instance, method)`` and
+    ``prop(instance)``. When the decorated property is accessed,
+    ``getattr(instance, method)`` is called. If this returns the same as its
+    cached value, the cached value of ``prop`` is returned. Otherwise both
+    ``meth`` and ``prop`` are recomputed, cached, and the new value of ``prop``
+    is returned.
+
+    Parameters
+    ----------
+    attr_name :
+        The name of the attribute, on which changes are checked for. The actual
+        attribute is accessed using ``getattr(attr_name, instance)``.
+
+    Notes
+    -----
+    The cached value of ``meth(instance)`` is stored under the key ``meth.__name__``.
+    """
+    def outer(prop):
+        """
+        prop: the property method being decorated
+        """
+        @wraps(outer)
+        def inner(instance):
+            """
+            Parameters
+            ----------
+            instance:
+                Any class instance that has the property ``prop``,
+                and attribute ``attr``.
+            """
+            cache = instance.__dict__
+            prop_key = prop.__name__
+
+            # Check if our caching method has changed ouptut
+            new_attr_val = getattr(instance, attr_name)
+            old_attr_val = cache.get(attr_name, _NOT_FOUND)
+            if old_attr_val is _NOT_FOUND or new_attr_val != old_attr_val:
+                # Store the new attribute value
+                cache[attr_name] = new_attr_val
+                # Recompute the property
+                new_val = prop(instance)
+                cache[prop_key] = new_val
+
+            return cache[prop_key]
+        return inner
+    return outer

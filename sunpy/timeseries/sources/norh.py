@@ -74,19 +74,18 @@ class NoRHTimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 
-        figure = plt.figure()
-        axes = plt.gca()
+        fig, ax = plt.subplots()
         data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(
             ']', '').replace('\'', '')
-        axes.plot(self.to_dataframe().index, self.to_dataframe(), label=data_lab, **kwargs)
-        axes.set_yscale("log")
-        axes.set_ylim(1e-4, 1)
-        axes.set_title('Nobeyama Radioheliograph')
-        axes.set_xlabel('Start time: ' + self.to_dataframe().index[0].strftime(TIME_FORMAT))
-        axes.set_ylabel('Correlation')
-        axes.legend()
+        ax.plot(self.to_dataframe().index, self.to_dataframe(), label=data_lab, **kwargs)
+        ax.set_yscale("log")
+        ax.set_ylim(1e-4, 1)
+        ax.set_title('Nobeyama Radioheliograph')
+        ax.set_xlabel('Start time: ' + self.to_dataframe().index[0].strftime(TIME_FORMAT))
+        ax.set_ylabel('Correlation')
+        ax.legend()
 
-        return figure
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):

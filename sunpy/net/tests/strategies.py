@@ -114,6 +114,17 @@ def goes_time(draw, time=Times(
     return a.Time(tr)
 
 
+@st.composite
+def srs_time(draw, time=Times(
+             max_value=datetime.datetime.now(),
+             min_value=datetime.datetime(1996, 1, 1)),
+             delta=TimeDelta()):
+    t1 = draw(time)
+    t2 = t1 + draw(delta)
+    assume(t1 < t2)
+    return a.Time(TimeRange(t1, t2))
+
+
 def range_time(min_date, max_date=Time.now()):
     time = Times(
         min_value=parse_time(min_date).datetime,

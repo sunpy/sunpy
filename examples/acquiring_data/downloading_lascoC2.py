@@ -1,9 +1,9 @@
 """
 ======================================
-Downloading and plotting LASCO C3 data
+Downloading and plotting LASCO C2 data
 ======================================
 
-How to download SOHO/LASCO C3 data with Fido and make a plot.
+How to download SOHO/LASCO C2 data with Fido and make a plot.
 """
 import matplotlib.pyplot as plt
 
@@ -19,8 +19,8 @@ from sunpy.net import attrs as a
 # a timerange and the instrument.
 timerange = a.Time('2002/05/24 11:06', '2002/05/24 11:07')
 instrument = a.Instrument.lasco
-detector = a.Detector.c3
-result = Fido.search(timerange, instrument)
+detector = a.Detector.c2
+result = Fido.search(timerange, instrument, detector)
 
 ###############################################################################
 # Let's inspect the result

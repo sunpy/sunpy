@@ -198,5 +198,5 @@ class SUVIClient(GenericClient):
             attrs.Provider: [('NOAA', 'The National Oceanic and Atmospheric Administration.')],
             attrs.Level: [('1b', 'Solar images at six wavelengths with image exposures 10 msec or 1 sec.'),
                           ('2', 'Weighted average of level-1b product files of SUVI.')],
-            attrs.Wavelength: [('*', 'Wavelength')]}
+            attrs.Wavelength: [('*')]}
         return adict

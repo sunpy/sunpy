@@ -61,7 +61,9 @@ class GenericTimeSeries:
     >>> times = parse_time("now") - TimeDelta(np.arange(24 * 60)*u.minute)
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
     >>> df = pd.DataFrame(intensity, index=times, columns=['intensity'])
-    >>> ts = TimeSeries(df)
+    >>> header = {}
+    >>> units = {'intensity': u.W/u.m**2}
+    >>> ts = TimeSeries(df, header, units)
     >>> ts.peek()  # doctest: +SKIP
 
     References
@@ -486,8 +488,6 @@ class GenericTimeSeries:
         specific validation should be handled in the relevant file in
         the "sunpy.timeseries.sources".
         """
-        warnings.simplefilter('always', Warning)
-
         for meta_property in ('cunit1', 'cunit2', 'waveunit'):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
@@ -505,8 +505,6 @@ class GenericTimeSeries:
         specific validation should be handled in the relevant file in
         the "sunpy.timeseries.sources".
         """
-        warnings.simplefilter('always', Warning)
-
         result = True
         for key in units:
             if not isinstance(units[key], astropy.units.UnitBase):
@@ -526,8 +524,6 @@ class GenericTimeSeries:
         * Add unitless entries for columns with no units defined.
         * Re-arrange the order of the dictionary to match the columns.
         """
-        warnings.simplefilter('always', Warning)
-
         # Populate unspecified units:
         for column in set(self._data.columns.tolist()) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
@@ -553,8 +549,6 @@ class GenericTimeSeries:
         * Remove column references in the metadata that don't match to a column in the data.
         * Remove metadata entries that have no columns matching the data.
         """
-        warnings.simplefilter('always', Warning)
-
         # Truncate the metadata
         self.meta._truncate(self.time_range)
 
