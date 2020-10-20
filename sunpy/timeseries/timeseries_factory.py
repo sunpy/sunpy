@@ -248,7 +248,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         * tuples of (data, header, unit) (1)
         * data, header not in a tuple (1)
         * filename, which will be read
-        * pathlib.PosixPath, which is the filepath to a file to be read.
+        * `pathlib.Path`, which is the filepath to a file to be read.
         * directory, from which all files will be read
         * glob, from which all files will be read
         * url, which will be downloaded and read
