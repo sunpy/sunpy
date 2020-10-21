@@ -51,7 +51,7 @@ jobs:
         - libpng-devel
 
     envs:
-      - macos: py39
+      - linux: py39
         name: py39_test
         posargs: -n=1
 
