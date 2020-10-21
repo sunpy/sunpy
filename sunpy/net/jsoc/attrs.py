@@ -92,7 +92,7 @@ class Cutout(DataAttr):
         self.value = {
             't_ref': bottom_left.obstime.isot,
             # JSOC input is disable tracking so take the negative
-            't': int(bool(~tracking)),
+            't': int(not tracking),
             'r': int(register),
             'c': int(nan_off_limb),
             'locunits': 'arcsec',
