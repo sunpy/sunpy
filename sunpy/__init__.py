@@ -11,7 +11,7 @@ import os
 import sys
 import logging
 
-from sunpy.tests.runner import SunPyTestRunner
+from sunpy.tests.self_test import self_test
 from sunpy.util import system_info
 from sunpy.util.config import load_config, print_config
 from sunpy.util.logger import _init_log
@@ -49,8 +49,6 @@ def _get_bibtex():
 
 
 __citation__ = __bibtex__ = _get_bibtex()
-
-self_test = SunPyTestRunner.make_test_runner_in(os.path.dirname(__file__))
 
 # Load user configuration
 config = load_config()
