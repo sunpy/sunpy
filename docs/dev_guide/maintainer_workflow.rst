@@ -155,25 +155,18 @@ You might have to add ``--force`` if you rebased instead of adding new commits.
 Using Milestones and Labels
 ===========================
 
-These guidelines are adapted from `guidelines`_ followed by astropy:
+Current milestone guidelines:
 
-* All open pull requests should have a milestone.
+* Only confirmed issues or pull requests that are release critical or for some other reason should be addressed before a release, should have a milestone.
+  When in doubt about which milestone to use for an issue, do not use a milestone and ask other the maintainers.
 
-* Only confirmed issues that are release critical or for some other reason should be addressed for a release, should have a milestone.
+Current labelling guidelines:
 
-* In general there should be the following open milestones:
-
-  * The next bug fix releases for any still-supported version lines; for example if 0.4 is in development and 0.2.x and 0.3.x are still supported there should be milestones for the next 0.2.x and 0.3.x releases.
-
-  * The next X.Y release, i.e. the next minor release; this is generally the next release that all development in master is aimed toward.
-
-  * The next X.Y release +1; for example if 0.3 is the next release, there should also be a milestone for 0.4 for issues that are important, but that we know won't be resolved in the next release.
-
-* When in doubt about which milestone to use for an issue, use the next minor release, it can always be moved once it's been more closely reviewed prior to release.
-
-* Issues that require fixing in master, but that also are confirmed to apply to supported stable version lines should be marked with a "Affects Release" label and the corresponding supported stable version label "v0.4.x".
-
-.. _guidelines: :https://docs.astropy.org/en/stable/development/workflow/maintainer_workflow.html#using-milestones-and-labels
+* Issues that require fixing in master, but that also are confirmed to apply to supported stable version lines should be marked with a "Affects Release" label.
+* All open issues should have a "Priority <level>", "Effort <level>" and "Package <level>", if you are unsure at what level, pick higher ones just to be safe.
+  If an issue is more of a question or discussion, you can omit these labels.
+* If an issue looks to be straightforward, you should add the "Good first issue" and "Hacktoberfest" label.
+* For other labels, you should add them if they fit, like if an issue affects the net submodule, add the "net" label or if it is a feature request etc.
 
 Using Projects
 ==============
