@@ -1,7 +1,8 @@
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
+__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey',
+           'Cutout']
 
 
 class Series(SimpleAttr):
@@ -71,6 +72,41 @@ class Notify(SimpleAttr):
         self.value = value
 
 
+class Cutout(DataAttr):
+    """
+    Select a cutout region to be processed by JSOC
+
+    Parameters
+    ----------
+    bottom_left
+    width
+    height
+    tracking
+    register
+    nan_off_limb
+    """
+
+    def __init__(self, bottom_left, width, height, tracking=False, register=False,
+                 nan_off_limb=False):
+        super().__init__()
+        self.value = {
+            't_ref': bottom_left.obstime.isot,
+            # JSOC input is disable tracking so take the negative
+            't': int(bool(~tracking)),
+            'r': int(register),
+            'c': int(nan_off_limb),
+            'locunits': 'arcsec',
+            'boxunits': 'arcsec',
+            'x': (bottom_left.Tx + width / 2).to('arcsec').value,
+            'y': (bottom_left.Ty + height / 2).to('arcsec').value,
+            'width': width.to('arcsec').value,
+            'height': height.to('arcsec').value,
+        }
+
+    def collides(self, other):
+        return False
+
+
 walker = AttrWalker()
 
 
@@ -125,14 +161,19 @@ def _apply1(wlk, query, imap):
         imap[key] = [query.value]
 
 
+@walker.add_applier(Cutout)
+def _apply1(wlk, query, imap):
+    imap[query.__class__.__name__.lower()] = query.value
+
+
 @walker.add_applier(Time)
-def _apply2(wlk, query, imap):
+def _apply1(wlk, query, imap):
     imap['start_time'] = query.start
     imap['end_time'] = query.end
 
 
 @walker.add_applier(Wavelength)
-def _apply_wave(wlk, query, imap):
+def _apply1(wlk, query, imap):
     if query.min != query.max:
         raise ValueError(
             "For JSOC queries Wavelength.min must equal Wavelength.max")

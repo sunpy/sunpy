@@ -448,6 +448,7 @@ class JSOCClient(BaseClient):
             ds = self._make_recordset(**block)
             cd = drms.Client(email=block.get('notify', ''))
             protocol = block.get('protocol', 'fits')
+            cutout = block.get('cutout')
 
             if protocol not in supported_protocols:
                 error_message = f"Protocols other than {','.join(supported_protocols)} "\
@@ -457,10 +458,12 @@ class JSOCClient(BaseClient):
                 error_message = f"Methods other than {','.join(supported_methods)} "\
                                 "are not supported."
                 raise TypeError(error_message)
+            if cutout is not None:
+                process = {'im_patch': cutout}
 
             if method != 'url-tar':
                 method = 'url' if protocol == 'fits' else 'url_quick'
-            r = cd.export(ds, method=method, protocol=protocol)
+            r = cd.export(ds, method=method, protocol=protocol, process=process)
 
             requests.append(r)
 
