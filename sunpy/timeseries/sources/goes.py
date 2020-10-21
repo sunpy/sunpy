@@ -115,7 +115,6 @@ class XRSTimeSeries(GenericTimeSeries):
 
         return figure
 
-
     @classmethod
     def _parse_file(cls, filepath):
         """
@@ -184,7 +183,6 @@ class XRSTimeSeries(GenericTimeSeries):
                              ('xrsb', u.W/u.m**2)])
         return data, header, units
 
-
     @staticmethod
     def _parse_netcdf(filepath):
         """
@@ -200,9 +198,9 @@ class XRSTimeSeries(GenericTimeSeries):
         d = h5netcdf.File(filepath, mode='r')
 
         header =  MetaDict(OrderedDict(d.attrs))
-        if 'a_counts' in d.variables:
-            xrsa = np.array(d['a_counts'])
-            xrsb = np.array(d['b_counts'])
+        if 'a_flux' in d.variables:
+            xrsa = np.array(d['a_flux'])
+            xrsb = np.array(d['b_flux'])
             times = parse_time('1970-01-01') + TimeDelta(d['time'], format='sec')
         elif 'xrsa_flux' in d.variables:
             xrsa = np.array(d['xrsa_flux'])
@@ -218,7 +216,6 @@ class XRSTimeSeries(GenericTimeSeries):
                              ('xrsb', u.W/u.m**2)])
 
         return data, header, units
-
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
