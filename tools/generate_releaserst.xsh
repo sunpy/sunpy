@@ -4,7 +4,7 @@ Re-write release.rst for SunPy
 
 
 Usage:
-    generate_releasemd.xsh <prev_version> [<prev_tag>] [--project-name=<project-name>] [--author-sort=<author-sort>] [--show-commit-count] [--pretty-project-name=<pretty-project-name>] [--repo=<repo>] [--auth]
+    generate_releaserst.xsh <prev_version> [<prev_tag>] [--project-name=<project-name>] [--author-sort=<author-sort>] [--show-commit-count] [--pretty-project-name=<pretty-project-name>] [--repo=<repo>] [--auth]
 
 Options:
     prev_version                                   The PyPI release name of the previous release (should not start with v)

@@ -1,0 +1,1 @@
+Enable `~sunpy.coordinates.metaframes.RotatedSunFrame` to work with non-SunPy frames (e.g., `~astropy.coordinates.HeliocentricMeanEcliptic`).
