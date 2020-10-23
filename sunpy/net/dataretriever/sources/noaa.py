@@ -211,13 +211,11 @@ class SRSClient(GenericClient):
         for i, [url, qre] in enumerate(zip(urls, qres)):
             name = url.split('/')[-1]
 
-            day = qre['Time'].start
-
             if name not in filenames:
                 filenames.append(name)
 
             if name.endswith('.gz'):
-                local_filenames.append('{}SRS.txt'.format(day.strftime('%Y%m%d')))
+                local_filenames.append('{}SRS.txt'.format(qre['Time'].start.strftime('%Y%m%d')))
             else:
                 local_filenames.append(name)
 

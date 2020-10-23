@@ -183,6 +183,13 @@ def test_srs_current_year():
     assert res.data[0].endswith(f"{year}0101SRS.txt")
 
 
+@pytest.mark.remote_data
+def test_srs_save_path(tmpdir):
+    qr = Fido.search(a.Instrument.srs_table, a.Time("2016/10/01", "2016/10/02"))
+    files = Fido.fetch(qr, path=str(tmpdir))
+    assert len(files) == 2
+
+
 @pytest.mark.filterwarnings('ignore:ERFA function')
 def test_srs_out_of_range(SRSClient):
     res = SRSClient.search(a.Time('1995/01/01', '1995/02/01'))
