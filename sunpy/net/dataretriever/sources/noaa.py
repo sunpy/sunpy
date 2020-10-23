@@ -174,6 +174,8 @@ class SRSClient(GenericClient):
         extractor1 = '{}/warehouse/{:4d}/SRS/{year:4d}{month:2d}{day:2d}SRS.txt'
         extractor2 = '{}/warehouse/{year:4d}/{}'
         matchdict = self._get_match_dict(*args, **kwargs)
+        # this is needed for fetch
+        self._filestart = matchdict["Time"].start
         timerange = matchdict['Time']
         metalist = []
         for url in self._get_url_for_timerange(timerange):
@@ -204,11 +206,11 @@ class SRSClient(GenericClient):
         filenames = []
         local_filenames = []
 
-        for i, [url, qre] in enumerate(zip(urls, qres)):
+        for i, url in enumerate(urls):
             name = url.split('/')[-1]
 
             # temporary fix !!! coz All QRBs have same start_time values
-            day = Time(qre['Time'].start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+            day = Time(self._filestart.strftime("%Y-%m-%d")) + TimeDelta(i*u.day)
 
             if name not in filenames:
                 filenames.append(name)
