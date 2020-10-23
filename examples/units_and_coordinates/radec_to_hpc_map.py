@@ -35,9 +35,14 @@ from sunpy.coordinates import frames, sun
 # We will first begin be reading in the header and data from the FITS file.
 hdu = fits.open(sunpy.data.sample.LOFAR_IMAGE)
 header = hdu[0].header
-data = np.squeeze(hdu[0].data)
 
-###############################################################################
+#####################################################################################
+# The data in this file is in a datacube structure to hold difference frequencies and
+# polarizations. We are only interested in the image at one frequency (the only data
+# in the file) so we index the data array to be the 2D data of interest.
+data = hdu[0].data[0, 0, :, :]
+
+################################################################################
 # We can inspect the header, for example, we can print the coordinate system and
 # type projection, which here is RA-DEC.
 print(header['ctype1'], header['ctype2'])
@@ -52,7 +57,7 @@ frequency = header['crval3']*u.Hz
 # To create a new `~sunpy.map.Map` header we need convert the reference coordinate
 # in RA-DEC to Helioprojective. To do this we will first create an `astropy.coordinates.SkyCoord`
 # of the reference coordinate from the header information.
-reference_coord = SkyCoord(header['crval1']*u.deg, header['crval2']*u.deg,
+reference_coord = SkyCoord(header['crval1']*u.Unit(header['cunit1']), header['crval2']*u.Unit(header['cunit2']),
                            frame='gcrs',
                            obstime=obstime,
                            distance=sun.earth_distance(obstime))
@@ -76,9 +81,10 @@ reference_coord_arcsec = reference_coord.transform_to(frames.Helioprojective(obs
 cdelt1 = (np.abs(header['cdelt1'])*u.deg).to(u.arcsec)
 cdelt2 = (np.abs(header['cdelt2'])*u.deg).to(u.arcsec)
 
-##########################################################################
-# We will also required the P angle at the observation time - the image will
-# need to be rotated by this angle.
+##################################################################################
+# We will also need knowledge of the P-angle at the observation time, which is the
+# position angle between geocentric north and solar north as observed from Earth.
+# The image will need to be rotated by this angle so that solar north is pointed up.
 P1 = sun.P(obstime)
 
 ##########################################################################
@@ -95,7 +101,7 @@ new_header = sunpy.map.make_fitswcs_header(data, reference_coord_arcsec,
                                            reference_pixel=u.Quantity([header['crpix1']-1, header['crpix2']-1]*u.pixel),
                                            scale=u.Quantity([cdelt1, cdelt2]*u.arcsec/u.pix),
                                            rotation_angle=-P1,
-                                           wavelength=frequency.to(u.MHz),
+                                           wavelength=frequency.to(u.MHz).round(2),
                                            observatory='LOFAR')
 
 ##########################################################################
