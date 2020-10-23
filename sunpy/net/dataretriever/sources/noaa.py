@@ -209,7 +209,6 @@ class SRSClient(GenericClient):
         for i, url in enumerate(urls):
             name = url.split('/')[-1]
 
-            # temporary fix !!! coz All QRBs have same start_time values
             day = Time(self._filestart.strftime("%Y-%m-%d")) + TimeDelta(i*u.day)
 
             if name not in filenames:
