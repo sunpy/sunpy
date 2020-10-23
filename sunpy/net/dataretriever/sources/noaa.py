@@ -220,10 +220,13 @@ class SRSClient(GenericClient):
             else:
                 local_filenames.append(name)
 
+        if path is not None:
+            path=pathlib.Path(path)
         # Files to be actually downloaded
         paths = self._get_full_filenames(qres, filenames, path)
 
         # Those files that will be present after get returns
+
         local_paths = self._get_full_filenames(qres, local_filenames, path)
 
         # remove duplicate urls. This will make paths and urls to have same number of elements.
