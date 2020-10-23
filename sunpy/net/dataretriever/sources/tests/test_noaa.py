@@ -167,6 +167,14 @@ def test_srs_tar_unpack():
 
 
 @pytest.mark.remote_data
+def test_srs_tar_unpack_midyear():
+    qr = Fido.search(a.Instrument("soon") & a.Time("2011/06/07", "2011/06/08T23:59:29"))
+    res = Fido.fetch(qr)
+    assert len(res) == 2
+    assert res.data[0].endswith("20110607SRS.txt")
+
+
+@pytest.mark.remote_data
 def test_srs_current_year():
     year = datetime.date.today().year
     qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/01/01", f"{year}/01/01T23:59:29"))
