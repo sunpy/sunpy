@@ -5,8 +5,7 @@ import pathlib
 import tarfile
 from collections import OrderedDict
 
-import astropy.units as u
-from astropy.time import Time, TimeDelta
+from astropy.time import Time
 
 from sunpy.extern.parse import parse
 from sunpy.net import attrs as a
@@ -170,12 +169,15 @@ class SRSClient(GenericClient):
             result.append(url)
         return result
 
+    def post_search_hook(self, exdict, matchdict):
+        rowdict = super().post_search_hook(exdict, matchdict)
+        rowdict["Time"] = matchdict["Time"]
+        return rowdict
+
     def search(self, *args, **kwargs):
         extractor1 = '{}/warehouse/{:4d}/SRS/{year:4d}{month:2d}{day:2d}SRS.txt'
         extractor2 = '{}/warehouse/{year:4d}/{}'
         matchdict = self._get_match_dict(*args, **kwargs)
-        # this is needed for fetch
-        self._filestart = matchdict["Time"].start
         timerange = matchdict['Time']
         metalist = []
         for url in self._get_url_for_timerange(timerange):
@@ -206,10 +208,10 @@ class SRSClient(GenericClient):
         filenames = []
         local_filenames = []
 
-        for i, url in enumerate(urls):
+        for i, [url, qre] in enumerate(zip(urls, qres)):
             name = url.split('/')[-1]
 
-            day = Time(self._filestart.strftime("%Y-%m-%d")) + TimeDelta(i*u.day)
+            day = qre['Time'].start
 
             if name not in filenames:
                 filenames.append(name)
