@@ -1,0 +1,2 @@
+Fixed :func:`~sunpy.net.helio.parser.wsdl_retriever`, which previously
+ignored discovered Taverna links.
