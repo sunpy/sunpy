@@ -170,6 +170,8 @@ class SRSClient(GenericClient):
         return result
 
     def post_search_hook(self, exdict, matchdict):
+        # update the extracted metadata to include the queried times rather
+        # than those scraped from the downloaded zip (which includes full year data).
         rowdict = super().post_search_hook(exdict, matchdict)
         rowdict["Time"] = matchdict["Time"]
         return rowdict
