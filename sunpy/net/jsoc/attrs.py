@@ -1,3 +1,6 @@
+import astropy.units as u
+
+from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
@@ -86,25 +89,29 @@ class Cutout(DataAttr):
     nan_off_limb
     """
 
-    def __init__(self, bottom_left, width, height, tracking=False, register=False,
+    @u.quantity_input
+    def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
+                 height: u.arcsec = None, tracking=False, register=False,
                  nan_off_limb=False):
         super().__init__()
+        bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width,
+                                           height=height)
         self.value = {
-            't_ref': bottom_left.obstime.isot,
+            't_ref': bl.obstime.isot,
             # JSOC input is disable tracking so take the negative
             't': int(not tracking),
             'r': int(register),
             'c': int(nan_off_limb),
             'locunits': 'arcsec',
             'boxunits': 'arcsec',
-            'x': (bottom_left.Tx + width / 2).to('arcsec').value,
-            'y': (bottom_left.Ty + height / 2).to('arcsec').value,
-            'width': width.to('arcsec').value,
-            'height': height.to('arcsec').value,
+            'x': ((bl.Tx + tr.Tx) / 2).to('arcsec').value,
+            'y': ((bl.Ty + tr.Ty) / 2).to('arcsec').value,
+            'width': (tr.Tx - bl.Tx).to('arcsec').value,
+            'height': (tr.Ty - bl.Ty).to('arcsec').value,
         }
 
     def collides(self, other):
-        return False
+        return isinstance(other, self.__class__)
 
 
 walker = AttrWalker()
