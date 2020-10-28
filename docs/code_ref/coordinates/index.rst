@@ -318,6 +318,7 @@ More Detailed Information
 
    carrington
    rotatedsunframe
+   velocities
    wcs
    other_api
 
