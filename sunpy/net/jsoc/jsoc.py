@@ -821,13 +821,10 @@ class JSOCClient(BaseClient):
         """
 
         keywords_default = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-        isMeta = iargs.get('meta', False)
         c = drms.Client()
+        is_meta = iargs.get('meta', False)
 
-        if isMeta:
-            keywords = '**ALL**'
-        else:
-            keywords = iargs.get('keys', keywords_default)
+        keywords = iargs.get('keys', '**ALL**' if is_meta else keywords_default)
 
         if 'series' not in iargs:
             error_message = "Series must be specified for a JSOC Query"
@@ -891,12 +888,7 @@ class JSOCClient(BaseClient):
         else:
             key = keywords
 
-        r = c.query(ds, key=key, rec_index=isMeta)
-
-        # If the method was called from search_metadata(), return a Pandas Dataframe,
-        # otherwise return astropy.table
-        if isMeta:
-            return r
+        r = c.query(ds, key=key, rec_index=is_meta)
 
         if r is None or r.empty:
             return astropy.table.Table()
