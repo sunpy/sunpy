@@ -7,10 +7,6 @@ words, every combinations of attributes looks like this:
 (a AND b AND c) OR (d AND e).
 
 Walkers are used to traverse the tree that results from combining attributes.
-They are implemented using sunpy.util.multimethod. Multimethods are functions
-that are not assigned to classes but still dispatch by type of one or more
-of their arguments. For more information about multimethods, refer to
-sunpy.util.multimethod.
 
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
