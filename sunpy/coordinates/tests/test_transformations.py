@@ -31,6 +31,7 @@ from sunpy.coordinates import (
     Helioprojective,
     sun,
 )
+from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth
 from sunpy.coordinates.frames import _J2000
 from sunpy.coordinates.transformations import transform_with_sun_center
 from sunpy.sun.constants import radius as _RSUN
@@ -552,6 +553,42 @@ def test_velocity_hgs_hgc():
     assert_quantity_allclose(new_vel.d_lon, -360*u.deg / (27.27253*u.day), rtol=1e-2)
     assert_quantity_allclose(new_vel.d_lat, 0*u.deg/u.s)
     assert_quantity_allclose(new_vel.d_distance, 0*u.km/u.s, atol=1e-7*u.km/u.s)
+
+
+def test_velocity_hgs_hci():
+    # HGS and HCI share the same origin and Z axis, so the induced velocity is entirely angular
+    obstime = Time(['2021-01-01', '2021-04-01', '2021-07-01', '2021-10-01'])
+    venus_hgs = get_body_heliographic_stonyhurst('venus', obstime, include_velocity=True)
+    venus_hci = venus_hgs.transform_to(HeliocentricInertial(obstime=obstime))
+
+    # The induced velocity is the longitude component of Earth's velocity, ~360 deg/yr
+    induced_dlon = get_earth(obstime, include_velocity=True).heliocentricinertial.d_lon
+    assert_quantity_allclose(induced_dlon, 360*u.deg/u.yr, rtol=0.05)
+
+    # The HCI velocity should be the same as the HGS velocity except for the induced velocity
+    assert_quantity_allclose(venus_hci.d_distance, venus_hgs.d_radius, rtol=1e-5)
+    assert_quantity_allclose(venus_hci.d_lon, venus_hgs.d_lon + induced_dlon, rtol=1e-6)
+    assert_quantity_allclose(venus_hci.d_lat, venus_hgs.d_lat)
+
+
+def test_velocity_hcrs_hci():
+    # HCRS and HCI are both inertial frames with the same origin, so there is no induced velocity.
+    # There is an induced angular velocity for HCRS->HGS, which should be canceled out by the
+    # induced angular velocity for HGS->HCI.
+
+    # Define an HCRS coordinate with a purely radial velocity
+    sc_hcrs = SkyCoord(ra=[0, 90, 180, 270]*u.deg, pm_ra_cosdec=[0, 0, 0, 0]*u.deg/u.d,
+                       dec=[10, 20, 30, 40]*u.deg, pm_dec=[0, 0, 0, 0]*u.deg/u.d,
+                       distance=[5, 6, 7, 8]*u.AU, radial_velocity=[1, 2, 3, 4]*u.km/u.s,
+                       frame='hcrs', obstime='2021-01-01')
+
+    # Transform to HCI, and get the velocity vector in spherical coordinates
+    sc_hci = sc_hcrs.heliocentricinertial
+
+    # The HCI velocity should have the same amplitude, and should be purely radial
+    assert_quantity_allclose(sc_hci.d_distance, sc_hcrs.velocity.norm(), rtol=1e-6)
+    assert_quantity_allclose(sc_hci.d_lon, 0*u.arcsec/u.s, atol=1e-9*u.arcsec/u.s)
+    assert_quantity_allclose(sc_hci.d_lat, 0*u.arcsec/u.s, atol=1e-9*u.arcsec/u.s)
 
 
 def test_hme_hee_sunspice():
