@@ -989,46 +989,6 @@ height_pix = 2 * u.pix
 width_deg = 20 * u.arcsec
 height_deg = 20 * u.arcsec
 
-
-def test_deprecated_submap_inputs(generic_map2, coords):
-    bl_coord, tr_coord, bl_tr_coord = coords
-    # deprecated
-    with pytest.warns(SunpyDeprecationWarning):
-        smap = generic_map2.submap(bl_coord, tr_coord)
-    assert u.allclose(smap.dimensions, (3, 3) * u.pix)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        smap = generic_map2.submap(bl_pix, tr_pix)
-    assert u.allclose(smap.dimensions, (3, 3) * u.pix)
-
-    # error
-    with pytest.raises(TypeError, match="width must be specified as a keyword argument"):
-        generic_map2.submap(bl_coord, width_deg, height_deg)
-
-    with pytest.raises(TypeError, match="width must be specified as a keyword argument"):
-        generic_map2.submap(bl_pix, width_pix, height_pix)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        with pytest.raises(ValueError,
-                           match="Either top_right alone or both width and height must be specified."):
-            generic_map2.submap(bl_coord, width_deg, height=height_deg)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        with pytest.raises(ValueError,
-                           match="Either top_right alone or both width and height must be specified"):
-            generic_map2.submap(bl_pix, width_pix, height=height_pix)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        with pytest.raises(TypeError,
-                           match="Invalid input, top_right must be of type SkyCoord or BaseCoordinateFrame."):
-            generic_map2.submap(bl_coord, width_deg)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        with pytest.raises(ValueError,
-                           match="Either top_right alone or both width and height must be specified"):
-            generic_map2.submap(bl_pix, width_pix, height=height_pix)
-
-
 @pytest.mark.skip
 def test_submap_kwarg_only_input_errors(generic_map2, coords):
     """
