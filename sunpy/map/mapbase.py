@@ -1445,8 +1445,6 @@ class GenericMap(NDData):
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
             The top-right coordinate of the rectangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.
-            Passing this as a positional argument is deprecated, you must pass
-            it as ``top_right=...``.
         width : `astropy.units.Quantity`, optional
             The width of the rectangle. Required if ``top_right`` is omitted.
         height : `astropy.units.Quantity`
@@ -1889,13 +1887,10 @@ class GenericMap(NDData):
             have shape ``(2,)`` to simultaneously define ``top_right``.
         top_right : `~astropy.coordinates.SkyCoord`
             The top-right coordinate of the rectangle.
-            Passing this as a positional argument is deprecated.
         width : `astropy.units.Quantity`, optional
             The width of the rectangle. Required if ``top_right`` is omitted.
-            Passing this as a positional argument is deprecated.
         height : `astropy.units.Quantity`
             The height of the rectangle. Required if ``top_right`` is omitted.
-            Passing this as a positional argument is deprecated.
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.
