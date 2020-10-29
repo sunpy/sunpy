@@ -36,7 +36,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import cached_property_based_on, deprecate_positional_args_since, deprecated
+from sunpy.util.decorators import cached_property_based_on, deprecated
 from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -1427,7 +1427,6 @@ class GenericMap(NDData):
 
         return new_map
 
-    @deprecate_positional_args_since(since='2.0', keyword_only=('width', 'height'))
     @u.quantity_input
     def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None):
         """
@@ -1870,7 +1869,6 @@ class GenericMap(NDData):
 
         return [circ]
 
-    @deprecate_positional_args_since(since='2.0')
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
                        axes=None, top_right=None, **kwargs):
