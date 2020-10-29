@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-import astropy
 import astropy.units as u
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
@@ -515,7 +514,6 @@ def test_hpc_hgs_implicit_hcc():
     assert_quantity_allclose(implicit.separation_3d(explicit2), 0*u.AU, atol=1e-10*u.AU)
 
 
-@pytest.mark.skipif(astropy.__version__ < '3.2.0', reason="Not supported by Astropy <3.2")
 def test_velocity_hcrs_hgs():
     # Obtain the position/velocity of Earth in ICRS
     obstime = Time(['2019-01-01', '2019-04-01', '2019-07-01', '2019-10-01'])
@@ -523,18 +521,14 @@ def test_velocity_hcrs_hgs():
     loc = pos.with_differentials(vel.represent_as(CartesianDifferential))
     earth = SkyCoord(loc, frame='icrs', obstime=obstime)
 
-    # The velocity of Earth in HGS should be very close to zero.  The velocity in the HGS Y
-    # direction is slightly further away from zero because there is true latitudinal motion.
+    # The velocity of Earth in HGS Y should be very close to zero because the XZ plane tracks
+    # the Earth.
     new = earth.heliographic_stonyhurst
-    assert_quantity_allclose(new.velocity.d_x, 0*u.km/u.s, atol=1e-15*u.km/u.s)
-    assert_quantity_allclose(new.velocity.d_y, 0*u.km/u.s, atol=1e-14*u.km/u.s)
-    assert_quantity_allclose(new.velocity.d_x, 0*u.km/u.s, atol=1e-15*u.km/u.s)
+    assert_quantity_allclose(new.velocity.d_y, 0*u.km/u.s, atol=1e-5*u.km/u.s)
 
     # Test the loopback to ICRS
     newer = new.icrs
-    assert_quantity_allclose(newer.velocity.d_x, vel.x)
-    assert_quantity_allclose(newer.velocity.d_y, vel.y)
-    assert_quantity_allclose(newer.velocity.d_z, vel.z)
+    assert_quantity_allclose(newer.velocity.d_xyz, vel.xyz)
 
 
 def test_velocity_hgs_hgc():
