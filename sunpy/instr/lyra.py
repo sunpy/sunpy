@@ -18,7 +18,6 @@ from sunpy.data import cache
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
