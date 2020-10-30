@@ -989,7 +989,7 @@ height_pix = 2 * u.pix
 width_deg = 20 * u.arcsec
 height_deg = 20 * u.arcsec
 
-@pytest.mark.skip
+
 def test_submap_kwarg_only_input_errors(generic_map2, coords):
     """
     This test replaces the one above when the deprecation period is over.
@@ -1007,42 +1007,6 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
     for args, kwargs in inputs:
         with pytest.raises(TypeError, match="too many positional arguments"):
             generic_map2.submap(*args, **kwargs)
-
-
-def test_submap_kwarg_only_input_errors(generic_map2, coords):
-    bl_coord, tr_coord, bl_tr_coord = coords
-
-    inputs = (
-        dict(width=width_pix),
-        dict(top_right=tr_pix, width=width_pix),
-        dict(top_right=tr_pix, height=height_pix),
-        dict(),  # Only post deprecation
-    )
-    for kwargs in inputs:
-        with pytest.raises(ValueError, match="top_right alone or both width and height "
-                                             "must be specified"):
-            generic_map2.submap(bl_pix, **kwargs)
-
-    with pytest.raises(TypeError, match="width and height must be a Quantity in units of pixels"):
-        generic_map2.submap(bl_pix, width=width_deg, height=height_deg)
-
-    with pytest.raises(TypeError,
-                       match="top_right must be a Quantity in units of pixels."):
-        generic_map2.submap([10, 10]*u.deg, top_right=[10, 10]*u.deg)
-
-    with pytest.raises(ValueError, match=r"must have shape \(2\, \)"):
-        generic_map2.submap(10*u.pix, top_right=10*u.pix)
-
-    with pytest.raises(ValueError, match=r"must have shape \(2\, \)"):
-        generic_map2.submap([10, 10, 10]*u.pix, top_right=[10, 10, 10]*u.pix)
-
-    with pytest.raises(u.UnitsError):
-        generic_map2.submap([10, 10]*u.deg, width=10*u.km, height=10*u.J)
-
-    with pytest.raises(ValueError,
-                       match="either bottom_left and top_right or bottom_left and height and width should be provided"):
-        generic_map2.submap(SkyCoord([10, 10, 10]*u.deg, [10, 10, 10]*u.deg,
-                                     frame=generic_map2.coordinate_frame))
 
 
 def test_submap_inputs(generic_map2, coords):
