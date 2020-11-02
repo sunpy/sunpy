@@ -17,6 +17,14 @@ def solar_wcs_frame_mapping(wcs):
     """
     This function registers the coordinates frames to their FITS-WCS coordinate
     type values in the `astropy.wcs.utils.wcs_to_celestial_frame` registry.
+
+    Parameters
+    ----------
+    wcs : astropy.wcs.WCS
+
+    Returns
+    -------
+    astropy.coordinates.BaseCoordinateFrame
     """
 
     if hasattr(wcs, "coordinate_frame"):
@@ -57,6 +65,15 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     For a given frame, this function returns the corresponding WCS object.
     It registers the WCS coordinates types from their associated frame in the
     `astropy.wcs.utils.celestial_frame_to_wcs` registry.
+
+    Parameters
+    ----------
+    frame : astropy.coordiantes.BaseCoordinateFrame
+    projection : str, optional
+
+    Returns
+    -------
+    astropy.wcs.WCS
     """
     wcs = WCS(naxis=2)
 
