@@ -80,13 +80,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
             image_axes.append(slices[::-1].index("y"))
             self.plot_dimensionality = 2
 
-        if self.plot_dimensionality == 1:
-            try:
-                from astropy.visualization.wcsaxes.frame import RectangularFrame1D  # NOQA
-            except ImportError as e:
-                raise ImportError(
-                    "Astropy 4.0 must be installed to do line plotting with WCSAxes.") from e
-
         self.naxis = data.ndim
         self.num_sliders = self.naxis - self.plot_dimensionality
         self.slices_wcsaxes = list(slices)
@@ -110,7 +103,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
         Read first the axes names property of the wcs and fall back to physical types.
         """
         # world_axis_names was only added to the APE 14 API in 4.0, so do this for backwards compatibility.
-        world_axis_names = getattr(self.wcs, "world_axis_names", [''] * self.wcs.world_n_dim)
+        try:
+            world_axis_names = self.wcs.world_axis_names
+        except AttributeError:
+            world_axis_names = [''] * self.wcs.world_n_dim
         # Return the name if it is set, or the physical type if it is not.
         return [l or t for l, t in zip(world_axis_names, self.wcs.world_axis_physical_types)]
 
