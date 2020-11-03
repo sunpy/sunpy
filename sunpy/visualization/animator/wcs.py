@@ -103,10 +103,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         Read first the axes names property of the wcs and fall back to physical types.
         """
         # world_axis_names was only added to the APE 14 API in 4.0, so do this for backwards compatibility.
-        try:
-            world_axis_names = self.wcs.world_axis_names
-        except AttributeError:
-            world_axis_names = [''] * self.wcs.world_n_dim
+        world_axis_names = self.wcs.world_axis_names
         # Return the name if it is set, or the physical type if it is not.
         return [l or t for l, t in zip(world_axis_names, self.wcs.world_axis_physical_types)]
 
