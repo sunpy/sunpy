@@ -195,25 +195,27 @@ class XRSTimeSeries(GenericTimeSeries):
         """
         import h5netcdf
 
-        d = h5netcdf.File(filepath, mode='r')
+        d = h5netcdf.File(filepath, mode="r")
 
         header =  MetaDict(OrderedDict(d.attrs))
-        if 'a_flux' in d.variables:
-            xrsa = np.array(d['a_flux'])
-            xrsb = np.array(d['b_flux'])
-            times = parse_time('1970-01-01') + TimeDelta(d['time'], format='sec')
-        elif 'xrsa_flux' in d.variables:
-            xrsa = np.array(d['xrsa_flux'])
-            xrsb = np.array(d['xrsb_flux'])
-            times = parse_time('2000-01-01 12:00:00') + TimeDelta(d['time'], format='sec')
+        if "a_flux" in d.variables:
+            xrsa = np.array(d["a_flux"])
+            xrsb = np.array(d["b_flux"])
+            times = parse_time("1970-01-01") + TimeDelta(d["time"], format="sec")
+        elif "xrsa_flux" in d.variables:
+            xrsa = np.array(d["xrsa_flux"])
+            xrsb = np.array(d["xrsb_flux"])
+            times = parse_time("2000-01-01 12:00:00") + TimeDelta(d["time"], format="sec")
 
         else:
             raise ValueError("Don't know how to parse this file")
 
-        data = DataFrame({'xrsa': xrsa, 'xrsb': xrsb}, index=times.datetime)
+        d.close()
+
+        data = DataFrame({"xrsa": xrsa, "xrsb": xrsb}, index=times.datetime)
         data.replace(-9999, np.nan)
-        units = OrderedDict([('xrsa', u.W/u.m**2),
-                             ('xrsb', u.W/u.m**2)])
+        units = OrderedDict([("xrsa", u.W/u.m**2),
+                             ("xrsb", u.W/u.m**2)])
 
         return data, header, units
 
@@ -223,8 +225,11 @@ class XRSTimeSeries(GenericTimeSeries):
         Determines if header corresponds to a GOES lightcurve
         `~sunpy.timeseries.TimeSeries`.
         """
-        if 'source' in kwargs.keys():
-            if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source)
-        if 'meta' in kwargs.keys():
-            return kwargs['meta'].get('TELESCOP', '').startswith('GOES')
+        if "source" in kwargs.keys():
+            if kwargs.get("source", ""):
+                return kwargs.get("source", "").lower().startswith(cls._source)
+        if "meta" in kwargs.keys():
+            return kwargs["meta"].get("TELESCOP", "").startswith("GOES")
+
+        if "filepath" in kwargs.keys():
+            return ("xrs" and ".nc" in kwargs.get("filepath", ""))
