@@ -109,6 +109,14 @@ extensions = [
     'sunpy.util.sphinx.generate',
 ]
 
+if on_rtd:
+    rtd_version = os.environ.get('READTHEDOCS_VERSION', None)
+    stable = (rtd_version == 'stable') or (rtd_version[0] == 'v')
+    if stable:
+        # Stable versions have a manually rendered changelog, so remove the
+        # changelog extension
+        extensions.remove('sunpy.util.sphinx.changelog')
+
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
 

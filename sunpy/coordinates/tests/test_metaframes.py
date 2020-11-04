@@ -2,7 +2,7 @@ import pytest
 from hypothesis import given, settings
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, SkyCoord, frame_transform_graph
+from astropy.coordinates import HeliocentricMeanEcliptic, SkyCoord, frame_transform_graph
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
@@ -64,8 +64,17 @@ def rot_hpc():
                             duration=4*u.day))
 
 
+# Test a non-SunPy frame
+@pytest.fixture
+def rot_hme():
+    return (HeliocentricMeanEcliptic,
+            RotatedSunFrame(lon=1*u.deg, lat=2*u.deg, distance=3*u.AU,
+                            base=HeliocentricMeanEcliptic(obstime='2001-01-01', equinox='2001-01-01'),
+                            duration=4*u.day))
+
+
 @pytest.mark.parametrize("indirect_fixture",
-                         ["rot_hgs", "rot_hgc", "rot_hci", "rot_hcc", "rot_hpc"], indirect=True)
+                         ["rot_hgs", "rot_hgc", "rot_hci", "rot_hcc", "rot_hpc", "rot_hme"], indirect=True)
 def test_class_creation(indirect_fixture):
     base_class, rot_frame = indirect_fixture
 
@@ -108,11 +117,6 @@ def test_as_base(rot_hgs):
 def test_no_base():
     with pytest.raises(TypeError):
         RotatedSunFrame()
-
-
-def test_no_sunpy_frame():
-    with pytest.raises(TypeError):
-        RotatedSunFrame(base=BaseCoordinateFrame)
 
 
 def test_no_obstime():

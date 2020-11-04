@@ -1,6 +1,7 @@
 import os
 import glob
 import datetime
+from pathlib import Path
 from collections import OrderedDict
 
 import numpy as np
@@ -90,6 +91,12 @@ class TestTimeSeries:
             filepath, "eve", "*"), source='EVE', concatenate=True)
         assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
+    def test_factory_generate_from_pathlib(self):
+        # Test making a TimeSeries from a : pathlib.PosixPath
+        ts_from_pathlib = sunpy.timeseries.TimeSeries(Path(filepath).joinpath("gbm.fits"),
+                                                      source="GBMSummary")
+        assert isinstance(ts_from_pathlib, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 # =============================================================================
 # Individual Implicit Source Tests
 # =============================================================================
