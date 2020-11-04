@@ -81,7 +81,7 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 ax = plt.subplot(projection=aiamap)
 aiamap.plot(axes=ax, clip_interval=(1, 99.5) * u.percent)
-ax.plot_coord(loop_coords.transform_to(aiamap.coordinate_frame), 'r')
+ax.plot_coord(loop_coords, 'r')
 
 plt.show()
 

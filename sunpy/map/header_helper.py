@@ -89,6 +89,11 @@ def make_fitswcs_header(data, coordinate,
     `~sunpy.util.MetaDict`
         The header information required for making a `sunpy.map.GenericMap`.
 
+    Notes
+    -----
+    The observer coordinate is taken from the observer property of the ``reference_pixel``
+    argument.
+
     Examples
     --------
     >>> import sunpy.map
