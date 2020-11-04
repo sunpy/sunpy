@@ -172,6 +172,7 @@ def test_srs_tar_unpack_midyear():
     res = Fido.fetch(qr)
     assert len(res) == 2
     assert res.data[0].endswith("20110607SRS.txt")
+    assert res.data[-1].endswith("20110608SRS.txt")
 
 
 @pytest.mark.remote_data

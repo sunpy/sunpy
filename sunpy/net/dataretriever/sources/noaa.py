@@ -5,7 +5,8 @@ import pathlib
 import tarfile
 from collections import OrderedDict
 
-from astropy.time import Time
+from astropy import units as u
+from astropy.time import Time, TimeDelta
 
 from sunpy.extern.parse import parse
 from sunpy.net import attrs as a
@@ -213,11 +214,13 @@ class SRSClient(GenericClient):
         for i, [url, qre] in enumerate(zip(urls, qres)):
             name = url.split('/')[-1]
 
+            day = Time(qre['Time'].start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+
             if name not in filenames:
                 filenames.append(name)
 
             if name.endswith('.gz'):
-                local_filenames.append('{}SRS.txt'.format(qre['Time'].start.strftime('%Y%m%d')))
+                local_filenames.append('{}SRS.txt'.format(day.strftime('%Y%m%d')))
             else:
                 local_filenames.append(name)
 
