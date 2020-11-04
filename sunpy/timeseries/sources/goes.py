@@ -124,10 +124,10 @@ class XRSTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        if Path(filepath).suffix == '.fits':
+        if ".fits" in Path(filepath).suffixes:
             hdus = sunpy.io.read_file(filepath)
             return cls._parse_hdus(hdus)
-        elif Path(filepath).suffix == '.nc':
+        elif Path(filepath).suffix == ".nc":
             return cls._parse_netcdf(filepath)
         else:
             return ValueError(f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
