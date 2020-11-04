@@ -31,6 +31,9 @@ trigger:
     - '*pre*'
     - '*post*'
 
+pr:
+  autoCancel: true
+
 jobs:
 - template: run-tox-env.yml@OpenAstronomy
   parameters:
