@@ -53,6 +53,9 @@ jobs:
     envs:
       - linux: py39
         name: py39_test
+
+      - macos: py38
+        name: py38_test
         posargs: -n=1
 
       - windows: py37
@@ -63,10 +66,6 @@ jobs:
 
       - linux32: py38-32bit
         name: py38_test_32bit
-
-      - linux: codestyle
-        name: python_codestyle
-        pytest: false
 
       - linux: py38-hypothesis
 
@@ -81,6 +80,10 @@ jobs:
 
       - linux: build_docs
         posargs: " "
+        pytest: false
+
+      - linux: codestyle
+        name: python_codestyle
         pytest: false
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
