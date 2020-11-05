@@ -64,6 +64,16 @@ def warnings_as_errors(request):
 new_hash_library = {}
 
 
+def get_hash_library_name():
+    """
+    Generate the hash library name for this env.
+    """
+    ft2_version = f"{mpl.ft2font.__freetype_version__.replace('.', '')}"
+    mpl_version = "dev" if "+" in mpl.__version__ else mpl.__version__.replace('.', '')
+    astropy_version = "dev" if "dev" in astropy.__version__ else astropy.__version__.replace('.', '')
+    return f"figure_hashes_mpl_{mpl_version}_ft_{ft2_version}_astropy_{astropy_version}.json"
+
+
 def figure_test(test_function):
     """
     A decorator for a test that verifies the hash of the current figure or the
@@ -79,10 +89,7 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
-    ft2_version = f"{mpl.ft2font.__freetype_version__.replace('.', '')}"
-    mpl_version = "dev" if "+" in mpl.__version__ else mpl.__version__.replace('.', '')
-    astropy_version = "dev" if "dev" in astropy.__version__ else astropy.__version__.replace('.', '')
-    hash_library_name = f"figure_hashes_mpl_{mpl_version}_ft_{ft2_version}_astropy_{astropy_version}.json"
+    hash_library_name = get_hash_library_name()
     hash_library_file = Path(__file__).parent / hash_library_name
 
     @pytest.mark.remote_data
