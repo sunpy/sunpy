@@ -7,6 +7,7 @@ words, every combinations of attributes looks like this:
 (a AND b AND c) OR (d AND e).
 
 Walkers are used to traverse the tree that results from combining attributes.
+They are implemented using `functools.singledispatch` modified to dispatch on the second argument to the function.
 
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
