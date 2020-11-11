@@ -5,7 +5,7 @@ import pathlib
 import tarfile
 from collections import OrderedDict
 
-import astropy.units as u
+from astropy import units as u
 from astropy.time import Time, TimeDelta
 
 from sunpy.extern.parse import parse
@@ -170,6 +170,13 @@ class SRSClient(GenericClient):
             result.append(url)
         return result
 
+    def post_search_hook(self, exdict, matchdict):
+        # update the extracted metadata to include the queried times rather
+        # than those scraped from the downloaded zip (which includes full year data).
+        rowdict = super().post_search_hook(exdict, matchdict)
+        rowdict["Time"] = matchdict["Time"]
+        return rowdict
+
     def search(self, *args, **kwargs):
         extractor1 = '{}/warehouse/{:4d}/SRS/{year:4d}{month:2d}{day:2d}SRS.txt'
         extractor2 = '{}/warehouse/{year:4d}/{}'
@@ -207,7 +214,6 @@ class SRSClient(GenericClient):
         for i, [url, qre] in enumerate(zip(urls, qres)):
             name = url.split('/')[-1]
 
-            # temporary fix !!! coz All QRBs have same start_time values
             day = Time(qre['Time'].start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
 
             if name not in filenames:
@@ -218,6 +224,8 @@ class SRSClient(GenericClient):
             else:
                 local_filenames.append(name)
 
+        if path is not None:
+            path = pathlib.Path(path)
         # Files to be actually downloaded
         paths = self._get_full_filenames(qres, filenames, path)
 
