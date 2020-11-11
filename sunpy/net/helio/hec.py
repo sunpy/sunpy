@@ -40,6 +40,13 @@ def votable_handler(xml_table):
     fake_file = io.BytesIO()
     fake_file.write(xml_table)
     votable = parse_single_table(fake_file)
+    # This is a workaround: in astropy 4.1 they made votable parse
+    # char type to strings over bytes which has changed the type of our return
+    # The fix here is burning this module down.
+    for i in range(len(votable.array)):
+        item = votable.array[i][0]
+        if isinstance(item, str):
+            votable.array[i] = (votable.array[i][0].encode(),)
     fake_file.close()
     return votable
 
@@ -174,7 +181,6 @@ class HECClient:
         table_list.sort()
         for index, table in enumerate(table_list):
             print(f'{index + 1} - {table.decode()}')
-
         while True:
             user_input = input(f"\nPlease enter a table number between 1 and {len(table_list)} "
                                "('e' to exit): ")
@@ -182,6 +188,7 @@ class HECClient:
                 return None
             if user_input.isdigit() and 1 <= int(user_input) <= len(table_list):
                 table_no = int(user_input)
-                return table_list[table_no - 1]
+                table = table_list[table_no - 1]
+                return table
             else:
                 print(f"Input must be an integer between 1 and {len(table_list)}")
