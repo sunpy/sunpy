@@ -49,6 +49,7 @@ jobs:
         - openssl-devel
         - freetype-devel
         - libpng-devel
+        - hdf5-devel
 
     envs:
       - macos: py38
