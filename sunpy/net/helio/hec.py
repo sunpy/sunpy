@@ -187,7 +187,6 @@ class HECClient:
                 return None
             if user_input.isdigit() and 1 <= int(user_input) <= len(table_list):
                 table_no = int(user_input)
-                table = table_list[table_no - 1]
-                return table
+                return table_list[table_no - 1]
             else:
                 print(f"Input must be an integer between 1 and {len(table_list)}")
