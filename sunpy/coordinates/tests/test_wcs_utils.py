@@ -1,5 +1,6 @@
 
 import numpy as np
+import pytest
 
 from astropy.coordinates import BaseCoordinateFrame
 from astropy.wcs import WCS
@@ -14,52 +15,20 @@ from sunpy.coordinates.frames import (
 from ..wcs_utils import solar_frame_to_wcs_mapping, solar_wcs_frame_mapping
 
 
-def test_hpc():
+@pytest.mark.parametrize('ctype, frame', [[['HPLN', 'HPLT'], Helioprojective],
+                                          [['HPLT', 'HPLN'], Helioprojective],
+                                          [['HGLN', 'HGLT'], HeliographicStonyhurst],
+                                          [['CRLN', 'CRLT'], HeliographicCarrington],
+                                          [['SOLX', 'SOLY'], Heliocentric]
+                                          ])
+def test_wcs_frame_mapping(ctype, frame):
     wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['HPLN', 'HPLT']
-
+    wcs.wcs.ctype = ctype
     result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, Helioprojective)
-
-
-def test_hpc_flipped():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['HPLT', 'HPLN']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, Helioprojective)
+    assert isinstance(result, frame)
 
 
-def test_hgs():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['HGLN', 'HGLT']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, HeliographicStonyhurst)
-
-
-def test_hgc():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['CRLN', 'CRLT']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, HeliographicCarrington)
-
-
-def test_hcc():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['SOLX', 'SOLY']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, Heliocentric)
-
-
-def test_none():
+def test_wcs_frame_mapping_none():
     wcs = WCS(naxis=2)
     wcs.wcs.ctype = ['spam', 'eggs']
 
