@@ -68,24 +68,6 @@ However if you want to develop sunpy we would strongly recommend reading our `ne
 
     Do **not** install sunpy or other third-party packages using ``sudo``.
 
-.. _testing-sunpy:
-
-Testing sunpy
-*************
-
-.. warning::
-    The tests will fail if you do not install all the optional dependencies.
-    If you have installed sunpy with conda-forge, you will be missing the ``pytest-mock`` package which will cause the test suite to fail.
-
-The easiest way to test your installed version of sunpy is running correctly is to use the :func:`sunpy.self_test`::
-
-    import sunpy
-    sunpy.self_test()
-
-which will run many of the sunpy tests.
-
-The tests should run and print out any failures, which you can report at the `sunpy issue tracker <https://github.com/sunpy/sunpy/issues>`__.
-
 sunpy's Requirements
 ********************
 
