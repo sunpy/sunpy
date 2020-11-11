@@ -42,7 +42,6 @@ def votable_handler(xml_table):
     votable = parse_single_table(fake_file)
     # This is a workaround: in astropy 4.1 they made votable parse
     # char type to strings over bytes which has changed the type of our return
-    # The fix here is burning this module down.
     for i in range(len(votable.array)):
         item = votable.array[i][0]
         if isinstance(item, str):
