@@ -1,0 +1,2 @@
+The transformations between `~astropy.coordinates.HCRS` and `~sunpy.coordinates.frames.HeliographicStonyhurst` have been re-implemented to enable the proper transformations of velocities.
+All ephemeris functions (e.g., :func:`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`) now return properly calculated velocities when ``include_velocity=True`` is specified.
