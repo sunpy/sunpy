@@ -237,6 +237,8 @@ class JSOCClient(BaseClient):
         >>> res.wait(progress=True)   # doctest: +SKIP
 
     """
+    # Default number of max connections that the Downloader opens
+    default_max_conn = 2
 
     def search(self, *query, **kwargs):
         """
@@ -467,7 +469,7 @@ class JSOCClient(BaseClient):
         return requests
 
     def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
-              downloader=None, wait=True, sleep=10, max_conn=4, **kwargs):
+              downloader=None, wait=True, sleep=10, max_conn=default_max_conn, **kwargs):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
@@ -533,7 +535,7 @@ class JSOCClient(BaseClient):
                                 wait=wait, max_conn=max_conn, **defaults)
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
-                    downloader=None, wait=True, max_conn=4, **kwargs):
+                    downloader=None, wait=True, max_conn=default_max_conn, **kwargs):
         """
         Query JSOC to see if the request(s) is ready for download.
 
@@ -625,9 +627,10 @@ class JSOCClient(BaseClient):
 
         if downloader.max_conn * kwargs['max_splits'] > 10:
             warnings.warn(("JSOC does not support more than 10 parallel connections. " +
-                           "Changing the number of parallel connections to 8."), SunpyUserWarning)
+                           f"Changing the number of parallel connections to {2 * self.default_max_conn}."),
+                          SunpyUserWarning)
             kwargs['max_splits'] = 2
-            downloader.max_conn = 4
+            downloader.max_conn = self.default_max_conn
 
         urls = []
         for request in requests:
