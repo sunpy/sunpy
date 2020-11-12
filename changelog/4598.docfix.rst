@@ -1,1 +1,1 @@
-Modified `skip_magnetogram_active_regions_example.py` to use HMI file from sample data instead of downloading it with Fido.
+Modified :ref:`sphx_glr_generated_gallery_magnetogram_active_regions_example.py` to use HMI file from sample data instead of downloading it with Fido.
