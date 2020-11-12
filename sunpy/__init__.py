@@ -13,7 +13,7 @@ import logging
 
 from sunpy.tests.runner import SunPyTestRunner
 from sunpy.util import system_info
-from sunpy.util.config import load_config
+from sunpy.util.config import load_config, print_config
 from sunpy.util.logger import _init_log
 from .version import version as __version__
 
@@ -49,10 +49,14 @@ def _get_bibtex():
 
 
 __citation__ = __bibtex__ = _get_bibtex()
+
 self_test = SunPyTestRunner.make_test_runner_in(os.path.dirname(__file__))
+
 # Load user configuration
 config = load_config()
+
 # Use the root logger as a dummy log before initializing Astropy's logger
 log = logging.getLogger()
 log = _init_log(config=config)
-__all__ = ['config', 'self_test', 'system_info']
+
+__all__ = ['config', 'self_test', 'system_info', 'print_config']
