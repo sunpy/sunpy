@@ -19,3 +19,6 @@ prune .jupyter
 prune binder
 prune changelog
 prune tools
+# This subpackage is only used in development checkouts and should not be
+# included in built tarballs
+prune sunpy/_dev
