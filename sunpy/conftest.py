@@ -1,6 +1,4 @@
 import os
-import json
-import pathlib
 import tempfile
 import importlib
 
@@ -8,10 +6,6 @@ import pytest
 
 import astropy
 import astropy.config.paths
-
-import sunpy.tests.helpers
-from sunpy.tests.hash import HASH_LIBRARY_NAME
-from sunpy.tests.helpers import generate_figure_webpage, new_hash_library
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -28,16 +22,6 @@ HAVE_REMOTEDATA = remotedata_spec is not None
 
 # Do not collect the sample data file because this would download the sample data.
 collect_ignore = ["data/sample.py"]
-
-
-def pytest_addoption(parser):
-    parser.addoption("--figure_dir", action="store", default="./figure_test_images")
-
-
-@pytest.fixture(scope='session', autouse=True)
-def figure_base_dir(request):
-    sunpy.tests.helpers.figure_base_dir = pathlib.Path(
-        request.config.getoption("--figure_dir"))
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -132,29 +116,3 @@ def pytest_runtest_setup(item):
     if isinstance(item, pytest.Function):
         if 'remote_data' in item.keywords and not HAVE_REMOTEDATA:
             pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
-
-
-def pytest_unconfigure(config):
-    # If at least one figure test has been run, print result image directory
-    if len(new_hash_library) > 0:
-        # Write the new hash library in JSON
-        figure_base_dir = pathlib.Path(config.getoption("--figure_dir"))
-        hashfile = figure_base_dir / HASH_LIBRARY_NAME
-        with open(hashfile, 'w') as outfile:
-            json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
-
-        """
-        Turn on internet when generating the figure comparison webpage.
-        """
-        if HAVE_REMOTEDATA:
-            from pytest_remotedata.disable_internet import turn_off_internet, turn_on_internet
-        else:
-            def turn_on_internet(): pass
-            def turn_off_internet(): pass
-
-        turn_on_internet()
-        generate_figure_webpage(new_hash_library)
-        turn_off_internet()
-
-        print('All images from image tests can be found in {}'.format(figure_base_dir.resolve()))
-        print("The corresponding hash library is {}".format(hashfile.resolve()))
