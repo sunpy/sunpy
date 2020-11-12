@@ -13,8 +13,8 @@ from astropy.coordinates import SkyCoord
 from astropy.time import TimeDelta
 
 import sunpy.coordinates
-import sunpy.map
 import sunpy.data.sample
+import sunpy.map
 from sunpy.io.special import srs
 from sunpy.net import Fido
 from sunpy.net import attrs as a
