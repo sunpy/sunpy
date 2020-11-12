@@ -28,7 +28,9 @@ smap = sunpy.map.Map(sunpy.data.sample.HMI_LOS_IMAGE)
 
 ##############################################################################
 # Then extract the observation time of the sample image. We use it to
-# calculate the time interval for the SRS file search.
+# calculate the time interval for the SRS file search. SRS files are published
+# at the same time each day. Therefore to define `TimeDelta` we use '23*u.hour
+# + 59*u.minute + 59*u.second' interval (not '1*u.day').
 
 start_time = parse_time(smap.date)
 end_time = start_time + TimeDelta(23*u.hour + 59*u.minute + 59*u.second)
@@ -40,8 +42,8 @@ srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument.srs_table)
 srs_downloaded_files = Fido.fetch(srs_results)
 
 ##############################################################################
-# We get one SRS file per day. To read this file, we pass the filename into
-# the SRS reader. So now `srs_table` contains an astropy table.
+# To read this file, we pass the filename into the SRS reader. So now
+# `srs_table` contains an astropy table.
 srs_table = srs.read_srs(srs_downloaded_files[0])
 print(srs_table)
 
