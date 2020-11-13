@@ -1,0 +1,1 @@
+Modified :ref:`sphx_glr_generated_gallery_plotting_magnetogram_active_regions.py` to use HMI file from sample data instead of downloading it with Fido.
