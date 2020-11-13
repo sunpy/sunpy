@@ -27,16 +27,15 @@ from sunpy.time import parse_time
 smap = sunpy.map.Map(sunpy.data.sample.HMI_LOS_IMAGE)
 
 ##############################################################################
-# Then extract the observation time of the sample image. We use it to
-# calculate the time interval for the SRS file search. SRS files are published
-# at the same time each day. Therefore to define `TimeDelta` we use '23*u.hour
-# + 59*u.minute + 59*u.second' interval (not '1*u.day').
+# Then using the observation time of the sample image we will download the corresponding
+# NOAA SWPC solar region summary. These are published once a day, so we will define an
+# ``end_time`` that ends just before the next day, otherwise you will download two files.
 
 start_time = parse_time(smap.date)
 end_time = start_time + TimeDelta(23*u.hour + 59*u.minute + 59*u.second)
 
 ##############################################################################
-# Search and download the SRS file.
+#  Here we use `sunpy.net.Fido` to acquire the data.
 
 srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument.srs_table)
 srs_downloaded_files = Fido.fetch(srs_results)
