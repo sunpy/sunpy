@@ -5,7 +5,7 @@ import pathlib
 import tarfile
 from collections import OrderedDict
 
-import astropy.units as u
+from astropy import units as u
 from astropy.time import Time, TimeDelta
 
 from sunpy.net.dataretriever import GenericClient
@@ -241,6 +241,8 @@ class SRSClient(GenericClient):
             else:
                 local_filenames.append(name)
 
+        if path is not None:
+            path = pathlib.Path(path)
         # Files to be actually downloaded
         paths = self._get_full_filenames(qres, filenames, path)
 
