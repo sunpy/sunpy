@@ -464,7 +464,7 @@ class GenericMap(NDData):
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.spatial_units
         w2.wcs.dateobs = self.date.isot
-        w2.rsun = self.rsun_meters
+        w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
         # "solar-y" ctypes.  This overrides the default assignment and
@@ -476,12 +476,23 @@ class GenericMap(NDData):
         if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
             w2.wcs.ctype[1] = 'HPLT-TAN'
 
-        # GenericMap.coordinate_frame is implemented using this method, so we
-        # need to do this only based on .meta.
-        ctypes = {c[:4] for c in w2.wcs.ctype}
-        # Check that the ctypes contains one of these three pairs of axes.
-        if ({'HPLN', 'HPLT'} <= ctypes or {'SOLX', 'SOLY'} <= ctypes or {'CRLN', 'CRLT'} <= ctypes):
-            w2.heliographic_observer = self.observer_coordinate
+        # Set observer coordinate information
+        #
+        # Clear all the aux information that was set earlier. This is to avoid
+        # issues with maps that store multiple observer coordinate keywords.
+        # Note that we have to create a new WCS as it's not possible to modify
+        # wcs.wcs.aux in place.
+        header = w2.to_header()
+        for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
+            header.pop(kw, None)
+        w2 = astropy.wcs.WCS(header)
+
+        # Get observer coord, and transform if needed
+        obs_coord = self.observer_coordinate
+        if not isinstance(obs_coord.frame, (HeliographicStonyhurst, HeliographicCarrington)):
+            obs_coord = obs_coord.transform_to(HeliographicStonyhurst(obstime=self.date))
+
+        sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
         # Validate the WCS here.
         w2.wcs.set()
