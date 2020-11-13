@@ -167,12 +167,30 @@ def test_srs_tar_unpack():
 
 
 @pytest.mark.remote_data
+def test_srs_tar_unpack_midyear():
+    qr = Fido.search(a.Instrument("soon") & a.Time("2011/06/07", "2011/06/08T23:59:29"))
+    res = Fido.fetch(qr)
+    assert len(res) == 2
+    assert res.data[0].endswith("20110607SRS.txt")
+    assert res.data[-1].endswith("20110608SRS.txt")
+
+
+@pytest.mark.remote_data
 def test_srs_current_year():
     year = datetime.date.today().year
     qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/01/01", f"{year}/01/01T23:59:29"))
     res = Fido.fetch(qr)
     assert len(res) == 1
     assert res.data[0].endswith(f"{year}0101SRS.txt")
+
+
+@pytest.mark.remote_data
+def test_srs_save_path(tmpdir):
+    qr = Fido.search(a.Instrument.srs_table, a.Time("2016/10/01", "2016/10/02"))
+    files = Fido.fetch(qr, path=str(tmpdir))
+    assert len(files) == 2
+    assert files[0].endswith("20161001SRS.txt")
+    assert files[1].endswith("20161002SRS.txt")
 
 
 @pytest.mark.filterwarnings('ignore:ERFA function')

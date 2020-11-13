@@ -36,7 +36,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import cached_property_based_on, deprecate_positional_args_since, deprecated
+from sunpy.util.decorators import cached_property_based_on, deprecated
 from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -1427,7 +1427,6 @@ class GenericMap(NDData):
 
         return new_map
 
-    @deprecate_positional_args_since(since='2.0', keyword_only=('width', 'height'))
     @u.quantity_input
     def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None):
         """
@@ -1446,8 +1445,6 @@ class GenericMap(NDData):
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
             The top-right coordinate of the rectangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.
-            Passing this as a positional argument is deprecated, you must pass
-            it as ``top_right=...``.
         width : `astropy.units.Quantity`, optional
             The width of the rectangle. Required if ``top_right`` is omitted.
         height : `astropy.units.Quantity`
@@ -1870,7 +1867,6 @@ class GenericMap(NDData):
 
         return [circ]
 
-    @deprecate_positional_args_since(since='2.0')
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
                        axes=None, top_right=None, **kwargs):
@@ -1891,13 +1887,10 @@ class GenericMap(NDData):
             have shape ``(2,)`` to simultaneously define ``top_right``.
         top_right : `~astropy.coordinates.SkyCoord`
             The top-right coordinate of the rectangle.
-            Passing this as a positional argument is deprecated.
         width : `astropy.units.Quantity`, optional
             The width of the rectangle. Required if ``top_right`` is omitted.
-            Passing this as a positional argument is deprecated.
         height : `astropy.units.Quantity`
             The height of the rectangle. Required if ``top_right`` is omitted.
-            Passing this as a positional argument is deprecated.
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.

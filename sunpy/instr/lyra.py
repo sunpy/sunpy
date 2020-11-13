@@ -18,7 +18,6 @@ from sunpy.data import cache
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
@@ -31,7 +30,6 @@ __all__ = ['remove_lytaf_events_from_timeseries',
 
 def remove_lytaf_events_from_timeseries(ts, artifacts=None,
                                         return_artifacts=False,
-                                        lytaf_path=None,
                                         force_use_local_lytaf=False):
     """
     Removes periods of LYRA artifacts defined in LYTAF from a TimeSeries.
@@ -50,9 +48,6 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
         Set to True to return a `numpy.recarray` containing the start time, end
         time and type of all artifacts removed.
         Default=False
-
-    lytaf_path : `str`
-        directory path where the LYRA annotation files are stored.
 
     force_use_local_lytaf : `bool`
         Ensures current local version of lytaf files are not replaced by
@@ -104,16 +99,12 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
         >>> ts_nolars, artifact_status = remove_lytaf_events_from_timeseries(
         ...        lyrats, artifacts=["LAR"], return_artifacts=True)  # doctest: +REMOTE_DATA
     """
-    # Check that input argument is of correct type
-    if lytaf_path:
-        warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
-             SunpyDeprecationWarning)
     # Remove artifacts from time series
     data_columns = ts.to_dataframe().columns
     time, channels, artifact_status = _remove_lytaf_events(
         ts.to_dataframe().index,
         channels=[np.asanyarray(ts.to_dataframe()[col]) for col in data_columns],
-        artifacts=artifacts, return_artifacts=True, lytaf_path=lytaf_path,
+        artifacts=artifacts, return_artifacts=True,
         force_use_local_lytaf=force_use_local_lytaf)
     # Create new copy copy of timeseries and replace data with
     # artifact-free time series.
@@ -129,7 +120,7 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
 
 def _remove_lytaf_events(time, channels=None, artifacts=None,
                          return_artifacts=False, filecolumns=None,
-                         lytaf_path=None, force_use_local_lytaf=False):
+                         force_use_local_lytaf=False):
     """
     Removes periods of LYRA artifacts from a time series.
 
@@ -170,9 +161,6 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         ["time", "channel0", "channel1",..."channelN"]
         where N is the number of irradiance arrays in the channels input
         (assuming 0-indexed counting).
-
-    lytaf_path : `str`
-        directory path where the LYRA annotation files are stored.
 
     force_use_local_lytaf : `bool`
         Ensures current local version of lytaf files are not replaced by
@@ -225,9 +213,6 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +SKIP
     """
     # Check inputs
-    if lytaf_path:
-        warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
-             SunpyDeprecationWarning)
     if channels and type(channels) is not list:
         raise TypeError("channels must be None or a list of numpy arrays "
                         "of dtype 'float64'.")
@@ -237,8 +222,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         artifacts = [artifacts]
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
         raise TypeError("All elements in artifacts must in strings.")
-    all_lytaf_event_types = get_lytaf_event_types(lytaf_path=lytaf_path,
-                                                  print_event_types=False)
+    all_lytaf_event_types = get_lytaf_event_types(print_event_types=False)
     for artifact in artifacts:
         if artifact not in all_lytaf_event_types:
             print(all_lytaf_event_types)
@@ -248,7 +232,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     clean_channels = copy.deepcopy(channels)
     artifacts_not_found = []
     # Get LYTAF file for given time range
-    lytaf = get_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path,
+    lytaf = get_lytaf_events(time[0], time[-1],
                              force_use_local_lytaf=force_use_local_lytaf)
 
     # Find events in lytaf which are to be removed from time series.
@@ -304,7 +288,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
             return clean_time, clean_channels
 
 
-def get_lytaf_events(start_time, end_time, lytaf_path=None,
+def get_lytaf_events(start_time, end_time,
                      combine_files=("lyra", "manual", "ppt", "science"),
                      csvfile=None, force_use_local_lytaf=False):
     """
@@ -320,9 +304,6 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
 
     end_time : `astropy.time.Time` or `str`
         End time of period for which annotation file is required.
-
-    lytaf_path : `str`
-        directory path where the LYRA annotation files are stored.
 
     combine_files : `tuple` of strings
         States which LYRA annotation files are to be combined.
@@ -369,10 +350,6 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
         >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')  # doctest: +SKIP
     """
     # Check inputs
-    # Check lytaf path
-    if lytaf_path:
-        warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
-             SunpyDeprecationWarning)
     # Parse start_time and end_time
     start_time = parse_time(start_time)
     end_time = parse_time(end_time)
@@ -489,16 +466,12 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     return lytaf
 
 
-def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
+def get_lytaf_event_types(print_event_types=True):
     """
     Prints the different event types in the each of the LYTAF databases.
 
     Parameters
     ----------
-    lytaf_path : `str`
-        Path location where LYTAF files are stored.
-        Default = Path stored in confog file.
-
     print_event_types : `bool`
         If True, prints the artifacts in each lytaf database to screen.
 
@@ -507,10 +480,6 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     all_event_types : `list`
         List of all events types in all lytaf databases.
     """
-    # Set lytaf_path is not done by user
-    if lytaf_path:
-        warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
-             SunpyDeprecationWarning)
     suffixes = ["lyra", "manual", "ppt", "science"]
     all_event_types = []
     # For each database file extract the event types and print them.

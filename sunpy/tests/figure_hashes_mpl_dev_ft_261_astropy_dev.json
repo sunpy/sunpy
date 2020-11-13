@@ -1,4 +1,5 @@
 {
+    "sunpy.map.tests.test_compositemap.test_peek_composite_map": "2bbe873f63c7504447c229f880962a60fd1fcf7b8916388210ef8f9002654afa",
     "sunpy.map.tests.test_compositemap.test_plot_composite_map": "7d8ab4c0ffecd45de6e2829fa343bb289e107fd3ce4bcc8e7243673f7e472d99",
     "sunpy.map.tests.test_compositemap.test_plot_composite_map_linewidths": "7d8ab4c0ffecd45de6e2829fa343bb289e107fd3ce4bcc8e7243673f7e472d99",
     "sunpy.map.tests.test_plotting.test_draw_contours_aia": "47b99639e1493626370c296a74eff1450182cbf86d25c784846c1b5258169e0d",
