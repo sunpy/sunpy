@@ -1,4 +1,7 @@
 name: $(BuildDefinitionName)_$(Date:yyyyMMdd)$(Rev:.rr)
+variables:
+  CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+  CIBW_MANYLINUX_I686_IMAGE: manylinux2014
 
 schedules:
   - cron: "0 0 * * *"
@@ -68,6 +71,7 @@ jobs:
         name: py38_test_online
 
       - linux32: py38-32bit
+        manylinux_image: manylinux2014_i686
         name: py38_test_32bit
 
       - linux: py38-hypothesis
@@ -90,7 +94,7 @@ jobs:
         pytest: false
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
-- ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
+- ${{ if or(ne(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.SourceBranchName'], 'master'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
   - template: publish.yml@OpenAstronomy
     parameters:
       # Only Upload to PyPI on tags
@@ -99,9 +103,8 @@ jobs:
       test_extras: 'dev'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
       submodules: false
-
       targets:
-        - wheels_cp3[789]-manylinux*x86_64
+        - wheels_cp3[789]-manylinux*
         - wheels_cp3[789]-macosx*
         - sdist
       dependsOn:
