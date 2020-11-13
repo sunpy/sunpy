@@ -2,8 +2,8 @@
 import numpy as np
 import pytest
 
-from astropy.coordinates import BaseCoordinateFrame
 import astropy.units as u
+from astropy.coordinates import BaseCoordinateFrame
 from astropy.wcs import WCS
 
 import sunpy.map
