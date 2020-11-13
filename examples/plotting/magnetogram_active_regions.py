@@ -13,6 +13,7 @@ from astropy.coordinates import SkyCoord
 from astropy.time import TimeDelta
 
 import sunpy.coordinates
+import sunpy.data.sample
 import sunpy.map
 from sunpy.io.special import srs
 from sunpy.net import Fido
@@ -20,27 +21,28 @@ from sunpy.net import attrs as a
 from sunpy.time import parse_time
 
 ##############################################################################
-# For this example, we will search for and download a single HMI using Fido.
-start_time = parse_time("2017-01-25")
+# For this example, we will start with the sample data. We need an HMI
+# file and use it to create a map.
+
+smap = sunpy.map.Map(sunpy.data.sample.HMI_LOS_IMAGE)
+
+##############################################################################
+# Then using the observation time of the sample image we will download the corresponding
+# NOAA SWPC solar region summary. These are published once a day, so we will define an
+# ``end_time`` that ends just before the next day, otherwise you will download two files.
+
+start_time = parse_time(smap.date)
 end_time = start_time + TimeDelta(23*u.hour + 59*u.minute + 59*u.second)
-results = Fido.search(a.Time(start_time, end_time),
-                      a.Instrument.hmi & a.Physobs.los_magnetic_field,
-                      a.Sample(60 * u.second))
 
 ##############################################################################
-# Let's select only the first file, download it and create a map.
-result = results[0, 0]
-file_name = Fido.fetch(result)
-smap = sunpy.map.Map(file_name)
+#  Here we use `sunpy.net.Fido` to acquire the data.
 
-##############################################################################
-# Download the SRS file.
 srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument.srs_table)
 srs_downloaded_files = Fido.fetch(srs_results)
 
 ##############################################################################
-# We get one SRS file per day. To read this file, we pass the filename into
-# the SRS reader. So now `srs_table` contains an astropy table.
+# To read this file, we pass the filename into the SRS reader. So now
+# `srs_table` contains an astropy table.
 srs_table = srs.read_srs(srs_downloaded_files[0])
 print(srs_table)
 
