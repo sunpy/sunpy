@@ -1,1 +1,1 @@
-Queries to `~sunpy.net.hek.HEKClient` now return a `~sunpy.net.hek.HEKResponse`, `~sunpy.net.hek.HEKTable` is removed.
+Queries to `~sunpy.net.hek.HEKClient` now return a `~sunpy.net.hek.HEKResponse`, `~sunpy.net.hek.HEKTable` is removed. This is to enable compatibility with ``Fido``.

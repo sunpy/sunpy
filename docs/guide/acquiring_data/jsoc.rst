@@ -217,7 +217,7 @@ If you want to get a manual set of keywords in the response object, you can pass
 Passing an incorrect keyword won't throw an error, but the corresponding column in the table will
 not be displayed.
 
-To display all of the columns, we can use ``show()``without passings any arguments.
+To display all of the columns, we can use ``show()`` without passing any arguments.
 
     >>> res.show()  # doctest: +REMOTE_DATA
     [<QTable length=81>
