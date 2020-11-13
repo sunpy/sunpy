@@ -209,7 +209,7 @@ def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map,
     assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
 
     # The output map should have the positional properties of the observer
-    assert dmap.date == new_observer.obstime
+    assert dmap.date.isot == new_observer.obstime.isot
     assert dmap.heliographic_latitude == new_observer.lat
     assert dmap.heliographic_longitude == new_observer.lon
 
