@@ -22,7 +22,7 @@
     "sunpy.map.tests.test_plotting.test_plot_masked_aia171_nowcsaxes": "69e28235fa42379a94f7da6cc39b375f361d1e26dc0f94e6b8c5f05894cc64c7",
     "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel": "154586d5635f895b5f9170353f70f427e23ab0be4ccabf743e668864653f54e3",
     "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel_nowcsaxes": "ec4cfe2687ea0a1f62f1a80f07e69ef5a89ef5aa2dbebc58599fb16b98ebafcb",
-    "sunpy.map.tests.test_plotting.test_plot_rotated_aia171": "878fedb8b890018434ca66aa09b8aacc5c2bd6a39b4cbefed36121998aca2bcc",
+    "sunpy.map.tests.test_plotting.test_plot_rotated_aia171": "06ed44d872a6e1e5ec2dd6a522ee81f68a2c8420dea1bc7491bc64d9e3d3e147",
     "sunpy.map.tests.test_plotting.test_rectangle_aia171_top_right": "455246d338564add5be94c1dc0ff5740a90d21d8ef7da9f392ba3a01237ef5b8",
     "sunpy.map.tests.test_plotting.test_rectangle_aia171_width_height": "455246d338564add5be94c1dc0ff5740a90d21d8ef7da9f392ba3a01237ef5b8",
     "sunpy.timeseries.tests.test_timeseriesbase.test_esp_peek": "d069eee419c45875cffe9a10c3262f83b3d28ccf7f13ee66ca1b99fe557f09b8",

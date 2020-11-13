@@ -128,10 +128,6 @@ def make_fitswcs_header(data, coordinate,
 
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
-    if hasattr(coordinate, "observer") and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
-        meta_observer = get_observer_meta(coordinate.observer, getattr(coordinate, 'rsun', None))
-        meta_wcs.update(meta_observer)
-
     meta_instrument = _get_instrument_meta(instrument, telescope, observatory, wavelength, exposure)
     meta_wcs.update(meta_instrument)
 
