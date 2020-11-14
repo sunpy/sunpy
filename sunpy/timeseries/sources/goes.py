@@ -232,8 +232,5 @@ class XRSTimeSeries(GenericTimeSeries):
 
         if "filepath" in kwargs.keys():
             if sunpy.io.detect_filetype(kwargs.get("filepath", "")) == "nc":
-                try:
-                    with h5netcdf.File(kwargs.get("filepath", ""), mode="r") as f:
-                        return "XRS" in f.attrs["summary"].astype("str")
-                except:
-                    return None
+                with h5netcdf.File(kwargs.get("filepath", ""), mode="r") as f:
+                    return "XRS" in f.attrs["summary"].astype("str")
