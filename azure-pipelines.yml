@@ -31,6 +31,9 @@ trigger:
     - '*pre*'
     - '*post*'
 
+pr:
+  autoCancel: true
+
 jobs:
 - template: run-tox-env.yml@OpenAstronomy
   parameters:
@@ -51,6 +54,9 @@ jobs:
         - libpng-devel
 
     envs:
+      - linux: py39
+        name: py39_test
+
       - macos: py38
         name: py38_test
         posargs: -n=1
@@ -63,10 +69,6 @@ jobs:
 
       - linux32: py38-32bit
         name: py38_test_32bit
-
-      - linux: codestyle
-        name: python_codestyle
-        pytest: false
 
       - linux: py38-hypothesis
 
@@ -83,6 +85,10 @@ jobs:
         posargs: " "
         pytest: false
 
+      - linux: codestyle
+        name: python_codestyle
+        pytest: false
+
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
 - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
   - template: publish.yml@OpenAstronomy
@@ -95,12 +101,13 @@ jobs:
       submodules: false
 
       targets:
-        - wheels_cp3[78]-manylinux*x86_64
-        - wheels_cp3[78]-macosx*
+        - wheels_cp3[789]-manylinux*x86_64
+        - wheels_cp3[789]-macosx*
         - sdist
       dependsOn:
         - py37_test
         - py38_test
+        - py39_test
         - py38_test_online
         - py38_test_32bit
         - py37_test_oldestdeps
