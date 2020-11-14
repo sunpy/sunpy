@@ -1,0 +1,2 @@
+Extended :meth:`~sunpy.timeseries.GenericTimeSeries.concatenate` and
+:meth:`~sunpy.timeseries.TimeSeriesMetaData.concatenate` to allow iterables.
