@@ -2,6 +2,7 @@ name: $(BuildDefinitionName)_$(Date:yyyyMMdd)$(Rev:.rr)
 variables:
   CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
   CIBW_MANYLINUX_I686_IMAGE: manylinux2014
+  CIBW_BEFORE_BUILD: pip install numpy
 
 schedules:
   - cron: "0 0 * * *"
