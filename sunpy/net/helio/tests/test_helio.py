@@ -298,10 +298,3 @@ def test_time_query(client):
     table_name = 'rhessi_hxr_flare'
     res = client.time_query(start, end, table=table_name, max_records=10)
     assert len(res.array) == 10
-
-
-def test_client_mock_fail(client):
-    """
-    This test will xfail on the offline tests.
-    It just passes if the client is working.
-    """
