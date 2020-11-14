@@ -985,7 +985,7 @@ Bug Fixes
 - Running the figure tests with ``setup.py test`` now saves the figures and the hashes to the same directory as setup.py. (`#2658 <https://github.com/sunpy/sunpy/pull/2658>`__)
 - `sunpy.instr.fermi.met_to_utc` now returns the correct utc time which takes into account the leap seconds that have passed. (`#2679 <https://github.com/sunpy/sunpy/pull/2679>`__)
 - Support passing Python file objects to `sunpy.io.fits.write`. (`#2688 <https://github.com/sunpy/sunpy/pull/2688>`__)
-- Added DRMS to setup.py so sunpy[all] installs it as a dependancy. (`#2693 <https://github.com/sunpy/sunpy/pull/2693>`__)
+- Added DRMS to setup.py so sunpy[all] installs it as a dependency. (`#2693 <https://github.com/sunpy/sunpy/pull/2693>`__)
 - Fix eve 0cs timeseries seperator regex to support Python 3.7 (`#2697 <https://github.com/sunpy/sunpy/pull/2697>`__)
 - Fix the bug which crashes `~sunpy.map.sources.LASCOMap` for when 'date-obs' is reformatted agian from a self applied function. (`#2700 <https://github.com/sunpy/sunpy/pull/2700>`__)
 - Change all instances of quantity_allclose to `astropy.units.allclose` this prevents pytest being needed to import `sunpy.coordinates` on Astropy 3 (`#2701 <https://github.com/sunpy/sunpy/pull/2701>`__)
@@ -1072,7 +1072,7 @@ Trivial/Internal Changes
 - Fix support for pip 19 and isolated builds (`#2915 <https://github.com/sunpy/sunpy/pull/2915>`__)
 - Moved to using `AppDirs <https://github.com/ActiveState/appdirs>`__ as the place to host our configuration file. (`#2922 <https://github.com/sunpy/sunpy/pull/2922>`__)
 - Users can now use fewer keywords in our `~sunpy.net.helioviewer.HelioviewerClient` to access the available sources. Either by ``observatory`` and ``measurement`` or ``instrument`` and ``measurement`` as this much information is enough to get the source ID for most of the cases. (`#2926 <https://github.com/sunpy/sunpy/pull/2926>`__)
-- Remove the pytest dependancy on the ``GenericMap`` asdf tag. (`#2943 <https://github.com/sunpy/sunpy/pull/2943>`__)
+- Remove the pytest dependency on the ``GenericMap`` asdf tag. (`#2943 <https://github.com/sunpy/sunpy/pull/2943>`__)
 - Fix initialization of `~sunpy.net.vso.VSOClient` when no WSDL link is found. (`#2981 <https://github.com/sunpy/sunpy/pull/2981>`__)
 
 
@@ -1657,7 +1657,7 @@ Bug fixes
 -  All tests now use tempfile rather than creating files in the current
    directory.
 -  Documentation builds under newer sphinx versions.
--  ANA and JP2 tests are skipped if dependancies are missing.
+-  ANA and JP2 tests are skipped if dependencies are missing.
 -  ANA tests are skipped on windows.
 
 0.5.0
@@ -1759,7 +1759,7 @@ Known Bugs:
 0.3.0
 =====
 
--  Removal of Optional PIL dependancy
+-  Removal of Optional PIL dependency
 -  Parse\_time now looks through nested lists/tuples
 -  Draw\_limb and draw\_grid are now implemented on MapCube and
    CompositeMap

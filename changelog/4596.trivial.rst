@@ -1,0 +1,1 @@
+Replaced the old test runner with a new version that adds a dependency check before the test suite is run.
