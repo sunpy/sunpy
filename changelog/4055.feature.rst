@@ -1,0 +1,1 @@
+Created `~sunpy.net.dataretriever.sources.GONGClient` for accessing Magnetogram Synoptic Map Archives of NSO-GONG.

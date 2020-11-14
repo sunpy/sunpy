@@ -12,11 +12,12 @@ from .client import GenericClient, QueryResponse
 from .sources.eve import EVEClient
 from .sources.fermi_gbm import GBMClient
 from .sources.goes import SUVIClient, XRSClient
+from .sources.gong import GONGClient
 from .sources.lyra import LYRAClient
 from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 
-__all__ = ['QueryResponse', 'GenericClient', 'EVEClient', 'GBMClient',
-           'XRSClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
-           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', ]
+__all__ = ['QueryResponse', 'GenericClient', 'EVEClient', 'GBMClient', 'XRSClient',
+           'GONGClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
+           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient']
