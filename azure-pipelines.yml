@@ -118,3 +118,23 @@ jobs:
         - py37_test_oldestdeps
         - py38_test_32bit
         - py38_conda
+
+#- ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
+- job: notify
+  condition: failed()
+  variables:
+    #roomid: '%21MeRdFpEonLoCwhoHeT:matrix.org'  # main sunpy room
+    roomid: '%21vuSqbfLVzKegOeHbhL:matrix.org'  # Test room
+    homeserver: 'https://matrix.cadair.com'
+  pool:
+    vmImage: ubuntu-20.04
+  steps:
+  - bash: |
+      sudo apt-get install httpie xonsh
+      http --version
+  - bash: xonsh ./tools/send_matrix_message.xsh
+    env:
+      BRANCH: $(Build.SourceBranchName)
+      ACCESS_TOKEN: $(azurebot_access_token)
+      BUILDID: $(Build.BuildId)
+      STATUS: $(Agent.JobStatus)
