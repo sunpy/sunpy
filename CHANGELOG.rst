@@ -1,3 +1,35 @@
+Sunpy v2.0.4 (2020-11-14)
+=========================
+
+Deprecations and Removals
+-------------------------
+
+- `sunpy.test.hash` has been removed, the functionality has been moved into the
+  `pytest-mpl <https://github.com/matplotlib/pytest-mpl>`__ package. (`#4605 <https://github.com/sunpy/sunpy/pull/4605>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed an issue on `TimeRange.get_dates()` where the function would return the wrong number of days if less than 24 hours had passed (`#4529 <https://github.com/sunpy/sunpy/pull/4529>`__)
+- Fixes the SRSClient to search for files of correct queried time and now allows a path keyword to be downloaded in fetch. (`#4600 <https://github.com/sunpy/sunpy/pull/4600>`__)
+- The maximum number of connections opened by the JSOC downloader has been reduced
+  from 4 to 2. This should prevent downloads of large numbers of files crashing. (`#4624 <https://github.com/sunpy/sunpy/pull/4624>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Added description for a counter-intuitive section in the :ref:`sphx_glr_generated_gallery_differential_rotation_reprojected_map.py` example. (`#4548 <https://github.com/sunpy/sunpy/pull/4548>`__)
+
+
+Documentation Fixes
+-------------------
+
+- The keyword `clip_interval` is now used more extensively in gallery examples when plotting the sample AIA image (e.g., :ref:`sphx_glr_generated_gallery_plotting_aia_example.py`). (`#4573 <https://github.com/sunpy/sunpy/pull/4573>`__)
+- Modified :ref:`sphx_glr_generated_gallery_plotting_magnetogram_active_regions.py` to use HMI file from sample data instead of downloading it with Fido. (`#4598 <https://github.com/sunpy/sunpy/pull/4598>`__)
+
+
 Sunpy 2.0.3 (2020-10-02)
 ========================
 
