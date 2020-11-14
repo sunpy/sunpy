@@ -127,7 +127,7 @@ if on_rtd:
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 if not is_development:
-    exclude_patterns.append('dev_guide/contents')
+    exclude_patterns.append('**/dev_guide/contents*')
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -235,7 +235,7 @@ with open('./code_ref/sunpy_stability.yaml', 'r') as estability:
 
 html_context = {
     'sunpy_modules': sunpy_modules,
-    'is_development' : is_development
+    'is_development': is_development,
 }
 
 
@@ -246,10 +246,11 @@ def rstjinja(app, docname, source):
     # Make sure we're outputting HTML
     if app.builder.format != 'html':
         return
-    src = source[0]
-    if "Current status" or ".. _dev_guide:" in src[:20]:
+    files_to_render = ["code_ref/stability", "dev_guide/index"]
+    if docname in files_to_render:
+        print(f"Jinja rendering {docname}")
         rendered = app.builder.templates.render_string(
-            src, app.config.html_context
+            source[0], app.config.html_context
         )
         source[0] = rendered
 

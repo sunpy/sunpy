@@ -17,7 +17,7 @@ This goes over the basics and has links to useful tutorials on git.
 
    contents/newcomers
    contents/code_standards
-   contents/ntdocumentation
+   contents/documentation
    contents/tests
    contents/pr_review_procedure
    contents/example_gallery
@@ -34,5 +34,3 @@ This goes over the basics and has links to useful tutorials on git.
 Please go `here <https://docs.sunpy.org/en/latest/dev_guide/index.html>`__ for our up to date developer’s guide.
 
 {%endif%}
-
-
