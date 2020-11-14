@@ -1,4 +1,8 @@
 .. _dev_guide:
+{% if is_development %}
+.. _newcomers:
+.. _remote_data:
+{% endif %}
 
 *****************
 Developer's Guide

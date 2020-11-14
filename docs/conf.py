@@ -127,7 +127,7 @@ if on_rtd:
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 if not is_development:
-    exclude_patterns.append('**/dev_guide/contents*')
+    exclude_patterns.append('dev_guide/contents/*')
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
