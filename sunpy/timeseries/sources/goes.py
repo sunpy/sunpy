@@ -5,6 +5,7 @@ import datetime
 from pathlib import Path
 from collections import OrderedDict
 
+import h5netcdf
 import matplotlib.dates
 import matplotlib.ticker as mticker
 import numpy as np
@@ -15,6 +16,7 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 import sunpy.io
+from sunpy.io.file_tools import UnrecognizedFileTypeError
 from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
@@ -124,12 +126,12 @@ class XRSTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        if ".fits" in Path(filepath).suffixes:
+        if sunpy.io.detect_filetype(filepath) == "nc":
+            return cls._parse_netcdf(filepath)
+        try:
             hdus = sunpy.io.read_file(filepath)
             return cls._parse_hdus(hdus)
-        elif Path(filepath).suffix == ".nc":
-            return cls._parse_netcdf(filepath)
-        else:
+        except UnrecognizedFileTypeError:
             return ValueError(f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
 
     @classmethod
@@ -192,8 +194,6 @@ class XRSTimeSeries(GenericTimeSeries):
         filepath : `~str`
             The path of the file to parse
         """
-        import h5netcdf
-
         d = h5netcdf.File(filepath, mode="r")
 
         header =  MetaDict(OrderedDict(d.attrs))
@@ -207,7 +207,7 @@ class XRSTimeSeries(GenericTimeSeries):
             times = parse_time("2000-01-01 12:00:00") + TimeDelta(d["time"], format="sec")
 
         else:
-            raise ValueError("Don't know how to parse this file")
+            raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
 
         d.close()
 
@@ -231,4 +231,9 @@ class XRSTimeSeries(GenericTimeSeries):
             return kwargs["meta"].get("TELESCOP", "").startswith("GOES")
 
         if "filepath" in kwargs.keys():
-            return ("xrs" and ".nc" in kwargs.get("filepath", ""))
+            if sunpy.io.detect_filetype(kwargs.get("filepath", "")) == "nc":
+                try:
+                    with h5netcdf.File(kwargs.get("filepath", ""), mode="r") as f:
+                        return "XRS" in f.attrs["summary"].astype("str")
+                except:
+                    return None
