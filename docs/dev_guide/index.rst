@@ -1,5 +1,5 @@
 .. _dev_guide:
-{% if is_development %}
+{% if not is_development %}
 .. _newcomers:
 .. _remote_data:
 {% endif %}
