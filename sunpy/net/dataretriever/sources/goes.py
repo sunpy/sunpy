@@ -66,14 +66,12 @@ class XRSClient(GenericClient):
     # GOES XRS 13, 14, 15 from NOAA (re-processed data)
     baseurl_new = (r"https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/"
                    r"goes{SatelliteNumber}/gxrs-l2-irrad_science/%Y/%m/sci_gxrs-l2-irrad_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
-
     pattern_new = ("{}/goes{SatelliteNumber:02d}/gxrs-l2-irrad_science/{year:4d}/"
                    "{month:2d}/sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
 
     # GOES XRS data for GOES-R Series - 16, 17
     baseurl_r = (r"https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber}"
                  r"/l2/data/xrsf-l2-flx1s_science/%Y/%m/sci_xrsf-l2-flx1s_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
-
     pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-flx1s_science/{year:4d}/"
                  "{month:2d}/sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
 
@@ -100,15 +98,13 @@ class XRSClient(GenericClient):
         matchdict = self._get_match_dict(*args, **kwargs)
 
         # this is for the case when the timerange overlaps with the provider change.
-        if matchdict["Time"].start<"2009-09-01" and matchdict["Time"].end>="2009-09-01":
+        if matchdict["Time"].start < "2009-09-01" and matchdict["Time"].end >= "2009-09-01":
             matchdict_before, matchdict_after = matchdict.copy(), matchdict.copy()
             matchdict_before["Time"] = TimeRange(matchdict_before["Time"].start, '2009-08-31')
             matchdict_after["Time"] = TimeRange('2009-09-01', matchdict_after["Time"].end)
-
             metalist_before = self._get_metalist(matchdict_before)
             metalist_after = self._get_metalist(matchdict_after)
             metalist = metalist_before + metalist_after
-
         else:
             metalist = self._get_metalist(matchdict)
 
@@ -121,29 +117,32 @@ class XRSClient(GenericClient):
         """
         metalist = []
         # the data before the re-processed GOES 13, 14, 15 data.
-        if matchdict["Time"].end<"2009-09-01":
+        if matchdict["Time"].end < "2009-09-01":
             scraper = Scraper(self.baseurl_old, regex=True)
-            filemeta = scraper._extract_files_meta(matchdict["Time"], extractor=self.pattern_old, matcher=matchdict)
+            filemeta = scraper._extract_files_meta(
+                matchdict["Time"], extractor=self.pattern_old, matcher=matchdict)
             for i in filemeta:
                 rowdict = self.post_search_hook(i, matchdict)
                 metalist.append(rowdict)
 
         # if for some reason a user wants the old data.
-        elif (matchdict["Time"].end>="2009-09-01" and matchdict["Provider"]==["sdac"]):
+        elif (matchdict["Time"].end >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
             scraper = Scraper(self.baseurl_old, regex=True)
-            filemeta = scraper._extract_files_meta(matchdict['Time'], extractor=self.pattern_old, matcher=matchdict)
+            filemeta = scraper._extract_files_meta(
+                matchdict['Time'], extractor=self.pattern_old, matcher=matchdict)
             for i in filemeta:
                 rowdict = self.post_search_hook(i, matchdict)
                 metalist.append(rowdict)
 
         # new data from NOAA.
         else:
-            if matchdict["Time"].end>="2017-02-07":
+            if matchdict["Time"].end >= "2017-02-07":
                 for sat in [16, 17]:
                     formdict = {"SatelliteNumber": sat}
                     urlpattern = self.baseurl_r.format(**formdict)
                     scraper = Scraper(urlpattern)
-                    filemeta = scraper._extract_files_meta(matchdict["Time"], extractor=self.pattern_r, matcher=matchdict)
+                    filemeta = scraper._extract_files_meta(
+                        matchdict["Time"], extractor=self.pattern_r, matcher=matchdict)
                     for i in filemeta:
                         rowdict = self.post_search_hook(i, matchdict)
                         metalist.append(rowdict)
@@ -152,7 +151,8 @@ class XRSClient(GenericClient):
                 formdict = {"SatelliteNumber": sat}
                 urlpattern = self.baseurl_new.format(**formdict)
                 scraper = Scraper(urlpattern)
-                filemeta = scraper._extract_files_meta(matchdict["Time"], extractor=self.pattern_new, matcher=matchdict)
+                filemeta = scraper._extract_files_meta(
+                    matchdict["Time"], extractor=self.pattern_new, matcher=matchdict)
                 for i in filemeta:
                     rowdict = self.post_search_hook(i, matchdict)
                     metalist.append(rowdict)
