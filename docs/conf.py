@@ -6,6 +6,13 @@ isort:skip_file
 # flake8: NOQA: E402
 
 # -- stdlib imports ------------------------------------------------------------
+from sunpy_sphinx_theme.conf import *
+import sunpy.data.sample  # isort:skip
+from sunpy import __version__
+import sunpy
+from sphinx_gallery.sorting import ExampleTitleSortKey
+from sphinx_gallery.sorting import ExplicitOrder
+import ruamel.yaml as yaml
 import os
 import sys
 import datetime
@@ -39,12 +46,6 @@ if on_rtd:
 
 # -- Non stdlib imports --------------------------------------------------------
 
-import ruamel.yaml as yaml
-from sphinx_gallery.sorting import ExplicitOrder
-from sphinx_gallery.sorting import ExampleTitleSortKey
-
-import sunpy
-from sunpy import __version__
 
 # -- Project information -------------------------------------------------------
 
@@ -62,7 +63,6 @@ is_development = '.dev' in __version__
 # in the CI, especially RTD.
 ori_level = sunpy.log.level
 sunpy.log.setLevel("DEBUG")
-import sunpy.data.sample  # isort:skip
 sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
@@ -85,7 +85,7 @@ rst_epilog = """
 
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
-suppress_warnings = ['app.add_directive',]
+suppress_warnings = ['app.add_directive', ]
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -124,6 +124,12 @@ if on_rtd:
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
+
+# Add any extra paths that contain custom files (such as robots.txt or
+# .htaccess) here, relative to this directory. These files are copied
+# directly to the root of the documentation.
+html_extra_path = ['robots.txt']
+
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The suffix(es) of source filenames.
@@ -178,7 +184,6 @@ intersphinx_mapping = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-from sunpy_sphinx_theme.conf import *
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -234,6 +239,7 @@ html_context = {
     'sunpy_modules': sunpy_modules
 }
 
+
 def rstjinja(app, docname, source):
     """
     Render our pages as a jinja template for fancy templating goodness.
@@ -249,6 +255,7 @@ def rstjinja(app, docname, source):
         source[0] = rendered
 
 # -- Sphinx setup --------------------------------------------------------------
+
 
 def setup(app):
     # Generate the stability page
