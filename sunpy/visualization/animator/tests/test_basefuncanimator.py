@@ -166,16 +166,27 @@ def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0](np.arange(10)))
 
 
-xdata = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
+XDATA = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
 
 
 @pytest.mark.parametrize('plot_axis_index, axis_ranges, xlabel, xlim',
                          [(-1, None, None, None),
-                          (-1, [None, None, xdata], 'x-axis', None)])
+                          (-1, [None, None, XDATA], 'x-axis', None)])
 def test_lineanimator_init(plot_axis_index, axis_ranges, xlabel, xlim):
     data = np.random.random((5, 5, 10))
     LineAnimator(data=data, plot_axis_index=plot_axis_index, axis_ranges=axis_ranges,
                  xlabel=xlabel, xlim=xlim)
+
+
+def test_lineanimator_init_nans():
+    data = np.random.random((5, 5, 10))
+    data[0][0][:] = np.nan
+    line_anim = LineAnimator(data=data, plot_axis_index=-1, axis_ranges=[None, None, XDATA],
+                             xlabel='x-axis', xlim=None, ylim=None)
+    assert line_anim.ylim[0] is not None
+    assert line_anim.ylim[1] is not None
+    assert line_anim.xlim[0] is not None
+    assert line_anim.xlim[1] is not None
 
 
 @figure_test
@@ -187,7 +198,5 @@ def test_lineanimator_figure():
     slider_axis0 = 0
     xdata = np.tile(np.linspace(
         0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
-
     ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata])
-
     return ani.fig
