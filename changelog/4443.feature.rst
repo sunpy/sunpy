@@ -1,0 +1,1 @@
+Added `~sunpy.coordinates.utils.solar_angle_equivalencies` to convert between arcsec on the Sun and km using the small angle approximation.
