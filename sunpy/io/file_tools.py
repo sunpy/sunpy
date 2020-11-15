@@ -203,6 +203,9 @@ def detect_filetype(filepath):
         # Some FITS files do not have line breaks at the end of header cards.
         fp.seek(0)
         first80 = fp.read(80)
+        # first 8 bytes of netcdf4/hdf5 to determine filetype as have same sequence
+        fp.seek(0)
+        first_8bytes = fp.read(8)
 
     # FITS
     # Check the extensions to see if it is a gzipped FITS file
@@ -231,8 +234,8 @@ def detect_filetype(filepath):
         if line1 + line2 == sig:
             return 'jp2'
 
-    # netcdf4 files
-    if line1 == b'\x89HDF\r\n':
+    # netcdf4 and hdf5 files (at moment only return 'nc')
+    if first_8bytes == b'\x89HDF\r\n\x1a\n':
         return 'nc'
 
     # Raise an error if an unsupported filetype is encountered
