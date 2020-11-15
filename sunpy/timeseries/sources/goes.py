@@ -236,4 +236,4 @@ class XRSTimeSeries(GenericTimeSeries):
                     with h5netcdf.File(kwargs.get("filepath", ""), mode="r") as f:
                         return "XRS" in f.attrs["summary"].astype("str")
             except:
-                    return False
+                return False
