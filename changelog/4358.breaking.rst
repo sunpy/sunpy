@@ -1,1 +1,1 @@
-:meth:`~sunpy.net.helio.HECClient.time_query` is removed; :meth:`~sunpy.net.helio.HECClient.search` is expected to be used instead.
+:meth:`~sunpy.net.helio.HECClient.time_query` has been deprecated and will be removed in sunpy 3.1; :meth:`~sunpy.net.helio.HECClient.search` is the replacement.

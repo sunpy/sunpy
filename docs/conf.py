@@ -255,7 +255,12 @@ def rstjinja(app, docname, source):
         source[0] = rendered
 
 
+# JSOC email os env
+os.environ["JSOC_EMAIL"] = "sunpy@sunpy.org"
+
 # -- Sphinx setup --------------------------------------------------------------
+
+
 def setup(app):
     # Generate the stability page
     app.connect("source-read", rstjinja)

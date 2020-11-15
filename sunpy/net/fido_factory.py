@@ -265,7 +265,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         >>> from sunpy.net import Fido, attrs as a
         >>> import astropy.units as u
-        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra) # doctest: +REMOTE_DATA
+        # doctest: +REMOTE_DATA
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra)
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 
@@ -353,7 +354,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Examples
         --------
         >>> from sunpy.net.attrs import Time, Instrument
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
+        # doctest: +REMOTE_DATA
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))
         >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
 
         If any downloads fail, they can be retried by passing the `parfive.Results` object back into ``fetch``.
@@ -392,18 +394,17 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         reslist = []
         for query_result in query_results:
             if isinstance(query_result, BaseQueryResponse):
-                result = query_result.client.fetch(query_result, path=path,
-                                                   downloader=downloader,
-                                                   wait=False, **kwargs)
+                responses = [query_result]
+            elif isinstance(query_result, UnifiedResponse):
+                responses = query_result.responses
+            else:
+                raise ValueError(f"Query result has an unrecognized type: {type(query_result)}")
+            for block in responses:
+                result = block.client.fetch(block, path=path,
+                                            downloader=downloader,
+                                            wait=False, **kwargs)
                 if result is not NotImplemented:
                     reslist.append(result)
-            else:
-                for block in query_result.responses:
-                    result = block.client.fetch(block, path=path,
-                                                downloader=downloader,
-                                                wait=False, **kwargs)
-                    if result is not NotImplemented:
-                        reslist.append(result)
 
         results = downloader.download()
         # Combine the results objects from all the clients into one Results

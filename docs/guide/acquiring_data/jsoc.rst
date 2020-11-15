@@ -217,7 +217,7 @@ If you want to get a manual set of keywords in the response object, you can pass
 Passing an incorrect keyword won't throw an error, but the corresponding column in the table will
 not be displayed.
 
-To display all of the columns, we can use ``show()`` without passing any arguments.
+To display all of the columns, we can use ``show()`` without passing any arguments::
 
     >>> res.show()  # doctest: +REMOTE_DATA
     [<QTable length=81>
@@ -235,6 +235,23 @@ To display all of the columns, we can use ``show()`` without passing any argumen
     2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z ...     4370
     2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370]
 
+or you can print the results::
+
+    >>> res  # doctest: +REMOTE_DATA
+    [<QTable length=81>
+            DATE                DATE__OBS        ... CALVER64
+           str20                  str23          ...  int64
+    -------------------- ----------------------- ... --------
+    2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
+    2014-01-05T17:47:10Z 2014-01-01T00:00:24.20Z ...     4370
+    2014-01-05T17:48:18Z 2014-01-01T00:01:09.20Z ...     4370
+    2014-01-05T17:49:25Z 2014-01-01T00:01:54.20Z ...     4370
+                     ...                     ... ...      ...
+    2014-01-05T17:41:25Z 2014-01-01T00:56:39.20Z ...     4370
+    2014-01-05T17:42:33Z 2014-01-01T00:57:24.20Z ...     4370
+    2014-01-05T17:43:41Z 2014-01-01T00:58:09.20Z ...     4370
+    2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z ...     4370
+    2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     437
 
 Using Segments
 ==============
