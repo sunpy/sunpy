@@ -45,12 +45,10 @@ def votable_handler(xml_table):
     fake_file = io.BytesIO()
     fake_file.write(xml_table)
     votable = parse_single_table(fake_file)
-    # This is a workaround: in astropy 4.1 they made votable parse
-    # char type to strings over bytes which has changed the type of our return
     for i in range(len(votable.array)):
         item = votable.array[i][0]
-        if isinstance(item, str):
-            votable.array[i] = (votable.array[i][0].encode(),)
+        if isinstance(item, bytes):
+            votable.array[i] = (votable.array[i][0].decode(),)
     fake_file.close()
     return votable
 
@@ -81,7 +79,6 @@ class HECClient(BaseClient):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-
         """
         if link is None:
             # The default wsdl file
@@ -135,7 +132,6 @@ class HECClient(BaseClient):
          31472 2005-01-03T11:06:48 2005-01-03T11:07:18 ...         12      5010304
         <BLANKLINE>
         <BLANKLINE>
-
         """
         qrdict = {}
         for elem in args:
@@ -186,12 +182,12 @@ class HECClient(BaseClient):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> print(hc.get_table_names())  # doctest: +REMOTE_DATA +SKIP
-        [(b'timed_see_flare',) (b'hi_event',) (b'yohkoh_flare_list',)
-         (b'wind_mfi_bs_crossing_time',) (b'seeds_soho',) (b'seeds_stb',)
+        >>> print(hc.get_table_names())  # doctest: +REMOTE_DATA
+        [('timed_see_flare',) ('hi_event',) ('yohkoh_flare_list',)
+         ('wind_mfi_bs_crossing_time',) ('seeds_soho',) ('seeds_stb',)
          ...
-         (b'rhessi_hxr_flare',) (b'cactus_soho_flow',) (b'cactus_soho_cme',)
-         (b'stereob_het_sep',)]
+         ('rhessi_hxr_flare',) ('cactus_soho_flow',) ('cactus_soho_cme',)
+         ('stereob_het_sep',)]
         """
         results = self.hec_client.service.getTableNames()
         tables = votable_handler(etree.tostring(results))
@@ -208,21 +204,20 @@ class HECClient(BaseClient):
 
         Returns
         -------
-        `bytes`
-            contains the name of the table that the user picked.
+        `str`
+            Contains the name of the table that the user picked.
 
         Examples
         --------
-        >>> from sunpy.net.helio import hec
-        >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> hc.select_table()  # doctest: +REMOTE_DATA +SKIP
-
+        >>> from sunpy.net.helio import hec  # doctest: +SKIP
+        >>> hc = hec.HECClient()  # doctest: +SKIP
+        >>> hc.select_table()  # doctest: +SKIP
         """
         tables = self.get_table_names()
         table_list = [t[0] for t in tables if len(t[0]) > 0]
         table_list.sort()
         for index, table in enumerate(table_list):
-            print(f'{index + 1} - {table.decode()}')
+            print(f'{index + 1} - {table}')
         while True:
             user_input = input(f"\nPlease enter a table number between 1 and {len(table_list)} "
                                "('e' to exit): ")
