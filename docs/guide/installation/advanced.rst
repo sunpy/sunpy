@@ -59,7 +59,7 @@ The entire list of options are encompassed by a ``[dev]`` option, so you can do:
     pip install sunpy[dev]
 
 to install all the packages needed to run and develop sunpy.
-However if you want to develop sunpy we would strongly recommend reading :ref:`newcomers`.
+However if you want to develop sunpy we would strongly recommend reading the `Newcomers' Guide <https://docs.sunpy.org/en/latest/dev_guide/newcomers.html>`__.
 
 .. note::
     If you get a ``PermissionError`` this means that you do not have the required administrative access to install new packages to your Python installation.
@@ -67,24 +67,6 @@ However if you want to develop sunpy we would strongly recommend reading :ref:`n
     You can read more about how to do this in the `pip documentation <https://pip.pypa.io/en/stable/user_guide/#user-installs>`__.
 
     Do **not** install sunpy or other third-party packages using ``sudo``.
-
-.. _testing-sunpy:
-
-Testing sunpy
-*************
-
-.. warning::
-    The tests will fail if you do not install all the optional dependencies.
-    If you have installed sunpy with conda-forge, you will be missing the ``pytest-mock`` package which will cause the test suite to fail.
-
-The easiest way to test your installed version of sunpy is running correctly is to use the :func:`sunpy.self_test`::
-
-    import sunpy
-    sunpy.self_test()
-
-which will run many of the sunpy tests.
-
-The tests should run and print out any failures, which you can report at the `sunpy issue tracker <https://github.com/sunpy/sunpy/issues>`__.
 
 sunpy's Requirements
 ********************

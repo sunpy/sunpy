@@ -89,7 +89,7 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
     assert header['crval1'] == 0
     assert header['crpix1'] == 5.5
     assert header['ctype1'] == 'HPLN-TAN'
-    assert header['dsun_obs'] == hpc_test_header.frame.observer.radius.to_value(u.m)
+    assert u.allclose(header['dsun_obs'], hpc_test_header.frame.observer.radius.to_value(u.m))
     assert isinstance(WCS(header), WCS)
 
     # Check no observer info for HGS
@@ -99,7 +99,7 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
 
     # Check for observer info for HGC
     header = sunpy.map.make_fitswcs_header(map_data, hgc_test_header)
-    assert header['dsun_obs'] == hgc_test_header.frame.observer.radius.to_value(u.m)
+    assert u.allclose(header['dsun_obs'], hgc_test_header.frame.observer.radius.to_value(u.m))
     assert isinstance(WCS(header), WCS)
 
     # Check arguments not given as astropy Quantities

@@ -109,13 +109,25 @@ extensions = [
     'sunpy.util.sphinx.generate',
 ]
 
+if on_rtd:
+    rtd_version = os.environ.get('READTHEDOCS_VERSION', None)
+    stable = (rtd_version == 'stable') or (rtd_version[0] == 'v')
+    if stable:
+        # Stable versions have a manually rendered changelog, so remove the
+        # changelog extension
+        extensions.remove('sunpy.util.sphinx.changelog')
+
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
+
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+if not is_development:
+    exclude_patterns.append('dev_guide/contents/*')
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -218,11 +230,12 @@ sphinx_gallery_conf = {
 
 # -- Stability Page ------------------------------------------------------------
 
-with open('./dev_guide/sunpy_stability.yaml', 'r') as estability:
+with open('./code_ref/sunpy_stability.yaml', 'r') as estability:
     sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
 
 html_context = {
-    'sunpy_modules': sunpy_modules
+    'sunpy_modules': sunpy_modules,
+    'is_development': is_development,
 }
 
 
@@ -233,10 +246,11 @@ def rstjinja(app, docname, source):
     # Make sure we're outputting HTML
     if app.builder.format != 'html':
         return
-    src = source[0]
-    if "Current status" in src[:20]:
+    files_to_render = ["code_ref/stability", "dev_guide/index"]
+    if docname in files_to_render:
+        print(f"Jinja rendering {docname}")
         rendered = app.builder.templates.render_string(
-            src, app.config.html_context
+            source[0], app.config.html_context
         )
         source[0] = rendered
 

@@ -36,7 +36,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import cached_property_based_on, deprecate_positional_args_since, deprecated
+from sunpy.util.decorators import cached_property_based_on, deprecated
 from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -464,7 +464,7 @@ class GenericMap(NDData):
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.spatial_units
         w2.wcs.dateobs = self.date.isot
-        w2.rsun = self.rsun_meters
+        w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
         # "solar-y" ctypes.  This overrides the default assignment and
@@ -476,12 +476,23 @@ class GenericMap(NDData):
         if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
             w2.wcs.ctype[1] = 'HPLT-TAN'
 
-        # GenericMap.coordinate_frame is implemented using this method, so we
-        # need to do this only based on .meta.
-        ctypes = {c[:4] for c in w2.wcs.ctype}
-        # Check that the ctypes contains one of these three pairs of axes.
-        if ({'HPLN', 'HPLT'} <= ctypes or {'SOLX', 'SOLY'} <= ctypes or {'CRLN', 'CRLT'} <= ctypes):
-            w2.heliographic_observer = self.observer_coordinate
+        # Set observer coordinate information
+        #
+        # Clear all the aux information that was set earlier. This is to avoid
+        # issues with maps that store multiple observer coordinate keywords.
+        # Note that we have to create a new WCS as it's not possible to modify
+        # wcs.wcs.aux in place.
+        header = w2.to_header()
+        for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
+            header.pop(kw, None)
+        w2 = astropy.wcs.WCS(header)
+
+        # Get observer coord, and transform if needed
+        obs_coord = self.observer_coordinate
+        if not isinstance(obs_coord.frame, (HeliographicStonyhurst, HeliographicCarrington)):
+            obs_coord = obs_coord.transform_to(HeliographicStonyhurst(obstime=self.date))
+
+        sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
         # Validate the WCS here.
         w2.wcs.set()
@@ -1427,7 +1438,6 @@ class GenericMap(NDData):
 
         return new_map
 
-    @deprecate_positional_args_since(since='2.0', keyword_only=('width', 'height'))
     @u.quantity_input
     def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None):
         """
@@ -1446,8 +1456,6 @@ class GenericMap(NDData):
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
             The top-right coordinate of the rectangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.
-            Passing this as a positional argument is deprecated, you must pass
-            it as ``top_right=...``.
         width : `astropy.units.Quantity`, optional
             The width of the rectangle. Required if ``top_right`` is omitted.
         height : `astropy.units.Quantity`
@@ -1870,7 +1878,6 @@ class GenericMap(NDData):
 
         return [circ]
 
-    @deprecate_positional_args_since(since='2.0')
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
                        axes=None, top_right=None, **kwargs):
@@ -1891,13 +1898,10 @@ class GenericMap(NDData):
             have shape ``(2,)`` to simultaneously define ``top_right``.
         top_right : `~astropy.coordinates.SkyCoord`
             The top-right coordinate of the rectangle.
-            Passing this as a positional argument is deprecated.
         width : `astropy.units.Quantity`, optional
             The width of the rectangle. Required if ``top_right`` is omitted.
-            Passing this as a positional argument is deprecated.
         height : `astropy.units.Quantity`
             The height of the rectangle. Required if ``top_right`` is omitted.
-            Passing this as a positional argument is deprecated.
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.

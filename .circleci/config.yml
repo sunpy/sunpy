@@ -27,7 +27,6 @@ apt-run: &apt-install
     sudo apt install -y graphviz build-essential libopenjp2-7 python3-dev
 
 jobs:
-
   figure:
     parameters:
       jobname:
@@ -42,37 +41,50 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install --user -U tox codecov tox-pypi-filter
+      - run: pip install --user -U tox tox-pypi-filter
       - run: tox
-      - run: codecov
+      - run: curl -s https://codecov.io/bash | bash
       - store_artifacts:
           path: .tmp/<< parameters.jobname >>/figure_test_images
       - run:
           name: "Image comparison page is available at: "
           command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/${TOXENV}/figure_test_images/fig_comparison.html"
-      - persist_to_workspace:
-          root: .tmp/
-          paths: << parameters.jobname >>/figure_test_images
 
   deploy-reference-images:
+    parameters:
+      jobname:
+        type: string
     docker:
-      - image: cimg/base:2020.01
+      - image: circleci/python:3.8
     environment:
-      GIT_SSH_COMMAND=ssh -i ~/.ssh/id_rsa_7b8fc81c13a3b446ec9aa50d3f626978
+      TOXENV: << parameters.jobname >>
+      GIT_SSH_COMMAND: ssh -i ~/.ssh/id_rsa_7b8fc81c13a3b446ec9aa50d3f626978
     steps:
-      - attach_workspace:
-          at: .tmp
+      - checkout
+      - run: *skip-check
+      - run: *merge-check
+      - run: *apt-install
       # Clear out all the ssh keys so that it always uses the write deploy key
       - run: ssh-add -D
       # Add private key for deploying to the figure tests repo
       - add_ssh_keys:
           fingerprints: "7b:8f:c8:1c:13:a3:b4:46:ec:9a:a5:0d:3f:62:69:78"
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run: git clone git@github.com:sunpy/sunpy-figure-tests.git -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
-      - run: cd .tmp/ && find . -maxdepth 1 -name "*-figure*" -type d -exec bash -c 'mkdir ~/sunpy-figure-tests/figures/$1; cp -v "$1"/figure_test_images/*png "/home/circleci/sunpy-figure-tests/figures/$1"' Cp {} \;
       - run: git config --global user.email "sunpy@circleci" && git config --global user.name "SunPy Circle CI"
-      - deploy:
-          command: cd ~/sunpy-figure-tests/; git add . && git commit -m "Update reference figures from ${CIRCLE_BRANCH}" || echo "No changes to reference images to deploy" && git push
+      - run: git clone git@github.com:sunpy/sunpy-figure-tests.git --depth 1 -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
+      # Generate Reference images
+      - run: pip install --user -U tox tox-pypi-filter
+      - run: tox -- --mpl-generate-path=/home/circleci/sunpy-figure-tests/figures/$TOXENV | tee toxlog
+      - run: |
+          hashlib=$(grep "^figure_hashes.*\.json$" toxlog)
+          cp ./sunpy/tests/$hashlib /home/circleci/sunpy-figure-tests/figures/$TOXENV/
+      - run: |
+          cd ~/sunpy-figure-tests/
+          git pull
+          git status
+          git add .
+          git commit -m "Update reference figures from ${CIRCLE_BRANCH}" || echo "No changes to reference images to deploy"
+          git push
 
 workflows:
   version: 2
@@ -88,6 +100,12 @@ workflows:
                 - "py37-figure-devdeps"
 
       - deploy-reference-images:
+          name: baseline-<< matrix.jobname >>
+          matrix:
+            parameters:
+              jobname:
+                - "py38-figure"
+                - "py37-figure-devdeps"
           requires:
             - "py38-figure"
             - "py37-figure-devdeps"

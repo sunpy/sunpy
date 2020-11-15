@@ -36,7 +36,7 @@ def webservice_parser(service='HEC'):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.webservice_parser()  # doctest: +SKIP
+    >>> parser.webservice_parser()  # doctest: +REMOTE_DATA
     ['http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService',
      'http://festung3.oats.inaf.it:8080/helio-hec/HelioService',
      'http://festung1.oats.inaf.it:8080/helio-hec/HelioService',
@@ -106,7 +106,7 @@ def endpoint_parser(link):
     for web_link in soup.find_all('a'):
         url = web_link.get('href')
         if url not in endpoints:
-            endpoints.append(url)
+            endpoints.append(url.replace(":80", "", 1))
     return endpoints
 
 
@@ -205,7 +205,7 @@ def wsdl_retriever(service='HEC'):
     --------
     >>> from sunpy.net.helio import parser
     >>> parser.wsdl_retriever()  # doctest: +REMOTE_DATA
-    'http://helio.mssl.ucl.ac.uk/helio_hec/HelioTavernaService?wsdl'
+    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService?wsdl'
 
     Notes
     -----
@@ -215,21 +215,12 @@ def wsdl_retriever(service='HEC'):
         this function to take a while to return. Timeout duration can be
         controlled through the LINK_TIMEOUT value
     """
-    def fail():
-        raise ValueError("No online HELIO servers can be found.")
     service_links = webservice_parser(service=service)
-    wsdl = None
-    wsdl_links = None
-    if service_links is None:
-        fail()
-    for link in service_links:
-        wsdl_links = taverna_parser(link)
-    if wsdl_links is None:
-        fail()
-    for end_point in wsdl_links:
-        if end_point is not None and link_test(end_point) is not None:
-            wsdl = end_point
-            break
-    if wsdl is None:
-        fail()
-    return wsdl
+    if service_links:
+        for link in service_links:
+            wsdl_links = taverna_parser(link)
+            if wsdl_links:
+                for end_point in wsdl_links:
+                    if end_point and link_test(end_point):
+                        return end_point
+    raise ValueError("No online HELIO servers can be found.")

@@ -64,10 +64,9 @@ result = vv.query_region(stereo_to_sun, radius=4 * u.deg, catalog='I/345/gaia2')
 print(len(result[0]))
 
 ###############################################################################
-# Now we load all stars into an array coordinate and transform it into the COR2
-# image coordinates.  The reference epoch for the star positions is J2015.5,
-# so we update these positions to the date of the COR2 observation using
-# :meth:`astropy.coordinates.SkyCoord.apply_space_motion`.
+# Now we load all stars into an array coordinate.  The reference epoch for the
+# star positions is J2015.5, # so we update these positions to the date of the
+# COR2 observation using :meth:`astropy.coordinates.SkyCoord.apply_space_motion`.
 
 tbl_crds = SkyCoord(ra=result[0]['RA_ICRS'],
                     dec=result[0]['DE_ICRS'],
@@ -78,16 +77,15 @@ tbl_crds = SkyCoord(ra=result[0]['RA_ICRS'],
                     frame='icrs',
                     obstime=Time(result[0]['Epoch'], format='jyear'))
 tbl_crds = tbl_crds.apply_space_motion(new_obstime=cor2.date)
-hpc_coords = tbl_crds.transform_to(cor2.coordinate_frame)
 
 ###############################################################################
 # One of the bright features is actually Mars, so let's also get that coordinate.
 
 mars = get_body_heliographic_stonyhurst('mars', cor2.date, observer=cor2.observer_coordinate)
-mars_hpc = mars.transform_to(cor2.coordinate_frame)
 
 ###############################################################################
-# Let's plot the results.
+# Let's plot the results.  The coordinates will be transformed automatically
+# when plotted using :meth:`~astropy.visualization.WCSAxes.plot_coord`.
 
 ax = plt.subplot(projection=cor2)
 
@@ -100,8 +98,8 @@ cor2.plot(axes=ax, vmin=0, vmax=600)
 cor2.draw_limb()
 
 # Plot the position of Mars
-ax.plot_coord(mars_hpc, 's', color='white', fillstyle='none', markersize=12, label='Mars')
+ax.plot_coord(mars, 's', color='white', fillstyle='none', markersize=12, label='Mars')
 # Plot all of the stars
-ax.plot_coord(hpc_coords, 'o', color='white', fillstyle='none')
+ax.plot_coord(tbl_crds, 'o', color='white', fillstyle='none')
 plt.legend()
 plt.show()
