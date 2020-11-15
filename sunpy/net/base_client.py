@@ -113,6 +113,7 @@ class BaseQueryResponseTable(BaseQueryResponse):
     """
     A base class for tabular results returned from clients.
     """
+
     def __init__(self, table=None, client=None):
         super().__init__()
         self.table = table or QTable()

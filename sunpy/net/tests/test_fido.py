@@ -441,13 +441,10 @@ def results_generator(dl):
 @mock.patch("parfive.Downloader.download", new=results_generator)
 def test_vso_errors_with_second_client(mock_download_all):
     query = a.Time("2011/01/01", "2011/01/02") & (a.Instrument.goes | a.Instrument.eit)
-
     qr = Fido.search(query)
-
     res = Fido.fetch(qr)
     assert len(res.errors) == 1
     assert len(res) != qr.file_num
-
     # Assert that all the XRSClient records are in the output.
     for resp in qr.responses:
         if isinstance(resp, XRSClient):
@@ -469,9 +466,7 @@ def test_mixed_retry_error():
             return_value=["hello"])
 def test_client_fetch_wrong_type(mock_fetch):
     query = a.Time("2011/01/01", "2011/01/02") & a.Instrument.goes
-
     qr = Fido.search(query)
-
     with pytest.raises(TypeError):
         Fido.fetch(qr)
 

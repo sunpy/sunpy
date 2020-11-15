@@ -7,6 +7,8 @@ This example shows how to search and retrieve metadata using `~sunpy.net.Fido` f
 search facilities like `~sunpy.net.hek.HEKClient`, `~sunpy.net.helio.HECClient`,
 and `~sunpy.net.jsoc.JSOCClient`. It also shows how to display desired columns from the result.
 """
+import os
+
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
@@ -16,10 +18,12 @@ from sunpy.net import attrs as a
 # For the same time range, we will query HEK for 'FL' as the
 # event type and 'PeakFlux' greater than 1000.
 # We will also search JSOC for 'hmi.m_45s' series.
+
 timerange = a.Time('2010/8/1 03:40', '2010/8/1 3:40:10')
+# Note that JSOC needs an email address that you should manually supply here.
 results = Fido.search(timerange, a.helio.TableName('rhessi_hxr_flare') |
                       a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
-                      a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify("jsoc@cadair.com"))
+                      a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify(os.environ["JSOC_EMAIL"]))
 
 ###################################################################
 # ``results`` is a `~sunpy.net.fido_factory.UnifiedResponse` object that

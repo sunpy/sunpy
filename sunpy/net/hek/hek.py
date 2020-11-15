@@ -123,6 +123,9 @@ class HEKClient(BaseClient):
         return list(unique(chain.from_iterable(responses), _freeze))
 
     def fetch(self, *args, **kwargs):
+        """
+        This is a no operation function to bypass Fido.fetch for this client.
+        """
         return NotImplemented
 
     @classmethod
@@ -141,6 +144,7 @@ class HEKResponse(BaseQueryResponseTable):
     """
     A container for data returned from HEK searches.
     """
+
     def __iter__(self):
         return (t for t in self.table)
 
