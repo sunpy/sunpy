@@ -280,14 +280,14 @@ def test_get_table_names(client):
     tables = client.get_table_names()
     assert len(tables) == 126
     table = tables[0][0]
-    assert isinstance(table, bytes)
-    assert table == b'timed_see_flare'
+    assert isinstance(table, str)
+    assert table == 'timed_see_flare'
 
 
 @pytest.mark.remote_data
 def test_select_table(client, monkeypatch):
     monkeypatch.setattr('builtins.input', lambda x: "11")
-    assert isinstance(client.select_table(), bytes)
+    assert isinstance(client.select_table(), str)
     monkeypatch.setattr('builtins.input', lambda x: "e")
     assert client.select_table() is None
 
@@ -299,10 +299,3 @@ def test_time_query(client):
     table_name = 'rhessi_hxr_flare'
     res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
     assert len(res) == 10
-
-
-def test_client_mock_fail(client):
-    """
-    This test will xfail on the offline tests.
-    It just passes if the client is working.
-    """

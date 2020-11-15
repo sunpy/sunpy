@@ -1,4 +1,7 @@
 name: $(BuildDefinitionName)_$(Date:yyyyMMdd)$(Rev:.rr)
+variables:
+  CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+  CIBW_MANYLINUX_I686_IMAGE: manylinux2014
 
 schedules:
   - cron: "0 0 * * *"
@@ -31,6 +34,9 @@ trigger:
     - '*pre*'
     - '*post*'
 
+pr:
+  autoCancel: true
+
 jobs:
 - template: run-tox-env.yml@OpenAstronomy
   parameters:
@@ -51,6 +57,9 @@ jobs:
         - libpng-devel
 
     envs:
+      - linux: py39
+        name: py39_test
+
       - macos: py38
         name: py38_test
         posargs: -n=1
@@ -61,30 +70,34 @@ jobs:
       - linux: py38-online
         name: py38_test_online
 
-      - linux32: py38-32bit
-        name: py38_test_32bit
-
-      - linux: codestyle
-        name: python_codestyle
-        pytest: false
-
-      - linux: py38-hypothesis
-
-      - linux: py38-conda
-        name: py38_conda
-        libraries: {}
-
       - linux: py37-oldestdeps
         name: py37_test_oldestdeps
-
-      - linux: py38-devdeps
 
       - linux: build_docs
         posargs: " "
         pytest: false
 
+      - linux: codestyle
+        name: python_codestyle
+        pytest: false
+
+      # Run these only on cron or manually or non-master branches.
+      - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'master'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
+
+        - linux32: py38-32bit
+          manylinux_image: manylinux2014_i686
+          name: py38_test_32bit
+
+        - linux: py38-hypothesis
+
+        - linux: py38-conda
+          name: py38_conda
+          libraries: {}
+
+        - linux: py38-devdeps
+
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
-- ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
+- ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'master'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
   - template: publish.yml@OpenAstronomy
     parameters:
       # Only Upload to PyPI on tags
@@ -93,7 +106,6 @@ jobs:
       test_extras: 'dev'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
       submodules: false
-
       targets:
         - wheels_cp3[78]-manylinux*x86_64
         - wheels_cp3[78]-macosx*
@@ -101,7 +113,26 @@ jobs:
       dependsOn:
         - py37_test
         - py38_test
+        - py39_test
         - py38_test_online
-        - py38_test_32bit
         - py37_test_oldestdeps
+        - py38_test_32bit
         - py38_conda
+
+- ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
+  - job: notify
+    condition: failed()
+    pool:
+      vmImage: ubuntu-20.04
+    steps:
+    - bash: |
+        sudo apt-get install httpie xonsh
+        http --version
+    - bash: xonsh ./tools/send_matrix_message.xsh
+      env:
+        ROOMID: '%21MeRdFpEonLoCwhoHeT:matrix.org'  # main sunpy room
+        HOMESERVER: 'https://matrix.cadair.com'
+        BRANCH: $(Build.SourceBranchName)
+        ACCESS_TOKEN: $(azurebot_access_token)
+        BUILDID: $(Build.BuildId)
+        STATUS: $(Agent.JobStatus)

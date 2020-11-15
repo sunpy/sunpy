@@ -7,8 +7,15 @@ but rather in the particular package.
 
 from astropy.utils.exceptions import AstropyWarning
 
-__all__ = ["SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
+__all__ = ["NoMapsInFileError",
+           "SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
            "SunpyPendingDeprecationWarning", "SunpyMetadataWarning"]
+
+
+class NoMapsInFileError(Exception):
+    """
+    An error raised when a file is opened and no maps are found.
+    """
 
 
 class SunpyWarning(AstropyWarning):
