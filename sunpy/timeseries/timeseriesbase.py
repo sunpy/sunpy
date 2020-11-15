@@ -5,6 +5,7 @@ This module provies `sunpy.timeseries.GenericTimeSeries` which all other
 import copy
 import warnings
 from collections import OrderedDict
+from collections.abc import Iterable
 
 import pandas as pd
 
@@ -356,17 +357,18 @@ class GenericTimeSeries:
         object._sanitize_units()
         return object
 
-    def concatenate(self, otherts, same_source=False, **kwargs):
+    def concatenate(self, others, same_source=False, **kwargs):
         """
-        Concatenate with another `~sunpy.timeseries.TimeSeries`. This function
-        will check and remove any duplicate times. It will keep the column
-        values from the original timeseries to which the new time series is
-        being added.
+        Concatenate with another `~sunpy.timeseries.TimeSeries` or an iterable containing multiple
+        `~sunpy.timeseries.TimeSeries`. This function will check and remove any duplicate times.
+        It will keep the column values from the original timeseries to which the new time
+        series is being added.
 
         Parameters
         ----------
-        otherts : `~sunpy.timeseries.TimeSeries`
-            Another `~sunpy.timeseries.TimeSeries`.
+        others : `~sunpy.timeseries.TimeSeries` or `collections.abc.Iterable`
+            Another `~sunpy.timeseries.TimeSeries` or an iterable containing multiple
+            `~sunpy.timeseries.TimeSeries`.
         same_source : `bool`, optional
             Set to `True` to check if the sources of the time series match. Defaults to `False`.
 
@@ -378,28 +380,60 @@ class GenericTimeSeries:
         Notes
         -----
         Extra keywords are passed to `pandas.concat`.
+
+        Examples
+        --------
+        A single `~sunpy.timeseries.TimeSeries` or an `collections.abc.Iterable` containing multiple
+        `~sunpy.timeseries.TimeSeries` can be passed to concatenate.
+
+        >>> timeseries_1.concatenate(timeseries_2) # doctest: +SKIP
+        >>> timeseries_1.concatenate([timeseries_2, timeseries_3]) # doctest: +SKIP
+
+        Set `same_source` to `True` if the sources of the time series are the same.
+
+        >>> timeseries_1.concatenate([timeseries_2, timeseries_3], same_source=True) # doctest: +SKIP
         """
-        # TODO: decide if we want to be able to concatenate multiple time series at once.
-        # check to see if nothing needs to be done
-        if self == otherts:
+        # Check to see if nothing needs to be done in case the same TimeSeries is provided.
+        if self == others:
             return self
+        elif isinstance(others, Iterable):
+            if len(others) == 1 and self == next(iter(others)):
+                return self
 
         # Check the sources match if specified.
-        if same_source and not (isinstance(otherts, self.__class__)):
-            raise TypeError("TimeSeries classes must match if specified.")
+        if (
+            same_source
+            and isinstance(others, Iterable)
+            and not all(isinstance(series, self.__class__) for series in others)
+        ):
+            raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
+        elif (
+            same_source
+            and not isinstance(others, Iterable)
+            and not isinstance(others, self.__class__)
+        ):
+            raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
 
-        # Concatenate the metadata and data
-        kwargs['sort'] = kwargs.pop('sort', False)
-        meta = self.meta.concatenate(otherts.meta)
-        data = pd.concat([self._data.copy(), otherts.to_dataframe()], **kwargs)
+        # If an iterable is not provided, it must be a TimeSeries object, so wrap it in a list.
+        if not isinstance(others, Iterable):
+            others = [others]
+
+        # Concatenate the metadata and data.
+        kwargs["sort"] = kwargs.pop("sort", False)
+        meta = self.meta.concatenate([series.meta for series in others])
+        data = pd.concat(
+            [self._data.copy(), *list(series.to_dataframe() for series in others)], **kwargs
+        )
 
         # Add all the new units to the dictionary.
         units = OrderedDict()
         units.update(self.units)
-        units.update(otherts.units)
+        units.update(
+            {k: v for unit in list(series.units for series in others) for k, v in unit.items()}
+        )
 
         # If sources match then build similar TimeSeries.
-        if self.__class__ == otherts.__class__:
+        if all(self.__class__ == series.__class__ for series in others):
             object = self.__class__(data.sort_index(), meta, units)
         else:
             # Build generic time series if the sources don't match.

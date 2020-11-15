@@ -14,14 +14,14 @@ SunPy is an open project that encourages everyone to contribute in any way possi
 The people who help develop or contribute to SunPy are varied in ability and experience with the vast majority being volunteers who dedicate time each week.
 We pride ourselves on being a welcoming community and we would love to have you become a part of our community.
 
-Although this document mainly focuses on how to make contributions to SunPy's code and documentation, there are other ways to get involved with the SunPy community.
+Although this document mainly focuses on how to make contributions to the core sunpy libraries code and documentation, there are other ways to get involved with the SunPy community.
 
 If you have any questions, comments or just want to say hello, we have online chat on `Matrix`_ which requires no registration or a `Google Group`_ which you message.
 
 .. _Matrix: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
 
-How to Contribute to SunPy
+How to Contribute to sunpy
 ==========================
 
 Not Code
@@ -33,7 +33,7 @@ If you do not have the time or the desire to code, we have severals of areas whe
 Reporting Issues
 ^^^^^^^^^^^^^^^^
 
-If you use SunPy and stumble upon a problem, the best way to report it is by opening an `issue`_ on our GitHub issue tracker.
+If you use sunpy and stumble upon a problem, the best way to report it is by opening an `issue`_ on our GitHub issue tracker.
 This way we can help you work around the problem and hopefully fix the problem!
 
 You will need to sign into `GitHub`_ to report an issue and if you are not already a member of Github, you will have to join.
@@ -45,8 +45,8 @@ When reporting an issue, please try to provide a short description of the issue 
 Also provide any error output generated when you encountered the issue, we can use this information to debug the issue.
 For a good example of how to do this see issue `#2879`_.
 
-If there is functionality that is not currently available in SunPy you can make a feature request.
-Please write as much information as possible regarding the feature you would like to see in SunPy.
+If there is functionality that is not currently available in sunpy you can make a feature request.
+Please write as much information as possible regarding the feature you would like to see in sunpy.
 
 When you go to open either an issue or a feature request, there is a GitHub template that will guide you on the type of information we are seeking.
 Please be sure to read over the comments in the GitHub text box.
@@ -58,8 +58,8 @@ Please be sure to read over the comments in the GitHub text box.
 Documentation
 ^^^^^^^^^^^^^
 
-SunPy has `online documentation`_ and we try to make sure its as comprehensive as possible.
-This documentation contains the API of SunPy but also a user guide, an example gallery and developer documents.
+sunpy has `online documentation`_ and we try to make sure its as comprehensive as possible.
+This documentation contains the API of sunpy but also a user guide, an example gallery and developer documents.
 
 However, documentation for any project is a living document.
 It is never complete and there are always areas that could be expanded upon or could do with proof reading to check if the text is easy to follow and understandable.
@@ -80,7 +80,7 @@ Code
 
 If you would prefer to code instead, the best way to start is to work on an exisiting and known `issues`_.
 We have several repositories you can investigate.
-The main one is the SunPy repository with where all the known `issues`_ with SunPy are detailed.
+The main one is the sunpy repository with where all the known `issues`_ with sunpy are detailed.
 Each issue should have a series of labels that provide information about the nature of the issue.
 If you find an issue you'd like to work on, please make sure to add a comment to let people know that you are working on it! This will make it less likely that effort is duplicated.
 
@@ -95,8 +95,8 @@ If you find an issue you'd like to work on, please make sure to add a comment to
     If you are unsure if your university or institution allows you to contribute under the BSD-2 license, you should contact the relevant department or administrator that deals with copyright at your institution.
 
 If you are unsure where to start we suggest the `Good First Issue label`_.
-These are issues that have been deemed a good way to be eased into SunPy and are achievable with little understanding of the SunPy codebase.
-Please be aware that this does not mean the issue is "easy", just that you do not need to be aware of the underlying structure of SunPy.
+These are issues that have been deemed a good way to be eased into sunpy and are achievable with little understanding of the sunpy codebase.
+Please be aware that this does not mean the issue is "easy", just that you do not need to be aware of the underlying structure of sunpy.
 
 We also tag issues for specific events such as  `Hacktoberfest`_ under the `Hacktoberfest label`_.
 The scope of the issues should be appropriate for that specific event.
@@ -150,30 +150,28 @@ Next we will want to setup the conda environment and we will need to add the `co
 .. code:: bash
 
     $ conda config --add channels conda-forge
-    $ conda create -n sunpy-dev sunpy
+    $ conda create -n sunpy-dev pip
     $ conda activate sunpy-dev
 
-This will create a new conda environment called "sunpy-dev" and install the latest version of SunPy from the conda-forge channel.
-The next step is remove the conda version of SunPy and install the development version of SunPy.
+This will create a new conda environment called "sunpy-dev" and install the latest version of pip from the conda-forge channel.
+The next step is get a developement version of sunpy.
 This will require that `git`_ be installed.
+If you have a `GitHub`_ account, we suggest that you `fork`_ the `sunpy repository`_ (the fork button is to the top right) and **use that url for the clone step**.
+This will make submitting changes easier in the long term for you:
 
 .. warning::
 
     Do not clone the sunpy repository into ``$HOME/sunpy``. Depending on the operating system this location is used to store downloaded data files.
     This will cause conflicts later on, so the last argument (``sunpy-git``) on the ``git clone`` line will become the local folder name of the cloned repository.
-
-.. note::
-    If you have a `GitHub`_ account, we suggest that you `fork`_ the `SunPy repository`_ (the fork button is to the top right) and **use that url for the clone step** below.
-    This will make submitting changes easier in the long term for you:
+    Otherwise you are free to clone to any other location.
 
 .. code:: bash
 
-    $ conda remove sunpy
-    $ git clone https://github.com/sunpy/sunpy.git sunpy-git
+    $ git clone https://github.com/<username>/sunpy.git sunpy-git
     $ cd sunpy-git
-    $ pip install -e .[all,dev]
+    $ pip install -e .[dev]
 
-Now you have the latest version of SunPy installed and are ready to work on it using your favorite editor!
+Now you have the latest version of sunpy installed and are ready to work on it using your favorite editor!
 Ideally, when you start making changes you want to create a git branch:
 
 .. code:: bash
@@ -190,7 +188,7 @@ If you get stuck or want help, just `ask here`_!
 .. _git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 .. _GitHub: https://github.com/
 .. _fork: https://guides.github.com/activities/forking/
-.. _SunPy repository: https://github.com/sunpy/sunpy
+.. _sunpy repository: https://github.com/sunpy/sunpy
 .. _ask here: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
 
 Checking the code you have written
@@ -219,7 +217,7 @@ This is a three stage process:
 1. Use ``git status`` to see that the only changes locally are the right ones.
 2. Use ``git add <path to file>`` to add the changes to `git`.
 3. Use ``git commit -m <message>`` to label those changes.
-4. Use ``git push`` to update your fork (copy) of SunPy on GitHub.
+4. Use ``git push`` to update your fork (copy) of sunpy on GitHub.
 
 Here you replace ``<message>`` with some text of the work you have done.
 We strongly recommend having a good commit message and this `commit guide`_ is worth reading.
@@ -239,7 +237,7 @@ These are explained on our :ref:`Pull Request Review <pr_review>` page.
 But what is important to know is that these run a series of tests to make sure that the changes do not cause any new errors.
 We strongly recommend that any code changes you have had, follow the `PEP8`_ style and that you have ran the code locally to make sure any changes do not break any existing code.
 We provide an overview on how to run the test suite :ref:`here <testing>`.
-Now we (the SunPy community) can review the code and offer suggestions and once we are happy, we can merge in the pull request.
+Now we (the sunpy community) can review the code and offer suggestions and once we are happy, we can merge in the pull request.
 
 If you do not have time to finish what you started on or ran out of time during a sprint and do not want to submit a pull request, you can create a git patch instead:
 
@@ -249,7 +247,7 @@ If you do not have time to finish what you started on or ran out of time during 
 
 You can rename ``my_fix`` to something more relevant.
 This way, you still get acknowledged for the work you have achieved.
-Now you can email this patch to either the  `Google Group`_ or `a SunPy contributor`_.
+Now you can email this patch to the  `Google Group`_ .
 
 Just remember, if you have any problems get in touch!
 
@@ -257,7 +255,6 @@ Just remember, if you have any problems get in touch!
 .. _GitHub guide: https://guides.github.com/activities/hello-world/
 .. _PEP8: https://realpython.com/python-pep8/
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
-.. _a SunPy contributor: stuart@mumford.me.uk
 
 Summer of Code(s)
 ^^^^^^^^^^^^^^^^^

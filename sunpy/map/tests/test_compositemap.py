@@ -37,5 +37,10 @@ def test_plot_composite_map(composite_test_map):
 
 
 @figure_test
+def test_peek_composite_map(composite_test_map):
+    composite_test_map.peek()
+
+
+@figure_test
 def test_plot_composite_map_linewidths(composite_test_map):
     composite_test_map.plot(linewidths=4)

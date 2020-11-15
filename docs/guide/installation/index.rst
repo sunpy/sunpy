@@ -41,12 +41,9 @@ First configure conda for sunpy downloads::
     conda config --add channels conda-forge
     conda config --set channel_priority strict
 
-to install sunpy::
+and then to install sunpy::
 
     conda install sunpy
-
-You now have a working sunpy installation.
-You can check your sunpy install by following the instructions in :ref:`testing-sunpy`.
 
 Updating sunpy
 --------------
