@@ -265,8 +265,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         >>> from sunpy.net import Fido, attrs as a
         >>> import astropy.units as u
-        # doctest: +REMOTE_DATA
-        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra)
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra) # doctest: +REMOTE_DATA
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 
@@ -354,8 +353,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Examples
         --------
         >>> from sunpy.net.attrs import Time, Instrument
-        # doctest: +REMOTE_DATA
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT')) # doctest: +REMOTE_DATA
         >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
 
         If any downloads fail, they can be retried by passing the `parfive.Results` object back into ``fetch``.
