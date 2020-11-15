@@ -1,0 +1,1 @@
+Fixes a bug which occurs in setting the ``ylims`` by `sunpy.visualization.animator.line.LineAnimator` when there are non-finite values in the data array to be animated.
