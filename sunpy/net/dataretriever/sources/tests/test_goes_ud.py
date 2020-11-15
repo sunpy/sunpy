@@ -62,7 +62,7 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
                            "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/"
                            "2009/09/sci_gxrs-l2-irrad_g14_d20090902_v0-0-0.nc")])
 def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
-    qresponse = LCClient.search(timerange, a.goes.SatelliteNumber.ten)
+    qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
     assert len(urls) == 4
     assert urls[0] == url_start
