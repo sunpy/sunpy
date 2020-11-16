@@ -18,11 +18,17 @@ from sunpy.data.sample import AIA_193_IMAGE
 aiamap = sunpy.map.Map(AIA_193_IMAGE)
 
 ###############################################################################
-# Now find the contours
+# In find a set of contours, we have to provide the level to contour in the
+# same units as the map data. To find out the units we can inspect
+# `sunpy.map.Map.unit`.
+print(aiamap.unit)
+###############################################################################
+# We can see that the units of this map are ``ct``, or counts. We can now
+# chose a contour level, and use the contour method to extract the contours.
 contours = aiamap.contour(50000 * u.ct)
 
 ##############################################################################
-# Finally, plot the map and add the contours
+# Finally, we can plot the map, and add each of the contours in turn.
 plt.figure()
 ax = plt.subplot(projection=aiamap)
 aiamap.plot()
