@@ -215,27 +215,27 @@ def test_verify_coordinate_helioprojective(aia171_test_map, all_off_disk_map, al
     _verify_coordinate_helioprojective(straddles_limb_map.coordinate_frame)
     _verify_coordinate_helioprojective(sub_smap.coordinate_frame)
     # These are not.
-    with pytest.raises(ValueError, match=r".* must be in the Helioprojective frame."):
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
         _verify_coordinate_helioprojective(non_helioprojective_map.coordinate_frame)
-    with pytest.raises(ValueError, match=r".* must be in the Helioprojective frame."):
+    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
         _verify_coordinate_helioprojective(non_helioprojective_skycoord)
 
 
-def test_functions_raise_non_frame_coords(non_helioprojective_map):
-    with pytest.raises(ValueError, match=r".* must be in the Helioprojective frame."):
+def test_functions_raise_non_frame_coords(non_helioprojective_skycoord):
+    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
         solar_angular_radius(non_helioprojective_skycoord)
-    with pytest.raises(ValueError, match=r".* must be in the Helioprojective frame."):
+    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
         coordinate_is_on_solar_disk(non_helioprojective_skycoord)
 
 
 def test_functions_raise_non_frame_map(non_helioprojective_map):
-    with pytest.raises(ValueError, match=r".* must be in the Helioprojective frame."):
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
         contains_full_disk(non_helioprojective_map)
-    with pytest.raises(ValueError, match=r".* must be in the Helioprojective frame."):
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
         contains_solar_center(non_helioprojective_map)
-    with pytest.raises(ValueError, match=r".* must be in the Helioprojective frame."):
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
         is_all_off_disk(non_helioprojective_map)
-    with pytest.raises(ValueError, match=r".* must be in the Helioprojective frame."):
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
         contains_limb(non_helioprojective_map)
-    with pytest.raises(ValueError, match=r".* must be in the Helioprojective frame."):
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
         on_disk_bounding_coordinates(non_helioprojective_map)
