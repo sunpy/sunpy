@@ -2181,6 +2181,20 @@ class GenericMap(NDData):
         contours: list of (n,2) `~astropy.coordinates.SkyCoord`
             Coordinates of each contour.
 
+        Examples
+        --------
+        >>> import astropy.units as u
+        >>> from astropy.coordinates import SkyCoord
+        >>> import sunpy.map
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> contours = aia.contour(50000 * u.ct)  # doctest: +REMOTE_DATA
+        >>> print(contours[0])  # doctest: +REMOTE_DATA
+            <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
+        ...
+
         See also
         --------
         `skimage.measure.find_contours`
