@@ -419,6 +419,9 @@ def solar_angle_equivalency(observer):
     if not isinstance(observer, (SkyCoord, BaseCoordinateFrame)):
         raise TypeError(
             "Invalid input, observer must be of type SkyCoord or BaseCoordinateFrame.")
+    if observer.obstime is None:
+        raise ValueError(
+            "Observer must have an observation time, `obstime`.")
 
     obstime = observer.obstime
     sun_coord = get_body_heliographic_stonyhurst("sun", time=obstime, observer=observer)
