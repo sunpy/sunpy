@@ -91,7 +91,8 @@ def _verify_coordinate_helioprojective(coordinates):
     """
     frame = coordinates.frame if hasattr(coordinates, 'frame') else coordinates
     if not isinstance(frame, Helioprojective):
-        raise ValueError("The input coordinate(s) must be in the Helioprojective frame.")
+        raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
+                         "but must be in the Helioprojective frame.")
 
 
 def solar_angular_radius(coordinates):
