@@ -6,8 +6,9 @@ Finding contours of a map
 
 This example shows how to find and plot contours on a map.
 """
-
 import matplotlib.pyplot as plt
+
+import astropy.units as u
 
 import sunpy.map
 from sunpy.data.sample import AIA_193_IMAGE
@@ -18,7 +19,7 @@ aiamap = sunpy.map.Map(AIA_193_IMAGE)
 
 ###############################################################################
 # Now find the contours
-contours = aiamap.contour(50000)
+contours = aiamap.contour(50000 * u.ct)
 
 ##############################################################################
 # Finally, plot the map and add the contours

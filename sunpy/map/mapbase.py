@@ -2169,8 +2169,10 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        level : float
-            Value along which to find contours in the array.
+        level : float, astropy.units.Quantity
+            Value along which to find contours in the array. If the map unit attribute
+            is not `None`, this must be a `~astropy.units.Quantity` with units
+            equivalent to the map data units.
         kwargs :
             Additional keyword arguments are passed to `skimage.measure.find_contours`.
 
@@ -2184,6 +2186,14 @@ class GenericMap(NDData):
         `skimage.measure.find_contours`
         """
         from skimage import measure
+
+        if self.unit is not None:
+            try:
+                level = level.to_value(self.unit)
+            # Catch cases where level is a float or can't be converted
+            except (AttributeError, u.UnitConversionError) as e:
+                raise ValueError(f'level must be an astropy quantity convertible to {self.unit}') from e
+
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours

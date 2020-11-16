@@ -1035,6 +1035,22 @@ def test_contour(simple_map):
     assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
 
 
+def test_contour_units(simple_map):
+    # Check that contouring with units works as intended
+    simple_map.meta['bunit'] = 'm'
+    contours = simple_map.contour(1.5 * u.m)
+    assert len(contours) == 1
+
+    contours_cm = simple_map.contour(150 * u.cm)
+    for c1, c2 in zip(contours, contours_cm):
+        np.all(c1 == c2)
+
+    with pytest.raises(ValueError, match='level must be an astropy quantity convertible to m'):
+        simple_map.contour(1.5)
+    with pytest.raises(ValueError, match='level must be an astropy quantity convertible to m'):
+        simple_map.contour(1.5 * u.s)
+
+
 def test_print_map(generic_map):
     out_repr = generic_map.__repr__()
     assert isinstance(out_repr, str)
