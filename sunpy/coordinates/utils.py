@@ -9,7 +9,7 @@ from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 
 from sunpy.coordinates import Heliocentric, get_body_heliographic_stonyhurst
 
-__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalencies']
+__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency']
 
 
 class GreatArc:
@@ -386,18 +386,22 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
     return bottom_left, top_right
 
 
-def solar_angle_equivalencies(observer):
+def solar_angle_equivalency(observer):
     """
-    Return the equivalency to convert between arcsec on the Sun and km.
+    Return the equivalency to convert between a physical distance on the Sun
+    and an angular separation as seen by a specified observer.
 
     .. note::
-        The equivalency uses a small angle conversion using tangent,
-        this does not approximate well for large angles.
+        This equivalency assumes that the physical distance is perpendicular to
+        the Sun-observer line.  That is, the tangent of the angular separation
+        is equal to the ratio of the physical distance to the Sun-observer
+        distance.  For large physical distances, a different assumption may be
+        more appropriate.
 
     Parameters
     ----------
     observer : `~astropy.coordinates.SkyCoord`
-        Observer for which equivalency is calculated.
+        Observer location for which the equivalency is calculated.
 
     Returns
     -------
@@ -407,7 +411,7 @@ def solar_angle_equivalencies(observer):
     --------
     >>> earth_observer = get_body_heliographic_stonyhurst("earth", "2013-10-28")
     >>> distance_in_km = 725*u.km
-    >>> distance_in_km.to(u.arcsec, equivalencies=solar_angle_equivalencies(earth_observer))
+    >>> distance_in_km.to(u.arcsec, equivalencies=solar_angle_equivalency(earth_observer))
     INFO: Apparent body location accounts for 495.82 seconds of light travel time [sunpy.coordinates.ephemeris]
     <Quantity 1.00603718 arcsec>
     """
