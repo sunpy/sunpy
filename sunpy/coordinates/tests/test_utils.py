@@ -3,6 +3,7 @@ import pytest
 
 import astropy.units as u
 from astropy.coordinates import ConvertError, SkyCoord, get_body
+from astropy.time import Time
 
 import sunpy.data.test as test
 import sunpy.map as smap
