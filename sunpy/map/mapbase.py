@@ -2184,7 +2184,6 @@ class GenericMap(NDData):
         Examples
         --------
         >>> import astropy.units as u
-        >>> from astropy.coordinates import SkyCoord
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA

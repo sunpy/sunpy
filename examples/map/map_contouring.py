@@ -24,7 +24,8 @@ aiamap = sunpy.map.Map(AIA_193_IMAGE)
 print(aiamap.unit)
 ###############################################################################
 # We can see that the units of this map are ``ct``, or counts. We can now
-# chose a contour level, and use the contour method to extract the contours.
+# chose a contour level, and use the :meth:`~sunpy.map.GenericMap.contour`
+# method to extract the contours.
 contours = aiamap.contour(50000 * u.ct)
 
 ##############################################################################
