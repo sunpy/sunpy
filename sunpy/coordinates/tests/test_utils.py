@@ -2,12 +2,12 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import ConvertError, SkyCoord, get_body
-from astropy.time import Time
+from astropy.coordinates import ConvertError, SkyCoord
+from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy.data.test as test
 import sunpy.map as smap
-from sunpy.coordinates import frames, sun
+from sunpy.coordinates import frames, sun, get_earth
 from sunpy.coordinates.utils import GreatArc, get_rectangle_coordinates, solar_angle_equivalency
 
 
@@ -326,7 +326,7 @@ def test_rectangle_bottom_left_vector():
     assert top_right.spherical.lat == bottom_left_vector[1].spherical.lat
 
 
-def test_solar_angle_equivalencies_inputs():
+def test_solar_angle_equivalency_inputs():
 
     with pytest.raises(TypeError):
         solar_angle_equivalency("earth")
@@ -336,13 +336,12 @@ def test_solar_angle_equivalencies_inputs():
         solar_angle_equivalency(test_coord)
 
 
-def test_solar_angle_equivalencies_outputs():
-
-    observer = get_body("earth", Time("2020-11-16"))
+def test_solar_angle_equivalency_outputs():
+    observer = get_earth("2020-11-16")
 
     distance_in_arcsec = 1*u.arcsec
     distance_in_km = distance_in_arcsec.to(u.km, equivalencies=solar_angle_equivalency(observer))
     distance_back_to_arcsec = distance_in_km.to(u.arcsec, equivalencies=solar_angle_equivalency(observer))
 
-    np.testing.assert_almost_equal(distance_in_km.value, 717.25668, decimal=5)
-    assert distance_in_arcsec == distance_back_to_arcsec
+    assert_quantity_allclose(distance_in_km, 717.25668*u.km)
+    assert_quantity_allclose(distance_back_to_arcsec, distance_in_arcsec)
