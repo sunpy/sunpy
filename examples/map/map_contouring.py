@@ -20,8 +20,9 @@ aiamap = sunpy.map.Map(AIA_193_IMAGE)
 ###############################################################################
 # In find a set of contours, we have to provide the level to contour in the
 # same units as the map data. To find out the units we can inspect
-# `sunpy.map.Map.unit`.
+# `sunpy.map.GenericMap.unit`.
 print(aiamap.unit)
+
 ###############################################################################
 # We can see that the units of this map are ``ct``, or counts. We can now
 # chose a contour level, and use the :meth:`~sunpy.map.GenericMap.contour`

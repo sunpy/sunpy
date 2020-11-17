@@ -2203,7 +2203,7 @@ class GenericMap(NDData):
         if self.unit is not None:
             try:
                 level = level.to_value(self.unit)
-            # Catch cases where level is a float or can't be converted
+            # Catch cases where level can't be converted or isn't a Quantity
             except (AttributeError, u.UnitConversionError) as e:
                 raise ValueError(f'level must be an astropy quantity convertible to {self.unit}') from e
 
