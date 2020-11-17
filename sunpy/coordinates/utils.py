@@ -409,6 +409,8 @@ def solar_angle_equivalency(observer):
 
     Examples
     --------
+    >>> import astropy.units as u
+    >>> from sunpy.coordinates import get_body_heliographic_stonyhurst
     >>> earth_observer = get_body_heliographic_stonyhurst("earth", "2013-10-28")
     >>> distance_in_km = 725*u.km
     >>> distance_in_km.to(u.arcsec, equivalencies=solar_angle_equivalency(earth_observer))
