@@ -80,7 +80,21 @@ def map_edges(smap):
     return top, bottom, left_hand_side, right_hand_side
 
 
-@u.quantity_input
+def _verify_coordinate_helioprojective(coordinates):
+    """
+    Raises an error if the coordinate is not in the
+    `~sunpy.coordinates.frames.Helioprojective` frame.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
+    """
+    frame = coordinates.frame if hasattr(coordinates, 'frame') else coordinates
+    if not isinstance(frame, Helioprojective):
+        raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
+                         "but must be in the Helioprojective frame.")
+
+
 def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
@@ -101,6 +115,7 @@ def solar_angular_radius(coordinates):
     angle : `~astropy.units.Quantity`
         The solar angular radius.
     """
+    _verify_coordinate_helioprojective(coordinates)
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
@@ -165,6 +180,7 @@ def contains_full_disk(smap):
     within the field of the view of the instrument (although no emission
     from the disk itself is present in the data.)
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Calculate the distance of the edge of the world in solar radii
     coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
@@ -192,6 +208,7 @@ def contains_solar_center(smap):
     bool
         True if the map contains the solar center.
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     bottom_left = smap.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
     top_right = smap.pixel_to_world(*(u.Quantity(smap.dimensions) - 0.5 * u.pix))
     # Test if the x and y component of the coordinate changes sign along
@@ -221,9 +238,7 @@ def coordinate_is_on_solar_disk(coordinates):
     `~bool`
         Returns `True` if the coordinate is on disk, `False` otherwise.
     """
-
-    if not isinstance(coordinates.frame, Helioprojective):
-        raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
+    _verify_coordinate_helioprojective(coordinates)
     # Calculate the angle of every pixel from the center of the Sun and compare it the angular
     # radius of the Sun.
     return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < solar_angular_radius(coordinates)
@@ -253,6 +268,7 @@ def is_all_off_disk(smap):
     within the field of view of the instrument, but the solar disk itself is not imaged.
     For such images this function will return `False`.
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Calculate the distance of the edge of the world in solar radii
     coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
@@ -282,6 +298,7 @@ def is_all_on_disk(smap):
         Returns `True` if all map coordinates have an angular radius less than
         the angular radius of the Sun.
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     return np.all(coordinate_is_on_solar_disk(edge_of_world))
 
@@ -314,6 +331,7 @@ def contains_limb(smap):
     within the field of view of the instrument, but the solar disk itself is not imaged.
     For such images this function will return `True`.
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     if contains_full_disk(smap):
         return True
     on_disk = coordinate_is_on_solar_disk(_edge_coordinates(smap))
@@ -338,6 +356,7 @@ def on_disk_bounding_coordinates(smap):
         top right coordinate of the smallest rectangular region that contains
         all the on-disk pixels in the input map.
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     # Check that the input map is not all off disk.
     if is_all_off_disk(smap):
         raise ValueError("The entire map is off disk.")
