@@ -200,11 +200,13 @@ class XRSTimeSeries(GenericTimeSeries):
         if "a_flux" in d.variables:
             xrsa = np.array(d["a_flux"])
             xrsb = np.array(d["b_flux"])
-            times = parse_time("1970-01-01") + TimeDelta(d["time"], format="sec")
+            start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since").rstrip("UTC")
+            times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
         elif "xrsa_flux" in d.variables:
             xrsa = np.array(d["xrsa_flux"])
             xrsb = np.array(d["xrsb_flux"])
-            times = parse_time("2000-01-01 12:00:00") + TimeDelta(d["time"], format="sec")
+            start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since")
+            times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
 
         else:
             raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
