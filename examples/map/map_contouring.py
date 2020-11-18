@@ -18,7 +18,7 @@ from sunpy.data.sample import AIA_193_IMAGE
 aiamap = sunpy.map.Map(AIA_193_IMAGE)
 
 ###############################################################################
-# In find a set of contours, we have to provide the level to contour in the
+# In finding a set of contours, we have to provide the level to contour in the
 # same units as the map data. To find out the units we can inspect
 # `sunpy.map.GenericMap.unit`.
 print(aiamap.unit)

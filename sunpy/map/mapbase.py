@@ -2205,7 +2205,7 @@ class GenericMap(NDData):
                 level = level.to_value(self.unit)
             # Catch cases where level can't be converted or isn't a Quantity
             except (AttributeError, u.UnitConversionError) as e:
-                raise ValueError(f'level must be an astropy quantity convertible to {self.unit}') from e
+                raise u.UnitsError(f'level must be an astropy quantity convertible to {self.unit}') from e
 
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
