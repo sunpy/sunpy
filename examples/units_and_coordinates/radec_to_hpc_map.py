@@ -4,20 +4,21 @@ Create a Helioprojective Map from observations in the RA-DEC coordinate system
 ==============================================================================
 
 How to create a `~sunpy.map.Map` in Helioprojective Coordinate Frame from radio observations
-in ICRS (RA-DEC).
+in GCRS (RA-DEC).
 
 In this example a LOFAR FITS file (made from CASA) is read in, the WCS
 header information is then used to make a new header with the information in
 Helioprojective, and a `~sunpy.map.Map` is made.
 
 The LOFAR example file has a WCS in celestial coordinates i.e. Right Ascension and
-Declination (RA-DEC). For many solar studies we may want to plot this data in some
-Sun-centered coordinate frame, such as Helioprojective. In this example we read the
-data and header information from the LOFAR FITS file and then create a new header
-with updated WCS information to create a `~sunpy.map.Map` with a HPC coordinate frame.
-We will make use of the `astropy.coordinates` and `sunpy.coordinates` submodules
-together with `sunpy.map.make_fitswcs_header` to create a new header and generate
-a `sunpy.map.Map`.
+Declination (RA-DEC). For this example, we are assuming that the definition of LOFAR's
+coordinate system for this observation is exactly the same as Astropy's ~astropy.coordinates.GCRS.
+For many solar studies we may want to plot this data in some Sun-centered coordinate frame,
+such as `~sunpy.coordinates.frames.Helioprojective`. In this example we read the data and
+header information from the LOFAR FITS file and then create a new header with updated WCS
+information to create a `~sunpy.map.Map` with a HPC coordinate frame. We will make use of the
+`astropy.coordinates` and `sunpy.coordinates` submodules together with `~sunpy.map.make_fitswcs_header`
+to create a new header and generate a `~sunpy.map.Map`.
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -53,26 +54,34 @@ print(header['ctype1'], header['ctype2'])
 obstime = Time(header['date-obs'])
 frequency = header['crval3']*u.Hz
 
+
 ###############################################################################
 # To create a new `~sunpy.map.Map` header we need convert the reference coordinate
-# in RA-DEC to Helioprojective. To do this we will first create an `astropy.coordinates.SkyCoord`
-# of the reference coordinate from the header information.
-reference_coord = SkyCoord(header['crval1']*u.Unit(header['cunit1']), header['crval2']*u.Unit(header['cunit2']),
+# in RA-DEC (that is in the header) to Helioprojective. To do this we will first create
+# an `astropy.coordinates.SkyCoord` of the reference coordinate from the header information.
+# We will need the location of the observer (i.e. where the observation was taken).
+# We first establish the location on Earth from which the observation takes place, in this
+# case LOFAR observations are taken from Exloo in the Netherlands, which we define in lat and lon.
+# We can convert this to a SkyCoord in GCRSat the observation time.
+
+lofar_loc = EarthLocation(lat=52.905329712*u.deg, lon=6.867996528*u.deg)
+lofar_gcrs = SkyCoord(lofar_loc.get_gcrs(obstime))
+
+##########################################################################
+# We can then define the reference coordinate in terms of RA-DEC from the header information.
+# Here we are using the `obsgeoloc` keyword argument to take into account that the observer is not
+# at the center of the Earth (i.e. the GCRS origin). The distance here is the Sun-observer distance.
+reference_coord = SkyCoord(header['crval1']*u.Unit(header['cunit1']),
+                           header['crval2']*u.Unit(header['cunit2']),
                            frame='gcrs',
                            obstime=obstime,
-                           distance=sun.earth_distance(obstime))
-
-###########################################################################
-# To convert the reference coordinate to Helioprojective we need the location of the
-# observer (i.e. where the observation was taken). We first establish the location on
-# Earth from which the observation takes place. We can convert this to a SkyCoord at the
-# observation time.
-lofar_loc = EarthLocation(lat=52.905329712*u.deg, lon=6.867996528*u.deg)
-lofar_coord = SkyCoord(lofar_loc.get_itrs(Time(obstime)))
+                           obsgeoloc=lofar_gcrs.cartesian,
+                           obsgeovel=lofar_gcrs.velocity.to_cartesian(),
+                           distance=lofar_gcrs.hcrs.distance)
 
 ##########################################################################
 # Now we can convert the `reference_coord` to the HPC coordinate frame
-reference_coord_arcsec = reference_coord.transform_to(frames.Helioprojective(observer=lofar_coord))
+reference_coord_arcsec = reference_coord.transform_to(frames.Helioprojective(observer=lofar_gcrs))
 
 ##########################################################################
 # Now we need to get the other parameters from the header that will be used
@@ -126,7 +135,7 @@ plt.show()
 lofar_map_rotate = lofar_map.rotate()
 bl = SkyCoord(-1500*u.arcsec, -1500*u.arcsec, frame=lofar_map_rotate.coordinate_frame)
 tr = SkyCoord(1500*u.arcsec, 1500*u.arcsec, frame=lofar_map_rotate.coordinate_frame)
-lofar_submap = lofar_map_rotate.submap(bl, tr)
+lofar_submap = lofar_map_rotate.submap(bl, top_right=tr)
 
 ##########################################################################
 # Now lets plot this map, and overplot some contours
