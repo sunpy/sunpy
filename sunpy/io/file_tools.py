@@ -234,9 +234,9 @@ def detect_filetype(filepath):
         if line1 + line2 == sig:
             return 'jp2'
 
-    # netcdf4 and hdf5 files (at moment only return 'nc')
+    # netcdf4 and hdf5 files
     if first_8bytes == b'\x89HDF\r\n\x1a\n':
-        return 'nc'
+        return 'hdf5'
 
     # Raise an error if an unsupported filetype is encountered
     raise UnrecognizedFileTypeError("The requested filetype is not currently "
