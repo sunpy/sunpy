@@ -126,13 +126,14 @@ class XRSTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        if sunpy.io.detect_filetype(filepath) == "nc":
+        if sunpy.io.detect_filetype(filepath) == "hdf5":
             return cls._parse_netcdf(filepath)
         try:
             hdus = sunpy.io.read_file(filepath)
-            return cls._parse_hdus(hdus)
         except UnrecognizedFileTypeError:
-            return ValueError(f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
+            raise ValueError(f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
+        else:
+            return cls._parse_hdus(hdus)
 
     @classmethod
     def _parse_hdus(cls, hdulist):
@@ -194,24 +195,23 @@ class XRSTimeSeries(GenericTimeSeries):
         filepath : `~str`
             The path of the file to parse
         """
-        d = h5netcdf.File(filepath, mode="r")
 
-        header =  MetaDict(OrderedDict(d.attrs))
-        if "a_flux" in d.variables:
-            xrsa = np.array(d["a_flux"])
-            xrsb = np.array(d["b_flux"])
-            start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since").rstrip("UTC")
-            times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
-        elif "xrsa_flux" in d.variables:
-            xrsa = np.array(d["xrsa_flux"])
-            xrsb = np.array(d["xrsb_flux"])
-            start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since")
-            times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
+        with h5netcdf.File(filepath, mode="r") as d:
 
-        else:
-            raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
+            header =  MetaDict(OrderedDict(d.attrs))
+            if "a_flux" in d.variables:
+                xrsa = np.array(d["a_flux"])
+                xrsb = np.array(d["b_flux"])
+                start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since").rstrip("UTC")
+                times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
+            elif "xrsa_flux" in d.variables:
+                xrsa = np.array(d["xrsa_flux"])
+                xrsb = np.array(d["xrsb_flux"])
+                start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since")
+                times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
 
-        d.close()
+            else:
+                raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
 
         data = DataFrame({"xrsa": xrsa, "xrsb": xrsb}, index=times.datetime)
         data.replace(-9999, np.nan)
@@ -227,15 +227,14 @@ class XRSTimeSeries(GenericTimeSeries):
         `~sunpy.timeseries.TimeSeries`.
         """
         if "source" in kwargs.keys():
-            if kwargs.get("source", ""):
-                return kwargs.get("source", "").lower().startswith(cls._source)
+            return kwargs["source"].lower().startswith(cls._source)
         if "meta" in kwargs.keys():
             return kwargs["meta"].get("TELESCOP", "").startswith("GOES")
 
         if "filepath" in kwargs.keys():
             try:
-                if sunpy.io.detect_filetype(kwargs.get("filepath", "")) == "nc":
-                    with h5netcdf.File(kwargs.get("filepath", ""), mode="r") as f:
+                if sunpy.io.detect_filetype(kwargs["filepath"]) == "hdf5":
+                    with h5netcdf.File(kwargs["filepath"], mode="r") as f:
                         return "XRS" in f.attrs["summary"].astype("str")
             except Exception:
                 return False
