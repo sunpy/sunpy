@@ -50,8 +50,7 @@ wcs.wcs.cdelt = [time_diff.value] + list(u.Quantity(m.scale).value)
 wcs.wcs.crval = [0, m._reference_longitude.value, m._reference_latitude.value]
 wcs.wcs.ctype = ['TIME'] + list(m.coordinate_system)
 wcs.wcs.cunit = ['s'] + list(m.spatial_units)
-wcs.rsun = m.rsun_meters
-wcs.heliographic_observer = m.observer_coordinate
+wcs.wcs.aux.rsun_ref = m.rsun_meters.to_value(u.m)
 
 # Now the resulting WCS object will look like:
 print(wcs)
