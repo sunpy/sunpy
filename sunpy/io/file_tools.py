@@ -20,7 +20,8 @@ try:
 except ImportError:
     ana = None
 
-__all__ = ['read_file', 'read_file_header', 'write_file']
+
+__all__ = ['read_file', 'read_file_header', 'write_file', 'detect_filetype']
 
 # File formats supported by SunPy
 _known_extensions = {
@@ -158,8 +159,31 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
 
 def _detect_filetype(filepath):
     """
-    Attempts to determine the type of data contained in a file. This is only
-    used for reading because it opens the file to check the data.
+    Attempts to determine the type of data contained in a file and returns
+    the filetype if the available readers exist within sunpy.io
+
+    Parameters
+    ----------
+    filepath : `str`
+        Where the file is.
+
+    Returns
+    -------
+    filetype : `str`
+        The type of file.
+    """
+
+    if detect_filetype(filepath) in _readers.keys():
+        return detect_filetype(filepath)
+
+    # Raise an error if an unsupported filetype is encountered
+    raise UnrecognizedFileTypeError("The requested filetype is not currently "
+                                    "supported by SunPy.")
+
+
+def detect_filetype(filepath):
+    """
+    Atempts to determine the type of file a given filepath is.
 
     Parameters
     ----------
@@ -179,9 +203,11 @@ def _detect_filetype(filepath):
         # Some FITS files do not have line breaks at the end of header cards.
         fp.seek(0)
         first80 = fp.read(80)
+        # first 8 bytes of netcdf4/hdf5 to determine filetype as have same sequence
+        fp.seek(0)
+        first_8bytes = fp.read(8)
 
     # FITS
-    #
     # Check the extensions to see if it is a gzipped FITS file
     filepath_rest_ext1, ext1 = os.path.splitext(filepath)
     _, ext2 = os.path.splitext(filepath_rest_ext1)
@@ -197,7 +223,6 @@ def _detect_filetype(filepath):
         return 'fits'
 
     # JPEG 2000
-    #
     # Checks for one of two signatures found at beginning of all JP2 files.
     # Adapted from ExifTool
     # [1] https://www.sno.phy.queensu.ca/~phil/exiftool/
@@ -205,10 +230,13 @@ def _detect_filetype(filepath):
     # [3] http://www.hlevkin.com/Standards/fcd15444-1.pdf
     jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
                       b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
-
     for sig in jp2_signatures:
         if line1 + line2 == sig:
             return 'jp2'
+
+    # netcdf4 and hdf5 files
+    if first_8bytes == b'\x89HDF\r\n\x1a\n':
+        return 'hdf5'
 
     # Raise an error if an unsupported filetype is encountered
     raise UnrecognizedFileTypeError("The requested filetype is not currently "

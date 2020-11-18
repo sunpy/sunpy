@@ -2,8 +2,10 @@
 This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
 """
 import datetime
+from pathlib import Path
 from collections import OrderedDict
 
+import h5netcdf
 import matplotlib.dates
 import matplotlib.ticker as mticker
 import numpy as np
@@ -14,7 +16,8 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 import sunpy.io
-from sunpy.time import TimeRange, is_time_in_given_format, parse_time
+from sunpy.io.file_tools import UnrecognizedFileTypeError
+from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
@@ -113,45 +116,6 @@ class XRSTimeSeries(GenericTimeSeries):
 
         return fig
 
-    # TODO: is this part of the DL pipeline? If so delete.
-    @staticmethod
-    def _get_goes_sat_num(start, end):
-        """
-        Parses the query time to determine which GOES satellite to use.
-
-        Parameters
-        ----------
-        filepath : `str`
-            The path to the file you want to parse.
-        """
-        goes_operational = {
-            2: TimeRange('1980-01-04', '1983-05-01'),
-            5: TimeRange('1983-05-02', '1984-08-01'),
-            6: TimeRange('1983-06-01', '1994-08-19'),
-            7: TimeRange('1994-01-01', '1996-08-14'),
-            8: TimeRange('1996-03-21', '2003-06-19'),
-            9: TimeRange('1997-01-01', '1998-09-09'),
-            10: TimeRange('1998-07-10', '2009-12-02'),
-            11: TimeRange('2006-06-20', '2008-02-16'),
-            12: TimeRange('2002-12-13', '2007-05-09'),
-            13: TimeRange('2006-08-01', '2006-08-01'),
-            14: TimeRange('2009-12-02', '2010-11-05'),
-            15: TimeRange('2010-09-01', Time.now()),
-        }
-
-        sat_list = []
-        for sat_num in goes_operational:
-            if (goes_operational[sat_num].start <= start <= goes_operational[sat_num].end and
-                    goes_operational[sat_num].start <= end <= goes_operational[sat_num].end):
-                # if true then the satellite with sat_num is available
-                sat_list.append(sat_num)
-
-        if not sat_list:
-            # if no satellites were found then raise an exception
-            raise Exception('No operational GOES satellites within time range')
-        else:
-            return sat_list
-
     @classmethod
     def _parse_file(cls, filepath):
         """
@@ -162,8 +126,14 @@ class XRSTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        hdus = sunpy.io.read_file(filepath)
-        return cls._parse_hdus(hdus)
+        if sunpy.io.detect_filetype(filepath) == "hdf5":
+            return cls._parse_netcdf(filepath)
+        try:
+            hdus = sunpy.io.read_file(filepath)
+        except UnrecognizedFileTypeError:
+            raise ValueError(f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
+        else:
+            return cls._parse_hdus(hdus)
 
     @classmethod
     def _parse_hdus(cls, hdulist):
@@ -175,6 +145,7 @@ class XRSTimeSeries(GenericTimeSeries):
         hdulist : `astropy.io.fits.HDUList`
             A HDU list.
         """
+
         header = MetaDict(OrderedDict(hdulist[0].header))
         if len(hdulist) == 4:
             if is_time_in_given_format(hdulist[0].header['DATE-OBS'], '%d/%m/%Y'):
@@ -214,14 +185,56 @@ class XRSTimeSeries(GenericTimeSeries):
                              ('xrsb', u.W/u.m**2)])
         return data, header, units
 
+    @staticmethod
+    def _parse_netcdf(filepath):
+        """
+        Parses the netCDF GOES files to return the data, header and associated units.
+
+        Parameters
+        ----------
+        filepath : `~str`
+            The path of the file to parse
+        """
+
+        with h5netcdf.File(filepath, mode="r") as d:
+
+            header =  MetaDict(OrderedDict(d.attrs))
+            if "a_flux" in d.variables:
+                xrsa = np.array(d["a_flux"])
+                xrsb = np.array(d["b_flux"])
+                start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since").rstrip("UTC")
+                times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
+            elif "xrsa_flux" in d.variables:
+                xrsa = np.array(d["xrsa_flux"])
+                xrsb = np.array(d["xrsb_flux"])
+                start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since")
+                times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
+
+            else:
+                raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
+
+        data = DataFrame({"xrsa": xrsa, "xrsb": xrsb}, index=times.datetime)
+        data.replace(-9999, np.nan)
+        units = OrderedDict([("xrsa", u.W/u.m**2),
+                             ("xrsb", u.W/u.m**2)])
+
+        return data, header, units
+
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """
         Determines if header corresponds to a GOES lightcurve
         `~sunpy.timeseries.TimeSeries`.
         """
-        if 'source' in kwargs.keys():
-            if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source)
-        if 'meta' in kwargs.keys():
-            return kwargs['meta'].get('TELESCOP', '').startswith('GOES')
+        if "source" in kwargs.keys():
+            return kwargs["source"].lower().startswith(cls._source)
+        if "meta" in kwargs.keys():
+            return kwargs["meta"].get("TELESCOP", "").startswith("GOES")
+
+        if "filepath" in kwargs.keys():
+            try:
+                if sunpy.io.detect_filetype(kwargs["filepath"]) == "hdf5":
+                    with h5netcdf.File(kwargs["filepath"], mode="r") as f:
+                        return "XRS" in f.attrs["summary"].astype("str")
+            except Exception:
+                return False
