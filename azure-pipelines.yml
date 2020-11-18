@@ -55,6 +55,7 @@ jobs:
         - openssl-devel
         - freetype-devel
         - libpng-devel
+        - hdf5-devel
 
     envs:
       - linux: py39
