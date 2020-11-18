@@ -24,6 +24,7 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
+from sunpy.util.exceptions import NoMapsInFileError, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
@@ -172,6 +173,10 @@ class MapFactory(BasicRegistrationFactory):
                 data = filedata
                 meta = MetaDict(filemeta)
                 new_pairs.append((data, meta))
+
+        if not new_pairs:
+            raise NoMapsInFileError(f"Found no HDUs with >= 2D data in '{fname}'.")
+
         return new_pairs
 
     def _validate_meta(self, meta):
@@ -185,7 +190,7 @@ class MapFactory(BasicRegistrationFactory):
         else:
             return False
 
-    def _parse_args(self, *args, **kwargs):
+    def _parse_args(self, *args, silence_errors=False, **kwargs):
         """
         Parses an args list into data-header pairs.
 
@@ -236,7 +241,12 @@ class MapFactory(BasicRegistrationFactory):
         # Note that this list can also contain GenericMaps if they are directly given to the factory
         data_header_pairs = []
         for arg in args:
-            data_header_pairs += self._parse_arg(arg, **kwargs)
+            try:
+                data_header_pairs += self._parse_arg(arg, **kwargs)
+            except NoMapsInFileError as e:
+                if not silence_errors:
+                    raise
+                warnings.warn(f"One of the arguments failed to parse with error: {e}", SunpyUserWarning)
 
         return data_header_pairs
 
@@ -320,7 +330,7 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
         as `memmap` for FITS files.
         """
-        data_header_pairs = self._parse_args(*args, **kwargs)
+        data_header_pairs = self._parse_args(*args, silence_errors=silence_errors, **kwargs)
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
@@ -339,7 +349,7 @@ class MapFactory(BasicRegistrationFactory):
                     ValidationFunctionError, MapMetaValidationError) as e:
                 if not silence_errors:
                     raise
-                warnings.warn(f"One of the data, header pairs failed to validate with: {e}")
+                warnings.warn(f"One of the data, header pairs failed to validate with: {e}", SunpyUserWarning)
 
         if not len(new_maps):
             raise RuntimeError('No maps loaded')

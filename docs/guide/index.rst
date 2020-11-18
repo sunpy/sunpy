@@ -18,7 +18,6 @@ For more details checkout the :ref:`reference`.
    Plotting <plotting>
    Units and Coordinates <units-coordinates>
    Time <time>
-   roi
    customization
    logger
    ssw

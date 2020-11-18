@@ -59,7 +59,7 @@ The entire list of options are encompassed by a ``[dev]`` option, so you can do:
     pip install sunpy[dev]
 
 to install all the packages needed to run and develop sunpy.
-However if you want to develop sunpy we would strongly recommend reading :ref:`newcomers`.
+However if you want to develop sunpy we would strongly recommend reading the `Newcomers' Guide <https://docs.sunpy.org/en/latest/dev_guide/newcomers.html>`__.
 
 .. note::
     If you get a ``PermissionError`` this means that you do not have the required administrative access to install new packages to your Python installation.

@@ -280,3 +280,9 @@ class Source(SimpleAttr):
     Please note that 'Source' is used internally by VSO to represent
     what the VSO Data Model refers to as 'Observatory'.
     """
+
+
+class ExtentType(SimpleAttr):
+    """
+    The type of Extent; for example, "FULLDISK", "SYNOPTIC", "LIMB", etc.
+    """
