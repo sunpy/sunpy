@@ -1,0 +1,2 @@
+The sunpy specific attributes ``.heliographic_observer`` and ``.rsun``
+are no longer set on the `~astropy.wcs.WCS` returned by `sunpy.map.Map.wcs`.

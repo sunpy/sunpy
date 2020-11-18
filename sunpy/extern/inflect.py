@@ -50,11 +50,7 @@ Exceptions:
 
 import ast
 import re
-
-try:
-    import importlib.metadata as importlib_metadata
-except ImportError:
-    import importlib_metadata
+from typing import Dict, Union
 
 
 class UnknownClassicalModeError(Exception):
@@ -83,12 +79,6 @@ class BadRcFileError(Exception):
 
 class BadGenderError(Exception):
     pass
-
-
-try:
-    __version__ = importlib_metadata.version("inflect")
-except Exception:
-    __version__ = "unknown"
 
 
 STDOUT_ON = False
@@ -1456,16 +1446,16 @@ plverb_special_s = enclose(
     )
 )
 
-pl_sb_postfix_adj = {
+_pl_sb_postfix_adj_defn = {
     "general": [r"(?!major|lieutenant|brigadier|adjutant|.*star)\S+"],
     "martial": ["court"],
     "force": ["pound"],
 }
 
-for k in list(pl_sb_postfix_adj.keys()):
-    pl_sb_postfix_adj[k] = enclose(
-        enclose("|".join(pl_sb_postfix_adj[k])) + "(?=(?:-|\\s+)%s)" % k
-    )
+pl_sb_postfix_adj: Dict[str, str] = {}
+
+for key, val in _pl_sb_postfix_adj_defn.items():
+    pl_sb_postfix_adj[key] = enclose(enclose("|".join(val)) + "(?=(?:-|\\s+)%s)" % key)
 
 pl_sb_postfix_adj_stems = "(" + "|".join(list(pl_sb_postfix_adj.values())) + ")(.*)"
 
@@ -1590,7 +1580,7 @@ pl_pron_nom = {
     "theirs": "theirs",
 }
 
-si_pron = {}
+si_pron: Dict[str, Dict[str, Union[str, Dict[str, str]]]] = {}
 si_pron["nom"] = {v: k for (k, v) in pl_pron_nom.items()}
 si_pron["nom"]["we"] = "I"
 
@@ -1649,10 +1639,10 @@ for thecase, plur, gend, sing in (
     ("acc", "themselves", "masculine or feminine", "himself or herself"),
 ):
     try:
-        si_pron[thecase][plur][gend] = sing
+        si_pron[thecase][plur][gend] = sing  # type: ignore
     except TypeError:
         si_pron[thecase][plur] = {}
-        si_pron[thecase][plur][gend] = sing
+        si_pron[thecase][plur][gend] = sing  # type: ignore
 
 
 si_pron_acc_keys = enclose("|".join(list(si_pron["acc"].keys())))
@@ -2575,7 +2565,7 @@ class engine:
                             + word.split[numword]
                             + "-"
                         ]
-                    ) + " ".join(word.split[(numword + 1) :])
+                    ) + " ".join(word.split[(numword + 1):])
 
         # HANDLE PRONOUNS
 
@@ -2803,7 +2793,7 @@ class engine:
 
         if word.first in list(plverb_irregular_pres.keys()):
             return "{}{}".format(
-                plverb_irregular_pres[word.first], word[len(word.first) :]
+                plverb_irregular_pres[word.first], word[len(word.first):]
             )
 
         # HANDLE IRREGULAR FUTURE, PRETERITE AND PERFECT TENSES
@@ -2817,7 +2807,7 @@ class engine:
             plverb_irregular_pres.keys()
         ):
             return "{}n't{}".format(
-                plverb_irregular_pres[word.first[:-3]], word[len(word.first) :]
+                plverb_irregular_pres[word.first[:-3]], word[len(word.first):]
             )
 
         if word.first.endswith("n't"):
@@ -3013,7 +3003,7 @@ class engine:
                             + word.split[numword]
                             + "-"
                         ]
-                    ) + " ".join(word.split[(numword + 1) :])
+                    ) + " ".join(word.split[(numword + 1):])
 
         # HANDLE PRONOUNS
 
@@ -3591,21 +3581,21 @@ class engine:
         return num
 
     def blankfn(self, mo):
-        """ do a global blank replace
+        """do a global blank replace
         TODO: surely this can be done with an option to re.sub
               rather than this fn
         """
         return ""
 
     def commafn(self, mo):
-        """ do a global ',' replace
+        """do a global ',' replace
         TODO: surely this can be done with an option to re.sub
               rather than this fn
         """
         return ","
 
     def spacefn(self, mo):
-        """ do a global ' ' replace
+        """do a global ' ' replace
         TODO: surely this can be done with an option to re.sub
               rather than this fn
         """

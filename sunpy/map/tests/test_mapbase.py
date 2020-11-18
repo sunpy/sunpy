@@ -577,14 +577,14 @@ def test_resample(simple_map, shape):
     # Check that the corner coordinates of the input and output are the same
     resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
     original_lower_left = simple_map.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
-    assert resampled_lower_left.Tx == original_lower_left.Tx
-    assert resampled_lower_left.Ty == original_lower_left.Ty
+    assert u.allclose(resampled_lower_left.Tx, original_lower_left.Tx)
+    assert u.allclose(resampled_lower_left.Ty, original_lower_left.Ty)
 
     resampled_upper_left = resampled.pixel_to_world((shape[0] - 0.5) * u.pix,
                                                     (shape[1] - 0.5) * u.pix)
     original_upper_left = simple_map.pixel_to_world(2.5 * u.pix, 2.5 * u.pix)
-    assert resampled_upper_left.Tx == original_upper_left.Tx
-    assert resampled_upper_left.Ty == original_upper_left.Ty
+    assert u.allclose(resampled_upper_left.Tx, original_upper_left.Tx)
+    assert u.allclose(resampled_upper_left.Ty, original_upper_left.Ty)
 
 
 resample_test_data = [('linear', (100, 200) * u.pixel), ('neighbor', (128, 256) * u.pixel),
@@ -772,12 +772,7 @@ def test_rotate_invalid_order(generic_map):
 def test_as_mpl_axes_aia171(aia171_test_map):
     ax = plt.subplot(projection=aia171_test_map)
     assert isinstance(ax, wcsaxes.WCSAxes)
-    # This test doesn't work, it seems that WCSAxes copies or changes the WCS
-    # object.
-    #  assert ax.wcs is aia171_test_map.wcs
     assert all([ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype, aia171_test_map.wcs.wcs.ctype)])
-    # Map adds these attributes, so we use them to check.
-    assert hasattr(ax.wcs, 'heliographic_observer')
 
 
 def test_pixel_to_world_no_projection(generic_map):

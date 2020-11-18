@@ -1,6 +1,11 @@
+import warnings
+
+import astropy.units as u
 import astropy.wcs.utils
+from astropy.coordinates import BaseCoordinateFrame
 from astropy.wcs import WCS
 
+from sunpy.util.exceptions import SunpyUserWarning
 from .frames import (
     BaseCoordinateFrame,
     Heliocentric,
@@ -32,17 +37,47 @@ def solar_wcs_frame_mapping(wcs):
 
     dateobs = wcs.wcs.dateobs or None
 
-    # SunPy Map adds 'heliographic_observer' and 'rsun' attributes to the WCS
-    # object. We check for them here, and default to None.
+    # Get observer coordinate from the WCS auxillary information
+    required_attrs = {HeliographicStonyhurst: ['hgln_obs', 'hglt_obs', 'dsun_obs'],
+                      HeliographicCarrington: ['crln_obs', 'hglt_obs', 'dsun_obs']}
+
+    observer = None
+    for frame, attr_names in required_attrs.items():
+        attrs = [getattr(wcs.wcs.aux, attr_name) for attr_name in attr_names]
+        if all([attr is not None for attr in attrs]):
+            observer = frame(attrs[0] * u.deg,
+                             attrs[1] * u.deg,
+                             attrs[2] * u.m,
+                             obstime=dateobs)
+
+    # Get rsun from the WCS auxillary information
+    rsun = wcs.wcs.aux.rsun_ref
+    if rsun is not None:
+        rsun *= u.m
+
+    # These custom attributes were always used in sunpy < 2.1; these warnings
+    # can be converted into errors in sunpy 3.1
     if hasattr(wcs, 'heliographic_observer'):
-        observer = wcs.heliographic_observer
-    else:
-        observer = None
+        warnings.warn('Support for the .heliographic_observer attribute on a WCS is deprecated. '
+                      'Set observer keywords in the FITS header, or directly set the wcs.wcs.aux '
+                      'values instead.',
+                      SunpyUserWarning)
+        if observer is None:
+            observer = wcs.heliographic_observer
+        else:
+            warnings.warn('Observer information present in WCS auxillary information, ignoring '
+                          '.heliographic_observer')
 
     if hasattr(wcs, 'rsun'):
-        rsun = wcs.rsun
-    else:
-        rsun = None
+        warnings.warn('Support for the .rsun attribute on a WCS is deprecated. '
+                      'Set observer keywords in the FITS header, or directly set the wcs.wcs.aux '
+                      'values instead.',
+                      SunpyUserWarning)
+        if rsun is None:
+            rsun = wcs.rsun
+        else:
+            warnings.warn('rsun information present in WCS auxillary information, ignoring '
+                          '.rsun')
 
     # Truncate the ctype to the first four letters
     ctypes = {c[:4] for c in wcs.wcs.ctype}
@@ -58,6 +93,31 @@ def solar_wcs_frame_mapping(wcs):
 
     if {'SOLX', 'SOLY'} <= ctypes:
         return Heliocentric(obstime=dateobs, observer=observer)
+
+
+def _set_wcs_aux_obs_coord(wcs, obs_frame):
+    """
+    Set (in-place) observer coordinate information on a WCS.
+
+    Parameters
+    ----------
+    wcs : astropy.wcs.WCS
+    obs_frame : astropy.coordinates.SkyCoord, astropy.coordinates.CoordinateFrame
+    """
+    # Sometimes obs_coord can be a frame (with data); convert to a SkyCoord to
+    # ensure the .frame attribute is present
+    if not isinstance(obs_frame, BaseCoordinateFrame):
+        obs_frame = obs_frame.frame
+
+    if isinstance(obs_frame, HeliographicStonyhurst):
+        wcs.wcs.aux.hgln_obs = obs_frame.lon.to_value(u.deg)
+    elif isinstance(obs_frame, HeliographicCarrington):
+        wcs.wcs.aux.crln_obs = obs_frame.lon.to_value(u.deg)
+    else:
+        raise ValueError('obs_coord must be in a Stonyhurst or Carrington frame')
+    # These two keywords are the same for Carrington and Stonyhurst
+    wcs.wcs.aux.hglt_obs = obs_frame.lat.to_value(u.deg)
+    wcs.wcs.aux.dsun_obs = obs_frame.radius.to_value(u.m)
 
 
 def solar_frame_to_wcs_mapping(frame, projection='TAN'):
@@ -78,14 +138,10 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     wcs = WCS(naxis=2)
 
     if hasattr(frame, 'rsun'):
-        wcs.rsun = frame.rsun
-    else:
-        wcs.rsun = None
+        wcs.wcs.aux.rsun_ref = frame.rsun.to_value(u.m)
 
     if hasattr(frame, 'observer') and isinstance(frame.observer, BaseCoordinateFrame):
-        wcs.heliographic_observer = frame.observer
-    else:
-        wcs.heliographic_observer = None
+        _set_wcs_aux_obs_coord(wcs, frame.observer)
 
     if isinstance(frame, SunPyBaseCoordinateFrame):
 
