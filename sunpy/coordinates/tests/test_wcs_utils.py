@@ -1,6 +1,8 @@
 
 import numpy as np
+import pytest
 
+import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame
 from astropy.wcs import WCS
 
@@ -11,55 +13,24 @@ from sunpy.coordinates.frames import (
     HeliographicStonyhurst,
     Helioprojective,
 )
-from ..wcs_utils import solar_frame_to_wcs_mapping, solar_wcs_frame_mapping
+from sunpy.util import SunpyUserWarning
+from ..wcs_utils import _set_wcs_aux_obs_coord, solar_frame_to_wcs_mapping, solar_wcs_frame_mapping
 
 
-def test_hpc():
+@pytest.mark.parametrize('ctype, frame', [[['HPLN', 'HPLT'], Helioprojective],
+                                          [['HPLT', 'HPLN'], Helioprojective],
+                                          [['HGLN', 'HGLT'], HeliographicStonyhurst],
+                                          [['CRLN', 'CRLT'], HeliographicCarrington],
+                                          [['SOLX', 'SOLY'], Heliocentric]
+                                          ])
+def test_wcs_frame_mapping(ctype, frame):
     wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['HPLN', 'HPLT']
-
+    wcs.wcs.ctype = ctype
     result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, Helioprojective)
-
-
-def test_hpc_flipped():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['HPLT', 'HPLN']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, Helioprojective)
+    assert isinstance(result, frame)
 
 
-def test_hgs():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['HGLN', 'HGLT']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, HeliographicStonyhurst)
-
-
-def test_hgc():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['CRLN', 'CRLT']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, HeliographicCarrington)
-
-
-def test_hcc():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['SOLX', 'SOLY']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, Heliocentric)
-
-
-def test_none():
+def test_wcs_frame_mapping_none():
     wcs = WCS(naxis=2)
     wcs.wcs.ctype = ['spam', 'eggs']
 
@@ -68,13 +39,10 @@ def test_none():
     assert result is None
 
 
-def test_wcs_extras():
+def test_wcs_aux():
     """
-    To enable proper creation of the coordinate systems, Map sticks three extra
-    attributes on the WCS object:
-    * heliographic_longitude
-    * heliographic_latitude
-    * dsun
+    Make sure auxillary information round trips properly from coordinate frames
+    to WCS and back.
     """
     data = np.ones([6, 6], dtype=np.float64)
     header = {'CRVAL1': 0,
@@ -105,11 +73,10 @@ def test_wcs_extras():
     generic_map = sunpy.map.Map((data, header))
 
     wcs = generic_map.wcs
-
-    assert wcs.heliographic_observer.lat.value == 0
-    assert wcs.heliographic_observer.lon.value == 0
-    assert wcs.heliographic_observer.radius.value == 10
-    assert wcs.rsun.value == header['rsun_ref']
+    assert wcs.wcs.aux.hglt_obs == 0
+    assert wcs.wcs.aux.hgln_obs == 0
+    assert wcs.wcs.aux.dsun_obs == 10
+    assert wcs.wcs.aux.rsun_ref == header['rsun_ref']
 
     result = solar_wcs_frame_mapping(wcs)
 
@@ -129,8 +96,10 @@ def test_hpc_frame_to_wcs():
     assert result_wcs.wcs.ctype[0] == 'HPLN-TAN'
     assert result_wcs.wcs.cunit[0] == 'arcsec'
     assert result_wcs.wcs.dateobs == '2013-10-28T00:00:00.000'
-    assert isinstance(result_wcs.heliographic_observer, HeliographicStonyhurst)
-    assert result_wcs.rsun == frame.rsun
+
+    new_frame = solar_wcs_frame_mapping(result_wcs)
+    assert isinstance(new_frame.observer, HeliographicStonyhurst)
+    assert new_frame.rsun == frame.rsun
 
     # Test a frame with no obstime and no observer
     frame = Helioprojective()
@@ -141,8 +110,10 @@ def test_hpc_frame_to_wcs():
     assert result_wcs.wcs.ctype[0] == 'HPLN-TAN'
     assert result_wcs.wcs.cunit[0] == 'arcsec'
     assert result_wcs.wcs.dateobs == ''
-    assert result_wcs.heliographic_observer is None
-    assert result_wcs.rsun == frame.rsun
+
+    new_frame = solar_wcs_frame_mapping(result_wcs)
+    assert new_frame.observer is None
+    assert new_frame.rsun == frame.rsun
 
 
 def test_hgs_frame_to_wcs():
@@ -195,7 +166,9 @@ def test_hcc_frame_to_wcs():
 
     assert result_wcs.wcs.ctype[0] == 'SOLX'
     assert result_wcs.wcs.dateobs == '2013-10-28T00:00:00.000'
-    assert isinstance(result_wcs.heliographic_observer, HeliographicStonyhurst)
+
+    new_frame = solar_wcs_frame_mapping(result_wcs)
+    assert isinstance(new_frame.observer, HeliographicStonyhurst)
 
     # Test a frame with no obstime and no observer
     frame = Heliocentric()
@@ -205,10 +178,50 @@ def test_hcc_frame_to_wcs():
 
     assert result_wcs.wcs.ctype[0] == 'SOLX'
     assert result_wcs.wcs.dateobs == ''
-    assert result_wcs.heliographic_observer is None
+
+    new_frame = solar_wcs_frame_mapping(result_wcs)
+    assert new_frame.observer is None
 
 
 def test_non_sunpy_frame_to_wcs():
     # For a non-SunPy frame, our mapping should return None
     frame = BaseCoordinateFrame()
     assert solar_frame_to_wcs_mapping(frame) is None
+
+
+def test_attribute_warnings():
+    # Check that warnings are raised if we try to convert a WCS with .rsun
+    # or .heliographic_observer attributes
+    wcs = WCS(naxis=2)
+    wcs.rsun = None
+    with pytest.warns(SunpyUserWarning,
+                      match='Support for the .rsun attribute on a WCS is deprecated'):
+        solar_wcs_frame_mapping(wcs)
+
+    wcs = WCS(naxis=2)
+    wcs.heliographic_observer = None
+    with pytest.warns(SunpyUserWarning,
+                      match='upport for the .heliographic_observer attribute on a WCS is deprecated'):
+        solar_wcs_frame_mapping(wcs)
+
+
+def test_set_wcs_aux():
+    wcs = WCS(naxis=2)
+    observer = Helioprojective(observer="earth", obstime='2013-10-28').observer
+    _set_wcs_aux_obs_coord(wcs, observer)
+    assert wcs.wcs.aux.hgln_obs == 0
+    assert u.allclose(wcs.wcs.aux.hglt_obs, 4.7711570596394015)
+    assert u.allclose(wcs.wcs.aux.dsun_obs, 148644585949.4918)
+    assert wcs.wcs.aux.crln_obs is None
+
+    wcs = WCS(naxis=2)
+    observer = observer.transform_to(HeliographicCarrington(observer=observer))
+    _set_wcs_aux_obs_coord(wcs, observer)
+    assert wcs.wcs.aux.hgln_obs is None
+    assert u.allclose(wcs.wcs.aux.hglt_obs, 4.7711570596394015)
+    assert u.allclose(wcs.wcs.aux.dsun_obs, 148644585949.4918)
+    assert u.allclose(wcs.wcs.aux.crln_obs, 326.05139910339886)
+
+    observer = observer.transform_to(Heliocentric(observer=observer))
+    with pytest.raises(ValueError, match='obs_coord must be in a Stonyhurst or Carrington frame'):
+        _set_wcs_aux_obs_coord(wcs, observer)

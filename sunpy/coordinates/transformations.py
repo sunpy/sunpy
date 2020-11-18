@@ -28,25 +28,19 @@ from astropy.coordinates import (
     ConvertError,
     HeliocentricMeanEcliptic,
     get_body_barycentric,
-    get_body_barycentric_posvel,
 )
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.builtin_frames import make_transform_graph_docs
 from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.coordinates.matrix_utilities import matrix_product, matrix_transpose, rotation_matrix
 from astropy.coordinates.representation import (
-    CartesianDifferential,
     CartesianRepresentation,
     SphericalRepresentation,
     UnitSphericalRepresentation,
 )
 # Import erfa via astropy to make sure we are using the same ERFA library as Astropy
 from astropy.coordinates.sky_coordinate import erfa
-from astropy.coordinates.transformations import (
-    AffineTransform,
-    FunctionTransform,
-    FunctionTransformWithFiniteDifference,
-)
+from astropy.coordinates.transformations import FunctionTransform, FunctionTransformWithFiniteDifference
 
 from sunpy import log
 from sunpy.sun import constants
@@ -528,11 +522,9 @@ _SUN_DETILT_MATRIX = _rotation_matrix_reprs_to_reprs(_SOLAR_NORTH_POLE_HCRS,
                                                      CartesianRepresentation(0, 0, 1))
 
 
-@frame_transform_graph.transform(AffineTransform, HCRS, HeliographicStonyhurst)
-@_transformation_debug("HCRS->HGS (affine transformation)")
-def hcrs_to_hgs(hcrscoord, hgsframe):
+def _affine_params_hcrs_to_hgs(hcrs_time, hgs_time):
     """
-    Convert from HCRS to Heliographic Stonyhurst (HGS).
+    Return the affine parameters (matrix and offset) from HCRS to HGS
 
     HGS shares the same origin (the Sun) as HCRS, but has its Z axis aligned with the Sun's
     rotation axis and its X axis aligned with the projection of the Sun-Earth vector onto the Sun's
@@ -542,23 +534,10 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     of time and is pre-computed, while the second matrix depends on the time-varying Sun-Earth
     vector.
     """
-    if hgsframe.obstime is None:
-        raise ConvertError("To perform this transformation, the coordinate"
-                           " frame needs a specified `obstime`.")
-
-    # Check whether differentials are involved on either end
-    has_differentials = ((hcrscoord._data is not None and hcrscoord.data.differentials) or
-                         (hgsframe._data is not None and hgsframe.data.differentials))
-
     # Determine the Sun-Earth vector in ICRS
     # Since HCRS is ICRS with an origin shift, this is also the Sun-Earth vector in HCRS
-    # If differentials exist, also obtain Sun and Earth velocities
-    if has_differentials:
-        sun_pos_icrs, sun_vel = get_body_barycentric_posvel('sun', hgsframe.obstime)
-        earth_pos_icrs, earth_vel = get_body_barycentric_posvel('earth', hgsframe.obstime)
-    else:
-        sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
-        earth_pos_icrs = get_body_barycentric('earth', hgsframe.obstime)
+    sun_pos_icrs = get_body_barycentric('sun', hgs_time)
+    earth_pos_icrs = get_body_barycentric('earth', hgs_time)
     sun_earth = earth_pos_icrs - sun_pos_icrs
 
     # De-tilt the Sun-Earth vector to the frame with the Sun's rotation axis parallel to the Z axis
@@ -571,42 +550,59 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
 
     # All of the above is calculated for the HGS observation time
     # If the HCRS observation time is different, calculate the translation in origin
-    if not _ignore_sun_motion and np.any(hcrscoord.obstime != hgsframe.obstime):
-        sun_pos_old_icrs = get_body_barycentric('sun', hcrscoord.obstime)
+    if not _ignore_sun_motion and np.any(hcrs_time != hgs_time):
+        sun_pos_old_icrs = get_body_barycentric('sun', hcrs_time)
         offset_icrf = sun_pos_icrs - sun_pos_old_icrs
     else:
         offset_icrf = sun_pos_icrs * 0  # preserves obstime shape
-
-    # Add velocity if needed (at the HGS observation time)
-    if has_differentials:
-        vel_icrf = (sun_vel - earth_vel).represent_as(CartesianDifferential)
-        offset_icrf = offset_icrf.with_differentials(vel_icrf)
 
     offset = offset_icrf.transform(total_matrix)
     return total_matrix, offset
 
 
-@frame_transform_graph.transform(AffineTransform, HeliographicStonyhurst, HCRS)
-@_transformation_debug("HGS->HCRS (affine transformation)")
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HCRS, HeliographicStonyhurst)
+@_transformation_debug("HCRS->HGS")
+def hcrs_to_hgs(hcrscoord, hgsframe):
+    """
+    Convert from HCRS to Heliographic Stonyhurst (HGS).
+
+    Even though we calculate the parameters for the affine transform, we use
+    ``FunctionTransformWithFiniteDifference`` because otherwise there is no way to account for the
+    induced angular velocity when transforming a coordinate with velocity information.
+    """
+    if hgsframe.obstime is None:
+        raise ConvertError("To perform this transformation, the HeliographicStonyhurst"
+                           " frame needs a specified `obstime`.")
+
+    rot_matrix, offset = _affine_params_hcrs_to_hgs(hcrscoord.obstime, hgsframe.obstime)
+
+    return hgsframe.realize_frame(hcrscoord.cartesian.transform(rot_matrix) + offset)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliographicStonyhurst, HCRS)
+@_transformation_debug("HGS->HCRS")
 def hgs_to_hcrs(hgscoord, hcrsframe):
     """
     Convert from Heliographic Stonyhurst to HCRS.
+
+    Even though we calculate the parameters for the affine transform, we use
+    ``FunctionTransformWithFiniteDifference`` because otherwise there is no way to account for the
+    induced angular velocity when transforming a coordinate with velocity information.
     """
+    if hgscoord.obstime is None:
+        raise ConvertError("To perform this transformation, the HeliographicStonyhurst"
+                           " frame needs a specified `obstime`.")
+
     # Calculate the matrix and offset in the HCRS->HGS direction
-    total_matrix, offset = hcrs_to_hgs(hcrsframe, hgscoord)
+    forward_matrix, forward_offset = _affine_params_hcrs_to_hgs(hcrsframe.obstime, hgscoord.obstime)
 
     # Invert the transformation to get the HGS->HCRS transformation
-    reverse_matrix = matrix_transpose(total_matrix)
-    # If differentials exist, properly negate the velocity
-    if offset.differentials:
-        pos = -offset.without_differentials()
-        vel = -offset.differentials['s']
-        offset = pos.with_differentials(vel)
-    else:
-        offset = -offset
-    reverse_offset = offset.transform(reverse_matrix)
+    reverse_matrix = matrix_transpose(forward_matrix)
+    reverse_offset = -forward_offset
 
-    return reverse_matrix, reverse_offset
+    return hcrsframe.realize_frame(hgscoord.cartesian.transform(reverse_matrix) + reverse_offset)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,

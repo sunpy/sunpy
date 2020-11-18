@@ -61,8 +61,6 @@ or at the top under the "Checks" tab:
 
 * changelog: absent | found (Giles): If a changelog is needed, this will check and will pass if a changelog with the correct number is found.
 
-* milestone: absent | present (Giles): Will check that the pull request has a milestone assigned.
-
 * `docs/readthedocs.org:sunpy (Read the Docs) <https://readthedocs.org/projects/sunpy/>`_: This builds our documentation.
   This primary check is to ensure the documentation has rendered correctly.
   Warnings are not checked on this build but under Azure Pipelines (see below).

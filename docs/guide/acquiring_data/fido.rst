@@ -337,6 +337,7 @@ If you want to see the current list of clients you can do::
     GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
     XRSClient         Provides access to the GOES XRS fits files archive.
     SUVIClient        Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
+    GONGClient        Provides access to the Magnetogram products of NSO-GONG synoptic Maps.
     LYRAClient        Provides access to the LYRA/Proba2 data archive.
     NOAAIndicesClient Provides access to the NOAA solar cycle indices.
     NOAAPredictClient Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
