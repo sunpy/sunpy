@@ -91,9 +91,13 @@ cdelt1 = (np.abs(header['cdelt1'])*u.deg).to(u.arcsec)
 cdelt2 = (np.abs(header['cdelt2'])*u.deg).to(u.arcsec)
 
 ##################################################################################
-# We will also need knowledge of the P-angle at the observation time, which is the
-# position angle between geocentric north and solar north as observed from Earth.
-# The image will need to be rotated by this angle so that solar north is pointed up.
+# Finally, we need to specify the orientation of the HPC coordinate grid because
+# GCRS north is not in the same direction as HPC north.  For convenience, we use
+# :func:`~sunpy.coordinates.sun.P` to calculate this relative rotation angle,
+# although due to subtleties in definitions, the returned value is inaccurate by
+# 2 arcmin, equivalent to a worst-case shift of 0.6 arcsec for HPC coordinates
+# on the disk. The image will need to be rotated by this angle so that solar north
+# is pointing up.
 P1 = sun.P(obstime)
 
 ##########################################################################
