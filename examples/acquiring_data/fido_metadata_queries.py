@@ -13,17 +13,19 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###################################################################
-# We will query Helio for the 'rhessi_flare_list' table and
-# limit the total number of records to 5.
+# We will query Helio for the 'rhessi_flare_list' table.
 # For the same time range, we will query HEK for 'FL' as the
 # event type and 'PeakFlux' greater than 1000.
-# We will also search JSOC for 'hmi.m_45s' series.
+# We will also search JSOC for a 'hmi.m_45s' series.
 
 timerange = a.Time('2010/8/1 03:40', '2010/8/1 3:40:10')
-# Note that JSOC needs an email address that you should manually supply here.
+# Note that JSOC needs an email address. For this example we have one a
+# dedicated private email address but if you want to run this, you must
+# supply your own email.
+jsoc_email = os.environ["JSOC_EMAIL"]
 results = Fido.search(timerange, a.helio.TableName('rhessi_hxr_flare') |
                       a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
-                      a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify(os.environ["JSOC_EMAIL"]))
+                      a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify(jsoc_email))
 
 ###################################################################
 # ``results`` is a `~sunpy.net.fido_factory.UnifiedResponse` object that
@@ -51,7 +53,7 @@ print(hek_table)
 ###################################################################
 # The results from JSOC have a default set of columns to show and are
 # ``['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']``.
-# To display all of the columns, we can use ``show()``without passings any arguments.
+# To display all of the columns, we can use ``show()`` without passings any arguments.
 print(jsoc_results)
 jsoc_table = jsoc_results.show()
 print(jsoc_table)
