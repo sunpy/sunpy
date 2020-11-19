@@ -167,12 +167,13 @@ class HECClient(BaseClient):
         results = votable_handler(etree.tostring(results))
         return HECResponse(results.to_table(), client=self)
 
-    @deprecated(since="2.1", message="Use client.search instead", alternative="Fido.search")
+    @deprecated(since="2.1", message="Use Fido.search instead", alternative="Fido.search")
     def time_query(self, start_time, end_time, table=None, max_records=None):
         """
         The simple interface to query the wsdl service.
         Used to utilize the service's TimeQuery() method, this is a simple
         interface between the sunpy module library and the web-service's API.
+
         Parameters
         ----------
         start_time : str, `~sunpy.time.parse_time` parsable objects
@@ -184,10 +185,12 @@ class HECClient(BaseClient):
             prompted to pick from a list of tables.
         max_records: int
             The maximum number of desired records.
+
         Returns
         -------
         results: `astropy.io.votable.tree.Table`
-            Table containing the results from the query
+            Table containing the results from the query.
+
         Examples
         --------
         >>> from sunpy.net.helio import hec  # doctest: +SKIP
