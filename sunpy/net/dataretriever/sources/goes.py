@@ -27,7 +27,7 @@ class XRSClient(GenericClient):
     the XRSClient searches the NOAA archive, and returns the re-processed
     science-quality data for GOES 13, 14 and 15, and also the new GOES-R series 16 and 17.
 
-    Note - the new science quality factors have scaling factors removed for 13, 14 and 15
+    Note - the new science quality data have scaling factors removed for 13, 14 and 15
     and they are not added to GOES 16 AND 17. This means the peak flux will be different to
     the older data.
 
@@ -117,19 +117,10 @@ class XRSClient(GenericClient):
         """
         metalist = []
         # the data before the re-processed GOES 13, 14, 15 data.
-        if matchdict["Time"].end < "2009-09-01":
+        if (matchdict["Time"].end < "2009-09-01") or (matchdict["Time"].end >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
             scraper = Scraper(self.baseurl_old, regex=True)
             filemeta = scraper._extract_files_meta(
                 matchdict["Time"], extractor=self.pattern_old, matcher=matchdict)
-            for i in filemeta:
-                rowdict = self.post_search_hook(i, matchdict)
-                metalist.append(rowdict)
-
-        # if for some reason a user wants the old data.
-        elif (matchdict["Time"].end >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
-            scraper = Scraper(self.baseurl_old, regex=True)
-            filemeta = scraper._extract_files_meta(
-                matchdict['Time'], extractor=self.pattern_old, matcher=matchdict)
             for i in filemeta:
                 rowdict = self.post_search_hook(i, matchdict)
                 metalist.append(rowdict)
@@ -147,15 +138,16 @@ class XRSClient(GenericClient):
                         rowdict = self.post_search_hook(i, matchdict)
                         metalist.append(rowdict)
 
-            for sat in [13, 14, 15]:
-                formdict = {"SatelliteNumber": sat}
-                urlpattern = self.baseurl_new.format(**formdict)
-                scraper = Scraper(urlpattern)
-                filemeta = scraper._extract_files_meta(
-                    matchdict["Time"], extractor=self.pattern_new, matcher=matchdict)
-                for i in filemeta:
-                    rowdict = self.post_search_hook(i, matchdict)
-                    metalist.append(rowdict)
+            if matchdict["Time"].end <="2020-03-04":
+                for sat in [13, 14, 15]:
+                    formdict = {"SatelliteNumber": sat}
+                    urlpattern = self.baseurl_new.format(**formdict)
+                    scraper = Scraper(urlpattern)
+                    filemeta = scraper._extract_files_meta(
+                        matchdict["Time"], extractor=self.pattern_new, matcher=matchdict)
+                    for i in filemeta:
+                        rowdict = self.post_search_hook(i, matchdict)
+                        metalist.append(rowdict)
 
         return metalist
 
