@@ -200,9 +200,13 @@ def _observers_are_equal(obs_1, obs_2):
                            "requires the destination observer to be specified, as the "
                            f"source observer is set to {obs_1}.")
     if isinstance(obs_1, str):
+        if obs_1 == "self":
+            return False
         raise ConvertError("The source observer needs to have `obstime` set because the "
                            "destination observer is different.")
     if isinstance(obs_2, str):
+        if obs_2 == "self":
+            return False
         raise ConvertError("The destination observer needs to have `obstime` set because the "
                            "source observer is different.")
 
@@ -217,9 +221,13 @@ def _check_observer_defined(frame):
         raise ConvertError("This transformation cannot be performed because the "
                            f"{frame.__class__.__name__} frame has observer=None.")
     elif isinstance(frame.observer, str):
-        raise ConvertError("This transformation cannot be performed because the "
-                           f"{frame.__class__.__name__} frame needs a specified obstime "
-                           f"to fully resolve observer='{frame.observer}'.")
+        if frame.observer != "self":
+            raise ConvertError("This transformation cannot be performed because the "
+                               f"{frame.__class__.__name__} frame needs a specified obstime "
+                               f"to fully resolve observer='{frame.observer}'.")
+        elif not isinstance(frame, HeliographicCarrington):
+            raise ConvertError(f"The {frame.__class__.__name__} frame has observer='self' "
+                               "but this is valid for only HeliographicCarrington frames.")
 
 
 # =============================================================================
@@ -275,12 +283,16 @@ def hgs_to_hgc(hgscoord, hgcframe):
     Convert from Heliographic Stonyhurst to Heliographic Carrington.
     """
     _check_observer_defined(hgcframe)
+    if isinstance(hgcframe.observer, str) and hgcframe.observer == "self":
+        observer_radius = hgscoord.radius
+    else:
+        observer_radius = hgcframe.observer.radius
 
     # First transform the HGS coord to the HGC obstime
     int_coord = _transform_obstime(hgscoord, hgcframe.obstime)
 
     # Rotate from HGS to HGC
-    total_matrix = _rotation_matrix_hgs_to_hgc(int_coord.obstime, hgcframe.observer.radius)
+    total_matrix = _rotation_matrix_hgs_to_hgc(int_coord.obstime, observer_radius)
     newrepr = int_coord.cartesian.transform(total_matrix)
 
     return hgcframe._replicate(newrepr, obstime=int_coord.obstime)
@@ -294,13 +306,17 @@ def hgc_to_hgs(hgccoord, hgsframe):
     Convert from Heliographic Carrington to Heliographic Stonyhurst.
     """
     _check_observer_defined(hgccoord)
+    if isinstance(hgccoord.observer, str) and hgccoord.observer == "self":
+        observer_radius = hgccoord.radius
+    else:
+        observer_radius = hgccoord.observer.radius
 
     # First transform the HGC coord to the HGS obstime
     int_coord = _transform_obstime(hgccoord, hgsframe.obstime)
 
     # Rotate from HGC to HGS
     total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hgc(int_coord.obstime,
-                                                                hgccoord.observer.radius))
+                                                                observer_radius))
     newrepr = int_coord.cartesian.transform(total_matrix)
 
     return hgsframe._replicate(newrepr, obstime=int_coord.obstime)
