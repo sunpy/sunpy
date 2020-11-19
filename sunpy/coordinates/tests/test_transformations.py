@@ -372,6 +372,33 @@ def test_hgc_hgc_different_observers():
     assert_quantity_allclose(sc_hgc_mars.lon - sc_hgc_sun.lon, ltt_mars * sidereal_rotation_rate)
 
 
+def test_hgc_self_observer():
+    # Test specifying observer='self' for HGC
+    obstime = Time('2001-01-01')
+    hgc = HeliographicCarrington(10*u.deg, 20*u.deg, 3*u.AU, observer='self', obstime=obstime)
+
+    # Transform to HGS (i.e., observer='self' in the source frame)
+    hgs = hgc.transform_to(HeliographicStonyhurst(obstime=obstime))
+
+    # Manually calculate the post-transformation longitude
+    lon = sun.L0(obstime,
+                 light_travel_time_correction=False,
+                 nearest_point=False,
+                 aberration_correction=False)
+    lon += (hgc.radius - _RSUN) / speed_of_light * sidereal_rotation_rate
+
+    assert_quantity_allclose(Longitude(hgs.lon + lon), hgc.lon)
+    assert_quantity_allclose(hgs.lat, hgc.lat)
+    assert_quantity_allclose(hgs.radius, hgc.radius)
+
+    # Transform back to HGC (i.e., observer='self' in the destination frame)
+    hgc_loop = hgs.transform_to(hgc.replicate_without_data())
+
+    assert_quantity_allclose(hgc_loop.lon, hgc.lon)
+    assert_quantity_allclose(hgc_loop.lat, hgc.lat)
+    assert_quantity_allclose(hgc_loop.radius, hgc.radius)
+
+
 def test_hcc_hcc():
     # Test same observer and changing obstime
     observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-02-01')
