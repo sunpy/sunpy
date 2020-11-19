@@ -261,6 +261,12 @@ class HeliographicCarrington(BaseHeliographic):
         HeliographicCarrington(lon, lat, obstime=obstime, observer=observer)
         HeliographicCarrington(lon, lat, radius, obstime=obstime, observer=observer)
 
+    If you want to define the location in HGC such that the observer for the coordinate frame is
+    the same as that location (e.g., the location of an observatory in its corresponding HGC
+    frame), use ``observer='self'``::
+
+        HeliographicCarrington(lon, lat, radius, obstime=obstime, observer='self')
+
     Parameters
     ----------
     {data}
@@ -283,9 +289,11 @@ class HeliographicCarrington(BaseHeliographic):
         (1., 2., 3.)>
 
     >>> sc = SkyCoord([1,2,3]*u.deg, [4,5,6]*u.deg, [5,6,7]*u.km,
-    ...               obstime="2010/01/01T00:00:45", frame="heliographic_carrington")
+    ...               obstime="2010/01/01T00:00:45",
+    ...               observer="self",
+    ...               frame="heliographic_carrington")
     >>> sc
-    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:45.000, observer=None): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:45.000, observer=self): (lon, lat, radius) in (deg, deg, km)
         [(1., 4., 5.), (2., 5., 6.), (3., 6., 7.)]>
 
     >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
