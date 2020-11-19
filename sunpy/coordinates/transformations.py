@@ -200,9 +200,13 @@ def _observers_are_equal(obs_1, obs_2):
                            "requires the destination observer to be specified, as the "
                            f"source observer is set to {obs_1}.")
     if isinstance(obs_1, str):
+        if obs_1 == "self":
+            return False
         raise ConvertError("The source observer needs to have `obstime` set because the "
                            "destination observer is different.")
     if isinstance(obs_2, str):
+        if obs_2 == "self":
+            return False
         raise ConvertError("The destination observer needs to have `obstime` set because the "
                            "source observer is different.")
 
