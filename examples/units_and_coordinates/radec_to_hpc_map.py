@@ -7,7 +7,7 @@ How to create a `~sunpy.map.Map` in Helioprojective Coordinate Frame from radio 
 in GCRS (RA-DEC).
 
 In this example a LOFAR FITS file (created with LOFAR's `Default Pre-Processing Pipeline (DPPP) and
-WSClean Imager` <https://support.astron.nl/LOFARImagingCookbook/dppp.html>`__) is read in,
+WSClean Imager <https://support.astron.nl/LOFARImagingCookbook/dppp.html>`__) is read in,
 the WCS header information is then used to make a new header with the information in Helioprojective,
 and a `~sunpy.map.Map` is made.
 
