@@ -22,14 +22,15 @@ class XRSClient(GenericClient):
     """
     Provides access to the GOES XRS fits files archive.
 
-    Searches data for the GOES XRS data both on NASA servers prior
-    to re-processed GOES 13, 14 and 15. For satellite numbers > 13
-    the XRSClient searches the NOAA archive, and returns the re-processed
-    science-quality data for GOES 13, 14 and 15, and also the new GOES-R series 16 and 17.
+    Searches for GOES XRS data both on NASA servers prior to re-processed
+    GOES 13, 14 and 15 and on the NOAA archive for > GOES 13.
+    For satellite numbers > 13 the XRSClient searches the NOAA archive, and
+    returns the re-processed science-quality data for GOES 13, 14 and 15, and
+    also the new GOES-R series 16 and 17.
 
     Note - the new science quality data have scaling factors removed for 13, 14 and 15
     and they are not added to GOES 16 AND 17. This means the peak flux will be different to
-    the older data.
+    the older version of the data, such as those collected from the NASA servers.
 
     See the following readmes about the data
 
