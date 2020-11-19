@@ -36,13 +36,17 @@ It is however *strongly* recommended to have all the dependencies installed (wit
 
 There are multiple options depending on how many optional dependencies you want to install:
 
-To install sunpy with ``pip`` including optional dependencies (recommended), simply run::
+To install sunpy with ``pip`` including all optional dependencies (*recommended*), simply run::
 
     pip install sunpy[all]
 
 To install sunpy with no optional dependencies::
 
     pip install sunpy
+
+To install sunpy with map- and timeseries-based dependencies::
+
+    pip install sunpy[map,timeseries]
 
 To install sunpy with net-based dependencies::
 
