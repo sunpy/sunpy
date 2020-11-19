@@ -8,10 +8,14 @@ If you already have a working Python / Scientific Python environment then you ca
 Requirements
 ============
 
-- python >= 3.7
-- astropy >= 3.2
+These are the minimum versions of packages needed to install sunpy:
 
-sunpy is compatible with Python 3.7+.
+- python 3.7
+- astropy 4.0.3
+- scipy 1.2
+- matplotlib 2.2.2
+- pandas 0.23
+- parfive 1.1
 
 .. _main-install:
 

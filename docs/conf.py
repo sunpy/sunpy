@@ -124,6 +124,11 @@ if on_rtd:
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 
+# Add any extra paths that contain custom files (such as robots.txt or
+# .htaccess) here, relative to this directory. These files are copied
+# directly to the root of the documentation.
+html_extra_path = ['robots.txt']
+
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 if not is_development:

@@ -46,6 +46,7 @@ _SAMPLE_DATA = {
     "GBM_TIMESERIES": "glg_cspec_n5_110607_v00.pha",
     "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
     "NORH_TIMESERIES": "tca110607.fits",
+    "LOFAR_IMAGE": "LOFAR_70MHZ_20190409_131136.fits",
 }
 
 # Reverse the dict because we want to use it backwards, but it is nicer to

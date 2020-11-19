@@ -1,0 +1,1 @@
+Added example of how to create a `sunpy.map.GenericMap` from observations in RA-DEC coordinates.

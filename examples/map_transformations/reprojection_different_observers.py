@@ -85,11 +85,8 @@ out_header = sunpy.map.make_fitswcs_header(
 
 ######################################################################
 # Next we construct an `~astropy.wcs.WCS` object from the header.
-# Currently `~astropy.wcs.WCS` does not understand the observer
-# position, so we manually set that.
 
 out_wcs = WCS(out_header)
-out_wcs.heliographic_observer = map_aia.reference_coordinate.observer
 
 ######################################################################
 # We can now reproject the EUVI map to this output `~astropy.wcs.WCS`.
@@ -146,11 +143,9 @@ mars_header = sunpy.map.make_fitswcs_header(
 )
 
 ######################################################################
-# Once again we need to generate a `~astropy.wcs.WCS` object and then
-# manually set the observer location.
+# Once again we need to generate a `~astropy.wcs.WCS` object.
 
 mars_wcs = WCS(mars_header)
-mars_wcs.heliographic_observer = mars
 
 output, footprint = reproject_interp(map_aia, mars_wcs, out_shape)
 
