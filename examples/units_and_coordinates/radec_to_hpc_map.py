@@ -6,9 +6,10 @@ Create a Helioprojective Map from observations in the RA-DEC coordinate system
 How to create a `~sunpy.map.Map` in Helioprojective Coordinate Frame from radio observations
 in GCRS (RA-DEC).
 
-In this example a LOFAR FITS file (made from CASA) is read in, the WCS
-header information is then used to make a new header with the information in
-Helioprojective, and a `~sunpy.map.Map` is made.
+In this example a LOFAR FITS file (created with LOFAR's `Default Pre-Processing Pipeline (DPPP) and
+WSClean Imager <https://support.astron.nl/LOFARImagingCookbook/dppp.html>`__) is read in,
+the WCS header information is then used to make a new header with the information in Helioprojective,
+and a `~sunpy.map.Map` is made.
 
 The LOFAR example file has a WCS in celestial coordinates i.e. Right Ascension and
 Declination (RA-DEC). For this example, we are assuming that the definition of LOFAR's
@@ -111,7 +112,8 @@ P1 = sun.P(obstime)
 # than the fits convention of 1 indexed.
 
 new_header = sunpy.map.make_fitswcs_header(data, reference_coord_arcsec,
-                                           reference_pixel=u.Quantity([header['crpix1']-1, header['crpix2']-1]*u.pixel),
+                                           reference_pixel=u.Quantity([header['crpix1']-1,
+                                                                       header['crpix2']-1]*u.pixel),
                                            scale=u.Quantity([cdelt1, cdelt2]*u.arcsec/u.pix),
                                            rotation_angle=-P1,
                                            wavelength=frequency.to(u.MHz).round(2),
