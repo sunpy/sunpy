@@ -132,22 +132,17 @@ class XRSClient(GenericClient):
         metalist = []
         # the data before the re-processed GOES 13, 14, 15 data.
         if (matchdict["Time"].end < "2009-09-01") or (matchdict["Time"].end >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
-            meta = self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
-            metalist += meta
+            metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
 
         # new data from NOAA.
         else:
             if matchdict["Time"].end >= "2017-02-07":
                 for sat in [16, 17]:
-                    formdict = {"SatelliteNumber": sat}
-                    meta = self._get_metalist_fn(matchdict, self.baseurl_r.format(**formdict), self.pattern_r)
-                    metalist += meta
+                    metalist += self._get_metalist_fn(matchdict, self.baseurl_r.format(**{"SatelliteNumber": sat}), self.pattern_r)
 
             if matchdict["Time"].end <="2020-03-04":
                 for sat in [13, 14, 15]:
-                    formdict = {"SatelliteNumber": sat}
-                    meta = self._get_metalist_fn(matchdict, self.baseurl_new.format(**formdict), self.pattern_new)
-                    metalist += meta
+                    metalist += self._get_metalist_fn(matchdict, self.baseurl_new.format(**{"SatelliteNumber": sat}), self.pattern_new)
 
         return metalist
 
