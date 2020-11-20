@@ -11,7 +11,7 @@ Requirements
 These are the minimum versions of packages needed to install sunpy:
 
 - python 3.7
-- astropy 4.0
+- astropy 4.0.3
 - scipy 1.2
 - matplotlib 2.2.2
 - pandas 0.23
