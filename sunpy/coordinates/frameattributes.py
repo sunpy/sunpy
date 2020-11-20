@@ -53,14 +53,14 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         if value is None:
             return None, False
 
-        elif value == 'now':
-            return Time(datetime.datetime.now()), True
-
         elif isinstance(value, Time):
             out = value
             converted = False
 
         elif isinstance(value, str):
+            if value == 'now':
+                return Time(datetime.datetime.now()), True
+
             try:
                 out = Time(parse_time(value))
             except Exception as err:
