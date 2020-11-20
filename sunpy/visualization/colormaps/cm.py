@@ -77,6 +77,7 @@ kcor = deepcopy(mplcm.get_cmap("gist_gray"))
 kcor.name = 'MLSO KCor'
 
 rhessi = ct.rhessi_color_table()
+rhessi2 = ct.rhessi_color_table2()
 
 cmlist = {
     'goes-rsuvi94': goesrsuvi94,
@@ -130,7 +131,8 @@ cmlist = {
     'irissjiNUV': ct.iris_sji_color_table('NUV'),
     'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
     'kcor': kcor,
-    'rhessi': rhessi
+    'rhessi': rhessi,
+    'rhessi2': rhessi2
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
