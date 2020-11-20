@@ -9,7 +9,7 @@ from astropy.time import Time
 from sunpy.coordinates import frames, get_earth
 from sunpy.time import parse_time
 from ..frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
-from ..frames import HeliocentricInertial, HeliographicStonyhurst, Helioprojective
+from ..frames import HeliocentricInertial, HeliographicCarrington, HeliographicStonyhurst, Helioprojective
 
 
 @pytest.fixture
@@ -153,6 +153,14 @@ def test_coord_get():
     assert hasattr(obs, "object_name")
     assert obs.object_name == "mars"
     assert str(obs) == "<HeliographicStonyhurst Coordinate for 'mars'>"
+
+
+def test_observer_self_get():
+    hgc_noobstime = HeliographicCarrington(observer="self")
+    assert hgc_noobstime.observer == "self"
+
+    hgc_obstime = HeliographicCarrington(observer="self", obstime="2001-01-01")
+    assert hgc_obstime.observer == "self"
 
 
 def test_default_hcc_observer():

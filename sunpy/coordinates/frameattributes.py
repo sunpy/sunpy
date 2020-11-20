@@ -53,14 +53,14 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         if value is None:
             return None, False
 
-        elif value == 'now':
-            return Time(datetime.datetime.now()), True
-
         elif isinstance(value, Time):
             out = value
             converted = False
 
         elif isinstance(value, str):
+            if value == 'now':
+                return Time(datetime.datetime.now()), True
+
             try:
                 out = Time(parse_time(value))
             except Exception as err:
@@ -135,7 +135,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
             # If the observer is a string and we have obstime then calculate
             # the position of the observer.
             if isinstance(observer, str):
-                if obstime is not None:
+                if observer != "self" and obstime is not None:
                     new_observer = self._convert_string_to_coord(observer.lower(), obstime)
                     new_observer.object_name = observer
                     setattr(instance, '_' + self.name, new_observer)
