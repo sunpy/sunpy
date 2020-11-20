@@ -132,7 +132,7 @@ cmlist = {
     'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
     'kcor': kcor,
     'rhessi': rhessi,
-    'rhessi2': rhessi2
+    'rhessi2': rhessi2,
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
