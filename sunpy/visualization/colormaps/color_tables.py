@@ -14,7 +14,7 @@ __all__ = [
     'aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
     'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table',
-    'rhessi_color_table', 'rhessi_color_table2',
+    'rhessi_color_table', 'std_gamma_2',
 ]
 
 cmap_data_dir = pathlib.Path(__file__).parent.absolute() / 'data'
@@ -301,10 +301,10 @@ def suvi_color_table(wavelength: u.angstrom):
 
 
 def rhessi_color_table():
-    return cmap_from_rgb_file(f"rhessi", f"rhessi.csv")
+    return cmap_from_rgb_file("rhessi", "rhessi.csv")
 
-def rhessi_color_table2():
-    return cmap_from_rgb_file(f"rhessi2", f"rhessi2.csv")
+def std_gamma_2():
+    return cmap_from_rgb_file("std_gamma_2", "std_gamma_2.csv")
 
 def cmap_from_rgb_file(name, fname):
     """
