@@ -261,7 +261,7 @@ def rstjinja(app, docname, source):
 
 
 # JSOC email os env
-os.environ["JSOC_EMAIL"] = "sunpy@sunpy.org"
+os.environ["JSOC_EMAIL"] = "nabil.freij@gmail.com"
 
 # -- Sphinx setup --------------------------------------------------------------
 
