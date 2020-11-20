@@ -138,11 +138,11 @@ class XRSClient(GenericClient):
         else:
             if matchdict["Time"].end >= "2017-02-07":
                 for sat in [16, 17]:
-                    metalist += self._get_metalist_fn(matchdict, self.baseurl_r.format(**{"SatelliteNumber": sat}), self.pattern_r)
+                    metalist += self._get_metalist_fn(matchdict, self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
 
             if matchdict["Time"].end <="2020-03-04":
                 for sat in [13, 14, 15]:
-                    metalist += self._get_metalist_fn(matchdict, self.baseurl_new.format(**{"SatelliteNumber": sat}), self.pattern_new)
+                    metalist += self._get_metalist_fn(matchdict, self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
 
         return metalist
 
