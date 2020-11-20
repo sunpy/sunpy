@@ -45,10 +45,14 @@ def solar_wcs_frame_mapping(wcs):
     for frame, attr_names in required_attrs.items():
         attrs = [getattr(wcs.wcs.aux, attr_name) for attr_name in attr_names]
         if all([attr is not None for attr in attrs]):
+            kwargs = {'obstime': dateobs}
+            if issubclass(frame, HeliographicCarrington):
+                kwargs['observer'] = 'self'
+
             observer = frame(attrs[0] * u.deg,
                              attrs[1] * u.deg,
                              attrs[2] * u.m,
-                             obstime=dateobs)
+                             **kwargs)
 
     # Get rsun from the WCS auxillary information
     rsun = wcs.wcs.aux.rsun_ref
@@ -104,9 +108,8 @@ def _set_wcs_aux_obs_coord(wcs, obs_frame):
     wcs : astropy.wcs.WCS
     obs_frame : astropy.coordinates.SkyCoord, astropy.coordinates.CoordinateFrame
     """
-    # Sometimes obs_coord can be a frame (with data); convert to a SkyCoord to
-    # ensure the .frame attribute is present
-    if not isinstance(obs_frame, BaseCoordinateFrame):
+    # Sometimes obs_coord can be a SkyCoord, so convert down to a frame
+    if hasattr(obs_frame, 'frame'):
         obs_frame = obs_frame.frame
 
     if isinstance(obs_frame, HeliographicStonyhurst):
