@@ -28,9 +28,6 @@ the latest Python 3.x version of Miniconda as SunPy only supports Python 3.7+.
 The reason we choose Miniconda over Anaconda, is mainly due to the size as Anaconda comes with a full install of packages you probably do not need and this way you have more direct control over what has been installed into your Python virtual environment.
 Furthermore, you bypass the need for the conda resolver to sort out your root environment which should make "conda" faster to use.
 
-We strongly recommend using a `Python virtual environment <https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/>`__ so any Python packages you install will be kept separate from your Operating System Python.
-You can use Miniconda as a virtual environment manager instead of one of the more common Python virtual environment managers and that is what the following seciton is about.
-
 Installing sunpy using Miniconda
 --------------------------------
 
@@ -40,12 +37,14 @@ First configure conda for to add the `conda-forge channel <https://conda-forge.o
     conda config --add channels conda-forge
     conda config --set channel_priority strict
 
-and now to install sunpy within a new virtual environment::
+and now to install sunpy within a the default conda virtual environment::
 
-    $ conda create -n sunpy python sunpy
-    $ conda activate sunpy
+    $ conda install sunpy
 
 This will install sunpy and every package it needs to function.
+
+.. note::
+    We strongly recommend using a `Python virtual environment <https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/>`__ or a `conda virtual environment. <https://towardsdatascience.com/getting-started-with-python-environments-using-conda-32e9f2779307>`__
 
 Updating sunpy
 --------------
@@ -60,7 +59,7 @@ Installing sunpy on top of an existing scientific Python environment
 Conda
 ^^^^^
 
-If you want to install sunpy within a pre-existing conda environment, you can run::
+If you want to install sunpy within a pre-existing conda environment, you will want to activate the virtual environment and run::
 
     $ conda install sunpy
 
@@ -69,16 +68,15 @@ This assumes you have the conda-forge channel added (as above).
 Pip
 ^^^
 
-This is for installing sunpy within a scientific Python distribution, where ``pip`` has been used to install  packages.
-
-We do provide compiled binaries for sunpy for Linux and Mac OS X (we do not compile our C extension on Windows), so you might not need a C compiler.
-If there is no compiled binary, you will need a C compiler (e.g., ``gcc`` or ``clang``) to be installed as we have a C library within sunpy that is built at install time.
-If you use Miniconda, you can get these compilers from there.
-On Linux, using the package manager for your distribution will usually be the easiest route, while on MacOS X you will need the XCode command line tools.
+This is for installing sunpy within a scientific Python distribution or environment, where ``pip`` has been used to install packages.
 
 To acquire a fully working sunpy installation, simply run::
 
     pip install sunpy[all]
+
+.. note::
+    If this does not work, it could be due to a missing C compiler (e.g., ``gcc`` or ``clang``) that is required to build sunpy at install.
+    Getting the compiler either from your system package manager or XCode or Anaconda should address this.
 
 If you have a reason to bypass this, you can sunpy with no optional dependencies::
 
