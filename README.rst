@@ -37,7 +37,8 @@ To install SunPy once conda is installed run the following two commands:
 .. code:: bash
 
     $ conda config --append channels conda-forge
-    $ conda install sunpy
+    $ conda create -n sunpy python sunpy
+    $ conda activate sunpy
 
 For detailed installation instructions, see the `installation guide`_ in the SunPy docs.
 
