@@ -1,0 +1,2 @@
+Reduced the selection of packages installed by default.
+Now ``map`` and ``timeseries`` have dedicated extras that must be installed now to use them.
