@@ -16,8 +16,8 @@ from sunpy.time import TimeRange, parse_time
 ##############################################################################
 # Search for Data
 
-goes_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument.xrs)
-norh_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument.norh,
+goes_res = Fido.search(a.Time("2010-11-03", "2010-11-04"), a.Instrument.xrs, a.goes.SatelliteNumber(15))
+norh_res = Fido.search(a.Time("2010-11-03", "2010-11-04"), a.Instrument.norh,
                        a.Wavelength(17 * u.GHz))
 ##############################################################################
 # Download the data and load it
@@ -61,7 +61,7 @@ large_ts.meta.metas  # List of the meta dictionaries
 ##############################################################################
 # When you truncate the TimeSeries, the metadata is truncated too:
 large_trunc_ts = large_ts.truncate(TimeRange('2010-11-03 13:59:57.468999',
-                                             '2010-11-05 13:59:56.091999'))
+                                             '2010-11-04 13:59:56.091999'))
 print(large_trunc_ts.meta.to_string(2))
 
 ##############################################################################
