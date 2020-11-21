@@ -1,0 +1,1 @@
+Add two new colormaps that are used for plotting RHESSI maps.
