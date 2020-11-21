@@ -144,17 +144,15 @@ class HECClient(BaseClient):
                 qrdict['table_name'] = elem.value
             else:
                 raise ValueError(
-                    "HECClient can not add {} to the map_ dictionary to pass "
-                    "to the Client.".format(elem.__class__.__name__))
+                    f"{elem.__class__.__name__} should be a ``attrs.Time``, ``attrs.hek.MaxRecords`` or ``attrs.hek.TableName`` attribute.")
         qrdict.update(kwargs)
         table = qrdict.get('table_name', None)
         if table:
             if isinstance(table, bytes):
                 warn('type `bytes` for table_name is deprecated, use `str` instead.', SunpyDeprecationWarning)
-            else:
-                table = str.encode(table)
-        start_time = qrdict.get('Time').start
-        end_time = qrdict.get('Time').end
+            table = str.encode(table)
+        start_time = qrdict['Time'].start
+        end_time = qrdict['Time'].end
         max_records = qrdict.get('max_records', 10)
         while table is None:
             table = self.select_table()
@@ -275,6 +273,6 @@ class HECClient(BaseClient):
 
     def fetch(self, *args, **kwargs):
         """
-        This is a no operation function to bypass Fido.fetch for this client.
+        This is a no operation function as this client does not download data.
         """
         return NotImplemented

@@ -143,37 +143,3 @@ class TestHelioviewerClient:
         filepath_3 = client.download_png('2020/01/01', 2.4, "[SOHO,MDI,continuum,1,100]",
                                          overwrite=True)
         assert filepath_3 == filepath
-
-    def test_progress_jp2(self, client, capsys):
-        """
-        Tests if progress bars are disabled when running `download_jp2()`.
-        """
-        msg = "\rFiles Downloaded:"
-        client = HelioviewerClient()
-        client.download_jp2("2012/01/01", observatory="SOHO",
-                            instrument="MDI", measurement="continuum",
-                            progress=False)
-        _, err = capsys.readouterr()
-        assert msg not in err
-        client.download_jp2("2012/01/01", observatory="SOHO",
-                            instrument="MDI", measurement="continuum")
-        _, err = capsys.readouterr()
-        assert msg in err
-
-    def test_progress_png(self, client, capsys):
-        """
-        Tests if progress bars are disabled when running `download_png()`.
-        """
-        msg = "\rFiles Downloaded:"
-        client = HelioviewerClient()
-        client.download_png('2012/07/16 10:08:00', 2.4,
-                            "[SDO,AIA,AIA,171,1,100]",
-                            x0=0, y0=0, width=1024, height=1024,
-                            progress=False)
-        _, err = capsys.readouterr()
-        assert msg not in err
-        client.download_png('2012/07/16 10:08:00', 2.4,
-                            "[SDO,AIA,AIA,171,1,100]",
-                            x0=0, y0=0, width=1024, height=1024)
-        _, err = capsys.readouterr()
-        assert msg in err

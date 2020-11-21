@@ -179,7 +179,7 @@ We will recreate the first example using the PNG function::
    >>> import matplotlib.pyplot as plt
    >>> from matplotlib.image import imread
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +REMOTE_DATA
+   >>> file = hv.download_png('2020/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +REMOTE_DATA
    >>> im = imread(file)  # doctest: +REMOTE_DATA
    >>> plt.imshow(im)  # doctest: +SKIP
    >>> plt.axis('off')  # doctest: +SKIP

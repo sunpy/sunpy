@@ -114,10 +114,10 @@ It is likely each flare on the Sun was actually detected multiple times by many 
 ***********************
 
 The Fido allows you to make more complex queries.
-There are two key features you need to know in order to make use of the full power of the Fido.
-Firstly, the attribute module - attrs.hek - describes ALL the parameters stored by the HEK as listed in http://www.lmsal.com/hek/VOEvent_Spec.html, and the HEK client makes these parameters searchable.
+There are two key features you need to know in order to make use of the full power of Fido.
+Firstly, the attribute module - ``attrs.hek`` - describes ALL the parameters stored by the HEK as listed in http://www.lmsal.com/hek/VOEvent_Spec.html, and the HEK client makes these parameters searchable.
 
-To explain this, let's have a closer look at attrs.hek.
+To explain this, let's have a closer look at ``attrs.hek``.
 The help command is your friend here; scroll down to section DATA you will see:
 
     >>> help(a.hek) # doctest:+REMOTE_DATA

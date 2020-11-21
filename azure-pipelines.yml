@@ -89,8 +89,6 @@ jobs:
           manylinux_image: manylinux2014_i686
           name: py38_test_32bit
 
-        - linux: py38-hypothesis
-
         - linux: py38-conda
           name: py38_conda
           libraries: {}

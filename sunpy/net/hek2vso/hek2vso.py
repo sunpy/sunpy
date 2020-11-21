@@ -49,9 +49,7 @@ def translate_results_to_query(results):
     19
 
     >>> hek2vso.translate_results_to_query(q[0])  # doctest: +REMOTE_DATA
-    [[<sunpy.net.attrs.Time(2011-08-08 01:30:04.000, 2011-08-10 00:00:04.000)>, <sunpy.net.vso.attrs.Source(SDO: Solar Dynamics Observatory) object at ...>, <sunpy.net.attrs.Instrument(HMI: Helioseismic and Magnetic Imager) object at ...>, <sunpy.net.attrs.Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>]]
-    >>> hek2vso.translate_results_to_query(q)   # doctest: +SKIP
-    [[<Time(2011-08-08 01:30:04.000, 2011-08-10 00:00:04.000)>, <Source('SDO')>, <Instrument('HMI')>, <Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>], ..., [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T08:01:21.000>, <Time object: scale='utc' format='isot' value=2011-08-09T08:16:45.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
+    [[<sunpy.net.attrs.Time(2011-08-08 01:30:04.000, 2011-08-10 00:00:04.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(HMI: Helioseismic and Magnetic Imager) object at ...>, <sunpy.net.attrs.Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>]]
     """
     queries = []
     if isinstance(results, HEKResponse):
@@ -86,9 +84,8 @@ def vso_attribute_parse(phrase):
     >>> q = h.search(a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), a.hek.EventType('FL'))  # doctest: +REMOTE_DATA
     >>> len(q)  # doctest: +REMOTE_DATA
     19
-
     >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA
-    [<sunpy.net.attrs.Time(2011-08-09 07:22:38.000, 2011-08-09 08:32:02.000)>, <sunpy.net.vso.attrs.Source(SDO: Solar Dynamics Observatory) object at ...>, <sunpy.net.attrs.Instrument(AIA: Atmospheric Imaging Assembly) object at ...>, <sunpy.net.attrs.Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
+    [<sunpy.net.attrs.Time(2011-08-09 07:22:38.000, 2011-08-09 08:32:02.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Atmospheric Imaging Assembly) object at ...>, <sunpy.net.attrs.Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
         query = [a.Time(phrase['event_starttime'],
@@ -144,8 +141,7 @@ class H2VClient:
         --------
         >>> from sunpy.net import attrs as a, hek, hek2vso
         >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
-        >>> q = h2v.full_query((a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
-        ...                    a.hek.EventType('FL')))  # doctest: +REMOTE_DATA
+        >>> q = h2v.full_query((a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), a.hek.EventType('FL')))  # doctest: +REMOTE_DATA
         """
         self._quick_clean()
         if progress:

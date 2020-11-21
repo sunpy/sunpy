@@ -16,7 +16,6 @@ As with the VSO query, you can use the fundamental logic operators AND and OR
 to construct queries of almost arbitrary complexity. Note that complex queries
 result in multiple requests to the server which might make them less efficient.
 """
-import sys
 from warnings import warn
 
 from sunpy.net import _attrs, attr
@@ -602,12 +601,5 @@ class _DeprecatedAttr:
         super().__init__(*args, **kwargs)
 
 
-_deprecated_names = ['Time']
-
-for _name in _deprecated_names:
-    # Dynamically construct a class which inherits the class with the
-    # deprecation warning in the __init__ first and the class it's deprecating
-    # second.
-    cls = type(_name, (_DeprecatedAttr, getattr(_attrs, _name)), {})
-    # Add the new class to the modules namespace
-    setattr(sys.modules[__name__], _name, cls)
+class Time(_attrs.Time, _DeprecatedAttr):
+    pass
