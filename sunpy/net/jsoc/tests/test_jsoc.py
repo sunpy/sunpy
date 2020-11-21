@@ -98,8 +98,8 @@ def test_show(client):
 def test_post_wavelength(client):
     responses = client.search(
         a.Time('2020/07/30T13:30:00', '2020/07/30T14:00:00'),
-        a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(193 * u.AA) |
-        a.jsoc.Wavelength(335 * u.AA), a.jsoc.Notify('jsoc@cadair.com'))
+        a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(193 * u.AA) |
+        a.Wavelength(335 * u.AA), a.jsoc.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses)
     [r.wait() for r in aa]
     tmpresp = aa[0]._d
@@ -127,7 +127,7 @@ def test_post_wave_series(client):
         client.search(
             a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
             a.jsoc.Series('hmi.M_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
-            a.jsoc.Wavelength(193 * u.AA) | a.jsoc.Wavelength(335 * u.AA))
+            a.Wavelength(193 * u.AA) | a.Wavelength(335 * u.AA))
 
 
 @pytest.mark.remote_data
@@ -295,7 +295,7 @@ def test_make_recordset(client):
 def test_search_metadata(client):
     with pytest.raises(SunpyDeprecationWarning):
         metadata = client.search_metadata(a.Time('2020-01-01T00:00:00', '2020-01-01T00:02:00'),
-                                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
+                                          a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA))
         assert isinstance(metadata, pd.DataFrame)
         assert metadata.shape == (11, 176)
         for i in metadata.index.values:

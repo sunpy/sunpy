@@ -53,7 +53,7 @@ class JSOCResponse(BaseQueryResponseTable):
         return ret
 
     def build_table(self):
-        # remove this check post 2.1
+        # remove this check post 3.0
         if any('keys' in i for i in self.query_args):
             return self.table
 
@@ -162,7 +162,7 @@ class JSOCClient(BaseClient):
         >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
         >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-        ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
+        ...                          a.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
         The response object holds the records that your query will return:
 
@@ -241,7 +241,7 @@ class JSOCClient(BaseClient):
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> response = client.search(a.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
-            ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
+            ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA),
             ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
                    T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
@@ -771,7 +771,7 @@ class JSOCClient(BaseClient):
             keywords = '**ALL**'
         else:
             keywords = iargs.get('keys', '**ALL**')
-        # TODO: keywords should be set only to '**ALL**' post 3.1.
+        # TODO: keywords should be set only to '**ALL**' post 3.0
         # All checks done above should be removed.
 
         if 'series' not in iargs:
@@ -840,7 +840,7 @@ class JSOCClient(BaseClient):
 
         # If the method was called from search_metadata(), return a Pandas Dataframe,
         # otherwise return astropy.table
-        # TODO: this check should also be removed post 3.1.
+        # TODO: this check should also be removed post 3.0
         if isMeta:
             return r
 

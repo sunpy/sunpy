@@ -124,7 +124,7 @@ class HEKClient(BaseClient):
 
     def fetch(self, *args, **kwargs):
         """
-        This is a no operation function to bypass Fido.fetch for this client.
+        This is a no operation function as this client does not download data.
         """
         return NotImplemented
 

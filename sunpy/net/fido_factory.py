@@ -353,7 +353,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Examples
         --------
         >>> from sunpy.net.attrs import Time, Instrument
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT')) # doctest: +REMOTE_DATA
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
         >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
 
         If any downloads fail, they can be retried by passing the `parfive.Results` object back into ``fetch``.
