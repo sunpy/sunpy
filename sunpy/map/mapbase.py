@@ -857,22 +857,10 @@ class GenericMap(NDData):
             if all(meta_list):
                 sc = SkyCoord(obstime=self.date, **kwargs)
 
-                # We need to specially handle an observer location provided in Carrington
-                # coordinates.  To create the observer coordinate, we need to specify the
-                # frame, but defining a Carrington frame normally requires specifying the
-                # frame's observer.  This loop is the problem.  Instead, since the
-                # Carrington frame needs only the Sun-observer distance component from the
-                # frame's observer, we create the same frame using a fake observer that has
-                # the same Sun-observer distance.
+                # If the observer location is supplied in Carrington coordinates,
+                # the coordinate's `observer` attribute should be set to "self"
                 if isinstance(sc.frame, HeliographicCarrington):
-                    fake_observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, sc.radius,
-                                                           obstime=sc.obstime)
-                    fake_frame = sc.frame.replicate(observer=fake_observer)
-                    hgs = fake_frame.transform_to(HeliographicStonyhurst(obstime=sc.obstime))
-
-                    # HeliographicStonyhurst doesn't need an observer, but adding the observer
-                    # facilitates a conversion back to HeliographicCarrington
-                    return SkyCoord(hgs, observer=hgs)
+                    sc.frame._observer = "self"
 
                 return sc.heliographic_stonyhurst
             elif any(meta_list) and not set(keys).isdisjoint(self.meta.keys()):
