@@ -471,7 +471,7 @@ import logging
 
 __all__ = 'parse search findall with_pattern'.split()
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("parse")
 
 
 def with_pattern(pattern, regex_group_count=None):

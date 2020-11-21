@@ -239,6 +239,8 @@ transformations cannot be performed.
 The location of the observer is automatically populated from meta data when
 coordinate frames are created using map.
 
+In the case of `~sunpy.coordinates.frames.HeliographicCarrington`, one can specify ``observer='self'`` to indicate that the coordinate itself should be used as the observer for defining the coordinate frame.
+
 It is possible to convert from a `~sunpy.coordinates.frames.Helioprojective`
 frame with one observer location to another
 `~sunpy.coordinates.frames.Helioprojective` frame with a different observer
