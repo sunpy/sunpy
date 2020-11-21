@@ -790,9 +790,6 @@ application).
 To apply this form of solar derotation to a `~sunpy.map.MapSequence`, simply import the
 function and apply it to your `~sunpy.map.MapSequence`::
 
-.. todo:
-    These are skipped since they raise warnigns that need to be tracked down and fixed
-
     >>> from sunpy.physics.solar_rotation import mapsequence_solar_derotate
     >>> derotated = mapsequence_solar_derotate(mc)  # doctest: +SKIP
 
