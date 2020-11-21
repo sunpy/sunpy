@@ -55,8 +55,6 @@ self_test = SunPyTestRunner.make_test_runner_in(os.path.dirname(__file__))
 # Load user configuration
 config = load_config()
 
-# Use the root logger as a dummy log before initializing Astropy's logger
-log = logging.getLogger()
 log = _init_log(config=config)
 
 __all__ = ['config', 'self_test', 'system_info', 'print_config']
