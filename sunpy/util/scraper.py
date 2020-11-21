@@ -6,6 +6,7 @@ import re
 import calendar
 import datetime
 import warnings
+from time import sleep
 from ftplib import FTP
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
@@ -16,6 +17,7 @@ from bs4 import BeautifulSoup
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
+from sunpy import log
 from sunpy.extern.parse import parse
 from sunpy.time import TimeRange
 from sunpy.util.exceptions import SunpyUserWarning
@@ -243,7 +245,8 @@ class Scraper:
             return self._ftpfileslist(timerange)
         if urlsplit(directories[0]).scheme == "file":
             return self._localfilelist(timerange)
-        for directory in directories:
+        while directories:
+            directory = directories.pop(0)
             try:
                 opn = urlopen(directory)
                 try:
@@ -263,6 +266,22 @@ class Scraper:
             except HTTPError as http_err:
                 # Ignore missing directories (issue #2684).
                 if http_err.code == 404:
+                    continue
+                if http_err.code == 429:
+                    # See if the server has told us how long to back off for
+                    retry_after = http_err.hdrs.get('Retry-After', 1)
+                    try:
+                        # Ensure that we can parse the header as an int in sec
+                        retry_after = int(retry_after)
+                    except Exception:
+                        retry_after = 1
+
+                    log.debug(f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying.")
+
+                    sleep(retry_after)
+
+                    # Put this dir back on the queue
+                    directories.insert(0, directory)
                     continue
                 raise
             except Exception:

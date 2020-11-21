@@ -11,7 +11,7 @@ from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.time import TimeRange
-from sunpy.util.scraper import Scraper
+from sunpy.util.scraper import Scraper, get_timerange_from_exdict
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -22,7 +22,23 @@ class XRSClient(GenericClient):
     """
     Provides access to the GOES XRS fits files archive.
 
-    Searches data hosted by the `Solar Data Analysis Center <https://umbra.nascom.nasa.gov/goes/fits/>`__.
+    Searches for GOES XRS data both on NASA servers prior to re-processed
+    GOES 13, 14 and 15 and on the NOAA archive for > GOES 13.
+    For satellite numbers > 13 the XRSClient searches the NOAA archive, and
+    returns the re-processed science-quality data for GOES 13, 14 and 15, and
+    also the new GOES-R series 16 and 17.
+
+    Note - the new science quality data have scaling factors removed for 13, 14 and 15
+    and they are not added to GOES 16 AND 17. This means the peak flux will be different to
+    the older version of the data, such as those collected from the NASA servers.
+
+    See the following readmes about the data
+
+    * Reprocessed 13, 14, 15 :
+        https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf
+
+    * GOES-R 16, 17 :
+         https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/docs/GOES-R_XRS_L1b_Science-Quality_Data_Readme.pdf
 
     Examples
     --------
@@ -44,8 +60,91 @@ class XRSClient(GenericClient):
     <BLANKLINE>
 
     """
-    baseurl = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
-    pattern = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
+    # GOES XRS data from NASA servers upto GOES 15. The reprocessed 13, 14, 15 data should be taken from NOAA server.
+    baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
+    pattern_old = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
+
+    # GOES XRS 13, 14, 15 from NOAA (re-processed data)
+    baseurl_new = (r"https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/"
+                   r"goes{SatelliteNumber}/gxrs-l2-irrad_science/%Y/%m/sci_gxrs-l2-irrad_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
+    pattern_new = ("{}/goes{SatelliteNumber:02d}/gxrs-l2-irrad_science/{year:4d}/"
+                   "{month:2d}/sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+
+    # GOES XRS data for GOES-R Series - 16, 17
+    baseurl_r = (r"https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber}"
+                 r"/l2/data/xrsf-l2-flx1s_science/%Y/%m/sci_xrsf-l2-flx1s_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
+    pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-flx1s_science/{year:4d}/"
+                 "{month:2d}/sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+
+    def post_search_hook(self, i, matchdict):
+        tr = get_timerange_from_exdict(i)
+        rowdict = OrderedDict()
+        rowdict["Time"] = TimeRange(tr.start, tr.end)
+        rowdict["Start Time"] = tr.start.strftime(TIME_FORMAT)
+        rowdict["End Time"] = tr.end.strftime(TIME_FORMAT)
+        rowdict["Instrument"] = matchdict["Instrument"][0].upper()
+        rowdict["SatelliteNumber"] = i["SatelliteNumber"]
+        rowdict["Physobs"] = matchdict["Physobs"][0]
+        rowdict["url"] = i["url"]
+        rowdict["Source"] = matchdict["Source"][0]
+        if i["url"].endswith(".fits"):
+            rowdict["Provider"] = matchdict["Provider"][0]
+        else:
+            rowdict["Provider"] = matchdict["Provider"][1]
+
+        return rowdict
+
+    def search(self, *args, **kwargs):
+
+        matchdict = self._get_match_dict(*args, **kwargs)
+
+        # this is for the case when the timerange overlaps with the provider change.
+        if matchdict["Time"].start < "2009-09-01" and matchdict["Time"].end >= "2009-09-01":
+            matchdict_before, matchdict_after = matchdict.copy(), matchdict.copy()
+            matchdict_before["Time"] = TimeRange(matchdict_before["Time"].start, '2009-08-31')
+            matchdict_after["Time"] = TimeRange('2009-09-01', matchdict_after["Time"].end)
+            metalist_before = self._get_metalist(matchdict_before)
+            metalist_after = self._get_metalist(matchdict_after)
+            metalist = metalist_before + metalist_after
+        else:
+            metalist = self._get_metalist(matchdict)
+
+        return QueryResponse(metalist, client=self)
+
+    def _get_metalist_fn(self, matchdict, baseurl, pattern):
+        """
+        Function to help get list of OrderedDicts.
+        """
+        metalist = []
+        scraper = Scraper(baseurl, regex=True)
+        filemeta = scraper._extract_files_meta(
+            matchdict["Time"], extractor=pattern, matcher=matchdict)
+        for i in filemeta:
+            rowdict = self.post_search_hook(i, matchdict)
+            metalist.append(rowdict)
+        return metalist
+
+    def _get_metalist(self, matchdict):
+        """
+        Function to get the list of OrderDicts.
+        This makes it easier for when searching for overlapping providers.
+        """
+        metalist = []
+        # the data before the re-processed GOES 13, 14, 15 data.
+        if (matchdict["Time"].end < "2009-09-01") or (matchdict["Time"].end >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
+            metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
+
+        # new data from NOAA.
+        else:
+            if matchdict["Time"].end >= "2017-02-07":
+                for sat in [16, 17]:
+                    metalist += self._get_metalist_fn(matchdict, self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
+
+            if matchdict["Time"].end <="2020-03-04":
+                for sat in [13, 14, 15]:
+                    metalist += self._get_metalist_fn(matchdict, self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
+
+        return metalist
 
     @classmethod
     def _attrs_module(cls):
@@ -54,14 +153,16 @@ class XRSClient(GenericClient):
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
-        goes_number = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        goes_number = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
         adict = {attrs.Instrument: [
             ("GOES", "The Geostationary Operational Environmental Satellite Program."),
-            ("XRS", "GOES X-ray Flux")],
+            ("XRS", "GOES X-ray Sensor")],
             attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
-            attrs.Source: [('NASA', 'The National Aeronautics and Space Administration.')],
-            attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.')],
+            attrs.Source: [("GOES", "The Geostationary Operational Environmental Satellite Program.")],
+            attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.'),
+                             ('NOAA', 'The National Oceanic and Atmospheric Administration.')],
             attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
+
         return adict
 
 

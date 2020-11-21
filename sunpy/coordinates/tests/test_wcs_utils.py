@@ -4,6 +4,7 @@ import pytest
 
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame
+from astropy.tests.helper import assert_quantity_allclose
 from astropy.wcs import WCS
 
 import sunpy.map
@@ -37,6 +38,30 @@ def test_wcs_frame_mapping_none():
     result = solar_wcs_frame_mapping(wcs)
 
     assert result is None
+
+
+def test_wcs_frame_mapping_observer_hgc_self():
+    # Test whether a WCS with HGC coordinates for the observer location uses observer="self"
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['SOLX', 'SOLY']
+    wcs.wcs.dateobs = '2001-01-01'
+    wcs.wcs.aux.crln_obs = 10
+    wcs.wcs.aux.hglt_obs = 20
+    wcs.wcs.aux.dsun_obs = 1.5e11
+
+    # This frame will have the observer location in HGS
+    result = solar_wcs_frame_mapping(wcs)
+
+    # We perform the desired transformation using observer="self"
+    hgc_obs = HeliographicCarrington(wcs.wcs.aux.crln_obs * u.deg,
+                                     wcs.wcs.aux.hglt_obs * u.deg,
+                                     wcs.wcs.aux.dsun_obs * u.m,
+                                     obstime=wcs.wcs.dateobs, observer="self")
+    hgs_obs = hgc_obs.transform_to(HeliographicStonyhurst(obstime=hgc_obs.obstime))
+
+    assert_quantity_allclose(result.observer.lon, hgs_obs.lon)
+    assert_quantity_allclose(result.observer.lat, hgs_obs.lat)
+    assert_quantity_allclose(result.observer.radius, hgs_obs.radius)
 
 
 def test_wcs_aux():
