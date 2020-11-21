@@ -1045,9 +1045,9 @@ def test_contour_units(simple_map):
     for c1, c2 in zip(contours, contours_cm):
         np.all(c1 == c2)
 
-    with pytest.raises(ValueError, match='level must be an astropy quantity convertible to m'):
+    with pytest.raises(u.UnitsError, match='level must be an astropy quantity convertible to m'):
         simple_map.contour(1.5)
-    with pytest.raises(ValueError, match='level must be an astropy quantity convertible to m'):
+    with pytest.raises(u.UnitsError, match='level must be an astropy quantity convertible to m'):
         simple_map.contour(1.5 * u.s)
 
 
