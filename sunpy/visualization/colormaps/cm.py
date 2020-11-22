@@ -76,6 +76,9 @@ hmimag = ct.hmi_mag_color_table()
 kcor = deepcopy(mplcm.get_cmap("gist_gray"))
 kcor.name = 'MLSO KCor'
 
+rhessi = ct.rhessi_color_table()
+std_gamma_2 = ct.std_gamma_2()
+
 cmlist = {
     'goes-rsuvi94': goesrsuvi94,
     'goes-rsuvi131': goesrsuvi131,
@@ -105,7 +108,6 @@ cmlist = {
     'stereocor2': stereocor2,
     'stereohi1': stereohi1,
     'stereohi2': stereohi2,
-    'rhessi': mplcm.jet,
     'yohkohsxtal': yohkohsxtal,
     'yohkohsxtwh': yohkohsxtwh,
     'hinodexrt': hinodexrt,
@@ -128,7 +130,9 @@ cmlist = {
     'irissjiFUV': ct.iris_sji_color_table('FUV'),
     'irissjiNUV': ct.iris_sji_color_table('NUV'),
     'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
-    'kcor': kcor
+    'kcor': kcor,
+    'rhessi': rhessi,
+    'std_gamma_2': std_gamma_2,
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
