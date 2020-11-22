@@ -13,7 +13,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###################################################################
-# We will query Helio for the 'rhessi_flare_list' table.
+# We will query the Heliophysics Integrated Observatory (`HELIO <https://www.helio-vo.eu/>`_) for the 'rhessi_flare_list' table.
 # For the same time range, we will query HEK for 'FL' as the
 # event type and 'PeakFlux' greater than 1000.
 # We will also search JSOC for a 'hmi.m_45s' series.
