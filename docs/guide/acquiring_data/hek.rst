@@ -21,7 +21,7 @@ Event types are specified as upper case, two letter strings, and are identical t
     >>> event_type = 'FL'
     >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type))  # doctest: +REMOTE_DATA
 
-The first line defines the search start and end times.
+``tstart`` and ``tend`` defines the start and end times of the query, and ``event_type`` specifies the event type which in this example we are searching for flares defined as ``FL``.
 Line 6 goes out to the web, contacts the HEK, and queries it for the information you have requested.
 Event data for ALL flares available in the HEK within the time range 2011/08/09 07:23:56 UT - 2011/08/09 12:40:20 UT will be returned, regardless of which feature recognition method used to detect the flare.
 
