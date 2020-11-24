@@ -1,2 +1,2 @@
-Reduced the selection of packages installed by default.
-Now ``map`` and ``timeseries`` have dedicated extras that must be installed now to use them.
+Reduced the selection of dependent packages installed by default via ``pip``, which means that some of our sub-packages will not fully import.
+You can install all dependencies by specifying ``[all]``, or you can install sub-package-specific dependencies by specifying, e.g., ``[map]`` or ``[timeseries]``.
