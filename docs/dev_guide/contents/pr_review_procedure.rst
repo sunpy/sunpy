@@ -169,7 +169,7 @@ SunPy Maintainers
 This is the group of people who have push access to the main SunPy repository.
 The membership of this group is at the discretion of the Lead Developer, but shall generally be made up of people who have demonstrated themselves to be trust worthy and active contributors to the project.
 
-This group has `subgroups <https://github.com/orgs/sunpy/teams/sunpy-maintainers/teams>`__ for each section of the repository that has `maintainers <https://sunpy.org/team#maintainer-list>`__.
+This group has `subgroups <https://github.com/orgs/sunpy/teams/sunpy-maintainers/teams>`__ for each section of the repository that has `maintainers <https://sunpy.org/project/#maintainers>`__.
 The members of these groups will automatically be requested to review all PRs which change files in that subpackage.
 
 SunPy Developers
