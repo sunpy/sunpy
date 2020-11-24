@@ -91,8 +91,8 @@ class Cutout(DataAttr):
 
     @u.quantity_input
     def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
-                 height: u.arcsec = None, tracking=False, register=False,
-                 nan_off_limb=False):
+                 height: u.arcsec = None, tracking = False, register = False,
+                 nan_off_limb = False):
         super().__init__()
         bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width,
                                            height=height)
