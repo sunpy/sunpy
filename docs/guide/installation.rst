@@ -21,7 +21,7 @@ Therefore a working sunpy installation is more about installing the scientific P
 If you do not currently have a working scientific Python distribution this guide will set you up with the Miniconda, which makes it easy to install and manage your scientific Python packages.
 
 To install the Miniconda Python distribution follow the instructions at
-`here <https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html>`__.
+`here <https://docs.conda.io/en/latest/miniconda.html>`__.
 Although Miniconda makes it simple to switch between Python versions, we recommend that new users install
 the latest Python 3.x version of Miniconda as SunPy only supports Python 3.7+.
 
@@ -37,7 +37,7 @@ First configure conda for to add the `conda-forge channel <https://conda-forge.o
     conda config --add channels conda-forge
     conda config --set channel_priority strict
 
-and now to install sunpy within a the default conda virtual environment::
+and now to install sunpy within the default conda virtual environment::
 
     $ conda install sunpy
 
@@ -61,6 +61,7 @@ Conda
 
 If you want to install sunpy within a pre-existing conda environment, you will want to activate the virtual environment and run::
 
+    $ conda activate <name e.g., base>
     $ conda install sunpy
 
 This assumes you have the conda-forge channel added (as above).
@@ -76,13 +77,13 @@ To acquire a fully working sunpy installation, simply run::
 
 .. note::
     If this does not work, it could be due to a missing C compiler (e.g., ``gcc`` or ``clang``) that is required to build sunpy at install.
-    Getting the compiler either from your system package manager or XCode or Anaconda should address this.
+    Getting the compiler either from your system package manager, XCode or Anaconda should address this.
 
-If you have a reason to bypass this, you can sunpy with no optional dependencies::
+If you have a reason to want a more minimal installation, you can install sunpy with no optional dependencies, however this means a lot of submodules will not import::
 
     pip install sunpy
 
-To install sunpy with map- and timeseries-based dependencies::
+It is possible to select which "extra" dependencies you want to install, if you know you only need certain submodules::
 
     pip install sunpy[map,timeseries]
 
@@ -95,6 +96,6 @@ If you want to develop sunpy we would strongly recommend reading the `Newcomers'
 
     Do **not** install sunpy or other third-party packages using ``sudo``.
 
-    This error implies you either an incorrectly configured virtual environment or it was not activate.
+    This error implies you have an incorrectly configured virtual environment or it is not activated.
 
     If you really do not want to use any virtual environment, you can always do ``pip install --user sunpy``.

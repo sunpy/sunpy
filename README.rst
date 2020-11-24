@@ -31,18 +31,17 @@ For some examples of using SunPy see our `gallery`_, to see the latest changes i
 Installation
 ============
 
-The recommended way to install SunPy is with `conda`_.
+The recommended way to install SunPy is with `miniconda`_.
 To install SunPy once conda is installed run the following two commands:
 
 .. code:: bash
 
     $ conda config --append channels conda-forge
-    $ conda create -n sunpy python sunpy
-    $ conda activate sunpy
+    $ conda install sunpy
 
 For detailed installation instructions, see the `installation guide`_ in the SunPy docs.
 
-.. _conda: https://www.anaconda.com/distribution/
+.. _conda: https://docs.conda.io/en/latest/miniconda.html
 .. _installation guide: https://docs.sunpy.org/en/latest/guide/installation/index.html
 
 Developing
