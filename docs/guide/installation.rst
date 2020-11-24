@@ -9,7 +9,6 @@ These are the minimum versions of packages needed to install sunpy:
 
 - python 3.7
 - astropy 4.0.3
-- scipy 1.2
 - parfive 1.1
 
 Installing Scientific Python and sunpy
