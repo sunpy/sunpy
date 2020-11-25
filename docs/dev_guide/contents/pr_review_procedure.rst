@@ -1,18 +1,17 @@
 .. _pr_review:
 
-**************************************
-Pull Request Review and GitHub Members
-**************************************
+******************************
+Pull Requests and GitHub Teams
+******************************
 
-This document describes the procedure that the people in the "sunpy-maintainers" group must follow when merging a pull request.
-If in any doubt about merging a pull request, the correct course of action is to contact the Lead Developer and ask.
+This document describes the standards required for a pull request to sunpy and an explanation of our automated tests.
 
 Each pull request **must** meet the following criteria before it is considered for merge:
 
 * The code must be PEP 8 compliant and meet the ill-defined SunPy quality standards.
   We have these in the :ref:`coding-standards` page.
 
-* The PR must contain a CHANGELOG entry if it changes the behavior of any code.
+* The PR must contain a changelog entry if it changes the behavior of any code.
 
 * The test coverage should not decrease, and for new features should be at or very close to 100%.
 
@@ -26,7 +25,7 @@ Before the "merge" button is clicked the following criteria must be met:
 
 * All the continuous integration must pass unless there is a known issue.
 
-* At least two members (not the author of the PR) of the "sunpy-developers" group must have approved the PR, one should be a relevant subpackage maintainer.
+* At least two members (not the author of the PR) of the "sunpy-developers" group must have approved the PR, one should, ideally, be a relevant subpackage maintainer.
 
 * All comments posted on the thread must be resolved.
 
@@ -81,6 +80,8 @@ Understanding Azure Pipelines
 -----------------------------
 
 The vast majority of our tests are run on Azure Pipelines and this means you might have to navigate to the results if you want to check why the tests failed.
+The tests for Azure Pipelines are split into two phases to reduce the number of builds running at one time.
+If your PR fails the the offline Python 3.9 tests or the codestyle check the second stage tests will not run.
 
 The Azure checks on GitHub manifest:
 
@@ -155,7 +156,6 @@ SunPy GitHub Groups
 ===================
 
 This document has already referred to two SunPy groups, namely "developers" and "maintainers" there is also a third primary SunPy group "owners".
-These owners' have control over the means of production.
 
 SunPy owners
 ------------
