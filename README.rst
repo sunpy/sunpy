@@ -72,7 +72,7 @@ For more information or to ask questions about SunPy, check out:
 -  `SunPy Mailing List`_
 
 .. _SunPy Documentation: https://docs.sunpy.org/en/stable/
-.. _SunPy Matrix Channel: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
+.. _SunPy Element Channel: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. _SunPy Mailing List: https://groups.google.com/forum/#!forum/sunpy
 
 Contributing
