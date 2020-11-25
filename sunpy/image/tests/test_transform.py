@@ -243,3 +243,22 @@ def test_float32(identity):
     in_arr = np.array([[100]], dtype=np.float32)
     out_arr = affine_transform(in_arr, rmatrix=identity)
     assert np.issubdtype(out_arr.dtype, np.float32)
+
+
+def test_reproducible_matrix_multiplication():
+    # Test whether matrix multiplication involving a large matrix always gives the same answer
+    # This indirectly tests whichever BLAS/LAPACK libraries that NumPy is linking to (if any)
+    x = np.arange(500000, dtype=np.float64)
+    src = np.vstack((x, -10*x)).T
+    matrix = np.array([[0, 1], [1, 0]])
+
+    expected = np.vstack((-10*x, x)).T  # src @ matrix
+
+    mismatches = np.zeros(500, int)
+    for i in range(len(mismatches)):
+        result = src @ matrix
+        mismatches[i] = (~np.isclose(result, expected)).sum()
+        if mismatches[i] != 0:
+            print(f"{mismatches[i]} mismatching elements in multiplication #{i}")
+
+    assert np.sum(mismatches != 0) == 0
