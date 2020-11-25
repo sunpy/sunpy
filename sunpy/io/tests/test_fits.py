@@ -117,6 +117,15 @@ def test_warn_nonascii():
     assert 'BAD' not in fits.keys()
 
 
+def test_warn_nan():
+    # Check that a NaN value raises a warning and not an error
+    with pytest.warns(SunpyUserWarning, match='has a NaN value'):
+        fits = header_to_fits({'bad': float('nan'),
+                               'good': 1.0})
+    assert 'GOOD' in fits.keys()
+    assert 'BAD' not in fits.keys()
+
+
 def test_warn_longkey():
     # Check that a key that is too long raises a warning and not an error
     with pytest.warns(SunpyUserWarning, match='The meta key badlongkey is too long'):

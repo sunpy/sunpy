@@ -23,10 +23,10 @@ Notes
    invalid header tags will result in an error so verifying it early on
    makes the header easier to work with later.
 """
-import math
 import os
 import re
 import sys
+import math
 import warnings
 import traceback
 import collections
@@ -219,7 +219,7 @@ def header_to_fits(header):
 
         if isinstance(v, float) and math.isnan(v):
             warnings.warn(f'The meta key {k} has a NaN value, which is not valid in a FITS '
-                          'header, dropping from the FITS header')
+                          'header, dropping from the FITS header', SunpyUserWarning)
             continue
 
         if k.upper() in ('COMMENT', 'HV_COMMENT'):
