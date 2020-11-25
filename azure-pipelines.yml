@@ -44,7 +44,7 @@ jobs:
     submodules: false
     coverage: codecov
     toxdeps: tox-pypi-filter
-    posargs: -n=4
+    posargs: -n=6
     libraries:
       apt:
         - libopenjp2-7
@@ -63,7 +63,6 @@ jobs:
 
       - macos: py38
         name: py38_test
-        posargs: -n=1
 
       - windows: py37
         name: py37_test
