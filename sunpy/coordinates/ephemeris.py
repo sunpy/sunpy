@@ -273,7 +273,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocit
     <SkyCoord (HeliographicStonyhurst: obstime=1995-07-18T07:17:00.000): (lon, lat, radius) in (deg, deg, AU)
         (-25.16107532, 14.59098438, 3.17667664)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
-        (-0.03305981, 0.0005247, -2.66699287)>
+        (-0.03306548, 0.00052415, -2.66709222)>
     """
     obstime = parse_time(time)
     array_time = np.reshape(obstime, (-1,))  # Convert to an array, even if scalar

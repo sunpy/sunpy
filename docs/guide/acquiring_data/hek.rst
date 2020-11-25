@@ -57,7 +57,7 @@ Each dictionary consists of key-value pairs that exactly correspond to the param
 
 You can inspect all results very simply:
 
-    >>> result[0] # doctest:+REMOTE_DATA
+    >>> result[0] # doctest:+SKIP
     <sunpy.net.hek.hek.HEKResponse object at ...>
              SOL_standard          active ... skel_startc2  sum_overlap_scores
     ------------------------------ ------ ... ------------ --------------------
@@ -85,7 +85,7 @@ Remember, the HEK query we made returns all the flares in the time-range stored 
 The HEK parameter which stores the the feature recognition method is called "frm_name".
 Using list comprehensions, it is easy to get a list of the feature recognition methods used to find each of the flares in the result object, for example:
 
-    >>> [elem["frm_name"] for elem in result]  # doctest:+REMOTE_DATA
+    >>> [elem["frm_name"] for elem in result]  # doctest:+SKIP
     [<HEKColumn name='frm_name' dtype='str32' length=19>
                               asainz
                               asainz
