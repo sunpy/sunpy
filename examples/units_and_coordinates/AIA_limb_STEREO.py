@@ -22,7 +22,7 @@ from sunpy.net import attrs as a
 # The first step is to download some data, we are going to get an image from
 # early 2011 when the STEREO spacecraft were roughly 90 deg separated from the
 # Earth.
-stereo = (a.vso.Source('STEREO_B') &
+stereo = (a.Source('STEREO_B') &
           a.Instrument("EUVI") &
           a.Time('2011-01-01', '2011-01-01T00:10:00'))
 

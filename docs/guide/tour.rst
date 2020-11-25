@@ -324,7 +324,7 @@ A simple example of this is shown below::
     >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
     ...          a.Instrument.aia, a.Sample(45*u.min))  # doctest: +REMOTE_DATA
     >>> db.commit()  # doctest: +REMOTE_DATA
-    >>> db  # doctest: +REMOTE_DATA
+    >>> db  # doctest: +SKIP
     <Table length=4>
      id  observation_time_start observation_time_end ...    download_time      size
     str1         str19                 str19         ...        str19          str7
@@ -339,7 +339,7 @@ If you then do a second query::
     >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:45:00"),
     ...          a.Instrument.aia, a.Sample(45*u.min))  # doctest: +REMOTE_DATA
     >>> db.commit()  # doctest: +REMOTE_DATA
-    >>> db  # doctest: +REMOTE_DATA
+    >>> db  # doctest: +SKIP
     <Table length=6>
      id  observation_time_start observation_time_end ...    download_time      size
     str1         str19                 str19         ...        str19          str7
@@ -354,7 +354,7 @@ If you then do a second query::
 A query can then be performed against the database to get the records::
 
     >>> entries = db.search(a.Time("2011-09-20T01:45:00", "2011-09-20T02:15:00"), a.Instrument.aia)  # doctest: +REMOTE_DATA
-    >>> len(entries)  # doctest: +REMOTE_DATA
+    >>> len(entries)  # doctest: +SKIP
     4
 
 You can see that only two extra records were added to the database.
