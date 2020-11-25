@@ -26,6 +26,7 @@ Notes
 import os
 import re
 import sys
+import math
 import warnings
 import traceback
 import collections
@@ -214,6 +215,11 @@ def header_to_fits(header):
             warnings.warn(f"The meta key {k} is too long, dropping from the FITS header "
                           "(maximum allowed key length is 8 characters).",
                           SunpyUserWarning)
+            continue
+
+        if isinstance(v, float) and math.isnan(v):
+            warnings.warn(f'The meta key {k} has a NaN value, which is not valid in a FITS '
+                          'header, dropping from the FITS header', SunpyUserWarning)
             continue
 
         if k.upper() in ('COMMENT', 'HV_COMMENT'):
