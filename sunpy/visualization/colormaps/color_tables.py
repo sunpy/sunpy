@@ -13,7 +13,8 @@ import astropy.units as u
 __all__ = [
     'aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
-    'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table'
+    'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table',
+    'rhessi_color_table', 'std_gamma_2',
 ]
 
 cmap_data_dir = pathlib.Path(__file__).parent.absolute() / 'data'
@@ -298,6 +299,12 @@ def suvi_color_table(wavelength: u.angstrom):
         )
     return _cmap_from_rgb(r, g, b, 'GOES-R SUVI {:s}'.format(str(wavelength)))
 
+
+def rhessi_color_table():
+    return cmap_from_rgb_file("rhessi", "rhessi.csv")
+
+def std_gamma_2():
+    return cmap_from_rgb_file("std_gamma_2", "std_gamma_2.csv")
 
 def cmap_from_rgb_file(name, fname):
     """
