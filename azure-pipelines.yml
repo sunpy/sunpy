@@ -58,11 +58,10 @@ stages:
 
         envs:
           - linux: codestyle
-            name: python_codestyle
+            name: style_check
             pytest: false
 
-          - linux: py39
-            name: py39_test
+          - linux: py38
 
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
@@ -89,25 +88,20 @@ stages:
             - hdf5-devel
 
         envs:
-          - macos: py38
-            name: py38_test
+          - macos: py39
             posargs: -n=1
 
           - windows: py37
-            name: py37_test
 
           - linux: build_docs
             posargs: " "
             pytest: false
 
           - linux: py38-online
-            name: py38_test_online
 
           - linux: py37-oldestdeps
-            name: py37_test_oldestdeps
 
           - linux: py38-conda
-            name: py38_conda
             libraries: {}
 
 
@@ -139,7 +133,6 @@ stages:
           envs:
             - linux32: py38-32bit
               manylinux_image: manylinux2014_i686
-              name: py38_test_32bit
 
             - linux: py38-hypothesis
 
