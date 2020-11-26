@@ -82,9 +82,8 @@ stages:
 
         envs:
           - macos: py39
-            posargs: -n=1
 
-          - windows: py37
+          - windows: py39
 
           - linux: build_docs
             posargs: " "
