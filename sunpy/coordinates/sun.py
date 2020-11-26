@@ -4,7 +4,12 @@ Sun-specific coordinate calculations
 import numpy as np
 
 import astropy.units as u
-from astropy import _erfa as erfa
+
+try:
+    import erfa
+except ModuleNotFoundError:
+    import astropy._erfa as erfa
+
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
     ITRS,
