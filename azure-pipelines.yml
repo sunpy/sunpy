@@ -52,14 +52,12 @@ stages:
         libraries:
           apt:
             - libopenjp2-7
-            - graphviz
-          brew:
-            - openjpeg
 
         envs:
           - linux: codestyle
             name: style_check
             pytest: false
+            libraries: {}
 
           - linux: py38
 
@@ -81,11 +79,6 @@ stages:
             - graphviz
           brew:
             - openjpeg
-          yum:
-            - openssl-devel
-            - freetype-devel
-            - libpng-devel
-            - hdf5-devel
 
         envs:
           - macos: py39
@@ -122,8 +115,6 @@ stages:
             apt:
               - libopenjp2-7
               - graphviz
-            brew:
-              - openjpeg
             yum:
               - openssl-devel
               - freetype-devel
