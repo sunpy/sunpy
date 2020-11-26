@@ -81,7 +81,7 @@ stages:
             - openjpeg
 
         envs:
-          - macos: py39
+          - macos: py37
 
           - windows: py39
 
