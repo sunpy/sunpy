@@ -81,7 +81,7 @@ Understanding Azure Pipelines
 
 The vast majority of our tests are run on Azure Pipelines and this means you might have to navigate to the results if you want to check why the tests failed.
 The tests for Azure Pipelines are split into two phases to reduce the number of builds running at one time.
-If your PR fails the the offline Python 3.9 tests or the codestyle check the second stage tests will not run.
+If your PR fails the the linux offline tests or the "style_check" check the second stage tests will not run.
 
 The Azure checks on GitHub manifest:
 

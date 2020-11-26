@@ -52,17 +52,14 @@ stages:
         libraries:
           apt:
             - libopenjp2-7
-            - graphviz
-          brew:
-            - openjpeg
 
         envs:
           - linux: codestyle
-            name: python_codestyle
+            name: style_check
             pytest: false
+            libraries: {}
 
-          - linux: py39
-            name: py39_test
+          - linux: py38
 
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
@@ -82,38 +79,28 @@ stages:
             - graphviz
           brew:
             - openjpeg
-          yum:
-            - openssl-devel
-            - freetype-devel
-            - libpng-devel
-            - hdf5-devel
 
         envs:
-          - macos: py38
-            name: py38_test
-            posargs: -n=1
+          - macos: py37
 
-          - windows: py37
-            name: py37_test
+          - windows: py39
 
           - linux: build_docs
             posargs: " "
             pytest: false
 
           - linux: py38-online
-            name: py38_test_online
 
           - linux: py37-oldestdeps
-            name: py37_test_oldestdeps
 
           - linux: py38-conda
-            name: py38_conda
             libraries: {}
 
 
   - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'master'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
     - stage: CronTests
       displayName: Cron Tests
+      dependsOn: []  # Don't wait on other stages
       jobs:
       - template: run-tox-env.yml@OpenAstronomy
         parameters:
@@ -127,8 +114,6 @@ stages:
             apt:
               - libopenjp2-7
               - graphviz
-            brew:
-              - openjpeg
             yum:
               - openssl-devel
               - freetype-devel
@@ -138,7 +123,6 @@ stages:
           envs:
             - linux32: py38-32bit
               manylinux_image: manylinux2014_i686
-              name: py38_test_32bit
 
             - linux: py38-hypothesis
 
