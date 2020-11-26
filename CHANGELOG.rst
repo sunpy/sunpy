@@ -1,3 +1,15 @@
+Sunpy 2.0.5 (2020-11-26)
+========================
+
+Bug Fixes
+---------
+
+- Several functions in `sunpy.map.maputils` now properly check if the provided coordinate is in the expected `~sunpy.coordinates.frames.Helioprojective` frame. (`#4552 <https://github.com/sunpy/sunpy/pull/4552>`__)
+- Fixes a bug which occurs in setting the ``ylims`` by `sunpy.visualization.animator.line.LineAnimator` when there are non-finite values in the data array to be animated. (`#4554 <https://github.com/sunpy/sunpy/pull/4554>`__)
+- Fixed a significant performance bug that affected all coordinate transformations.
+  Transformations have been sped up by a factor a few. (`#4663 <https://github.com/sunpy/sunpy/pull/4663>`__)
+
+
 Sunpy v2.0.4 (2020-11-14)
 =========================
 
