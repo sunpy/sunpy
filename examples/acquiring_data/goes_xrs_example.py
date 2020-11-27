@@ -94,18 +94,16 @@ ax.set_ylabel("Flux (Wm$^{-2}$$s^{-1}$)")
 fig.autofmt_xdate()
 plt.show()
 
-"""
-GOES 16 and 17 data
--------------------
-Since March 2020, data prior to GOES 15 (incl) is no longer supported
-by NOAA and GOES 16 and 17 data is now provided. See
-`here <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/docs/GOES-R_XRS_L2_Data_Users_Guide.pdf>`__
-for more details. GOES 16 and 17 are part of the GOES-R series and provide
-XRS data at a better time resolution (1s). sunpy now supports this data also.
-GOES 16 has been taking observations from 2017, and GOES 17 sunce 2018, both of
-which are now and its now available through sunpy.net.Fido.
-"""
-
+###############################################################
+# GOES 16 and 17 data
+# -------------------
+# Since March 2020, data prior to GOES 15 (incl) is no longer supported
+# by NOAA and GOES 16 and 17 data is now provided. See
+# `here <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/docs/GOES-R_XRS_L2_Data_Users_Guide.pdf>`__
+# for more details. GOES 16 and 17 are part of the GOES-R series and provide
+# XRS data at a better time resolution (1s). sunpy now supports this data also.
+# GOES 16 has been taking observations from 2017, and GOES 17 sunce 2018, both of
+# which are now and its now available through sunpy.net.Fido.
 
 ###############################################################
 # Lets query for some recent data over two days
