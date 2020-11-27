@@ -67,7 +67,7 @@ file_goes15 = Fido.fetch(result_goes15)
 
 #############################################################
 # Lets now load this data into a `~sunpy.timeseries.TimeSeries`,
-# and inspect the data using `.peek()`
+# and inspect the data using `~sunpy.timeseries.GenericTimeSeries.peek()`
 goes_15 = ts.TimeSeries(file_goes15)
 goes_15.peek()
 
