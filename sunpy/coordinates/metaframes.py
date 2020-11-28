@@ -3,7 +3,7 @@ Coordinate frames that are defined relative to other frames
 """
 
 from astropy import units as u
-from astropy.coordinates import SphericalRepresentation
+from astropy.coordinates import SphericalRepresentation, BaseCoordinateFrame
 from astropy.coordinates.attributes import Attribute, QuantityAttribute
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
@@ -54,6 +54,15 @@ def _make_rotatedsun_cls(framecls):
         This metaclass renames the class to be "RotatedSun<framecls>".
         """
         def __new__(cls, name, bases, members):
+
+            # This has to be done because FrameMeta will set these attributes
+            # to the defaults from BaseCoordinateFrame when it creates the base
+            # SkyOffsetFrame class initially.
+            members['_default_representation'] = framecls._default_representation
+            members['_default_differential'] = framecls._default_differential
+            members['_frame_specific_representation_info'] = \
+                framecls._frame_specific_representation_info
+
             newname = name[:-5] if name.endswith('Frame') else name
             newname += framecls.__name__
 
@@ -122,7 +131,7 @@ def _make_rotatedsun_cls(framecls):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-class RotatedSunFrame:
+class RotatedSunFrame(BaseCoordinateFrame):
     """
     A frame that applies solar rotation to a base coordinate frame.
 
