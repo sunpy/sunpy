@@ -55,9 +55,7 @@ def _make_rotatedsun_cls(framecls):
         """
         def __new__(cls, name, bases, members):
 
-            # This has to be done because FrameMeta will set these attributes
-            # to the defaults from BaseCoordinateFrame when it creates the base
-            # SkyOffsetFrame class initially.
+            # Copy over the defaults from the input frame class
             members['_default_representation'] = framecls._default_representation
             members['_default_differential'] = framecls._default_differential
             members['_frame_specific_representation_info'] = \
