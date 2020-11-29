@@ -7,7 +7,7 @@ The X-ray Sensor (XRS) on board the GOES series of satellites
 have provided soft X-ray measurements in two broadband energy
 ranges 0.5-4 and 1-8 angstrom since 1975. The GOES 16 and 17
 satellites are the latest in line. The flux levels in the GOES
-0.1-8 angstrom channel are used to report flares and determine
+1-8 angstrom channel are used to report flares and determine
 their size (i.e. their GOES class).
 
 In this example we are going to look at how you can query and
@@ -17,7 +17,7 @@ into a `~sunpy.timeseries.TimeSeries`.
 Some things are to note. NOAA have recently re-processed the GOES 13,
 14 and 15 XRS science quality data, such that the SWPC scaling factor
 has been removed. This means that the fluxes will have a different values,
-and so will flare peak fluxes. See
+and so will flare peak fluxes from previous 13, 14 and 15 XRS data. See
 `here <https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf>`__
 for more details. The sunpy GOES XRS client for Fido now provides this
 new re-processed data. We now also provide the data for GOES 16 and 17.
@@ -61,9 +61,9 @@ file_goes15 = Fido.fetch(result_goes15)
 
 #############################################################
 # Also just to note, if this will download the file to the
-# `~/sunpy/data/` directory on your local machine. You can also
-# define where you want this to download to using the `path` keyword
-# argument in .fetch (e.g. Fido.fetch(result, path=".\")).
+# ``~/sunpy/data/`` directory on your local machine. You can also
+# define where you want this to download to using the ``path`` keyword
+# argument in `~sunpy.net.Fido.fetch` (e.g. ``Fido.fetch(result, path=".\")``).
 
 #############################################################
 # Lets now load this data into a `~sunpy.timeseries.TimeSeries`,
@@ -102,7 +102,7 @@ plt.show()
 # `here <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/docs/GOES-R_XRS_L2_Data_Users_Guide.pdf>`__
 # for more details. GOES 16 and 17 are part of the GOES-R series and provide
 # XRS data at a better time resolution (1s). sunpy now supports this data also.
-# GOES 16 has been taking observations from 2017, and GOES 17 sunce 2018, both of
+# GOES 16 has been taking observations from 2017, and GOES 17 since 2018, both of
 # which are now and its now available through sunpy.net.Fido.
 
 ###############################################################
