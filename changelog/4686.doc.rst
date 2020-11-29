@@ -1,1 +1,1 @@
-Add new example of searching and downloading GOES XRS data
+New gallery example of searching and downloading GOES XRS data (with GOES 15, 16 and 17).
