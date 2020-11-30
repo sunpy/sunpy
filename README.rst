@@ -68,11 +68,11 @@ Getting Help
 For more information or to ask questions about SunPy, check out:
 
 -  `SunPy Documentation`_
--  `SunPy Matrix Channel`_
+-  `SunPy Element Channel`_
 -  `SunPy Mailing List`_
 
 .. _SunPy Documentation: https://docs.sunpy.org/en/stable/
-.. _SunPy Matrix Channel: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
+.. _SunPy Element Channel: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. _SunPy Mailing List: https://groups.google.com/forum/#!forum/sunpy
 
 Contributing
@@ -91,7 +91,7 @@ For more information on contributing to SunPy, please read our `Newcomers' guide
 
 .. _SunPy mailing list: https://groups.google.com/forum/#!forum/sunpy
 .. _Developers Guide: https://docs.sunpy.org/en/latest/dev_guide/index.html
-.. _`#sunpy:openastronomy.org`: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
+.. _`#sunpy:openastronomy.org`: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. _issues page: https://github.com/sunpy/sunpy/issues
 .. _Newcomers' guide: https://docs.sunpy.org/en/latest/dev_guide/newcomers.html
 .. _Development installation:  https://docs.sunpy.org/en/latest/dev_guide/newcomers.html#setting-up-a-development-environment

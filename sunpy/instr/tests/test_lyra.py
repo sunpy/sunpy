@@ -63,8 +63,8 @@ def test_split_series_using_lytaf():
     assert len(split) == 4
     assert is_time_equal(split[0]['subtimes'][0], parse_time((2010, 6, 13, 2, 0)))
     assert is_time_equal(split[0]['subtimes'][-1], parse_time((2010, 6, 13, 2, 7, 2)))
-    assert split[3]['subtimes'][0].isot == parse_time((2010, 6, 13, 2, 59, 41)).isot
-    assert split[3]['subtimes'][-1].isot == parse_time((2010, 6, 13, 2, 59, 58)).isot
+    assert is_time_equal(split[3]['subtimes'][0], parse_time((2010, 6, 13, 2, 59, 41)))
+    assert is_time_equal(split[3]['subtimes'][-1], parse_time((2010, 6, 13, 2, 59, 58)))
 
     # Test case when no LYTAF events found in time series.
     split_no_lytaf = lyra.split_series_using_lytaf(dummy_time,
