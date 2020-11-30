@@ -77,22 +77,43 @@ class Notify(SimpleAttr):
 
 class Cutout(DataAttr):
     """
-    Select a cutout region to be processed by JSOC
+    Select a cutout region.
+
+    The JSOC allows for users to request cutouts. This process is performed server
+    side so as to allow users to download only the portions of the full-disk images
+    they are interested in. For a detailed explanation of the routine
+    used to perform these cutouts on the JSOC server, see
+    http://jsoc.stanford.edu/doxygen_html/group__im__patch.html.
 
     Parameters
     ----------
-    bottom_left
-    width
-    height
-    tracking
-    register
-    nan_off_limb
+    bottom_left : `~astropy.coordinates.SkyCoord`
+        Coordinate for the bottom left corner of the cutout.
+    top_right : `~astropy.coordinates.SkyCoord`, optional
+        Coordinate for the top right corner of the cutout. If this is
+        not specified, both `width` and `height` must both be specified.
+    width : `~astropy.units.Quantity`, optional
+        Width of the cutout. If this parameter, along with `height`, is
+        not specified, `top_right` must be specified.
+    height : `~astropy.units.Quantity`, optional
+        Height of the cutout. If this parameter, along with `width`, is
+        not specified, `top_right` must be specified.
+    tracking : `bool`, optional
+        If True, the field of view follows the rotation of the Sun
+    register : `bool`, optional
+        If True, use sub-pixel registration when cropping to the target location.
+    nan_off_limb : `bool`, optional
+        If True, all off-limb pixels are set to NaN
+
+    See Also
+    --------
+    sunpy.coordinate.utils.get_rectangle_coordinates
     """
 
     @u.quantity_input
     def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
-                 height: u.arcsec = None, tracking = False, register = False,
-                 nan_off_limb = False):
+                 height: u.arcsec = None, tracking=False, register=False,
+                 nan_off_limb=False):
         super().__init__()
         bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width,
                                            height=height)
