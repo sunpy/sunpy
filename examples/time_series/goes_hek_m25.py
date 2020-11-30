@@ -17,7 +17,7 @@ from sunpy.timeseries import TimeSeries
 # data for this time from the NOAA Space Weather Prediction Center (SWPC).
 
 tr = a.Time('2011-06-07 04:00', '2011-06-07 12:00')
-results = Fido.search(tr, a.Instrument.xrs | a.hek.FL & (a.hek.FRM.Name == 'SWPC'))
+results = Fido.search(tr, a.Instrument.xrs & a.goes.SatelliteNumber(15) | a.hek.FL & (a.hek.FRM.Name == 'SWPC'))
 
 ###############################################################################
 # Then download the XRS data and load it into a TimeSeries
