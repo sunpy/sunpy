@@ -464,7 +464,6 @@ def B0(time='now'):
         * The heliographic latitude of Earth
         * The tilt of the solar North rotational axis toward Earth
 
-
     Parameters
     ----------
     time : {parse_time_types}
