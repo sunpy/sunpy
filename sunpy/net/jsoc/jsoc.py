@@ -915,7 +915,8 @@ class JSOCClient(BaseClient):
 
         required = {a.jsoc.Series}
         optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
-                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample}
+                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample,
+                    a.jsoc.Cutout}
         return cls.check_attr_types_in_query(query, required, optional)
 
     @classmethod
