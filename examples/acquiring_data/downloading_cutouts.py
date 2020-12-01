@@ -6,6 +6,8 @@ Requesting cutouts of AIA images from the JSOC
 This example shows how to request a cutout of a series of
 AIA images from the JSOC and animate the resulting sequence.
 """
+import os
+
 import matplotlib.pyplot as plt
 
 import astropy.time
@@ -14,16 +16,18 @@ from astropy.coordinates import SkyCoord
 from astropy.visualization import ImageNormalize, SqrtStretch
 
 import sunpy.map
-from sunpy.net import Fido, attrs, jsoc
+from sunpy.net import Fido
+from sunpy.net import attrs as a
+from sunpy.net.jsoc import JSOCClient
 
 #####################################################
 # First, query a full frame AIA image.
 t0 = astropy.time.Time('2012-09-24T14:56:03', scale='utc', format='isot')
 q = Fido.search(
-    attrs.Instrument.aia,
-    attrs.Physobs.intensity,
-    attrs.Wavelength(171*u.angstrom),
-    attrs.Time(t0, t0 + 13*u.s),
+    a.Instrument.aia,
+    a.Physobs.intensity,
+    a.Wavelength(171*u.angstrom),
+    a.Time(t0, t0 + 13*u.s),
 )
 m = sunpy.map.Map(Fido.fetch(q))
 
@@ -42,13 +46,9 @@ m_cutout.peek()
 # image at each timestep. Instead, we will use our submap
 # to create a cutout request from the JSOC.
 #
-# First, create a `~sunpy.net.jsoc.JSOCClient` instance.
-c = jsoc.JSOCClient()
-
-#####################################################
-# Next, construct the cutout from the submap
+# First, construct the cutout from the submap
 # above using the `~sunpy.net.jsoc.attrs.Cutout` attribute.
-cutout = jsoc.attrs.Cutout(
+cutout = a.jsoc.Cutout(
     m_cutout.bottom_left_coord,
     top_right=m_cutout.top_right_coord,
     tracking=True
@@ -58,13 +58,14 @@ cutout = jsoc.attrs.Cutout(
 # Now we are ready to construct the query. Note that all of this is
 # the same for a full-frame image except for the
 # cutout component.
+c = JSOCClient()
 q = c.search(
-    attrs.Time(m_cutout.date - 6*u.h, m_cutout.date + 6*u.h),
-    attrs.Wavelength(m_cutout.wavelength),
-    attrs.Sample(12*u.min),
-    jsoc.attrs.Series.aia_lev1_euv_12s,
-    jsoc.attrs.Notify('jsoc@cadair.com'),  # Put your email here
-    jsoc.attrs.Segment.image,
+    a.Time(m_cutout.date - 6*u.h, m_cutout.date + 6*u.h),
+    a.Wavelength(m_cutout.wavelength),
+    a.Sample(12*u.min),
+    a.jsoc.Series.aia_lev1_euv_12s,
+    a.jsoc.Notify(os.environ["JSOC_EMAIL"]),  # Put your email here
+    a.jsoc.Segment.image,
     cutout,
 )
 
