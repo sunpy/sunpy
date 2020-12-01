@@ -9,7 +9,10 @@ from parfive import Results
 import astropy.table
 import astropy.time
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
+import sunpy.data.test
+import sunpy.map
 import sunpy.net.attrs as a
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.util.exceptions import SunpyUserWarning
@@ -433,3 +436,30 @@ def test_jsoc_attrs(client):
     assert a.jsoc.Segment in attrs.keys()
     assert len(attrs[a.jsoc.Series]) != 0
     assert len(attrs[a.jsoc.Segment]) != 0
+
+
+@pytest.mark.flaky(reruns_delay=30)
+@pytest.mark.remote_data
+def test_jsoc_cutout_attrs(client):
+    m_ref = sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits'))
+    cutout = a.jsoc.Cutout(
+        SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=m_ref.coordinate_frame),
+        top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=m_ref.coordinate_frame),
+        tracking=True
+    )
+    q = client.search(
+        a.Time(m_ref.date, m_ref.date + 1 * u.min),
+        a.Wavelength(171*u.angstrom),
+        a.jsoc.Series.aia_lev1_euv_12s,
+        a.jsoc.Notify('jsoc@cadair.com'),  # Put your email here
+        a.jsoc.Segment.image,
+        cutout,
+    )
+    req = client.request_data(q, method='url', protocol='fits')
+    req.wait()
+    assert req.status == 0
+    files = client.get_request(req, max_conn=2)
+    assert len(files) == 6
+    m = sunpy.map.Map(files, sequence=True)
+    assert m.all_maps_same_shape()
+    assert m.as_array().shape == (1085, 1085, 6)
