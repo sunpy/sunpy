@@ -6,6 +6,7 @@ Requesting cutouts of AIA images from the JSOC
 This example shows how to request a cutout of a series of
 AIA images from the JSOC and animate the resulting sequence.
 """
+# sphinx_gallery_thumbnail_number = 2
 import os
 
 import matplotlib.pyplot as plt
@@ -18,7 +19,6 @@ from astropy.visualization import ImageNormalize, SqrtStretch
 import sunpy.map
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-from sunpy.net.jsoc import JSOCClient
 
 #####################################################
 # First, query a full frame AIA image.
@@ -55,28 +55,35 @@ cutout = a.jsoc.Cutout(
 )
 
 #####################################################
+# Exporting data from the JSOC requires registering your
+# email first. Please replace this with your email
+# address once you have registered.
+# See `this page <http://jsoc.stanford.edu/ajax/register_email.html>`_
+# for more details.
+jsoc_email = os.environ["JSOC_EMAIL"]
+
+#####################################################
 # Now we are ready to construct the query. Note that all of this is
 # the same for a full-frame image except for the
-# cutout component.
-c = JSOCClient()
-q = c.search(
+# cutout component. We will download images from a 12 hour interval
+# centered on the time of the above cutout.
+# We request one image every 12 minutes.
+q = Fido.search(
     a.Time(m_cutout.date - 6*u.h, m_cutout.date + 6*u.h),
     a.Wavelength(m_cutout.wavelength),
     a.Sample(12*u.min),
     a.jsoc.Series.aia_lev1_euv_12s,
-    a.jsoc.Notify(os.environ["JSOC_EMAIL"]),  # Put your email here
+    a.jsoc.Notify(jsoc_email),
     a.jsoc.Segment.image,
     cutout,
 )
 
 #####################################################
-# Submit the export request and download the data. This
-# may take some time as the data has to be processed and
-# downloaded.
-req = c.request_data(q, method='url', protocol='fits')
-while not req.has_succeeded():
-    continue
-files = c.get_request(req, max_conn=2)
+# Submit the export request and download the data. We
+# set the number of parallel downloads to 2 so as not
+# to overwhelm the JSOC export service with our number
+# of download requests.
+files = Fido.fetch(q, max_conn=2)
 files.sort()
 
 #####################################################
@@ -87,7 +94,9 @@ m_seq = sunpy.map.Map(files, sequence=True)
 #####################################################
 # Finally, we can construct an animation in time from
 # our stack of cutouts and interactively flip through
-# each image in our sequence.
+# each image in our sequence. We first adjust the plot
+# settings on each image to ensure the colorbar is the
+# same at each time step.
 for m in m_seq:
     m.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
 m_seq.peek()
