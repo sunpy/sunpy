@@ -458,8 +458,7 @@ class JSOCClient(BaseClient):
                 error_message = f"Methods other than {','.join(supported_methods)} "\
                                 "are not supported."
                 raise TypeError(error_message)
-            if cutout is not None:
-                process = {'im_patch': cutout}
+            process = {'im_patch': cutout} if cutout is not None else None
 
             if method != 'url-tar':
                 method = 'url' if protocol == 'fits' else 'url_quick'
