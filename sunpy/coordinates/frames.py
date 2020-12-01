@@ -126,7 +126,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
 
         super().__init__(*args, **kwargs)
 
-        # If obstime is specified, treat the default observer (Earth) as explicitly set
+        # If obstime is specified, treat the default observer (None) as explicitly set
         if self.obstime is not None and self.is_frame_attr_default('observer'):
             self._attr_names_with_defaults.remove('observer')
 
@@ -169,8 +169,6 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
     }
 
     def __init__(self, *args, **kwargs):
-        kwargs.get('representation_type', None)
-
         super().__init__(*args, **kwargs)
 
         # Make 3D if specified as 2D
