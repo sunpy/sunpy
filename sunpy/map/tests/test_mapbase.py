@@ -83,6 +83,8 @@ def generic_map():
         'CDELT2': 10,
         'CUNIT1': 'arcsec',
         'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
         'PC1_1': 0,
         'PC1_2': -1,
         'PC2_1': 1,
@@ -245,7 +247,18 @@ def test_rsun_obs(generic_map):
 
 
 def test_coordinate_system(generic_map):
-    assert generic_map.coordinate_system == ('HPLN-   ', 'HPLT-   ')
+    assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+
+
+def test_default_coordinate_system(generic_map):
+    generic_map.meta.pop('ctype1')
+    with pytest.raises(SunpyUserWarning, match='Missing CTYPE1 from metadata'):
+        assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+
+    generic_map.meta.pop('ctype2')
+    generic_map.meta['ctype1'] = 'HPLN-TAN'
+    with pytest.raises(SunpyUserWarning, match='Missing CTYPE2 from metadata'):
+        assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
 def test_carrington_longitude(generic_map):
@@ -334,7 +347,9 @@ def test_rotation_matrix_cd_cdelt():
         'NAXIS1': 6,
         'NAXIS2': 6,
         'CUNIT1': 'arcsec',
-        'CUNIT2': 'arcsec'
+        'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1.], [1., 0]]))
@@ -356,7 +371,9 @@ def test_rotation_matrix_cd_cdelt_square():
         'NAXIS1': 6,
         'NAXIS2': 6,
         'CUNIT1': 'arcsec',
-        'CUNIT2': 'arcsec'
+        'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1], [1., 0]]))
@@ -422,6 +439,8 @@ def test_default_shift():
         'NAXIS2': 6,
         'CUNIT1': 'arcsec',
         'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
     }
     cd_map = sunpy.map.Map((data, header))
     assert cd_map.shifted_value[0].value == 0
@@ -893,6 +912,8 @@ def test_missing_metadata_warnings():
         header = {}
         header['cunit1'] = 'arcsec'
         header['cunit2'] = 'arcsec'
+        header['ctype1'] = 'HPLN-TAN'
+        header['ctype2'] = 'HPLT-TAN'
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)

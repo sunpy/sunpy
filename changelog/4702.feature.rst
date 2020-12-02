@@ -1,0 +1,3 @@
+If either 'CTYPE1' or 'CTYPE2' are not present in map metadata, sunpy now assumes
+they are 'HPLN-TAN' and 'HPLT-TAN' (previously it assumed 'HPLN-   ' and 'HPLT-   ').
+In addition, a warning is also now raised when this assumption is made.
