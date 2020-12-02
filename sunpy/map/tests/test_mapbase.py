@@ -794,12 +794,6 @@ def test_as_mpl_axes_aia171(aia171_test_map):
     assert all([ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype, aia171_test_map.wcs.wcs.ctype)])
 
 
-def test_pixel_to_world_no_projection(generic_map):
-    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel))
-    assert_quantity_allclose(out.Tx, 0*u.arcsec)
-    assert_quantity_allclose(out.Ty, 0*u.arcsec)
-
-
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
     with pytest.warns(SunpyUserWarning) as w:
