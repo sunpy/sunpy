@@ -391,7 +391,7 @@ def test_world_to_pixel(generic_map):
 
 
 def test_world_to_pixel_error(generic_map):
-    strerr = 'world_to_pixel takes a Astropy coordinate frame or SkyCoord instance'
+    strerr = 'Expected the following order of world arguments: SkyCoord'
     with pytest.raises(ValueError, match=strerr):
         generic_map.world_to_pixel(1)
 
