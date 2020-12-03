@@ -252,7 +252,7 @@ def test_coordinate_system(generic_map):
 
 def test_default_coordinate_system(generic_map):
     generic_map.meta.pop('ctype1')
-    with pytest.raises(SunpyUserWarning, match='Missing CTYPE1 from metadata'):
+    with pytest.warns(SunpyUserWarning, match='Missing CTYPE1 from metadata'):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
     generic_map.meta.pop('ctype2')
