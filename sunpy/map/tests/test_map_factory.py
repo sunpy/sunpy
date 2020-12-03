@@ -156,7 +156,8 @@ class TestMap:
         header = {'cdelt1': 10, 'cdelt2': 10,
                   'telescop': 'sunpy',
                   'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-        pair_map = sunpy.map.Map(data, header)
+        with pytest.warns(SunpyUserWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+            pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
         # Common keys not strings
@@ -166,7 +167,8 @@ class TestMap:
                   'detector': 1,
                   'instrume': 50,
                   'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-        pair_map = sunpy.map.Map(data, header)
+        with pytest.warns(SunpyUserWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+            pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
     def test_errors(self, tmpdir):

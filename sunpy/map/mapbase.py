@@ -813,9 +813,24 @@ class GenericMap(NDData):
 
     @property
     def coordinate_system(self):
-        """Coordinate system used for x and y axes (ctype1/2)."""
-        return SpatialPair(self.meta.get('ctype1', 'HPLN-   '),
-                           self.meta.get('ctype2', 'HPLT-   '))
+        """
+        Coordinate system used for x and y axes (ctype1/2).
+
+        If not present, defaults to (HPLN-TAN, HPLT-TAN), and emits a warning.
+        """
+        ctype1 = self.meta.get('ctype1', None)
+        if ctype1 is None:
+            warnings.warn("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN",
+                          SunpyUserWarning)
+            ctype1 = 'HPLN-TAN'
+
+        ctype2 = self.meta.get('ctype2', None)
+        if ctype2 is None:
+            warnings.warn("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN",
+                          SunpyUserWarning)
+            ctype2 = 'HPLT-TAN'
+
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def _supported_observer_coordinates(self):
