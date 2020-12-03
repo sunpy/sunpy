@@ -19,9 +19,8 @@ from sunpy.net import attrs as a
 # We will also search JSOC for a 'hmi.m_45s' series.
 
 timerange = a.Time('2010/8/1 03:40', '2010/8/1 3:40:10')
-# Note that JSOC needs an email address. For this example we have one a
-# dedicated private email address but if you want to run this, you must
-# supply your own email.
+# Note that JSOC needs an email address, if you want to run this, you
+# must supply your own email.
 jsoc_email = os.environ["JSOC_EMAIL"]
 results = Fido.search(timerange, a.helio.TableName('rhessi_hxr_flare') |
                       a.hek.FL & (a.hek.FL.PeakFlux > 1000) |

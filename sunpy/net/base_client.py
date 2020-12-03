@@ -141,11 +141,11 @@ class BaseQueryResponseTable(BaseQueryResponse):
         if isinstance(item, int):
             item = slice(item, item + 1)
         ret = type(self)(self.table[item])
+        # On iter we were returning empty rows.
+        if len(ret) == 0:
+            raise IndexError
         ret.client = self._client
         return ret
-
-    def __iter__(self):
-        return (t for t in [self])
 
     def build_table(self):
         return self.table
