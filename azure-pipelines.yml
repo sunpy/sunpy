@@ -122,9 +122,6 @@ stages:
               - hdf5-devel
 
           envs:
-            - linux32: py38-32bit
-              manylinux_image: manylinux2010_i686
-
             - linux: py38-hypothesis
 
             - linux: py38-devdeps
