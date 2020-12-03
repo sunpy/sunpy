@@ -1123,8 +1123,8 @@ class GenericMap(NDData):
         self._check_origin(origin)
         x, y = self.wcs.world_to_pixel(coordinate)
         if origin == 1:
-            x += 1 * u.pixel
-            y += 1 * u.pixel
+            x += 1
+            y += 1
 
         return PixelPair(x * u.pixel, y * u.pixel)
 
@@ -1155,8 +1155,8 @@ class GenericMap(NDData):
         """
         self._check_origin(origin)
         if origin == 1:
-            x -= 1 * u.pixel
-            y -= 1 * u.pixel
+            x = x - 1 * u.pixel
+            y = y - 1 * u.pixel
 
         return self.wcs.pixel_to_world(x, y)
 

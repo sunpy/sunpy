@@ -396,6 +396,17 @@ def test_world_to_pixel_error(generic_map):
         generic_map.world_to_pixel(1)
 
 
+@pytest.mark.parametrize('origin', [0, 1])
+def test_world_pixel_roundtrip(simple_map, origin):
+    pix = 1 * u.pix, 1 * u.pix
+    with pytest.warns(SunpyDeprecationWarning, match='The origin argument is deprecated'):
+        coord = simple_map.pixel_to_world(*pix, origin=origin)
+        pix_roundtrip = simple_map.world_to_pixel(coord, origin=origin)
+
+    assert u.allclose(pix_roundtrip.x, pix[0], atol=1e-10 * u.pix)
+    assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
+
+
 def test_save(aia171_test_map, generic_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
