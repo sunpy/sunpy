@@ -12,7 +12,7 @@ from sunpy import log
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from .frames import HeliocentricInertial, SunPyBaseCoordinateFrame
+from .frames import BaseHeliographic, HeliocentricInertial, SunPyBaseCoordinateFrame
 from .offset_frame import NorthOffsetFrame
 from .transformations import _transformation_debug
 
@@ -45,25 +45,24 @@ def _make_rotatedsun_cls(framecls):
     if framecls in _rotatedsun_cache:
         return _rotatedsun_cache[framecls]
 
-    # Obtain the base frame's metaclass by getting the type of the base frame's class
-    framemeta = type(framecls)
+    members = {'__doc__': f'{RotatedSunFrame.__doc__}\n{framecls.__doc__}'}
 
-    # Subclass the metaclass for the RotatedSunFrame from the base frame's metaclass
-    class RotatedSunMeta(framemeta):
-        """
-        This metaclass renames the class to be "RotatedSun<framecls>".
-        """
-        def __new__(cls, name, bases, members):
-            newname = name[:-5] if name.endswith('Frame') else name
-            newname += framecls.__name__
+    # Copy over the defaults from the input frame class
+    attrs_to_copy = ['_default_representation',
+                     '_default_differential',
+                     '_frame_specific_representation_info']
+    for attr in attrs_to_copy:
+        members[attr] = getattr(framecls, attr)
 
-            return super().__new__(cls, newname, bases, members)
+    # Frames based on BaseHeliographic need to include the auto-upgrading from 2D to 3D
+    if issubclass(framecls, BaseHeliographic):
+        def baseheliographic_init(self, *args, **kwargs):
+            RotatedSunFrame.__init__(self, *args, **kwargs)
+            BaseHeliographic._make_3d(self)
 
-    # We need this to handle the intermediate metaclass correctly, otherwise we could
-    # just subclass RotatedSunFrame.
-    _RotatedSunFramecls = RotatedSunMeta('RotatedSunFrame',
-                                         (RotatedSunFrame, framecls),
-                                         {'__doc__': RotatedSunFrame.__doc__})
+        members['__init__'] = baseheliographic_init
+
+    _RotatedSunFramecls = type(f'RotatedSun{framecls.__name__}', (RotatedSunFrame,), members)
 
     @frame_transform_graph.transform(FunctionTransform, _RotatedSunFramecls, _RotatedSunFramecls)
     @_transformation_debug(f"{_RotatedSunFramecls.__name__}->{_RotatedSunFramecls.__name__}")
@@ -122,7 +121,7 @@ def _make_rotatedsun_cls(framecls):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-class RotatedSunFrame:
+class RotatedSunFrame(SunPyBaseCoordinateFrame):
     """
     A frame that applies solar rotation to a base coordinate frame.
 
@@ -159,6 +158,10 @@ class RotatedSunFrame:
     """
     # This code reuses significant code from Astropy's implementation of SkyOffsetFrame
     # See licenses/ASTROPY.rst
+
+    # We don't want to inherit the frame attributes of SunPyBaseCoordinateFrame (namely `obstime`)
+    # Note that this does not work for Astropy 4.3+, so we need to manually remove it below
+    _inherit_descriptors_ = False
 
     # Even though the frame attribute `base` is a coordinate frame, we use `Attribute` instead of
     # `CoordinateAttribute` because we are preserving the supplied frame rather than converting to
@@ -235,3 +238,8 @@ class RotatedSunFrame:
         Returns the sum of the base frame's observation time and the rotation of duration.
         """
         return self.base.obstime + self.duration
+
+
+# For Astropy 4.3+, we need to manually remove the `obstime` frame attribute from RotatedSunFrame
+if 'obstime' in RotatedSunFrame.frame_attributes:
+    del RotatedSunFrame.frame_attributes['obstime']

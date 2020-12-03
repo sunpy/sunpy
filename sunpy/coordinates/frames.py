@@ -177,6 +177,9 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self._make_3d()
+
+    def _make_3d(self):
         # Make 3D if specified as 2D
         if (self._data is not None and self._data.norm().unit is u.one
                 and u.allclose(self._data.norm(), 1*u.one)):
