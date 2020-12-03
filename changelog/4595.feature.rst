@@ -1,0 +1,2 @@
+Add `~sunpy.net.jsoc.attrs.Cutout` attr for requesting cutouts
+from JSOC via `~sunpy.net.jsoc.JSOCClient` and ``Fido``.

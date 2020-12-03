@@ -389,6 +389,7 @@ class JSOCClient(BaseClient):
             ds = self._make_recordset(**block)
             cd = drms.Client(email=block.get('notify', ''))
             protocol = block.get('protocol', 'fits')
+            cutout = block.get('cutout')
 
             if protocol not in supported_protocols:
                 error_message = f"Protocols other than {','.join(supported_protocols)} "\
@@ -398,10 +399,11 @@ class JSOCClient(BaseClient):
                 error_message = f"Methods other than {','.join(supported_methods)} "\
                                 "are not supported."
                 raise TypeError(error_message)
+            process = {'im_patch': cutout} if cutout is not None else None
 
             if method != 'url-tar':
                 method = 'url' if protocol == 'fits' else 'url_quick'
-            r = cd.export(ds, method=method, protocol=protocol)
+            r = cd.export(ds, method=method, protocol=protocol, process=process)
 
             requests.append(r)
 
@@ -856,7 +858,8 @@ class JSOCClient(BaseClient):
 
         required = {a.jsoc.Series}
         optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
-                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample}
+                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample,
+                    a.jsoc.Cutout}
         return cls.check_attr_types_in_query(query, required, optional)
 
     @classmethod
