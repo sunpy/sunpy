@@ -310,3 +310,13 @@ def test_client_search(client):
     table_name = 'rhessi_hxr_flare'
     res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
     assert len(res) == 10
+
+@pytest.mark.remote_data
+def test_HECResponse_iter(client):
+    start = '2005/01/03'
+    end = '2005/12/03'
+    table_name = 'rhessi_hxr_flare'
+    res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
+    for i in res:
+        # Just to make sure iter still works.
+        assert len(i) == 1
