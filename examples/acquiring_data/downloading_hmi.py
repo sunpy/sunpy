@@ -22,6 +22,11 @@ result = Fido.search(a.Time('2020/01/20 00:00:00', '2020/01/20 00:01:00'),
 print(result)
 
 ###############################################################################
+# We can look at the values of specific keywords from this result.
+jsoc_result = result[0]
+print(jsoc_result.show('T_REC', 'CROTA2'))
+
+###############################################################################
 # The following shows how to download the results. If we
 # don't provide a path it will download the file into the sunpy data directory.
 # The output provides the path of the downloaded files.

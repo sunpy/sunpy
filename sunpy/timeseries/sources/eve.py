@@ -159,7 +159,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')  # doctest: +REMOTE_DATA
-    >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')  # doctest: +REMOTE_DATA
+    >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')  # doctest: +SKIP
     >>> eve.peek(subplots=True)  # doctest: +SKIP
 
     References

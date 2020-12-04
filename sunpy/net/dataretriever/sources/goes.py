@@ -50,15 +50,14 @@ class XRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the XRSClient:
-         Start Time           End Time      Instrument ... Provider SatelliteNumber
-    ------------------- ------------------- ---------- ... -------- ---------------
-    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...     SDAC              13
-    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...     SDAC              13
-    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...     SDAC              15
-    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...     SDAC              15
+         Start Time           End Time      Instrument ... Source Provider
+    ------------------- ------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...   GOES     NOAA
+    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...   GOES     NOAA
+    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...   GOES     NOAA
+    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...   GOES     NOAA
     <BLANKLINE>
     <BLANKLINE>
-
     """
     # GOES XRS data from NASA servers upto GOES 15. The reprocessed 13, 14, 15 data should be taken from NOAA server.
     baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
@@ -138,11 +137,13 @@ class XRSClient(GenericClient):
         else:
             if matchdict["Time"].end >= "2017-02-07":
                 for sat in [16, 17]:
-                    metalist += self._get_metalist_fn(matchdict, self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
+                    metalist += self._get_metalist_fn(matchdict,
+                                                      self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
 
-            if matchdict["Time"].end <="2020-03-04":
+            if matchdict["Time"].end <= "2020-03-04":
                 for sat in [13, 14, 15]:
-                    metalist += self._get_metalist_fn(matchdict, self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
+                    metalist += self._get_metalist_fn(matchdict,
+                                                      self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
 
         return metalist
 

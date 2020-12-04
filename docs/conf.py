@@ -262,7 +262,12 @@ def rstjinja(app, docname, source):
 # JSOC email os env
 os.environ["JSOC_EMAIL"] = "jsoc@cadair.com"
 
+# JSOC email os env
+os.environ["JSOC_EMAIL"] = "jsoc@cadair.com"
+
 # -- Sphinx setup --------------------------------------------------------------
+
+
 def setup(app):
     # Generate the stability page
     app.connect("source-read", rstjinja)

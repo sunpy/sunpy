@@ -17,8 +17,9 @@ from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.net.base_client import BaseClient, BaseQueryResponseTable
 from sunpy.net.jsoc.attrs import walker
+from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.parfive_helpers import Downloader, Results
 
@@ -33,71 +34,37 @@ class NotExportedError(Exception):
     pass
 
 
-class JSOCResponse(BaseQueryResponse):
+class JSOCResponse(BaseQueryResponseTable):
     def __init__(self, table=None, client=None):
         """
         table : `astropy.table.Table`
         """
-        super().__init__()
-        self.table = table or astropy.table.QTable()
+        super().__init__(table, client)
         self.query_args = getattr(table, 'query_args', None)
         self.requests = getattr(table, 'requests', None)
-        self._client = client
-
-    @property
-    def client(self):
-        return self._client
-
-    @client.setter
-    def client(self, client):
-        self._client = client
-
-    @property
-    def blocks(self):
-        return list(self.table.iterrows)
-
-    def __len__(self):
-        if self.table is None:
-            return 0
-        else:
-            return len(self.table)
 
     def __getitem__(self, item):
-        if isinstance(item, int):
-            item = slice(item, item + 1)
-        ret = type(self)(self.table[item])
+        ret = super().__getitem__(item)
         ret.query_args = self.query_args
-        ret.requests = self.requests
         ret.client = self._client
-
         warnings.warn("Downloading of sliced JSOC results is not supported. "
                       "All the files present in the original response will be downloaded.",
                       SunpyUserWarning)
         return ret
 
-    def __iter__(self):
-        return (t for t in [self])
-
     def build_table(self):
-        return self.table
+        # remove this check post 3.0
+        if any('keys' in i for i in self.query_args):
+            return self.table
 
-    def append(self, table):
-        if self.table is None:
-            self.table = table
-        else:
-            self.table = astropy.table.vstack([self.table, table])
-
-    def response_block_properties(self):
-        """
-        Returns a set of class attributes on all the response blocks.
-        """
-        warnings.warn("The JSOC client does not support response block properties.", SunpyUserWarning)
-        return set()
+        default_columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
+        cols_in_table = [colname for colname in default_columns if colname in self.table.colnames]
+        return self.table[cols_in_table]
 
 
 class JSOCClient(BaseClient):
     """
-    This is a client to the JSOC Data Export service.
+    Provides access to the JSOC Data Export service.
 
     It exposes a similar API to the VSO client, although the underlying model
     is more complex. The JSOC stages data before you can download it, so a JSOC
@@ -141,7 +108,7 @@ class JSOCClient(BaseClient):
         The response object holds the records that your query will return:
 
         >>> print(response)   # doctest: +REMOTE_DATA
-                T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+                 T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
         ----------------------- -------- ---------- -------- -------
         2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
         2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -195,7 +162,7 @@ class JSOCClient(BaseClient):
         >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
         >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-        ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
+        ...                          a.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
         The response object holds the records that your query will return:
 
@@ -274,7 +241,7 @@ class JSOCClient(BaseClient):
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> response = client.search(a.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
-            ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
+            ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA),
             ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
                    T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
@@ -293,16 +260,15 @@ class JSOCClient(BaseClient):
 
         *Example 2*
 
-        Request keyword data of ``hmi.v_45s`` for certain specific keywords only::
+        Request keyword data of ``hmi.v_45s`` and show specific columns only::
 
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-            ...                          a.jsoc.Series('hmi.v_45s'),
-            ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA
+            ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+            >>> print(response.show('T_REC', 'DATAMEAN', 'OBS_VR'))  # doctest: +REMOTE_DATA
                          T_REC               DATAMEAN            OBS_VR
             ----------------------- ------------------ ------------------
             2014.01.01_00:00:45_TAI        1906.518188        1911.202614
@@ -355,6 +321,7 @@ class JSOCClient(BaseClient):
         return_results.query_args = blocks
         return return_results
 
+    @deprecated(since="2.1", message="use JSOCClient.search() instead", alternative="JSOCClient.search()")
     def search_metadata(self, *query, **kwargs):
         """
         Get the metadata of all the files obtained in a search query.
@@ -374,31 +341,6 @@ class JSOCClient(BaseClient):
         res : `~pandas.DataFrame` object
             A collection of metadata of all the files.
 
-        Example
-        -------
-
-        Request metadata or all all AIA 304 image data between 2014-01-01T00:00 and
-        2014-01-01T01:00.
-
-        Since, the function only performs a lookdata, and does not make a proper export
-        request, attributes like Segment need not be passed::
-
-            >>> import astropy.units as u
-            >>> from sunpy.net import jsoc
-            >>> from sunpy.net import attrs as a
-            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-            >>> metadata = client.search_metadata(
-            ...                         a.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
-            ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
-            >>> print(metadata[['T_OBS', 'WAVELNTH']])  # doctest: +REMOTE_DATA
-                                                                        T_OBS  WAVELNTH
-            aia.lev1_euv_12s[2014-01-01T00:00:01Z][304]  2014-01-01T00:00:08.57Z       304
-            aia.lev1_euv_12s[2014-01-01T00:00:13Z][304]  2014-01-01T00:00:20.58Z       304
-            aia.lev1_euv_12s[2014-01-01T00:00:25Z][304]  2014-01-01T00:00:32.57Z       304
-            aia.lev1_euv_12s[2014-01-01T00:00:37Z][304]  2014-01-01T00:00:44.58Z       304
-            aia.lev1_euv_12s[2014-01-01T00:00:49Z][304]  2014-01-01T00:00:56.57Z       304
-            aia.lev1_euv_12s[2014-01-01T00:01:01Z][304]  2014-01-01T00:01:08.59Z       304
-
         """
         query = and_(*query)
         blocks = []
@@ -409,7 +351,6 @@ class JSOCClient(BaseClient):
             iargs.update({'meta': True})
             blocks.append(iargs)
             res = res.append(self._lookup_records(iargs))
-
         return res
 
     def request_data(self, jsoc_response, method='url', **kwargs):
@@ -825,14 +766,15 @@ class JSOCClient(BaseClient):
         Do a LookData request to JSOC to workout what results the query returns.
         """
 
-        keywords_default = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
         isMeta = iargs.get('meta', False)
         c = drms.Client()
 
         if isMeta:
             keywords = '**ALL**'
         else:
-            keywords = iargs.get('keys', keywords_default)
+            keywords = iargs.get('keys', '**ALL**')
+        # TODO: keywords should be set only to '**ALL**' post 3.0
+        # All checks done above should be removed.
 
         if 'series' not in iargs:
             error_message = "Series must be specified for a JSOC Query"
@@ -900,6 +842,7 @@ class JSOCClient(BaseClient):
 
         # If the method was called from search_metadata(), return a Pandas Dataframe,
         # otherwise return astropy.table
+        # TODO: this check should also be removed post 3.0
         if isMeta:
             return r
 

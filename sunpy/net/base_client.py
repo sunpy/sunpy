@@ -1,13 +1,15 @@
 import importlib
 from abc import ABC, abstractmethod
 from textwrap import dedent
+from warnings import warn
 from collections.abc import Sequence
 
-from astropy.table import Table
+from astropy.table import QTable, Table, vstack
 
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.util import get_width
 
-__all__ = ['BaseQueryResponse', 'BaseClient']
+__all__ = ['BaseQueryResponse', 'BaseQueryResponseTable', 'BaseClient']
 
 
 class BaseQueryResponse(Sequence):
@@ -102,7 +104,70 @@ class BaseQueryResponse(Sequence):
         table = self.build_table()
         if len(cols) == 0:
             return table
-        return table[list(cols)]
+        tablecols = table.columns
+        valid_cols = [col for col in cols if col in tablecols]
+        return table[valid_cols]
+
+
+class BaseQueryResponseTable(BaseQueryResponse):
+    """
+    A base class for tabular results returned from clients.
+    """
+
+    def __init__(self, table=None, client=None):
+        super().__init__()
+        self.table = table or QTable()
+        self._client = client
+
+    @property
+    def client(self):
+        return self._client
+
+    @client.setter
+    def client(self, client):
+        self._client = client
+
+    @property
+    def blocks(self):
+        return list(self.table.iterrows)
+
+    def __len__(self):
+        if self.table:
+            return len(self.table)
+        else:
+            return 0
+
+    def __getitem__(self, item):
+        if isinstance(item, int):
+            item = slice(item, item + 1)
+        ret = type(self)(self.table[item])
+        # On iter we were returning empty rows.
+        if len(ret) == 0:
+            raise IndexError
+        ret.client = self._client
+        return ret
+
+    def build_table(self):
+        return self.table
+
+    def response_block_properties(self):
+        client_name = self._client.__class__.__name__
+        warn(f"The {client_name} does not support response block properties.",
+             SunpyUserWarning)
+        return set()
+
+    def append(self, table):
+        if self.table is None:
+            self.table = table
+        else:
+            self.table = vstack([self.table, table])
+
+    def show(self, *cols):
+        if len(cols) == 0:
+            return self.table
+        tablecols = self.table.columns
+        valid_cols = [col for col in cols if col in tablecols]
+        return self.table[valid_cols]
 
 
 def _print_client(client, html=False):

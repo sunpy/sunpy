@@ -18,6 +18,7 @@ from sunpy import config
 from sunpy.net import Fido, attr
 from sunpy.net import attrs as a
 from sunpy.net import jsoc
+from sunpy.net.base_client import BaseQueryResponse, BaseQueryResponseTable
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
@@ -190,18 +191,18 @@ Use LYRA here because it does not use the internet to return results.
 def test_unifiedresponse_slicing():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-    assert isinstance(results[0:2], UnifiedResponse)
-    assert isinstance(results[0], UnifiedResponse)
+    assert isinstance(results[0:2], BaseQueryResponse)
+    assert isinstance(results[0], BaseQueryResponse)
 
 
 @pytest.mark.remote_data
 def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-    assert isinstance(results[::-1], UnifiedResponse)
-    assert len(results[::-1]) == len(results)
-    assert isinstance(results[0, ::-1], UnifiedResponse)
-    assert all(results._list[0][::-1].build_table() == results[0, ::-1]._list[0].build_table())
+    assert isinstance(results[::-1], BaseQueryResponse)
+    assert len(results[::-1]) == len(results[::1])
+    assert isinstance(results[0, ::-1], BaseQueryResponse)
+    assert all(results[0][::-1].build_table() == results[0, ::-1].build_table())
 
 
 @pytest.mark.remote_data
@@ -333,13 +334,13 @@ def test_fido_indexing(queries):
     res = Fido.search(query1 | query2)
 
     assert len(res) == 2
-    assert len(res[0]) == 1
-    assert len(res[1]) == 1
+    assert len(res[0][0]) == 1
+    assert len(res[1][0]) == 1
 
     aa = res[0, 0]
-    assert isinstance(aa, UnifiedResponse)
+    assert isinstance(aa, BaseQueryResponse)
     assert len(aa) == 1
-    assert len(aa.get_response(0)) == 1
+    assert len(aa[0]) == 1
 
     aa = res[:, 0]
     assert isinstance(aa, UnifiedResponse)
@@ -347,8 +348,8 @@ def test_fido_indexing(queries):
     assert len(aa.get_response(0)) == 1
 
     aa = res[0, :]
-    assert isinstance(aa, UnifiedResponse)
-    assert len(aa) == 1
+    assert isinstance(aa, BaseQueryResponse)
+    assert len(aa[0]) == 1
 
     with pytest.raises(IndexError):
         res[0, 0, 0]
@@ -358,6 +359,9 @@ def test_fido_indexing(queries):
 
     with pytest.raises(IndexError):
         res[1.0132]
+
+    if isinstance(res, UnifiedResponse):
+        assert len(res) != 1
 
 
 @no_vso
@@ -437,13 +441,10 @@ def results_generator(dl):
 @mock.patch("parfive.Downloader.download", new=results_generator)
 def test_vso_errors_with_second_client(mock_download_all):
     query = a.Time("2011/01/01", "2011/01/02") & (a.Instrument.goes | a.Instrument.eit)
-
     qr = Fido.search(query)
-
     res = Fido.fetch(qr)
     assert len(res.errors) == 1
     assert len(res) != qr.file_num
-
     # Assert that all the XRSClient records are in the output.
     for resp in qr.responses:
         if isinstance(resp, XRSClient):
@@ -465,9 +466,7 @@ def test_mixed_retry_error():
             return_value=["hello"])
 def test_client_fetch_wrong_type(mock_fetch):
     query = a.Time("2011/01/01", "2011/01/02") & a.Instrument.goes
-
     qr = Fido.search(query)
-
     with pytest.raises(TypeError):
         Fido.fetch(qr)
 
@@ -518,3 +517,20 @@ def test_slice_jsoc():
 def test_fido_repr():
     output = repr(Fido)
     assert output[:50] == '<sunpy.net.fido_factory.UnifiedDownloaderFactory o'
+
+
+@pytest.mark.remote_data
+def test_fido_metadata_queries():
+    results = Fido.search(a.Time('2010/8/1 03:40', '2010/8/1 3:40:10'),
+                          a.hek.FI | a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
+                          a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify("jsoc@cadair.com"))
+
+    assert len(results['hek']) == 2
+    assert isinstance(results['hek'], UnifiedResponse)
+    assert isinstance(results['hek'][0], BaseQueryResponse)
+    assert len(results['hek'][1]) == 2
+    assert results[::-1][0] == results['jsoc']
+    assert isinstance(results['jsoc'], BaseQueryResponseTable)
+
+    files = Fido.fetch(results)
+    assert len(files) == len(results['jsoc'])

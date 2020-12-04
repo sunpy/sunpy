@@ -1,0 +1,2 @@
+Added `~sunpy.net.base_client.BaseQueryResponseTable` for containing query responses from clients returning tabular data.
+`~sunpy.net.helio.hec.HECResponse`, `~sunpy.net.hek.hek.HEKResponse`, and `~sunpy.net.jsoc.JSOCResponse` are its sublcasses.

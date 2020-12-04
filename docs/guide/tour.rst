@@ -316,60 +316,46 @@ re-download data.
 A simple example of this is shown below::
 
 
-  >>> import astropy.units as u
-  >>> from sunpy.net import Fido, attrs as a
-  >>> from sunpy.database import Database
+    >>> import astropy.units as u
+    >>> from sunpy.net import Fido, attrs as a
+    >>> from sunpy.database import Database
 
-  >>> db = Database()
-  >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
-  ...          a.Instrument.aia, a.Sample(15*u.min))  # doctest: +REMOTE_DATA
-  >>> db.commit()  # doctest: +REMOTE_DATA
-
-  >>> db  # doctest: +REMOTE_DATA
-  <Table length=10>
-   id  observation_time_start observation_time_end ...    download_time      size
-  str2         str19                 str19         ...        str19          str7
-  ---- ---------------------- -------------------- ... ------------------- -------
-     1    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2018-03-01 21:02:33 66200.0
-     2    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2018-03-01 21:02:33 66200.0
-     3    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2018-03-01 21:02:33 66200.0
-     4    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2018-03-01 21:02:33 66200.0
-     5    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2018-03-01 21:02:33 66200.0
-     6    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2018-03-01 21:02:33 66200.0
-     7    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2018-03-01 21:02:33 66200.0
-     8    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2018-03-01 21:02:33 66200.0
-     9    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2018-03-01 21:02:33 66200.0
-    10    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2018-03-01 21:02:33 66200.0
+    >>> db = Database()
+    >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
+    ...          a.Instrument.aia, a.Sample(45*u.min))  # doctest: +REMOTE_DATA
+    >>> db.commit()  # doctest: +REMOTE_DATA
+    >>> db  # doctest: +SKIP
+    <Table length=4>
+     id  observation_time_start observation_time_end ...    download_time      size
+    str1         str19                 str19         ...        str19          str7
+    ---- ---------------------- -------------------- ... ------------------- -------
+       1    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2020-11-21 14:15:30 66200.0
+       2    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2020-11-21 14:15:30 66200.0
+       3    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2020-11-21 14:15:30 66200.0
+       4    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2020-11-21 14:15:30 66200.0
 
 If you then do a second query::
 
-  >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:15:00"),
-  ...          a.Instrument.aia, a.Sample(15*u.min))  # doctest: +REMOTE_DATA
-  >>> db.commit()  # doctest: +REMOTE_DATA
-  >>> db  # doctest: +REMOTE_DATA
-  <Table length=12>
-   id  observation_time_start observation_time_end ...    download_time      size
-  str2         str19                 str19         ...        str19          str7
-  ---- ---------------------- -------------------- ... ------------------- -------
-     1    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2017-08-03 19:41:00 66200.0
-     2    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2017-08-03 19:41:00 66200.0
-     3    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2017-08-03 19:41:00 66200.0
-     4    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2017-08-03 19:41:00 66200.0
-     5    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2017-08-03 19:41:01 66200.0
-     6    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2017-08-03 19:41:01 66200.0
-     7    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2017-08-03 19:41:01 66200.0
-     8    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2017-08-03 19:41:01 66200.0
-     9    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2017-08-03 19:41:01 66200.0
-    10    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2017-08-03 19:41:01 66200.0
-    11    2011-09-20 02:15:00  2011-09-20 02:15:01 ... 2017-08-03 19:42:19 66200.0
-    12    2011-09-20 02:15:00  2011-09-20 02:15:01 ... 2017-08-03 19:42:19 66200.0
+    >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:45:00"),
+    ...          a.Instrument.aia, a.Sample(45*u.min))  # doctest: +REMOTE_DATA
+    >>> db.commit()  # doctest: +REMOTE_DATA
+    >>> db  # doctest: +SKIP
+    <Table length=6>
+     id  observation_time_start observation_time_end ...    download_time      size
+    str1         str19                 str19         ...        str19          str7
+    ---- ---------------------- -------------------- ... ------------------- -------
+       1    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2020-11-21 14:15:30 66200.0
+       2    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2020-11-21 14:15:30 66200.0
+       3    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2020-11-21 14:15:30 66200.0
+       4    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2020-11-21 14:15:30 66200.0
+       5    2011-09-20 02:30:00  2011-09-20 02:30:01 ... 2020-11-21 14:17:51 66200.0
+       6    2011-09-20 02:30:00  2011-09-20 02:30:01 ... 2020-11-21 14:17:51 66200.
 
+A query can then be performed against the database to get the records::
 
-A query can then be performed against the database to get the records.
+    >>> entries = db.search(a.Time("2011-09-20T01:45:00", "2011-09-20T02:15:00"), a.Instrument.aia)  # doctest: +REMOTE_DATA
+    >>> len(entries)  # doctest: +SKIP
+    4
 
-  >>> entries = db.search(a.Time("2011-09-20T01:45:00", "2011-09-20T02:15:00"), a.Instrument.aia)  # doctest: +REMOTE_DATA
-  >>> len(entries)  # doctest: +REMOTE_DATA
-  4
-
-You can see that only two extra records were added to the database. For more
-information check out the :ref:`database_guide`.
+You can see that only two extra records were added to the database.
+For more information check out the :ref:`database_guide`.
