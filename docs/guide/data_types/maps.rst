@@ -181,28 +181,28 @@ your map simply type::
 
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> my_map  # doctest: +REMOTE_DATA
-    <sunpy.map.sources.sdo.AIAMap object at 0x...>
+    <sunpy.map.sources.sdo.AIAMap object at ...>
     SunPy Map
     ---------
-    Observatory:		 SDO
-    Instrument:		 AIA 3
-    Detector:		 AIA
-    Measurement:		 171.0 Angstrom
-    Wavelength:		 171.0 Angstrom
-    Observation Date:	 2011-06-07 06:33:02
-    Exposure Time:		 0.234256 s
-    Dimension:		 [1024. 1024.] pix
-    Coordinate System:	 helioprojective
-    Scale:			 [2.402792 2.402792] arcsec / pix
-    Reference Pixel:	 [512.5 512.5] pix
-    Reference Coord:	 [3.22309951 1.38578135] arcsec
+    Observatory:                 SDO
+    Instrument:          AIA 3
+    Detector:            AIA
+    Measurement:                 171.0 Angstrom
+    Wavelength:          171.0 Angstrom
+    Observation Date:    2011-06-07 06:33:02
+    Exposure Time:               0.234256 s
+    Dimension:           [1024. 1024.] pix
+    Coordinate System:   helioprojective
+    Scale:                       [2.402792 2.402792] arcsec / pix
+    Reference Pixel:     [511.5 511.5] pix
+    Reference Coord:     [3.22309951 1.38578135] arcsec
     array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
             -127.96519  , -127.96519  ],
            [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
             -104.04137  , -127.919716 ],
            [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
              -37.95505  , -127.87541  ],
-            ...,
+           ...,
            [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
             -128.01454  , -128.01454  ],
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
@@ -792,7 +792,7 @@ To apply this form of solar derotation to a `~sunpy.map.MapSequence`, simply imp
 function and apply it to your `~sunpy.map.MapSequence`::
 
     >>> from sunpy.physics.solar_rotation import mapsequence_solar_derotate
-    >>> derotated = mapsequence_solar_derotate(mc)  # doctest: +REMOTE_DATA
+    >>> derotated = mapsequence_solar_derotate(mc)  # doctest: +SKIP
 
 For more info see `~sunpy.physics.solar_rotation.mapsequence_solar_derotate`.
 
@@ -800,7 +800,6 @@ If you just want to calculate the shifts required to compensate for solar
 rotation relative to the first map in the `~sunpy.map.MapSequence` without applying them, use::
 
     >>> from sunpy.physics.solar_rotation import calculate_solar_rotate_shift
-    >>> shifts = calculate_solar_rotate_shift(mc)  # doctest: +REMOTE_DATA
+    >>> shifts = calculate_solar_rotate_shift(mc)  # doctest: +SKIP
 
-Please consult the docstring of the `~sunpy.image.coalignment.mapsequence_coalign_by_match_template` function in order to learn about
-the features of this function.
+Please consult the docstring of the `~sunpy.image.coalignment.mapsequence_coalign_by_match_template` function in order to learn about the features of this function.

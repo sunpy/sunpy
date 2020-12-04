@@ -91,7 +91,7 @@ def test_fido(time, instrument, wave):
     qr = Fido.search(time, instrument, wave)
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
-    assert len(response) == qr[0]._numfile + qr[1]._numfile
+    assert len(response) == len(qr[0]) + len(qr[1])
 
 
 def test_attr_reg():

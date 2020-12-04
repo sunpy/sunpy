@@ -186,6 +186,11 @@ operator would::
     2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     2
     2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     3
     <BLANKLINE>
+    1 Results from the RHESSIClient:
+         Start Time           End Time      Instrument ... Source Provider
+    ------------------- ------------------- ---------- ... ------ --------
+    2012-03-04 00:00:00 2012-03-04 23:59:59     RHESSI ... RHESSI     NASA
+    <BLANKLINE>
     3 Results from the VSOClient:
        Start Time [1]       End Time [1]    Source ...     Type    Wavelength [2]
                                                    ...                  keV
@@ -193,11 +198,6 @@ operator would::
     2012-03-03 22:57:40 2012-03-04 00:33:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
     2012-03-04 00:33:20 2012-03-04 01:45:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
     2012-03-04 01:45:40 2012-03-04 02:09:00 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
-    <BLANKLINE>
-    1 Results from the RHESSIClient:
-         Start Time           End Time      Instrument ... Source Provider
-    ------------------- ------------------- ---------- ... ------ --------
-    2012-03-04 00:00:00 2012-03-04 23:59:59     RHESSI ... RHESSI     NASA
     <BLANKLINE>
     <BLANKLINE>
 
@@ -223,31 +223,20 @@ specified in the search, you would index this response to see just the
 results returned by the `~sunpy.net.dataretriever.LYRAClient`::
 
     >>> results[0, :]  # doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at ...>
-    Results from 1 Provider:
-    <BLANKLINE>
-    2 Results from the LYRAClient:
+    <sunpy.net.dataretriever.client.QueryResponse object at ...>
          Start Time           End Time      Instrument ... Source Provider Level
     ------------------- ------------------- ---------- ... ------ -------- -----
     2012-01-01 00:00:00 2012-01-01 23:59:59       LYRA ... PROBA2      ESA     2
-    2012-01-02 00:00:00 2012-02-02 23:59:59       LYRA ... PROBA2      ESA     2
-    <BLANKLINE>
-    <BLANKLINE>
+    2012-01-02 00:00:00 2012-01-02 23:59:59       LYRA ... PROBA2      ESA     2
 
 Or, equivalently::
 
     >>> results[0]  # doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at ...>
-    Results from 1 Provider:
-    <BLANKLINE>
-    2 Results from the LYRAClient:
+    <sunpy.net.dataretriever.client.QueryResponse object at ...>
          Start Time           End Time      Instrument ... Source Provider Level
     ------------------- ------------------- ---------- ... ------ -------- -----
     2012-01-01 00:00:00 2012-01-01 23:59:59       LYRA ... PROBA2      ESA     2
-    2012-01-02 00:00:00 2012-02-02 23:59:59       LYRA ... PROBA2      ESA     2
-    <BLANKLINE>
-    <BLANKLINE>
-
+    2012-01-02 00:00:00 2012-01-02 23:59:59       LYRA ... PROBA2      ESA     2
 
 Normal slicing operations work as with any other Python sequence, e.g.
 ``results[1,::10]`` to access every tenth file in the result returned by
@@ -344,5 +333,7 @@ If you want to see the current list of clients you can do::
     SRSClient         Provides access to the NOAA SWPC solar region summary data.
     NoRHClient        Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
     RHESSIClient      Provides access to the RHESSI observing summary time series data.
-    JSOCClient        This is a client to the JSOC Data Export service.
-    VSOClient         Allows queries and downloads from the Virtual Solar Observatory (VSO).
+    HEKClient         Provides access to the Heliophysics Event Knowledgebase (HEK).
+    HECClient         Provides access to the HELIO webservices.
+    JSOCClient        Provides access to the JSOC Data Export service.
+    VSOClient         Provides access to query and download from Virtual Solar Observatory (VSO).

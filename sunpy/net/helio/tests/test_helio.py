@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 
+from sunpy.net import attrs as a
 from sunpy.net.helio.hec import HECClient
 from sunpy.net.helio.parser import (
     endpoint_parser,
@@ -11,6 +12,7 @@ from sunpy.net.helio.parser import (
     webservice_parser,
     wsdl_retriever,
 )
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 # Currently helio makes unverified requests - this filter should be removed when
 # https://github.com/sunpy/sunpy/issues/4401 is fixed
@@ -296,5 +298,26 @@ def test_time_query(client):
     start = '2005/01/03'
     end = '2005/12/03'
     table_name = 'rhessi_hxr_flare'
-    res = client.time_query(start, end, table=table_name, max_records=10)
-    assert len(res.array) == 10
+    with pytest.raises(SunpyDeprecationWarning):
+        res = client.time_query(start, end, table=table_name, max_records=10)
+        assert len(res.array) == 10
+
+
+@pytest.mark.remote_data
+def test_client_search(client):
+    start = '2005/01/03'
+    end = '2005/12/03'
+    table_name = 'rhessi_hxr_flare'
+    res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
+    assert len(res) == 10
+
+
+@pytest.mark.remote_data
+def test_HECResponse_iter(client):
+    start = '2005/01/03'
+    end = '2005/12/03'
+    table_name = 'rhessi_hxr_flare'
+    res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
+    for i in res:
+        # Just to make sure iter still works.
+        assert len(i) == 1

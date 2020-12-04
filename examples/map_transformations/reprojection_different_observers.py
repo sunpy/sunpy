@@ -35,7 +35,7 @@ plt.rcParams['figure.figsize'] = (16, 8)
 # Let’s download an EUV image from both AIA and EUVI A, when the
 # two spacecraft were separated by approximately 120 degrees.
 
-euvi = (a.vso.Source('STEREO_A') &
+euvi = (a.Source('STEREO_A') &
         a.Instrument("EUVI") &
         a.Time('2011-11-01', '2011-11-01T00:10:00'))
 

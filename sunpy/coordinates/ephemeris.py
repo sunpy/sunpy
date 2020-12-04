@@ -269,11 +269,11 @@ def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocit
     Query the location and velocity of the asteroid Juno
 
     >>> get_horizons_coord('Juno', '1995-07-18 07:17', 'smallbody', include_velocity=True)  # doctest: +REMOTE_DATA
-    INFO: Obtained JPL HORIZONS location for 3 Juno [sunpy.coordinates.ephemeris]
+    INFO: Obtained JPL HORIZONS location for 3 Juno (A804 RA) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=1995-07-18T07:17:00.000): (lon, lat, radius) in (deg, deg, AU)
-        (-25.16107572, 14.59098456, 3.17667662)
+        (-25.16107532, 14.59098438, 3.17667664)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
-        (-0.00514936, -0.00205857, 8.89781348)>
+        (-0.03306548, 0.00052415, -2.66709222)>
     """
     obstime = parse_time(time)
     array_time = np.reshape(obstime, (-1,))  # Convert to an array, even if scalar
