@@ -1,0 +1,5 @@
+Fixed an assumption in `sunpy.map.GenericMap.pixel_to_world` that the first
+data axis is longitude, and the second is latitude. This will affect you if
+you are using data where the x/y axes are latitude/longitude, and now returns
+correct values in methods and properties that call ``pixel_to_world``,
+such as ``bottom_left_coord``, ``top_right_coord``, ``center``.
