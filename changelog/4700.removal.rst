@@ -1,0 +1,7 @@
+The ``origin`` argument to `sunpy.map.GenericMap.pixel_to_world` and
+`sunpy.map.GenericMap.world_to_pixel` is deprecated.
+
+- If passing ``0``, not using the ``origin`` argument will have the same effect.
+- If passing ``1``, manually subtract 1 pixel from the input to ``pixel_to_world``,
+  or manually add 1 pixel to the output of ``world_to_pixel``, and do not use the
+  ``origin`` argument.
