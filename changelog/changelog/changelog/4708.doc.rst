@@ -1,1 +1,0 @@
-Moveed the example for NorthOffsetFrame out of its docstring
