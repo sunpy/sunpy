@@ -32,33 +32,7 @@ class NorthOffsetFrame:
     20) in the Heliographic Stonyhurst frame. The new grid is overplotted in
     blue.
 
-    .. plot::
-        :include-source:
-
-        import matplotlib.pyplot as plt
-        import astropy.units as u
-
-        from astropy.coordinates import SkyCoord
-        from sunpy.coordinates import NorthOffsetFrame
-
-        import sunpy.map
-        from sunpy.data.sample import AIA_171_IMAGE
-
-        m = sunpy.map.Map(AIA_171_IMAGE)
-
-        north = SkyCoord(20*u.deg, 20*u.deg, frame="heliographic_stonyhurst")
-        new_frame = NorthOffsetFrame(north=north)
-
-        ax = plt.subplot(projection=m)
-        m.plot()
-
-        overlay = ax.get_coords_overlay('heliographic_stonyhurst')
-        overlay[0].set_ticks(spacing=30. * u.deg, color='white')
-        overlay.grid(ls='-', color='white')
-
-        overlay = ax.get_coords_overlay(new_frame)
-        overlay[0].set_ticks(spacing=30. * u.deg)
-        overlay.grid(ls='-', color='blue')
+    Link to example : https://docs.sunpy.org/en/latest/api/sunpy.coordinates.NorthOffsetFrame.html
 
     Notes
     -----
