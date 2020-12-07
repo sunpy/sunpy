@@ -24,7 +24,7 @@ class NorthOffsetFrame:
     Examples
     --------
     .. minigallery:: examples.units_and_coordinates.NorthOffsetFrame
-   
+
     Notes
     -----
     ``NorthOffsetFrame`` is a wrapper around the
