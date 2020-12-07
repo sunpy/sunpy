@@ -27,7 +27,7 @@ import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################
-# Creating the offset frame  
+# Now to create the offset frame. 
 m = sunpy.map.Map(AIA_171_IMAGE)
 
 north = SkyCoord(20*u.deg, 20*u.deg, frame="heliographic_stonyhurst")
