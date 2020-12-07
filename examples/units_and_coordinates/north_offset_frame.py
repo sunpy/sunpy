@@ -18,16 +18,16 @@ blue.
 ##############################################################################
 # Import the required modules.
 import matplotlib.pyplot as plt
-import astropy.units as u
 
+import astropy.units as u
 from astropy.coordinates import SkyCoord
-from sunpy.coordinates import NorthOffsetFrame
 
 import sunpy.map
+from sunpy.coordinates import NorthOffsetFrame
 from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################
-# Now to create the offset frame. 
+# Now to create the offset frame.
 m = sunpy.map.Map(AIA_171_IMAGE)
 
 north = SkyCoord(20*u.deg, 20*u.deg, frame="heliographic_stonyhurst")
