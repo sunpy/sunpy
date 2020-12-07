@@ -20,7 +20,7 @@ class NorthOffsetFrame:
     Examples
     --------
 
-    .. minigallery:: examples.units_and_coordinates 
+    .. minigallery:: examples.units_and_coordinates.NorthOffsetFrame
 
 
     Parameters
