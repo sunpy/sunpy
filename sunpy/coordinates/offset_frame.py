@@ -16,17 +16,16 @@ class NorthOffsetFrame:
     shifting the origin in the projected sky (e.g., where helioprojective X and Y coordinates are
     zero), use `~astropy.coordinates.SkyOffsetFrame` instead.
     
-    
-    Examples
-    --------
-
-    .. minigallery:: examples.units_and_coordinates.NorthOffsetFrame
-
-
     Parameters
     ----------
     north : `~sunpy.coordinates.frames.HeliographicStonyhurst`
         The direction and frame for the new "north pole".
+        
+        
+    Examples
+    --------
+
+    .. minigallery:: examples.units_and_coordinates.NorthOffsetFrame
 
    
     Notes
