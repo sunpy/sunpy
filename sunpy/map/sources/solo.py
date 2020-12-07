@@ -1,6 +1,9 @@
 """Solar Orbiter Map subclass definitions"""
+import astropy.units as u
+from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch, ImageNormalize
 
+from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
@@ -29,6 +32,16 @@ class EUIMap(GenericMap):
             self.meta['bunit'] = 'ct'
         if self.meta.get('bunit', None) == 'DN/s':
             self.meta['bunit'] = 'ct/s'
+
+    @property
+    def _supported_observer_coordinates(self):
+        return [(('hcix_obs', 'hciy_obs', 'hciz_obs'),
+                 {'x': self.meta.get('hcix_obs'),
+                  'y': self.meta.get('hciy_obs'),
+                  'z': self.meta.get('hciz_obs'),
+                  'unit': u.m,
+                  'representation_type': CartesianRepresentation,
+                  'frame': HeliocentricInertial})] + super()._supported_observer_coordinates
 
     @property
     def observatory(self):
