@@ -21,19 +21,7 @@ class NorthOffsetFrame:
     north : `~sunpy.coordinates.frames.HeliographicStonyhurst`
         The direction and frame for the new "north pole".
 
-    Examples
-    --------
-    A common use for this is to create a frame derived from Heliographic, which
-    has the north pole at some point of interest. In this new frame, lines of
-    longitude form great circles radially away from the point, and lines of
-    latitude measure angular distance from the point.
-
-    In this example the new frame is shifted so the new north pole is at (20,
-    20) in the Heliographic Stonyhurst frame. The new grid is overplotted in
-    blue.
-
-    Link to example : https://docs.sunpy.org/en/latest/api/sunpy.coordinates.NorthOffsetFrame.html
-
+   
     Notes
     -----
     ``NorthOffsetFrame`` is a wrapper around the
