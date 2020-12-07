@@ -1,1 +1,1 @@
-Moved the example for NorthOffsetFrame out of its docstring
+Created a new gallery example for `~sunpy.coordinates.NorthOffsetFrame`.
