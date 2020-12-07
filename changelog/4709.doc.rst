@@ -1,1 +1,1 @@
-Created a new gallery example for `~sunpy.coordinates.NorthOffsetFrame`.
+Created the new gallery example :ref:`sphx-glr-generated-gallery-units-and-coordinates-north-offset-frame-py` for `~sunpy.coordinates.NorthOffsetFrame`.

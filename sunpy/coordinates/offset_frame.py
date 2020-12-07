@@ -23,7 +23,7 @@ class NorthOffsetFrame:
 
     Examples
     --------
-    .. minigallery:: examples.units_and_coordinates.NorthOffsetFrame
+    .. minigallery:: sunpy.coordinates.NorthOffsetFrame
 
     Notes
     -----
