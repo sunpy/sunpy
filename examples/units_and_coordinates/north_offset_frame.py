@@ -4,6 +4,15 @@ Creating an Offset frame using NorthOffsetFrame
 ===============================================
 
 This is an example to show some possible usage of ``NorthOffsetFrame``.
+
+A common use for this is to create a frame derived from Heliographic, which
+has the north pole at some point of interest. In this new frame, lines of
+longitude form great circles radially away from the point, and lines of
+latitude measure angular distance from the point.
+In this example the new frame is shifted so the new north pole is at (20,
+20) in the Heliographic Stonyhurst frame. The new grid is overplotted in
+blue.
+
 """
 
 ##############################################################################
