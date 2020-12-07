@@ -3,7 +3,7 @@
 Creating an Offset frame using NorthOffsetFrame
 ===============================================
 
-This is an example to show some possible usage of ``NorthOffsetFrame``.
+This example shows a possible use of `~sunpy.coordinates.NorthOffsetFrame`
 
 A common use for this is to create a frame derived from Heliographic, which
 has the north pole at some point of interest. In this new frame, lines of
