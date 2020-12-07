@@ -4,6 +4,7 @@ Creating an Offset frame using NorthOffsetFrame
 ===============================================
 
 This is an example to show some possible usage of ``NorthOffsetFrame``.
+"""
 
 ##############################################################################
 # Import the required modules.
