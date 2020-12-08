@@ -34,7 +34,7 @@ new_frame = NorthOffsetFrame(north=north)
 # measure angular distance from the point.
 
 ax = plt.subplot(projection=aiamap)
-aiamap.plot()
+aiamap.plot(clip_interval=(1, 99.99)*u.percent)
 aiamap.draw_grid()
 
 overlay = ax.get_coords_overlay(new_frame)
