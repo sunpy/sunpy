@@ -28,6 +28,48 @@ Requesting cutouts from the JSOC
 ================================
 `~sunpy.net.Fido` can now be used to request cutouts from JSOC via the new ``a.jsoc.Cutout`` attr. This includes the ability to adjust the requested field of view to "track" a feature as it moves across the solar disk, perform sub-pixel image registration, and mask off-disk pixels.
 
+Coordinates with velocities
+===========================
+It is now supported to transform coordinates with attached velocities, and the various ephemeris functions can optionally include velocity information.
+Transformations between coordinate frames will account for both any change in orientation of the velocity vector and any induced velocity due to relative motion between the frames.
+For example, consider Mars's position/velocity in `~sunpy.coordinates.frames.HeliographicStonyhurst`::
+
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import get_body_heliographic_stonyhurst
+    >>> mars = SkyCoord(get_body_heliographic_stonyhurst('mars', '2021-01-01',
+    ...                                                  include_velocity=True))
+    >>> mars
+    <SkyCoord( HeliographicStonyhurst: obstime=2021-01-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+        (-34.46752135, 1.77496469, 1.50936573)
+     (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
+        (-0.00048971, 0.00060976, 19.54950062)>
+    >>> mars.velocity.norm()
+    <Quantity 19.56823076 km / s>
+
+However, `~sunpy.coordinates.frames.HeliographicStonyhurst` is a non-inertial frame that rotates over time.
+By transforming this coordinate to `~sunpy.coordinates.frames.HeliocentricInertial`, we can see that Mars's actual velocity is larger::
+
+    >>> mars.heliocentricinertial
+    <SkyCoord (HeliocentricInertial: obstime=2021-01-01T00:00:00.000): (lon, lat, distance) in (deg, deg, AU)
+        (-9.91128592, 1.77496469, 1.50936573)
+     (d_lon, d_lat, d_distance) in (arcsec / s, arcsec / s, km / s)
+        (0.04174239, 0.00060976, 19.54950058)>
+    >>> mars.heliocentricinertial.velocity.norm()
+    <Quantity 49.68592218 km / s>
+
+See :ref:`sunpy-coordinates-velocities` for more information.
+
+Alternatives for reprojecting a Helioprojective map
+===================================================
+The typical observation in `~sunpy.coordinates.frames.Helioprojective` coordinates does not contain full 3D information for the sources of emission, so an assumption needs to be made when transforming such coordinates to other coordinate frames.
+By default, SunPy assumes that the emission is coming from the surface of the Sun, which enables reprojections such as in the example :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py`.
+However, this assumption is not appropriate for some observations, e.g., from coronagraphs.
+
+There is now a context manager (:meth:`~sunpy.coordinates.frames.Helioprojective.assume_spherical_screen`) to override the default assumption such that any 2D coordinates are interpreted as being on the inside of a large spherical screen.
+See the following example for how this context manager enables alternative reprojections.
+
+.. minigallery:: sunpy.coordinates.Helioprojective.assume_spherical_screen
+
 Performance improvements
 ========================
 Several functions in `sunpy.map.maputils` have been significantly sped up with improved algorithms.
