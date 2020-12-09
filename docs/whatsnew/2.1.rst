@@ -1,0 +1,45 @@
+.. doctest-skip-all
+
+.. _whatsnew-2.1:
+
+************************
+What's New in SunPy 2.1?
+************************
+
+Overview
+========
+The SunPy project is pleased to announce the 2.1 release of the sunpy package.
+
+Finding map contours
+====================
+The new :meth:`sunpy.map.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
+
+Map data and units
+==================
+`~sunpy.map.Map`s now have the ``.unit`` set to the correct `~astropy.units.Unit` if the 'BUNIT' keyword is set in the FITS metadata.
+
+New synoptic map sources and clients
+====================================
+`~sunpy.map.sources.MDISynopticMap` and `~sunpy.map.sources.HMISynopticMap` have been added as new data sources, and automatically fix common issues with FITS metadata from these sources. You do not need to change any code to use these, as sunpy automatically detects and uses the appropriate map sources for each file.
+
+It is now possible to search for GONG synoptic maps within `sunpy.net.Fido`, using ``a.Instrument('GONG')``.
+
+Requesting cutouts from the JSOC
+================================
+`~sunpy.net.Fido` can now be used to request cutouts from JSOC via the new ``a.jsoc.Cutout`` attr. This includes the ability to adjust the requested field of view to "track" a feature as it moves across the solar disk, perform sub-pixel image registration, and mask off-disk pixels.
+
+Performance improvements
+========================
+Several functions in `sunpy.map.maputils` have been significantly sped up with improved algorithms.
+
+In addition, `sunpy.map.Map.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications which make mutiple requests for the map WCS (e.g. plotting), and reducing the number of repeated warnings thrown when metadata is missing.
+
+Increase in required package versions
+=====================================
+We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 2.1:
+
+- python 3.7
+- astropy 4.0
+- scipy 1.2
+- parfive 1.1
+- drms 0.6
