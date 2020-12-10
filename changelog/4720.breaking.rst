@@ -1,0 +1,1 @@
+Moved function for calculating solar angular raduis from `sunpy/map/maputils.py` to `sunpy/coordinates/utils.py`
