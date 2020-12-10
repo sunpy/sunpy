@@ -42,7 +42,7 @@ To install SunPy once conda is installed run the following two commands:
 For detailed installation instructions, see the `installation guide`_ in the SunPy docs.
 
 .. _miniconda: https://docs.conda.io/en/latest/miniconda.html
-.. _installation guide: https://docs.sunpy.org/en/latest/guide/installation/index.html
+.. _installation guide: https://docs.sunpy.org/en/latest/guide/installation.html
 
 Developing
 ==========
