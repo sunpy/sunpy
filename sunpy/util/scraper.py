@@ -74,6 +74,8 @@ class Scraper:
     -----
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
+    If a pattern contatining time is passed as a parameter, set `regex = True`. 
+    For example the pattern contains `%Y%m%dT%H%M%S` instead of just `%Y%m%d`.
     """
     def __init__(self, pattern, regex=False, **kwargs):
         if regex:
