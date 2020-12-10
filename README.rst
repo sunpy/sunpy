@@ -93,8 +93,8 @@ For more information on contributing to SunPy, please read our `Newcomers' guide
 .. _Developers Guide: https://docs.sunpy.org/en/latest/dev_guide/index.html
 .. _`#sunpy:openastronomy.org`: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. _issues page: https://github.com/sunpy/sunpy/issues
-.. _Newcomers' guide: https://docs.sunpy.org/en/latest/dev_guide/newcomers.html
-.. _Development installation:  https://docs.sunpy.org/en/latest/dev_guide/newcomers.html#setting-up-a-development-environment
+.. _Newcomers' guide: https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html
+.. _Development installation:  https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html#setting-up-a-development-environment
 
 Code of Conduct
 ===============
