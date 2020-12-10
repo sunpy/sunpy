@@ -8,7 +8,7 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates import Helioprojective, sun
+from sunpy.coordinates import Helioprojective
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'map_edges', 'solar_angular_radius', 'sample_at_coords',
@@ -93,30 +93,6 @@ def _verify_coordinate_helioprojective(coordinates):
     if not isinstance(frame, Helioprojective):
         raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
                          "but must be in the Helioprojective frame.")
-
-
-def solar_angular_radius(coordinates):
-    """
-    Calculates the solar angular radius as seen by the observer.
-
-    The tangent vector from the observer to the edge of the Sun forms a
-    right-angle triangle with the radius of the Sun as the far side and the
-    Sun-observer distance as the hypotenuse.  Thus, the sine of the angular
-    radius of the Sun is ratio of these two distances.
-
-    Parameters
-    ----------
-    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate. The coordinate frame must be
-        `~sunpy.coordinates.Helioprojective`.
-
-    Returns
-    -------
-    angle : `~astropy.units.Quantity`
-        The solar angular radius.
-    """
-    _verify_coordinate_helioprojective(coordinates)
-    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
 def sample_at_coords(smap, coordinates):
