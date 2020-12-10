@@ -26,7 +26,7 @@ For some examples of using SunPy see our `gallery`_, to see the latest changes i
 
 .. _SunPy: https://sunpy.org
 .. _gallery: https://docs.sunpy.org/en/stable/generated/gallery/index.html
-.. _Changelog: https://docs.sunpy.org/en/latest/whatsnew/changelog.html
+.. _Changelog: https://docs.sunpy.org/en/stable/whatsnew/changelog.html
 
 Installation
 ============
@@ -42,7 +42,7 @@ To install SunPy once conda is installed run the following two commands:
 For detailed installation instructions, see the `installation guide`_ in the SunPy docs.
 
 .. _miniconda: https://docs.conda.io/en/latest/miniconda.html
-.. _installation guide: https://docs.sunpy.org/en/latest/guide/installation.html
+.. _installation guide: https://docs.sunpy.org/en/stable/guide/installation/index.html
 
 Developing
 ==========
