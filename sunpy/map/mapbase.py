@@ -1507,10 +1507,6 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The rectangle is defined in pixel space. If coordinate input is given,
-        it is first transformed into pixel space, and the pixel indices of
-        top_right and bottom_left are used as the corners of the rectangle.
-
         If top_right is below or to the left of bottom_left, a message is logged
         at the debug level to the sunpy logger.
 
