@@ -482,7 +482,24 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
         rep = self.represent_as(UnitSphericalRepresentation)
         lat, lon = rep.lat, rep.lon
-        alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
+
+        # Check for the use of floats with lower precision than the native Python float
+        lon_type = lon.dtype.type if hasattr(lon, 'dtype') else type(lon)
+        lat_type = lat.dtype.type if hasattr(lat, 'dtype') else type(lat)
+        if not set([lon_type, lat_type]).issubset([float, np.float64, np.longdouble]):
+            raise SunpyUserWarning("The Helioprojective component values appear to be lower "
+                                   "precision than the native Python float: "
+                                   f"Tx is {lon_type.__name__}, and Ty is {lat_type.__name__}. "
+                                   "To minimize precision loss, you may want to cast the values to "
+                                   "`float` or `numpy.float64` via the NumPy method `.astype()`.")
+
+        # Calculate the distance to the surface of the Sun using the law of cosines
+        cos_alpha = np.cos(lat) * np.cos(lon)
+        c = self.observer.radius**2 - self.rsun**2
+        b = -2 * self.observer.radius * cos_alpha
+        # Ignore sqrt of NaNs
+        with np.errstate(invalid='ignore'):
+            d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2  # use the "near" solution
 
         # Check for the use of floats with lower precision than the native Python float
         if not set([lon.dtype.type, lat.dtype.type]).issubset([float, np.float64, np.longdouble]):
