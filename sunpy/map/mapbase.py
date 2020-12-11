@@ -1468,6 +1468,10 @@ class GenericMap(NDData):
         If top_right is below or to the left of bottom_left, a message is logged
         at the debug level to the sunpy logger.
 
+        When specifying pixel coordinates, they are specified in Cartesian
+        order not in numpy order. So, for example, the ``bottom_left=``
+        argument should be ``[left, bottom]``.
+
         Examples
         --------
         >>> import astropy.units as u
@@ -1586,52 +1590,53 @@ class GenericMap(NDData):
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
         # parse input arguments
-        bottom_left, top_right = self._parse_submap_input(bottom_left, top_right, width, height)
+        pixel_corners = u.Quantity(self._parse_submap_input(bottom_left, top_right, width, height)).T
 
-        x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
-        y_pixels = u.Quantity([bottom_left[1], top_right[1]]).to_value(u.pix)
-        if x_pixels[0] > x_pixels[1]:
+        # The pixel corners result is in Cartesian order, so the first index is
+        # columns and the second is rows.
+        bottom = np.min(pixel_corners[1]).to_value(u.pix)
+        top = np.max(pixel_corners[1]).to_value(u.pix)
+        left = np.min(pixel_corners[0]).to_value(u.pix)
+        right = np.max(pixel_corners[0]).to_value(u.pix)
+
+        if left > right:
             log.debug("The rectangle is inverted in the left/right direction.")
 
-        if y_pixels[0] > y_pixels[1]:
+        if bottom > top:
             log.debug("The rectangle is inverted in the bottom/top direction.")
-        # Sort the pixel values so we always slice in the correct direction
-        x_pixels.sort()
-        y_pixels.sort()
 
         # Round the lower left pixel to the nearest integer
         # We want 0.5 to be rounded up to 1, so use floor(x + 0.5)
-        x_pixels[0] = np.floor(x_pixels[0] + 0.5)
-        y_pixels[0] = np.floor(y_pixels[0] + 0.5)
+        bottom = np.floor(bottom + 0.5)
+        left = np.floor(left + 0.5)
+
         # Round the top right pixel to the nearest integer, then add 1 for array indexing
         # We want e.g. 2.5 to be rounded down to 2, so use ceil(x - 0.5)
-        x_pixels[1] = np.ceil(x_pixels[1] - 0.5) + 1
-        y_pixels[1] = np.ceil(y_pixels[1] - 0.5) + 1
-
-        x_pixels = np.array(x_pixels)
-        y_pixels = np.array(y_pixels)
+        top = np.ceil(top - 0.5) + 1
+        right = np.ceil(right - 0.5) + 1
 
         # Clip pixel values to max of array, prevents negative
         # indexing
-        x_pixels = np.clip(x_pixels, 0, self.data.shape[1])
-        y_pixels = np.clip(y_pixels, 0, self.data.shape[0])
+        bottom = int(np.clip(bottom, 0, self.data.shape[0]))
+        top = int(np.clip(top, 0, self.data.shape[0]))
+        left = int(np.clip(left, 0, self.data.shape[1]))
+        right = int(np.clip(right, 0, self.data.shape[1]))
 
+        arr_slice = np.s_[bottom:top, left:right]
         # Get ndarray representation of submap
-        xslice = slice(int(x_pixels[0]), int(x_pixels[1]))
-        yslice = slice(int(y_pixels[0]), int(y_pixels[1]))
-        new_data = self.data[yslice, xslice].copy()
+        new_data = self.data[arr_slice].copy()
 
         # Make a copy of the header with updated centering information
         new_meta = self.meta.copy()
         # Add one to go from zero-based to one-based indexing
-        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - x_pixels[0]
-        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - y_pixels[0]
+        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - left
+        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - bottom
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
         if self.mask is not None:
-            new_mask = self.mask[yslice, xslice].copy()
+            new_mask = self.mask[arr_slice].copy()
             # Create new map with the modification
             new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
             return new_map
@@ -1668,7 +1673,10 @@ class GenericMap(NDData):
                                 "must be a Quantity in units of pixels.")
             # Add width and height to get top_right
             top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
-        return bottom_left, top_right
+
+        top_left = u.Quantity([top_right[0], bottom_left[1]])
+        bottom_right = u.Quantity([bottom_left[0], top_right[1]])
+        return bottom_left, top_left, top_right, bottom_right
 
     @_parse_submap_input.register(SkyCoord)
     def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
@@ -1677,10 +1685,12 @@ class GenericMap(NDData):
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
-        # Convert cordinates to pixels
-        bottom_left = self.world_to_pixel(bottom_left)
-        top_right = self.world_to_pixel(top_right)
-        return bottom_left, top_right
+        frame = bottom_left.frame
+        corners = SkyCoord(Tx=[bottom_left.Tx, bottom_left.Tx, top_right.Tx, top_right.Tx],
+                           Ty=[bottom_left.Ty, top_right.Ty, top_right.Ty, bottom_left.Ty],
+                           frame=frame)
+
+        return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
 
     @u.quantity_input
     def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):
