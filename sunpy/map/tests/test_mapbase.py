@@ -476,6 +476,25 @@ def test_submap_world(simple_map, rect, submap_out):
         np.testing.assert_equal(submap.data, submap_out)
 
 
+@pytest.mark.parametrize('test_map', ("aia171_roll_map", "aia171_test_map", "hmi_test_map"),
+                         indirect=['test_map'])
+def test_submap_roll_image(test_map):
+    """
+    This test checks that when an unaligned map is cropped with submap that the
+    resulting map contains all four corners of the input world coordinate
+    bounding box.
+    """
+    corners = SkyCoord(Tx=[300, 300, 800, 800], Ty=[0, 500, 500, 0],
+                       unit=u.arcsec, frame=test_map.coordinate_frame)
+
+    submap = test_map.submap(corners[0], top_right=corners[2])
+
+    pix_corners = np.array(submap.wcs.world_to_pixel(corners)).T
+    for pix_corner in pix_corners:
+        assert ((-0.5, -0.5) <= pix_corner).all()
+        assert (pix_corner <= submap.data.shape).all()
+
+
 # Check that submap works with units convertable to pix but that aren't pix
 @pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
 def test_submap_data_header(generic_map, unit):
