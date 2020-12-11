@@ -1,7 +1,6 @@
 """
 Test mapsequence functionality
 """
-import os
 from unittest import mock
 
 import numpy as np
@@ -16,72 +15,38 @@ from sunpy.util.metadata import MetaDict
 
 
 @pytest.fixture
-def aia_map():
-    """
-    Load SunPy's test AIA image.
-    """
-    testpath = sunpy.data.test.rootdir
-    aia_file = os.path.join(testpath, "aia_171_level1.fits")
-    return sunpy.map.Map(aia_file)
-
-
-@pytest.fixture
-def eit_map():
-    """
-    Load SunPy's test EIT image.
-    """
-    testpath = sunpy.data.test.rootdir
-    eit_file = os.path.join(testpath, "EIT", "efz20040301.020010_s.fits")
-    return sunpy.map.Map(eit_file)
-
-
-@pytest.fixture
-def masked_aia_map(aia_map):
-    """
-    Put a simple mask in the test AIA image.  A rectangular (not square) block
-    of True values are included to test that operations on the mask respect how
-    the mask is stored.
-    """
-    aia_map_data = aia_map.data
-    aia_map_mask = np.zeros_like(aia_map_data)
-    aia_map_mask[0:2, 0:3] = True
-    return sunpy.map.Map(np.ma.masked_array(aia_map_data, mask=aia_map_mask),
-                         aia_map.meta)
-
-
-@pytest.fixture
-def mapsequence_all_the_same(aia_map):
+def mapsequence_all_the_same(aia171_test_map):
     """ Simple `sunpy.map.mapsequence` for testing."""
-    return sunpy.map.Map([aia_map, aia_map], sequence=True)
+    return sunpy.map.Map([aia171_test_map, aia171_test_map], sequence=True)
 
 
 @pytest.fixture
-def mapsequence_different_maps(aia_map, eit_map):
+def mapsequence_different_maps(aia171_test_map, eit_test_map):
     """
     Simple `sunpy.map.mapsequence` for testing, in which there are different maps
     """
-    return sunpy.map.Map([aia_map, eit_map], sequence=True)
+    return sunpy.map.Map([aia171_test_map, eit_test_map], sequence=True)
 
 
 @pytest.fixture
-def mapsequence_all_the_same_all_have_masks(masked_aia_map):
+def mapsequence_all_the_same_all_have_masks(aia171_test_map_with_mask):
     """ Simple `sunpy.map.mapsequence` for testing, in which all the maps have
     masks."""
-    return sunpy.map.Map([masked_aia_map, masked_aia_map], sequence=True)
+    return sunpy.map.Map([aia171_test_map_with_mask, aia171_test_map_with_mask], sequence=True)
 
 
 @pytest.fixture
-def mapsequence_all_the_same_some_have_masks(aia_map, masked_aia_map):
+def mapsequence_all_the_same_some_have_masks(aia171_test_map, aia171_test_map_with_mask):
     """ Simple `sunpy.map.mapsequence` for testing, in which at least some of the
     maps have masks."""
-    return sunpy.map.Map([masked_aia_map, masked_aia_map, aia_map], sequence=True)
+    return sunpy.map.Map([aia171_test_map_with_mask, aia171_test_map_with_mask, aia171_test_map], sequence=True)
 
 
 @pytest.fixture()
-def mapsequence_different(aia_map):
+def mapsequence_different(aia171_test_map):
     """ Mapsequence allows that the size of the image data in each map be
     different.  This mapsequence contains such maps."""
-    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4) * u.pix)], sequence=True)
+    return sunpy.map.Map([aia171_test_map, aia171_test_map.superpixel((4, 4) * u.pix)], sequence=True)
 
 
 def test_all_maps_same_shape(mapsequence_all_the_same, mapsequence_different):
