@@ -20,6 +20,7 @@ from astropy.time import Time
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.exceptions import SunpyUserWarning
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 
 _J2000 = Time('J2000.0', scale='tt')
@@ -482,6 +483,16 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         rep = self.represent_as(UnitSphericalRepresentation)
         lat, lon = rep.lat, rep.lon
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
+
+        # Check for the use of floats with lower precision than the native Python float
+        if not set([lon.dtype.type, lat.dtype.type]).issubset([float, np.float64, np.longdouble]):
+            raise SunpyUserWarning("The Helioprojective component values appear to be lower "
+                                   "precision than the native Python float: "
+                                   f"Tx is {lon.dtype.name}, and Ty is {lat.dtype.name}. "
+                                   "To minimize precision loss, you may want to cast the values to "
+                                   "`float` or `numpy.float64` via the NumPy method `.astype()`.")
+
+        # Calculate the distance to the surface of the Sun using the law of cosines
         c = self.observer.radius**2 - self.rsun**2
         b = -2 * self.observer.radius * np.cos(alpha)
         # Ingore sqrt of NaNs
