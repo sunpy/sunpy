@@ -1,1 +1,1162 @@
-{"detector": [["BFI", "None"], ["CTOF", "Charge Time Of Flight mass spectrometer"], ["HI1", "Heliospheric Imager 1"], ["+Z-Z", ""], ["SHORTWAVE-LOBE", "None"], ["RSC", ""], ["TM-1010", "None"], ["TM4200-2", "None"], ["MODULE2", "7-shell Si detector (flight #1), 7-shell Si detector with collimator (flight #3)"], ["Hi-C21", "High Resolution Coronal Imager 2.1"], ["L1", "Coronado solar telescope L1"], ["C1", "Coronograph 1"], ["XRT", "None"], ["INNER", "None"], ["HI2", "Heliospheric Imager 2"], ["WAP", "Wide Angle Partition"], ["SPM", ""], ["NFI", "None"], ["C2", "Coronograph 2"], ["MEGS-P", "Multiple EUV Grating Spectrograph-Photometer"], ["VAULT-2002", "None"], ["DIARAD", "Differential Absolute Radiometer"], ["MODULE6", "7-shell Si detector (flight #1), 10-shell Si detector (flights #2 & 3)"], ["MODULE1", "7-shell Si detector (flights #1 & 2)"], ["OVI", ""], ["LONGWAVE-SLIT", "None"], ["PMOD", "Physikalisch-Meteorologisches Observatorium Davos"], ["MEGS-A", "Multiple EUV Grating Spectrograph-A"], ["NUV", "None"], ["HED", "High Energy Detector"], ["COR2", "Coronograph 2"], ["VAULT-1999", "None"], ["LOI", ""], ["GFPI", "None"], ["L2", "Coronado solar telescope L2"], ["VAULT-2014", "None"], ["MEGS-B", "Multiple EUV Grating Spectrograph-B"], ["GRIS", "None"], ["NB", "None"], ["LONGWAVE-LOBE", "None"], ["HET", "High Energy Telescope"], ["MODULE3", "7-shell Si detector (flight 1),  7-shell CdTe detector (flights 2 & 3)"], ["SIT", "Suprathermal Ion Telescope"], ["FG", "None"], ["LFR", "None"], ["SWS", "Solar Wind Sector"], ["Fsmain", ""], ["BBI", "None"], ["LED", "Low Energy Detector"], ["WB", "None"], ["BIC0HIFI", "None"], ["MODULE0", "7-shell Si detector (flights #1 & 2), 10-shell Si detector (flight #3)"], ["MDI", "Michelson Doppler Imager"], ["GIS", "Grazing Incidence Spectrometer"], ["Fairchild 2020 scientific CMOS sensor", "None"], ["SEM", "None"], ["LVA", "None"], ["TM4200-6", "None"], ["MODULE5", "7-shell Si detector (flights #1 & 2), 10-shell CdTe detector (flight #3)"], ["+Z", ""], ["VLD", ""], ["HFR", "High Freqency Receiver"], ["ESP", "EUV SpectroPhotometers"], ["B", ""], ["EIT", "Extreme ultraviolet Imaging Telescope"], ["EUVI", "Extreme Ultraviolet Imager"], ["TM-1001", "None"], ["RHESSI", "None"], ["SP", "None"], ["HSTOF", ""], ["IMaX", "None"], ["SEPT", "Solar Electron Proton Telescope"], ["TM4200-5", "None"], ["MTOF", "Mass Time of Flight instrument"], ["MODULE4", "7-shell Si detector (flights #1 & 2), 10-shell Si detector (flight #3)"], ["LET", "Low Energy Telescope"], ["EIS", "None"], ["STE", "Suprathermal Electron Telescope"], ["Hi-C", "High Resolution Coronal Imager"], ["SHORTWAVE-SLIT", "None"], ["MAG", "Magnetometer"], ["LION", "Low Energy Ion and Electron Instrument"], ["FUV", "None"], ["SWEA", "Solar Wind Electron Analyzer"], ["A", ""], ["SWAP", "None"], ["EPHIN", "Electron Proton Helium Instrument"], ["-Z", ""], ["OUTER", "None"], ["SJI", "Slit-Jaw Imager"], ["STOF", "Suprathermal Time Of Flight"], ["PM", "MTOF Proton Monitor"], ["PHOENIX", "7-shell detector with collimator"], ["C3", "Coronograph 3"], ["ZIMPOL", "None"], ["COR1", "Coronograph 1"]], "instrument": [["WISPR", "Wide-Field Imager for Solar Probe Plus"], ["BCS", "Bragg Crystal Spectrometer"], ["512-channel magnetograph", "512-channel Magnetograph"], ["TM-1010", "Kanzelh\u00f6he H\u03b1 Pulnix TM-1010 Camera"], ["Cerro Tololo", "Cerro Tololo, Chile GONG+ site"], ["Hi-C21", "High Resolution Coronal Imager 2.1 (172 A)"], ["XRT", "X-Ray Telescope"], ["CAII", "Kanzelh\u00f6he Ca II k Instrument"], ["ISS", "None"], ["ChroTel", "Chromospheric Telescope"], ["SWAN", "Solar Wind Anisotropies"], ["SHORTWAVE-LOBE-06", "Shortwave EUV observation of Sun with EUNIS (2006 flight)"], ["dpm", "Digital Prominence Monitor"], ["LASCO", "Large Angle and Spectrometric Coronagraph"], ["VAULT-2002", "Very High Angular Resolution Ultraviolet Telescope (2002 flight)"], ["solar fts spectrometer", "Solar FTS Spectrometer"], ["LONGWAVE-LOBE-07", "Full longwave EUV observation of Sun with EUNIS (2007 flight)"], ["ISOON", "Improved Solar Observing Optical Network"], ["chp", "Chromospheric Helium-I Imaging Photometer"], ["60-ft SHG", "60-foot Tower Spectroheliograph"], ["HMI", "Helioseismic and Magnetic Imager"], ["SXI-0", "Solar X-ray Imager"], ["PTMC", "None"], ["SHORTWAVE-LOBE-07", "Shortwave EUV observation of Sun with EUNIS (2007 flight)"], ["LONGWAVE-SLIT-07", "Full longwave EUV observation of Sun with EUNIS (trimmed/2007 flight)"], ["VIRGO", "Variability of Solar Irradiance and Gravity Oscillations"], ["VAULT-1999", "Very High Angular Resolution Ultraviolet Telescope (1999 flight)"], ["HXT", "Hard X-Ray Telescope"], ["EVE", "Extreme Ultraviolet Variability Experiment"], ["GFPI", "None"], ["spectromagnetograph", "SpectroMagnetograph"], ["VAULT-2014", "Very High Angular Resolution Ultraviolet Telescope (2014 flight)"], ["vsm", "Vector SpecroMagnetograph"], ["IVM", "None"], ["GRIS", "None"], ["SECCHI", "Sun Earth Connection Coronal and Heliospheric Investigation"], ["CLIMSO", "Christian Latouche IMageur SOlaire"], ["MERGED GONG", "None"], ["LONGWAVE-SLIT-06", "Full longwave EUV observation of Sun with EUNIS (trimmed/2006 flight)"], ["OVSA", "Owens Valley Solar Array"], ["SHORTWAVE-SLIT-07", "Shortwave EUV observation of Sun with EUNIS (trimmed/2007 flight)"], ["Udaipur", "Indian GONG+ site"], ["BBI", "None"], ["LONGWAVE-LOBE-06", "Full longwave EUV observation of Sun with EUNIS (2006 flight)"], ["AIA", "Atmospheric Imaging Assembly"], ["ERNE", "Energetic and Relativistic Nuclei and Electron experiment"], ["PLASTIC", "PLasma And SupraThermal Ion Composition"], ["MDI", "Michelson Doppler Imager"], ["IRIS", "Interface Region Imaging Spectrograph"], ["mk4", "Mk. IV coronagraph"], ["GOLF", "Global Oscillations at Low Frequencies"], ["SJ", "Slit-Jaw"], ["HXECLIPSE", "UCAR HAO Historical Eclipse Archive"], ["Meudon Spectroheliograph", "None"], ["TRACE", "Transition Region And Coronal Explorer"], ["UVCS", "Ultraviolet Coronagraph Spectrometer"], ["K-Cor", "None"], ["SXT", "Soft X-Ray Telescope"], ["Big Bear", "Big Bear Solar Observatory, California TON and GONG+ sites"], ["EIT", "Extreme ultraviolet Imaging Telescope"], ["TM-1001", "Kanzelh\u00f6he H\u03b1 Pulnix TM-1001 Camera"], ["SP1", "Spectropolarimeter1"], ["RHESSI", "Reuven Ramaty High Energy Solar Spectroscopic Imager"], ["SOT", "Solar Optical Telescope"], ["IMaX", "None"], ["El Teide", "Canary Islands GONG+ site"], ["SUMER", "Solar Ultraviolet Measurements of Emitted Radiation"], ["IMPACT", "In-situ Measurements of Particles and CME Transients"], ["Mauna Loa", "Hawai'ian GONG+ site"], ["SHORTWAVE-SLIT-06", "Shortwave EUV observation of Sun with EUNIS (trimmed/2006 flight)"], ["EIS", "EUV Imaging Spectrometer"], ["CDS", "Coronal Diagnostic Spectrometer"], ["SWAVES", "STEREO/WAVES"], ["Hi-C", "High Resolution Coronal Imager (193 A)"], ["CELIAS", "Charge, Element, and Isotope Analysis System"], ["FOXSI", "Focusing Optics X-ray Solar Imager"], ["SWAP", "Sun Watcher using Active pixel system detector and image Processing"], ["BIC-HIFI", "None"], ["HA2", "Kanzelh\u00f6he H\u03b1 Patrol Instrument"], ["SP2", "Spectropolarimeter2"], ["cp", " Coronagraph/Polarimeter"], ["PHOENIX", "PHOENIX detector on flight #3 of FOXSI"], ["spectroheliograph", "SpectroHeliograph"], ["COSTEP", "Comprehensive Suprathermal and Energetic Particle Analyzer"], ["ZIMPOL", "None"], ["KPDC", "Kanzelh\u00f6he Photosphere Digital Camera"], ["WBS", "Wide Band Spectrometer"], ["Learmonth", "Australian GONG+ site"]], "source": [["VAULT", "Upgraded Very High Angular Resolution Ultraviolet Telescope (VAULT2.0)"], ["STEREO", "None"], ["MLSO", "Mauna Loa Solar Observatory"], ["SMM", "Solar Maximum Mission"], ["Hi-C21", "High Resolution Coronal Imager Experimental Rocket 3rd Flight"], ["SOHO", "Solar and Heliospheric Observatory"], ["SUNRISE2", "None"], ["Hinode", "Hinode Satellite, Japan"], ["HXECLIPSE", "UCAR HAO Historical Eclipse Archive"], ["GONG", "Global Oscillations Network Group"], ["Evans", "Evans Solar Telescope, Sacramento Peak"], ["ChroTel", "Chromospheric Telescope, Observatorio del Teide, Tenerife, Canary Islands"], ["McMath", "McMath Solar Telescope, Kitt Peak"], ["FOXSI1", "Focusing Optics X-ray Solar Imager (flight #1:  11/02/12)"], ["TRACE", "Transition Region And Coronal Explorer"], ["EUNIS2", "None"], ["EUNIS", "Extreme Ultraviolet Normal-incidence Spectrograph"], ["KSO", "Kanzelh\u00f6he Solar Observatory, Karl-Franzens-Universit\u00e4t, Graz, Austria"], ["SOLIS", "Synoptic Optical Long-term Investigations of the Sun"], ["GOES-12", "Geosyncronous Operational Environmental Satellite - 12"], ["RHESSI", "Reuven Ramaty High Energy Solar Spectroscopic Imager"], ["ISOON", "Improved Solar Observing Optical Network"], ["PSP", "Parker Solar Probe"], ["KPVT", "Kitt Peak Vacuum Tower Telescope"], ["GREGOR", "None"], ["PTMC", "None"], ["FOXSI2", "Focusing Optics X-ray Solar Imager (flight #2:  12/11/14)"], ["Hi-C", "High Resolution Coronal Imager Experimental Rocket"], ["IVM", "None"], ["SUNRISE1", "None"], ["OVRO", "Owens Valley Radio Observatory"], ["FOXSI3", "Focusing Optics X-ray Solar Imager (flight #3:  09/07/18)"], ["CLASP2", "Chromospheric LAyer SpectroPolarimeter 2"], ["OMP", "Pic-du-Midi, France"], ["SDO", "Solar Dynamics Observatory"], ["OBSPM", "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris, Paris, France"], ["YOHKOH", "Yohkoh Satellite, Japan"], ["MtWilson", "Mt Wilson Solar Observatory"], ["IRIS", "Interface Region Imaging Spectrograph"], ["PROBA2", "PRoject for Onboard Autonomy"]], "provider": [["NSO", "National Solar Observatory"], ["NGDC", "National Geophysical Data Center, NOAA"], ["KIS", "Kiepenheuer-Institut f\u00fcr Sonnenphysik"], ["SAO", "Smithsonian Astrophysical Observatory"], ["ROB", "Royal Observatory of Belgium Solar Influences Data Center"], ["SSC", "STEREO Science Center, NASA/Goddard"], ["SDAC", "Solar Data Analysis Center, NASA/Goddard"], ["MSFC", "Marshall Space Flight Center"], ["JSOC", "SDO Joint Science Operations Center"], ["OVRO", "Owens Valley Radio Observatory"], ["HAO", "High Altitude Observatory, NCAR"], ["SHA", "Stanford Helioseismology Archive, Stanford U."], ["OMP", "Observatoire Midi-Pyr\u00e9n\u00e9es"], ["LASP", "Laboratory for Atmospheric and Space Physics (University of Colorado at Boulder)"], ["LSSP", "Laboratory for Space and Solar Physics, NASA/Goddard"], ["KSO", "Kanzelh\u00f6he Solar Observatory"], ["NRL", "U.S. Naval Research Laboratory"], ["MPS", "None"], ["MWSPADP", "Mount Wilson Solar Archive Digitization Project"], ["OBSPM", "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris"], ["MSU", "Montana State University"], ["LMSAL", "Lockheed-Martin Solar and Astrophysics Laboratory"]], "physobs": [["number_density", "the number of particles per unit volume"], ["LOS_velocity", "the displacement of line center from rest wavelength/frequency in an arbitrary polarization state"], ["wave_power", "solar internal or atmospheric acoustic-gravity wave measurements. The mode parameters could include frequencies, splittings, amplitudes, widths, etc."], ["LOS_magnetic_field", "Line of sight magnetic field; may be in situ or inferred from the frequency/wavelength Zeeman splitting between opposite circular polarizations of a magnetically-sensitive line"], ["composition", "a notion of relative abundance, such as relative number densities of solar wind particles as a ratio"], ["equivalent_width", "differences between intensities measured at nearby wavelengths, typically in line cores, wings, and nearby continuum, whether measured as an intensity difference or an equivalent width"], ["VECTOR_magnetic_field", "Vector magnetic field; may be in situ or inferred from Stokes polarimetry"], ["polarization_vector", "the net linear polarization"], ["spectrum", "None"], ["particle_velocity", "the average velocity or velocity distribution of a group of particles"], ["Stokes_parameters", "I, Q, U, V - equivalent to observables of total intensity, linear polarization, and circular polarization"], ["vector_magnetic_field", "Vector magnetic field; may be in situ or inferred from Stokes polarimetry"], ["thermal_velocity", "a characterization of the relationship between the temperature and mass of a distribution of particles"], ["irradiance", "intensity per unit area."], ["particle_flux", "the number of particles passing through a unit area per unit time per unit energy"], ["intensity", "the direct intensity, either integrated over the spectral observing range or as a function of wavelength (spectral density)"], ["Intensity", "the direct intensity, either integrated over the spectral observing range or as a function of wavelength (spectral density)"]], "level": [["1", "1"], ["1.5", "1.5"], ["3", "3"], ["1.0", "1.0"], ["2", "2"]]}
+{
+  "detector": [
+    [
+      "BFI",
+      "None"
+    ],
+    [
+      "CTOF",
+      "Charge Time Of Flight mass spectrometer"
+    ],
+    [
+      "HI1",
+      "Heliospheric Imager 1"
+    ],
+    [
+      "+Z-Z",
+      ""
+    ],
+    [
+      "SHORTWAVE-LOBE",
+      "None"
+    ],
+    [
+      "RSC",
+      ""
+    ],
+    [
+      "Paper",
+      "Daily Sunspot Drawings"
+    ],
+    [
+      "TM-1010",
+      "None"
+    ],
+    [
+      "TM4200-2",
+      "None"
+    ],
+    [
+      "MODULE2",
+      "7-shell Si detector (flight #1), 7-shell Si detector with collimator (flight #3)"
+    ],
+    [
+      "Hi-C21",
+      "High Resolution Coronal Imager 2.1"
+    ],
+    [
+      "L1",
+      "Coronado solar telescope L1"
+    ],
+    [
+      "C1",
+      "Coronograph 1"
+    ],
+    [
+      "XRT",
+      "None"
+    ],
+    [
+      "INNER",
+      "None"
+    ],
+    [
+      "HI2",
+      "Heliospheric Imager 2"
+    ],
+    [
+      "WAP",
+      "Wide Angle Partition"
+    ],
+    [
+      "SPM",
+      ""
+    ],
+    [
+      "NFI",
+      "None"
+    ],
+    [
+      "C2",
+      "Coronograph 2"
+    ],
+    [
+      "MEGS-P",
+      "Multiple EUV Grating Spectrograph-Photometer"
+    ],
+    [
+      "VAULT-2002",
+      "None"
+    ],
+    [
+      "DIARAD",
+      "Differential Absolute Radiometer"
+    ],
+    [
+      "MODULE6",
+      "7-shell Si detector (flight #1), 10-shell Si detector (flights #2 & 3)"
+    ],
+    [
+      "MODULE1",
+      "7-shell Si detector (flights #1 & 2)"
+    ],
+    [
+      "OVI",
+      ""
+    ],
+    [
+      "LONGWAVE-SLIT",
+      "None"
+    ],
+    [
+      "PMOD",
+      "Physikalisch-Meteorologisches Observatorium Davos"
+    ],
+    [
+      "MEGS-A",
+      "Multiple EUV Grating Spectrograph-A"
+    ],
+    [
+      "NUV",
+      "None"
+    ],
+    [
+      "HED",
+      "High Energy Detector"
+    ],
+    [
+      "COR2",
+      "Coronograph 2"
+    ],
+    [
+      "VAULT-1999",
+      "None"
+    ],
+    [
+      "Kodak_KAF-09000",
+      "INAF-OACT H\u03b1 and Continuum Detector"
+    ],
+    [
+      "LOI",
+      ""
+    ],
+    [
+      "L2",
+      "Coronado solar telescope L2"
+    ],
+    [
+      "GFPI",
+      "None"
+    ],
+    [
+      "VAULT-2014",
+      "None"
+    ],
+    [
+      "MEGS-B",
+      "Multiple EUV Grating Spectrograph-B"
+    ],
+    [
+      "GRIS",
+      "None"
+    ],
+    [
+      "NB",
+      "None"
+    ],
+    [
+      "LONGWAVE-LOBE",
+      "None"
+    ],
+    [
+      "MEES",
+      "None"
+    ],
+    [
+      "HET",
+      "High Energy Telescope"
+    ],
+    [
+      "MODULE3",
+      "7-shell Si detector (flight 1),  7-shell CdTe detector (flights 2 & 3)"
+    ],
+    [
+      "SIT",
+      "Suprathermal Ion Telescope"
+    ],
+    [
+      "FG",
+      "None"
+    ],
+    [
+      "LFR",
+      "None"
+    ],
+    [
+      "SWS",
+      "Solar Wind Sector"
+    ],
+    [
+      "Fsmain",
+      ""
+    ],
+    [
+      "BBI",
+      "None"
+    ],
+    [
+      "LED",
+      "Low Energy Detector"
+    ],
+    [
+      "WB",
+      "None"
+    ],
+    [
+      "BIC0HIFI",
+      "None"
+    ],
+    [
+      "MODULE0",
+      "7-shell Si detector (flights #1 & 2), 10-shell Si detector (flight #3)"
+    ],
+    [
+      "FILM",
+      "None"
+    ],
+    [
+      "MDI",
+      "Michelson Doppler Imager"
+    ],
+    [
+      "GIS",
+      "Grazing Incidence Spectrometer"
+    ],
+    [
+      "Fairchild 2020 scientific CMOS sensor",
+      "None"
+    ],
+    [
+      "SEM",
+      "None"
+    ],
+    [
+      "LVA",
+      "None"
+    ],
+    [
+      "TM4200-6",
+      "None"
+    ],
+    [
+      "MODULE5",
+      "7-shell Si detector (flights #1 & 2), 10-shell CdTe detector (flight #3)"
+    ],
+    [
+      "+Z",
+      ""
+    ],
+    [
+      "VLD",
+      ""
+    ],
+    [
+      "HFR",
+      "High Freqency Receiver"
+    ],
+    [
+      "ESP",
+      "EUV SpectroPhotometers"
+    ],
+    [
+      "B",
+      ""
+    ],
+    [
+      "EIT",
+      "Extreme ultraviolet Imaging Telescope"
+    ],
+    [
+      "EUVI",
+      "Extreme Ultraviolet Imager"
+    ],
+    [
+      "TM-1001",
+      "None"
+    ],
+    [
+      "RHESSI",
+      "None"
+    ],
+    [
+      "SP",
+      "None"
+    ],
+    [
+      "HSTOF",
+      ""
+    ],
+    [
+      "IMaX",
+      "None"
+    ],
+    [
+      "SEPT",
+      "Solar Electron Proton Telescope"
+    ],
+    [
+      "TM4200-5",
+      "None"
+    ],
+    [
+      "KODALITH Ortho 3 Graphical Film",
+      "None"
+    ],
+    [
+      "MTOF",
+      "Mass Time of Flight instrument"
+    ],
+    [
+      "MODULE4",
+      "7-shell Si detector (flights #1 & 2), 10-shell Si detector (flight #3)"
+    ],
+    [
+      "LET",
+      "Low Energy Telescope"
+    ],
+    [
+      "EIS",
+      "None"
+    ],
+    [
+      "STE",
+      "Suprathermal Electron Telescope"
+    ],
+    [
+      "Hi-C",
+      "High Resolution Coronal Imager"
+    ],
+    [
+      "SHORTWAVE-SLIT",
+      "None"
+    ],
+    [
+      "MAG",
+      "Magnetometer"
+    ],
+    [
+      "LION",
+      "Low Energy Ion and Electron Instrument"
+    ],
+    [
+      "FUV",
+      "None"
+    ],
+    [
+      "SWEA",
+      "Solar Wind Electron Analyzer"
+    ],
+    [
+      "A",
+      ""
+    ],
+    [
+      "SWAP",
+      "None"
+    ],
+    [
+      "EPHIN",
+      "Electron Proton Helium Instrument"
+    ],
+    [
+      "-Z",
+      ""
+    ],
+    [
+      "OUTER",
+      "None"
+    ],
+    [
+      "SJI",
+      "Slit-Jaw Imager"
+    ],
+    [
+      "STOF",
+      "Suprathermal Time Of Flight"
+    ],
+    [
+      "PM",
+      "MTOF Proton Monitor"
+    ],
+    [
+      "PHOENIX",
+      "7-shell detector with collimator"
+    ],
+    [
+      "C3",
+      "Coronograph 3"
+    ],
+    [
+      "ZIMPOL",
+      "None"
+    ],
+    [
+      "COR1",
+      "Coronograph 1"
+    ]
+  ],
+  "instrument": [
+    [
+      "WISPR",
+      "Wide-Field Imager for Solar Probe Plus"
+    ],
+    [
+      "BCS",
+      "Bragg Crystal Spectrometer"
+    ],
+    [
+      "512-channel magnetograph",
+      "512-channel Magnetograph"
+    ],
+    [
+      "TM-1010",
+      "Kanzelh\u00f6he H\u03b1 Pulnix TM-1010 Camera"
+    ],
+    [
+      "Cerro Tololo",
+      "Cerro Tololo, Chile GONG+ site"
+    ],
+    [
+      "Hi-C21",
+      "High Resolution Coronal Imager 2.1 (172 A)"
+    ],
+    [
+      "XRT",
+      "X-Ray Telescope"
+    ],
+    [
+      "CAII",
+      "Kanzelh\u00f6he Ca II k Instrument"
+    ],
+    [
+      "ISS",
+      "None"
+    ],
+    [
+      "PHOKA",
+      "Kanzelh\u00f6he Photoheliograph"
+    ],
+    [
+      "ChroTel",
+      "Chromospheric Telescope"
+    ],
+    [
+      "SWAN",
+      "Solar Wind Anisotropies"
+    ],
+    [
+      "SHORTWAVE-LOBE-06",
+      "Shortwave EUV observation of Sun with EUNIS (2006 flight)"
+    ],
+    [
+      "dpm",
+      "Digital Prominence Monitor"
+    ],
+    [
+      "LASCO",
+      "Large Angle and Spectrometric Coronagraph"
+    ],
+    [
+      "VAULT-2002",
+      "Very High Angular Resolution Ultraviolet Telescope (2002 flight)"
+    ],
+    [
+      "solar fts spectrometer",
+      "Solar FTS Spectrometer"
+    ],
+    [
+      "LONGWAVE-LOBE-07",
+      "Full longwave EUV observation of Sun with EUNIS (2007 flight)"
+    ],
+    [
+      "ISOON",
+      "Improved Solar Observing Optical Network"
+    ],
+    [
+      "chp",
+      "Chromospheric Helium-I Imaging Photometer"
+    ],
+    [
+      "60-ft SHG",
+      "60-foot Tower Spectroheliograph"
+    ],
+    [
+      "HMI",
+      "Helioseismic and Magnetic Imager"
+    ],
+    [
+      "SXI-0",
+      "Solar X-ray Imager"
+    ],
+    [
+      "Cooke",
+      "None"
+    ],
+    [
+      "PTMC",
+      "None"
+    ],
+    [
+      "SHORTWAVE-LOBE-07",
+      "Shortwave EUV observation of Sun with EUNIS (2007 flight)"
+    ],
+    [
+      "LONGWAVE-SLIT-07",
+      "Full longwave EUV observation of Sun with EUNIS (trimmed/2007 flight)"
+    ],
+    [
+      "VIRGO",
+      "Variability of Solar Irradiance and Gravity Oscillations"
+    ],
+    [
+      "VAULT-1999",
+      "Very High Angular Resolution Ultraviolet Telescope (1999 flight)"
+    ],
+    [
+      "HXT",
+      "Hard X-Ray Telescope"
+    ],
+    [
+      "EVE",
+      "Extreme Ultraviolet Variability Experiment"
+    ],
+    [
+      "GFPI",
+      "None"
+    ],
+    [
+      "spectromagnetograph",
+      "SpectroMagnetograph"
+    ],
+    [
+      "VAULT-2014",
+      "Very High Angular Resolution Ultraviolet Telescope (2014 flight)"
+    ],
+    [
+      "vsm",
+      "Vector SpecroMagnetograph"
+    ],
+    [
+      "IVM",
+      "None"
+    ],
+    [
+      "GRIS",
+      "None"
+    ],
+    [
+      "SECCHI",
+      "Sun Earth Connection Coronal and Heliospheric Investigation"
+    ],
+    [
+      "CLIMSO",
+      "Christian Latouche IMageur SOlaire"
+    ],
+    [
+      "MERGED GONG",
+      "None"
+    ],
+    [
+      "LONGWAVE-SLIT-06",
+      "Full longwave EUV observation of Sun with EUNIS (trimmed/2006 flight)"
+    ],
+    [
+      "MEES",
+      "Mees Solar Observatory Imaging Spectrograph on Haleakala, Maui"
+    ],
+    [
+      "OVSA",
+      "Owens Valley Solar Array"
+    ],
+    [
+      "SHORTWAVE-SLIT-07",
+      "Shortwave EUV observation of Sun with EUNIS (trimmed/2007 flight)"
+    ],
+    [
+      "Udaipur",
+      "Indian GONG+ site"
+    ],
+    [
+      "BBI",
+      "None"
+    ],
+    [
+      "SUVI",
+      "GOES-R Series Solar Ultraviolet Imager "
+    ],
+    [
+      "LONGWAVE-LOBE-06",
+      "Full longwave EUV observation of Sun with EUNIS (2006 flight)"
+    ],
+    [
+      "AIA",
+      "Atmospheric Imaging Assembly"
+    ],
+    [
+      "ERNE",
+      "Energetic and Relativistic Nuclei and Electron experiment"
+    ],
+    [
+      "PLASTIC",
+      "PLasma And SupraThermal Ion Composition"
+    ],
+    [
+      "FILM",
+      "Kanzelh\u00f6he H\u03b1 Film Camera"
+    ],
+    [
+      "MDI",
+      "Michelson Doppler Imager"
+    ],
+    [
+      "mk4",
+      "Mk. IV coronagraph"
+    ],
+    [
+      "IRIS",
+      "Interface Region Imaging Spectrograph"
+    ],
+    [
+      "GOLF",
+      "Global Oscillations at Low Frequencies"
+    ],
+    [
+      "SJ",
+      "Slit-Jaw"
+    ],
+    [
+      "HXECLIPSE",
+      "UCAR HAO Historical Eclipse Archive"
+    ],
+    [
+      "Meudon Spectroheliograph",
+      "None"
+    ],
+    [
+      "TRACE",
+      "Transition Region And Coronal Explorer"
+    ],
+    [
+      "BE-Halpha",
+      "INAF-OACT Barra Equatoriale H\u03b1 Instrument"
+    ],
+    [
+      "UVCS",
+      "Ultraviolet Coronagraph Spectrometer"
+    ],
+    [
+      "K-Cor",
+      "None"
+    ],
+    [
+      "SXT",
+      "Soft X-Ray Telescope"
+    ],
+    [
+      "Big Bear",
+      "Big Bear Solar Observatory, California TON and GONG+ sites"
+    ],
+    [
+      "EIT",
+      "Extreme ultraviolet Imaging Telescope"
+    ],
+    [
+      "TM-1001",
+      "Kanzelh\u00f6he H\u03b1 Pulnix TM-1001 Camera"
+    ],
+    [
+      "SP1",
+      "Spectropolarimeter1"
+    ],
+    [
+      "RHESSI",
+      "Reuven Ramaty High Energy Solar Spectroscopic Imager"
+    ],
+    [
+      "BE-Continuum",
+      "INAF-OACT Barra Equatoriale Continuum Instrument"
+    ],
+    [
+      "SOT",
+      "Solar Optical Telescope"
+    ],
+    [
+      "IMaX",
+      "None"
+    ],
+    [
+      "El Teide",
+      "Canary Islands GONG+ site"
+    ],
+    [
+      "SUMER",
+      "Solar Ultraviolet Measurements of Emitted Radiation"
+    ],
+    [
+      "IMPACT",
+      "In-situ Measurements of Particles and CME Transients"
+    ],
+    [
+      "Mauna Loa",
+      "Hawai'ian GONG+ site"
+    ],
+    [
+      "SHORTWAVE-SLIT-06",
+      "Shortwave EUV observation of Sun with EUNIS (trimmed/2006 flight)"
+    ],
+    [
+      "EIS",
+      "EUV Imaging Spectrometer"
+    ],
+    [
+      "CDS",
+      "Coronal Diagnostic Spectrometer"
+    ],
+    [
+      "SWAVES",
+      "STEREO/WAVES"
+    ],
+    [
+      "Hi-C",
+      "High Resolution Coronal Imager (193 A)"
+    ],
+    [
+      "CELIAS",
+      "Charge, Element, and Isotope Analysis System"
+    ],
+    [
+      "FOXSI",
+      "Focusing Optics X-ray Solar Imager"
+    ],
+    [
+      "SWAP",
+      "Sun Watcher using Active pixel system detector and image Processing"
+    ],
+    [
+      "BIC-HIFI",
+      "None"
+    ],
+    [
+      "HA2",
+      "Kanzelh\u00f6he H\u03b1 Patrol Instrument"
+    ],
+    [
+      "SP2",
+      "Spectropolarimeter2"
+    ],
+    [
+      "cp",
+      " Coronagraph/Polarimeter"
+    ],
+    [
+      "PHOENIX",
+      "PHOENIX detector on flight #3 of FOXSI"
+    ],
+    [
+      "spectroheliograph",
+      "SpectroHeliograph"
+    ],
+    [
+      "COSTEP",
+      "Comprehensive Suprathermal and Energetic Particle Analyzer"
+    ],
+    [
+      "ZIMPOL",
+      "None"
+    ],
+    [
+      "KPDC",
+      "Kanzelh\u00f6he Photosphere Digital Camera"
+    ],
+    [
+      "WBS",
+      "Wide Band Spectrometer"
+    ],
+    [
+      "Learmonth",
+      "Australian GONG+ site"
+    ]
+  ],
+  "source": [
+    [
+      "VAULT",
+      "Upgraded Very High Angular Resolution Ultraviolet Telescope (VAULT2.0)"
+    ],
+    [
+      "GOES17",
+      "Geostationary Operational Environmental Satellite (GOES-R) Series 17 "
+    ],
+    [
+      "STEREO",
+      "None"
+    ],
+    [
+      "MLSO",
+      "Mauna Loa Solar Observatory"
+    ],
+    [
+      "SMM",
+      "Solar Maximum Mission"
+    ],
+    [
+      "Hi-C21",
+      "High Resolution Coronal Imager Experimental Rocket 3rd Flight"
+    ],
+    [
+      "SOHO",
+      "Solar and Heliospheric Observatory"
+    ],
+    [
+      "SUNRISE2",
+      "None"
+    ],
+    [
+      "Hinode",
+      "Hinode Satellite, Japan"
+    ],
+    [
+      "HXECLIPSE",
+      "UCAR HAO Historical Eclipse Archive"
+    ],
+    [
+      "GONG",
+      "Global Oscillations Network Group"
+    ],
+    [
+      "Evans",
+      "Evans Solar Telescope, Sacramento Peak"
+    ],
+    [
+      "ChroTel",
+      "Chromospheric Telescope, Observatorio del Teide, Tenerife, Canary Islands"
+    ],
+    [
+      "McMath",
+      "McMath Solar Telescope, Kitt Peak"
+    ],
+    [
+      "TRACE",
+      "Transition Region And Coronal Explorer"
+    ],
+    [
+      "FOXSI1",
+      "Focusing Optics X-ray Solar Imager (flight #1:  11/02/12)"
+    ],
+    [
+      "EUNIS2",
+      "None"
+    ],
+    [
+      "EUNIS",
+      "Extreme Ultraviolet Normal-incidence Spectrograph"
+    ],
+    [
+      "KSO",
+      "Kanzelh\u00f6he Solar Observatory, Karl-Franzens-Universit\u00e4t, Graz, Austria"
+    ],
+    [
+      "SOLIS",
+      "Synoptic Optical Long-term Investigations of the Sun"
+    ],
+    [
+      "RHESSI",
+      "Reuven Ramaty High Energy Solar Spectroscopic Imager"
+    ],
+    [
+      "GOES-12",
+      "Geosyncronous Operational Environmental Satellite - 12"
+    ],
+    [
+      "ISOON",
+      "Improved Solar Observing Optical Network"
+    ],
+    [
+      "PSP",
+      "Parker Solar Probe"
+    ],
+    [
+      "KPVT",
+      "Kitt Peak Vacuum Tower Telescope"
+    ],
+    [
+      "GREGOR",
+      "None"
+    ],
+    [
+      "PTMC",
+      "None"
+    ],
+    [
+      "FOXSI2",
+      "Focusing Optics X-ray Solar Imager (flight #2:  12/11/14)"
+    ],
+    [
+      "OACT",
+      "Osservatorio Astrofisico di Catania, Via S.Sofia 78, 95123 Catania ITALY"
+    ],
+    [
+      "Hi-C",
+      "High Resolution Coronal Imager Experimental Rocket"
+    ],
+    [
+      "IVM",
+      "None"
+    ],
+    [
+      "SUNRISE1",
+      "None"
+    ],
+    [
+      "OVRO",
+      "Owens Valley Radio Observatory"
+    ],
+    [
+      "FOXSI3",
+      "Focusing Optics X-ray Solar Imager (flight #3:  09/07/18)"
+    ],
+    [
+      "CLASP2",
+      "Chromospheric LAyer SpectroPolarimeter 2"
+    ],
+    [
+      "OMP",
+      "Pic-du-Midi, France"
+    ],
+    [
+      "MCCD",
+      "Mees CCD Imaging Spectrograph"
+    ],
+    [
+      "SDO",
+      "Solar Dynamics Observatory"
+    ],
+    [
+      "OBSPM",
+      "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris, Paris, France"
+    ],
+    [
+      "YOHKOH",
+      "Yohkoh Satellite, Japan"
+    ],
+    [
+      "MtWilson",
+      "Mt Wilson Solar Observatory"
+    ],
+    [
+      "PROBA2",
+      "PRoject for Onboard Autonomy"
+    ],
+    [
+      "IRIS",
+      "Interface Region Imaging Spectrograph"
+    ]
+  ],
+  "provider": [
+    [
+      "NSO",
+      "National Solar Observatory"
+    ],
+    [
+      "NGDC",
+      "National Geophysical Data Center, NOAA"
+    ],
+    [
+      "KIS",
+      "Kiepenheuer-Institut f\u00fcr Sonnenphysik"
+    ],
+    [
+      "SAO",
+      "Smithsonian Astrophysical Observatory"
+    ],
+    [
+      "ROB",
+      "Royal Observatory of Belgium Solar Influences Data Center"
+    ],
+    [
+      "SSC",
+      "STEREO Science Center, NASA/Goddard"
+    ],
+    [
+      "SDAC",
+      "Solar Data Analysis Center, NASA/Goddard"
+    ],
+    [
+      "MSFC",
+      "Marshall Space Flight Center"
+    ],
+    [
+      "JSOC",
+      "SDO Joint Science Operations Center"
+    ],
+    [
+      "OVRO",
+      "Owens Valley Radio Observatory"
+    ],
+    [
+      "HAO",
+      "High Altitude Observatory, NCAR"
+    ],
+    [
+      "SHA",
+      "Stanford Helioseismology Archive, Stanford U."
+    ],
+    [
+      "OMP",
+      "Observatoire Midi-Pyr\u00e9n\u00e9es"
+    ],
+    [
+      "LASP",
+      "Laboratory for Atmospheric and Space Physics (University of Colorado at Boulder)"
+    ],
+    [
+      "LSSP",
+      "Laboratory for Space and Solar Physics, NASA/Goddard"
+    ],
+    [
+      "KSO",
+      "Kanzelh\u00f6he Solar Observatory"
+    ],
+    [
+      "NRL",
+      "U.S. Naval Research Laboratory"
+    ],
+    [
+      "OBSPM",
+      "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris"
+    ],
+    [
+      "INAF-OACT",
+      "Istituto Nazionale di Astrofisica, Osservatorio Astrofisico di Catania"
+    ],
+    [
+      "MPS",
+      "None"
+    ],
+    [
+      "MWSPADP",
+      "Mount Wilson Solar Archive Digitization Project"
+    ],
+    [
+      "NOAA",
+      "None"
+    ],
+    [
+      "MSU",
+      "Montana State University"
+    ],
+    [
+      "LMSAL",
+      "Lockheed-Martin Solar and Astrophysics Laboratory"
+    ],
+    [
+      "NWRA",
+      "Northwest Research Associates"
+    ]
+  ],
+  "physobs": [
+    [
+      "number_density",
+      "the number of particles per unit volume"
+    ],
+    [
+      "LOS_velocity",
+      "the displacement of line center from rest wavelength/frequency in an arbitrary polarization state"
+    ],
+    [
+      "wave_power",
+      "solar internal or atmospheric acoustic-gravity wave measurements. The mode parameters could include frequencies, splittings, amplitudes, widths, etc."
+    ],
+    [
+      "LOS_magnetic_field",
+      "Line of sight magnetic field; may be in situ or inferred from the frequency/wavelength Zeeman splitting between opposite circular polarizations of a magnetically-sensitive line"
+    ],
+    [
+      "composition",
+      "a notion of relative abundance, such as relative number densities of solar wind particles as a ratio"
+    ],
+    [
+      "equivalent_width",
+      "differences between intensities measured at nearby wavelengths, typically in line cores, wings, and nearby continuum, whether measured as an intensity difference or an equivalent width"
+    ],
+    [
+      "VECTOR_magnetic_field",
+      "Vector magnetic field; may be in situ or inferred from Stokes polarimetry"
+    ],
+    [
+      "polarization_vector",
+      "the net linear polarization"
+    ],
+    [
+      "spectrum",
+      "None"
+    ],
+    [
+      "particle_velocity",
+      "the average velocity or velocity distribution of a group of particles"
+    ],
+    [
+      "Stokes_parameters",
+      "I, Q, U, V - equivalent to observables of total intensity, linear polarization, and circular polarization"
+    ],
+    [
+      "vector_magnetic_field",
+      "Vector magnetic field; may be in situ or inferred from Stokes polarimetry"
+    ],
+    [
+      "thermal_velocity",
+      "a characterization of the relationship between the temperature and mass of a distribution of particles"
+    ],
+    [
+      "irradiance",
+      "intensity per unit area."
+    ],
+    [
+      "particle_flux",
+      "the number of particles passing through a unit area per unit time per unit energy"
+    ],
+    [
+      "intensity",
+      "the direct intensity, either integrated over the spectral observing range or as a function of wavelength (spectral density)"
+    ],
+    [
+      "Intensity",
+      "the direct intensity, either integrated over the spectral observing range or as a function of wavelength (spectral density)"
+    ]
+  ],
+  "level": [
+    [
+      "1b",
+      "1b"
+    ],
+    [
+      "1",
+      "1"
+    ],
+    [
+      "1.5",
+      "1.5"
+    ],
+    [
+      "3",
+      "3"
+    ],
+    [
+      "1.0",
+      "1.0"
+    ],
+    [
+      "2",
+      "2"
+    ]
+  ]
+}
