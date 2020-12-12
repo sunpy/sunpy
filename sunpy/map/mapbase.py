@@ -28,7 +28,7 @@ from astropy.visualization.wcsaxes import WCSAxes
 import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
-from sunpy import config, log
+from sunpy import config
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
@@ -1434,7 +1434,9 @@ class GenericMap(NDData):
         Returns a submap defined by a rectangle.
 
         Any pixels which have at least part of their area inside the rectangle
-        are returned.
+        are returned. If the rectangle is defined in world coordinates, the
+        smallest array which contains all four corners of the rectangle as
+        defined in world coordinates is returned.
 
         Parameters
         ----------
@@ -1461,13 +1463,6 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The rectangle is defined in pixel space. If coordinate input is given,
-        it is first transformed into pixel space, and the pixel indices of
-        top_right and bottom_left are used as the corners of the rectangle.
-
-        If top_right is below or to the left of bottom_left, a message is logged
-        at the debug level to the sunpy logger.
-
         When specifying pixel coordinates, they are specified in Cartesian
         order not in numpy order. So, for example, the ``bottom_left=``
         argument should be ``[left, bottom]``.
@@ -1598,12 +1593,6 @@ class GenericMap(NDData):
         top = np.max(pixel_corners[1]).to_value(u.pix)
         left = np.min(pixel_corners[0]).to_value(u.pix)
         right = np.max(pixel_corners[0]).to_value(u.pix)
-
-        if left > right:
-            log.debug("The rectangle is inverted in the left/right direction.")
-
-        if bottom > top:
-            log.debug("The rectangle is inverted in the bottom/top direction.")
 
         # Round the lower left pixel to the nearest integer
         # We want 0.5 to be rounded up to 1, so use floor(x + 0.5)
