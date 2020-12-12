@@ -902,7 +902,7 @@ class JSOCClient(BaseClient):
             keyword_info = {}
             keyword_info["series_store"] = series_store
             keyword_info["segments"] = segments
-            json.dump(keyword_info, attrs_file)
+            json.dump(keyword_info, attrs_file, indent=2)
 
     @staticmethod
     def load_jsoc_values():

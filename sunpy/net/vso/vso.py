@@ -902,4 +902,4 @@ class VSOClient(BaseClient):
                         attrs[key].append((str(item[key]), str(item[key+"_long"])))
 
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
-            json.dump(attrs, attrs_file)
+            json.dump(attrs, attrs_file, indent=2)
