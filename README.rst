@@ -26,7 +26,7 @@ For some examples of using SunPy see our `gallery`_, to see the latest changes i
 
 .. _SunPy: https://sunpy.org
 .. _gallery: https://docs.sunpy.org/en/stable/generated/gallery/index.html
-.. _Changelog: https://docs.sunpy.org/en/latest/whatsnew/changelog.html
+.. _Changelog: https://docs.sunpy.org/en/stable/whatsnew/changelog.html
 
 Installation
 ============
@@ -42,7 +42,7 @@ To install SunPy once conda is installed run the following two commands:
 For detailed installation instructions, see the `installation guide`_ in the SunPy docs.
 
 .. _miniconda: https://docs.conda.io/en/latest/miniconda.html
-.. _installation guide: https://docs.sunpy.org/en/latest/guide/installation/index.html
+.. _installation guide: https://docs.sunpy.org/en/stable/guide/installation/index.html
 
 Developing
 ==========
@@ -93,8 +93,8 @@ For more information on contributing to SunPy, please read our `Newcomers' guide
 .. _Developers Guide: https://docs.sunpy.org/en/latest/dev_guide/index.html
 .. _`#sunpy:openastronomy.org`: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. _issues page: https://github.com/sunpy/sunpy/issues
-.. _Newcomers' guide: https://docs.sunpy.org/en/latest/dev_guide/newcomers.html
-.. _Development installation:  https://docs.sunpy.org/en/latest/dev_guide/newcomers.html#setting-up-a-development-environment
+.. _Newcomers' guide: https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html
+.. _Development installation:  https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html#setting-up-a-development-environment
 
 Code of Conduct
 ===============

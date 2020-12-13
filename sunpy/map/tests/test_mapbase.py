@@ -257,7 +257,7 @@ def test_default_coordinate_system(generic_map):
 
     generic_map.meta.pop('ctype2')
     generic_map.meta['ctype1'] = 'HPLN-TAN'
-    with pytest.raises(SunpyUserWarning, match='Missing CTYPE2 from metadata'):
+    with pytest.warns(SunpyUserWarning, match='Missing CTYPE2 from metadata'):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
@@ -391,9 +391,20 @@ def test_world_to_pixel(generic_map):
 
 
 def test_world_to_pixel_error(generic_map):
-    strerr = 'world_to_pixel takes a Astropy coordinate frame or SkyCoord instance'
+    strerr = 'Expected the following order of world arguments: SkyCoord'
     with pytest.raises(ValueError, match=strerr):
         generic_map.world_to_pixel(1)
+
+
+@pytest.mark.parametrize('origin', [0, 1])
+def test_world_pixel_roundtrip(simple_map, origin):
+    pix = 1 * u.pix, 1 * u.pix
+    with pytest.warns(SunpyDeprecationWarning, match='The origin argument is deprecated'):
+        coord = simple_map.pixel_to_world(*pix, origin=origin)
+        pix_roundtrip = simple_map.world_to_pixel(coord, origin=origin)
+
+    assert u.allclose(pix_roundtrip.x, pix[0], atol=1e-10 * u.pix)
+    assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
 
 
 def test_save(aia171_test_map, generic_map):

@@ -101,16 +101,16 @@ class MapFactory(BasicRegistrationFactory):
     * data, wcs object, in tuple
 
     >>> from astropy.wcs import WCS
-    >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)     # doctest: +REMOTE_DATA
-    >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)    # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA
+    >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)  # doctest: +SKIP
+    >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)  # doctest: +SKIP
+    >>> mymap = sunpy.map.Map((data, wcs))  # doctest: +SKIP
 
     * data, wcs object, not in tuple
 
     >>> from astropy.wcs import WCS
-    >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)     # doctest: +REMOTE_DATA
-    >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)    # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA
+    >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)  # doctest: +SKIP
+    >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)  # doctest: +SKIP
+    >>> mymap = sunpy.map.Map(data, wcs)  # doctest: +SKIP
 
     * File names
 
@@ -246,7 +246,8 @@ class MapFactory(BasicRegistrationFactory):
             except NoMapsInFileError as e:
                 if not silence_errors:
                     raise
-                warnings.warn(f"One of the arguments failed to parse with error: {e}", SunpyUserWarning)
+                warnings.warn(
+                    f"One of the arguments failed to parse with error: {e}", SunpyUserWarning)
 
         return data_header_pairs
 
@@ -349,7 +350,8 @@ class MapFactory(BasicRegistrationFactory):
                     ValidationFunctionError, MapMetaValidationError) as e:
                 if not silence_errors:
                     raise
-                warnings.warn(f"One of the data, header pairs failed to validate with: {e}", SunpyUserWarning)
+                warnings.warn(
+                    f"One of the data, header pairs failed to validate with: {e}", SunpyUserWarning)
 
         if not len(new_maps):
             raise RuntimeError('No maps loaded')

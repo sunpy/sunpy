@@ -44,6 +44,11 @@ class ChangeLog(Directive):
         return []
 
 
+class DummyChangelog(ChangeLog):
+    def run(self):
+        return []
+
+
 def setup(app):
     app.add_directive('changelog', ChangeLog)
 

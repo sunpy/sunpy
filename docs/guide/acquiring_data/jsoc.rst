@@ -147,13 +147,13 @@ Querying with other PrimeKeys
 =============================
 
 Other than Time, one other PrimeKey is supported with in-built attribute.
-In case of AIA series, ``a.jsoc.Wavelength()`` can be passed as a PrimeKey::
+In case of AIA series, ``a.Wavelength()`` can be passed as a PrimeKey::
 
     >>> import astropy.units as u
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                               a.jsoc.Notify('sunpy@sunpy.org'),
     ...                               a.jsoc.Series('aia.lev1_euv_12s'),
-    ...                               a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
+    ...                               a.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
 
 Note that, only Time and Wavelength are in-built attributes here. If you need to pass any other PrimeKey,
 it should be passed like this::
@@ -194,24 +194,81 @@ Upon doing ``Fido.search()`` as described above, only a limited set of keywords 
 object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, ``'T_OBS'`` and ``'WAVELNTH'``.
 
 If you want to get a manual set of keywords in the response object, you can pass the set of keywords using
-`~sunpy.net.jsoc.attrs.Keys` attribute.
+:meth:`~sunpy.net.base_client.BaseQueryResponseTable.show` method.
 
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'),
-    ...                   a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS']))  # doctest: +REMOTE_DATA
-
-The parameter passed into ``a.jsoc.Keys()`` can be either a list of strings, or a string with keywords seperated by
-comma and a space. Meaning to say,: ``a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS'])`` and
-``jsoc.attrs.Keys('TELESCOP, INSTRUME, T_OBS')``
-
-both are correct.
+    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
+    >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')  # doctest: +REMOTE_DATA
+    [<QTable length=81>
+    TELESCOP  INSTRUME           T_OBS
+    str7     str10             str23
+    -------- ---------- -----------------------
+    SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI
+        ...        ...                     ...
+    SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI
+    SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI]
 
 Passing an incorrect keyword won't throw an error, but the corresponding column in the table will
-contain ``Invalid KeyLink``.
+not be displayed.
 
-To get all of the keywords, you can either use the `~sunpy.net.jsoc.JSOCClient.search_metadata` method,
-or alternatively pass ``a.jsoc.Keys('***ALL***')`` with the series name and PrimeKey.
+To display all of the columns, we can use ``show()`` without passing any arguments::
 
+    >>> res.show()  # doctest: +REMOTE_DATA
+    [<QTable length=81>
+            DATE                DATE__OBS        ... CALVER64
+           str20                  str23          ...  int64
+    -------------------- ----------------------- ... --------
+    2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
+    2014-01-05T17:47:10Z 2014-01-01T00:00:24.20Z ...     4370
+    2014-01-05T17:48:18Z 2014-01-01T00:01:09.20Z ...     4370
+    2014-01-05T17:49:25Z 2014-01-01T00:01:54.20Z ...     4370
+                     ...                     ... ...      ...
+    2014-01-05T17:41:25Z 2014-01-01T00:56:39.20Z ...     4370
+    2014-01-05T17:42:33Z 2014-01-01T00:57:24.20Z ...     4370
+    2014-01-05T17:43:41Z 2014-01-01T00:58:09.20Z ...     4370
+    2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z ...     4370
+    2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370]
+
+or you can print the results::
+
+    >>> res  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
+             T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+    ----------------------- -------- ---------- -------- -------
+    2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+                        ...      ...        ...      ...     ...
+    2014.01.01_00:53:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 Using Segments
 ==============

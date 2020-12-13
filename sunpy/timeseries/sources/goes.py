@@ -214,7 +214,7 @@ class XRSTimeSeries(GenericTimeSeries):
                 raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
 
         data = DataFrame({"xrsa": xrsa, "xrsb": xrsb}, index=times.datetime)
-        data.replace(-9999, np.nan)
+        data = data.replace(-9999, np.nan)
         units = OrderedDict([("xrsa", u.W/u.m**2),
                              ("xrsb", u.W/u.m**2)])
 

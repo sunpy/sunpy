@@ -14,6 +14,7 @@ from astropy.coordinates import (
 from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.time import parse_time
+from sunpy.util.exceptions import SunpyUserWarning
 from ... import sun
 from ..frames import Heliocentric, HeliographicCarrington, HeliographicStonyhurst, Helioprojective
 
@@ -214,6 +215,15 @@ def test_hpc_default_observer():
 
     hpc = Helioprojective(0*u.arcsec, 0*u.arcsec, obstime='2019-06-01')
     assert not hpc.is_frame_attr_default('observer')
+
+
+def test_hpc_low_precision_float_warning():
+    hpc = Helioprojective(u.Quantity(0, u.deg, dtype=np.float32),
+                          u.Quantity(0, u.arcsec, dtype=np.float16),
+                          observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
+
+    with pytest.raises(SunpyUserWarning, match="Tx is float32, and Ty is float16"):
+        hpc.make_3d()
 
 
 # ==============================================================================

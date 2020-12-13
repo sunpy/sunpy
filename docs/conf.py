@@ -10,6 +10,7 @@ import os
 import sys
 import datetime
 from pkg_resources import get_distribution, DistributionNotFound
+from packaging.version import Version
 
 # -- Check for dependencies ----------------------------------------------------
 
@@ -54,7 +55,8 @@ copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
 # The full version, including alpha/beta/rc tags
 release = __version__
-is_development = '.dev' in __version__
+sunpy_version = Version(__version__)
+is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 
@@ -104,18 +106,10 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    'sunpy.util.sphinx.changelog',
     'sunpy.util.sphinx.doctest',
     'sunpy.util.sphinx.generate',
+    'sunpy.util.sphinx.changelog',
 ]
-
-if on_rtd:
-    rtd_version = os.environ.get('READTHEDOCS_VERSION', None)
-    stable = (rtd_version == 'stable') or (rtd_version[0] == 'v')
-    if stable:
-        # Stable versions have a manually rendered changelog, so remove the
-        # changelog extension
-        extensions.remove('sunpy.util.sphinx.changelog')
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
@@ -131,7 +125,7 @@ html_extra_path = ['robots.txt']
 
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-if not is_development:
+if is_release:
     exclude_patterns.append('dev_guide/contents/*')
 
 # The suffix(es) of source filenames.
@@ -240,7 +234,7 @@ with open('./code_ref/sunpy_stability.yaml', 'r') as estability:
 
 html_context = {
     'sunpy_modules': sunpy_modules,
-    'is_development': is_development,
+    'is_development': not is_release,
 }
 
 
@@ -263,9 +257,10 @@ def rstjinja(app, docname, source):
 os.environ["JSOC_EMAIL"] = "jsoc@cadair.com"
 
 # -- Sphinx setup --------------------------------------------------------------
+
 def setup(app):
     # Generate the stability page
     app.connect("source-read", rstjinja)
-
-    # The theme conf provides a fix for circle ci redirections
-    fix_circleci(app)
+    if is_release:
+        from sunpy.util.sphinx.changelog import DummyChangelog
+        app.add_directive('changelog', DummyChangelog, override=True)

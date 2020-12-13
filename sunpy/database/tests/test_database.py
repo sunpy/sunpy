@@ -444,7 +444,7 @@ def test_add_already_existing_entry_ignore(database):
 @pytest.mark.remote_data
 def test_add_entry_from_hek_qr(database):
     hek_res = hek.HEKClient().search(
-        hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 07:24:00'),
+        net_attrs.Time('2011/08/09 07:23:56', '2011/08/09 07:24:00'),
         hek.attrs.EventType('FL'))
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
@@ -491,7 +491,7 @@ def test_hek_query_download(monkeypatch, database, tmpdir):
     monkeypatch.setattr(tables, "entries_from_dir", mock_entries_from_dir)
 
     query = hek.HEKClient().search(
-        hek.attrs.Time('2019/03/10 14:40:10', '2019/04/11 16:40:50'),
+        net_attrs.Time('2019/03/10 14:40:10', '2019/04/11 16:40:50'),
         hek.attrs.EventType('FL')
     )
 

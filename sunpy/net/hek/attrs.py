@@ -16,8 +16,12 @@ As with the VSO query, you can use the fundamental logic operators AND and OR
 to construct queries of almost arbitrary complexity. Note that complex queries
 result in multiple requests to the server which might make them less efficient.
 """
-from sunpy.net import attr
+from warnings import warn
+
+from sunpy.net import _attrs, attr
+from sunpy.net.attrs import Time
 from sunpy.time import parse_time
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 # Ugly hack for the deprecated apply decorator, this needs to be cleaned up
@@ -95,31 +99,6 @@ class EventType(attr.Attr):
             return super().__or__(other)
 
 
-# XXX: XOR
-class Time(attr.Attr):
-    """ Restrict query to time range between start and end. """
-
-    def __init__(self, start, end):
-        attr.Attr.__init__(self)
-        self.start = start
-        self.end = end
-
-    def collides(self, other):
-        return isinstance(other, Time)
-
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return vars(self) == vars(other)
-
-    def __hash__(self):
-        return hash(tuple(vars(self).items()))
-
-    @classmethod
-    def dt(cls, start, end):
-        return cls(parse_time(start), parse_time(end))
-
-
 class SpatialRegion(attr.Attr):
     def __init__(self, x1=-5000, y1=-5000, x2=5000, y2=5000,
                  sys='helioprojective'):
@@ -181,6 +160,9 @@ class _ComparisonParamAttrWrapper:
 
     def __ne__(self, other):
         return _ParamAttr(self.name, '!=', other)
+
+    def collides(self, other):
+        return isinstance(other, _ComparisonParamAttrWrapper)
 
 
 class _StringParamAttrWrapper(_ComparisonParamAttrWrapper):
@@ -608,3 +590,16 @@ class Misc:
     PeakPower = _StringParamAttrWrapper('PeakPower')
     PeakPowerUnit = _StringParamAttrWrapper('PeakPowerUnit')
     RasterScanType = _StringParamAttrWrapper('RasterScanType')
+
+
+# Deprecate old classes
+class _DeprecatedAttr:
+    def __init__(self, *args, **kwargs):
+        name = type(self).__name__
+        warn(f"sunpy.net.hek.attrs.{name} is deprecated, please use sunpy.net.attrs.{name}",
+             SunpyDeprecationWarning)
+        super().__init__(*args, **kwargs)
+
+
+class Time(_attrs.Time, _DeprecatedAttr):
+    pass

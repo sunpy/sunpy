@@ -55,8 +55,12 @@ Using ``Instrument`` as the first example, if you print the object::
     aia                         VSO         AIA                      Atmospheric Imaging Assembly
     bbi                         VSO         BBI                      None
     bcs                         VSO         BCS                      Bragg Crystal Spectrometer
+    be_continuum                VSO         BE-Continuum             INAF-OACT Barra Equatoriale Continuum Instrument
+    be_halpha                   VSO         BE-Halpha                INAF-OACT Barra Equatoriale Hα Instrument
     bic_hifi                    VSO         BIC-HIFI                 None
     bigbear                     VSO         Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
+    caii                        VSO         CAII                     Kanzelhöhe Ca II k Instrument
+    cds                         VSO         CDS                      Coronal Diagnostic Spectrometer
     ...
 
 You get a full list of known values, a description and what "Clients" support those values (if you want to use a specific data source).
@@ -76,6 +80,11 @@ For JSOC::
     aia_lev1                           JSOC   aia.lev1                           AIA Level 1
     aia_lev1_euv_12s                   JSOC   aia.lev1_euv_12s                   AIA Level 1, 12 second cadence
     aia_lev1_uv_24s                    JSOC   aia.lev1_uv_24s                    AIA Level 1, 24 second cadence
+    aia_lev1_vis_1h                    JSOC   aia.lev1_vis_1h                    AIA Level 1, 3600 second cadence
+    aia_master_pointing3h              JSOC   aia.master_pointing3h              Master Pointing Parameters
+    aia_response                       JSOC   aia.response                       AIA instrument response table
+    aia_temperature_summary_300s       JSOC   aia.temperature_summary_300s       Temperature Statistics from AIA Housekeeping - Thermal Packet
+    hmi_b_135s                         JSOC   hmi.b_135s                         Full-disk Milne-Eddington inversion with the azimuth disambiguation informati...
     ...
 
 Furthermore, you can use tab completion to auto-fill the attribute name, for example by typing ``a.jsoc.aia_f<TAB>``.
@@ -186,6 +195,11 @@ operator would::
     2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     2
     2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     3
     <BLANKLINE>
+    1 Results from the RHESSIClient:
+         Start Time           End Time      Instrument ... Source Provider
+    ------------------- ------------------- ---------- ... ------ --------
+    2012-03-04 00:00:00 2012-03-04 23:59:59     RHESSI ... RHESSI     NASA
+    <BLANKLINE>
     3 Results from the VSOClient:
        Start Time [1]       End Time [1]    Source ...     Type    Wavelength [2]
                                                    ...                  keV
@@ -193,11 +207,6 @@ operator would::
     2012-03-03 22:57:40 2012-03-04 00:33:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
     2012-03-04 00:33:20 2012-03-04 01:45:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
     2012-03-04 01:45:40 2012-03-04 02:09:00 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
-    <BLANKLINE>
-    1 Results from the RHESSIClient:
-         Start Time           End Time      Instrument ... Source Provider
-    ------------------- ------------------- ---------- ... ------ --------
-    2012-03-04 00:00:00 2012-03-04 23:59:59     RHESSI ... RHESSI     NASA
     <BLANKLINE>
     <BLANKLINE>
 
@@ -223,31 +232,20 @@ specified in the search, you would index this response to see just the
 results returned by the `~sunpy.net.dataretriever.LYRAClient`::
 
     >>> results[0, :]  # doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at ...>
-    Results from 1 Provider:
-    <BLANKLINE>
-    2 Results from the LYRAClient:
+    <sunpy.net.dataretriever.client.QueryResponse object at ...>
          Start Time           End Time      Instrument ... Source Provider Level
     ------------------- ------------------- ---------- ... ------ -------- -----
     2012-01-01 00:00:00 2012-01-01 23:59:59       LYRA ... PROBA2      ESA     2
-    2012-01-02 00:00:00 2012-02-02 23:59:59       LYRA ... PROBA2      ESA     2
-    <BLANKLINE>
-    <BLANKLINE>
+    2012-01-02 00:00:00 2012-01-02 23:59:59       LYRA ... PROBA2      ESA     2
 
 Or, equivalently::
 
     >>> results[0]  # doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at ...>
-    Results from 1 Provider:
-    <BLANKLINE>
-    2 Results from the LYRAClient:
+    <sunpy.net.dataretriever.client.QueryResponse object at ...>
          Start Time           End Time      Instrument ... Source Provider Level
     ------------------- ------------------- ---------- ... ------ -------- -----
     2012-01-01 00:00:00 2012-01-01 23:59:59       LYRA ... PROBA2      ESA     2
-    2012-01-02 00:00:00 2012-02-02 23:59:59       LYRA ... PROBA2      ESA     2
-    <BLANKLINE>
-    <BLANKLINE>
-
+    2012-01-02 00:00:00 2012-01-02 23:59:59       LYRA ... PROBA2      ESA     2
 
 Normal slicing operations work as with any other Python sequence, e.g.
 ``results[1,::10]`` to access every tenth file in the result returned by
@@ -344,5 +342,7 @@ If you want to see the current list of clients you can do::
     SRSClient         Provides access to the NOAA SWPC solar region summary data.
     NoRHClient        Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
     RHESSIClient      Provides access to the RHESSI observing summary time series data.
-    JSOCClient        This is a client to the JSOC Data Export service.
-    VSOClient         Allows queries and downloads from the Virtual Solar Observatory (VSO).
+    HEKClient         Provides access to the Heliophysics Event Knowledgebase (HEK).
+    HECClient         Provides access to the HELIO webservices.
+    JSOCClient        Provides access to the JSOC Data Export service.
+    VSOClient         Provides access to query and download from Virtual Solar Observatory (VSO).

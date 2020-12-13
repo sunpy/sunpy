@@ -77,6 +77,14 @@ class UnifiedResponse(Sequence):
         if isinstance(aslice, slice):
             ret = self._list[aslice]
 
+        # using the client's name for indexing the responses.
+        elif isinstance(aslice, str):
+            ret = []
+            for res in self._list:
+                clientname = res.client.__class__.__name__
+                if aslice.lower() == clientname.lower().split('client')[0]:
+                    ret.append(res)
+
         # Make sure we only have a length two slice.
         elif isinstance(aslice, tuple):
             if len(aslice) > 2:
@@ -98,7 +106,13 @@ class UnifiedResponse(Sequence):
         else:
             raise IndexError("UnifiedResponse objects must be sliced with integers.")
 
-        return UnifiedResponse(*ret)
+        # if only one response matches, we will return a BaseQueryResponse instance.
+        if not len(ret):
+            raise IndexError("No records found for the given index.")
+        elif len(ret) == 1:
+            return ret[0]
+        else:
+            return UnifiedResponse(*ret)
 
     def get_response(self, i):
         """
@@ -185,6 +199,22 @@ class UnifiedResponse(Sequence):
             ret += '\n\n'
 
         return ret
+
+    def show(self, *cols):
+        """
+        Displays response tables with desired columns for the Query.
+
+        Parameters
+        ----------
+        \\*cols : `tuple`
+            Name of columns to be shown.
+
+        Returns
+        -------
+        `list` of `astropy.table.Table`
+            A list of tables showing values for specified columns.
+        """
+        return [i.show(*cols) for i in self._list]
 
 
 query_walker = attr.AttrWalker()
@@ -289,12 +319,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):
         """
-        Download the records represented by
+        Download the records represented by `~sunpy.net.BaseQueryResponse` or
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
 
         Parameters
         ----------
-        query_results : `sunpy.net.fido_factory.UnifiedResponse`
+        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.BaseQueryResponse`
             Container returned by query method, or multiple.
         path : `str`
             The directory to retrieve the files into. Can refer to any fields
@@ -361,10 +391,18 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         reslist = []
         for query_result in query_results:
-            for block in query_result.responses:
-                reslist.append(block.client.fetch(block, path=path,
-                                                  downloader=downloader,
-                                                  wait=False, **kwargs))
+            if isinstance(query_result, BaseQueryResponse):
+                responses = [query_result]
+            elif isinstance(query_result, UnifiedResponse):
+                responses = query_result.responses
+            else:
+                raise ValueError(f"Query result has an unrecognized type: {type(query_result)}")
+            for block in responses:
+                result = block.client.fetch(block, path=path,
+                                            downloader=downloader,
+                                            wait=False, **kwargs)
+                if result is not NotImplemented:
+                    reslist.append(result)
 
         results = downloader.download()
         # Combine the results objects from all the clients into one Results

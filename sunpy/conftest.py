@@ -87,6 +87,17 @@ def undo_config_dir_patch():
 
 
 @pytest.fixture(scope='session', autouse=True)
+def hide_parfive_progress(request):
+    """
+    Globally set the HIDE_PARFIVE_PROGESS to hide the parfive progress bar in tests.
+    Used by the parfive helper class only.
+    """
+    os.environ["HIDE_PARFIVE_PROGESS"] = "True"
+    yield
+    del os.environ["HIDE_PARFIVE_PROGESS"]
+
+
+@pytest.fixture(scope='session', autouse=True)
 def tmp_dl_dir(request):
     """
     Globally set the default download directory for the test run to a tmp dir.
