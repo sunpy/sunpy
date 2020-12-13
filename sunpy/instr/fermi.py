@@ -73,8 +73,9 @@ def download_weekly_pointing_file(date):
 
     # try to download the file
     try:
-        urllib.request.urlopen(pointing_file_url)
-        exists = True
+        # Use a context manager to avoid leaving a connection open
+        with urllib.request.urlopen(pointing_file_url) as _:
+            exists = True
     except urllib.error.HTTPError:
         exists = False
 
