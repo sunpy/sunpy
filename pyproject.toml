@@ -29,6 +29,10 @@ build-backend = 'setuptools.build_meta'
   [ tool.gilesbot.pull_requests ]
     enabled = true
 
+  [ tool.gilesbot.milestones ]
+    enabled = true
+    missing_message_long = "This pull request does not have a milestone assigned to it. Only maintainers can change this, so you don't need to worry about it. :smile:"
+
   [ tool.gilesbot.towncrier_changelog ]
     enabled = true
     verify_pr_number = true
