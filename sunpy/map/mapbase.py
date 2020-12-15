@@ -1480,58 +1480,37 @@ class GenericMap(NDData):
         <sunpy.map.sources.sdo.AIAMap object at 0x...>
         SunPy Map
         ---------
-        Observatory:		 SDO
-        Instrument:		 AIA 3
-        Detector:		 AIA
-        Measurement:		 171.0 Angstrom
-        Wavelength:		 171.0 Angstrom
-        Observation Date:	 2011-06-07 06:33:02
-        Exposure Time:		 0.234256 s
-        Dimension:		 [334. 334.] pix
-        Coordinate System:	 helioprojective
-        Scale:			 [2.402792 2.402792] arcsec / pix
-        Reference Pixel:	 [127.5 126.5] pix
-        Reference Coord:	 [3.22309951 1.38578135] arcsec
-        array([[ 450.4546 ,  565.81494,  585.0416 , ..., 1178.3234 , 1005.28284,
-                977.8161 ],
-            [ 474.20004,  516.1865 ,  555.7032 , ..., 1024.9636 , 1010.1449 ,
-                1010.1449 ],
-            [ 548.1609 ,  620.9256 ,  620.9256 , ...,  933.8139 , 1074.4924 ,
-                1108.4492 ],
-                ...,
-            [ 203.58617,  195.52335,  225.75891, ...,  612.7742 ,  580.52295,
-                560.3659 ],
-            [ 206.00058,  212.1806 ,  232.78065, ...,  650.96185,  622.12177,
-                537.6615 ],
-            [ 229.32516,  236.07002,  222.5803 , ...,  517.1058 ,  586.8026 ,
-                591.2992 ]], dtype=float32)
+        Observatory:         SDO
+        Instrument:          AIA 3
+        Detector:            AIA
+        Measurement:         171.0 Angstrom
+        Wavelength:          171.0 Angstrom
+        Observation Date:    2011-06-07 06:33:02
+        Exposure Time:       0.234256 s
+        Dimension:           [335. 335.] pix
+        Coordinate System:   helioprojective
+        Scale:               [2.402792 2.402792] arcsec / pix
+        Reference Pixel:     [126.5 125.5] pix
+        Reference Coord:     [3.22309951 1.38578135] arcsec
+        ...
 
         >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at 0x...>
         SunPy Map
         ---------
-        Observatory:		 SDO
-        Instrument:		 AIA 3
-        Detector:		 AIA
-        Measurement:		 171.0 Angstrom
-        Wavelength:		 171.0 Angstrom
-        Observation Date:	 2011-06-07 06:33:02
-        Exposure Time:		 0.234256 s
-        Dimension:		 [5. 5.] pix
-        Coordinate System:	 helioprojective
-        Scale:			 [2.402792 2.402792] arcsec / pix
-        Reference Pixel:	 [512.5 512.5] pix
-        Reference Coord:	 [3.22309951 1.38578135] arcsec
-        array([[-95.92475   ,   7.076416  ,  -1.9656711 ,  -2.9485066 ,
-                -0.98283553],
-            [-96.97533   ,  -5.1167884 ,   0.        ,   0.        ,
-                0.9746264 ],
-            [-93.99607   ,   1.0189276 ,  -4.0757103 ,   2.0378551 ,
-                -2.0378551 ],
-            [-96.97533   ,  -8.040668  ,  -2.9238791 ,  -5.1167884 ,
-                -0.9746264 ],
-            [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
-                -3.9313421 ]], dtype=float32)
+        Observatory:         SDO
+        Instrument:          AIA 3
+        Detector:            AIA
+        Measurement:         171.0 Angstrom
+        Wavelength:          171.0 Angstrom
+        Observation Date:    2011-06-07 06:33:02
+        Exposure Time:       0.234256 s
+        Dimension:           [6. 6.] pix
+        Coordinate System:   helioprojective
+        Scale:               [2.402792 2.402792] arcsec / pix
+        Reference Pixel:     [511.5 511.5] pix
+        Reference Coord:     [3.22309951 1.38578135] arcsec
+        ...
 
         >>> width = 10 * u.arcsec
         >>> height = 10 * u.arcsec
@@ -1539,45 +1518,38 @@ class GenericMap(NDData):
         <sunpy.map.sources.sdo.AIAMap object at 0x7f91aecc5438>
         SunPy Map
         ---------
-        Observatory:		 SDO
-        Instrument:		 AIA 3
-        Detector:		 AIA
-        Measurement:		 171.0 Angstrom
-        Wavelength:		 171.0 Angstrom
-        Observation Date:	 2011-06-07 06:33:02
-        Exposure Time:		 0.234256 s
-        Dimension:		 [4. 4.] pix
-        Coordinate System:	 helioprojective
-        Scale:			 [2.402792 2.402792] arcsec / pix
-        Reference Pixel:	 [126.5 126.5] pix
-        Reference Coord:	 [3.22309951 1.38578135] arcsec
-        array([[565.81494, 585.0416 , 656.4552 , 670.18854],
-            [516.1865 , 555.7032 , 634.7365 , 661.90424],
-            [620.9256 , 620.9256 , 654.8825 , 596.6707 ],
-            [667.5083 , 560.52094, 651.22766, 530.28534]], dtype=float32)
+        Observatory:         SDO
+        Instrument:          AIA 3
+        Detector:            AIA
+        Measurement:         171.0 Angstrom
+        Wavelength:          171.0 Angstrom
+        Observation Date:    2011-06-07 06:33:02
+        Exposure Time:       0.234256 s
+        Dimension:           [5. 5.] pix
+        Coordinate System:   helioprojective
+        Scale:               [2.402792 2.402792] arcsec / pix
+        Reference Pixel:     [125.5 125.5] pix
+        Reference Coord:     [3.22309951 1.38578135] arcsec
+        ...
 
-        >>> bottom_left_vector = SkyCoord([0, 10]  * u.arcsec, [0, 10] * u.arcsec, frame='heliographic_stonyhurst')
+        >>> bottom_left_vector = SkyCoord([0, 10]  * u.deg, [0, 10] * u.deg, frame='heliographic_stonyhurst')
         >>> aia.submap(bottom_left_vector)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at 0x7f91aece8be0>
         SunPy Map
         ---------
-        Observatory:		 SDO
-        Instrument:		 AIA 3
-        Detector:		 AIA
-        Measurement:		 171.0 Angstrom
-        Wavelength:		 171.0 Angstrom
-        Observation Date:	 2011-06-07 06:33:02
-        Exposure Time:		 0.234256 s
-        Dimension:		 [4. 5.] pix
-        Coordinate System:	 helioprojective
-        Scale:			 [2.402792 2.402792] arcsec / pix
-        Reference Pixel:	 [1.5 1.5] pix
-        Reference Coord:	 [3.22309951 1.38578135] arcsec
-        array([[213.9748 , 256.76974, 244.54262, 356.62466],
-            [223.74321, 258.0102 , 292.27716, 340.65408],
-            [219.53459, 242.31648, 308.5911 , 331.373  ],
-            [268.24377, 254.83157, 268.24377, 321.89252],
-            [249.99167, 265.14267, 274.61206, 240.5223 ]], dtype=float32)
+        Observatory:         SDO
+        Instrument:          AIA 3
+        Detector:            AIA
+        Measurement:         171.0 Angstrom
+        Wavelength:          171.0 Angstrom
+        Observation Date:    2011-06-07 06:33:02
+        Exposure Time:       0.234256 s
+        Dimension:           [70. 69.] pix
+        Coordinate System:   helioprojective
+        Scale:               [2.402792 2.402792] arcsec / pix
+        Reference Pixel:     [1.5 0.5] pix
+        Reference Coord:     [3.22309951 1.38578135] arcsec
+        ...
         """
         # Check that we have been given a valid combination of inputs
         # [False, False, False] is valid if bottom_left contains the two corner coords
@@ -1675,8 +1647,10 @@ class GenericMap(NDData):
                                                            width=width,
                                                            height=height)
         frame = bottom_left.frame
-        corners = SkyCoord(Tx=[bottom_left.Tx, bottom_left.Tx, top_right.Tx, top_right.Tx],
-                           Ty=[bottom_left.Ty, top_right.Ty, top_right.Ty, bottom_left.Ty],
+        left_lon, bottom_lat = self._get_lon_lat(bottom_left)
+        right_lon, top_lat = self._get_lon_lat(top_right)
+        corners = SkyCoord([left_lon, left_lon, right_lon, right_lon],
+                           [bottom_lat, top_lat, top_lat, bottom_lat],
                            frame=frame)
 
         return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
