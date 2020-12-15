@@ -476,9 +476,10 @@ def test_submap_world(simple_map, rect, submap_out):
         np.testing.assert_equal(submap.data, submap_out)
 
 
-@pytest.mark.parametrize('test_map', ("aia171_roll_map", "aia171_test_map", "hmi_test_map"),
+@pytest.mark.parametrize('test_map', ("aia171_roll_map", "aia171_test_map",
+                                      "hmi_test_map", "aia171_test_map_with_mask"),
                          indirect=['test_map'])
-def test_submap_roll_image(test_map):
+def test_submap_world_corners(test_map):
     """
     This test checks that when an unaligned map is cropped with submap that the
     resulting map contains all four corners of the input world coordinate
@@ -492,10 +493,33 @@ def test_submap_roll_image(test_map):
     pix_corners = np.array(submap.wcs.world_to_pixel(corners)).T
     for pix_corner in pix_corners:
         assert ((-0.5, -0.5) <= pix_corner).all()
-        assert (pix_corner <= submap.data.shape).all()
+        assert (pix_corner <= submap.data.shape[::-1]).all()
+
+    if test_map.mask is not None:
+        assert submap.mask.shape == submap.data.shape
 
 
-# Check that submap works with units convertable to pix but that aren't pix
+@pytest.mark.parametrize('test_map', ("aia171_test_map", "heliographic_test_map"),
+                         indirect=['test_map'])
+def test_submap_hgs_corners(test_map):
+    """
+    This test checks that when an unaligned map is cropped with submap that the
+    resulting map contains all four corners of the input world coordinate
+    bounding box.
+    """
+    corners = SkyCoord([10, 10, 40, 40], [-10, 30, 30, -10],
+                       unit=u.deg, frame="heliographic_stonyhurst",
+                       obstime=test_map.date)
+
+    submap = test_map.submap(corners[0], top_right=corners[2])
+
+    pix_corners = np.array(submap.wcs.world_to_pixel(corners)).T
+    for pix_corner in pix_corners:
+        assert ((-0.5, -0.5) <= pix_corner).all()
+        assert (pix_corner <= submap.data.shape[::-1]).all()
+
+
+# Check that submap works with units convertible to pix but that aren't pix
 @pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
 def test_submap_data_header(generic_map, unit):
     """Check data and header information for a submap"""
