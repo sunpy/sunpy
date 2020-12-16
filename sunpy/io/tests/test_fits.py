@@ -84,8 +84,8 @@ def test_simple_write_compressed(tmpdir):
 
 
 def test_write_with_metadict_header_astropy(tmpdir):
-    fits_file = fits.open(AIA_171_IMAGE)
-    data, header = fits_file[0].data, fits_file[0].header
+    with fits.open(AIA_171_IMAGE) as fits_file:
+        data, header = fits_file[0].data, fits_file[0].header
     meta_header = MetaDict(OrderedDict(header))
     temp_file = tmpdir / "temp.fits"
     with pytest.warns(SunpyUserWarning, match='The meta key comment is not valid ascii'):
