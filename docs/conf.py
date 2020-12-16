@@ -153,6 +153,15 @@ napoleon_use_rtype = False
 # Disable google style docstrings
 napoleon_google_docstring = False
 
+# Enable nitpicky mode, which forces links to be non-broken
+nitpicky = True
+nitpick_ignore = [('py:class', 'optional'),
+                  # Prevents shpinx nitpicky mode picking up on optional
+                  # (see https://github.com/sphinx-doc/sphinx/issues/6861)
+                  ('py:obj', 'numpy.datetime64'),
+                  # See https://github.com/numpy/numpy/issues/10039
+                  ]
+
 # -- Options for intersphinx extension -----------------------------------------
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
