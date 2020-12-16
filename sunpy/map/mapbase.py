@@ -603,7 +603,11 @@ class GenericMap(NDData):
 
     @property
     def date(self):
-        """Image observation time."""
+        """
+        Image observation time.
+
+        This is taken from the 'DATE-OBS' FITS keyword.
+        """
         time = self.meta.get('date-obs', None)
         if time is None:
             if self._default_time is None:
@@ -617,12 +621,20 @@ class GenericMap(NDData):
 
     @property
     def detector(self):
-        """Detector name."""
+        """
+        Detector name.
+
+        This is taken from the 'DETECTOR' FITS keyword.
+        """
         return self.meta.get('detector', "")
 
     @property
     def exposure_time(self):
-        """Exposure time of the image in seconds."""
+        """
+        Exposure time of the image in seconds.
+
+        This is taken from the 'EXPTIME' FITS keyword.
+        """
         return self.meta.get('exptime', 0.0) * u.s
 
     @property
@@ -632,13 +644,21 @@ class GenericMap(NDData):
 
     @property
     def measurement(self):
-        """Measurement name, defaults to the wavelength of image."""
+        """
+        Measurement name, defaults to the wavelength of image.
+
+        This is taken from the 'WAVELNTH' FITS keyword.
+        """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.waveunit)
 
     @property
     def waveunit(self):
-        """The `~astropy.units.Unit` of the wavelength of this observation."""
+        """
+        The `~astropy.units.Unit` of the wavelength of this observation.
+
+        This is taken from the 'WAVEUNIT' FITS keyword.
+        """
         unit = self.meta.get("waveunit")
         if unit is None:
             return u.one
@@ -646,13 +666,21 @@ class GenericMap(NDData):
 
     @property
     def wavelength(self):
-        """Wavelength of the observation."""
+        """
+        Wavelength of the observation.
+
+        This is taken from the 'WAVELNTH' FITS keyword.
+        """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.waveunit)
 
     @property
     def observatory(self):
-        """Observatory or Telescope name."""
+        """
+        Observatory or Telescope name.
+
+        This is taken from the 'OBSRVTRY' FITS keyword.
+        """
         return self.meta.get('obsrvtry',
                              self.meta.get('telescop', "")).replace("_", " ")
 
@@ -660,6 +688,8 @@ class GenericMap(NDData):
     def processing_level(self):
         """
         Returns the FITS processing level if present.
+
+        This is taken from the 'LVL_NUM' FITS keyword.
         """
         return self.meta.get('lvl_num', None)
 
@@ -919,9 +949,14 @@ class GenericMap(NDData):
 
     @property
     def rotation_matrix(self):
-        """
+        r"""
         Matrix describing the rotation required to align solar North with
         the top of the image.
+
+        The order or precendence of FITS keywords which this is taken from is:
+        - PC\*_\*
+        - CD\*_\*
+        - CROTA\*
         """
         if 'PC1_1' in self.meta:
             return np.array([[self.meta['PC1_1'], self.meta['PC1_2']],
