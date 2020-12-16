@@ -108,7 +108,9 @@ def test_copy_default_config(tmpdir, undo_config_dir_patch, monkeypatch):
 
     # Create a new config file
     copy_default_config()
-    assert open(user_config_file, 'r').read() == open(config_file, 'r').read()
+    with open(user_config_file, 'r') as ucf:
+        with open(config_file, 'r') as cf:
+            assert ucf.read() == cf.read()
 
 
 def test_copy_default_config_without_overwrite(tmpdir, undo_config_dir_patch, monkeypatch):
