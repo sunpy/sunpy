@@ -375,3 +375,25 @@ def on_disk_bounding_coordinates(smap):
     return SkyCoord([np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
                     [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
                     frame=smap.coordinate_frame)
+
+def contains_coordinate(smap, coordinates):
+    """
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        A map in helioprojective Cartesian coordinates.
+
+    coordinate : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+        The input coordinate. The coordinate frame must be
+        `~sunpy.coordinates.Helioprojective`.
+
+    Returns
+    -------
+    `~bool`
+        Returns `True` If coordinates are within the coordinate
+        bound of the smap and Returns `False` If coordinates are 
+        not within the coordinate bound of the smap.
+    """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
+
+    return coordinates in all_coordinates_from_map(smap)
