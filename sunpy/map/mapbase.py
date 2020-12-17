@@ -1209,9 +1209,9 @@ class GenericMap(NDData):
             Location to save file to.
         filetype : str
             'auto' or any supported file extension.
-        hdu_type: None, `~fits.CompImageHDU`
+        hdu_type: None, `~astropy.io.fits.CompImageHDU`
             `None` will return a normal FITS file.
-            `~fits.CompImageHDU` will rice compress the FITS file.
+            `~astropy.io.fits.CompImageHDU` will rice compress the FITS file.
         kwargs :
             Any additional keyword arguments are passed to
             `~sunpy.io.write_file`.
@@ -1242,7 +1242,7 @@ class GenericMap(NDData):
                   `scipy.interpolate.interp1d`.
                 * ``'spline'`` - Uses piecewise polynomials (splines) for mapping the input
                   array to new coordinates by interpolation using
-                  `ndimage.map_coordinates`.
+                  `scipy.ndimage.map_coordinates`.
 
         Returns
         -------
@@ -1311,14 +1311,15 @@ class GenericMap(NDData):
         ----------
         angle : `~astropy.units.Quantity`
             The angle (degrees) to rotate counterclockwise.
-        rmatrix : 2x2
-            Linear transformation rotation matrix.
-        order : int 0-5
-            Interpolation order to be used. When using scikit-image this
+        rmatrix : ndarray
+            2x2 linear transformation rotation matrix.
+        order : int
+            Interpolation order to be used. Must be in the range 0-5.
+            When using scikit-image this
             parameter is passed into :func:`skimage.transform.warp` (e.g., 4
             corresponds to bi-quartic interpolation).
             When using scipy it is passed into
-            :func:`scipy.ndimage.interpolation.affine_transform` where it
+            :func:`scipy.ndimage.affine_transform` where it
             controls the order of the spline. Faster performance may be
             obtained at the cost of accuracy by using lower values.
             Default: 4
@@ -1332,7 +1333,7 @@ class GenericMap(NDData):
             Default: 0.0
         use_scipy : bool
             If True, forces the rotation to use
-            :func:`scipy.ndimage.interpolation.affine_transform`, otherwise it
+            :func:`scipy.ndimage.affine_transform`, otherwise it
             uses the :func:`skimage.transform.warp`.
             Default: False, unless scikit-image can't be imported
 
@@ -1486,10 +1487,10 @@ class GenericMap(NDData):
         Parameters
         ----------
         bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
-            The bottom-left coordinate of the rectangle. If a `SkyCoord` it can
+            The bottom-left coordinate of the rectangle. If a `~astropy.coordinates.SkyCoord` it can
             have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
-            object with units of `~astropy.units.pixel`.
+            object with units of `~astropy.units.pix`.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
             The top-right coordinate of the rectangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.
@@ -1742,7 +1743,8 @@ class GenericMap(NDData):
         offset : tuple
             Offset from (0,0) in original map pixels used to calculate where
             the data used to make the resulting superpixel map starts.
-        func : function applied to the original data
+        func :
+            Function applied to the original data.
             The function 'func' must take a numpy array as its first argument,
             and support the axis keyword with the meaning of a numpy axis
             keyword (see the description of `~numpy.sum` for an example.)
@@ -1855,7 +1857,7 @@ class GenericMap(NDData):
 
         Returns
         -------
-        overlay: `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap`
+        overlay: `~astropy.visualization.wcsaxes.CoordinatesMap`
             The wcsaxes coordinate overlay instance.
 
         Notes
@@ -2006,7 +2008,7 @@ class GenericMap(NDData):
         Returns
         -------
         cs : `list`
-            The `~matplotlib.QuadContourSet` object, after it has been added to
+            The `~matplotlib.contour.QuadContourSet` object, after it has been added to
             ``axes``.
 
         Notes
