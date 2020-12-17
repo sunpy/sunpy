@@ -62,7 +62,7 @@ def make_fitswcs_header(data, coordinate,
         Pixel scaling along x and y axis (i.e. the spatial scale of the pixels (dx, dy)). These are
         expected to be Cartestian ordered, i.e [dx, dy].
         Defaults to ``([1., 1.] arcsec/pixel)``.
-    rotation_angle : `~astropy.unit.Quantity`, optional
+    rotation_angle : `~astropy.units.Quantity`, optional
         Coordinate system rotation angle, will be converted to a rotation
         matrix and stored in the ``PCi_j`` matrix. Can not be specified with
         ``rotation_matrix``.
@@ -76,10 +76,10 @@ def make_fitswcs_header(data, coordinate,
         Name of the telescope of the observation.
     observatory : `~str`, optional
         Name of the observatory of the observation.
-    wavelength : `~u.Quantity`, optional
+    wavelength : `~astropy.units.Quantity`, optional
         Wavelength of the observation as an astropy quanitity, e.g. 171*u.angstrom.
         From this keyword, the meta keywords ``wavelnth`` and ``waveunit`` will be populated.
-    exposure : `~u.Quantity`, optional
+    exposure : `~astropy.units.Quantity`, optional
         Exposure time of the observation
     projection_code : `str`, optional
         The FITS standard projection code for the new header.
