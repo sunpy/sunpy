@@ -38,9 +38,6 @@ from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
 from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.exceptions import SunpyUserWarning
-from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import cached_property_based_on, deprecated
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
@@ -1072,19 +1069,7 @@ class GenericMap(NDData):
 
 # #### Data conversion routines #### #
 
-    @staticmethod
-    def _check_origin(origin):
-        """
-        Check origin is valid, and raise a deprecation warning if it's not None.
-        """
-        if origin is not None:
-            warnings.warn('The origin argument is deprecated. If using origin=1, '
-                          'manually subtract 1 from your pixels do not pass a value for origin.',
-                          SunpyDeprecationWarning)
-        if origin not in [None, 0, 1]:
-            raise ValueError('origin must be 0 or 1.')
-
-    def world_to_pixel(self, coordinate, origin=None):
+    def world_to_pixel(self, coordinate, origin=0):
         """
         Convert a world (data) coordinate to a pixel coordinate.
 
@@ -1094,8 +1079,6 @@ class GenericMap(NDData):
             The coordinate object to convert to pixel coordinates.
 
         origin : int
-            Deprecated.
-
             Origin of the top-left corner. i.e. count from 0 or 1.
             Normally, origin should be 0 when passing numpy indices, or 1 if
             passing values from FITS header or map attributes.
@@ -1108,16 +1091,17 @@ class GenericMap(NDData):
         y : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE2 axis.
         """
-        self._check_origin(origin)
-        x, y = self.wcs.world_to_pixel(coordinate)
-        if origin == 1:
-            x += 1
-            y += 1
-
+        if not isinstance(coordinate, (SkyCoord,
+                                       astropy.coordinates.BaseCoordinateFrame)):
+            raise ValueError(
+                "world_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
+        native_frame = coordinate.transform_to(self.coordinate_frame)
+        lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg)
+        x, y = self.wcs.wcs_world2pix(lon, lat, origin)
         return PixelPair(x * u.pixel, y * u.pixel)
 
     @u.quantity_input
-    def pixel_to_world(self, x: u.pixel, y: u.pixel, origin=None):
+    def pixel_to_world(self, x: u.pixel, y: u.pixel, origin=0):
         """
         Convert a pixel coordinate to a data (world) coordinate.
 
@@ -1130,8 +1114,6 @@ class GenericMap(NDData):
             Pixel coordinate of the CTYPE2 axis. (Normally solar-y).
 
         origin : int
-            Deprecated.
-
             Origin of the top-left corner. i.e. count from 0 or 1.
             Normally, origin should be 0 when passing numpy indices, or 1 if
             passing values from FITS header or map attributes.
@@ -1141,12 +1123,14 @@ class GenericMap(NDData):
         coord : `astropy.coordinates.SkyCoord`
             A coordinate object representing the output coordinate.
         """
-        self._check_origin(origin)
-        if origin == 1:
-            x = x - 1 * u.pixel
-            y = y - 1 * u.pixel
-
-        return self.wcs.pixel_to_world(x, y)
+        # Hold the WCS instance here so we can inspect the output units after
+        # the pix2world call
+        temp_wcs = self.wcs
+        x, y = temp_wcs.wcs_pix2world(x, y, origin)
+        out_units = list(map(u.Unit, temp_wcs.wcs.cunit))
+        x = u.Quantity(x, out_units[0])
+        y = u.Quantity(y, out_units[1])
+        return SkyCoord(x, y, frame=self.coordinate_frame)
 
 # #### I/O routines #### #
 
@@ -1360,7 +1344,8 @@ class GenericMap(NDData):
         temp_map = self._new_instance(new_data, new_meta, self.plot_settings)
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate)).value
+        pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(
+            self.reference_coordinate, origin=0)).value
         del temp_map
 
         if recenter:
