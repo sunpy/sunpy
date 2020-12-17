@@ -94,41 +94,11 @@ def figure_test(test_function):
                                    savefig_kwargs={'metadata': {'Software': None}},
                                    style='default')
     @wraps(test_function)
-    def wrapper(*args, **kwargs):
-        if not os.path.exists(hash.HASH_LIBRARY_FILE):
-            pytest.xfail(f'Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}')
-        # figure_base_dir is a pytest fixture defined on use.
-        if figure_base_dir is None:
-            pytest.xfail("No directory to save figures to found")
-
-        name = "{}.{}".format(test_function.__module__,
-                              test_function.__name__)
-        # Run the test function and get the figure
-        plt.figure()
-        fig = test_function(*args, **kwargs)
-        if fig is None:
-            fig = plt.gcf()
-
-        # Save the image that was generated
-        figure_base_dir.mkdir(exist_ok=True)
-        result_image_loc = figure_base_dir / f'{name}.png'
-        # Have to set Software to None to prevent Matplotlib injecting it's version number
-        plt.savefig(str(result_image_loc), metadata={'Software': None})
-        plt.close('all')
-
-        # Create hash
-        imgdata = open(result_image_loc, "rb")
-        figure_hash = hash._hash_file(imgdata)
-        imgdata.close()
-
-        new_hash_library[name] = figure_hash
-        if name not in hash.hash_library:
-            pytest.fail(f"Hash not present: {name}")
-
-        expected_hash = hash.hash_library[name]
-        if expected_hash != figure_hash:
-            raise RuntimeError(f'Figure hash ({figure_hash}) does not match expected hash ({expected_hash}).\n'
-                               f'New image generated and placed at {result_image_loc}')
+    def test_wrapper(*args, **kwargs):
+        ret = test_function(*args, **kwargs)
+        if ret is None:
+            ret = plt.gcf()
+        return ret
 
     return test_wrapper
 
