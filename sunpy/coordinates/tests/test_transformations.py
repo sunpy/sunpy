@@ -767,7 +767,7 @@ def test_convert_error_with_no_obstime(frame_class):
         ICRS(0*u.deg, 0*u.deg, 0*u.AU).transform_to(frame)
 
     with pytest.raises(ConvertError, match=r".*obstime.*"):
-        frame.transform_to(ICRS)
+        frame.transform_to(ICRS())
 
 
 # Convenience function to check whether a transformation succeeds if the target `obstime` is `None`
