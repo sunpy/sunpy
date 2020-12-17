@@ -258,10 +258,10 @@ class MapSequence:
 
         Parameters
         ----------
-        axes: mpl axes
+        axes: matplotlib.axes.Axes
             axes to plot the animation on, if none uses current axes
 
-        resample: list or False
+        resample: list
             Draws the map at a lower resolution to increase the speed of
             animation. Specify a list as a fraction i.e. [0.25, 0.25] to
             plot at 1/4 resolution.
@@ -275,7 +275,7 @@ class MapSequence:
 
         plot_function : function
             A function to be called as each map is plotted.
-            For more information see `sunpy.visualization.MapSequenceAnimator`.
+            For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
 
         Returns
         -------
@@ -284,7 +284,7 @@ class MapSequence:
 
         See Also
         --------
-        `sunpy.visualization.mapsequenceanimator.MapSequenceAnimator`
+        `sunpy.visualization.animator.MapSequenceAnimator`
 
         Examples
         --------
@@ -393,10 +393,10 @@ class MapSequence:
 
         Parameters
         ----------
-        fig: mpl.figure
+        fig: matplotlib.Figure
             Figure to use to create the explorer
 
-        resample: list or False
+        resample: list
             Draws the map at a lower resolution to increase the speed of
             animation. Specify a list as a fraction i.e. [0.25, 0.25] to
             plot at 1/4 resolution.
@@ -413,16 +413,15 @@ class MapSequence:
 
         plot_function : function
             A function to call to overplot extra items on the map plot.
-            For more information see `sunpy.visualization.MapSequenceAnimator`.
+            For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
 
         Returns
         -------
-        mapsequenceanim : `sunpy.visualization.MapSequenceAnimator`
-            A mapsequence animator instance.
+        mapsequenceanim : `sunpy.visualization.animator.MapSequenceAnimator`
 
         See Also
         --------
-        sunpy.visualization.mapsequenceanimator.MapSequenceAnimator
+        sunpy.visualization.animator.MapSequenceAnimator
 
         Examples
         --------
