@@ -1,12 +1,9 @@
-import os
-
 import numpy as np
 import pytest
 
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 
-import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliographicCarrington
@@ -26,13 +23,6 @@ from sunpy.map.maputils import (
     sample_at_coords,
     solar_angular_radius,
 )
-
-testpath = sunpy.data.test.rootdir
-
-
-@pytest.fixture
-def aia171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
 
 @pytest.fixture
