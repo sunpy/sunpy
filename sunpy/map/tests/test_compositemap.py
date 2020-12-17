@@ -1,7 +1,6 @@
 """
 Test Composite Map
 """
-import os
 
 import pytest
 
@@ -14,16 +13,6 @@ testpath = sunpy.data.test.rootdir
 # Ignore missing metadata warnings
 pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer'),
               pytest.mark.filterwarnings(r'ignore:Unable to treat `\.meta` as a FITS header')]
-
-
-@pytest.fixture
-def aia171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
-
-
-@pytest.fixture
-def hmi_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'resampled_hmi.fits'))
 
 
 @pytest.fixture
