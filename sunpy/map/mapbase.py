@@ -28,7 +28,7 @@ from astropy.visualization.wcsaxes import WCSAxes
 import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
-from sunpy import config, log
+from sunpy import config
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
@@ -1482,7 +1482,9 @@ class GenericMap(NDData):
         Returns a submap defined by a rectangle.
 
         Any pixels which have at least part of their area inside the rectangle
-        are returned.
+        are returned. If the rectangle is defined in world coordinates, the
+        smallest array which contains all four corners of the rectangle as
+        defined in world coordinates is returned.
 
         Parameters
         ----------
@@ -1507,12 +1509,9 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The rectangle is defined in pixel space. If coordinate input is given,
-        it is first transformed into pixel space, and the pixel indices of
-        top_right and bottom_left are used as the corners of the rectangle.
-
-        If top_right is below or to the left of bottom_left, a message is logged
-        at the debug level to the sunpy logger.
+        When specifying pixel coordinates, they are specified in Cartesian
+        order not in numpy order. So, for example, the ``bottom_left=``
+        argument should be ``[left, bottom]``.
 
         Examples
         --------
@@ -1527,60 +1526,37 @@ class GenericMap(NDData):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:                 SDO
+        Observatory:         SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:                 171.0 Angstrom
+        Measurement:         171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:               0.234256 s
-        Dimension:           [333. 335.] pix
+        Exposure Time:       0.234256 s
+        Dimension:           [335. 335.] pix
         Coordinate System:   helioprojective
-        Scale:                       [2.402792 2.402792] arcsec / pix
-        Reference Pixel:     [125.5 125.5] pix
+        Scale:               [2.402792 2.402792] arcsec / pix
+        Reference Pixel:     [126.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        array([[ 565.81494,  585.0416 ,  656.4552 , ..., 1178.3234 , 1005.28284,
-                977.8161 ],
-            [ 516.1865 ,  555.7032 ,  634.7365 , ..., 1024.9636 , 1010.1449 ,
-                1010.1449 ],
-            [ 620.9256 ,  620.9256 ,  654.8825 , ...,  933.8139 , 1074.4924 ,
-                1108.4492 ],
-            ...,
-            [ 212.1806 ,  232.78065,  228.66064, ...,  650.96185,  622.12177,
-                537.6615 ],
-            [ 236.07002,  222.5803 ,  218.08372, ...,  517.1058 ,  586.8026 ,
-                591.2992 ],
-            [ 187.92569,  225.1387 ,  236.3026 , ...,  619.59656,  649.367  ,
-                686.58   ]], dtype=float32)
+        ...
 
         >>> aia.submap([0,0]*u.pixel, top_right=[5,5]*u.pixel)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:                 SDO
+        Observatory:         SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:                 171.0 Angstrom
+        Measurement:         171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:               0.234256 s
+        Exposure Time:       0.234256 s
         Dimension:           [6. 6.] pix
         Coordinate System:   helioprojective
-        Scale:                       [2.402792 2.402792] arcsec / pix
+        Scale:               [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [511.5 511.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        array([[-95.92475   ,   7.076416  ,  -1.9656711 ,  -2.9485066 ,
-                -0.98283553,  -6.0935802 ],
-            [-96.97533   ,  -5.1167884 ,   0.        ,   0.        ,
-                0.9746264 ,   3.8985057 ],
-            [-93.99607   ,   1.0189276 ,  -4.0757103 ,   2.0378551 ,
-                -2.0378551 ,  -7.896689  ],
-            [-96.97533   ,  -8.040668  ,  -2.9238791 ,  -5.1167884 ,
-                -0.9746264 ,  -8.040668  ],
-            [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
-                -3.9313421 ,  -1.0483578 ],
-            [-95.103004  ,   0.        ,  -4.993475  ,   0.        ,
-                -4.0855703 ,  -7.03626   ]], dtype=float32)
+        ...
 
         >>> width = 10 * u.arcsec
         >>> height = 10 * u.arcsec
@@ -1588,43 +1564,38 @@ class GenericMap(NDData):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:                 SDO
+        Observatory:         SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:                 171.0 Angstrom
+        Measurement:         171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:               0.234256 s
+        Exposure Time:       0.234256 s
         Dimension:           [5. 5.] pix
         Coordinate System:   helioprojective
-        Scale:                       [2.402792 2.402792] arcsec / pix
+        Scale:               [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [125.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        array([[565.81494, 585.0416 , 656.4552 , 670.18854, 678.4286 ],
-            [516.1865 , 555.7032 , 634.7365 , 661.90424, 587.8105 ],
-            [620.9256 , 620.9256 , 654.8825 , 596.6707 , 531.18243],
-            [667.5083 , 560.52094, 651.22766, 530.28534, 495.39816],
-            [570.15643, 694.5542 , 653.0883 , 699.7374 , 583.11456]],
-            dtype=float32)
+        ...
 
-        >>> bottom_left_vector = SkyCoord([0, 10]  * u.arcsec, [0, 10] * u.arcsec, frame='heliographic_stonyhurst')
+        >>> bottom_left_vector = SkyCoord([0, 10]  * u.deg, [0, 10] * u.deg, frame='heliographic_stonyhurst')
         >>> aia.submap(bottom_left_vector)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:                 SDO
+        Observatory:         SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:                 171.0 Angstrom
+        Measurement:         171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:               0.234256 s
-        Dimension:           [1. 1.] pix
+        Exposure Time:       0.234256 s
+        Dimension:           [70. 69.] pix
         Coordinate System:   helioprojective
-        Scale:                       [2.402792 2.402792] arcsec / pix
+        Scale:               [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [1.5 0.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        array([[209.89908]], dtype=float32)
+        ...
         """
         # Check that we have been given a valid combination of inputs
         # [False, False, False] is valid if bottom_left contains the two corner coords
@@ -1632,52 +1603,47 @@ class GenericMap(NDData):
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
         # parse input arguments
-        bottom_left, top_right = self._parse_submap_input(bottom_left, top_right, width, height)
+        pixel_corners = u.Quantity(self._parse_submap_input(bottom_left, top_right, width, height)).T
 
-        x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
-        y_pixels = u.Quantity([bottom_left[1], top_right[1]]).to_value(u.pix)
-        if x_pixels[0] > x_pixels[1]:
-            log.debug("The rectangle is inverted in the left/right direction.")
-
-        if y_pixels[0] > y_pixels[1]:
-            log.debug("The rectangle is inverted in the bottom/top direction.")
-        # Sort the pixel values so we always slice in the correct direction
-        x_pixels.sort()
-        y_pixels.sort()
+        # The pixel corners result is in Cartesian order, so the first index is
+        # columns and the second is rows.
+        bottom = np.min(pixel_corners[1]).to_value(u.pix)
+        top = np.max(pixel_corners[1]).to_value(u.pix)
+        left = np.min(pixel_corners[0]).to_value(u.pix)
+        right = np.max(pixel_corners[0]).to_value(u.pix)
 
         # Round the lower left pixel to the nearest integer
         # We want 0.5 to be rounded up to 1, so use floor(x + 0.5)
-        x_pixels[0] = np.floor(x_pixels[0] + 0.5)
-        y_pixels[0] = np.floor(y_pixels[0] + 0.5)
+        bottom = np.floor(bottom + 0.5)
+        left = np.floor(left + 0.5)
+
         # Round the top right pixel to the nearest integer, then add 1 for array indexing
         # We want e.g. 2.5 to be rounded down to 2, so use ceil(x - 0.5)
-        x_pixels[1] = np.ceil(x_pixels[1] - 0.5) + 1
-        y_pixels[1] = np.ceil(y_pixels[1] - 0.5) + 1
-
-        x_pixels = np.array(x_pixels)
-        y_pixels = np.array(y_pixels)
+        top = np.ceil(top - 0.5) + 1
+        right = np.ceil(right - 0.5) + 1
 
         # Clip pixel values to max of array, prevents negative
         # indexing
-        x_pixels = np.clip(x_pixels, 0, self.data.shape[1])
-        y_pixels = np.clip(y_pixels, 0, self.data.shape[0])
+        bottom = int(np.clip(bottom, 0, self.data.shape[0]))
+        top = int(np.clip(top, 0, self.data.shape[0]))
+        left = int(np.clip(left, 0, self.data.shape[1]))
+        right = int(np.clip(right, 0, self.data.shape[1]))
 
+        arr_slice = np.s_[bottom:top, left:right]
         # Get ndarray representation of submap
-        xslice = slice(int(x_pixels[0]), int(x_pixels[1]))
-        yslice = slice(int(y_pixels[0]), int(y_pixels[1]))
-        new_data = self.data[yslice, xslice].copy()
+        new_data = self.data[arr_slice].copy()
 
         # Make a copy of the header with updated centering information
         new_meta = self.meta.copy()
         # Add one to go from zero-based to one-based indexing
-        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - x_pixels[0]
-        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - y_pixels[0]
+        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - left
+        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - bottom
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
         if self.mask is not None:
-            new_mask = self.mask[yslice, xslice].copy()
+            new_mask = self.mask[arr_slice].copy()
             # Create new map with the modification
             new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
             return new_map
@@ -1714,7 +1680,10 @@ class GenericMap(NDData):
                                 "must be a Quantity in units of pixels.")
             # Add width and height to get top_right
             top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
-        return bottom_left, top_right
+
+        top_left = u.Quantity([top_right[0], bottom_left[1]])
+        bottom_right = u.Quantity([bottom_left[0], top_right[1]])
+        return bottom_left, top_left, top_right, bottom_right
 
     @_parse_submap_input.register(SkyCoord)
     def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
@@ -1723,10 +1692,14 @@ class GenericMap(NDData):
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
-        # Convert cordinates to pixels
-        bottom_left = self.world_to_pixel(bottom_left)
-        top_right = self.world_to_pixel(top_right)
-        return bottom_left, top_right
+        frame = bottom_left.frame
+        left_lon, bottom_lat = self._get_lon_lat(bottom_left)
+        right_lon, top_lat = self._get_lon_lat(top_right)
+        corners = SkyCoord([left_lon, left_lon, right_lon, right_lon],
+                           [bottom_lat, top_lat, top_lat, bottom_lat],
+                           frame=frame)
+
+        return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
 
     @u.quantity_input
     def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):

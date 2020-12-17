@@ -31,94 +31,6 @@ from sunpy.util.exceptions import SunpyMetadataWarning
 testpath = sunpy.data.test.rootdir
 
 
-@pytest.fixture
-def hmi_test_map():
-    return sunpy.map.Map(os.path.join(testpath, "resampled_hmi.fits"))
-
-
-@pytest.fixture
-def aia171_test_map():
-    map = sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
-
-    # Get rid of the blank keyword to prevent some astropy fits fixing warnings
-    header = dict(map.meta)
-    header.pop('blank')
-    return sunpy.map.Map((map.data, header))
-
-
-@pytest.fixture
-def heliographic_test_map():
-    map = sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
-
-    # Fix unit strings to prevent some astropy fits fixing warnings
-    header = dict(map.meta)
-    header['cunit1'] = 'deg'
-    header['cunit2'] = 'deg'
-    # Set observer location to avoid warnings later
-    header['hgln_obs'] = 0.0
-    return sunpy.map.Map((map.data, header))
-
-
-@pytest.fixture
-def aia171_test_map_with_mask(aia171_test_map):
-    shape = aia171_test_map.data.shape
-    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
-    mask[0:shape[0] // 2, 0:shape[1] // 2] = True
-    return sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
-
-
-@pytest.fixture
-def generic_map():
-    data = np.ones([6, 6], dtype=np.float64)
-    dobs = Time('1970-01-01T00:00:00')
-    l0 = sun.L0(dobs).to_value(u.deg)
-    b0 = sun.B0(dobs).to_value(u.deg)
-    dsun = sun.earth_distance(dobs).to_value(u.m)
-    header = {
-        'CRVAL1': 0,
-        'CRVAL2': 0,
-        'CRPIX1': 5,
-        'CRPIX2': 5,
-        'CDELT1': 10,
-        'CDELT2': 10,
-        'CUNIT1': 'arcsec',
-        'CUNIT2': 'arcsec',
-        'CTYPE1': 'HPLN-TAN',
-        'CTYPE2': 'HPLT-TAN',
-        'PC1_1': 0,
-        'PC1_2': -1,
-        'PC2_1': 1,
-        'PC2_2': 0,
-        'NAXIS1': 6,
-        'NAXIS2': 6,
-        'date-obs': dobs.isot,
-        'crln_obs': l0,
-        'crlt_obs': b0,
-        "dsun_obs": dsun,
-        'mjd-obs': 40587.0,
-        'obsrvtry': 'Foo',
-        'detector': 'bar',
-        'wavelnth': 10,
-        'waveunit': 'm',
-        'bunit': 'ct/s',
-    }
-    return sunpy.map.Map((data, header))
-
-
-@pytest.fixture
-def simple_map():
-    # A 3x3 map, with it's center at (0, 0), and scaled differently in
-    # each direction
-    data = np.arange(9).reshape((3, 3))
-    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg',
-                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
-                                           frame='heliographic_stonyhurst'))
-    ref_pix = [1, 1] * u.pix
-    scale = [2, 1] * u.arcsec / u.pix
-    header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
-    return sunpy.map.Map(data, header)
-
-
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same in pyfits and SunPy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
@@ -564,7 +476,50 @@ def test_submap_world(simple_map, rect, submap_out):
         np.testing.assert_equal(submap.data, submap_out)
 
 
-# Check that submap works with units convertable to pix but that aren't pix
+@pytest.mark.parametrize('test_map', ("aia171_roll_map", "aia171_test_map",
+                                      "hmi_test_map", "aia171_test_map_with_mask"),
+                         indirect=['test_map'])
+def test_submap_world_corners(test_map):
+    """
+    This test checks that when an unaligned map is cropped with submap that the
+    resulting map contains all four corners of the input world coordinate
+    bounding box.
+    """
+    corners = SkyCoord(Tx=[300, 300, 800, 800], Ty=[0, 500, 500, 0],
+                       unit=u.arcsec, frame=test_map.coordinate_frame)
+
+    submap = test_map.submap(corners[0], top_right=corners[2])
+
+    pix_corners = np.array(submap.wcs.world_to_pixel(corners)).T
+    for pix_corner in pix_corners:
+        assert ((-0.5, -0.5) <= pix_corner).all()
+        assert (pix_corner <= submap.data.shape[::-1]).all()
+
+    if test_map.mask is not None:
+        assert submap.mask.shape == submap.data.shape
+
+
+@pytest.mark.parametrize('test_map', ("aia171_test_map", "heliographic_test_map"),
+                         indirect=['test_map'])
+def test_submap_hgs_corners(test_map):
+    """
+    This test checks that when an unaligned map is cropped with submap that the
+    resulting map contains all four corners of the input world coordinate
+    bounding box.
+    """
+    corners = SkyCoord([10, 10, 40, 40], [-10, 30, 30, -10],
+                       unit=u.deg, frame="heliographic_stonyhurst",
+                       obstime=test_map.date)
+
+    submap = test_map.submap(corners[0], top_right=corners[2])
+
+    pix_corners = np.array(submap.wcs.world_to_pixel(corners)).T
+    for pix_corner in pix_corners:
+        assert ((-0.5, -0.5) <= pix_corner).all()
+        assert (pix_corner <= submap.data.shape[::-1]).all()
+
+
+# Check that submap works with units convertible to pix but that aren't pix
 @pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
 def test_submap_data_header(generic_map, unit):
     """Check data and header information for a submap"""
