@@ -370,6 +370,24 @@ def test_world_pixel_roundtrip(simple_map, origin):
     assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
 
 
+def test_swapped_ctypes(simple_map):
+    # Check that CTYPES different from normal work fine
+    simple_map.meta['ctype1'] = 'HPLT-TAN'   # Usually HPLN
+    simple_map.meta['ctype2'] = 'HPLN-TAN'   # Usually HPLT
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -1 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -2 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Tx, 1 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 2 * u.arcsec)
+
+    # Put them back
+    simple_map.meta['ctype1'] = 'HPLN-TAN'   # Usually HPLN
+    simple_map.meta['ctype2'] = 'HPLT-TAN'   # Usually HPLT
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -2 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -1 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Tx, 2 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 1 * u.arcsec)
+
+
 def test_save(aia171_test_map, generic_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
