@@ -35,9 +35,9 @@ from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import expand_list
+from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import deprecate_positional_args_since
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
@@ -1068,10 +1068,18 @@ class GenericMap(NDData):
                           SunpyUserWarning)
 
 # #### Data conversion routines #### #
+
+    @staticmethod
+    def _check_origin(origin):
+        """
+        Check origin is valid.
+        """
+        if origin not in [None, 0, 1]:
+            raise ValueError('origin must be 0 or 1.')
+
     def world_to_pixel(self, coordinate, origin=0):
         """
-        Convert a world (data) coordinate to a pixel coordinate by using
-        `~astropy.wcs.WCS.wcs_world2pix`.
+        Convert a world (data) coordinate to a pixel coordinate.
 
         Parameters
         ----------
@@ -1082,7 +1090,6 @@ class GenericMap(NDData):
             Origin of the top-left corner. i.e. count from 0 or 1.
             Normally, origin should be 0 when passing numpy indices, or 1 if
             passing values from FITS header or map attributes.
-            See `~astropy.wcs.WCS.wcs_world2pix` for more information.
 
         Returns
         -------
@@ -1097,21 +1104,21 @@ class GenericMap(NDData):
             raise ValueError(
                 "world_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
 
-        native_frame = coordinate.transform_to(self.coordinate_frame)
-        lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg)
-        x, y = self.wcs.wcs_world2pix(lon, lat, origin)
+        self._check_origin(origin)
+        x, y = self.wcs.world_to_pixel(coordinate)
+        if origin == 1:
+            x += 1
+            y += 1
 
         return PixelPair(x * u.pixel, y * u.pixel)
 
     @u.quantity_input
     def pixel_to_world(self, x: u.pixel, y: u.pixel, origin=0):
         """
-        Convert a pixel coordinate to a data (world) coordinate by using
-        `~astropy.wcs.WCS.wcs_pix2world`.
+        Convert a pixel coordinate to a data (world) coordinate.
 
         Parameters
         ----------
-
         x : `~astropy.units.Quantity`
             Pixel coordinate of the CTYPE1 axis. (Normally solar-x).
 
@@ -1122,28 +1129,18 @@ class GenericMap(NDData):
             Origin of the top-left corner. i.e. count from 0 or 1.
             Normally, origin should be 0 when passing numpy indices, or 1 if
             passing values from FITS header or map attributes.
-            See `~astropy.wcs.WCS.wcs_pix2world` for more information.
 
         Returns
         -------
-
         coord : `astropy.coordinates.SkyCoord`
             A coordinate object representing the output coordinate.
-
         """
+        self._check_origin(origin)
+        if origin == 1:
+            x = x - 1 * u.pixel
+            y = y - 1 * u.pixel
 
-        # Hold the WCS instance here so we can inspect the output units after
-        # the pix2world call
-        temp_wcs = self.wcs
-
-        x, y = temp_wcs.wcs_pix2world(x, y, origin)
-
-        out_units = list(map(u.Unit, temp_wcs.wcs.cunit))
-
-        x = u.Quantity(x, out_units[0])
-        y = u.Quantity(y, out_units[1])
-
-        return SkyCoord(x, y, frame=self.coordinate_frame)
+        return self.wcs.pixel_to_world(x, y)
 
 # #### I/O routines #### #
 
