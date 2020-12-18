@@ -1,3 +1,48 @@
+Sunpy v2.0.6 (2020-12-18)
+=========================
+
+Backwards Incompatible Changes
+------------------------------
+
+- The class inheritance for `~sunpy.coordinates.metaframes.RotatedSunFrame` and the frames it creates has been changed in order to stop depending on unsupported behavior in the underlying machinery.
+  The return values for some :func:`isinstance`/:func:`issubclass` calls will be different, but the API for `~sunpy.coordinates.metaframes.RotatedSunFrame` is otherwise unchanged. (`#4691 <https://github.com/sunpy/sunpy/pull/4691>`__)
+- Fix a bug in `~sunpy.map.GenericMap.submap` where only the top right and bottom
+  left coordinates of the input rectangle in world coordinates were considered
+  when calculating the pixel bounding box. All four corners are once again taken
+  into account now, meaning that `~sunpy.map.GenericMap.submap` correctly returns
+  the smallest pixel box which contains all four corners of the input rectangle.
+
+
+  To revert to the previous 2.0 behaviour, first convert the top right and bottom
+  left coordinates to pixel space before calling submap with::
+
+      top_right = smap.wcs.world_to_pixel(top_right) * u.pix
+      bottom_left = smap.wcs.world_to_pixel(bottom_left) * u.pix
+      smap.submap(bottom_left=bottom_left, top_right=top_right)
+
+
+  This will define the rectangle in pixel space. (`#4727 <https://github.com/sunpy/sunpy/pull/4727>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed an assumption in `sunpy.map.GenericMap.pixel_to_world` that the first
+  data axis is longitude, and the second is latitude. This will affect you if
+  you are using data where the x/y axes are latitude/longitude, and now returns
+  correct values in methods and properties that call ``pixel_to_world``,
+  such as ``bottom_left_coord``, ``top_right_coord``, ``center``. (`#4700 <https://github.com/sunpy/sunpy/pull/4700>`__)
+- Added a warning when a 2D `~sunpy.coordinates.frames.Helioprojective` coordinate is upgraded to a 3D coordinate and the number type is lower precision than the native Python float.
+  This 2D->3D upgrade is performed internally when transforming a 2D `~sunpy.coordinates.frames.Helioprojective` coordinate to any other coordinate frame. (`#4724 <https://github.com/sunpy/sunpy/pull/4724>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Added more information on which FITS keywords are used for various `sunpy.map.GenericMap`
+  properties. (`#4717 <https://github.com/sunpy/sunpy/pull/4717>`__)
+
+
 Sunpy 2.0.5 (2020-11-26)
 ========================
 
