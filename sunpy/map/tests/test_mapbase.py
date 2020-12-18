@@ -86,6 +86,8 @@ def generic_map():
         'CDELT2': 10,
         'CUNIT1': 'arcsec',
         'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
         'PC1_1': 0,
         'PC1_2': -1,
         'PC2_1': 1,
@@ -220,7 +222,7 @@ def test_rsun_obs(generic_map):
 
 
 def test_coordinate_system(generic_map):
-    assert generic_map.coordinate_system == ('HPLN-   ', 'HPLT-   ')
+    assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
 def test_carrington_longitude(generic_map):
@@ -356,6 +358,16 @@ def test_world_to_pixel_error(generic_map):
     strerr = 'world_to_pixel takes a Astropy coordinate frame or SkyCoord instance'
     with pytest.raises(ValueError, match=strerr):
         generic_map.world_to_pixel(1)
+
+
+@pytest.mark.parametrize('origin', [0, 1])
+def test_world_pixel_roundtrip(simple_map, origin):
+    pix = 1 * u.pix, 1 * u.pix
+    coord = simple_map.pixel_to_world(*pix, origin=origin)
+    pix_roundtrip = simple_map.world_to_pixel(coord, origin=origin)
+
+    assert u.allclose(pix_roundtrip.x, pix[0], atol=1e-10 * u.pix)
+    assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
 
 
 def test_save(aia171_test_map, generic_map):
@@ -811,8 +823,8 @@ def test_as_mpl_axes_aia171(aia171_test_map):
 def test_pixel_to_world_no_projection(generic_map):
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
         out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel))
-    assert_quantity_allclose(out.Tx, 0*u.arcsec)
-    assert_quantity_allclose(out.Ty, 0*u.arcsec)
+    assert_quantity_allclose(out.Tx, 0*u.arcsec, atol=1e-26*u.arcsec)
+    assert_quantity_allclose(out.Ty, 0*u.arcsec, atol=1e-26*u.arcsec)
 
 
 def test_validate_meta(generic_map):
