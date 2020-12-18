@@ -35,9 +35,9 @@ from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import MetaDict, expand_list
+from sunpy.util import expand_list
 from sunpy.util.decorators import deprecate_positional_args_since
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
