@@ -7,13 +7,12 @@ sunpy can interface with the `pyvista` package to produce interactive 3D plots.
 """
 ###############################################################################
 # Start by importing the required modules
-from astropy.coordinates import SkyCoord
 import astropy.constants as const
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
-import sunpy.coordinates
+from sunpy.data.sample import AIA_193_IMAGE
 from sunpy.map import Map
-from sunpy.data.sample import AIA_193_IMAGE, RHESSI_IMAGE
 from sunpy.visualization.pyvista import PyVistaPlotter
 
 ###############################################################################

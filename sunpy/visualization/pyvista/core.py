@@ -1,12 +1,12 @@
 import functools
 
-from astropy.constants import R_sun
 import numpy as np
 import pyvista as pv
 
+from astropy.constants import R_sun
+
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map.maputils import all_corner_coords_from_map
-
 
 __all__ = ['PyVistaPlotter']
 
