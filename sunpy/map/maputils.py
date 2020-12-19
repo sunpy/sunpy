@@ -11,6 +11,7 @@ from astropy.coordinates import SkyCoord
 from sunpy.coordinates import Helioprojective, sun
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
+           'all_corner_coords_from_map',
            'map_edges', 'solar_angular_radius', 'sample_at_coords',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
            'contains_limb', 'coordinate_is_on_solar_disk',
@@ -37,7 +38,7 @@ def all_pixel_indices_from_map(smap):
 
 def all_coordinates_from_map(smap):
     """
-    Returns the coordinates of every pixel in a map.
+    Returns the coordinates of the center of every pixel in a map.
 
     Parameters
     ----------
@@ -52,6 +53,17 @@ def all_coordinates_from_map(smap):
     """
     x, y = all_pixel_indices_from_map(smap)
     return smap.pixel_to_world(x, y)
+
+
+def all_corner_coords_from_map(smap):
+    """
+    Returns the coordinates of the pixel corners in a map.
+    """
+    nx, ny = smap.data.shape
+    xpix = np.arange(0, nx + 1, 1) - 0.5
+    ypix = np.arange(0, ny + 1, 1) - 0.5
+    xpix, ypix = np.meshgrid(xpix, ypix, indexing='ij') * u.pix
+    return smap.pixel_to_world(xpix, ypix)
 
 
 def map_edges(smap):
