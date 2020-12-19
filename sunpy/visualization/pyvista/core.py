@@ -15,13 +15,12 @@ class PyVistaPlotter:
     """
     A plotter for 3D data.
 
-    Since pyvista is not coordinate aware, everything is converted to
-    the `~sunpy.coordinates.HeliocentricInertial` frame, and in distance units
-    of :math:`R_{sun} = 1`. The z-axis is aligned with the solar rotation axis.
+    Since pyvista is not coordinate aware, all coordinates are converted to
+    a specific frame (`~sunpy.coordinates.HeliocentricInertial` by default),
+    and distance units are such that :math:`R_{sun} = 1`.
 
-    Attributes
+    Parameters
     ----------
-    plotter : pyvista.Plotter
     coordinate_frame : astropy.coordinates.BaseFrame
         Coordinate frame of the plot. The x, y, z axes of the pyvista plotter
         will be the x, y, z axes in this coordinate system.
@@ -30,7 +29,7 @@ class PyVistaPlotter:
         if coordinate_frame is None:
             coordinate_frame = HeliocentricInertial()
         self._coordinate_frame = coordinate_frame
-        self.plotter = pv.Plotter()
+        self._plotter = pv.Plotter()
 
     @property
     def coordinate_frame(self):
@@ -38,6 +37,13 @@ class PyVistaPlotter:
         Coordinate frame of the plot.
         """
         return self._coordinate_frame
+
+    @property
+    def plotter(self):
+        """
+        `pyvista.Plotter`.
+        """
+        return self._plotter
 
     @functools.wraps(pv.Plotter.show)
     def show(self, *args, **kwargs):
@@ -60,6 +66,10 @@ class PyVistaPlotter:
         Parameters
         ----------
         m : sunpy.map.Map
+
+        Returns
+        -------
+        pyvista.StructuredGrid
         """
         corner_coords = all_corner_coords_from_map(m)
         nodes = self._coords_to_xyz(corner_coords.ravel())
@@ -107,6 +117,8 @@ class PyVistaPlotter:
 
     def plot_solar_axis(self, length=2.5, arrow_kwargs={}, **kwargs):
         """
+        Plot the solar rotation axis as an arrow.
+
         Parameters
         ----------
         length : float
