@@ -9,6 +9,11 @@ __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey',
            'Cutout']
 
 
+# Define a custom __dir__ to restrict tab-completion to __all__
+def __dir__():
+    return __all__
+
+
 class Series(SimpleAttr):
     """
     The JSOC Series to Download.
