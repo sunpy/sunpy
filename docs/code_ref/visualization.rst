@@ -9,6 +9,8 @@ SunPy visualization
 
 .. automodapi:: sunpy.visualization.colormaps.color_tables
 
+.. automodapi:: sunpy.visualization.pyvista
+
 .. automodapi:: sunpy.visualization.animator
 
 .. automodapi:: sunpy.visualization.wcsaxes_compat

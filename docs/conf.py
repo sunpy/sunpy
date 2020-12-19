@@ -173,6 +173,7 @@ intersphinx_mapping = {
     "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
     "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
+    "pyvista": ('https://docs.pyvista.org', None),
 }
 
 # -- Options for HTML output ---------------------------------------------------
