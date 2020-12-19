@@ -1,8 +1,6 @@
-.. _plotting:
-
-*****************
-Plotting in SunPy
-*****************
+***********
+2D plotting
+***********
 
 SunPy makes use of `matplotlib <https://matplotlib.org/>`_ for all of its
 plotting - as such, it tries to follow the matplotlib plotting philosophy. It is

@@ -15,7 +15,7 @@ For more details checkout the :ref:`reference`.
    Brief Tour <tour>
    Data Acquisition <acquiring_data/index>
    Data Types <data_types/index>
-   Plotting <plotting>
+   Plotting <plotting/index>
    Units and Coordinates <units-coordinates>
    Time <time>
    customization
