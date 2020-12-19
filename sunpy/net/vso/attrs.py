@@ -28,6 +28,12 @@ from .. import attr as _attr
 
 __all__ = ['Extent', 'Field', 'Pixels', 'Filter', 'Quicklook', 'PScale']
 
+
+# Define a custom __dir__ to restrict tab-completion to __all__
+def __dir__():
+    return __all__
+
+
 _TIMEFORMAT = '%Y%m%d%H%M%S'
 
 
