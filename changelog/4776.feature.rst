@@ -1,0 +1,2 @@
+Added a new `~sunpy.map.all_corner_coords_from_map` function to get the
+coordinates of all the pixel corners in a `~sunpy.map.GenericMap`.
