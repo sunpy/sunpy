@@ -22,7 +22,7 @@ is an interface to multiple sources including all the sources implemented in
 
 
 VSO
----
+===
 
 .. automodapi:: sunpy.net.vso
 
@@ -30,7 +30,7 @@ VSO
 
 
 Dataretriever
--------------
+=============
 
 .. automodapi:: sunpy.net.dataretriever
 
@@ -45,7 +45,7 @@ JSOC
 
 
 HEK
----
+===
 
 .. automodapi:: sunpy.net.hek
 
