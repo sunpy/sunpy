@@ -27,9 +27,9 @@ Deprecations and Removals
 - Fido search attrs available as `sunpy.net.attrs` i.e, ``a.Time``, ``a.Instrument`` etc are now deprecated as VSO attrs (`sunpy.net.vso.attrs`). (`#3714 <https://github.com/sunpy/sunpy/pull/3714>`__)
 - ``sunpy.util.multimethod.MultiMethod`` is deprecated, `functools.singledispatch` provides equivalent functionality in the standard library. (`#3714 <https://github.com/sunpy/sunpy/pull/3714>`__)
 - `sunpy.net.vso.attrs.Physobs` has been moved to `sunpy.net.attrs.Physobs` and the original deprecated. (`#3877 <https://github.com/sunpy/sunpy/pull/3877>`__)
-- Deprecate `sunpy.instr.aia.aiaprep` in favor of the `aiapy.calibrate.register` function in the
+- Deprecate ``sunpy.instr.aia.aiaprep`` in favor of the `aiapy.calibrate.register` function in the
   [aiapy](https://gitlab.com/LMSAL_HUB/aia_hub/aiapy) package.
-  `sunpy.instr.aia.aiaprep` will be removed in version 2.1 (`#3960 <https://github.com/sunpy/sunpy/pull/3960>`__)
+  ``sunpy.instr.aia.aiaprep`` will be removed in version 2.1 (`#3960 <https://github.com/sunpy/sunpy/pull/3960>`__)
 - Removed the module ``sunpy.sun.sun``, which was deprecated in version 1.0.
   Use the module `sunpy.coordinates.sun` instead. (`#4014 <https://github.com/sunpy/sunpy/pull/4014>`__)
 - Removed Sun-associated functions in `sunpy.coordinates.ephemeris`, which were deprecated in 1.0.
@@ -565,7 +565,7 @@ Bug Fixes
 - Raise an error when transforming between HPC and HCC frames if the observer is not the same. (`#2725 <https://github.com/sunpy/sunpy/pull/2725>`__)
 - Replaces the existing LASCO C2 and C3 color maps with new ones that perform better with JP2 and Level 0.5, 1 data. (`#2731 <https://github.com/sunpy/sunpy/pull/2731>`__)
 - Do not attempt to save a FITS header comment for a keyword which is not in the header. This prevents an error on saving some maps after the metadata had been modified but not the comments. (`#2748 <https://github.com/sunpy/sunpy/pull/2748>`__)
-- Add support for `~sunpy.map.sources.HMIMap` objects as input to `sunpy.instr.aia.aiaprep`. (`#2749 <https://github.com/sunpy/sunpy/pull/2749>`__)
+- Add support for `~sunpy.map.sources.HMIMap` objects as input to ``sunpy.instr.aia.aiaprep``. (`#2749 <https://github.com/sunpy/sunpy/pull/2749>`__)
 - User can convert between HPC and HCC coordinates with different observers. This is implemented by automatically transforming the coordinate into HGS and then changing observer, and then transforming back to HCC. (`#2754 <https://github.com/sunpy/sunpy/pull/2754>`__)
 - Changed default file type for Helioviewer to prevent decode errors. (`#2771 <https://github.com/sunpy/sunpy/pull/2771>`__)
 - Increase figure size to avoid cutting off longer colormap names in ``sunpy.cm.show_colormaps``. (`#2824 <https://github.com/sunpy/sunpy/pull/2824>`__)
@@ -579,7 +579,7 @@ Bug Fixes
 - If Carrington longitude ("crln_obs") is found in the FITS header, `~sunpy.map.Map` converts this to the correct Heliographic longitude. (`#2946 <https://github.com/sunpy/sunpy/pull/2946>`__)
 - `sunpy.net.helio.hec.HECClient.time_query` now resolves the correct input time format. (`#2969 <https://github.com/sunpy/sunpy/pull/2969>`__)
 - Fixes the calculation of the solar rotation of coordinates and the differential rotation of `sunpy.map.GenericMap`. (`#2972 <https://github.com/sunpy/sunpy/pull/2972>`__)
-- Added back the FERMI GBM client to `sunpy.net.dataretriever.sources`. (`#2983 <https://github.com/sunpy/sunpy/pull/2983>`__)
+- Added back the FERMI GBM client to `sunpy.net.dataretriever`. (`#2983 <https://github.com/sunpy/sunpy/pull/2983>`__)
 - Fix bug in `sunpy.net.hek` which raised and error if a search returned zero results, now returns an empty `sunpy.net.hek.HEKTable`. (`#3046 <https://github.com/sunpy/sunpy/pull/3046>`__)
 - `~sunpy.map.sources.AIAMap` now uses the provided HAE coordinates instead of the provided HGS coordinates to determine the observer location. (`#3056 <https://github.com/sunpy/sunpy/pull/3056>`__)
 - Correctly zero pad milliseconds in the `sunpy.util.scraper.Scraper` formatting to prevent errors when the millisecond value was less than 100. (`#3063 <https://github.com/sunpy/sunpy/pull/3063>`__)
@@ -634,7 +634,7 @@ Trivial/Internal Changes
 - Use of `textwrap` to keep source code indented when multiline texts is used (`#2671 <https://github.com/sunpy/sunpy/pull/2671>`__)
 - Fix mispelling of private attribute ``_default_heliographic_latitude`` in map. (`#2730 <https://github.com/sunpy/sunpy/pull/2730>`__)
 - Miscellaneous fixes to developer docs about building sunpy's documentation. (`#2825 <https://github.com/sunpy/sunpy/pull/2825>`__)
-- Changed `sunpy.instr.aia.aiaprep` to update BITPIX keyword to reflect the float64 dtype. (`#2831 <https://github.com/sunpy/sunpy/pull/2831>`__)
+- Changed ``sunpy.instr.aia.aiaprep`` to update BITPIX keyword to reflect the float64 dtype. (`#2831 <https://github.com/sunpy/sunpy/pull/2831>`__)
 - Remove warning from ``GenericMap.submap`` when using pixel ``Quantities`` as input. (`#2833 <https://github.com/sunpy/sunpy/pull/2833>`__)
 - Remove the usage of six and all ``__future__`` imports (`#2837 <https://github.com/sunpy/sunpy/pull/2837>`__)
 - Fix SunPy Coordinate tests with Astropy 3.1 (`#2838 <https://github.com/sunpy/sunpy/pull/2838>`__)

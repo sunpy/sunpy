@@ -212,10 +212,10 @@ class JSOCClient(BaseClient):
         Build a JSOC query and submit it to JSOC for processing.
 
         Takes a variable number of `~sunpy.net.jsoc.attrs` as parameters,
-        which are chained together using the AND (`&`) operator.
+        which are chained together using the AND (``&``) operator.
 
         Complex queries to be easily formed using logical operators such as
-        `&` and `|`, in the same way as the VSO client.
+        ``&`` and ``|``, in the same way as the VSO client.
 
         Parameters
         ----------
@@ -372,8 +372,8 @@ class JSOCClient(BaseClient):
 
         Returns
         -------
-        requests : `~drms.ExportRequest` object or
-                   a list of  `~drms.ExportRequest` objects
+        requests : `~drms.client.ExportRequest` object or
+                   a list of  `~drms.client.ExportRequest` objects
 
             Request Id can be accessed by requests.id
             Request status can be accessed by requests.status
@@ -433,7 +433,7 @@ class JSOCClient(BaseClient):
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
 
         max_conn : `int`
@@ -444,7 +444,7 @@ class JSOCClient(BaseClient):
 
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
+           any effect if ``downloader`` is not `None`.
 
         sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
@@ -486,8 +486,8 @@ class JSOCClient(BaseClient):
 
         Parameters
         ----------
-        requests : `~drms.ExportRequest`, `str`, `list`
-            `~drms.ExportRequest` objects or `str` request IDs or lists
+        requests : `~drms.client.ExportRequest`, `str`, `list`
+            `~drms.client.ExportRequest` objects or `str` request IDs or lists
             returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
 
         path : `str`
