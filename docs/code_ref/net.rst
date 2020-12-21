@@ -30,7 +30,7 @@ VSO
 
 
 Dataretriever
-=============
+-------------
 
 .. automodapi:: sunpy.net.dataretriever
 
