@@ -38,7 +38,7 @@ class DownloaderError(Exception):
 class ParfiveDownloader(DownloaderBase):
     """
     Concrete implementation of `~sunpy.data.data_manager.downloader.DownloaderBase`
-    using `parfive`.
+    using :mod:`parfive`.
     """
 
     def download(self, url, path):
