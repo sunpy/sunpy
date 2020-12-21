@@ -13,71 +13,74 @@ from sunpy.visualization.colormaps import color_tables as ct
 
 __all__ = ['show_colormaps', 'cmlist']
 
-sdoaia94 = ct.aia_color_table(94*u.angstrom)
-sdoaia131 = ct.aia_color_table(131*u.angstrom)
-sdoaia171 = ct.aia_color_table(171*u.angstrom)
-sdoaia193 = ct.aia_color_table(193*u.angstrom)
-sdoaia211 = ct.aia_color_table(211*u.angstrom)
-sdoaia304 = ct.aia_color_table(304*u.angstrom)
-sdoaia335 = ct.aia_color_table(335*u.angstrom)
-sdoaia1600 = ct.aia_color_table(1600*u.angstrom)
-sdoaia1700 = ct.aia_color_table(1700*u.angstrom)
-sdoaia4500 = ct.aia_color_table(4500*u.angstrom)
+sdoaia94 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[94*u.angstrom], 'SDO AIA {:s}'.format(str(94*u.angstrom)))
+sdoaia131 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[131*u.angstrom], 'SDO AIA {:s}'.format(str(131*u.angstrom)))
+sdoaia171 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[171*u.angstrom], 'SDO AIA {:s}'.format(str(171*u.angstrom)))
+sdoaia193 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[193*u.angstrom], 'SDO AIA {:s}'.format(str(193*u.angstrom)))
+sdoaia211 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[211*u.angstrom], 'SDO AIA {:s}'.format(str(211*u.angstrom)))
+sdoaia304 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[304*u.angstrom], 'SDO AIA {:s}'.format(str(304*u.angstrom)))
+sdoaia335 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[335*u.angstrom], 'SDO AIA {:s}'.format(str(335*u.angstrom)))
+sdoaia1600 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[1600*u.angstrom], 'SDO AIA {:s}'.format(str(1600*u.angstrom)))
+sdoaia1700 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[1700*u.angstrom], 'SDO AIA {:s}'.format(str(1700*u.angstrom)))
+sdoaia4500 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[4500*u.angstrom], 'SDO AIA {:s}'.format(str(4500*u.angstrom)))
 
-sohoeit171 = ct.eit_color_table(171*u.angstrom)
-sohoeit195 = ct.eit_color_table(195*u.angstrom)
-sohoeit284 = ct.eit_color_table(284*u.angstrom)
-sohoeit304 = ct.eit_color_table(304*u.angstrom)
+sohoeit171 =  ct.cmap_from_rgb_file('SOHO EIT {:s}'.format(str(171*u.angstrom)), f'eit_{ct.Colors.color.value[171*u.angstrom]}.csv')
+sohoeit195 =  ct.cmap_from_rgb_file('SOHO EIT {:s}'.format(str(195*u.angstrom)), f'eit_{ct.Colors.color.value[195*u.angstrom]}.csv')
+sohoeit284 =  ct.cmap_from_rgb_file('SOHO EIT {:s}'.format(str(284*u.angstrom)), f'eit_{ct.Colors.color.value[284*u.angstrom]}.csv')
+sohoeit304 =  ct.cmap_from_rgb_file('SOHO EIT {:s}'.format(str(304*u.angstrom)), f'eit_{ct.Colors.color.value[304*u.angstrom]}.csv')
+    
+goesrsuvi94 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[94*u.angstrom], 'GOES-R SUVI {:s}'.format(str(94*u.angstrom)))
+goesrsuvi131 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[131*u.angstrom], 'GOES-R SUVI {:s}'.format(str(131*u.angstrom)))
+goesrsuvi171 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[171*u.angstrom], 'GOES-R SUVI {:s}'.format(str(171*u.angstrom)))
+goesrsuvi304 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[304*u.angstrom], 'GOES-R SUVI {:s}'.format(str(304*u.angstrom)))
 
-goesrsuvi94 = ct.suvi_color_table(94*u.angstrom)
-goesrsuvi131 = ct.suvi_color_table(131*u.angstrom)
-goesrsuvi171 = ct.suvi_color_table(171*u.angstrom)
-goesrsuvi195 = ct.suvi_color_table(195*u.angstrom)
-goesrsuvi284 = ct.suvi_color_table(284*u.angstrom)
-goesrsuvi304 = ct.suvi_color_table(304*u.angstrom)
-
+goesrsuvi195 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[193*u.angstrom], 'GOES-R SUVI {:s}'.format(str(193*u.angstrom)))
+goesrsuvi284 = ct._cmap_from_rgb(ct.Colors.aia_wave_dict.value[335*u.angstrom], 'GOES-R SUVI {:s}'.format(str(335*u.angstrom)))
 
 # The color tables below returns one of the fundamental color tables for SOHO
 # LASCO images. These are not the same as those used in SSWIDL.  This is
 # because the SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly
 # compressed and does not display the data well.
+
 soholasco2 = deepcopy(mplcm.get_cmap("gist_heat"))
 soholasco2.name = 'SOHO LASCO C2'
 soholasco3 = deepcopy(mplcm.get_cmap("bone"))
 soholasco3.name = 'SOHO LASCO C3'
 
 # These are the SSWIDL color tables.
-sswidlsoholasco2 = ct.sswidl_lasco_color_table(2)
-sswidlsoholasco3 = ct.sswidl_lasco_color_table(3)
+sswidlsoholasco2 = ct.cmap_from_rgb_file(f'SOHO LASCO C{2}', f'lasco_c{2}.csv')
+sswidlsoholasco3 = ct.cmap_from_rgb_file(f'SOHO LASCO C{3}', f'lasco_c{3}.csv')
 
-stereocor1 = ct.cor_color_table(1)
-stereocor2 = ct.cor_color_table(2)
+stereocor1 = ct.cmap_from_rgb_file(f'STEREO COR{1}', f'stereo_cor{1}.csv')
+stereocor2 = ct.cmap_from_rgb_file(f'STEREO COR{2}', f'stereo_cor{2}.csv')
 
-stereohi1 = ct.stereo_hi_color_table(1)
-stereohi2 = ct.stereo_hi_color_table(2)
+stereohi1 = ct.cmap_from_rgb_file(f'STEREO HI{1}', f'hi{1}.csv')
+stereohi2 = ct.cmap_from_rgb_file(f'STEREO HI{2}', f'hi{2}.csv')
 
-yohkohsxtal = ct.sxt_color_table('al')
-yohkohsxtwh = ct.sxt_color_table('wh')
+yohkohsxtal = ct._cmap_from_rgb(ct.Colors.sxt_colors.value['al'], 'Yohkoh SXT {:s}'.format('al'.title()))
+yohkohsxtwh = ct._cmap_from_rgb(ct.Colors.sxt_colors.value['wh'], 'Yohkoh SXT {:s}'.format('wh'.title()))
 
-hinodexrt = ct.xrt_color_table()
-hinodesotintensity = ct.sot_color_table('intensity')
+hinodexrt = ct._cmap_from_rgb(ct.Colors.rgb_colors.value['intensity'], 'Hinode XRT')
+hinodesotintensity = ct._cmap_from_rgb(ct.Colors.rgb_colors.value['intensity'], 'Hinode SOT intensity')
 
-trace171 = ct.trace_color_table('171')
-trace195 = ct.trace_color_table('195')
-trace284 = ct.trace_color_table('284')
-trace1216 = ct.trace_color_table('1216')
-trace1550 = ct.trace_color_table('1550')
-trace1600 = ct.trace_color_table('1600')
-trace1700 = ct.trace_color_table('1700')
-traceWL = ct.trace_color_table('WL')
 
-hmimag = ct.hmi_mag_color_table()
+trace171 = ct.cmap_from_rgb_file('TRACE 171', 'trace_171.csv')
+trace195 = ct.cmap_from_rgb_file('TRACE 195', 'trace_195.csv')
+trace284 = ct.cmap_from_rgb_file('TRACE 284', 'trace_284.csv')
+trace1216 = ct.cmap_from_rgb_file('TRACE 1216', 'trace_1216.csv')
+trace1550 = ct.cmap_from_rgb_file('TRACE 1550', 'trace_1550.csv')
+trace1600 = ct.cmap_from_rgb_file('TRACE 1600', 'trace_1600.csv')
+trace1700 = ct.cmap_from_rgb_file('TRACE 1700', 'trace_1700.csv')
+
+traceWL = ct.cmap_from_rgb_file('TRACE WL', 'grayscale.csv')
+
+hmimag = ct.cmap_from_rgb_file('SDO HMI magnetogram', 'hmi_mag.csv')
 
 kcor = deepcopy(mplcm.get_cmap("gist_gray"))
 kcor.name = 'MLSO KCor'
 
-rhessi = ct.rhessi_color_table()
-std_gamma_2 = ct.std_gamma_2()
+rhessi = ct.cmap_from_rgb_file("rhessi", "rhessi.csv")
+std_gamma_2 = ct.cmap_from_rgb_file("std_gamma_2", "std_gamma_2.csv")
 
 cmlist = {
     'goes-rsuvi94': goesrsuvi94,
@@ -143,13 +146,11 @@ for name, cmap in cmlist.items():
 def show_colormaps(search=None):
     """
     Displays a plot of the custom color maps supported in SunPy.
-
     Parameters
     ----------
     search : str
         A string to search for in the names of the color maps (e.g. aia, EIT,
         171). Case insensitive.
-
     Examples
     --------
     >>> import sunpy.visualization.colormaps as cm
