@@ -30,12 +30,9 @@ VSO
 
 
 Dataretriever
-=============
+-------------
 
 .. automodapi:: sunpy.net.dataretriever
-   :allowed-package-names: sources
-
-.. automodapi:: sunpy.net.dataretriever.sources
 
 .. automodapi:: sunpy.net.dataretriever.attrs.goes
 
