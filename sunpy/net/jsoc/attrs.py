@@ -98,13 +98,13 @@ class Cutout(DataAttr):
         Coordinate for the bottom left corner of the cutout.
     top_right : `~astropy.coordinates.SkyCoord`, optional
         Coordinate for the top right corner of the cutout. If this is
-        not specified, both `width` and `height` must both be specified.
+        not specified, both ``width`` and ``height`` must both be specified.
     width : `~astropy.units.Quantity`, optional
         Width of the cutout. If this parameter, along with `height`, is
         not specified, `top_right` must be specified.
     height : `~astropy.units.Quantity`, optional
-        Height of the cutout. If this parameter, along with `width`, is
-        not specified, `top_right` must be specified.
+        Height of the cutout. If this parameter, along with ``width``, is
+        not specified, ``top_right`` must be specified.
     tracking : `bool`, optional
         If True, the field of view follows the rotation of the Sun
     register : `bool`, optional
@@ -114,7 +114,7 @@ class Cutout(DataAttr):
 
     See Also
     --------
-    sunpy.coordinate.utils.get_rectangle_coordinates
+    sunpy.coordinates.utils.get_rectangle_coordinates
     """
 
     @u.quantity_input

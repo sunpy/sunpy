@@ -46,8 +46,8 @@ class Scraper:
 
     regex : `bool`
         Set to `True` if parts of the pattern uses regexp symbols. Be careful that
-        periods `.` matches any character and therefore it's better to escape them.
-        If `regexp` is used, other ``kwargs`` are ignored and string replacement is
+        periods ``.`` matches any character and therefore it's better to escape them.
+        If regexp is used, other ``kwargs`` are ignored and string replacement is
         not possible. Default is `False`.
 
     Attributes
@@ -111,7 +111,7 @@ class Scraper:
         Returns
         -------
         `list` of `str`
-            `List` of all the possible directories valid for the time range given.
+            All the possible directories valid for the time range given.
             Notice that these directories may not exist in the archive.
         """
         # find directory structure - without file names
