@@ -1,0 +1,1 @@
+Replaced functions from `~sunpy.visualization.colormaps.color_tables.py` with enums and changed it's use in `~sunpy.visualization.colormaps.cm.py`
