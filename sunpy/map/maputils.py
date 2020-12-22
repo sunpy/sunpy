@@ -388,6 +388,7 @@ def on_disk_bounding_coordinates(smap):
                     [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
                     frame=smap.coordinate_frame)
 
+
 def contains_coordinate(smap, coordinates):
     """
     Parameters
@@ -395,7 +396,7 @@ def contains_coordinate(smap, coordinates):
     smap : `~sunpy.map.GenericMap`
         A map in helioprojective Cartesian coordinates.
 
-    coordinate : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
         The input coordinate. The coordinate frame must be
         `~sunpy.coordinates.Helioprojective`.
 
@@ -403,9 +404,12 @@ def contains_coordinate(smap, coordinates):
     -------
     `~bool`
         Returns `True` If coordinates are within the coordinate
-        bound of the smap and Returns `False` If coordinates are 
+        bound of the smap and Returns `False` If coordinates are
         not within the coordinate bound of the smap.
     """
     _verify_coordinate_helioprojective(smap.coordinate_frame)
-
-    return coordinates in all_coordinates_from_map(smap)
+    # Getting pixel indices of smap
+    xs, ys = all_pixel_indices_from_map(smap)
+    # Converting coordinates to pixels
+    xc, yc = smap.world_to_pixel(coordinates)
+    return xc <= len(xs) * u.pixel and yc <= len(ys) * u.pixel
