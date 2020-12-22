@@ -218,6 +218,7 @@ examples/**/*.csv
 figure_test_images*
 tags
 sunpy_map.asdf
+baseline
 
 ### Pycharm(?)
 .idea
