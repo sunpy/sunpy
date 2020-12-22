@@ -418,12 +418,8 @@ def test_QueryResponse_build_table_with_no_start_time(mock_build_client):
     qr = vso.QueryResponse(records)
     table = qr.build_table()
 
-    start_time_ = table['Start Time']
-    assert len(start_time_) == 1
-    assert start_time_[0] == 'None'
-
-    # Even though 'End Time' is valid, there is no 'Start Time'
-    # marks as 'N/A'
+    # 'End Time' is valid, there is no 'Start Time' in the table
+    assert 'Start Time' not in table.columns
     end_time_ = table['End Time']
     assert len(end_time_) == 1
     assert end_time_[0] == 'N/A'
@@ -440,7 +436,6 @@ def test_QueryResponse_build_table_with_no_end_time(mock_build_client):
 
     qr = vso.QueryResponse(records)
     table = qr.build_table()
-
     start_time_ = table['Start Time']
     assert len(start_time_) == 1
     assert start_time_[0] == '2016-02-14 08:08:12'
