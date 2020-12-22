@@ -1604,7 +1604,8 @@ class GenericMap(NDData):
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
         # parse input arguments
-        pixel_corners = u.Quantity(self._parse_submap_input(bottom_left, top_right, width, height)).T
+        pixel_corners = u.Quantity(self._parse_submap_input(
+            bottom_left, top_right, width, height)).T
 
         # The pixel corners result is in Cartesian order, so the first index is
         # columns and the second is rows.
@@ -2230,7 +2231,8 @@ class GenericMap(NDData):
                 level = level.to_value(self.unit)
             # Catch cases where level can't be converted or isn't a Quantity
             except (AttributeError, u.UnitConversionError) as e:
-                raise u.UnitsError(f'level must be an astropy quantity convertible to {self.unit}') from e
+                raise u.UnitsError(
+                    f'level must be an astropy quantity convertible to {self.unit}') from e
 
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
