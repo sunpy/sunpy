@@ -407,9 +407,8 @@ def contains_coordinate(smap, coordinates):
         bound of the smap and Returns `False` If coordinates are
         not within the coordinate bound of the smap.
     """
-    _verify_coordinate_helioprojective(smap.coordinate_frame)
-    # Getting pixel indices of smap
-    xs, ys = all_pixel_indices_from_map(smap)
+    #Dimensions of smap
+    xs, ys = smap.dimensions
     # Converting coordinates to pixels
     xc, yc = smap.world_to_pixel(coordinates)
-    return xc <= len(xs) * u.pixel and yc <= len(ys) * u.pixel
+    return xc<=xs and yc<=ys
