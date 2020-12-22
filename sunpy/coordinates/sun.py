@@ -60,9 +60,9 @@ def angular_radius(t='now'):
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
-    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective` 
-         The input coordinate. The coordinate frame must be 
-         `~sunpy.coordinates.Helioprojective`. 
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+         The input coordinate. The coordinate frame must be
+         `~sunpy.coordinates.Helioprojective`.
     """
     try:
         if type(t) == str:
@@ -70,7 +70,7 @@ def angular_radius(t='now'):
         else:
             _verify_coordinate_helioprojective(t)
             return _angular_radius(t.rsun, t.observer.radius)
-    except:
+    except AttributeError:
         raise ValueError("Invalid arguments. Valid arguments are of type "
                          "datetime yyyy/mm/dd or `~sunpy.coordinates.frames.Helioprojective")
 

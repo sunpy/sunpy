@@ -1,0 +1,3 @@
+Removed function `solar_angular_radius` from `sunpy/map/maputils.py` and its functionality
+has been extended into `sunpy/coordinates/sun.py` where it is handled by an if statement.
+Thereby removing the duplicate function that calculates the angular radius.
