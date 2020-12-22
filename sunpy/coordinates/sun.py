@@ -26,6 +26,7 @@ from astropy.time import Time
 
 from sunpy import log
 from sunpy.sun import constants
+from sunpy.map import maputils
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
@@ -51,18 +52,27 @@ __all__ = [
 def angular_radius(t='now'):
     """
     Return the angular radius of the Sun as viewed from Earth.
-
     The tangent vector from the Earth to the edge of the Sun forms a
     right-angle triangle with the radius of the Sun as the far side and the
     Sun-Earth distance as the hypotenuse.  Thus, the sine of the angular
     radius of the Sun is ratio of these two distances.
-
     Parameters
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective` 
+         The input coordinate. The coordinate frame must be 
+         `~sunpy.coordinates.Helioprojective`. 
     """
-    return _angular_radius(constants.radius, earth_distance(t))
+    try:
+        if type(t) == str:
+            return _angular_radius(constants.radius, earth_distance(t))
+        else:
+            _verify_coordinate_helioprojective(t)
+            return _angular_radius(t.rsun, t.observer.radius)
+    except:
+        raise ValueError("Invalid arguments. Valid arguments are of type "
+                         "datetime yyyy/mm/dd or `~sunpy.coordinates.frames.Helioprojective")
 
 
 def _angular_radius(sol_radius, distance):

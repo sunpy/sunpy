@@ -107,30 +107,6 @@ def _verify_coordinate_helioprojective(coordinates):
                          "but must be in the Helioprojective frame.")
 
 
-def solar_angular_radius(coordinates):
-    """
-    Calculates the solar angular radius as seen by the observer.
-
-    The tangent vector from the observer to the edge of the Sun forms a
-    right-angle triangle with the radius of the Sun as the far side and the
-    Sun-observer distance as the hypotenuse.  Thus, the sine of the angular
-    radius of the Sun is ratio of these two distances.
-
-    Parameters
-    ----------
-    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate. The coordinate frame must be
-        `~sunpy.coordinates.Helioprojective`.
-
-    Returns
-    -------
-    angle : `~astropy.units.Quantity`
-        The solar angular radius.
-    """
-    _verify_coordinate_helioprojective(coordinates)
-    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
-
-
 def sample_at_coords(smap, coordinates):
     """
     Samples the data in a map at given series of coordinates.
