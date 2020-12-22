@@ -13,11 +13,12 @@ import pandas as pd
 import astropy.table
 import astropy.time
 import astropy.units as u
+from astropy.table import TableAttribute
 from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient, BaseQueryResponseTable
+from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
@@ -34,32 +35,27 @@ class NotExportedError(Exception):
     pass
 
 
-class JSOCResponse(BaseQueryResponseTable):
-    def __init__(self, table=None, client=None):
-        """
-        table : `astropy.table.Table`
-        """
-        super().__init__(table, client)
-        self.query_args = getattr(table, 'query_args', None)
-        self.requests = getattr(table, 'requests', None)
+class JSOCResponse(QueryResponseTable):
+    query_args = TableAttribute()
+    requests = TableAttribute()
+    display_keys = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
 
     def __getitem__(self, item):
-        ret = super().__getitem__(item)
-        ret.query_args = self.query_args
-        ret.client = self._client
-        warnings.warn("Downloading of sliced JSOC results is not supported. "
-                      "All the files present in the original response will be downloaded.",
-                      SunpyUserWarning)
-        return ret
+        if isinstance(item, (int, slice)) or (isiterable(item) and any([not isinstance(i, str) for i in item])):
+            warnings.warn("Downloading of sliced JSOC results is not supported. "
+                          "All the files present in the original response will "
+                          "be downloaded when passed to fetch().",
+                          SunpyUserWarning)
+        return super().__getitem__(item)
 
     def build_table(self):
         # remove this check post 3.0
         if any('keys' in i for i in self.query_args):
-            return self.table
+            new_table = self.table.copy()
+            new_table.display_keys = slice(None)
+            return new_table
 
-        default_columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-        cols_in_table = [colname for colname in default_columns if colname in self.table.colnames]
-        return self.table[cols_in_table]
+        return self
 
 
 class JSOCClient(BaseClient):
@@ -317,7 +313,7 @@ class JSOCClient(BaseClient):
             iargs.update(block)
             # Update blocks with deep copy of iargs because in _make_recordset we use .pop() on element from iargs
             blocks.append(copy.deepcopy(iargs))
-            return_results.append(self._lookup_records(iargs))
+            return_results = astropy.table.vstack([return_results, self._lookup_records(iargs)])
         return_results.query_args = blocks
         return return_results
 

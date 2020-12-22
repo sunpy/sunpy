@@ -1,15 +1,13 @@
 import importlib
 from abc import ABC, abstractmethod
 from textwrap import dedent
-from warnings import warn
 from collections.abc import Sequence
 
-from astropy.table import QTable, Table, vstack
+from astropy.table import QTable, Table, TableAttribute
 
-from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.util import get_width
 
-__all__ = ['BaseQueryResponse', 'BaseQueryResponseTable', 'BaseClient']
+__all__ = ['BaseQueryResponse', 'QueryResponseTable', 'BaseClient']
 
 
 class BaseQueryResponse(Sequence):
@@ -65,7 +63,6 @@ class BaseQueryResponse(Sequence):
         contained within the Query Response.
         """
 
-    @abstractmethod
     def response_block_properties(self):
         """
         Returns a set of class attributes on all the response blocks.
@@ -75,6 +72,7 @@ class BaseQueryResponse(Sequence):
         s : `set`
             List of strings, containing attribute names in the response blocks.
         """
+        set()
 
     def __str__(self):
         """Print out human-readable summary of records retrieved"""
@@ -109,65 +107,32 @@ class BaseQueryResponse(Sequence):
         return table[valid_cols]
 
 
-class BaseQueryResponseTable(BaseQueryResponse):
-    """
-    A base class for tabular results returned from clients.
-    """
+class QueryResponseTable(QTable, BaseQueryResponse):
+    client = TableAttribute()
+    display_keys = TableAttribute(default=slice(None))
 
-    def __init__(self, table=None, client=None):
-        super().__init__()
-        self.table = table or QTable()
-        self._client = client
-
-    @property
-    def client(self):
-        return self._client
-
-    @client.setter
-    def client(self, client):
-        self._client = client
+    def build_table(self):
+        return self
 
     @property
     def blocks(self):
         return list(self.table.iterrows)
 
-    def __len__(self):
-        if self.table:
-            return len(self.table)
-        else:
-            return 0
+    def __str__(self):
+        """Print out human-readable summary of records retrieved"""
+        return '\n'.join(self[self.display_keys].pformat(show_dtype=False))
 
-    def __getitem__(self, item):
-        if isinstance(item, int):
-            item = slice(item, item + 1)
-        ret = type(self)(self.table[item])
-        # On iter we were returning empty rows.
-        if len(ret) == 0:
-            raise IndexError
-        ret.client = self._client
-        return ret
+    def __repr__(self):
+        """Print out human-readable summary of records retrieved"""
+        return object.__repr__(self) + "\n" + str(self[self.display_keys])
 
-    def build_table(self):
-        return self.table
-
-    def response_block_properties(self):
-        client_name = self._client.__class__.__name__
-        warn(f"The {client_name} does not support response block properties.",
-             SunpyUserWarning)
-        return set()
-
-    def append(self, table):
-        if self.table is None:
-            self.table = table
-        else:
-            self.table = vstack([self.table, table])
+    def _repr_html_(self):
+        return super(QTable, self[self.display_keys])._repr_html_()
 
     def show(self, *cols):
-        if len(cols) == 0:
-            return self.table
-        tablecols = self.table.columns
-        valid_cols = [col for col in cols if col in tablecols]
-        return self.table[valid_cols]
+        tab = self.copy()
+        tab.display_keys = slice(None)
+        return BaseQueryResponse.show(tab, *cols)
 
 
 def _print_client(client, html=False):
