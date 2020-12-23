@@ -31,7 +31,7 @@ Installing sunpy using Miniconda
 --------------------------------
 
 To install SunPy launch a system command prompt or the 'Anaconda Prompt' (under Windows).
-First configure conda for to add the `conda-forge channel <https://conda-forge.org/>__`::
+First configure conda for to add the `conda-forge channel <https://conda-forge.org/>`__::
 
     conda config --add channels conda-forge
     conda config --set channel_priority strict

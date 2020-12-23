@@ -131,7 +131,7 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
 
     Parameters
     ----------
-    frame : astropy.coordiantes.BaseCoordinateFrame
+    frame : astropy.coordinates.BaseCoordinateFrame
     projection : str, optional
 
     Returns

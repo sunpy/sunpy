@@ -969,8 +969,8 @@ class Database:
 
         Parameters
         ----------
-        file : str or file-like object
-            Either a path pointing to a FITS file or a an opened file-like
+        file : str, file object
+            Either a path pointing to a FITS file or an opened file-like
             object. If an opened file object, its mode must be one of the
             following rb, rb+, or ab+.
 

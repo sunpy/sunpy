@@ -405,7 +405,7 @@ def solar_angle_equivalency(observer):
 
     Returns
     -------
-    equiv : equivalency function that can be used as keyword `equivalencies` for astropy unit conversion.
+    equiv : equivalency function that can be used as keyword ``equivalencies`` for astropy unit conversion.
 
     Examples
     --------

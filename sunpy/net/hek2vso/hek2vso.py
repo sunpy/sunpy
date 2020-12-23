@@ -166,7 +166,7 @@ class H2VClient:
             The results from a HEK query in the form of a list.
         limit : int
             An approximate limit to the desired number of VSO results.
-        progress : Boolean
+        progress : bool
             A flag to turn off the progress bar, defaults to "off"
 
         Examples

@@ -76,7 +76,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         type : {'sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'geo'}, optional
             The type of plot required. Defaults to "sunspot SWO".
         **kwargs : `dict`
-            Additional plot keyword arguments that are handed to `axes.plot` functions
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
@@ -267,7 +268,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         Parameters
         ----------
         **plot_args : `dict`
-            Additional plot keyword arguments that are handed to `axes.plot` functions
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
