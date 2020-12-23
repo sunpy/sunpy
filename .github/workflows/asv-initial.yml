@@ -7,7 +7,7 @@ on:
       - master
 jobs:
   asv-run:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout sunpy repo
         uses: actions/checkout@v2
@@ -31,15 +31,10 @@ jobs:
           pip install asv virtualenv
           
       - name: Add machine info for ASV
-        run : asv machine --machine GH-Actions --os ubuntu-18.04 --arch x64 --cpu "2-core unknown" --ram 7GB
+        run : asv machine --machine GH-Actions --os ubuntu-20.04 --arch x64 --cpu "2-core unknown" --ram 7GB
         
       - name: Run benchmarks
         run : asv run
-
-      - name: List results folder
-        run : |
-          cd asv_results/results
-          ls -la
   
       - name: Install SSH Client 🔑
         uses: webfactory/ssh-agent@v0.4.1

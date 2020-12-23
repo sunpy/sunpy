@@ -20,7 +20,7 @@ class TimeSuite:
 class MemSuite:
     def setup(self):
         self._map = sunpy.data.sample.AIA_171_IMAGE
-   
+
     def mem_sunpy_map(self):
         return sunpy.map.Map(self._map)
 

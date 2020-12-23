@@ -4,7 +4,7 @@
     "version": 1,
 
     // The name of the project being benchmarked
-    "project": "asv_sunpy_project",
+    "project": "sunpy-benchmarks",
 
     // The project's homepage
     "project_url": "http://sunpy.org/",
