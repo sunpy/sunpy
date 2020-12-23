@@ -1,5 +1,4 @@
-# This is an initial workflow to run airspeed velocity
-name: asv-initial-workflow
+name: asv-benchmarks
 
 on:
   push:
@@ -55,7 +54,7 @@ jobs:
           REPOSITORY_NAME: sunpy/sunpy-benchmarks
           TARGET_FOLDER: results 
           CLEAN: true
-          SSH: true # SSH must be set to true so the deploy action knows which protocol to deploy with.
+          SSH: true
           COMMIT_MESSAGE: | 
             Push new results from the CI
             
