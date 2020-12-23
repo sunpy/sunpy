@@ -1,5 +1,3 @@
-# Initial benchmarks
-# See "Writing benchmarks" in the asv docs for more information.
 
 from sunpy.time import parse_time
 

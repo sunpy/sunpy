@@ -1,5 +1,3 @@
-# Initial benchmarks
-# See "Writing benchmarks" in the asv docs for more information.
 
 import sunpy.data.sample
 import sunpy.map
