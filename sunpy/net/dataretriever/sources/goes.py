@@ -6,6 +6,7 @@ from datetime import datetime
 from collections import OrderedDict
 
 import astropy.units as u
+from astropy.time import Time
 
 from sunpy import config
 from sunpy.net import attrs as a
@@ -78,9 +79,10 @@ class XRSClient(GenericClient):
     def post_search_hook(self, i, matchdict):
         tr = get_timerange_from_exdict(i)
         rowdict = OrderedDict()
-        rowdict["Time"] = TimeRange(tr.start, tr.end)
-        rowdict["Start Time"] = tr.start.strftime(TIME_FORMAT)
-        rowdict["End Time"] = tr.end.strftime(TIME_FORMAT)
+        rowdict['Time Start'] = tr.start
+        rowdict['Time Start'].format = 'iso'
+        rowdict['Time End'] = tr.end
+        rowdict['Time End'].format = 'iso'
         rowdict["Instrument"] = matchdict["Instrument"][0].upper()
         rowdict["SatelliteNumber"] = i["SatelliteNumber"]
         rowdict["Physobs"] = matchdict["Physobs"][0]
@@ -221,14 +223,14 @@ class SUVIClient(GenericClient):
     def post_search_hook(self, i, matchdict):
 
         # extracting start times and end times
-        start = datetime(i['year'], i['month'], i['day'], i['hour'], i['minute'], i['second'])
-        end = datetime(i['year'], i['month'], i['day'], i['ehour'], i['eminute'], i['esecond'])
-        timerange = TimeRange(start, end)
+        start = Time(datetime(i['year'], i['month'], i['day'], i['hour'], i['minute'], i['second']))
+        start.format = 'iso'
+        end = Time(datetime(i['year'], i['month'], i['day'], i['ehour'], i['eminute'], i['esecond']))
+        end.format = 'iso'
 
         rowdict = OrderedDict()
-        rowdict['Time'] = timerange
-        rowdict['Start Time'] = start.strftime(TIME_FORMAT)
-        rowdict['End Time'] = end.strftime(TIME_FORMAT)
+        rowdict['Time Start'] = start
+        rowdict['Time End'] = end
         rowdict['Instrument'] = matchdict['Instrument'][0].upper()
         rowdict['Physobs'] = matchdict['Physobs'][0]
         rowdict['Source'] = matchdict['Source'][0]
