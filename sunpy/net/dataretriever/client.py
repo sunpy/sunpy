@@ -1,13 +1,11 @@
 from pathlib import Path
 from collections import OrderedDict
 
-import astropy.table
-
 import sunpy
 from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 from sunpy.util.scraper import Scraper, get_timerange_from_exdict
@@ -17,48 +15,18 @@ TIME_FORMAT = config.get("general", "time_format")
 __all__ = ['QueryResponse', 'GenericClient']
 
 
-class QueryResponse(BaseQueryResponse):
-    """
-    A container for files metadata returned by
-    searches from Dataretriver clients.
-    """
-
-    def __init__(self, lst, client=None):
-        super().__init__()
-        self._data = lst
-        self._client = client
-
-    @property
-    def blocks(self):
-        return self._data
-
-    @property
-    def client(self):
-        return self._client
-
-    @client.setter
-    def client(self, client):
-        self._client = client
+class QueryResponse(QueryResponseTable):
+    def __init__(self, *args, **kwargs):
+        if 'hide_keys' not in kwargs:
+            kwargs['hide_keys'] = ['url']
+        super().__init__(*args, **kwargs)
 
     def time_range(self):
         """
         Returns the time-span for which records are available.
         """
-        return TimeRange(min(qrblock['Time'].start for qrblock in self),
-                         max(qrblock['Time'].end for qrblock in self))
-
-    def __len__(self):
-        return len(self._data)
-
-    def __getitem__(self, item):
-        # Always index so a list comes back
-        if isinstance(item, int):
-            item = slice(item, item+1)
-        return type(self)(self._data[item], client=self.client)
-
-    def __iter__(self):
-        for block in self._data:
-            yield block
+        return TimeRange(min(qrblock['Time Start'] for qrblock in self),
+                         max(qrblock['Time End'] for qrblock in self))
 
     def response_block_properties(self):
         """
@@ -70,22 +38,6 @@ class QueryResponse(BaseQueryResponse):
 
         s.remove(None)
         return s
-
-    def build_table(self):
-        if len(self._data) == 0:
-            return astropy.table.Table()
-
-        # finding column names to be shown in the response table.
-        colnames = []
-        for colname in self._data[0].keys():
-            if colname != 'url' and colname != 'Time':
-                colnames.append(colname)
-        columns = OrderedDict(((col, [])) for col in colnames)
-
-        for qrblock in self:
-            for colname in columns.keys():
-                columns[colname].append(qrblock[colname])
-        return astropy.table.Table(columns)
 
 
 class GenericClient(BaseClient):
@@ -215,10 +167,11 @@ class GenericClient(BaseClient):
         rowdict = OrderedDict()
         tr = get_timerange_from_exdict(exdict)
         start = tr.start
+        start.format = 'iso'
         end = tr.end
-        rowdict['Time'] = TimeRange(start, end)
-        rowdict['Start Time'] = start.strftime(TIME_FORMAT)
-        rowdict['End Time'] = end.strftime(TIME_FORMAT)
+        end.format = 'iso'
+        rowdict['Time Start'] = start
+        rowdict['Time End'] = end
         for k in matchdict:
             if k != 'Time' and k != 'Wavelength':
                 if k == 'Physobs':

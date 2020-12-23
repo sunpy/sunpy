@@ -110,24 +110,40 @@ class BaseQueryResponse(Sequence):
 class QueryResponseTable(QTable, BaseQueryResponse):
     client = TableAttribute()
     display_keys = TableAttribute(default=slice(None))
+    hide_keys = TableAttribute()
 
     def build_table(self):
         return self
 
     @property
     def blocks(self):
-        return list(self.table.iterrows)
+        return list(self.iterrows)
+
+    def unhide_columns(self):
+        self.display_keys = slice(None)
+        self.hide_keys = None
+        return self
+
+    @property
+    def _display_table(self):
+        table = self[self.display_keys]
+        if self.hide_keys:
+            keys = list(table.colnames)
+            # Index only the keys not in hide keys in order
+            [keys.remove(key) for key in self.hide_keys if key in keys]
+            table = table[keys]
+        return table
 
     def __str__(self):
         """Print out human-readable summary of records retrieved"""
-        return '\n'.join(self[self.display_keys].pformat(show_dtype=False))
+        return '\n'.join(self._display_table.pformat(show_dtype=False))
 
     def __repr__(self):
         """Print out human-readable summary of records retrieved"""
-        return object.__repr__(self) + "\n" + str(self[self.display_keys])
+        return object.__repr__(self) + "\n" + str(self._display_table)
 
     def _repr_html_(self):
-        return super(QTable, self[self.display_keys])._repr_html_()
+        return QTable._repr_html_(self._display_table)
 
     def show(self, *cols):
         tab = self.copy()
