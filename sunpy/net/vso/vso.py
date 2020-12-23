@@ -67,6 +67,7 @@ class HashableResponse:
     ----------
     * https://stackoverflow.com/a/1305682
     """
+
     def __init__(self, d):
         self.data = d
         for a, b in d.items():
@@ -288,14 +289,22 @@ class QueryResponse(BaseQueryResponse):
                     data[key.title()].append(value)
                 else:
                     if key == "wave":
+                        # Assumption here is that if min is empty, they all are.
+                        if value['wavemin'] is None:
+                            continue
+
+                        # Some records in the VSO have 'kev' which astropy
+                        # doesn't recognise as a unit, so fix it.
+                        waveunit = value['waveunit']
+                        waveunit = 'keV' if waveunit == 'kev' else waveunit
+
                         data["Wavelength"].append(
                             u.Quantity(
                                 [float(value['wavemin']), float(value['wavemax'])],
-                                unit=value['waveunit'])
+                                unit=waveunit)
                         )
                         data["Wavetype"].append(value['wavetype'])
                         continue
-
                     for subkey, subvalue in value.items():
                         key_template = f"{key.capitalize()} {subkey.capitalize()}"
                         if key == "time" and subvalue is not None:
@@ -306,7 +315,8 @@ class QueryResponse(BaseQueryResponse):
                         data[key_template].append(subvalue)
 
         # Remove Fileid as this method is only used for display.
-        data.pop("Fileid")
+        if "Fileid" in data.keys():
+            data.pop("Fileid")
 
         # Remove any columns which have no non-None values in them
         clean_data = {}
@@ -374,7 +384,8 @@ class VSOClient(BaseClient):
         return obj(**kwargs)
 
     def search(self, *query):
-        """ Query data from the VSO with the new API. Takes a variable number
+        """
+        Query data from the VSO with the new API. Takes a variable number
         of attributes as parameter, which are chained together using AND.
 
         The new query language allows complex queries to be easily formed.
@@ -402,9 +413,9 @@ class VSOClient(BaseClient):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list)
+        out : `QueryResult`
             Matched items. Return value is of same type as the one of
-            :py:meth:`VSOClient.search`.
+            :meth:`VSOClient.search`.
         """
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
