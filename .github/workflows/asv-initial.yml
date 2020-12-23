@@ -1,0 +1,64 @@
+# This is an initial workflow to run airspeed velocity
+name: asv-initial-workflow
+
+on:
+  push:
+    branches: 
+      - asv-ci
+      - master
+jobs:
+  asv-run:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout sunpy repo
+        uses: actions/checkout@v2
+        
+      - name: Checkout sunpy-benchmarks repo
+        uses: actions/checkout@v2
+        with:
+          repository: sunpy/sunpy-benchmarks
+          ref : main
+          path: asv_results
+        
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+          architecture: 'x64'
+        
+      - name: Install dependencies
+        run : |
+          python -m pip install --upgrade pip
+          pip install asv virtualenv
+          
+      - name: Add machine info for ASV
+        run : asv machine --machine GH-Actions --os ubuntu-18.04 --arch x64 --cpu "2-core unknown" --ram 7GB
+        
+      - name: Run benchmarks
+        run : asv run
+
+      - name: List results folder
+        run : |
+          cd asv_results/results
+          ls -la
+  
+      - name: Install SSH Client 🔑
+        uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.ASV_CI_KEY }}
+          
+      - name: Push results
+        uses: JamesIves/github-pages-deploy-action@3.6.2
+        with:
+          BRANCH: main
+          FOLDER: asv_results/results
+          REPOSITORY_NAME: sunpy/sunpy-benchmarks
+          TARGET_FOLDER: results 
+          CLEAN: true
+          SSH: true # SSH must be set to true so the deploy action knows which protocol to deploy with.
+          COMMIT_MESSAGE: | 
+            Push new results from the CI
+            
+            repository: ${{ github.repository }}
+            workflow: ${{ github.workflow }}
+            triggered by: ${{ github.sha }}
