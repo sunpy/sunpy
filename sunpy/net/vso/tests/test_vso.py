@@ -24,11 +24,10 @@ class MockQRRecord:
 
     def __init__(self, start_time=None, end_time=None, size=0, source='SOHO', instrument='aia',
                  extent_type=None):
-        self.size = size
-        self.time = MockObject(start=start_time, end=end_time)
-        self.source = a.Source(source)
-        self.instrument = core_attrs.Instrument(instrument)
-        self.extent = MockObject(type=None if extent_type is None else extent_type.type)
+        self.data = {"size": size, "time": dict(start=start_time, end=end_time),
+                     "source": a.Source(source),
+                     "instrument": core_attrs.Instrument(instrument),
+                     "extent": dict(type=None if extent_type is None else extent_type.type)}
 
 
 class MockQRResponse:
@@ -258,22 +257,20 @@ def test_wave_repr():
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_str(mock_build_client):
     qr = QueryResponse([])
-    assert str(qr) == ('Start Time End Time Source Instrument Type\n'
-                       '---------- -------- ------ ---------- ----')
+    assert str(qr) == '<No columns>'
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_repr(mock_build_client):
     qr = QueryResponse([])
-    assert "Start Time End Time Source Instrument Type" in repr(qr)
+    assert '<No columns>' in repr(qr)
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_show(mock_build_client):
     qr = QueryResponse([])
     qrshow = qr.show('Start Time', 'Source', 'Type')
-    assert str(qrshow) == ('Start Time Source Type\n'
-                           '---------- ------ ----')
+    assert str(qrshow) == '<No columns>'
 
 
 @pytest.mark.remote_data
@@ -368,40 +365,30 @@ def test_QueryResponse_build_table_defaults(mock_build_client):
     qr = vso.QueryResponse(records)
     table = qr.build_table()
 
-    start_time_ = table['Start Time']
-    assert len(start_time_) == 1
-    assert start_time_[0] == 'None'
-
-    end_time_ = table['End Time']
-    assert len(end_time_) == 1
-    assert end_time_[0] == 'None'
-
-    type_ = table['Type'].data
-    assert len(type_) == 1
-    assert type_[0] == 'N/A'
-
-    # Check values we did set by default in 'MockQRRecord'
+    # These are the only None values in the table.
     source_ = table['Source'].data
     assert len(source_) == 1
-    assert source_[0][:-16] == str(a.Source('SOHO'))[:-16]
+    assert source_[0].value == 'SOHO'
 
     instrument_ = table['Instrument'].data
     assert len(instrument_) == 1
-    assert instrument_[0][:-16] == str(core_attrs.Instrument('aia'))[:-16]
+    assert instrument_[0].value == 'aia'
+
+    size_ = table['Size'].data
+    assert len(size_) == 1
+    assert size_[0] == 0.0
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_QueryResponse_build_table_with_extent_type(mock_build_client):
     """
-    When explcitley suppling an 'Extent' only the 'type' is stored
+    When explicitly suppling an 'Extent' only the 'type' is stored
     in the built table.
     """
     e_type = va.Extent(x=1.0, y=2.5, width=37, length=129.2, atype='CORONA')
-
     qr = vso.QueryResponse((MockQRRecord(extent_type=e_type),))
     table = qr.build_table()
-
-    extent = table['Type'].data
+    extent = table['Extent Type'].data
     assert len(extent) == 1
     assert extent[0] == e_type.type
 
@@ -422,7 +409,7 @@ def test_QueryResponse_build_table_with_no_start_time(mock_build_client):
     assert 'Start Time' not in table.columns
     end_time_ = table['End Time']
     assert len(end_time_) == 1
-    assert end_time_[0] == 'N/A'
+    assert end_time_[0].value == '2016-02-14 08:08:12.000'
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
@@ -438,11 +425,7 @@ def test_QueryResponse_build_table_with_no_end_time(mock_build_client):
     table = qr.build_table()
     start_time_ = table['Start Time']
     assert len(start_time_) == 1
-    assert start_time_[0] == '2016-02-14 08:08:12'
-
-    end_time_ = table['End Time']
-    assert len(end_time_) == 1
-    assert end_time_[0] == 'None'
+    assert start_time_[0].value == '2016-02-14 08:08:12.000'
 
 
 @pytest.mark.remote_data
