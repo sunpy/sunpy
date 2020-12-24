@@ -693,9 +693,10 @@ class GenericMap(NDData):
     @property
     def measurement(self):
         """
-        Measurement name, defaults to the wavelength of image.
+        Measurement wavelength.
 
-        This is taken from the 'WAVELNTH' FITS keyword.
+        This is taken from the 'WAVELNTH' FITS keyword. If the keyword is not
+        present, defaults to 0.
         """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.waveunit)
