@@ -26,7 +26,7 @@
     "sunpy.map.tests.test_plotting.test_rectangle_aia171_top_right": "455246d338564add5be94c1dc0ff5740a90d21d8ef7da9f392ba3a01237ef5b8",
     "sunpy.map.tests.test_plotting.test_rectangle_aia171_width_height": "455246d338564add5be94c1dc0ff5740a90d21d8ef7da9f392ba3a01237ef5b8",
     "sunpy.timeseries.tests.test_timeseriesbase.test_esp_peek": "d069eee419c45875cffe9a10c3262f83b3d28ccf7f13ee66ca1b99fe557f09b8",
-    "sunpy.timeseries.tests.test_timeseriesbase.test_eve_peek": "fe84a95c9943554660acdf5202cf68ffc13333c5db29cf5ebb1d4f296043c882",
+    "sunpy.timeseries.tests.test_timeseriesbase.test_eve_peek": "2a22f93af44971411800e4fcd0d93d2128fe2b9e6b97e576e8372c2cd12d7d78",
     "sunpy.timeseries.tests.test_timeseriesbase.test_fermi_gbm_peek": "a0addeae9ec0eda509c976e9058b2d90fa748b2c3d4a64df43b3a064d85f34d9",
     "sunpy.timeseries.tests.test_timeseriesbase.test_generic_ts_peek": "73a71e717b7dd0dd345f0f8a8bfa7f06387607417b3ecd123adfd8f630f93d51",
     "sunpy.timeseries.tests.test_timeseriesbase.test_goes_peek": "5e8a20ed592398ac710798e7995ba7da158743d974820508656b2ba3bf62e152",
