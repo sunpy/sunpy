@@ -1,13 +1,12 @@
 import os
 import codecs
 from os.path import basename
-from datetime import datetime
 from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import dates
-from pandas import DataFrame
+from pandas import DataFrame, to_datetime
 from pandas.io.parsers import read_csv
 
 import astropy.units as u
@@ -228,22 +227,21 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
-            fp.seek(0)
 
-            if line1.startswith("Date"):
-                return cls._parse_average_csv(fp)
-            elif line1.startswith(";"):
-                return cls._parse_level_0cs(fp)
+        if line1.startswith("Date"):
+            return cls._parse_average_csv(filepath)
+        elif line1.startswith(";"):
+            return cls._parse_level_0cs(filepath)
 
     @staticmethod
-    def _parse_average_csv(fp):
+    def _parse_average_csv(filepath):
         """
         Parses an EVE Averages file.
         """
-        return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
+        return "", read_csv(filepath, sep=",", index_col=0, parse_dates=True)
 
     @staticmethod
-    def _parse_level_0cs(fp):
+    def _parse_level_0cs(filepath):
         """
         Parses and EVE Level 0CS file.
         """
@@ -251,15 +249,16 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         missing_data_val = np.nan
         header = []
         fields = []
-        line = fp.readline()
-        # Read header at top of file
-        while line.startswith(";"):
-            header.append(line)
-            if '; Missing data:' in line:
-                is_missing_data = True
-                missing_data_val = line.split(':')[1].strip()
-
+        with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
             line = fp.readline()
+            # Read header at top of file
+            while line.startswith(";"):
+                header.append(line)
+                if '; Missing data:' in line:
+                    is_missing_data = True
+                    missing_data_val = line.split(':')[1].strip()
+
+                line = fp.readline()
 
         meta = MetaDict()
         for hline in header:
@@ -283,17 +282,27 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
         # Next line is YYYY DOY MM DD
         date_parts = line.split(" ")
-
         year = int(date_parts[0])
         month = int(date_parts[2])
         day = int(date_parts[3])
 
-        def parser(x):
-            # Parse date column (HHMM)
-            return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
+        data = read_csv(filepath, delim_whitespace=True, names=fields, comment=';',
+                        dtype={'HHMM': int})
+        # First line is YYYY DOY MM DD
+        data = data.iloc[1:, :]
+        data['Hour'] = data['HHMM'] // 100
+        data['Minute'] = data['HHMM'] % 100
+        data = data.drop(['HHMM'], axis=1)
 
-        data = read_csv(fp, sep=r"\s+", names=fields,
-                        index_col=0, date_parser=parser, header=None, engine='python')
+        data['Year'] = year
+        data['Month'] = month
+        data['Day'] = day
+
+        datecols = ['Year', 'Month', 'Day', 'Hour', 'Minute']
+        data['Time'] = to_datetime(data[datecols])
+        data = data.set_index('Time')
+        data = data.drop(datecols, axis=1)
+
         if is_missing_data:  # If missing data specified in header
             data[data == float(missing_data_val)] = np.nan
 
