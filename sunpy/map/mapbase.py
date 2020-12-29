@@ -1895,7 +1895,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def draw_quadrangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
-                    axes=None, top_right=None, **kwargs):
+                        axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot using Quadrangle from astropy.
         This draws a rectangle that has corners at ``(bottom_left, top_right)``,
@@ -1929,9 +1929,9 @@ class GenericMap(NDData):
         `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
         """
         if version.parse(astropy.__version__) < version.parse("4.2.0"):
-            warnings.warn("draw_quardrangle is supported only in astropy 4.2 and above, defaulting to draw_rectangle instead")
+            warnings.warn("draw_quardrangle is a feature of astropy > 4.2, using draw_rectangle")
             self.draw_rectangle(bottom_left=bottom_left, width=width, height=height,
-                    axes=axes, top_right=top_right, **kwargs)
+                                axes=axes, top_right=top_right, **kwargs)
         else:
             if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
                 # The decorator assigns the first positional arg to top_right and so on.
