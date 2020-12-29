@@ -10,6 +10,7 @@ from io import BytesIO
 from base64 import b64encode
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
+from packaging import version
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,12 +18,13 @@ from matplotlib import cm
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
+import astropy
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import Latitude, Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
-from astropy.visualization.wcsaxes import WCSAxes
+from astropy.visualization.wcsaxes import WCSAxes, Quadrangle
 
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
@@ -1890,6 +1892,77 @@ class GenericMap(NDData):
         axes.add_artist(circ)
 
         return [circ]
+
+    @u.quantity_input
+    def draw_quadrangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
+                    axes=None, top_right=None, **kwargs):
+        """
+        Draw a rectangle defined in world coordinates on the plot using Quadrangle from astropy.
+        This draws a rectangle that has corners at ``(bottom_left, top_right)``,
+        and has sides parallel to coordinate axes of the map.
+        If ``width`` and ``height`` are specified, they are respectively added to the
+        longitude and latitude of the ``bottom_left`` coordinate to calculate a
+        ``top_right`` coordinate.
+        Parameters
+        ----------
+        bottom_left : `~astropy.coordinates.SkyCoord`
+            The bottom-left coordinate of the rectangle. It can
+            have shape ``(2,)`` to simultaneously define ``top_right``.
+        top_right : `~astropy.coordinates.SkyCoord`
+            The top-right coordinate of the rectangle.
+        width : `astropy.units.Quantity`, optional
+            The width of the rectangle. Required if ``top_right`` is omitted.
+        height : `astropy.units.Quantity`
+            The height of the rectangle. Required if ``top_right`` is omitted.
+        axes : `matplotlib.axes.Axes`
+            The axes on which to plot the rectangle, defaults to the current
+            axes.
+        Returns
+        -------
+        rect : `list`
+            A list containing the `~astropy.visualization.wcsaxes.patches.Quadrangle` object, after
+            it has been added to ``axes``.
+        Notes
+        -----
+        If user's astropy version is < 4.2, it defaults to using draw_rectangle instead
+        Extra keyword arguments to this function are passed through to the
+        `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
+        """
+        if version.parse(astropy.__version__) < version.parse("4.2.0"):
+            warnings.warn("draw_quardrangle is supported only in astropy 4.2 and above, defaulting to draw_rectangle instead")
+            self.draw_rectangle(bottom_left=bottom_left, width=width, height=height,
+                    axes=axes, top_right=top_right, **kwargs)
+        else:
+            if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
+                # The decorator assigns the first positional arg to top_right and so on.
+                height = width
+                width = top_right
+                top_right = None
+
+            bottom_left, top_right = get_rectangle_coordinates(
+                bottom_left, top_right=top_right, width=width, height=height)
+
+            width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
+            height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
+
+            if not axes:
+                axes = plt.gca()
+            if wcsaxes_compat.is_wcsaxes(axes):
+                axes_unit = u.deg
+            else:
+                axes_unit = self.spatial_units[0]
+
+            coord = bottom_left.transform_to(self.coordinate_frame)
+            kwergs = {
+                "transform": wcsaxes_compat.get_world_transform(axes),
+                "color": "white",
+                "fill": False,
+            }
+            kwergs.update(kwargs)
+            rect = Quadrangle(
+                (bottom_left.Tx, bottom_left.Ty) * u.arcsec, width, height, **kwergs)
+            axes.add_artist(rect)
+            return [rect]
 
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
