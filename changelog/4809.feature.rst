@@ -1,0 +1,2 @@
+Add draw_quadrangle which replaces draw_rectangle and extends all functionality if
+user's astropy version >= 4.2, otherwise falls back to draw_rectangle.
