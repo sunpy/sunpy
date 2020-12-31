@@ -40,7 +40,7 @@ plt.show()
 # A utility function gives us access to the helioprojective coordinate of each
 # pixels. We create a new array which contains the normalized radial position
 # for each pixel adjusted for the position of the brightest pixel
-# (using `hpc_max`) and then create a new map.
+# (using ``hpc_max``) and then create a new map.
 hpc_coords = all_coordinates_from_map(aia)
 r_mask = np.sqrt((hpc_coords.Tx-hpc_max.Tx) ** 2 + (hpc_coords.Ty-hpc_max.Ty) ** 2) / aia.rsun_obs
 mask = ma.masked_less_equal(r_mask, 0.1)

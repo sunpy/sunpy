@@ -17,7 +17,7 @@ from sunpy.data.sample import AIA_171_IMAGE
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
-# All plot settings for a map are stored in the `plot_settings` attribute.
+# All plot settings for a map are stored in the ``plot_settings`` attribute.
 # How a Map is displayed is determined by its colormap, which sets the colors
 # , and the normalization, which sets how data values are translated to colors.
 # Lets replace the colormap and normalization.
