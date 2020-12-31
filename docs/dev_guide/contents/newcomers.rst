@@ -145,7 +145,7 @@ In order to start coding you will need a local Python environment and we would r
 This method will bypass your operating system Python packages and makes the entire process easier.
 
 The first step is to install the version of conda that corresponds to your operating system and `instructions are here`_.
-Next we will want to setup the conda environment and we will need to add the `conda-forge_` channel as a prerequisite:
+Next we will want to setup the conda environment and we will need to add the `conda-forge`_ channel as a prerequisite:
 
 .. code:: bash
 
@@ -215,7 +215,7 @@ Once you have some changes you would like to submit, you will need to commit the
 This is a three stage process:
 
 1. Use ``git status`` to see that the only changes locally are the right ones.
-2. Use ``git add <path to file>`` to add the changes to `git`.
+2. Use ``git add <path to file>`` to add the changes to ``git``.
 3. Use ``git commit -m <message>`` to label those changes.
 4. Use ``git push`` to update your fork (copy) of sunpy on GitHub.
 
