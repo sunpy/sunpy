@@ -70,7 +70,7 @@ lofar_gcrs = SkyCoord(lofar_loc.get_gcrs(obstime))
 
 ##########################################################################
 # We can then define the reference coordinate in terms of RA-DEC from the header information.
-# Here we are using the `obsgeoloc` keyword argument to take into account that the observer is not
+# Here we are using the ``obsgeoloc`` keyword argument to take into account that the observer is not
 # at the center of the Earth (i.e. the GCRS origin). The distance here is the Sun-observer distance.
 reference_coord = SkyCoord(header['crval1']*u.Unit(header['cunit1']),
                            header['crval2']*u.Unit(header['cunit2']),
@@ -81,7 +81,7 @@ reference_coord = SkyCoord(header['crval1']*u.Unit(header['cunit1']),
                            distance=lofar_gcrs.hcrs.distance)
 
 ##########################################################################
-# Now we can convert the `reference_coord` to the HPC coordinate frame
+# Now we can convert the ``reference_coord`` to the HPC coordinate frame
 reference_coord_arcsec = reference_coord.transform_to(frames.Helioprojective(observer=lofar_gcrs))
 
 ##########################################################################
@@ -106,9 +106,9 @@ P1 = sun.P(obstime)
 # function `~sunpy.map.make_fitswcs_header()`. This will create a MetaDict
 # which we contain all the necessay WCS information to create a `~sunpy.map.Map`.
 # We provide a reference coordinate (in HPC), the spatial
-# scale of the observation (i.e. `cdelt1` and `cdelt2`), and the rotation angle (P1).
+# scale of the observation (i.e. ``cdelt1`` and ``cdelt2``), and the rotation angle (P1).
 # Note that here, 1 is subtracted from the crpix1 and crpix2 values, this is because
-# the `reference_pixel` keyword in ~sunpy.map.make_fitswcs_header` is zero indexed rather
+# the ``reference_pixel`` keyword in ~sunpy.map.make_fitswcs_header` is zero indexed rather
 # than the fits convention of 1 indexed.
 
 new_header = sunpy.map.make_fitswcs_header(data, reference_coord_arcsec,

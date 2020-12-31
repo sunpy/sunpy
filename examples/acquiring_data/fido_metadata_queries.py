@@ -33,7 +33,7 @@ print(results)
 
 ###################################################################
 # Now we will download the searched records. Since HEK and HELIO
-# clients don't provide files, `Fido.fetch` will
+# clients don't provide files, ``Fido.fetch`` will
 # ignore them and only download files from JSOC.
 files = Fido.fetch(results)
 print(files)
