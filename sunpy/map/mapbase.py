@@ -2019,7 +2019,7 @@ class GenericMap(NDData):
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
 
-        if not axes:
+        if axes is not None:
             axes = plt.gca()
         if wcsaxes_compat.is_wcsaxes(axes):
             axes_unit = u.deg
