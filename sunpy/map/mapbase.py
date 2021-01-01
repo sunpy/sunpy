@@ -1898,8 +1898,10 @@ class GenericMap(NDData):
                         axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot using Quadrangle from astropy.
+
         This draws a rectangle that has corners at ``(bottom_left, top_right)``,
         and has sides parallel to coordinate axes of the map.
+
         If ``width`` and ``height`` are specified, they are respectively added to the
         longitude and latitude of the ``bottom_left`` coordinate to calculate a
         ``top_right`` coordinate.
@@ -1924,14 +1926,14 @@ class GenericMap(NDData):
             it has been added to ``axes``.
         Notes
         -----
-        If user's astropy version is < 4.2, it defaults to using draw_rectangle instead
+        If user's astropy version is < 4.2, raises an error to use draw_rectangle instead.
+
         Extra keyword arguments to this function are passed through to the
         `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
         """
         if version.parse(astropy.__version__) < version.parse("4.2.0"):
             warnings.warn("draw_quardrangle is a feature of astropy > 4.2, using draw_rectangle")
-            self.draw_rectangle(bottom_left=bottom_left, width=width, height=height,
-                                axes=axes, top_right=top_right, **kwargs)
+            ImportError('Astropy >= 4.2 is required for this method, use draw_rectangle instead.')
         else:
             if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
                 # The decorator assigns the first positional arg to top_right and so on.
