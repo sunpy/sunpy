@@ -64,7 +64,7 @@ class GenericClient(BaseClient):
     pattern = None
     """
     A string which is used to extract the desired metadata from urls correctly,
-    using :func:`~sunpy.extern.parse.parse`
+    using ``sunpy.extern.parse.parse``.
     """
     required = {a.Time, a.Instrument}
     """
@@ -154,7 +154,7 @@ class GenericClient(BaseClient):
         exdict: `dict`
             Represents metadata extracted from files.
         matchdict: `dict`
-            Contains attr values accessed from `register_values()`
+            Contains attr values accessed from ``register_values()``
             and the search query itself.
 
         Returns
@@ -265,7 +265,7 @@ class GenericClient(BaseClient):
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
@@ -274,7 +274,7 @@ class GenericClient(BaseClient):
             The download manager to use.
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
+           any effect if ``downloader`` is not `None`.
         **kwargs : dict, optional
             Passed to `parfive.Downloader.enqueue_file`.
 

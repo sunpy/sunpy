@@ -279,7 +279,7 @@ class VSOClient(BaseClient):
         Generate the best possible (or least-worse) filename for a VSO download.
 
         * Use the ``content-disposition`` header.
-        * Use `fileid` to generate a file name if content-disposition fails
+        * Use ``fileid`` to generate a file name if content-disposition fails
         * If everything else fails use the last segment of the URL and hope.
         """
         name = None
@@ -341,7 +341,7 @@ class VSOClient(BaseClient):
         methods : {list of str}
             Download methods, defaults to URL-FILE_Rice then URL-FILE.
             Methods are a concatenation of one PREFIX followed by any number of
-            SUFFIXES i.e. `PREFIX-SUFFIX_SUFFIX2_SUFFIX3`.
+            SUFFIXES i.e. ``PREFIX-SUFFIX_SUFFIX2_SUFFIX3``.
             The full list of
             `PREFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
             and `SUFFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
@@ -371,7 +371,7 @@ class VSOClient(BaseClient):
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
 
         downloader : `parfive.Downloader`, optional
@@ -379,7 +379,7 @@ class VSOClient(BaseClient):
 
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
+           any effect if ``downloader`` is not `None`.
 
         Returns
         -------

@@ -100,8 +100,8 @@ class Cutout(DataAttr):
         Coordinate for the top right corner of the cutout. If this is
         not specified, both ``width`` and ``height`` must both be specified.
     width : `~astropy.units.Quantity`, optional
-        Width of the cutout. If this parameter, along with `height`, is
-        not specified, `top_right` must be specified.
+        Width of the cutout. If this parameter, along with ``height``, is
+        not specified, ``top_right`` must be specified.
     height : `~astropy.units.Quantity`, optional
         Height of the cutout. If this parameter, along with ``width``, is
         not specified, ``top_right`` must be specified.
