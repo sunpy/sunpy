@@ -1949,10 +1949,6 @@ class GenericMap(NDData):
 
             if not axes:
                 axes = plt.gca()
-            if wcsaxes_compat.is_wcsaxes(axes):
-                axes_unit = u.deg
-            else:
-                axes_unit = self.spatial_units[0]
 
             coord = bottom_left.transform_to(self.coordinate_frame)
             kwergs = {
@@ -1962,7 +1958,7 @@ class GenericMap(NDData):
             }
             kwergs.update(kwargs)
             rect = Quadrangle(
-                (bottom_left.Tx, bottom_left.Ty) * u.arcsec, width, height, **kwergs)
+                (bottom_left.Tx, bottom_left.Ty), width, height, **kwergs)
             axes.add_artist(rect)
             return [rect]
 
@@ -2019,7 +2015,7 @@ class GenericMap(NDData):
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
 
-        if axes is not None:
+        if not axes:
             axes = plt.gca()
         if wcsaxes_compat.is_wcsaxes(axes):
             axes_unit = u.deg
