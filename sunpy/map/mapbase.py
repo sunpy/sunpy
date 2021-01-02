@@ -1905,6 +1905,7 @@ class GenericMap(NDData):
         If ``width`` and ``height`` are specified, they are respectively added to the
         longitude and latitude of the ``bottom_left`` coordinate to calculate a
         ``top_right`` coordinate.
+
         Parameters
         ----------
         bottom_left : `~astropy.coordinates.SkyCoord`
@@ -1919,11 +1920,13 @@ class GenericMap(NDData):
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.
+
         Returns
         -------
         rect : `list`
             A list containing the `~astropy.visualization.wcsaxes.patches.Quadrangle` object, after
             it has been added to ``axes``.
+
         Notes
         -----
         If user's astropy version is < 4.2, raises an error to use draw_rectangle instead.
@@ -1932,7 +1935,6 @@ class GenericMap(NDData):
         `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
         """
         if version.parse(astropy.__version__) < version.parse("4.2.0"):
-            warnings.warn("draw_quardrangle is a feature of astropy > 4.2, using draw_rectangle")
             ImportError('Astropy >= 4.2 is required for this method, use draw_rectangle instead.')
         else:
             if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
