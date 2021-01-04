@@ -1,10 +1,11 @@
 """
 ==================================
-Plotting with xlim and ylim on Map
+Set Axis Range When Plotting a Map
 ==================================
 
 In this example we are going to look at how to set the axes
-range using xlim and ylim when plotting a Map with WCSAxes.
+range using Matplotlib's `set_xlim` and `set_ylim` when plotting a
+Map with WCSAxes.
 """
 
 import matplotlib.pyplot as plt
