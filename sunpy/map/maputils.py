@@ -410,4 +410,4 @@ def contains_coordinate(smap, coordinates):
     xs, ys = smap.dimensions
     # Converting coordinates to pixels
     xc, yc = smap.world_to_pixel(coordinates)
-    return xc >= -0.5 and xc <= xs-0.5 and and yc >= -0.5 and yc <= ys-0.5
+    return xc >= -0.5 and xc <= xs-0.5 and yc >= -0.5 and yc <= ys-0.5
