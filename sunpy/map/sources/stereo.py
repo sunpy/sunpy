@@ -34,7 +34,7 @@ class EUVIMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = 'sohoeit{wl:d}'.format(wl=int(self.wavelength.value))
+        self.plot_settings['cmap'] = 'euvi{wl:d}'.format(wl=int(self.wavelength.value))
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
         self.meta['waveunit'] = 'Angstrom'
