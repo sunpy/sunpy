@@ -76,6 +76,14 @@ Several functions in `sunpy.map.maputils` have been significantly sped up with i
 
 In addition, `sunpy.map.Map.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications which make mutiple requests for the map WCS (e.g. plotting), and reducing the number of repeated warnings thrown when metadata is missing.
 
+Support for GOES-16 and GOES-17 X-Ray Sensor (XRS) data
+=======================================================
+We have now included support for the GOES-16 and GOES-17 XRS 1-second data. This data can now be queried and downloaded with `sunpy.net.Fido` and the files read in and analysed as a `sunpy.timeseries.TimeSeries`.
+
+See the following example for how this can be achieved:
+
+(add example "goes_xrs_example")
+
 Increase in required package versions
 =====================================
 We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 2.1:
