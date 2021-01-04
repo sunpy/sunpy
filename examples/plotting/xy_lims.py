@@ -24,7 +24,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 # Now lets say for example we are only interested in plotting a certain region
 # of this Map. One way this could be done is to create a submap over the region
 # of interest and then plotting that. Another useful way is to set the axes
-# range over which to plot using Matplotlib's set_xlim and set_ylim functions.
+# range over which to plot using Matplotlib's `Axes.set_xlim` and `Axes.set_ylim` functionality.
 # The axes that Matplotlib uses is in pixel coordinates (e.g. of image data array)
 # rather than world coordinates (e.g. in arcsecs) so we need to define our limits that
 # are passed to set_xlim(), set_lim() to pixel coordinates.
@@ -35,7 +35,7 @@ xlims_world = [500, 1100]*u.arcsec
 ylims_world = [-800, 0]*u.arcsec
 
 ###############################################################################
-# We can then covert these into a SkyCoord which can be passed to Map.world_to_pixel() to
+# We can then covert these into a SkyCoord which can be passed to :func:`~sunpy.map.GenericMap.world_to_pixel` to
 # determine which pixel coordinates these represent on the Map.
 world_coords = SkyCoord(Tx=xlims_world, Ty=ylims_world, frame=aia_map.coordinate_frame)
 pixel_coords = aia_map.world_to_pixel(world_coords)
