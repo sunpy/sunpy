@@ -1952,7 +1952,6 @@ class GenericMap(NDData):
             if not axes:
                 axes = plt.gca()
 
-            coord = bottom_left.transform_to(self.coordinate_frame)
             kwergs = {
                 "transform": wcsaxes_compat.get_world_transform(axes),
                 "color": "white",
