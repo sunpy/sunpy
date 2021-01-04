@@ -379,24 +379,23 @@ def on_disk_bounding_coordinates(smap):
 
 def contains_coordinate(smap, coordinates):
     """
+    Checks whether a coordinate falls within the bounds of a map.
+
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        A map in helioprojective Cartesian coordinates.
+        The input map.
 
-    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate. The coordinate frame must be
-        `~sunpy.coordinates.Helioprojective`.
+    coordinates : `~astropy.coordinates.SkyCoord`
+        The input coordinate.
 
     Returns
     -------
     `~bool`
-        Returns `True` If coordinates are within the coordinate
-        bound of the smap and Returns `False` If coordinates are
-        not within the coordinate bound of the smap.
+        Returns ``True`` if ``coordinates`` falls within the bounds of ``smap``.
     """
-    #Dimensions of smap
+    # Dimensions of smap
     xs, ys = smap.dimensions
     # Converting coordinates to pixels
     xc, yc = smap.world_to_pixel(coordinates)
-    return xc<=xs and yc<=ys
+    return xc >= -0.5 and xc <= xs-0.5 and and yc >= -0.5 and yc <= ys-0.5
