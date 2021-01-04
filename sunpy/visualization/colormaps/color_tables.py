@@ -14,7 +14,7 @@ __all__ = [
     'aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
     'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table',
-    'rhessi_color_table', 'std_gamma_2',
+    'rhessi_color_table', 'std_gamma_2', 'euvi_color_table',
 ]
 
 cmap_data_dir = pathlib.Path(__file__).parent.absolute() / 'data'
@@ -306,6 +306,16 @@ def rhessi_color_table():
 def std_gamma_2():
     return cmap_from_rgb_file("std_gamma_2", "std_gamma_2.csv")
 
+def euvi_color_table(wavelength: u.angstrom):
+
+    try:
+        return cmap_from_rgb_file(f'EUVI {str(wavelength)}', f'euvi_{int(wavelength.value)}.csv')
+    except OSError:
+        raise ValueError(
+            "Invalid EUVI wavelength. Valid values are "
+            "171, 195, 284, 304."
+        )
+
 def cmap_from_rgb_file(name, fname):
     """
     Create a colormap from a RGB .csv file.
@@ -339,7 +349,7 @@ def create_cdict(r, g, b):
     """
     Create the color tuples in the correct format.
     """
-    i = np.linspace(0, 1, r0.size)
+    i = np.linspace(0, 1, r.size)
 
     cdict = {name: list(zip(i, el / 255.0, el / 255.0))
              for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}

@@ -393,7 +393,7 @@ long as it recognizes the instrument. To see what colormaps are available::
     'trace284', 'trace1216', 'trace1550', 'trace1600', 'trace1700', 'traceWL',
     'hmimag', 'irissji1330', 'irissji1400', 'irissji1600', 'irissji2796',
     'irissji2832', 'irissji5000', 'irissjiFUV', 'irissjiNUV', 'irissjiSJI_NUV', 'kcor',
-    'rhessi', 'std_gamma_2'])
+    'rhessi', 'std_gamma_2', 'euvi171', 'euvi195', 'euvi284', 'euvi304'])
 
 The SunPy colormaps are registered with matplotlib so you can grab them like
 you would any other colormap::
