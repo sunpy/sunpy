@@ -1,2 +1,2 @@
-Add draw_quadrangle which replaces draw_rectangle and extends all functionality if
-user's astropy version >= 4.2, otherwise falls back to draw_rectangle.
+Added :meth:`sunpy.map.GenericMap.draw_quadrangle` to make use of `astropy.visualization.wcsaxes.Quadrangle`, which is available in Astropy 4.2+.
+Unlike with :meth:`sunpy.map.GenericMap.draw_rectangle`, a quadrangle can be aligned with coordinate axes different from those of the map.
