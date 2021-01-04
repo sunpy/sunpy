@@ -121,7 +121,9 @@ def carrington_rotation_time(crot):
     # Perform two iterations of the correction to achieve sub-second accuracy
     estimate = refine(estimate)
     estimate = refine(estimate)
-    return Time(estimate, scale='tt', format='jd')
+    t = Time(estimate, scale='tt', format='jd')
+    t.format = 'iso'
+    return t
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
