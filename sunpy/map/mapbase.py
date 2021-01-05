@@ -1900,7 +1900,8 @@ class GenericMap(NDData):
         Draw a rectangle defined in world coordinates on the plot using Quadrangle from astropy.
 
         This draws a rectangle that has corners at ``(bottom_left, top_right)``,
-        and has sides parallel to coordinate axes of the map.
+        and has sides aligned with the coordinate axes of the frame of ``bottom_left``,
+        which may be different from the coordinate axes of the map.
 
         If ``width`` and ``height`` are specified, they are respectively added to the
         longitude and latitude of the ``bottom_left`` coordinate to calculate a
