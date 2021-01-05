@@ -2,7 +2,6 @@ import os
 import pathlib
 from stat import S_IREAD, S_IRGRP, S_IROTH
 from unittest import mock
-from collections import OrderedDict
 
 import hypothesis.strategies as st
 import pytest
@@ -12,13 +11,13 @@ from parfive import Results
 from parfive.utils import FailedDownload
 
 import astropy.units as u
-from astropy.table import Table
+from astropy.table import Row, Table
 
 from sunpy import config
 from sunpy.net import Fido, attr
 from sunpy.net import attrs as a
 from sunpy.net import jsoc
-from sunpy.net.base_client import BaseQueryResponse, BaseQueryResponseTable
+from sunpy.net.base_client import BaseQueryResponse, QueryResponseTable
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
@@ -98,12 +97,8 @@ def check_response(query, unifiedresp):
     for block in unifiedresp.responses:
         res_tr = block.time_range()
         for res in block:
-            if isinstance(res, OrderedDict) or isinstance(res, dict):
-                assert res['Time'].start in res_tr
-                assert query_instr.lower() == res['Instrument'].lower()
-            else:
-                assert res.time.start in res_tr
-                assert query_instr.lower() == res.instrument.lower()
+            assert res['Start Time'] in res_tr
+            assert query_instr.lower() == res['Instrument'].lower()
 
 
 @pytest.mark.remote_data
@@ -334,8 +329,8 @@ def test_fido_indexing(queries):
     res = Fido.search(query1 | query2)
 
     assert len(res) == 2
-    assert len(res[0][0]) == 1
-    assert len(res[1][0]) == 1
+    assert isinstance(res[0][0], Row)
+    assert isinstance(res[1][0], Row)
 
     aa = res[0, 0]
     assert isinstance(aa, BaseQueryResponse)
@@ -530,7 +525,7 @@ def test_fido_metadata_queries():
     assert isinstance(results['hek'][0], BaseQueryResponse)
     assert len(results['hek'][1]) == 2
     assert results[::-1][0] == results['jsoc']
-    assert isinstance(results['jsoc'], BaseQueryResponseTable)
+    assert isinstance(results['jsoc'], QueryResponseTable)
 
     files = Fido.fetch(results)
     assert len(files) == len(results['jsoc'])

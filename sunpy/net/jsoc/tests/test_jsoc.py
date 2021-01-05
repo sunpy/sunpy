@@ -23,25 +23,15 @@ def client():
     return JSOCClient()
 
 
-def test_jsocresponse_double():
-    j1 = JSOCResponse(table=astropy.table.Table(data=[[1, 2, 3, 4]]))
-    j1.append(astropy.table.Table(data=[[1, 2, 3, 4]]))
-    assert isinstance(j1, JSOCResponse)
-    assert all(j1.table == astropy.table.vstack([astropy.table.Table(
-        data=[[1, 2, 3, 4]]), astropy.table.Table(data=[[1, 2, 3, 4]])]))
-
-
 def test_jsocresponse_single():
-    j1 = JSOCResponse(table=None)
-    assert len(j1) == 0
-    j1.append(astropy.table.Table(data=[[1, 2, 3, 4]]))
-    assert all(j1.table == astropy.table.Table(data=[[1, 2, 3, 4]]))
+    j1 = JSOCResponse(astropy.table.Table(data=[[1, 2, 3, 4]]))
+    assert all(j1 == astropy.table.Table(data=[[1, 2, 3, 4]]))
     assert len(j1) == 4
 
 
 def test_empty_jsoc_response():
     Jresp = JSOCResponse()
-    assert len(Jresp.table) == 0
+    assert len(Jresp) == 0
     assert Jresp.query_args is None
     assert Jresp.requests is None
     assert len(Jresp) == 0
@@ -90,7 +80,7 @@ def test_build_table(client):
 
 def test_show(client):
     jdict = {'TELESCOP': ['SDO/HMI', 'SDO/AIA'], 'CAR_ROT': [2145, 2145]}
-    responses = JSOCResponse(table=astropy.table.Table(jdict))
+    responses = JSOCResponse(astropy.table.Table(jdict))
     showtable = responses.show('TELESCOP')
     assert isinstance(showtable, astropy.table.Table)
     assert showtable.colnames == ['TELESCOP']

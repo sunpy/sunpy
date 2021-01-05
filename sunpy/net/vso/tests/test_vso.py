@@ -25,8 +25,8 @@ class MockQRRecord:
     def __init__(self, start_time=None, end_time=None, size=0, source='SOHO', instrument='aia',
                  extent_type=None):
         self.data = {"size": size, "time": dict(start=start_time, end=end_time),
-                     "source": a.Source(source),
-                     "instrument": core_attrs.Instrument(instrument),
+                     "source": source,
+                     "instrument": instrument,
                      "extent": dict(type=None if extent_type is None else extent_type.type)}
 
 
@@ -366,15 +366,15 @@ def test_QueryResponse_build_table_defaults(mock_build_client):
     table = qr.build_table()
 
     # These are the only None values in the table.
-    source_ = table['Source'].data
+    source_ = table['Source']
     assert len(source_) == 1
-    assert source_[0].value == 'SOHO'
+    assert source_[0] == 'SOHO'
 
-    instrument_ = table['Instrument'].data
+    instrument_ = table['Instrument']
     assert len(instrument_) == 1
-    assert instrument_[0].value == 'aia'
+    assert instrument_[0] == 'aia'
 
-    size_ = table['Size'].data
+    size_ = table['Size']
     assert len(size_) == 1
     assert size_[0] == 0.0
 

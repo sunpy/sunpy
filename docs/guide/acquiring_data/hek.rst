@@ -57,55 +57,13 @@ Each dictionary consists of key-value pairs that exactly correspond to the param
 
 You can inspect all results very simply:
 
-    >>> result[0] # doctest:+SKIP
-    <sunpy.net.hek.hek.HEKResponse object at ...>
-             SOL_standard          active ... skel_startc2  sum_overlap_scores
-    ------------------------------ ------ ... ------------ --------------------
-    SOL2011-08-08T01:30:04L247C075   true ...         None   12.588887041198964
-    SOL2011-08-08T01:30:04L247C075   true ...         None   12.588887041198964
-    SOL2011-08-08T01:30:04L247C075   true ...         None   12.588887041198964
-    SOL2011-08-09T01:40:04L230C084   true ...         None  37.4574863857972034
-    SOL2011-08-09T02:30:04L319C077   true ...         None  13.6403551847007094
-    SOL2011-08-09T02:30:04L319C077   true ...         None  13.6403551847007094
-    SOL2011-08-09T02:30:04L319C077   true ...         None  13.6403551847007094
-    SOL2011-08-09T07:19:00L296C075   true ...         None                    1
-    SOL2011-08-09T07:19:00L227C090   true ...         None                    0
-    SOL2011-08-09T07:22:38L305C073   true ...         None 0.283032539594587795
-    SOL2011-08-09T07:22:44L305C073   true ...         None                    1
-    SOL2011-08-09T07:48:00L296C073   true ...         None                    0
-    SOL2011-08-09T07:48:00L296C076   true ...         None                    0
-    SOL2011-08-09T07:55:59L305C073   true ...         None                    0
-    SOL2011-08-09T07:59:49L300C077   true ...         None                    0
-    SOL2011-08-09T08:00:03L305C073   true ...         None                    0
-    SOL2011-08-09T08:00:20L305C073   true ...         None                    0
-    SOL2011-08-09T08:00:53L305C073   true ...         None                    0
-    SOL2011-08-09T08:01:21L300C077   true ...         None                    0
+    >>> result[0]  # doctest: +REMOTE_DATA
 
 Remember, the HEK query we made returns all the flares in the time-range stored in the HEK, regardless of the feature recognition method.
 The HEK parameter which stores the the feature recognition method is called "frm_name".
 Using list comprehensions, it is easy to get a list of the feature recognition methods used to find each of the flares in the result object, for example:
 
-    >>> [elem["frm_name"] for elem in result]  # doctest:+SKIP
-    [<HEKColumn name='frm_name' dtype='str32' length=19>
-                              asainz
-                              asainz
-                              asainz
-                              asainz
-                              asainz
-                              asainz
-                              asainz
-                   SSW Latest Events
-                                SWPC
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
-                                SWPC
-                   SSW Latest Events
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module]
+    >>> [elem["frm_name"] for elem in result]  # doctest: +REMOTE_DATA
 
 It is likely each flare on the Sun was actually detected multiple times by many different methods.
 

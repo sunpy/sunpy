@@ -50,7 +50,7 @@ class JSOCResponse(QueryResponseTable):
 
     def build_table(self):
         # remove this check post 3.0
-        if any('keys' in i for i in self.query_args):
+        if self.query_args is not None and any('keys' in i for i in self.query_args):
             new_table = self.table.copy()
             new_table.display_keys = slice(None)
             return new_table

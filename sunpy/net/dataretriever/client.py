@@ -25,8 +25,8 @@ class QueryResponse(QueryResponseTable):
         """
         Returns the time-span for which records are available.
         """
-        return TimeRange(min(qrblock['Time Start'] for qrblock in self),
-                         max(qrblock['Time End'] for qrblock in self))
+        return TimeRange(min(qrblock['Start Time'] for qrblock in self),
+                         max(qrblock['End Time'] for qrblock in self))
 
     def response_block_properties(self):
         """
@@ -105,8 +105,8 @@ class GenericClient(BaseClient):
                     matchdict[attrname].append(val)
         for elem in args:
             if isinstance(elem, a.Time):
-                timerange = TimeRange(elem.start, elem.end)
-                matchdict['Time'] = timerange
+                matchdict['Start Time'] = elem.start
+                matchdict['End Time'] = elem.end
             elif hasattr(elem, 'value'):
                 matchdict[elem.__class__.__name__] = [str(elem.value).lower()]
             elif isinstance(elem, a.Wavelength):
@@ -170,10 +170,10 @@ class GenericClient(BaseClient):
         start.format = 'iso'
         end = tr.end
         end.format = 'iso'
-        rowdict['Time Start'] = start
-        rowdict['Time End'] = end
+        rowdict['Start Time'] = start
+        rowdict['End Time'] = end
         for k in matchdict:
-            if k != 'Time' and k != 'Wavelength':
+            if k not in ('Start Time', 'End Time', 'Wavelength'):
                 if k == 'Physobs':
                     # not changing case for Phsyobs
                     rowdict[k] = matchdict[k][0]
@@ -212,7 +212,7 @@ class GenericClient(BaseClient):
             elif '{file}' not in str(path):
                 fname = path / '{file}'
 
-            temp_dict = qres.blocks[i].copy()
+            temp_dict = dict(qres[i])
             temp_dict['file'] = str(filename)
             fname = fname.expanduser()
             fname = Path(str(fname).format(**temp_dict))
@@ -238,7 +238,8 @@ class GenericClient(BaseClient):
         """
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         scraper = Scraper(baseurl, regex=True)
-        filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern,
+        tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+        filesmeta = scraper._extract_files_meta(tr, extractor=pattern,
                                                 matcher=matchdict)
         metalist = []
         for i in filesmeta:
