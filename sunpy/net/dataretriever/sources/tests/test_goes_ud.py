@@ -12,7 +12,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time
 from sunpy.time import is_time_equal, parse_time
-from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -193,7 +192,6 @@ def mock_query_object(LCClient):
     start = '2016/1/1'
     end = '2016/1/1 23:59:59'
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'GOES',
@@ -212,7 +210,7 @@ def test_show(LCClient):
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
     allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
-               'Provider', 'SatelliteNumber']
+               'Provider', 'SatelliteNumber', 'url']
     assert qrshow0.colnames == allcols
     assert qrshow1.colnames == ['Start Time', 'Instrument']
     assert qrshow0['Instrument'][0] == 'GOES'

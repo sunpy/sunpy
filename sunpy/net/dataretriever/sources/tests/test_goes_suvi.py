@@ -49,7 +49,6 @@ def mock_query_object(suvi_client):
     end = '2019/05/25 00:52'
     wave = 94 * u.Angstrom
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'SUVI',
@@ -206,7 +205,7 @@ def test_show(suvi_client):
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
     allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
-               'Provider', 'Level', 'Wavelength']
+               'Provider', 'Level', 'Wavelength', 'url']
     assert qrshow0.colnames == allcols
     assert qrshow1.colnames == ['Start Time', 'Instrument']
     assert qrshow0['Instrument'][0] == 'SUVI'

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from textwrap import dedent
 from collections.abc import Sequence
 
-from astropy.table import QTable, Table, TableAttribute
+from astropy.table import QTable, Row, Table, TableAttribute
 
 from sunpy.util.util import get_width
 
@@ -107,7 +107,19 @@ class BaseQueryResponse(Sequence):
         return table[valid_cols]
 
 
+class QueryResponseRow(Row):
+    """
+    A row subclass which knows about the client of the parent table.
+    """
+
+    @property
+    def client(self):
+        return self._parent.client
+
+
 class QueryResponseTable(QTable, BaseQueryResponse):
+    Row = QueryResponseRow
+
     client = TableAttribute()
     display_keys = TableAttribute(default=slice(None))
     hide_keys = TableAttribute()
@@ -117,7 +129,7 @@ class QueryResponseTable(QTable, BaseQueryResponse):
 
     @property
     def blocks(self):
-        return list(self.iterrows)
+        return list(self.iterrows())
 
     def unhide_columns(self):
         self.display_keys = slice(None)

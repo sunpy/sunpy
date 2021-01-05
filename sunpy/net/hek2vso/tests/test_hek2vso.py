@@ -56,7 +56,7 @@ def test_translate_results_to_query(hek_client):
     assert len(hek_query) == len(vso_query)
     # Comparing types of both queries
     # Not sure this test makes any sense now
-    assert isinstance(hek_query, hek.HEKResponse)
+    assert isinstance(hek_query, hek.HEKTable)
     assert isinstance(vso_query, list)
 
 

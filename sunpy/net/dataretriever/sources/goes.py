@@ -79,10 +79,10 @@ class XRSClient(GenericClient):
     def post_search_hook(self, i, matchdict):
         tr = get_timerange_from_exdict(i)
         rowdict = OrderedDict()
-        rowdict['Time Start'] = tr.start
-        rowdict['Time Start'].format = 'iso'
-        rowdict['Time End'] = tr.end
-        rowdict['Time End'].format = 'iso'
+        rowdict['Start Time'] = tr.start
+        rowdict['Start Time'].format = 'iso'
+        rowdict['End Time'] = tr.end
+        rowdict['End Time'].format = 'iso'
         rowdict["Instrument"] = matchdict["Instrument"][0].upper()
         rowdict["SatelliteNumber"] = i["SatelliteNumber"]
         rowdict["Physobs"] = matchdict["Physobs"][0]
@@ -100,10 +100,10 @@ class XRSClient(GenericClient):
         matchdict = self._get_match_dict(*args, **kwargs)
 
         # this is for the case when the timerange overlaps with the provider change.
-        if matchdict["Time"].start < "2009-09-01" and matchdict["Time"].end >= "2009-09-01":
+        if matchdict["Start Time"] < "2009-09-01" and matchdict["End Time"] >= "2009-09-01":
             matchdict_before, matchdict_after = matchdict.copy(), matchdict.copy()
-            matchdict_before["Time"] = TimeRange(matchdict_before["Time"].start, '2009-08-31')
-            matchdict_after["Time"] = TimeRange('2009-09-01', matchdict_after["Time"].end)
+            matchdict_after["Start Time"] = parse_time('2009-09-01')
+            matchdict_before["End Time"] = parse_time('2009-08-31')
             metalist_before = self._get_metalist(matchdict_before)
             metalist_after = self._get_metalist(matchdict_after)
             metalist = metalist_before + metalist_after
@@ -118,8 +118,9 @@ class XRSClient(GenericClient):
         """
         metalist = []
         scraper = Scraper(baseurl, regex=True)
-        filemeta = scraper._extract_files_meta(
-            matchdict["Time"], extractor=pattern, matcher=matchdict)
+        tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
+        filemeta = scraper._extract_files_meta(tr, extractor=pattern,
+                                               matcher=matchdict)
         for i in filemeta:
             rowdict = self.post_search_hook(i, matchdict)
             metalist.append(rowdict)
@@ -132,17 +133,17 @@ class XRSClient(GenericClient):
         """
         metalist = []
         # the data before the re-processed GOES 13, 14, 15 data.
-        if (matchdict["Time"].end < "2009-09-01") or (matchdict["Time"].end >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
+        if (matchdict["End Time"] < "2009-09-01") or (matchdict["End Time"] >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
             metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
 
         # new data from NOAA.
         else:
-            if matchdict["Time"].end >= "2017-02-07":
+            if matchdict["End Time"] >= "2017-02-07":
                 for sat in [16, 17]:
                     metalist += self._get_metalist_fn(matchdict,
                                                       self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
 
-            if matchdict["Time"].end <= "2020-03-04":
+            if matchdict["End Time"] <= "2020-03-04":
                 for sat in [13, 14, 15]:
                     metalist += self._get_metalist_fn(matchdict,
                                                       self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
@@ -229,8 +230,8 @@ class SUVIClient(GenericClient):
         end.format = 'iso'
 
         rowdict = OrderedDict()
-        rowdict['Time Start'] = start
-        rowdict['Time End'] = end
+        rowdict['Start Time'] = start
+        rowdict['End Time'] = end
         rowdict['Instrument'] = matchdict['Instrument'][0].upper()
         rowdict['Physobs'] = matchdict['Physobs'][0]
         rowdict['Source'] = matchdict['Source'][0]
@@ -279,7 +280,8 @@ class SUVIClient(GenericClient):
                     urlpattern = baseurl.format(**formdict)
 
                     scraper = Scraper(urlpattern)
-                    filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern)
+                    tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+                    filesmeta = scraper._extract_files_meta(tr, extractor=pattern)
                     for i in filesmeta:
                         rowdict = self.post_search_hook(i, matchdict)
                         metalist.append(rowdict)

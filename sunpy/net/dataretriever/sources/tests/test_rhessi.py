@@ -210,7 +210,6 @@ def mock_query_object(LCClient):
     start = '2016/1/1'
     end = '2016/1/1 23:59:59'
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'RHESSI',
@@ -228,7 +227,7 @@ def test_show(LCClient):
     mock_qr = mock_query_object(LCClient)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source', 'Provider']
+    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source', 'Provider', 'url']
     assert qrshow0.colnames == allcols
     assert qrshow1.colnames == ['Start Time', 'Instrument']
     assert qrshow0['Instrument'][0] == 'RHESSI'

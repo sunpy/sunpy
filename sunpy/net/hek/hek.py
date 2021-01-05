@@ -113,9 +113,9 @@ class HEKClient(BaseClient):
             ndata.append(new)
 
         if len(ndata) == 1:
-            return HEKResponse(self._download(ndata[0]), client=self)
+            return HEKTable(self._download(ndata[0]), client=self)
         else:
-            return HEKResponse(self._merge(self._download(data) for data in ndata), client=self)
+            return HEKTable(self._merge(self._download(data) for data in ndata), client=self)
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """

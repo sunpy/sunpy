@@ -28,7 +28,7 @@ result = Fido.search(a.Time(tstart, tend),
 print(result)
 
 # We can now inspect the results in `result` by indexing to return get the data
-# from the `~sunpy.net.hek.hek.HEKResponse`. Lets print the number of flares and
+# from the `~sunpy.net.hek.hek.HEKTable`. Lets print the number of flares and
 # inspect the result information.
 print(len(result[0]))
 # We can also print the key-values that correspond to the HEK parameters returned
@@ -49,7 +49,7 @@ result_m1 = Fido.search(a.Time(tstart, tend),
 print(result_m1[0])
 
 ###################################################################
-# The results returned to the `~sunpy.net.hek.hek.HEKResponse`
+# The results returned to the `~sunpy.net.hek.hek.HEKTable`
 # contain a lot of information and we may only want to keep some main
 # results such as start time, end time, peak time, GOES-class, and
 # active region number. This can be done as so:
