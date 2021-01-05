@@ -11,7 +11,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import range_time, time_attr
 from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -115,7 +114,6 @@ def mock_query_object(LCClient):
     end = '2016/1/1 23:59:59'
     wave = 17*u.GHz
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'NORH',
@@ -133,7 +131,7 @@ def test_show(LCClient):
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Wavelength', 'Instrument')
     allcols = ['Start Time', 'End Time', 'Instrument', 'Source',
-               'Provider', 'Wavelength']
+               'Provider', 'Wavelength', 'url']
     assert qrshow0.colnames == allcols
     assert qrshow1.colnames == ['Wavelength', 'Instrument']
     assert qrshow0['Instrument'][0] == 'NORH'

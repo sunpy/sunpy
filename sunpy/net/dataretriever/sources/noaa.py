@@ -11,6 +11,7 @@ from astropy.time import Time, TimeDelta
 from sunpy.extern.parse import parse
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
+from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
@@ -174,18 +175,15 @@ class SRSClient(GenericClient):
         # update the extracted metadata to include the queried times rather
         # than those scraped from the downloaded zip (which includes full year data).
         rowdict = super().post_search_hook(exdict, matchdict)
-        tr = matchdict["Time"]
-        tr.start.format = 'iso'
-        tr.end.format = 'iso'
-        rowdict["Time Start"] = tr.start
-        rowdict["Time End"] = tr.end
+        rowdict["Start Time"].format = 'iso'
+        rowdict["End Time"].format = 'iso'
         return rowdict
 
     def search(self, *args, **kwargs):
         extractor1 = '{}/warehouse/{:4d}/SRS/{year:4d}{month:2d}{day:2d}SRS.txt'
         extractor2 = '{}/warehouse/{year:4d}/{}'
         matchdict = self._get_match_dict(*args, **kwargs)
-        timerange = matchdict['Time']
+        timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         metalist = []
         for url in self._get_url_for_timerange(timerange):
             exdict1 = parse(extractor1, url)
@@ -218,7 +216,7 @@ class SRSClient(GenericClient):
         for i, [url, qre] in enumerate(zip(urls, qres)):
             name = url.split('/')[-1]
 
-            day = Time(qre['Time'].start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+            day = Time(qre['Start Time'].strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
 
             if name not in filenames:
                 filenames.append(name)

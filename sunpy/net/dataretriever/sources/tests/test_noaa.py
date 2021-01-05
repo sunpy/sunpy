@@ -32,7 +32,8 @@ def mock_query_object(start_date, end_date):
     start = parse_time(start_date)
     end = parse_time(end_date)
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
+        'Start Time': parse_time(start),
+        'End Time': parse_time(end),
         'Instrument': 'NOAA-Indices',
         'Physobs': 'sunspot number',
         'Source': 'SIDC',
@@ -65,7 +66,8 @@ def test_fetch_working(LCClient, tmpdir):
     assert mock_qr['Physobs'] == qr['Physobs']
     assert mock_qr['Instrument'] == qr['Instrument']
     assert mock_qr['url'] == qr['url']
-    assert mock_qr['Time'] == qr['Time']
+    assert mock_qr['Start Time'] == qr['Start Time']
+    assert mock_qr['End Time'] == qr['End Time']
 
     # Assert if the timerange is same
     assert qr1.time_range() == TimeRange('2012/10/4', '2012/10/6')
@@ -220,7 +222,7 @@ def test_show(LCClient):
     mock_qr = mock_query_object('2012/10/4', '2012/10/6')
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Source', 'Instrument')
-    allcols = ['Instrument', 'Physobs', 'Source', 'Provider']
+    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source', 'Provider', 'url']
     assert qrshow0.colnames == allcols
     assert qrshow1.colnames == ['Source', 'Instrument']
     assert qrshow0['Instrument'][0] == 'NOAA-Indices'
