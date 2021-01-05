@@ -51,5 +51,5 @@
   "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params": "e1678a7b513917e177547b8ee0a93ee2f29a6d3dacff5fa213355ff414e706b1",
   "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params_no_ticks": "ce35b25eb2c4eb6d2ce56d6a78c8a33b1bfdf8ef00b098c7c2c08feae2a82356",
   "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params_grid": "4bb5930ec573f8399470df023d4686601728d35a70527c397f7eed39d07ba0e3",
-  "sunpy.visualization.colormaps.tests.test_cm.test_cmap_visual": "453d75b2a1c180c31363fdb2faa3f60bc4433ded53dde4678e91b7986f85bf00"
+  "sunpy.visualization.colormaps.tests.test_cm.test_cmap_visual": "a2a4885b1bcdef40626bef1e8e9be1b7469530beae47a8c75f25aa697a708b4f"
 }
