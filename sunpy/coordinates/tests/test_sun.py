@@ -484,4 +484,4 @@ def test_carrington_rotation_roundtrip():
 def test_carrington_rotation_str():
     # Check that by default a human parseable string is returned
     t = sun.carrington_rotation_time(2210)
-    assert str(t) == '2018-10-26 20:49:25.321'
+    assert str(t) == '2018-10-26 20:48:16.137'
