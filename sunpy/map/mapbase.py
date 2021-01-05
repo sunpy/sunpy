@@ -24,7 +24,7 @@ import astropy.wcs
 from astropy.coordinates import Latitude, Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
-from astropy.visualization.wcsaxes import WCSAxes, Quadrangle
+from astropy.visualization.wcsaxes import WCSAxes
 
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
