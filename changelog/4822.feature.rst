@@ -1,0 +1,1 @@
+Added the STEREO EUVI instrument specific colormaps called" 'euvi171', 'euvi195', 'euvi284', 'euvi304'.
