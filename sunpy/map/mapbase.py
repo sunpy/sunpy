@@ -1936,33 +1936,35 @@ class GenericMap(NDData):
         `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
         """
         if version.parse(astropy.__version__) < version.parse("4.2.0"):
-            ImportError('Astropy >= 4.2 is required for this method, use draw_rectangle instead.')
-        else:
-            if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
-                # The decorator assigns the first positional arg to top_right and so on.
-                height = width
-                width = top_right
-                top_right = None
+            raise ImportError('Astropy >= 4.2 is required for this method, use draw_rectangle instead.')
 
-            bottom_left, top_right = get_rectangle_coordinates(
-                bottom_left, top_right=top_right, width=width, height=height)
+        from astropy.visualization.wcsaxes import Quadrangle
 
-            width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-            height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
+        if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
+            # The decorator assigns the first positional arg to top_right and so on.
+            height = width
+            width = top_right
+            top_right = None
 
-            if not axes:
-                axes = plt.gca()
+        bottom_left, top_right = get_rectangle_coordinates(
+            bottom_left, top_right=top_right, width=width, height=height)
 
-            kwergs = {
-                "transform": wcsaxes_compat.get_world_transform(axes),
-                "color": "white",
-                "fill": False,
-            }
-            kwergs.update(kwargs)
-            rect = Quadrangle(
-                (bottom_left.Tx, bottom_left.Ty), width, height, **kwergs)
-            axes.add_artist(rect)
-            return [rect]
+        width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
+        height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
+
+        if not axes:
+            axes = plt.gca()
+
+        kwergs = {
+            "transform": axes.get_transform(bottom_left.frame.replicate_without_data()),
+            "edgecolor": "white",
+            "fill": False,
+        }
+        kwergs.update(kwargs)
+        rect = Quadrangle(
+            (self._get_lon_lat(bottom_left)), width, height, **kwergs)
+        axes.add_artist(rect)
+        return [rect]
 
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
