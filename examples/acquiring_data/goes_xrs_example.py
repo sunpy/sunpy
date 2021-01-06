@@ -47,23 +47,24 @@ print(result)
 #############################################################
 # As we can see this now returns three results, one file for GOES
 # 13, one for GOES 14 and one for GOES 15, which can be identfied
-# by the `SatelliteNumber` column. However, we probably will only want
-# one of these files for our analysis, so we can query by the `attrs`:
-# `a.goes.SatelliteNumber` to specify what GOES satellite number we want
+# by the ``SatelliteNumber`` column. However, we probably will only want
+# one of these files for our analysis, so we can query by the `sunpy.net.attrs`:
+# `sunpy.net.dataretriever.attrs.goes.SatelliteNumber` to specify what GOES satellite number we want
 # to use.
 result_goes15 = Fido.search(a.Time(tstart, tend), a.Instrument("XRS"), a.goes.SatelliteNumber(15))
 print(result_goes15)
 
 #############################################################
 # Now we can see that this returns just one file for the GOES 15 data.
-# Lets now download this data using `~sunpy.net.Fido.fetch`.
+# Lets now download this data using `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`.
 file_goes15 = Fido.fetch(result_goes15)
 
 #############################################################
 # Also just to note, if this will download the file to the
 # ``~/sunpy/data/`` directory on your local machine. You can also
 # define where you want this to download to using the ``path`` keyword
-# argument in `~sunpy.net.Fido.fetch` (e.g. ``Fido.fetch(result, path=".\")``).
+# argument in `~sunpy.net.sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`
+# (e.g. ``Fido.fetch(result, path=".\")``).
 
 #############################################################
 # Lets now load this data into a `~sunpy.timeseries.TimeSeries`,
