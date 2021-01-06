@@ -42,7 +42,7 @@ srs_downloaded_files = Fido.fetch(srs_results)
 
 ##############################################################################
 # To read this file, we pass the filename into the SRS reader. So now
-# `srs_table` contains an astropy table.
+# ``srs_table`` contains an astropy table.
 srs_table = srs.read_srs(srs_downloaded_files[0])
 print(srs_table)
 
