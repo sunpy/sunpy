@@ -51,14 +51,15 @@ class XRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the XRSClient:
-         Start Time           End Time      Instrument ... Source Provider
-    ------------------- ------------------- ---------- ... ------ --------
-    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...   GOES     NOAA
-    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...   GOES     NOAA
-    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...   GOES     NOAA
-    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...   GOES     NOAA
+           Start Time               End Time        Instrument ... Source Provider
+    ----------------------- ----------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS ...   GOES     NOAA
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS ...   GOES     NOAA
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS ...   GOES     NOAA
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS ...   GOES     NOAA
     <BLANKLINE>
     <BLANKLINE>
+
     """
     # GOES XRS data from NASA servers upto GOES 15. The reprocessed 13, 14, 15 data should be taken from NOAA server.
     baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
@@ -201,11 +202,12 @@ class SUVIClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the SUVIClient:
-         Start Time           End Time      Instrument ... Level   Wavelength
-    ------------------- ------------------- ---------- ... ----- --------------
-    2020-07-10 00:00:00 2020-07-10 00:04:00       SUVI ...     2 304.0 Angstrom
-    2020-07-10 00:04:00 2020-07-10 00:08:00       SUVI ...     2 304.0 Angstrom
-    2020-07-10 00:08:00 2020-07-10 00:12:00       SUVI ...     2 304.0 Angstrom
+           Start Time               End Time        Instrument ... Level Wavelength
+                                                               ...        Angstrom
+    ----------------------- ----------------------- ---------- ... ----- ----------
+    2020-07-10 00:00:00.000 2020-07-10 00:04:00.000       SUVI ...     2      304.0
+    2020-07-10 00:04:00.000 2020-07-10 00:08:00.000       SUVI ...     2      304.0
+    2020-07-10 00:08:00.000 2020-07-10 00:12:00.000       SUVI ...     2      304.0
     <BLANKLINE>
     <BLANKLINE>
 

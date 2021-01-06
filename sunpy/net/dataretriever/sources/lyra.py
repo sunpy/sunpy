@@ -23,12 +23,12 @@ class LYRAClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the LYRAClient:
-         Start Time           End Time      Instrument ... Source Provider Level
-    ------------------- ------------------- ---------- ... ------ -------- -----
-    2016-01-01 00:00:00 2016-01-01 23:59:59       LYRA ... PROBA2      ESA     2
-    2016-01-01 00:00:00 2016-01-01 23:59:59       LYRA ... PROBA2      ESA     3
-    2016-01-02 00:00:00 2016-01-02 23:59:59       LYRA ... PROBA2      ESA     2
-    2016-01-02 00:00:00 2016-01-02 23:59:59       LYRA ... PROBA2      ESA     3
+           Start Time               End Time        Instrument ... Provider Level
+    ----------------------- ----------------------- ---------- ... -------- -----
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       LYRA ...      ESA     2
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       LYRA ...      ESA     3
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       LYRA ...      ESA     2
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       LYRA ...      ESA     3
     <BLANKLINE>
     <BLANKLINE>
 
