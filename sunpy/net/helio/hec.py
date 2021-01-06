@@ -163,7 +163,9 @@ class HECClient(BaseClient):
                                                     FROM=table,
                                                     MAXRECORDS=max_records)
         results = votable_handler(etree.tostring(results))
-        return HECResponse(results.to_table(), client=self)
+        resp = HECResponse(results.to_table())
+        resp.client = self
+        return resp
 
     @deprecated(since="2.1", message="Use Fido.search instead", alternative="Fido.search")
     def time_query(self, start_time, end_time, table=None, max_records=None):
