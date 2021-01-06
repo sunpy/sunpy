@@ -9,12 +9,13 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord, HeliographicStonyhurst
+from astropy.coordinates import SkyCoord
 
 import sunpy
 import sunpy.coordinates
 import sunpy.data.test
 import sunpy.map
+from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.tests.helpers import figure_test, fix_map_wcs
 from sunpy.util.exceptions import SunpyUserWarning
