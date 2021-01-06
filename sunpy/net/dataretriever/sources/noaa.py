@@ -53,6 +53,11 @@ class NOAAIndicesClient(GenericClient):
                 rowdict[key] = rowdict[key][0]
         rowdict['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
         rowdict['Instrument'] = 'NOAA-Indices'
+        # These results are not dependant on time, but we allow time as a
+        # parameter for easy searching, so remove time from the results table
+        # injected by GenericClient.
+        del rowdict['Start Time']
+        del rowdict['End Time']
         return QueryResponse([rowdict], client=self)
 
     @classmethod
@@ -103,6 +108,11 @@ class NOAAPredictClient(GenericClient):
                 rowdict[key] = rowdict[key][0]
         rowdict['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
         rowdict['Instrument'] = 'NOAA-Predict'
+        # These results are not dependant on time, but we allow time as a
+        # parameter for easy searching, so remove time from the results table
+        # injected by GenericClient.
+        del rowdict['Start Time']
+        del rowdict['End Time']
         return QueryResponse([rowdict], client=self)
 
     @classmethod
@@ -138,10 +148,10 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-         Start Time           End Time      Instrument Physobs Source Provider
-    ------------------- ------------------- ---------- ------- ------ --------
-    2016-01-01 00:00:00 2016-12-31 23:59:59       SOON     SRS   SWPC     NOAA
-    2016-01-01 00:00:00 2016-12-31 23:59:59       SOON     SRS   SWPC     NOAA
+           Start Time               End Time        Instrument ... Source Provider
+    ----------------------- ----------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00.000 2016-12-31 23:59:59.999       SOON ...   SWPC     NOAA
+    2016-01-01 00:00:00.000 2016-12-31 23:59:59.999       SOON ...   SWPC     NOAA
     <BLANKLINE>
     <BLANKLINE>
 
