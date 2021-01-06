@@ -69,7 +69,7 @@ hpc_max = aiamap.pixel_to_world(coordinates[:, 1]*u.pixel, coordinates[:, 0]*u.p
 
 ###############################################################################
 # Finally we do an AIA plot to check for the local maxima locations
-# which will be marked with a blue `x` label.
+# which will be marked with a blue x-label.
 
 fig = plt.figure()
 ax = plt.subplot(projection=aiamap)

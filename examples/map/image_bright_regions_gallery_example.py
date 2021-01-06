@@ -28,7 +28,7 @@ aiamap = sunpy.map.Map(AIA_193_IMAGE)
 mask = aiamap.data < aiamap.max() * 0.10
 
 ##############################################################################
-# Mask is a `boolean` array. It can be used to modify the original map object
+# Mask is a `bool` array. It can be used to modify the original map object
 # without modifying the data. Once this mask attribute is set, we can plot the
 # image again.
 aiamap_mask.mask = mask
@@ -56,8 +56,8 @@ data2[data2 < 100] = 0
 aiamap2 = sunpy.map.Map(data2, aiamap.meta)
 
 ##############################################################################
-# The function `label` from the `scipy.ndimage` module, counts the number of
-# contiguous regions in an image.
+# The function `scipy.ndimage.label` counts the number of contiguous regions
+# in an image.
 labels, n = ndimage.label(aiamap2.data)
 
 ##############################################################################
