@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import SkyCoord, HeliographicStonyhurst
 
 import sunpy
 import sunpy.coordinates
@@ -127,6 +127,27 @@ def test_rectangle_aia171_top_right(aia171_test_map):
     h = 100 * u.arcsec
     bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=w, height=h)
     aia171_test_map.draw_rectangle(bottom_left, top_right=top_right)
+
+
+@figure_test
+def test_quadrangle_aia17_width_height(aia171_test_map):
+    aia171_test_map.plot()
+    bottom_left = SkyCoord(
+        50 * u.deg, -10 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
+    w = 30 * u.deg
+    h = 90 * u.deg
+    aia171_test_map.draw_quadrangle(bottom_left=bottom_left, width=w, height=h)
+
+
+@figure_test    
+def test_quadrangle_aia17_top_right(aia171_test_map):
+    aia171_test_map.plot()
+    bottom_left = SkyCoord(
+        50 * u.deg, -10 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
+    w = 15 * u.deg
+    h = 60 * u.deg
+    bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=w, height=h)
+    aia171_test_map.draw_quadrangle(bottom_left, top_right=top_right)
 
 
 @figure_test
