@@ -10,7 +10,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources import noaa
 from sunpy.tests.helpers import no_vso
 from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -58,19 +57,14 @@ def test_fetch_working(LCClient, tmpdir):
 
     # Compare if two objects have the same attribute
 
-    mock_qr = mock_qr.blocks[0]
-    qr = qr1.blocks[0]
+    mock_qr = mock_qr[0]
+    qr = qr1[0]
 
     assert mock_qr['Source'] == qr['Source']
     assert mock_qr['Provider'] == qr['Provider']
     assert mock_qr['Physobs'] == qr['Physobs']
     assert mock_qr['Instrument'] == qr['Instrument']
     assert mock_qr['url'] == qr['url']
-    assert mock_qr['Start Time'] == qr['Start Time']
-    assert mock_qr['End Time'] == qr['End Time']
-
-    # Assert if the timerange is same
-    assert qr1.time_range() == TimeRange('2012/10/4', '2012/10/6')
 
     target_dir = tmpdir.mkdir("down")
     download_list = LCClient.fetch(qr1, path=target_dir)

@@ -282,7 +282,12 @@ class GenericClient(BaseClient):
         if path is not None:
             path = Path(path)
 
-        urls = [qrblock['url'] for qrblock in qres]
+        urls = []
+        if len(qres):
+            if isinstance(qres, QueryResponseRow):
+                urls = [qres['url']]
+            else:
+                urls = list(qres['url'])
 
         filenames = [url.split('/')[-1] for url in urls]
 
