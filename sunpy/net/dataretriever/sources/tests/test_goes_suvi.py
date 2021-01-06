@@ -88,8 +88,8 @@ def test_fetch_working(suvi_client):
 
     # Compare if two objects have the same attribute
 
-    mock_qr = mock_qr.blocks[0]
-    qr = qr1.blocks[0]
+    mock_qr = mock_qr[0]
+    qr = qr1[0]
 
     assert mock_qr['Source'] == qr['Source']
     assert mock_qr['Provider'] == qr['Provider']

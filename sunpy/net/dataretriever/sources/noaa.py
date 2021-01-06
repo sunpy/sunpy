@@ -10,6 +10,7 @@ from astropy.time import Time, TimeDelta
 
 from sunpy.extern.parse import parse
 from sunpy.net import attrs as a
+from sunpy.net.base_client import QueryResponseRow
 from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
@@ -185,6 +186,8 @@ class SRSClient(GenericClient):
         # update the extracted metadata to include the queried times rather
         # than those scraped from the downloaded zip (which includes full year data).
         rowdict = super().post_search_hook(exdict, matchdict)
+        rowdict["Start Time"] = matchdict["Start Time"]
+        rowdict["End Time"] = matchdict["End Time"]
         rowdict["Start Time"].format = 'iso'
         rowdict["End Time"].format = 'iso'
         return rowdict
