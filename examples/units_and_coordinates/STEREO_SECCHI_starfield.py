@@ -85,7 +85,7 @@ mars = get_body_heliographic_stonyhurst('mars', cor2.date, observer=cor2.observe
 
 ###############################################################################
 # Let's plot the results.  The coordinates will be transformed automatically
-# when plotted using :meth:`~astropy.visualization.WCSAxes.plot_coord`.
+# when plotted using :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord`.
 
 ax = plt.subplot(projection=cor2)
 

@@ -14,7 +14,7 @@ from sunpy.net import attrs as a
 # as a flare ('FL'). We also set up the start and end times over which
 # we will search for flare events. We want the list of events
 # that were detected by the GOES X-ray Sensor (XRS) instrument between
-# `tstart` and `tend`.
+# ``tstart`` and ``tend``.
 event_type = 'FL'
 tstart = '2013/10/28'
 tend = '2013/10/29'
