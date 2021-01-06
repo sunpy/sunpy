@@ -1,3 +1,13 @@
+Sunpy v2.0.7 (2021-01-06)
+=========================
+
+Bug Fixes
+---------
+
+- Improved the file processing logic for EVE L0CS files, which has fixed a
+  bug where the first line of data was parsed incorrectly. (`#4805 <https://github.com/sunpy/sunpy/pull/4805>`__)
+
+
 Sunpy v2.0.6 (2020-12-18)
 =========================
 
