@@ -3,7 +3,7 @@
 Sample data set overview
 ========================
 
-An overview of the coordinated sample data set.
+An overview of the coordinated sample data set (available through `sunpy.data.sample`).
 """
 import matplotlib.pyplot as plt
 
