@@ -12,6 +12,7 @@ import astropy.units as u
 import sunpy
 import sunpy.data.test
 import sunpy.map
+from sunpy.tests.helpers import figure_test
 from sunpy.util.metadata import MetaDict
 
 
@@ -192,7 +193,7 @@ def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
 
 def test_derotate():
     with pytest.raises(NotImplementedError):
-        mapsequence = sunpy.map.MapSequence(derotate=True)
+        sunpy.map.MapSequence(derotate=True)
 
 
 def test_repr_html(mapsequence_all_the_same):
@@ -216,3 +217,11 @@ def test_quicklook(mapsequence_all_the_same):
 
         for m in mapsequence_all_the_same.maps:
             assert m._repr_html_() in html_string
+
+
+@figure_test
+def test_norm_animator(hmi_test_map):
+    seq = sunpy.map.Map([hmi_test_map, hmi_test_map], sequence=True)
+    ani = seq.peek()
+    ani._slider_changed(1, ani.sliders[ani.active_slider]._slider)
+    return ani.fig
