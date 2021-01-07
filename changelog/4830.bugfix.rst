@@ -1,2 +1,0 @@
-Edited the repeated tests for draw_rectangle and added a test where the
-coordinates are correctly specified.
