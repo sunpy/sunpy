@@ -15,57 +15,72 @@ is an interface to multiple sources including all the sources implemented in
 
 .. automodapi:: sunpy.net
    :include-all-objects:
+   :headings: =-
 
 .. automodapi:: sunpy.net.attrs
+   :headings: ^"
 
 .. automodapi:: sunpy.net.fido_factory
+   :headings: ^"
 
 
 VSO
 ---
 
 .. automodapi:: sunpy.net.vso
+   :headings: ^"
 
 .. automodapi:: sunpy.net.vso.attrs
+   :headings: ^"
 
 
 Dataretriever
-=============
+-------------
 
 .. automodapi:: sunpy.net.dataretriever
-   :allowed-package-names: sources
 
 .. automodapi:: sunpy.net.dataretriever.sources
 
 .. automodapi:: sunpy.net.dataretriever.attrs.goes
+   :headings: ^"
 
 JSOC
-====
+----
 
 .. automodapi:: sunpy.net.jsoc
+   :headings: ^"
 
 .. automodapi:: sunpy.net.jsoc.attrs
+   :headings: ^"
 
 
 HEK
 ---
 
 .. automodapi:: sunpy.net.hek
+   :headings: ^"
+
+.. automodapi:: sunpy.net.hek.attrs
+   :headings: ^"
 
 .. automodapi:: sunpy.net.hek2vso
+   :headings: ^"
 
 
 HELIO
-=====
+-----
 
 .. automodapi:: sunpy.net.helio
+   :headings: ^"
 
-.. automodapi:: sunpy.net.helio.hec
+.. automodapi:: sunpy.net.helio.attrs
+   :headings: ^"
 
 Helioviewer
-===========
+-----------
 
 .. automodapi:: sunpy.net.helioviewer
+   :headings: ^"
 
 
 Internal Classes and Functions
