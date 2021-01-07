@@ -15,7 +15,6 @@ import sunpy
 import sunpy.coordinates
 import sunpy.data.test
 import sunpy.map
-from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.tests.helpers import figure_test, fix_map_wcs
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -124,7 +123,7 @@ def test_rectangle_aia171_top_right(aia171_test_map):
     bottom_left = SkyCoord(
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     top_right = SkyCoord(
-        200 * u.arcsec, 500 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+        100 * u.arcsec, 100 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     aia171_test_map.draw_rectangle(bottom_left, top_right=top_right)
 
 
@@ -193,7 +192,7 @@ def test_heliographic_rectangle_top_right(heliographic_test_map):
     heliographic_test_map.plot()
     bottom_left = SkyCoord(
         60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
-    top_right = SkyCoord(80 * u.deg, 90 * u.deg, frame=hmap.coordinate_frame)
+    top_right = SkyCoord(73 * u.deg, 63 * u.deg, frame=heliographic_test_map.coordinate_frame)
     heliographic_test_map.draw_rectangle(bottom_left, top_right=top_right, color='cyan')
 
 
