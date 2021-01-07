@@ -99,7 +99,7 @@ def noaa_ind_json_test_ts():
 @pytest.fixture
 def noaa_pre_json_test_ts():
     # NOAA pre data contains years long into the future, which ERFA complains about
-    with pytest.warns(ErfaWarning, match='dubious year'):
+    with pytest.warns(ErfaWarning, match=r'.*dubious year'):
         return sunpy.timeseries.TimeSeries(
             noaa_pre_json_filepath, source='NOAAPredictIndices')
 

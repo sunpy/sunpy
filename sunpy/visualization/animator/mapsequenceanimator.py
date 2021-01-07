@@ -73,10 +73,7 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         i = int(val)
         im.set_array(self.data[i].data)
         im.set_cmap(self.mapsequence[i].plot_settings['cmap'])
-
         norm = deepcopy(self.mapsequence[i].plot_settings['norm'])
-        # The following explicit call is for bugged versions of Astropy's ImageNormalize
-        norm.autoscale_None(self.data[i].data)
         im.set_norm(norm)
 
         if wcsaxes_compat.is_wcsaxes(im.axes):
