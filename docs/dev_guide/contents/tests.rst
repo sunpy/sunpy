@@ -251,14 +251,30 @@ If the hashes do not match, the figure has changed, and thus the test is conside
 To run the figure tests you need to be very careful, as any pixel that has changed, will change the hash.
 In order to avoid changes due to different package versions, we recommend using tox::
 
-    $ tox -e figure
+    $ tox -e py38-figure
 
 This will ensure that any figures created are checked using the package versions that were used to create the original figure hashes.
 Running this will create a folder, "figure_test_images", within your work folder ("<local clone location>/figure_test_images"), which is ignored by git.
 Inside this folder will be all the images created, as well as a json file with the hashes of the figures created by the test run.
-The current hashes are located within "sunpy/tests/figure_tests_env_py36.json" and this will be where you will need to update old hashes or create new figure entries if anything changes.
+The current hashes are located within "sunpy/tests/figure_hashes_mpl_<ver>_ft_<ver>_astropy_<ver>.json" and this will be where you will need to update old hashes or create new figure entries if anything changes.
+The filenames are the versions of matplotlib, freetype and astropy used.
+If these versions differ to your local setup, the figure tests will not run.
 
-If you are adding a new figure test, you will also need to update this `repository <https://github.com/sunpy/sunpy-figure-tests>`__ that stores the current figure tests, which we use for a visual comparison of figure tests.
+If you are adding a new figure test you will need to do a few more steps::
+
+    $ tox -e py38-figure -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_332_ft_261_astropy_403.json
+
+and for the development figure tests::
+
+    $ tox -e py38-figure-devdeps -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_dev_ft_261_astropy_dev.json
+
+This will run the figure test suite and update the hashes stored.
+
+If you want to check what the images look like, you can do::
+
+    $ tox -e py38-figure -- --mpl-generate-path=baseline
+
+The images output from the tests will be stored in a folder called baseline so you can double check the test works as you expected.
 
 Writing doctests
 ----------------
