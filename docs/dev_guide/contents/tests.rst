@@ -257,7 +257,7 @@ This will ensure that any figures created are checked using the package versions
 Running this will create a folder, "figure_test_images", within your work folder ("<local clone location>/figure_test_images"), which is ignored by git.
 Inside this folder will be all the images created, as well as a json file with the hashes of the figures created by the test run.
 The current hashes are located within "sunpy/tests/figure_hashes_mpl_<ver>_ft_<ver>_astropy_<ver>.json" and this will be where you will need to update old hashes or create new figure entries if anything changes.
-The filenames are the versions of matplotlib, font library and astropy used.
+The filenames are the versions of matplotlib, freetype and astropy used.
 If these versions differ to your local setup, the figure tests will not run.
 
 If you are adding a new figure test you will need to do a few more steps::
