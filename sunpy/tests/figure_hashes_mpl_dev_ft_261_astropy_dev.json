@@ -50,5 +50,9 @@
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params": "e1678a7b513917e177547b8ee0a93ee2f29a6d3dacff5fa213355ff414e706b1",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params_grid": "4bb5930ec573f8399470df023d4686601728d35a70527c397f7eed39d07ba0e3",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params_no_ticks": "ce35b25eb2c4eb6d2ce56d6a78c8a33b1bfdf8ef00b098c7c2c08feae2a82356",
-    "sunpy.visualization.colormaps.tests.test_cm.test_cmap_visual": "453d75b2a1c180c31363fdb2faa3f60bc4433ded53dde4678e91b7986f85bf00"
+    "sunpy.visualization.colormaps.tests.test_cm.test_cmap_visual": "453d75b2a1c180c31363fdb2faa3f60bc4433ded53dde4678e91b7986f85bf00",
+    "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_top_right": "cc12f9d668f7064a20539e3c2b1d8e2941b3bef39ae717efbcf3c1ad171c8d28",
+    "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_width_height": "824eb4271fd97e3bfb6e0b3602618673b693ee99fb5e2c8359c6d54efee39a46",
+    "sunpy.map.tests.test_plotting.test_quadrangle_aia17_top_right": "06f07d40e1442ebaf3a23c7fbad9fe497d859ad6b4d9cd2e543fe57a517bc352",
+    "sunpy.map.tests.test_plotting.test_quadrangle_aia17_width_height": "963082f296a1d4b1f66ccbe9f5bdfd3f342230a4d409ab1af02785dd5f9d91cd"
 }
