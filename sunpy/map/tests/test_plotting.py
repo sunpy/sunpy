@@ -143,8 +143,8 @@ def test_quadrangle_aia17_top_right(aia171_test_map):
     aia171_test_map.plot()
     bottom_left = SkyCoord(
         50 * u.deg, -10 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
-    w = 15 * u.deg
-    h = 60 * u.deg
+    top_right = SkyCoord(
+        65 * u.deg, 50 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
     aia171_test_map.draw_quadrangle(bottom_left, top_right=top_right)
 
 
