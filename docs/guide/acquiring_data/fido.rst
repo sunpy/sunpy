@@ -109,11 +109,11 @@ variable set to the Fido search, in this case, result::
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the LYRAClient:
-         Start Time           End Time      Instrument ... Source Provider Level
-    ------------------- ------------------- ---------- ... ------ -------- -----
-    2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     2
-    2012-03-05 00:00:00 2012-03-05 23:59:59       LYRA ... PROBA2      ESA     2
-    2012-03-06 00:00:00 2012-03-06 23:59:59       LYRA ... PROBA2      ESA     2
+           Start Time               End Time        Instrument ... Provider Level
+    ----------------------- ----------------------- ---------- ... -------- -----
+    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA ...      ESA     2
+    2012-03-05 00:00:00.000 2012-03-05 23:59:59.999       LYRA ...      ESA     2
+    2012-03-06 00:00:00.000 2012-03-06 23:59:59.999       LYRA ...      ESA     2
     <BLANKLINE>
     <BLANKLINE>
 
@@ -129,11 +129,12 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the NoRHClient:
-         Start Time           End Time      Instrument Source Provider Wavelength
-    ------------------- ------------------- ---------- ------ -------- ----------
-    2012-03-04 00:00:00 2012-03-04 23:59:59       NORH   NAOJ      NRO   17.0 GHz
-    2012-03-05 00:00:00 2012-03-05 23:59:59       NORH   NAOJ      NRO   17.0 GHz
-    2012-03-06 00:00:00 2012-03-06 23:59:59       NORH   NAOJ      NRO   17.0 GHz
+           Start Time               End Time        ... Provider Wavelength
+                                                    ...             GHz
+    ----------------------- ----------------------- ... -------- ----------
+    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999 ...      NRO       17.0
+    2012-03-05 00:00:00.000 2012-03-05 23:59:59.999 ...      NRO       17.0
+    2012-03-06 00:00:00.000 2012-03-06 23:59:59.999 ...      NRO       17.0
     <BLANKLINE>
     <BLANKLINE>
 
@@ -190,23 +191,23 @@ operator would::
     Results from 3 Providers:
     <BLANKLINE>
     2 Results from the LYRAClient:
-         Start Time           End Time      Instrument ... Source Provider Level
-    ------------------- ------------------- ---------- ... ------ -------- -----
-    2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     2
-    2012-03-04 00:00:00 2012-03-04 23:59:59       LYRA ... PROBA2      ESA     3
+           Start Time               End Time        Instrument ... Provider Level
+    ----------------------- ----------------------- ---------- ... -------- -----
+    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA ...      ESA     2
+    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA ...      ESA     3
     <BLANKLINE>
     1 Results from the RHESSIClient:
-         Start Time           End Time      Instrument ... Source Provider
-    ------------------- ------------------- ---------- ... ------ --------
-    2012-03-04 00:00:00 2012-03-04 23:59:59     RHESSI ... RHESSI     NASA
+           Start Time               End Time        Instrument ... Source Provider
+    ----------------------- ----------------------- ---------- ... ------ --------
+    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999     RHESSI ... RHESSI     NASA
     <BLANKLINE>
     3 Results from the VSOClient:
-           Start Time               End Time        ... Extent Type      Info
-                                                    ...
-    ----------------------- ----------------------- ... ----------- --------------
-    2012-03-03 22:57:40.000 2012-03-04 00:33:20.000 ... PARTIAL_SUN RHESSI level-0
-    2012-03-04 00:33:20.000 2012-03-04 01:45:40.000 ... PARTIAL_SUN RHESSI level-0
-    2012-03-04 01:45:40.000 2012-03-04 02:09:00.000 ... PARTIAL_SUN RHESSI level-0
+           Start Time       ...                       fileid
+                            ...
+    ----------------------- ... --------------------------------------------------
+    2012-03-03 22:57:40.000 ... /hessidata/2012/03/03/hsi_20120303_225740_001.fits
+    2012-03-04 00:33:20.000 ... /hessidata/2012/03/04/hsi_20120304_003320_003.fits
+    2012-03-04 01:45:40.000 ... /hessidata/2012/03/04/hsi_20120304_014540_003.fits
     <BLANKLINE>
     <BLANKLINE>
 
@@ -233,19 +234,19 @@ results returned by the `~sunpy.net.dataretriever.LYRAClient`::
 
     >>> results[0, :]  # doctest: +REMOTE_DATA
     <sunpy.net.dataretriever.client.QueryResponse object at ...>
-         Start Time           End Time      Instrument ... Source Provider Level
-    ------------------- ------------------- ---------- ... ------ -------- -----
-    2012-01-01 00:00:00 2012-01-01 23:59:59       LYRA ... PROBA2      ESA     2
-    2012-01-02 00:00:00 2012-01-02 23:59:59       LYRA ... PROBA2      ESA     2
+           Start Time               End Time        Instrument ... Provider Level
+    ----------------------- ----------------------- ---------- ... -------- -----
+    2012-01-01 00:00:00.000 2012-01-01 23:59:59.999       LYRA ...      ESA     2
+    2012-01-02 00:00:00.000 2012-01-02 23:59:59.999       LYRA ...      ESA     2
 
 Or, equivalently::
 
     >>> results[0]  # doctest: +REMOTE_DATA
     <sunpy.net.dataretriever.client.QueryResponse object at ...>
-         Start Time           End Time      Instrument ... Source Provider Level
-    ------------------- ------------------- ---------- ... ------ -------- -----
-    2012-01-01 00:00:00 2012-01-01 23:59:59       LYRA ... PROBA2      ESA     2
-    2012-01-02 00:00:00 2012-01-02 23:59:59       LYRA ... PROBA2      ESA     2
+           Start Time               End Time        Instrument ... Provider Level
+    ----------------------- ----------------------- ---------- ... -------- -----
+    2012-01-01 00:00:00.000 2012-01-01 23:59:59.999       LYRA ...      ESA     2
+    2012-01-02 00:00:00.000 2012-01-02 23:59:59.999       LYRA ...      ESA     2
 
 Normal slicing operations work as with any other Python sequence, e.g.
 ``results[1,::10]`` to access every tenth file in the result returned by
