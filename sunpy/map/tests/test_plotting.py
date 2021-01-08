@@ -15,11 +15,7 @@ import sunpy
 import sunpy.coordinates
 import sunpy.data.test
 import sunpy.map
-<<<<<<< HEAD
 from sunpy.coordinates import HeliographicStonyhurst
-from sunpy.coordinates.utils import get_rectangle_coordinates
-=======
->>>>>>> a8af505eec9778969484b886ee01fa63af52dcec
 from sunpy.tests.helpers import figure_test, fix_map_wcs
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -149,7 +145,6 @@ def test_quadrangle_aia17_top_right(aia171_test_map):
         50 * u.deg, -10 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
     w = 15 * u.deg
     h = 60 * u.deg
-    bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=w, height=h)
     aia171_test_map.draw_quadrangle(bottom_left, top_right=top_right)
 
 
