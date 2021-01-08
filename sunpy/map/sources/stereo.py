@@ -43,7 +43,7 @@ class EUVIMap(GenericMap):
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
         # fix CROTA to CROTAn
-        if "crota" in self.meta:
+        if "crota" in self.meta and "crota2" not in self.meta:
             crota2 = self.meta.pop("crota")
             self.meta["crota2"] = crota2
 
