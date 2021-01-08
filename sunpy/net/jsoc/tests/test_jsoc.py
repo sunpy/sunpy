@@ -70,12 +70,12 @@ def test_post_pass(client):
 def test_build_table(client):
     responses = client.search(
         a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
+        a.jsoc.Series('hmi.M_45s'))
     table = responses.build_table()
     assert isinstance(table, astropy.table.Table)
 
     columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-    assert columns == table.colnames
+    assert columns == table._display_table.colnames
 
 
 def test_show(client):

@@ -151,8 +151,8 @@ class SRSClient(GenericClient):
     2 Results from the SRSClient:
            Start Time               End Time        Instrument ... Source Provider
     ----------------------- ----------------------- ---------- ... ------ --------
-    2016-01-01 00:00:00.000 2016-12-31 23:59:59.999       SOON ...   SWPC     NOAA
-    2016-01-01 00:00:00.000 2016-12-31 23:59:59.999       SOON ...   SWPC     NOAA
+    2016-01-01 00:00:00.000 2016-01-02 00:00:00.000       SOON ...   SWPC     NOAA
+    2016-01-01 00:00:00.000 2016-01-02 00:00:00.000       SOON ...   SWPC     NOAA
     <BLANKLINE>
     <BLANKLINE>
 

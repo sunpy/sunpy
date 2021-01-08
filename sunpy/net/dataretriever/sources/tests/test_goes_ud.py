@@ -132,11 +132,11 @@ def test_query(LCClient, time):
     assert isinstance(qr1, QueryResponse)
     # We only compare dates here as the start time of the qr will always be the
     # start of the day.
-    assert qr1.time_range().start.strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
+    assert qr1[0]['Start Time'].strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
 
     almost_day = TimeDelta(1*u.day - 1*u.millisecond)
     end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
-    assert is_time_equal(qr1.time_range().end, end)
+    assert is_time_equal(qr1[-1]['End Time'], end)
 
 
 @pytest.mark.remote_data

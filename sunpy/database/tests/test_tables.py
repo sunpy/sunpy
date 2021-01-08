@@ -163,16 +163,16 @@ def test_entries_from_fido_search_result(fido_search_result):
     assert entries[60] == DatabaseEntry(
         source='SIDC', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_start=None,
+        observation_time_end=None,
         wavemin=np.nan, wavemax=np.nan,
         instrument='NOAA-Indices')
     # 1 entry from noaa-predict
     assert entries[61] == DatabaseEntry(
         source='ISES', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json',
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_start=None,
+        observation_time_end=None,
         wavemin=np.nan, wavemax=np.nan,
         instrument='NOAA-Predict')
     # 2 entries from norh
@@ -212,7 +212,7 @@ def test_entries_from_fido_search_result_JSOC():
 @pytest.mark.remote_data
 def test_from_fido_search_result_block(fido_search_result):
     entry = DatabaseEntry._from_fido_search_result_block(
-        fido_search_result[0, 0].blocks[0])
+        fido_search_result[0, 0])
     expected_entry = DatabaseEntry(
         source='PROBA2', provider='ESA', physobs='irradiance',
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',

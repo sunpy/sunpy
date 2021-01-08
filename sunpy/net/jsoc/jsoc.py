@@ -312,6 +312,7 @@ class JSOCClient(BaseClient):
             blocks.append(copy.deepcopy(iargs))
             return_results = astropy.table.vstack([return_results, self._lookup_records(iargs)])
         return_results.query_args = blocks
+        return_results._original_num_rows = len(return_results)
         return return_results
 
     @deprecated(since="2.1", message="use JSOCClient.search() instead", alternative="JSOCClient.search()")
