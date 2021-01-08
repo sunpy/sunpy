@@ -216,7 +216,7 @@ def test_show(LCClient):
     mock_qr = mock_query_object('2012/10/4', '2012/10/6')
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Source', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source', 'Provider', 'url']
-    assert qrshow0.colnames == allcols
+    allcols = {'Start Time', 'End Time', 'Instrument', 'Physobs', 'Source', 'Provider', 'url'}
+    assert not allcols.difference(qrshow0.colnames)
     assert qrshow1.colnames == ['Source', 'Instrument']
     assert qrshow0['Instrument'][0] == 'NOAA-Indices'
