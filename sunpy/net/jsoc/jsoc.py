@@ -39,19 +39,16 @@ class JSOCResponse(QueryResponseTable):
     query_args = TableAttribute()
     requests = TableAttribute()
     display_keys = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
+    _original_num_rows = TableAttribute(default=None)
 
-    def __getitem__(self, item):
-        if isinstance(item, (int, slice)) or (isiterable(item) and any([not isinstance(i, str) for i in item])):
-            warnings.warn("Downloading of sliced JSOC results is not supported. "
-                          "All the files present in the original response will "
-                          "be downloaded when passed to fetch().",
-                          SunpyUserWarning)
-        return super().__getitem__(item)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_num_rows = len(self)
 
     def build_table(self):
         # remove this check post 3.0
         if self.query_args is not None and any('keys' in i for i in self.query_args):
-            new_table = self.table.copy()
+            new_table = self.copy()
             new_table.display_keys = slice(None)
             return new_table
 
@@ -451,7 +448,13 @@ class JSOCClient(BaseClient):
         results : a `~sunpy.net.download.Results` instance
             A Results object
 
-        """
+       """
+        if len(jsoc_response) != jsoc_response._original_num_rows:
+            warnings.warn("Downloading of sliced JSOC results is not supported. "
+                          "All the files present in the original response will "
+                          "be downloaded when passed to fetch().",
+                          SunpyUserWarning)
+
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
 
