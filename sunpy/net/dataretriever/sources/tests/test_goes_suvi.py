@@ -4,13 +4,14 @@ import pytest
 from hypothesis import given
 
 import astropy.units as u
+from astropy.time import Time
 
 import sunpy.net.dataretriever.sources.goes as goes
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.tests.strategies import time_attr
-from sunpy.time import TimeRange, parse_time
+from sunpy.time import parse_time
 
 
 @pytest.fixture
@@ -97,8 +98,8 @@ def test_fetch_working(suvi_client):
     assert mock_qr['Instrument'] == qr['Instrument']
     assert mock_qr['url'] == qr['url']
 
-    assert qr1.time_range() == TimeRange("2019-05-25T00:52:00.000",
-                                         "2019-05-25T00:56:00.000")
+    assert qr1['Start Time'] == Time("2019-05-25T00:52:00.000")
+    assert qr1['End Time'] == Time("2019-05-25T00:56:00.000")
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         download_list = suvi_client.fetch(qr1, path=tmpdirname)
@@ -196,8 +197,8 @@ def test_query(suvi_client, start, end, expected_num_files):
     qr1 = suvi_client.search(a.Time(start, end), a.Instrument.suvi, goes_sat, a.Level.two)
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == expected_num_files
-    assert qr1.time_range().start == parse_time('2019/05/25 00:52')
-    assert qr1.time_range().end == parse_time('2019/05/25 00:56')
+    assert qr1['Start Time'][0] == parse_time('2019/05/25 00:52')
+    assert qr1['End Time'][1] == parse_time('2019/05/25 00:56')
 
 
 def test_show(suvi_client):

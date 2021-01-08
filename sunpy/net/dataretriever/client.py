@@ -16,10 +16,7 @@ __all__ = ['QueryResponse', 'GenericClient']
 
 
 class QueryResponse(QueryResponseTable):
-    def __init__(self, *args, **kwargs):
-        if 'hide_keys' not in kwargs:
-            kwargs['hide_keys'] = ['url']
-        super().__init__(*args, **kwargs)
+    hide_keys = ['url']
 
     def time_range(self):
         """

@@ -374,14 +374,18 @@ class DatabaseEntry(DatabaseEntryType, Base):
         """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
-        source = sr_block.get('Source', None)
-        provider = sr_block.get('Provider', None)
-        physobs = sr_block.get('Physobs', None)
+        source = sr_block.get('Source')
+        provider = sr_block.get('Provider')
+        physobs = sr_block.get('Physobs')
         if physobs is not None:
             physobs = str(physobs)
-        instrument = sr_block.get('Instrument', None)
-        time_start = sr_block['Time'].start.datetime
-        time_end = sr_block['Time'].end.datetime
+        instrument = sr_block.get('Instrument')
+        time_start = sr_block.get('Start Time')
+        if time_start is not None:
+            time_start = time_start.datetime
+        time_end = sr_block.get('End Time')
+        if time_end is not None:
+            time_end = time_end.datetime
 
         wavelengths = sr_block.get('Wavelength', np.nan)
         wavelength_temp = {}
@@ -409,7 +413,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
         wavemin = final_values['wavemin']
         wavemax = final_values['wavemax']
 
-        fileid = sr_block.get('url', None)
+        fileid = sr_block.get('url')
         size = None
         return cls(
             source=source, provider=provider, physobs=physobs, fileid=fileid,

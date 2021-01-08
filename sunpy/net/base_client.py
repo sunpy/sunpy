@@ -118,6 +118,14 @@ class QueryResponseRow(Row):
         """
         return self.table[self.index:self.index + 1]
 
+    def get(self, key, default=None):
+        """
+        Extract a value from the row if the key is present otherwise return the value of ``default``
+        """
+        if key in self.colnames:
+            return self[key]
+        return default
+
 
 class QueryResponseTable(QTable, BaseQueryResponse):
     Row = QueryResponseRow
@@ -161,11 +169,10 @@ class QueryResponseTable(QTable, BaseQueryResponse):
             # Index only the keys not in hide keys in order
             [keys.remove(key) for key in self.hide_keys if key in keys]
 
-        tslice = self.display_keys
-        if tslice != slice(None):
-            tslice = [dk for dk in self.display_keys if dk in keys]
+        if self.display_keys != slice(None):
+            keys = [dk for dk in self.display_keys if dk in keys]
 
-        table = self[tslice]
+        table = self[keys]
         # The slicing operation resets display and hide keys to default, but we
         # have already applied it
         table.unhide_columns()

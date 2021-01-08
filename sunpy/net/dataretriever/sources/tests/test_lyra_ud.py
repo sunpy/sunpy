@@ -59,9 +59,9 @@ def test_can_handle_query(time):
 def test_query(LCClient, time):
     qr1 = LCClient.search(time, Instrument('lyra'))
     assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
+    assert qr1[0]['Start Time'] == time.start
     almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-    assert qr1.time_range().end == time.end + almost_day
+    assert qr1[-1]['End Time'] == time.end + almost_day
 
 
 @pytest.mark.remote_data
