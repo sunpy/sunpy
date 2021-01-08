@@ -8,6 +8,7 @@ import astropy.units as u
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
+from sunpy import log
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
@@ -44,8 +45,8 @@ class EUVIMap(GenericMap):
             self.meta['date-obs'] = self.meta['date_obs']
         # fix CROTA to CROTAn
         if "crota" in self.meta and "crota2" not in self.meta:
-            crota2 = self.meta.pop("crota")
-            self.meta["crota2"] = crota2
+            log.debug("EUVIMap: Changing the CROTA keyword to CROTA2")
+            self.meta["crota2"] = self.meta.pop("crota")
 
     @property
     def rsun_arcseconds(self):
