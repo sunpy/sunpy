@@ -1,8 +1,8 @@
 {
-    "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_top_right": "cc12f9d668f7064a20539e3c2b1d8e2941b3bef39ae717efbcf3c1ad171c8d28",
-    "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_width_height": "824eb4271fd97e3bfb6e0b3602618673b693ee99fb5e2c8359c6d54efee39a46",
-    "sunpy.map.tests.test_plotting.test_quadrangle_aia17_top_right": "06f07d40e1442ebaf3a23c7fbad9fe497d859ad6b4d9cd2e543fe57a517bc352",
-    "sunpy.map.tests.test_plotting.test_quadrangle_aia17_width_height": "963082f296a1d4b1f66ccbe9f5bdfd3f342230a4d409ab1af02785dd5f9d91cd"
+  "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_top_right": "cc12f9d668f7064a20539e3c2b1d8e2941b3bef39ae717efbcf3c1ad171c8d28",
+  "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_width_height": "824eb4271fd97e3bfb6e0b3602618673b693ee99fb5e2c8359c6d54efee39a46",
+  "sunpy.map.tests.test_plotting.test_quadrangle_aia17_top_right": "06f07d40e1442ebaf3a23c7fbad9fe497d859ad6b4d9cd2e543fe57a517bc352",
+  "sunpy.map.tests.test_plotting.test_quadrangle_aia17_width_height": "963082f296a1d4b1f66ccbe9f5bdfd3f342230a4d409ab1af02785dd5f9d91cd",
 =======
   "sunpy.map.tests.test_compositemap.test_plot_composite_map": "7d8ab4c0ffecd45de6e2829fa343bb289e107fd3ce4bcc8e7243673f7e472d99",
   "sunpy.map.tests.test_compositemap.test_peek_composite_map": "2bbe873f63c7504447c229f880962a60fd1fcf7b8916388210ef8f9002654afa",
