@@ -112,9 +112,11 @@ class QueryResponseRow(Row):
     A row subclass which knows about the client of the parent table.
     """
 
-    @property
-    def client(self):
-        return self._parent.client
+    def as_table(self):
+        """
+        Return this Row as a length one Table
+        """
+        return self.table[self.index:self.index + 1]
 
 
 class QueryResponseTable(QTable, BaseQueryResponse):
@@ -123,6 +125,15 @@ class QueryResponseTable(QTable, BaseQueryResponse):
     client = TableAttribute()
     display_keys = TableAttribute(default=slice(None))
     hide_keys = TableAttribute()
+
+    # This is a work around for https://github.com/astropy/astropy/pull/11217
+    # Remove when min astropy version is > 4.2.1
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for attr in list(kwargs):
+            descr = getattr(self.__class__, attr, None)
+            if isinstance(descr, TableAttribute):
+                setattr(self, attr, kwargs.pop(attr))
 
     def build_table(self):
         return self
