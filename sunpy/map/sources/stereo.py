@@ -42,6 +42,10 @@ class EUVIMap(GenericMap):
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
+        # fix CROTA to CROTAn
+        if "crota" in self.meta:
+            crota2 = self.meta.pop("crota")
+            self.meta["crota2"] = crota2
 
     @property
     def rsun_arcseconds(self):
