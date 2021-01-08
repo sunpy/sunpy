@@ -149,12 +149,27 @@ class QueryResponseTable(QTable, BaseQueryResponse):
 
     @property
     def _display_table(self):
-        table = self[self.display_keys]
+        """
+        Apply the display_keys and hide_keys attributes to the table.
+
+        This removes any keys in hide keys and then slices by any keys in
+        display_keys to return the correct table.
+        """
+
+        keys = list(self.colnames)
         if self.hide_keys:
-            keys = list(table.colnames)
             # Index only the keys not in hide keys in order
             [keys.remove(key) for key in self.hide_keys if key in keys]
-            table = table[keys]
+
+        tslice = self.display_keys
+        if tslice != slice(None):
+            tslice = [dk for dk in self.display_keys if dk in keys]
+
+        table = self[tslice]
+        # The slicing operation resets display and hide keys to default, but we
+        # have already applied it
+        table.unhide_columns()
+
         return table
 
     def __str__(self):
@@ -169,9 +184,19 @@ class QueryResponseTable(QTable, BaseQueryResponse):
         return QTable._repr_html_(self._display_table)
 
     def show(self, *cols):
-        tab = self.copy()
-        tab.display_keys = slice(None)
-        return BaseQueryResponse.show(tab, *cols)
+        table = self.copy()
+        table.unhide_columns()
+
+        if len(cols) == 0:
+            return table
+
+        valid_cols = [col for col in cols if col in table.colnames]
+        table = table[valid_cols]
+
+        # The slicing operation resets display and hide keys to default, but we
+        # want to bypass it here.
+        table.unhide_columns()
+        return table
 
 
 def _print_client(client, html=False):
