@@ -12,15 +12,6 @@ from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_ea
 from .strategies import times
 
 
-@pytest.fixture(scope='function')
-def astropy_ephemeris_de432s():
-    # Temporarily set Astropy's ephemeris to DE432s
-    old_ephemeris = solar_system_ephemeris.get()
-    solar_system_ephemeris.set('de432s')
-    yield solar_system_ephemeris.get()
-    solar_system_ephemeris.set(old_ephemeris)
-
-
 def test_get_body_heliographic_stonyhurst():
     # Validate against published values from the Astronomical Almanac (2013)
     e1 = get_body_heliographic_stonyhurst('earth', '2013-Jan-01')
@@ -124,22 +115,34 @@ def test_get_horizons_coord_array_time():
     assert_quantity_allclose(e[3].radius, 0.9908173*u.AU, atol=5e-7*u.AU)
 
 
-# Ignore the warning hypothesis throws, as in this case we don't care that
-# the fixture isn't reset between tests
-@pytest.mark.filterwarnings('ignore:.*which is reset between function calls but not between test cases.*')
 @pytest.mark.remote_data
-@given(obstime=times())
-@settings(deadline=5000, max_examples=10)
-def test_consistency_with_horizons(astropy_ephemeris_de432s, obstime):
+class TestUsingDE432s:
+    # This class is for test functions that need the Astropy ephemeris to be set to DE432s
+
     # get_horizons_coord() depends on astroquery
     pytest.importorskip("astroquery")
 
-    # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
-    e1 = get_earth(obstime)
-    e2 = get_horizons_coord('Geocenter', obstime)
-    assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=50*u.m)
+    @classmethod
+    def setup_class(cls):
+        cls.old_ephemeris = solar_system_ephemeris.get()
+        solar_system_ephemeris.set('de432s')
 
-    # Check whether the location of Mars is the same between Astropy and JPL HORIZONS
-    e1 = get_body_heliographic_stonyhurst('mars', obstime)
-    e2 = get_horizons_coord('Mars barycenter', obstime)
-    assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=500*u.m)
+    @classmethod
+    def teardown_class(cls):
+        solar_system_ephemeris.set(cls.old_ephemeris)
+
+    @given(obstime=times())
+    @settings(deadline=5000, max_examples=10)
+    def test_consistency_with_horizons(self, obstime):
+        # Check that the high-accuracy Astropy ephemeris has been set
+        assert solar_system_ephemeris.get() == 'de432s'
+
+        # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
+        e1 = get_earth(obstime)
+        e2 = get_horizons_coord('Geocenter', obstime)
+        assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=50*u.m)
+
+        # Check whether the location of Mars is the same between Astropy and JPL HORIZONS
+        e1 = get_body_heliographic_stonyhurst('mars', obstime)
+        e2 = get_horizons_coord('Mars barycenter', obstime)
+        assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=500*u.m)
