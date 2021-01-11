@@ -67,6 +67,7 @@ class HashableResponse:
     ----------
     * https://stackoverflow.com/a/1305682
     """
+
     def __init__(self, d):
         self.data = d
         for a, b in d.items():
@@ -272,60 +273,58 @@ class QueryResponse(BaseQueryResponse):
                          max(record.time.end for record in self if record.time.end is not None))
 
     def build_table(self):
-        """
-        Create a human readable table.
+        data = defaultdict(list)
+        # To maintain some compatibility with old versions, and to put the relevant info first,
+        # create the core columns
+        [data[k] for k in ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']]
+        for record in self._data:
+            for key, value in record.data.items():
+                if not isinstance(value, dict):
+                    if key == "size":
+                        if value == -1:
+                            value = None
+                        else:
+                            # size is in bytes with a very high degree of precision.
+                            value = (value * u.Kibyte).to(u.Mibyte).round(5)
+                    data[key.title()].append(value)
+                else:
+                    if key == "wave":
+                        # Assumption here is that if min is empty, they all are.
+                        if value['wavemin'] is None:
+                            continue
 
-        Returns
-        -------
-        table : `astropy.table.QTable`
-        """
-        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']
-        record_items = {}
-        for key in keywords:
-            record_items[key] = []
+                        # Some records in the VSO have 'kev' which astropy
+                        # doesn't recognise as a unit, so fix it.
+                        waveunit = value['waveunit']
+                        waveunit = 'keV' if waveunit == 'kev' else waveunit
 
-        def validate_time(time):
-            # Handle if the time is None when coming back from VSO
-            if time is None:
-                return ['None']
-            if record.time.start is not None:
-                return [parse_time(time).strftime(TIME_FORMAT)]
-            else:
-                return ['N/A']
+                        data["Wavelength"].append(
+                            u.Quantity(
+                                [float(value['wavemin']), float(value['wavemax'])],
+                                unit=waveunit)
+                        )
+                        data["Wavetype"].append(value['wavetype'])
+                        continue
+                    for subkey, subvalue in value.items():
+                        key_template = f"{key.capitalize()} {subkey.capitalize()}"
+                        if key == "time" and subvalue is not None:
+                            key_template = f"{subkey.capitalize()} {key.capitalize()}"
+                            subvalue = parse_time(subvalue)
+                            # Change the display to the 'T'-less version
+                            subvalue.format = 'iso'
+                        data[key_template].append(subvalue)
 
-        for record in self:
-            record_items['Start Time'].append(validate_time(record.time.start))
-            record_items['End Time'].append(validate_time(record.time.end))
-            record_items['Source'].append(str(record.source))
-            record_items['Instrument'].append(str(record.instrument))
-            record_items['Type'].append(str(record.extent.type)
-                                        if record.extent.type is not None else ['N/A'])
-            # If we have a start and end Wavelength, make a quantity
-            if hasattr(record, 'wave') and record.wave.wavemin and record.wave.wavemax:
-                unit = record.wave.waveunit
-                # Convert this so astropy units parses it correctly
-                if unit == "kev":
-                    unit = "keV"
-                record_items['Wavelength'].append(u.Quantity([float(record.wave.wavemin),
-                                                              float(record.wave.wavemax)],
-                                                             unit=unit))
-            # If not save None
-            else:
-                record_items['Wavelength'].append(None)
-        # If we have no wavelengths for the whole list, drop the col
-        if all([a is None for a in record_items['Wavelength']]):
-            record_items.pop('Wavelength')
-            keywords.remove('Wavelength')
-        else:
-            # Make whole column a quantity
-            try:
-                with u.set_enabled_equivalencies(u.spectral()):
-                    record_items['Wavelength'] = u.Quantity(record_items['Wavelength'])
-            # If we have mixed units or some Nones just represent as strings
-            except (u.UnitConversionError, TypeError):
-                record_items['Wavelength'] = [str(a) for a in record_items['Wavelength']]
+        # Remove Fileid as this method is only used for display.
+        if "Fileid" in data.keys():
+            data.pop("Fileid")
 
-        return Table(record_items)[keywords]
+        # Remove any columns which have no non-None values in them
+        clean_data = {}
+        for key, value in data.items():
+            if not all([x is None for x in value]):
+                clean_data[key] = value
+
+        return Table(clean_data)
 
     def add_error(self, exception):
         self.errors.append(exception)
@@ -385,7 +384,8 @@ class VSOClient(BaseClient):
         return obj(**kwargs)
 
     def search(self, *query):
-        """ Query data from the VSO with the new API. Takes a variable number
+        """
+        Query data from the VSO with the new API. Takes a variable number
         of attributes as parameter, which are chained together using AND.
 
         The new query language allows complex queries to be easily formed.
@@ -402,20 +402,20 @@ class VSOClient(BaseClient):
         ...    a.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
         ...    a.Instrument.eit | a.Instrument.aia)   # doctest:  +REMOTE_DATA
         <sunpy.net.vso.vso.QueryResponse object at ...>
-           Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
-                                                       ...             Angstrom
-        ------------------- ------------------- ------ ... -------- --------------
-        2010-01-01 00:00:08 2010-01-01 00:00:20   SOHO ... FULLDISK 195.0 .. 195.0
-        2010-01-01 00:12:08 2010-01-01 00:12:20   SOHO ... FULLDISK 195.0 .. 195.0
-        2010-01-01 00:24:10 2010-01-01 00:24:22   SOHO ... FULLDISK 195.0 .. 195.0
-        2010-01-01 00:36:08 2010-01-01 00:36:20   SOHO ... FULLDISK 195.0 .. 195.0
-        2010-01-01 00:48:09 2010-01-01 00:48:21   SOHO ... FULLDISK 195.0 .. 195.0
+               Start Time               End Time        Source ... Extent Type   Size
+                                                               ...              Mibyte
+        ----------------------- ----------------------- ------ ... ----------- -------
+        2010-01-01 00:00:08.000 2010-01-01 00:00:20.000   SOHO ...    FULLDISK 2.01074
+        2010-01-01 00:12:08.000 2010-01-01 00:12:20.000   SOHO ...    FULLDISK 2.01074
+        2010-01-01 00:24:10.000 2010-01-01 00:24:22.000   SOHO ...    FULLDISK 2.01074
+        2010-01-01 00:36:08.000 2010-01-01 00:36:20.000   SOHO ...    FULLDISK 2.01074
+        2010-01-01 00:48:09.000 2010-01-01 00:48:21.000   SOHO ...    FULLDISK 2.01074
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list)
+        out : `QueryResult`
             Matched items. Return value is of same type as the one of
-            :py:meth:`VSOClient.search`.
+            :meth:`VSOClient.search`.
         """
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
