@@ -67,11 +67,11 @@ jsoc_email = os.environ["JSOC_EMAIL"]
 # the same for a full-frame image except for the
 # cutout component. We will download images from a 12 hour interval
 # centered on the time of the above cutout.
-# We request one image every 12 minutes.
+# We request one image every 2 hours.
 q = Fido.search(
     a.Time(m_cutout.date - 6*u.h, m_cutout.date + 6*u.h),
     a.Wavelength(m_cutout.wavelength),
-    a.Sample(12*u.min),
+    a.Sample(2*u.h),
     a.jsoc.Series.aia_lev1_euv_12s,
     a.jsoc.Notify(jsoc_email),
     a.jsoc.Segment.image,
