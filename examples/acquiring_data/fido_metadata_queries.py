@@ -5,7 +5,7 @@ Querying Metadata clients using Fido
 
 This example shows how to search and retrieve metadata using `~sunpy.net.Fido` from
 search facilities like `~sunpy.net.hek.HEKClient`, `~sunpy.net.helio.HECClient`,
-and `~sunpy.net.jsoc.JSOCClient`. It also shows how to display desired columns from the result.
+and `~sunpy.net.jsoc.JSOCClient`.
 """
 import os
 
@@ -13,11 +13,10 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###################################################################
-# We will query the Heliophysics Integrated Observatory (`HELIO <https://www.helio-vo.eu/>`_) for the 'rhessi_flare_list' table.
+# We will query the `Heliophysics Integrated Observatory  <https://www.helio-vo.eu/>`__ for the 'rhessi_flare_list' table.
 # For the same time range, we will query HEK for 'FL' as the
 # event type and 'PeakFlux' greater than 1000.
 # We will also search JSOC for a 'hmi.m_45s' series.
-
 timerange = a.Time('2010/8/1 03:40', '2010/8/1 3:40:10')
 # Note that JSOC needs an email address, if you want to run this, you
 # must supply your own email.
