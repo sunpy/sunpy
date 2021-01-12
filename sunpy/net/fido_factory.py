@@ -309,7 +309,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # This is because the VSO _can_handle_query is very broad because we
         # don't know the full list of supported values we can search for (yet).
         if len(results) > 1:
-            vso_results = list(filter(lambda r: isinstance(r, vso.QueryResponse), results))
+            vso_results = list(filter(lambda r: isinstance(r, vso.VSOQueryResponseTable), results))
             for vres in vso_results:
                 if len(vres) == 0:
                     results.remove(vres)
@@ -391,7 +391,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         reslist = []
         for query_result in query_results:
-            if isinstance(query_result, BaseQueryResponse):
+            if isinstance(query_result, QueryResponseRow):
+                responses = [query_result.as_table()]
+            elif isinstance(query_result, BaseQueryResponse):
                 responses = [query_result]
             elif isinstance(query_result, UnifiedResponse):
                 responses = query_result.responses
