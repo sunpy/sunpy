@@ -5,6 +5,7 @@ This module provides a wrapper around the VSO API.
 import os
 import re
 import cgi
+import copy
 import json
 import socket
 import inspect
@@ -12,23 +13,17 @@ import datetime
 import warnings
 import itertools
 from functools import partial
-from collections import defaultdict
 from urllib.error import URLError, HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 import zeep
-from zeep.helpers import serialize_object
-
-import astropy.units as u
-from astropy.table import QTable as Table
 
 from sunpy import config, log
 from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.time import TimeRange, parse_time
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
@@ -42,9 +37,8 @@ from .exceptions import (
     UnknownStatus,
     UnknownVersion,
 )
+from .table_response import VSOQueryResponseTable
 from .zeep_plugins import SunPyLoggingZeepPlugin
-
-TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
                      'port': 'nsoVSOi'},
@@ -54,101 +48,12 @@ DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 
-class HashableResponse:
-    """
-    Enables hashing of objects returned from `zeep.Client` using the ``fileid`` of a "record item".
-
-    Parameters
-    ----------
-    d : `dict`
-        A "QueryResponseBlock" returned from the `sunpy.net.vso.VSOClient`.
-
-    References
-    ----------
-    * https://stackoverflow.com/a/1305682
-    """
-
-    def __init__(self, d):
-        self.data = d
-        for a, b in d.items():
-            if isinstance(b, (list, tuple)):
-                setattr(self, a, [HashableResponse(x) if isinstance(x, dict) else x for x in b])
-            else:
-                setattr(self, a, HashableResponse(b) if isinstance(b, dict) else b)
-
-    def __hash__(self):
-        return hash(self.fileid)
-
-    def __eq__(self, other):
-        return self.__hash__() == other.__hash__()
-
-    def __str__(self):
-        return self.data.__str__()
-
-    def __repr__(self):
-        return self.data.__repr__()
-
-
 class _Str(str):
-
     """ Subclass of string that contains a meta attribute for the
     record_item associated with the file. """
 
 
 # ----------------------------------------
-
-def _parse_waverange(string):
-    min_, max_, unit = RANGE.match(string).groups()[::2]
-    return {
-        'wave_wavemin': min_,
-        'wave_wavemax': min_ if max_ is None else max_,
-        'wave_waveunit': 'Angstrom' if unit is None else unit,
-    }
-
-
-def _parse_date(string):
-    start, end = string.split(' - ')
-    return {'time_start': start.strip(), 'time_end': end.strip()}
-
-
-def iter_sort_response(response):
-    """
-    Sorts the VSO queryresults by their start time.
-
-    Parameters
-    ----------
-    response : `zeep.objects.QueryResponse`
-        A SOAP Object of a VSO queryresult
-
-    Returns
-    -------
-    `list`
-        Sorted record items w.r.t. their start time.
-    """
-    has_time_recs = list()
-    has_notime_recs = list()
-    for prov_item in response.provideritem:
-        if not hasattr(prov_item, 'record') or not prov_item.record:
-            continue
-        if not hasattr(prov_item.record, 'recorditem') or not prov_item.record.recorditem:
-            continue
-        rec_item = prov_item.record.recorditem
-        for rec in rec_item:
-            if hasattr(rec, 'time') and hasattr(rec.time, 'start') and rec.time.start is not None:
-                has_time_recs.append(rec)
-            else:
-                has_notime_recs.append(rec)
-    has_time_recs = sorted(has_time_recs, key=lambda x: x.time.start)
-    all_recs = has_time_recs + has_notime_recs
-    return all_recs
-
-
-def iter_errors(response):
-    for prov_item in response.provideritem:
-        if not hasattr(prov_item, 'record') or not prov_item.record:
-            yield prov_item
-
-
 def check_connection(url):
     try:
         return urlopen(url).getcode() == 200
@@ -207,148 +112,6 @@ def build_client(url=None, port_name=None, **kwargs):
     return client
 
 
-class QueryResponse(BaseQueryResponse):
-    """
-    A container for VSO Records returned from VSO Searches.
-    """
-
-    def __init__(self, lst, queryresult=None):
-        super().__init__()
-        self._data = lst
-        self.queryresult = queryresult
-        self.errors = []
-        self._client = VSOClient()
-
-    def __getitem__(self, item):
-        # Always index so a list comes back
-        if isinstance(item, int):
-            item = slice(item, item+1)
-        return type(self)(self._data[item], queryresult=self.queryresult)
-
-    def __len__(self):
-        return len(self._data)
-
-    def __iter__(self):
-        for block in self._data:
-            yield block
-
-    @property
-    def blocks(self):
-        return self._data
-
-    @property
-    def client(self):
-        return self._client
-
-    @client.setter
-    def client(self, client):
-        self._client = client
-
-    def search(self, *query):
-        """ Furtherly reduce the query response by matching it against
-        another query, e.g. response.search(attrs.Instrument('aia')). """
-        query = and_(*query)
-        return QueryResponse(
-            attrs._filter_results(query, self), self.queryresult
-        )
-
-    @classmethod
-    def create(cls, queryresult):
-        unhashed_recs = iter_sort_response(queryresult)
-        hashed_recs = list()
-        for r in unhashed_recs:
-            res_dict = json.loads(json.dumps(serialize_object(r)))
-            hashed_recs.append(HashableResponse(res_dict))
-        return cls(hashed_recs, queryresult)
-
-    def total_size(self):
-        """ Total size of data in KB. May be less than the actual
-        size because of inaccurate data providers. """
-        # Warn about -1 values?
-        return sum(record.size for record in self if record.size > 0)
-
-    def time_range(self):
-        """ Return total time-range all records span across. """
-        return TimeRange(min(record.time.start for record in self if record.time.start is not None),
-                         max(record.time.end for record in self if record.time.end is not None))
-
-    def build_table(self):
-        data = defaultdict(list)
-        # To maintain some compatibility with old versions, and to put the relevant info first,
-        # create the core columns
-        [data[k] for k in ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']]
-        for record in self._data:
-            for key, value in record.data.items():
-                if not isinstance(value, dict):
-                    if key == "size":
-                        if value == -1:
-                            value = None
-                        else:
-                            # size is in bytes with a very high degree of precision.
-                            value = (value * u.Kibyte).to(u.Mibyte).round(5)
-                    data[key.title()].append(value)
-                else:
-                    if key == "wave":
-                        # Assumption here is that if min is empty, they all are.
-                        if value['wavemin'] is None:
-                            continue
-
-                        # Some records in the VSO have 'kev' which astropy
-                        # doesn't recognise as a unit, so fix it.
-                        waveunit = value['waveunit']
-                        waveunit = 'keV' if waveunit == 'kev' else waveunit
-
-                        data["Wavelength"].append(
-                            u.Quantity(
-                                [float(value['wavemin']), float(value['wavemax'])],
-                                unit=waveunit)
-                        )
-                        data["Wavetype"].append(value['wavetype'])
-                        continue
-                    for subkey, subvalue in value.items():
-                        key_template = f"{key.capitalize()} {subkey.capitalize()}"
-                        if key == "time" and subvalue is not None:
-                            key_template = f"{subkey.capitalize()} {key.capitalize()}"
-                            subvalue = parse_time(subvalue)
-                            # Change the display to the 'T'-less version
-                            subvalue.format = 'iso'
-                        data[key_template].append(subvalue)
-
-        # Remove Fileid as this method is only used for display.
-        if "Fileid" in data.keys():
-            data.pop("Fileid")
-
-        # Remove any columns which have no non-None values in them
-        clean_data = {}
-        for key, value in data.items():
-            if not all([x is None for x in value]):
-                clean_data[key] = value
-
-        return Table(clean_data)
-
-    def add_error(self, exception):
-        self.errors.append(exception)
-
-    def response_block_properties(self):
-        """
-        Returns a set of class attributes on all the response blocks.
-
-        Returns
-        -------
-        s : `set`
-            List of strings, containing attribute names in the response blocks.
-        """
-        s = {a if not a.startswith('_') else None for a in dir(self[0])}
-        for resp in self[1:]:
-            if len(s) == 0:
-                break
-            s = s.intersection({a if not a.startswith('_') else None for a in dir(resp)})
-
-        if None in s:
-            s.remove(None)
-        return s
-
-
 class VSOClient(BaseClient):
     """
     Provides access to query and download from Virtual Solar Observatory (VSO).
@@ -375,6 +138,18 @@ class VSOClient(BaseClient):
             if api is None:
                 raise ConnectionError("Cannot find an online VSO mirror.")
         self.api = api
+
+    def __deepcopy__(self, memo):
+        """
+        Copy the client but don't copy the API object.
+        """
+        memo[id(self.api)] = self.api
+        deepcopy_method = self.__deepcopy__
+        self.__deepcopy__ = None
+        cp = copy.deepcopy(self, memo)
+        self.__deepcopy__ = deepcopy_method
+        cp.__deepcopy__ = deepcopy_method
+        return cp
 
     def make(self, atype, **kwargs):
         """
@@ -433,10 +208,10 @@ class VSOClient(BaseClient):
                     VSOQueryResponse(query_response)
                 )
             except Exception as ex:
-                response = QueryResponse.create(self.merge(responses))
+                response = VSOQueryResponseTable.from_zeep_response(self.merge(responses), client=self)
                 response.add_error(ex)
 
-        return QueryResponse.create(self.merge(responses))
+        return VSOQueryResponseTable.from_zeep_response(self.merge(responses), client=self)
 
     def merge(self, queryresponses):
         """ Merge responses into one. """
@@ -498,10 +273,10 @@ class VSOClient(BaseClient):
 
             # I don't know if we still need this bytes check in Python 3 only
             # land, but I don't dare remove it.
-            if isinstance(queryresponse.fileid, bytes):
-                fileid = queryresponse.fileid.decode("ascii", "ignore")
+            if isinstance(queryresponse['fileid'], bytes):
+                fileid = queryresponse['fileid'].decode("ascii", "ignore")
             else:
-                fileid = queryresponse.fileid
+                fileid = queryresponse['fileid']
 
             # Some providers make fileid a path
             # Some also don't specify a file extension, but not a lot we can do
@@ -519,7 +294,7 @@ class VSOClient(BaseClient):
         if not name:
             name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 
-        fname = pattern.format(file=name, **(queryresponse.data))
+        fname = pattern.format(file=name, **dict(queryresponse))
 
         return fname
 
@@ -530,11 +305,12 @@ class VSOClient(BaseClient):
 
         Parameters
         ----------
-        query_response : sunpy.net.vso.QueryResponse
+        query_response : sunpy.net.vso.VSOQueryResponseTable
             QueryResponse containing the items to be downloaded.
 
         path : str
-            Specify where the data is to be downloaded. Can refer to arbitrary
+            Specify where the
+        data is to be downloaded. Can refer to arbitrary
             fields of the QueryResponseItem (instrument, source, time, ...) via
             string formatting, moreover the file-name of the file downloaded can
             be referred to as file, e.g.
@@ -592,6 +368,9 @@ class VSOClient(BaseClient):
         --------
         >>> files = fetch(qr) # doctest:+SKIP
         """
+        if isinstance(query_response, QueryResponseRow):
+            query_response = query_response.as_table()
+
         if path is None:
             path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
@@ -604,9 +383,9 @@ class VSOClient(BaseClient):
             dl_set = False
             downloader = Downloader(progress=progress)
 
-        fileids = VSOClient.by_fileid(query_response)
-        if not fileids:
+        if not len(query_response):
             return downloader.download() if wait else Results()
+
         # Adding the site parameter to the info
         info = {}
         if site is not None:
@@ -617,7 +396,11 @@ class VSOClient(BaseClient):
         data_request = self.make_getdatarequest(query_response, methods, info)
         data_response = VSOGetDataResponse(self.api.service.GetData(data_request))
 
-        err_results = self.download_all(data_response, methods, downloader, path, fileids)
+        err_results = self.download_all(data_response,
+                                        methods,
+                                        downloader,
+                                        path,
+                                        self.by_fileid(query_response))
 
         if dl_set and not wait:
             return err_results
@@ -650,8 +433,7 @@ class VSOClient(BaseClient):
             methods = self.method_order + ['URL']
 
         return self.create_getdatarequest(
-            {k: [x.fileid for x in v]
-             for k, v in self.by_provider(response).items()},
+            {g[0]['Provider']: list(g['fileid']) for g in response.group_by('Provider').groups},
             methods, info
         )
 
@@ -781,25 +563,13 @@ class VSOClient(BaseClient):
         raise NoData
 
     @staticmethod
-    def by_provider(response):
-        """
-        Returns a dictionary of provider
-        corresponding to records in the response.
-        """
-
-        map_ = defaultdict(list)
-        for record in response:
-            map_[record.provider].append(record)
-        return map_
-
-    @staticmethod
     def by_fileid(response):
         """
         Returns a dictionary of fileids
         corresponding to records in the response.
         """
         return {
-            record.fileid: record for record in response
+            record['fileid']: record for record in response
         }
 
     def multiple_choices(self, choices, response):

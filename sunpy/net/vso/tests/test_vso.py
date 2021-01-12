@@ -10,9 +10,9 @@ from sunpy.net import _attrs as core_attrs
 from sunpy.net import attr
 from sunpy.net import attrs as a
 from sunpy.net import vso
-from sunpy.net.vso import QueryResponse
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.vso import HashableResponse, VSOClient, build_client, get_online_vso_url
+from sunpy.net.vso.table_response import VSOQueryResponseTable, iter_sort_response
+from sunpy.net.vso.vso import VSOClient, build_client, get_online_vso_url
 from sunpy.tests.mocks import MockObject
 from sunpy.time import TimeRange, parse_time
 
@@ -256,19 +256,19 @@ def test_wave_repr():
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_str(mock_build_client):
-    qr = QueryResponse([])
+    qr = VSOQueryResponseTable()
     assert str(qr) == '<No columns>'
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_repr(mock_build_client):
-    qr = QueryResponse([])
+    qr = VSOQueryResponseTable()
     assert '<No columns>' in repr(qr)
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_show(mock_build_client):
-    qr = QueryResponse([])
+    qr = VSOQueryResponseTable()
     qrshow = qr.show('Start Time', 'Source', 'Type')
     assert str(qrshow) == '<No columns>'
 
@@ -345,25 +345,17 @@ def test__parse_date(input, expected):
 
 
 def test_iter_sort_response(mock_response):
-    fileids = [i.fileid for i in vso.vso.iter_sort_response(mock_response)]
+    fileids = [i.fileid for i in iter_sort_response(mock_response)]
     # the function would have sorted records w.r.t. start time,
     # those without start time appended at last of final response.
     assert fileids == ['t1', 't2', 't3', 't4', 'f1', 'f2']
 
 
-def test_iter_errors(mock_response):
-    prov_item = list(vso.vso.iter_errors(mock_response))
-
-    assert len(prov_item) == 1
-    assert prov_item[0].error == 'FAILED'
-
-
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
-def test_QueryResponse_build_table_defaults(mock_build_client):
+def test_from_zeep_response(mock_build_client):
     records = (MockQRRecord(),)
 
-    qr = vso.QueryResponse(records)
-    table = qr.build_table()
+    table = VSOQueryResponseTable.from_zeep_response(records)
 
     # These are the only None values in the table.
     source_ = table['Source']
@@ -386,8 +378,7 @@ def test_QueryResponse_build_table_with_extent_type(mock_build_client):
     in the built table.
     """
     e_type = va.Extent(x=1.0, y=2.5, width=37, length=129.2, atype='CORONA')
-    qr = vso.QueryResponse((MockQRRecord(extent_type=e_type),))
-    table = qr.build_table()
+    table = VSOQueryResponseTable.from_zeep_response((MockQRRecord(extent_type=e_type),))
     extent = table['Extent Type'].data
     assert len(extent) == 1
     assert extent[0] == e_type.type
@@ -402,8 +393,8 @@ def test_QueryResponse_build_table_with_no_start_time(mock_build_client):
 
     records = (MockQRRecord(end_time=a_st.strftime(va._TIMEFORMAT)),)
 
-    qr = vso.QueryResponse(records)
-    table = qr.build_table()
+    vso.QueryResponse(records)
+    table = VSOQueryResponseTable.from_zeep_response(records)
 
     # 'End Time' is valid, there is no 'Start Time' in the table
     assert 'Start Time' not in table.columns
@@ -421,8 +412,7 @@ def test_QueryResponse_build_table_with_no_end_time(mock_build_client):
 
     records = (MockQRRecord(start_time=a_st.strftime(va._TIMEFORMAT)),)
 
-    qr = vso.QueryResponse(records)
-    table = qr.build_table()
+    table = VSOQueryResponseTable.from_zeep_response(records)
     start_time_ = table['Start Time']
     assert len(start_time_) == 1
     assert start_time_[0].value == '2016-02-14 08:08:12.000'
@@ -477,19 +467,6 @@ def test_build_client(mock_vso_url):
 def test_build_client_params():
     with pytest.raises(ValueError):
         build_client(url="http://notathing.com/")
-
-
-@pytest.mark.remote_data
-def test_vso_post_search(client):
-    timerange = a.Time(('2020-01-01 00:01:05'), ('2020-01-01 00:01:10'))
-    results = client.search(timerange, a.Instrument('aia') | a.Instrument('hmi'))
-    trange_filter = a.Time(('2020-01-01 00:01:05'), ('2020-01-01 00:01:07'))
-    wave_filter = a.Wavelength(131 * u.Angstrom)
-    res_filtered = results.search(trange_filter & a.Instrument('aia') & wave_filter)
-    for rec in res_filtered:
-        assert parse_time(rec.time.start) <= parse_time(trange_filter.end)
-        assert rec.instrument.lower() == 'aia'
-        assert (float(rec.wave.wavemax) == 131.0 or float(rec.wave.wavemin) == 131.0)
 
 
 @pytest.mark.remote_data
@@ -548,17 +525,31 @@ def test_response_block_properties(client):
     assert len(properties) == 0
 
 
-def test_HashableResponse():
-    d0 = {'instrument': 'HMI', 'wave': {'wavemin': '6173', 'wavemax': '6174'}, 'fileid': 'fid1'}
-    d1 = {'instrument': 'AIA', 'wave': {'wavemin': '304', 'wavemax': '304'}, 'fileid': 'fid1'}
-    d2 = {'instrument': 'AIA', 'wave': {'wavemin': '131', 'wavemax': '131'}, 'fileid': 'fid2'}
-    dicts = [d0, d1, d2]
-    hashRecs = list()
-    for d in dicts:
-        hashRecs.append(HashableResponse(d))
-    assert d0['wave']['wavemax'] == hashRecs[0].wave.wavemax == '6174'
-    assert d2['fileid'] == hashRecs[2].fileid
-    assert hashRecs[0].__eq__(hashRecs[2]) is False
-    assert hashRecs[0] == hashRecs[1]
-    assert hashRecs[1].__hash__() != hashRecs[2].__hash__()
-    assert len(set(hashRecs)) == 2
+# We probably need these tests for backwards compat when I add that back
+# def test_HashableResponse():
+#     d0 = {'instrument': 'HMI', 'wave': {'wavemin': '6173', 'wavemax': '6174'}, 'fileid': 'fid1'}
+#     d1 = {'instrument': 'AIA', 'wave': {'wavemin': '304', 'wavemax': '304'}, 'fileid': 'fid1'}
+#     d2 = {'instrument': 'AIA', 'wave': {'wavemin': '131', 'wavemax': '131'}, 'fileid': 'fid2'}
+#     dicts = [d0, d1, d2]
+#     hashRecs = list()
+#     for d in dicts:
+#         hashRecs.append(HashableResponse(d))
+#     assert d0['wave']['wavemax'] == hashRecs[0].wave.wavemax == '6174'
+#     assert d2['fileid'] == hashRecs[2].fileid
+#     assert hashRecs[0].__eq__(hashRecs[2]) is False
+#     assert hashRecs[0] == hashRecs[1]
+#     assert hashRecs[1].__hash__() != hashRecs[2].__hash__()
+#     assert len(set(hashRecs)) == 2
+
+
+# @pytest.mark.remote_data
+# def test_vso_post_search(client):
+#     timerange = a.Time(('2020-01-01 00:01:05'), ('2020-01-01 00:01:10'))
+#     results = client.search(timerange, a.Instrument('aia') | a.Instrument('hmi'))
+#     trange_filter = a.Time(('2020-01-01 00:01:05'), ('2020-01-01 00:01:07'))
+#     wave_filter = a.Wavelength(131 * u.Angstrom)
+#     res_filtered = results.search(trange_filter & a.Instrument('aia') & wave_filter)
+#     for rec in res_filtered:
+#         assert parse_time(rec.time.start) <= parse_time(trange_filter.end)
+#         assert rec.instrument.lower() == 'aia'
+#         assert (float(rec.wave.wavemax) == 131.0 or float(rec.wave.wavemin) == 131.0)
