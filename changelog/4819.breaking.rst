@@ -1,0 +1,3 @@
+The time returned from :func:`~sunpy.coordinates.sun.carrington_rotation_number`
+has been changed from TT to the more common UTC scale. To undo this change,
+use ``time_out = time_out.tt`` on the outputted time.
