@@ -9,6 +9,18 @@ import scipy.ndimage.interpolation
 
 from sunpy.util.exceptions import SunpyUserWarning
 
+# This is messy but I don't know of another way to do it
+try:
+    import dask.array
+except ImportError:
+    HAS_DASK = False
+else:
+    try:
+        import dask_image.ndinterp
+        HAS_DASK = True
+    except ImportError:
+        HAS_DASK = False
+
 __all__ = ['affine_transform']
 
 
@@ -101,13 +113,24 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             warnings.warn("scikit-image could not be imported. Image rotation will use scipy",
                           ImportWarning)
             use_scipy = True
+    if HAS_DASK and isinstance(image, dask.array.Array):
+        scipy_affine_transform = dask_image.ndinterp.affine_transform
+        # Warning here if use_scipy isn't true so that if a user is using a
+        # dask array, they know why their rotate is being run eagerly
+    else:
+        scipy_affine_transform = scipy.ndimage.interpolation.affine_transform
     if use_scipy:
         if np.any(np.isnan(image)):
             warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
         # Transform the image using the scipy affine transform
-        rotated_image = scipy.ndimage.interpolation.affine_transform(
-            np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
-            mode='constant', cval=missing).T
+        rotated_image = scipy_affine_transform(
+            np.nan_to_num(image).T,
+            rmatrix,
+            offset=shift,
+            order=order,
+            mode='constant',
+            cval=missing
+        ).T
     else:
         # Make the rotation matrix 3x3 to include translation of the image
         skmatrix = np.zeros((3, 3))

@@ -262,3 +262,12 @@ def test_reproducible_matrix_multiplication():
             print(f"{mismatches[i]} mismatching elements in multiplication #{i}")
 
     assert np.sum(mismatches != 0) == 0
+
+
+def test_dask(original, identity):
+    import dask.array
+    original_dask = dask.array.from_array(original)
+    derot = affine_transform(original, rmatrix=identity, use_scipy=True)
+    derot_dask = affine_transform(original_dask, rmatrix=identity, use_scipy=True)
+    assert isinstance(derot_dask, dask.array.Array)
+    assert np.all(derot == derot_dask.compute())
