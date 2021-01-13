@@ -17,3 +17,4 @@ from .sources.lyra import *
 from .sources.noaa import *
 from .sources.norh import *
 from .sources.rhessi import *
+from .sources.secchi import *
