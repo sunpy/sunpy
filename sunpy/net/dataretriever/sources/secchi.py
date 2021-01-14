@@ -18,28 +18,28 @@ class SECCHIlient(GenericClient):
     """
 
     patterns = {
-        'euvi':'{}/img/euvi/{year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}',
-        'cor2':'{}/img/cor2/{year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}',
-        'hi_1':'{}/img/hi_1/{year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}',
-        'hi_2':'{}/img/hi_2/{year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}'
+        'euvi': '{}/img/euvi/{year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}',
+        'cor2': '{}/img/cor2/{year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}',
+        'hi_1': '{}/img/hi_1/{year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}',
+        'hi_2': '{}/img/hi_2/{year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}'
     }
     baseurl = 'https://stereo-ssc.nascom.nasa.gov/pub/beacon/ahead/secchi/img'
 
     def get_filenames(self, timerange):
         telescopes = ['euvi', 'cor2', 'hi_1', 'hi_2']
         tele_url = {
-            'euvi':'n7euA',
-            'cor2':'d7c2A',
-            'hi_1':'s7h1A',
-            'hi_2':'s7h2A'
+            'euvi': 'n7euA',
+            'cor2': 'd7c2A',
+            'hi_1': 's7h1A',
+            'hi_2': 's7h2A'
         }
 
         filenames = {}
         for telescope in telescopes:
             pattern = ("""https://stereo-ssc.nascom.nasa.gov/pub/beacon/ahead/
                        {instrument}/img/{telescope}/%Y%m%d/%Y%m%d_%H%M%S_{tele_url}.fts""")
-            solmon = Scraper(pattern, instrument='secchi', 
-                     telescope=telescope, tele_url=tele_url[telescope])
+            solmon = Scraper(pattern, instrument='secchi',
+                             telescope=telescope, tele_url=tele_url[telescope])
 
             files = solmon.filelist(timerange)
             filenames[telescope] = files
@@ -65,7 +65,8 @@ class SECCHIlient(GenericClient):
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('SECCHI',
-                                     'Sun Earth Connection Coronal and Heliospheric Investigation.')],
+                                     """Sun Earth Connection Coronal 
+                                     and Heliospheric Investigation.""")],
                  attrs.Source: [('STEREO', 'Solar Terrestrial Relations Observatory.')],
                  attrs.Provider: [('NASA', 'The National Aeronautics and Space Administration.')]}
         return adict
