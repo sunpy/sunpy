@@ -65,7 +65,7 @@ class SECCHIlient(GenericClient):
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('SECCHI',
-                                     """Sun Earth Connection Coronal 
+                                     """Sun Earth Connection Coronal
                                      and Heliospheric Investigation.""")],
                  attrs.Source: [('STEREO', 'Solar Terrestrial Relations Observatory.')],
                  attrs.Provider: [('NASA', 'The National Aeronautics and Space Administration.')]}
