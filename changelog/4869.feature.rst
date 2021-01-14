@@ -1,0 +1,1 @@
+Added a new STEREO/SECCHI client which captures beacon data.
