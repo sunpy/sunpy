@@ -111,6 +111,17 @@ class HMIMap(GenericMap):
         self._nickname = self.detector
 
     @property
+    def unit(self):
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+
+        if unit_str == "Gauss":
+            return u.Unit(unit_str)
+
+        return super().unit
+
+    @property
     def measurement(self):
         """
         Returns the measurement type.
