@@ -1,11 +1,13 @@
 """
 =========================================
 Overplotting HMI Contours on an AIA Image
-==========================================
+=========================================
 
 This example shows how to use `~astropy.visualization.wcsaxes` to overplot
 unaligned HMI magnetic field strength contours on an AIA map.
 """
+# sphinx_gallery_thumbnail_number = 2
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -43,7 +45,7 @@ sub_hmi.plot()
 ################################################################################
 # In the next plot we will start by plotting the same aia submap, and draw a
 # heliographic grid on top.
-fig = plt.figure()
+fig = plt.figure(figsize=(8, 8))
 
 ax = plt.subplot(projection=sub_aia)
 sub_aia.plot(clip_interval=(1, 99.99)*u.percent)
@@ -51,7 +53,6 @@ grid = sub_aia.draw_grid()
 
 ax.set_title("AIA 193 with HMI magnetic field strength contours", y=1.1)
 
-################################################################################
 # Now we want to draw the contours, to enhance the appearance of the plot we
 # explicitly list the levels, but then make them symmetric around 0
 levels = [50, 100, 150, 300, 500, 1000] * u.Gauss
@@ -60,13 +61,11 @@ levels = [50, 100, 150, 300, 500, 1000] * u.Gauss
 # highest by reversing the array.
 levels = np.concatenate((-1 * levels[::-1], levels))
 
-################################################################################
 # Before we add the contours to the axis we store the existing bounds of the
 # as overplotting the contours will sometimes change the bounds, we re-apply
 # them to the axis after the contours have been added.
 bounds = ax.axis()
 
-################################################################################
 # We use the map method `~.GenericMap.draw_contours` to simplify this process,
 # but this is a wrapper around `~matplotlib.pyplot.contour`. We set the
 # colormap, line width and transparency of the lines to improve the final
@@ -85,7 +84,6 @@ cset = sub_hmi.draw_contours(levels,
                              transform=ax.get_transform(sub_hmi.wcs))
 ax.axis(bounds)
 
-################################################################################
 # Finally, add a colorbar. We add an extra tick to the colorbar at the 0 point
 # to make it clearer that it is symmetric, and tweak the size and location to
 # fit with the axis better.
