@@ -109,6 +109,10 @@ map_aia.plot(axes=ax1)
 ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
 outmap.plot(axes=ax2, title='EUVI image as seen from SDO')
 
+# Set the HPC grid color to black as the background is white
+ax2.coords[0].grid_lines_kwargs['color'] = 'k'
+ax2.coords[1].grid_lines_kwargs['color'] = 'k'
+
 ######################################################################
 # AIA as Seen from Mars
 # =====================
