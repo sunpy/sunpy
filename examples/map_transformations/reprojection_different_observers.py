@@ -82,6 +82,9 @@ out_header = sunpy.map.make_fitswcs_header(
     observatory="AIA Observer",
     wavelength=map_euvi.wavelength
 )
+# STEREO and SDO use a different value for the solar radius, we need to replace
+# the AIA value with the STEREO value
+out_header['RSUN_REF'] = map_euvi.rsun_meters.to_value(u.m)
 
 ######################################################################
 # Next we construct an `~astropy.wcs.WCS` object from the header.
