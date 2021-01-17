@@ -286,3 +286,15 @@ class ExtentType(SimpleAttr):
     """
     The type of Extent; for example, "FULLDISK", "SYNOPTIC", "LIMB", etc.
     """
+
+
+class Satellite(SimpleAttr):
+    """
+    The satellite for beacon data either; for example, "ahead" or "behind".
+    """
+
+
+class Telescope(SimpleAttr):
+    """
+    Various instruments for STEREO/SECCHI client; for example, "EUVI", "COR2, "HI_1", "HI_2".
+    """
