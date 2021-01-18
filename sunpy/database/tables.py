@@ -16,6 +16,7 @@ from astropy.time import Time
 from astropy.units import Unit, equivalencies, nm, quantity
 
 import sunpy
+import sunpy.net.vso.legacy_response
 from sunpy import config
 from sunpy.io import file_tools as sunpy_filetools
 from sunpy.io import fits
@@ -589,7 +590,7 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
 
     """
     for entry in sr:
-        if isinstance(entry, sunpy.net.vso.vso.QueryResponse):
+        if isinstance(entry, sunpy.net.vso.legacy_response.QueryResponse):
             # This is because Fido can search the VSO. It
             # returns a VSO QueryResponse.
             for block in entry:

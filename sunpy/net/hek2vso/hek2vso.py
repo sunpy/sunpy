@@ -152,7 +152,7 @@ class H2VClient:
         return self.translate_and_query(self.hek_results,
                                         limit=limit, progress=progress)
 
-    def translate_and_query(self, hek_results, limit=None, progress=False):
+    def translate_and_query(self, hek_results, limit=None, progress=False, vso_response_format="table"):
         """
         Translates HEK results, makes a VSO query, then returns the results.
 
@@ -183,7 +183,7 @@ class H2VClient:
         vso_query = translate_results_to_query(hek_results)
 
         for query in tqdm(vso_query, unit="records"):
-            temp = self.vso_client.search(*query)
+            temp = self.vso_client.search(*query, response_format=vso_response_format)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
             if limit is not None:

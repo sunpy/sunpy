@@ -797,7 +797,7 @@ class Database:
 
         """
         vso_qr = itertools.chain.from_iterable(
-            H2VClient().translate_and_query(query_result))
+            H2VClient().translate_and_query(query_result, vso_response_format="legacy"))
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
 
     def download_from_hek_query_result(self, query_result, client=None, path=None, progress=False,
@@ -830,7 +830,8 @@ class Database:
             return
 
         iterator = itertools.chain.from_iterable(
-            H2VClient().translate_and_query(query_result))
+            H2VClient().translate_and_query(query_result,
+                                            vso_response_format="legacy"))
 
         vso_qr = []
 

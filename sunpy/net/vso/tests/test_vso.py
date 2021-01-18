@@ -424,7 +424,7 @@ def test_vso_hmi(client, tmpdir):
     This is a regression test for https://github.com/sunpy/sunpy/issues/2284
     """
     res = client.search(core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
-                        core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'))
+                        core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'), response_format="table")
 
     dr = client.make_getdatarequest(res)
 
@@ -523,33 +523,3 @@ def test_response_block_properties(client):
                         a.Sample(10 * u.minute))
     properties = res.response_block_properties()
     assert len(properties) == 0
-
-
-# We probably need these tests for backwards compat when I add that back
-# def test_HashableResponse():
-#     d0 = {'instrument': 'HMI', 'wave': {'wavemin': '6173', 'wavemax': '6174'}, 'fileid': 'fid1'}
-#     d1 = {'instrument': 'AIA', 'wave': {'wavemin': '304', 'wavemax': '304'}, 'fileid': 'fid1'}
-#     d2 = {'instrument': 'AIA', 'wave': {'wavemin': '131', 'wavemax': '131'}, 'fileid': 'fid2'}
-#     dicts = [d0, d1, d2]
-#     hashRecs = list()
-#     for d in dicts:
-#         hashRecs.append(HashableResponse(d))
-#     assert d0['wave']['wavemax'] == hashRecs[0].wave.wavemax == '6174'
-#     assert d2['fileid'] == hashRecs[2].fileid
-#     assert hashRecs[0].__eq__(hashRecs[2]) is False
-#     assert hashRecs[0] == hashRecs[1]
-#     assert hashRecs[1].__hash__() != hashRecs[2].__hash__()
-#     assert len(set(hashRecs)) == 2
-
-
-# @pytest.mark.remote_data
-# def test_vso_post_search(client):
-#     timerange = a.Time(('2020-01-01 00:01:05'), ('2020-01-01 00:01:10'))
-#     results = client.search(timerange, a.Instrument('aia') | a.Instrument('hmi'))
-#     trange_filter = a.Time(('2020-01-01 00:01:05'), ('2020-01-01 00:01:07'))
-#     wave_filter = a.Wavelength(131 * u.Angstrom)
-#     res_filtered = results.search(trange_filter & a.Instrument('aia') & wave_filter)
-#     for rec in res_filtered:
-#         assert parse_time(rec.time.start) <= parse_time(trange_filter.end)
-#         assert rec.instrument.lower() == 'aia'
-#         assert (float(rec.wave.wavemax) == 131.0 or float(rec.wave.wavemin) == 131.0)

@@ -28,6 +28,7 @@ from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
+from . import legacy_response
 from .exceptions import (
     DownloadFailed,
     MissingInformation,
@@ -158,12 +159,18 @@ class VSOClient(BaseClient):
         obj = self.api.get_type(f"VSO:{atype}")
         return obj(**kwargs)
 
-    def search(self, *query):
+    def search(self, *query, response_format="legacy"):
         """
         Query data from the VSO with the new API. Takes a variable number
         of attributes as parameter, which are chained together using AND.
 
-        The new query language allows complex queries to be easily formed.
+        Parameters
+        ----------
+        response_format: {"legacy", "table"}
+            The response format from the search, this can be either
+            ``"legacy"`` to return a list-like object of the zeep responses, or
+            ``"table"`` to return the responses in a subclass of
+            `~astropy.table.QTable`.
 
         Examples
         --------
@@ -176,15 +183,15 @@ class VSOClient(BaseClient):
         >>> client.search(
         ...    a.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
         ...    a.Instrument.eit | a.Instrument.aia)   # doctest:  +REMOTE_DATA
-        <sunpy.net.vso.vso.QueryResponse object at ...>
-               Start Time               End Time        Source ... Extent Type   Size
-                                                               ...              Mibyte
-        ----------------------- ----------------------- ------ ... ----------- -------
-        2010-01-01 00:00:08.000 2010-01-01 00:00:20.000   SOHO ...    FULLDISK 2.01074
-        2010-01-01 00:12:08.000 2010-01-01 00:12:20.000   SOHO ...    FULLDISK 2.01074
-        2010-01-01 00:24:10.000 2010-01-01 00:24:22.000   SOHO ...    FULLDISK 2.01074
-        2010-01-01 00:36:08.000 2010-01-01 00:36:20.000   SOHO ...    FULLDISK 2.01074
-        2010-01-01 00:48:09.000 2010-01-01 00:48:21.000   SOHO ...    FULLDISK 2.01074
+        <sunpy.net.vso.legacy_response.QueryResponse object at ...>
+        Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
+                                                    ...             Angstrom
+        ------------------- ------------------- ------ ... -------- --------------
+        2010-01-01 00:00:08 2010-01-01 00:00:20   SOHO ... FULLDISK 195.0 .. 195.0
+        2010-01-01 00:12:08 2010-01-01 00:12:20   SOHO ... FULLDISK 195.0 .. 195.0
+        2010-01-01 00:24:10 2010-01-01 00:24:22   SOHO ... FULLDISK 195.0 .. 195.0
+        2010-01-01 00:36:08 2010-01-01 00:36:20   SOHO ... FULLDISK 195.0 .. 195.0
+        2010-01-01 00:48:09 2010-01-01 00:48:21   SOHO ... FULLDISK 195.0 .. 195.0
 
         Returns
         -------
@@ -211,7 +218,11 @@ class VSOClient(BaseClient):
                 response = VSOQueryResponseTable.from_zeep_response(self.merge(responses), client=self)
                 response.add_error(ex)
 
-        return VSOQueryResponseTable.from_zeep_response(self.merge(responses), client=self)
+        responses = self.merge(responses)
+        if response_format == "legacy":
+            return legacy_response.QueryResponse.create(responses)
+
+        return VSOQueryResponseTable.from_zeep_response(responses, client=self)
 
     def merge(self, queryresponses):
         """ Merge responses into one. """
@@ -382,6 +393,11 @@ class VSOClient(BaseClient):
         if not downloader:
             dl_set = False
             downloader = Downloader(progress=progress)
+
+        if isinstance(query_response, legacy_response.QueryResponse):
+            query_response = VSOQueryResponseTable.from_zeep_response(query_response, client=self, sort=False)
+        if isinstance(query_response, QueryResponseRow):
+            query_response = query_response.as_table()
 
         if not len(query_response):
             return downloader.download() if wait else Results()
