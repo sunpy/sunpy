@@ -60,11 +60,14 @@ class VSOQueryResponseTable(QueryResponseTable):
             self.client = VSOClient()
 
     @classmethod
-    def from_zeep_response(cls, response, client=None):
+    def from_zeep_response(cls, response, *, client, sort=True):
         """
         Construct a table response from the zeep response.
         """
-        records = iter_sort_response(response)
+        if sort:
+            records = iter_sort_response(response)
+        else:
+            records = response
 
         data = []
         for record in records:
