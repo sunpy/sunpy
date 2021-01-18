@@ -677,13 +677,23 @@ class GenericMap(NDData):
         return self.meta.get('detector', "")
 
     @property
+    def timeunit(self):
+        """
+        The `~astropy.units.Unit` of the exposure time of this observation.
+
+        Taken from the "TIMEUNIT" FITS keyword, and defaults to seconds (as per)
+        the FITS standard).
+        """
+        return u.Unit(self.meta.get('timeunit', 's'))
+
+    @property
     def exposure_time(self):
         """
         Exposure time of the image in seconds.
 
         This is taken from the 'EXPTIME' FITS keyword.
         """
-        return self.meta.get('exptime', 0.0) * u.s
+        return self.meta.get('exptime', 0.0) * self.timeunit
 
     @property
     def instrument(self):
