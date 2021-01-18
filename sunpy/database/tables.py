@@ -12,8 +12,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 import astropy.table
+import astropy.units as u
 from astropy.time import Time
-from astropy.units import Unit, equivalencies, nm, quantity
+from astropy.units import equivalencies, quantity
 
 import sunpy
 import sunpy.net.vso.legacy_response
@@ -320,27 +321,27 @@ class DatabaseEntry(DatabaseEntryType, Base):
         unit = None
         if wave.waveunit is None:
             if default_waveunit is not None:
-                unit = Unit(default_waveunit)
+                unit = u.Unit(default_waveunit)
         else:
             # some query response blocks store the unit "kev",
             # but Astropy only understands "keV". See issue #766.
             waveunit = wave.waveunit
             if waveunit == "kev":
                 waveunit = "keV"
-            unit = Unit(waveunit)
+            unit = u.Unit(waveunit)
         if wave.wavemin is None:
             wavemin = None
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemin = unit.to(nm, float(wave.wavemin),
+            wavemin = unit.to(u.nm, float(wave.wavemin),
                               equivalencies.spectral())
         if wave.wavemax is None:
             wavemax = None
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemax = unit.to(nm, float(wave.wavemax),
+            wavemax = unit.to(u.nm, float(wave.wavemax),
                               equivalencies.spectral())
         source = getattr(qr_block, 'source', None)
         provider = getattr(qr_block, 'provider', None)
@@ -388,31 +389,37 @@ class DatabaseEntry(DatabaseEntryType, Base):
         if time_end is not None:
             time_end = time_end.datetime
 
-        wavelengths = sr_block.get('Wavelength', np.nan)
-        wavelength_temp = {}
-        if isinstance(wavelength_temp, tuple):
-            # Tuple of values
-            wavelength_temp['wavemin'] = wavelengths[0]
-            wavelength_temp['wavemax'] = wavelengths[1]
+        wavelengths = sr_block.get('Wavelength', np.nan * u.nm)
+        if isinstance(wavelengths, u.Quantity):
+            if wavelengths.isscalar:
+                wavemin = wavemax = wavelengths
+            else:
+                wavemin, wavemax = wavelengths
         else:
-            # Single Value
-            wavelength_temp['wavemin'] = wavelength_temp['wavemax'] = wavelengths
+            wavelength_temp = {}
+            if isinstance(wavelength_temp, tuple):
+                # Tuple of values
+                wavelength_temp['wavemin'] = wavelengths[0]
+                wavelength_temp['wavemax'] = wavelengths[1]
+            else:
+                # Single Value
+                wavelength_temp['wavemin'] = wavelength_temp['wavemax'] = wavelengths
 
-        final_values = {}
-        for key, val in wavelength_temp.items():
-            if isinstance(val, quantity.Quantity):
-                unit = getattr(val, 'unit', None)
-                if unit is None:
-                    if default_waveunit is not None:
-                        unit = Unit(default_waveunit)
-                    else:
-                        raise WaveunitNotFoundError(sr_block)
-                final_values[key] = unit.to(nm, float(val.value), equivalencies.spectral())
-            elif val is None or np.isnan(val):
-                final_values[key] = val
+            final_values = {}
+            for key, val in wavelength_temp.items():
+                if isinstance(val, quantity.Quantity):
+                    unit = getattr(val, 'unit', None)
+                    if unit is None:
+                        if default_waveunit is not None:
+                            unit = u.Unit(default_waveunit)
+                        else:
+                            raise WaveunitNotFoundError(sr_block)
+                    final_values[key] = unit.to(u.nm, float(val.value), equivalencies.spectral())
+                elif val is None or np.isnan(val):
+                    final_values[key] = val
 
-        wavemin = final_values['wavemin']
-        wavemax = final_values['wavemax']
+            wavemin = final_values['wavemin']
+            wavemax = final_values['wavemax']
 
         fileid = sr_block.get('url')
         size = None
@@ -695,7 +702,7 @@ def entries_from_file(file, default_waveunit=None,
         unit = None
         if waveunit is not None:
             try:
-                unit = Unit(waveunit)
+                unit = u.Unit(waveunit)
             except ValueError:
                 raise WaveunitNotConvertibleError(waveunit)
         for header_entry in entry.fits_header_entries:
@@ -707,7 +714,7 @@ def entries_from_file(file, default_waveunit=None,
                     raise WaveunitNotFoundError(file)
                 # use the value of `unit` to convert the wavelength to nm
                 entry.wavemin = entry.wavemax = unit.to(
-                    nm, value, equivalencies.spectral())
+                    u.nm, value, equivalencies.spectral())
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
