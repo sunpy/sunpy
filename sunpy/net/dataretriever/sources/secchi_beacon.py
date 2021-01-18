@@ -32,7 +32,7 @@ class SECCHIBEACONlient(GenericClient):
                       {instrument}/img/{telescope}/%Y%m%d/%Y%m%d_%H%M%S_{tele_url}.fts""")
         solmon = Scraper(pattern, instrument='secchi',
                          satellite=satellite, telescope=telescope, tele_url=tele_url[telescope])
-        files = solmon.filelist(timerange)
+        files = secchi_scraper.filelist(timerange)
         return files
 
     def search(self, *args, **kwargs):
