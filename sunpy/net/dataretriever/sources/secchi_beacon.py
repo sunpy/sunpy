@@ -16,7 +16,7 @@ class SECCHIBEACONlient(GenericClient):
     Uses this `archive <https://stereo-ssc.nascom.nasa.gov/pub/beacon/>`.
     """
 
-    pattern = """{}/{satellite}/secchi/img/{instrument}/
+    pattern = "{}/{satellite}/secchi/img/{instrument}/"
                  {year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}"""
     baseurl = 'https://stereo-ssc.nascom.nasa.gov/pub/beacon/'
 
