@@ -30,7 +30,7 @@ class SECCHIBEACONlient(GenericClient):
 
         pattern = ("""https://stereo-ssc.nascom.nasa.gov/pub/beacon/{satellite}/
                       {instrument}/img/{telescope}/%Y%m%d/%Y%m%d_%H%M%S_{tele_url}.fts""")
-        solmon = Scraper(pattern, instrument='secchi', 
+        solmon = Scraper(pattern, instrument='secchi',
                          satellite=satellite, telescope=telescope, tele_url=tele_url[telescope])
         files = solmon.filelist(timerange)
         return files
@@ -57,7 +57,7 @@ class SECCHIBEACONlient(GenericClient):
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('SECCHI_BEACON',
-                                     """Sun Earth Connection Coronal 
+                                     """Sun Earth Connection Coronal
                                         and Heliospheric Investigation.""")],
                  attrs.Telescope: [('EUVI', 'Extreme UltraViolet Imager'),
                                    ('COR2', 'Outer Coronagraph (NRL)'),

@@ -39,9 +39,9 @@ from ._attrs import (
 )
 
 # Trick the docs into thinking these attrs are defined in here.
-for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs, 
+for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs,
            Source, Provider, ExtentType, Telescope, Satellite):
     _a.__module__ = __name__
 
-__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'ExtentType',
-           'Sample', 'Detector', 'Resolution', 'Physobs', 'Source', 'Provider', 'Telescope', 'Satellite']
+__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'ExtentType', 'Sample',
+           'Detector', 'Resolution', 'Physobs', 'Source', 'Provider', 'Telescope', 'Satellite']
