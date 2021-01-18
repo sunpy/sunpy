@@ -26,7 +26,7 @@ from sunpy.net.vso import VSOQueryResponseTable
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.tests.helpers import no_vso, skip_windows
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -204,15 +204,14 @@ def test_unifiedresponse_slicing_reverse():
 def test_tables_single_response():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra, a.Level.two)
-    tables = results.tables
+
+    with pytest.warns(SunpyDeprecationWarning):
+        tables = results.tables
 
     assert isinstance(tables, list)
     assert isinstance(tables[0], Table)
     assert len(tables) == 1
 
-    columns = ['Start Time', 'End Time', 'Instrument', 'Physobs',
-               'Source', 'Provider', 'Level']
-    assert columns == tables[0].colnames
     assert len(tables[0]) == 5
 
 
@@ -220,7 +219,10 @@ def test_tables_single_response():
 def test_tables_multiple_response():
     results = Fido.search(a.Time('2012/3/4', '2012/3/6'),
                           a.Instrument.lyra | (a.Instrument.rhessi & a.Physobs.summary_lightcurve))
-    tables = results.tables
+
+    with pytest.warns(SunpyDeprecationWarning):
+        tables = results.tables
+
     assert isinstance(tables, list)
     assert all(isinstance(t, Table) for t in tables)
     assert len(tables) == 2
@@ -233,31 +235,6 @@ def test_tables_multiple_response():
 
     assert all(entry == 'LYRA' for entry in tables[0]['Instrument'])
     assert all(entry == 'RHESSI' for entry in tables[1]['Instrument'])
-
-
-@pytest.mark.remote_data
-def test_tables_all_types():
-    # Data retriver response objects
-    drclient = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                           a.Instrument.lyra | (a.Instrument.rhessi & a.Physobs.summary_lightcurve))
-    drtables = drclient.tables
-    assert isinstance(drtables, list)
-    assert isinstance(drtables[0], Table)
-
-    # VSO response objects
-    vsoclient = Fido.search(a.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
-                            a.Instrument.aia, a.Wavelength(171 * u.AA))
-    vsotables = vsoclient.tables
-    assert isinstance(vsotables, list)
-    assert isinstance(vsotables[0], Table)
-
-    # JSOC response objects
-    jsocclient = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-                             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))
-    jsoctables = jsocclient.tables
-
-    assert isinstance(jsoctables, list)
-    assert isinstance(jsoctables[0], Table)
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
