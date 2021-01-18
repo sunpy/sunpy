@@ -28,7 +28,7 @@ class SECCHIBEACONlient(GenericClient):
             'hi_2': 's7h2'+satellite[0].upper()
         }
 
-        pattern = ("""https://stereo-ssc.nascom.nasa.gov/pub/beacon/{satellite}/
+        pattern = ("https://stereo-ssc.nascom.nasa.gov/pub/beacon/{satellite}/"
                       {instrument}/img/{telescope}/%Y%m%d/%Y%m%d_%H%M%S_{tele_url}.fts""")
         secchi_scraper = Scraper(pattern, instrument='secchi',
                          satellite=satellite, telescope=telescope, tele_url=tele_url[telescope])
