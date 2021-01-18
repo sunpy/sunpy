@@ -17,7 +17,7 @@ class SECCHIBEACONlient(GenericClient):
     """
 
     pattern = "{}/{satellite}/secchi/img/{instrument}/"
-                 {year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}"""
+                 "{year:4d}{month:2d}{day:2d}/{year:4d}{month:2d}{day:2d}_{}"
     baseurl = 'https://stereo-ssc.nascom.nasa.gov/pub/beacon/'
 
     def get_filenames(self, timerange, telescope, satellite):
