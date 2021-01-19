@@ -142,7 +142,7 @@ def test_quadrangle_aia17_width_height(aia171_test_map):
 
 
 @pytest.mark.xfail(version.parse(astropy.__version__) < version.parse("4.2.0"), reason="Astropy >= 4.2 is required")
-@figure_test    
+@figure_test
 def test_quadrangle_aia17_top_right(aia171_test_map):
     aia171_test_map.plot()
     bottom_left = SkyCoord(
