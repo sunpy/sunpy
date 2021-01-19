@@ -10,13 +10,13 @@ from io import BytesIO
 from base64 import b64encode
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
-from packaging import version
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
+from packaging import version
 
 import astropy
 import astropy.units as u
