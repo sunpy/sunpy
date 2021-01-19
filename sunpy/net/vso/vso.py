@@ -305,7 +305,10 @@ class VSOClient(BaseClient):
         if not name:
             name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 
-        fname = pattern.format(file=name, **dict(queryresponse))
+        # This can be replaced with dict(queryresponse) with astropy 4.1
+        fname = pattern.format(file=name,
+                               **dict(zip(queryresponse.colnames,
+                                          queryresponse.columns)))
 
         return fname
 

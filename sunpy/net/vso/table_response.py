@@ -6,10 +6,10 @@ from collections import defaultdict
 from zeep.helpers import serialize_object
 
 import astropy.units as u
-from astropy import table
 
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.time import parse_time
+from sunpy.util.table_attribute import TableAttribute
 
 __all__ = ['VSOQueryResponseTable']
 
@@ -48,7 +48,7 @@ def iter_sort_response(response):
 
 class VSOQueryResponseTable(QueryResponseTable):
     hide_keys = ['fileid', 'fileurl']
-    errors = table.TableAttribute(default=[])
+    errors = TableAttribute(default=[])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
