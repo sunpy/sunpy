@@ -209,7 +209,7 @@ class GenericClient(BaseClient):
             elif '{file}' not in str(path):
                 fname = path / '{file}'
 
-            # This can be replaced with dict(qres[i]) with astropy 4.1
+            # TODO: This can be replaced with dict(qres[i]) with astropy 4.1
             temp_dict = dict(zip(qres[i].colnames, qres[i].columns))
             temp_dict['file'] = str(filename)
             fname = fname.expanduser()
