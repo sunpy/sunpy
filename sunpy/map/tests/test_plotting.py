@@ -232,7 +232,7 @@ def test_heliographic_quadrangle_width_height(heliographic_test_map):
     heliographic_test_map.draw_quadrangle(bottom_left, width=w, height=h, edgecolor='cyan')
 
 
-@pytest.mark.xfail(version.parse(astropy.__version__) >= version.parse("4.2.0"), reason="Astropy >= 4.2 is required")
+@pytest.mark.xfail(version.parse(astropy.__version__) < version.parse("4.2.0"), reason="Astropy >= 4.2 is required")
 @figure_test
 def test_heliographic_quadrangle_top_right(heliographic_test_map):
     heliographic_test_map.plot()
