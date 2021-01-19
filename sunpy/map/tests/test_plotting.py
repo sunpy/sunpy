@@ -2,12 +2,12 @@
 Test Generic Map
 """
 import os
-from packaging import version
 
 import matplotlib.colors as mcolor
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from packaging import version
 
 import astropy
 import astropy.units as u
