@@ -45,6 +45,7 @@ class JSOCResponse(QueryResponseTable):
         super().__init__(*args, **kwargs)
         self._original_num_rows = len(self)
 
+    # TODO: remove this method post 3.0
     def build_table(self):
         # remove this check post 3.0
         if self.query_args is not None and any('keys' in i for i in self.query_args):
