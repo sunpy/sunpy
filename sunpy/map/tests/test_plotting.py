@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
+import astropy
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
