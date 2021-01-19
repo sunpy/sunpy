@@ -13,7 +13,6 @@ import pandas as pd
 import astropy.table
 import astropy.time
 import astropy.units as u
-from astropy.table import TableAttribute
 from astropy.utils.misc import isiterable
 
 from sunpy import config
@@ -23,6 +22,7 @@ from sunpy.net.jsoc.attrs import walker
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.parfive_helpers import Downloader, Results
+from sunpy.util.table_attribute import TableAttribute
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
