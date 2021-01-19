@@ -3,8 +3,9 @@ from abc import ABC, abstractmethod
 from textwrap import dedent
 from collections.abc import Sequence
 
-from astropy.table import QTable, Row, Table, TableAttribute
+from astropy.table import Row, Table
 
+from sunpy.util.table_attribute import QTable, TableAttribute
 from sunpy.util.util import get_width
 
 __all__ = ['BaseQueryResponse', 'QueryResponseTable', 'BaseClient']
