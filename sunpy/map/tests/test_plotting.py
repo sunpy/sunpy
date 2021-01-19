@@ -130,7 +130,7 @@ def test_rectangle_aia171_top_right(aia171_test_map):
     aia171_test_map.draw_rectangle(bottom_left, top_right=top_right)
 
 
-@pytest.mark.xfail(version.parse(astropy.__version__) >= version.parse("4.2.0"), reason="Astropy >= 4.2 is required")
+@pytest.mark.xfail(version.parse(astropy.__version__) < version.parse("4.2.0"), reason="Astropy >= 4.2 is required")
 @figure_test
 def test_quadrangle_aia17_width_height(aia171_test_map):
     aia171_test_map.plot()
