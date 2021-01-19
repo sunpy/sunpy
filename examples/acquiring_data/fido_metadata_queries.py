@@ -3,9 +3,12 @@
 Querying Metadata clients using Fido
 ====================================
 
-This example shows how to search and retrieve metadata using `~sunpy.net.Fido` from
-search facilities like `~sunpy.net.hek.HEKClient`, `~sunpy.net.helio.HECClient`,
-and `~sunpy.net.jsoc.JSOCClient`. It also shows how to display desired columns from the result.
+This example shows how to search and retrieve metadata using `~sunpy.net.Fido`.
+Fido supports searching metadata from services like `~sunpy.net.hek.HEKClient`,
+`~sunpy.net.helio.HECClient`, and `~sunpy.net.jsoc.JSOCClient`.
+
+In this example we will make one search for records from the JSOC and the HEK,
+and then download the corresponding file from the JSOC.
 """
 import os
 
@@ -13,16 +16,15 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###################################################################
-# We will query the Heliophysics Integrated Observatory (`HELIO <https://www.helio-vo.eu/>`_) for the 'rhessi_flare_list' table.
-# For the same time range, we will query HEK for 'FL' as the
-# event type and 'PeakFlux' greater than 1000.
+# We will query the HEK for all flares with a peak flux greater than 1000.
 # We will also search JSOC for a 'hmi.m_45s' series.
-
 timerange = a.Time('2010/8/1 03:40', '2010/8/1 3:40:10')
-# Note that JSOC needs an email address, if you want to run this, you
-# must supply your own email.
+
+# Note that JSOC needs an email address to export the files, if you want to run
+# this, you must supply your own email here.
 jsoc_email = os.environ["JSOC_EMAIL"]
-results = Fido.search(timerange, a.helio.TableName('rhessi_hxr_flare') |
+
+results = Fido.search(timerange,
                       a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
                       a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify(jsoc_email))
 
@@ -32,16 +34,16 @@ results = Fido.search(timerange, a.helio.TableName('rhessi_hxr_flare') |
 print(results)
 
 ###################################################################
-# Now we will download the searched records. Since HEK and HELIO
-# clients don't provide files, ``Fido.fetch`` will
-# ignore them and only download files from JSOC.
+# Now we will download the searched records. Since the HEK
+# client don't provide files, ``Fido.fetch`` will
+# ignore it and only download files from JSOC.
 files = Fido.fetch(results)
 print(files)
 
 ###################################################################
 # Now we will extract individual responses from Fido results.
 # We can index these results using the client's name (which is case-insensitive).
-hec_results, hek_results, jsoc_results = results['hec'], results['hek'], results['jsoc']
+hek_results, jsoc_results = results['hek'], results['jsoc']
 
 ###################################################################
 # The results from a metadata search could have up to 100 columns.
