@@ -152,6 +152,9 @@ class QueryResponseTable(QTable, BaseQueryResponse):
         return list(self.iterrows())
 
     def unhide_columns(self):
+        """
+        Modify this table so that all columns are displayed.
+        """
         self.display_keys = slice(None)
         self.hide_keys = None
         return self
@@ -192,6 +195,12 @@ class QueryResponseTable(QTable, BaseQueryResponse):
         return QTable._repr_html_(self._display_table)
 
     def show(self, *cols):
+        """
+        Return a table with only ``cols`` present.
+
+        This differs slightly from ``QueryResponseTable[cols]`` as it allows
+        keys which are not in the table to be requested.
+        """
         table = self.copy()
         table.unhide_columns()
 

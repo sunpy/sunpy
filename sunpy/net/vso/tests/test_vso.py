@@ -12,6 +12,7 @@ from sunpy.net import attrs as a
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net.vso.table_response import VSOQueryResponseTable, iter_sort_response
+from sunpy.net.vso.legacy_response import QueryResponse
 from sunpy.net.vso.vso import VSOClient, build_client, get_online_vso_url
 from sunpy.tests.mocks import MockObject
 from sunpy.time import TimeRange, parse_time
@@ -54,17 +55,14 @@ class MockQRResponse:
 def mock_response():
     # defining unsorted queryresult to mock test `iter_sort_response()`.
     # Incorporated cases with no None start time and without time attribute too.
-    recs = [MockObject(record=MockObject(recorditem=[
-        MockObject(time=MockObject(start=4), fileid='t4'),
-        MockObject(time=MockObject(start=1), fileid='t1'),
-        MockObject(time=MockObject(start=2), fileid='t2')
-    ]))]
-    rec = MockObject(record=MockObject(recorditem=[
-        MockObject(time=MockObject(start=None), fileid='f1'),
-        MockObject(fileid='f2'),
-        MockObject(time=MockObject(start=3), fileid='t3')
-    ]))
-    recs.append(rec)
+    recs = [
+        MockQRRecord(start_time="2021/01/01T00:00:04", fileid='t4'),
+        MockQRRecord(start_time="2021/01/01T00:00:01", fileid='t1'),
+        MockQRRecord(start_time="2021/01/01T00:00:02", fileid='t2'),
+        MockQRRecord(start_time=None, fileid='f1'),
+        MockQRRecord(start_time=None, end_time=None, fileid='f2'),
+        MockQRRecord(start_time="2021/01/01T00:00:03", fileid='t3'),
+    ]
     return MockQRResponse(records=recs, errors=['FAILED'])
 
 
@@ -523,3 +521,12 @@ def test_response_block_properties(client):
                         a.Sample(10 * u.minute))
     properties = res.response_block_properties()
     assert len(properties) == 0
+
+
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+def test_response_block_properties_table(mock_build_client, mock_response):
+    legacy_response = QueryResponse.create(mock_response)
+    table_response = VSOQueryResponseTable.from_zeep_response(mock_response, client=False)
+
+    print(legacy_response)
+    print(table_response)
