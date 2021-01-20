@@ -8,7 +8,12 @@ from astropy.tests.helper import assert_quantity_allclose
 import sunpy.data.test as test
 import sunpy.map as smap
 from sunpy.coordinates import frames, get_earth, sun
-from sunpy.coordinates.utils import GreatArc, CoordinateVisibility, get_rectangle_coordinates, solar_angle_equivalency
+from sunpy.coordinates.utils import (
+    CoordinateVisibility,
+    GreatArc,
+    get_rectangle_coordinates,
+    solar_angle_equivalency,
+)
 
 
 @pytest.fixture
