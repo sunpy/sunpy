@@ -143,6 +143,12 @@ def test_detector(generic_map):
     assert generic_map.detector == 'bar'
 
 
+def test_timeunit(generic_map):
+    assert generic_map.timeunit == u.Unit('s')
+    generic_map.meta['timeunit'] = 'h'
+    assert generic_map.timeunit == u.Unit('h')
+
+
 def test_dsun(generic_map):
     assert_quantity_allclose(generic_map.dsun, sun.earth_distance(generic_map.date))
 
