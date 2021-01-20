@@ -679,13 +679,23 @@ class GenericMap(NDData):
         return self.meta.get('detector', "")
 
     @property
+    def timeunit(self):
+        """
+        The `~astropy.units.Unit` of the exposure time of this observation.
+
+        Taken from the "TIMEUNIT" FITS keyword, and defaults to seconds (as per)
+        the FITS standard).
+        """
+        return u.Unit(self.meta.get('timeunit', 's'))
+
+    @property
     def exposure_time(self):
         """
         Exposure time of the image in seconds.
 
         This is taken from the 'EXPTIME' FITS keyword.
         """
-        return self.meta.get('exptime', 0.0) * u.s
+        return self.meta.get('exptime', 0.0) * self.timeunit
 
     @property
     def instrument(self):
@@ -2184,11 +2194,7 @@ class GenericMap(NDData):
                               SunpyUserWarning)
 
         # Normal plot
-        try:
-            plot_settings = copy.deepcopy(self.plot_settings)
-        except NotImplementedError:
-            # MPL dev at the moment does not support deepcopy and this is a workaround.
-            plot_settings = self.plot_settings
+        plot_settings = copy.deepcopy(self.plot_settings)
         if 'title' in plot_settings:
             plot_settings_title = plot_settings.pop('title')
         else:
@@ -2217,11 +2223,7 @@ class GenericMap(NDData):
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
-        try:
-            imshow_args.update(copy.deepcopy(imshow_kwargs))
-        except NotImplementedError:
-            # MPL dev at the moment does not support deepcopy and this is a workaround.
-            imshow_args.update(imshow_kwargs)
+        imshow_args.update(copy.deepcopy(imshow_kwargs))
 
         if clip_interval is not None:
             if len(clip_interval) == 2:
