@@ -22,7 +22,7 @@ from sunpy.net.jsoc.attrs import walker
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.parfive_helpers import Downloader, Results
-from sunpy.util.table_attribute import TableAttribute
+from sunpy.util._table_attribute import TableAttribute
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -39,6 +39,8 @@ class JSOCResponse(QueryResponseTable):
     query_args = TableAttribute()
     requests = TableAttribute()
     display_keys = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
+    # This variable is used to detect if the result has been sliced before it is passed
+    # to fetch and issue a warning to the user about not being able to post-filter JSOC searches.
     _original_num_rows = TableAttribute(default=None)
 
     def __init__(self, *args, **kwargs):

@@ -5,7 +5,7 @@ from collections.abc import Sequence
 
 from astropy.table import Row, Table
 
-from sunpy.util.table_attribute import QTable, TableAttribute
+from sunpy.util._table_attribute import QTable, TableAttribute
 from sunpy.util.util import get_width
 
 __all__ = ['BaseQueryResponse', 'QueryResponseTable', 'BaseClient']
