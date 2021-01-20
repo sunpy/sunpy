@@ -203,6 +203,7 @@ class VSOClient(BaseClient):
         QueryRequest = self.api.get_type('VSO:QueryRequest')
         VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
         responses = []
+        exceptions = []
         for block in walker.create(query, self.api):
             try:
                 query_response = self.api.service.Query(
@@ -215,14 +216,18 @@ class VSOClient(BaseClient):
                     VSOQueryResponse(query_response)
                 )
             except Exception as ex:
-                response = VSOQueryResponseTable.from_zeep_response(self.merge(responses), client=self)
-                response.add_error(ex)
+                exceptions.append(ex)
 
         responses = self.merge(responses)
         if response_format == "legacy":
-            return legacy_response.QueryResponse.create(responses)
+            response = QueryResponse.create(responses)
+        else:
+            response = VSOQueryResponseTable.from_zeep_response(responses, client=self)
 
-        return VSOQueryResponseTable.from_zeep_response(responses, client=self)
+        for ex in exceptions:
+            response.add_error(ex)
+
+        return response
 
     def merge(self, queryresponses):
         """ Merge responses into one. """
