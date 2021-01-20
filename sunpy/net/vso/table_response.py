@@ -9,7 +9,7 @@ import astropy.units as u
 
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.time import parse_time
-from sunpy.util.table_attribute import TableAttribute
+from sunpy.util._table_attribute import TableAttribute
 
 __all__ = ['VSOQueryResponseTable']
 
