@@ -390,36 +390,15 @@ class DatabaseEntry(DatabaseEntryType, Base):
             time_end = time_end.datetime
 
         wavelengths = sr_block.get('Wavelength', np.nan * u.nm)
+        if wavelengths is None:
+            wavelengths = np.nan * u.nm
         if isinstance(wavelengths, u.Quantity):
             if wavelengths.isscalar:
                 wavemin = wavemax = wavelengths
             else:
                 wavemin, wavemax = wavelengths
         else:
-            wavelength_temp = {}
-            if isinstance(wavelength_temp, tuple):
-                # Tuple of values
-                wavelength_temp['wavemin'] = wavelengths[0]
-                wavelength_temp['wavemax'] = wavelengths[1]
-            else:
-                # Single Value
-                wavelength_temp['wavemin'] = wavelength_temp['wavemax'] = wavelengths
-
-            final_values = {}
-            for key, val in wavelength_temp.items():
-                if isinstance(val, quantity.Quantity):
-                    unit = getattr(val, 'unit', None)
-                    if unit is None:
-                        if default_waveunit is not None:
-                            unit = u.Unit(default_waveunit)
-                        else:
-                            raise WaveunitNotFoundError(sr_block)
-                    final_values[key] = unit.to(u.nm, float(val.value), equivalencies.spectral())
-                elif val is None or np.isnan(val):
-                    final_values[key] = val
-
-            wavemin = final_values['wavemin']
-            wavemax = final_values['wavemax']
+            raise TypeError("Expected Wavelength in the Fido response to be None or a Quantity")
 
         fileid = sr_block.get('url')
         size = None

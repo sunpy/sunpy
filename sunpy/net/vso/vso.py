@@ -402,7 +402,7 @@ class VSOClient(BaseClient):
             dl_set = False
             downloader = Downloader(progress=progress)
 
-        if isinstance(query_response, (legacy_response.QueryResponse, list)):
+        if isinstance(query_response, (QueryResponse, list)):
             query_response = VSOQueryResponseTable.from_zeep_response(query_response,
                                                                       client=self,
                                                                       _sort=False)
