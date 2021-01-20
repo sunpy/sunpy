@@ -90,12 +90,15 @@ class QueryResponse(BaseQueryResponse):
                 return ['N/A']
 
         for record in self:
-            record_items['Start Time'].append(validate_time(record.time.start))
-            record_items['End Time'].append(validate_time(record.time.end))
+            record_items['Start Time'] += validate_time(record.time.start)
+            record_items['End Time'] += validate_time(record.time.end)
             record_items['Source'].append(str(record.source))
             record_items['Instrument'].append(str(record.instrument))
-            record_items['Type'].append(str(record.extent.type)
-                                        if record.extent.type is not None else ['N/A'])
+            if hasattr(record, 'extent') and record.extent is not None:
+                record_items['Type'].append(str(record.extent.type)
+                                            if record.extent.type is not None else ['N/A'])
+            else:
+                record_items['Type'].append('N/A')
             # If we have a start and end Wavelength, make a quantity
             if hasattr(record, 'wave') and record.wave.wavemin and record.wave.wavemax:
                 unit = record.wave.waveunit
