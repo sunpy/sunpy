@@ -7,6 +7,7 @@ from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEclipti
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
+from sunpy import log
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
@@ -137,16 +138,22 @@ class HMISynopticMap(HMIMap):
         super().__init__(data, header, **kwargs)
 
         if self.meta['cunit1'] == 'Degree':
-            self.meta['cunit1'] = 'degree'
+            self.meta['cunit1'] = 'deg'
 
         if self.meta['cunit2'] == 'Sine Latitude':
-            self.meta['cunit2'] = 'degree'
+            log.debug("Editing CUNIT2, CDELT1, CDLET2 keywords to the correct "
+                      "values for a CEA projection.")
+            self.meta['cunit2'] = 'deg'
 
             # Since, this map uses the cylindrical equal-area (CEA) projection,
             # the spacing should be modified to 180/pi times the original value
             # Reference: Section 5.5, Thompson 2006
             self.meta['cdelt2'] = 180 / np.pi * self.meta['cdelt2']
             self.meta['cdelt1'] = np.abs(self.meta['cdelt1'])
+
+        if 'date-obs' not in self.meta and 't_obs' in self.meta:
+            log.debug('Setting "DATE-OBS" keyword from "T_OBS"')
+            self.meta['date-obs'] = self.meta['t_obs']
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
