@@ -7,14 +7,14 @@ Drawing and using a Great Arc and a Great Circle
 How to define and draw a great arc on an image of the
 Sun, and to extract intensity values along that arc.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.map
-from sunpy.coordinates.utils import GreatArc, CoordinateVisibility
+from sunpy.coordinates.utils import CoordinateVisibility, GreatArc
 from sunpy.data.sample import AIA_171_IMAGE
 
 from sunpy.net import Fido
