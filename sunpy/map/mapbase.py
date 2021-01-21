@@ -1973,10 +1973,9 @@ class GenericMap(NDData):
             "fill": False,
         }
         kwergs.update(kwargs)
-        rect = Quadrangle(
-            (self._get_lon_lat(bottom_left)), width, height, **kwergs)
-        axes.add_artist(rect)
-        return [rect]
+        quad = Quadrangle(self._get_lon_lat(bottom_left), width, height, **kwergs)
+        axes.add_artist(quad)
+        return quad
 
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
