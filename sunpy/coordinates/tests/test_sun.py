@@ -479,3 +479,9 @@ def test_carrington_rotation_roundtrip():
     dt = t - t_roundtrip
     # Stated precision in the docstring is 0.11 seconds
     assert_quantity_allclose(dt.to(u.s), 0*u.s, atol=0.11*u.s)
+
+
+def test_carrington_rotation_str():
+    # Check that by default a human parseable string is returned
+    t = sun.carrington_rotation_time(2210)
+    assert str(t) == '2018-10-26 20:48:16.137'
