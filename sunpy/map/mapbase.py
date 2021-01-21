@@ -1947,7 +1947,8 @@ class GenericMap(NDData):
         `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
         """
         if version.parse(astropy.__version__) < version.parse("4.2.0"):
-            raise ImportError('Astropy >= 4.2 is required for this method, use draw_rectangle instead.')
+            raise ImportError('Astropy >= 4.2 is required for this method. '
+                              'draw_rectangle() may meet your needs.')
 
         from astropy.visualization.wcsaxes import Quadrangle
 
