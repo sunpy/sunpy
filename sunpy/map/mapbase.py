@@ -1908,7 +1908,8 @@ class GenericMap(NDData):
     def draw_quadrangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
                         axes=None, top_right=None, **kwargs):
         """
-        Draw a rectangle defined in world coordinates on the plot using Quadrangle from astropy.
+        Draw a quadrangle defined in world coordinates on the plot using Astropy's
+        `~astropy.visualization.wcsaxes.patches.Quadrangle`.
 
         This draws a rectangle that has corners at ``(bottom_left, top_right)``,
         and has sides aligned with the coordinate axes of the frame of ``bottom_left``,
