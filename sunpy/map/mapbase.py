@@ -1936,9 +1936,8 @@ class GenericMap(NDData):
 
         Returns
         -------
-        rect : `list`
-            A list containing the `~astropy.visualization.wcsaxes.patches.Quadrangle` object, after
-            it has been added to ``axes``.
+        quad : `~astropy.visualization.wcsaxes.patches.Quadrangle`
+            The added patch
 
         Notes
         -----
