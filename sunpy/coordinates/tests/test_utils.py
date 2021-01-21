@@ -37,13 +37,13 @@ def aia171_test_map():
 
 
 @pytest.mark.parametrize("initial, target", [((0, 0), (0, 45)),
-                                            ((0, 0), (45, 0)),
-                                            ((0, 45), (0, 0)),
-                                            ((45, 0), (0, 0)),
-                                            ((12, 13), (12, 58)),
-                                            ((-10, 6), (-10, 51)),
-                                            ((-20, -50), (-20, -5)),
-                                            ((10, -50), (87.53163324626676, -55))])
+                                             ((0, 0), (45, 0)),
+                                             ((0, 45), (0, 0)),
+                                             ((45, 0), (0, 0)),
+                                             ((12, 13), (12, 58)),
+                                             ((-10, 6), (-10, 51)),
+                                             ((-20, -50), (-20, -5)),
+                                             ((10, -50), (87.53163324626676, -55))])
 def test_great_arc_calculable(initial, target):
     c = SkyCoord(initial[0]*u.degree, initial[1]*u.degree, frame=frames.HeliographicStonyhurst,
                  observer=frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
