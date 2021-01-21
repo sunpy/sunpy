@@ -1911,7 +1911,7 @@ class GenericMap(NDData):
         Draw a quadrangle defined in world coordinates on the plot using Astropy's
         `~astropy.visualization.wcsaxes.patches.Quadrangle`.
 
-        This draws a rectangle that has corners at ``(bottom_left, top_right)``,
+        This draws a quadrangle that has corners at ``(bottom_left, top_right)``,
         and has sides aligned with the coordinate axes of the frame of ``bottom_left``,
         which may be different from the coordinate axes of the map.
 
