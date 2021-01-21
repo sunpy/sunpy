@@ -16,10 +16,8 @@ from astropy.coordinates import SkyCoord
 import sunpy.map
 from sunpy.coordinates.utils import CoordinateVisibility, GreatArc
 from sunpy.data.sample import AIA_171_IMAGE
-
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-
 
 ###############################################################################
 # We start with the sample data
@@ -138,6 +136,7 @@ neither = np.logical_and(~c0v.visible, ~c1v.visible)
 ###############################################################################
 # Determine the indices of the coordinates that are on and not on the
 # observable disk of the Sun as seen from AIA and STEREO
+
 
 def front_indices(visibility):
     """
