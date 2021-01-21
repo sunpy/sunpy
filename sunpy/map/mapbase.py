@@ -1941,7 +1941,7 @@ class GenericMap(NDData):
 
         Notes
         -----
-        If user's astropy version is < 4.2, raises an error to use draw_rectangle instead.
+        Astropy 4.2+ is required for this method.
 
         Extra keyword arguments to this function are passed through to the
         `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
