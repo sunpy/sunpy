@@ -1922,16 +1922,16 @@ class GenericMap(NDData):
         Parameters
         ----------
         bottom_left : `~astropy.coordinates.SkyCoord`
-            The bottom-left coordinate of the rectangle. It can
+            The bottom-left coordinate of the quadrangle. It can
             have shape ``(2,)`` to simultaneously define ``top_right``.
         top_right : `~astropy.coordinates.SkyCoord`
-            The top-right coordinate of the rectangle.
+            The top-right coordinate of the quadrangle.
         width : `astropy.units.Quantity`, optional
-            The width of the rectangle. Required if ``top_right`` is omitted.
+            The width of the quadrangle. Required if ``top_right`` is omitted.
         height : `astropy.units.Quantity`
-            The height of the rectangle. Required if ``top_right`` is omitted.
+            The height of the quadrangle. Required if ``top_right`` is omitted.
         axes : `matplotlib.axes.Axes`
-            The axes on which to plot the rectangle, defaults to the current
+            The axes on which to plot the quadrangle. Defaults to the current
             axes.
 
         Returns
