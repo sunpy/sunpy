@@ -1951,12 +1951,6 @@ class GenericMap(NDData):
 
         from astropy.visualization.wcsaxes import Quadrangle
 
-        if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
-            # The decorator assigns the first positional arg to top_right and so on.
-            height = width
-            width = top_right
-            top_right = None
-
         bottom_left, top_right = get_rectangle_coordinates(
             bottom_left, top_right=top_right, width=width, height=height)
 
