@@ -190,7 +190,10 @@ If you want to get a manual set of keywords in the response object, you can pass
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
     >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')  # doctest: +REMOTE_DATA
-    [<sunpy.net.jsoc.jsoc.JSOCResponse object at ...>
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
     TELESCOP  INSTRUME           T_OBS
     -------- ---------- -----------------------
      SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
@@ -215,7 +218,9 @@ If you want to get a manual set of keywords in the response object, you can pass
      SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI
      SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI
      SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI
-    Length = 81 rows]
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 Passing an incorrect keyword won't throw an error, but the corresponding column in the table will
 not be displayed.
@@ -223,7 +228,10 @@ not be displayed.
 To display all of the columns, we can use ``show()`` without passing any arguments::
 
     >>> res.show()  # doctest: +REMOTE_DATA
-    [<sunpy.net.jsoc.jsoc.JSOCResponse object at ...>
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
             DATE                DATE__OBS        ... CALVER64
     -------------------- ----------------------- ... --------
     2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
@@ -248,7 +256,10 @@ To display all of the columns, we can use ``show()`` without passing any argumen
     2014-01-05T17:43:41Z 2014-01-01T00:58:09.20Z ...     4370
     2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z ...     4370
     2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370
-    Length = 81 rows]
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
+
 
 Using Segments
 ==============

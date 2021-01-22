@@ -18,7 +18,13 @@ import parfive
 from astropy.table import Table
 
 from sunpy.net import attr, vso
-from sunpy.net.base_client import BaseClient, BaseQueryResponse, QueryResponseRow, QueryResponseTable
+from sunpy.net.base_client import (
+    BaseClient,
+    BaseQueryResponse,
+    QueryResponseColumn,
+    QueryResponseRow,
+    QueryResponseTable,
+)
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
 from sunpy.util.decorators import deprecated
 from sunpy.util.parfive_helpers import Downloader, Results
@@ -51,6 +57,9 @@ class UnifiedResponse(Sequence):
         self._numfile = 0
         for result in results:
             if isinstance(result, QueryResponseRow):
+                result = result.as_table()
+
+            if isinstance(result, QueryResponseColumn):
                 result = result.as_table()
 
             if not isinstance(result, QueryResponseTable):
@@ -215,7 +224,19 @@ class UnifiedResponse(Sequence):
         `list` of `astropy.table.Table`
             A list of tables showing values for specified columns.
         """
-        return [i.show(*cols) for i in self._list]
+        return type(self)(*[i.show(*cols) for i in self._list])
+
+    @property
+    def all_colnames(self):
+        """
+        Returns all the colnames in any of the tables in this response.
+
+        Any column names in this list are valid inputs to :meth:`.UnifiedResponse.show`.
+        """
+        colnames = set(self[0].colnames)
+        for resp in self[1:]:
+            colnames.union(resp.colnames)
+        return sorted(list(colnames))
 
 
 query_walker = attr.AttrWalker()
