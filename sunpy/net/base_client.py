@@ -3,12 +3,12 @@ from abc import ABC, abstractmethod
 from textwrap import dedent
 from collections.abc import Sequence
 
-from astropy.table import Row, Table
+from astropy.table import Column, Row, Table
 
 from sunpy.util._table_attribute import QTable, TableAttribute
 from sunpy.util.util import get_width
 
-__all__ = ['BaseQueryResponse', 'QueryResponseTable', 'BaseClient']
+__all__ = ['QueryResponseColumn', 'BaseQueryResponse', 'QueryResponseTable', 'BaseClient']
 
 
 class BaseQueryResponse(Sequence):
@@ -128,8 +128,21 @@ class QueryResponseRow(Row):
         return default
 
 
+class QueryResponseColumn(Column):
+    """
+    A column subclass which knows about the client of the parent table.
+    """
+
+    def as_table(self):
+        """
+        Return this Row as a length one Table
+        """
+        return self.parent_table[(self.name,)]
+
+
 class QueryResponseTable(QTable, BaseQueryResponse):
     Row = QueryResponseRow
+    Column = QueryResponseColumn
 
     client = TableAttribute()
     display_keys = TableAttribute(default=slice(None))

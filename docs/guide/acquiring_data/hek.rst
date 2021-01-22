@@ -65,8 +65,8 @@ Remember, the HEK query we made returns all the flares in the time-range stored 
 The HEK parameter which stores the the feature recognition method is called "frm_name".
 We can select just this column:
 
-    >>> result['hek']["frm_name"]  # doctest: +REMOTE_DATA
-    <Column name='frm_name' dtype='str32' length=19>
+    >>> result["hek"]["frm_name"]  # doctest: +REMOTE_DATA
+    <QueryResponseColumn name='frm_name' dtype='str32' length=19>
                               asainz
                               asainz
                               asainz
@@ -198,7 +198,7 @@ Let's say I want all the flares west of 50 arcseconds OR have a peak flux over 1
 and as a check:
 
     >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
-    <Column name='fl_peakflux' dtype='object' length=17>
+    <QueryResponseColumn name='fl_peakflux' dtype='object' length=17>
        None
        None
        None
@@ -218,7 +218,7 @@ and as a check:
     1019.83
 
     >>> result["hek"]["event_coord1"] # doctest: +REMOTE_DATA
-    <Column name='event_coord1' dtype='float64' length=17>
+    <QueryResponseColumn name='event_coord1' dtype='float64' length=17>
      51.0
      51.0
      51.0
@@ -246,7 +246,7 @@ Let's say we want all the flares west of 50 arcseconds AND have a peak flux over
     >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), (a.hek.Event.Coord1 > 50) and (a.hek.FL.PeakFlux > 1000.0))  # doctest: +REMOTE_DATA
 
     >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
-    <Column name='fl_peakflux' dtype='float64' length=7>
+    <QueryResponseColumn name='fl_peakflux' dtype='float64' length=7>
     2326.86
     1698.83
     2360.49
@@ -255,7 +255,7 @@ Let's say we want all the flares west of 50 arcseconds AND have a peak flux over
     6275.98
     1019.83
     >>> result["hek"]["event_coord1"] # doctest: +REMOTE_DATA
-    <Column name='event_coord1' dtype='float64' length=7>
+    <QueryResponseColumn name='event_coord1' dtype='float64' length=7>
     883.2
     883.2
     883.2
