@@ -6,9 +6,6 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 from astropy.visualization import wcsaxes
 
-# Force is put here to enable disabling all checks in this module.
-# It should only be used by tests and other such hacks.
-_FORCE_NO_WCSAXES = False
 
 __all__ = ["is_wcsaxes", "gca_wcs", "get_world_transform",
            "default_wcs_grid", "wcsaxes_heliographic_overlay"]
@@ -29,10 +26,7 @@ def is_wcsaxes(axes):
     `bool`
         Result of the test.
     """
-    if not _FORCE_NO_WCSAXES:
-        return isinstance(axes, wcsaxes.WCSAxes)
-    else:
-        return False
+    return isinstance(axes, wcsaxes.WCSAxes)
 
 
 def gca_wcs(wcs, fig=None, slices=None):
@@ -61,10 +55,7 @@ def gca_wcs(wcs, fig=None, slices=None):
         fig = plt.gcf()
 
     if not len(fig.get_axes()):
-        if not _FORCE_NO_WCSAXES:
-            ax = plt.axes(projection=wcs, slices=slices)
-        else:
-            ax = plt.gca()
+        ax = plt.axes(projection=wcs, slices=slices)
     else:
         ax = plt.gca()
 

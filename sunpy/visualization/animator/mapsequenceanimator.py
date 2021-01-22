@@ -5,7 +5,6 @@ from copy import deepcopy
 
 from sunpy.visualization import animator as imageanimator
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
-from sunpy.visualization.wcsaxes_compat import _FORCE_NO_WCSAXES
 
 __all__ = ['MapSequenceAnimator']
 
@@ -109,8 +108,6 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         # If axes already exist, just return them
         if len(self.fig.axes):
             return self.fig.axes[0]
-        elif _FORCE_NO_WCSAXES:
-            return self.fig.add_subplot(111)
         else:
             return self.fig.add_subplot(111, projection=self.mapsequence[0].wcs)
 
