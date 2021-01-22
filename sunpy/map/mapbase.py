@@ -1956,7 +1956,7 @@ class GenericMap(NDData):
             bottom_left, top_right=top_right, width=width, height=height)
 
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-        height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
+        height = top_right.spherical.lat - bottom_left.spherical.lat
 
         if not axes:
             axes = plt.gca()
