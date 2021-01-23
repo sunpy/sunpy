@@ -51,7 +51,7 @@ def semi_circular_loop(length: u.cm, latitude: u.deg = 0*u.deg):
     return SkyCoord(
         x=x,
         y=np.zeros_like(x),
-        z=z + constants.R_sun,
+        z=z + constants.radius,
         frame=hcc_frame)
 
 
