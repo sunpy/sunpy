@@ -20,7 +20,6 @@ the same form as they were saved.
 
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.optimize
 
 import asdf
 import astropy.units as u
@@ -39,30 +38,21 @@ from sunpy.sun import constants
 
 
 @u.quantity_input
-def semi_circular_loop(length: u.m, latitude: u.deg = 0*u.deg):
+def semi_circular_loop(length: u.cm, latitude: u.deg = 0*u.deg):
     """
-    Return a Heliographic Stonyhurst coordinate object with points of a semi circular loop in it.
+    Return HGS coordinates for a semi-circular loop
     """
-    r_sun = constants.radius
-
-    def r_2_func(x):
-        return np.arccos(0.5 * x / r_sun.to(u.cm).value) - np.pi + length.to(u.cm).value / 2. / x
-
-    # Find the loop radius corresponding to the loop length
-    r_2 = scipy.optimize.bisect(r_2_func,
-                                length.to(u.cm).value / (2 * np.pi),
-                                length.to(u.cm).value / np.pi) * u.cm
-    alpha = np.arccos(0.5 * (r_2 / r_sun))
-    phi = np.linspace(-np.pi * u.rad + alpha, np.pi * u.rad - alpha, 2000)
-
+    angles = np.linspace(0, 1, 1000) * np.pi * u.rad
+    z = length / np.pi * np.sin(angles)
+    x = length / np.pi * np.cos(angles)
     hcc_frame = frames.Heliocentric(
-        observer=frames.HeliographicStonyhurst(lon=0 * u.deg, lat=latitude, radius=1 * u.AU))
+        observer=frames.HeliographicStonyhurst(lon=0 * u.deg, lat=latitude, radius=constants.au))
 
     return SkyCoord(
-        x=r_2 * np.sin(phi),
-        y=0 * u.cm,
-        z=r_2 * np.cos(phi) + r_sun,
-        frame=hcc_frame).transform_to('heliographic_stonyhurst')
+        x=x,
+        y=np.zeros_like(x),
+        z=z + constants.radius,
+        frame=hcc_frame)
 
 
 ################################################################################
