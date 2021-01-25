@@ -8,13 +8,15 @@ from collections import OrderedDict
 from astropy import units as u
 from astropy.time import Time, TimeDelta
 
-from sunpy.extern.parse import parse
+from sunpy import log
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
+
+from sunpy.util.scraper import Scraper
 
 
 class NOAAIndicesClient(GenericClient):
@@ -156,6 +158,7 @@ class SRSClient(GenericClient):
     <BLANKLINE>
 
     """
+    BASE_URL = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
 
     def _get_url_for_timerange(self, timerange):
         """
@@ -163,22 +166,34 @@ class SRSClient(GenericClient):
         given time-range.
         """
         result = list()
-        base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
         total_days = int(timerange.days.value) + 1
         all_dates = timerange.split(total_days)
-        today_year = int(Time.now().strftime('%Y'))
+        end_year = int(Time.now().strftime('%Y'))
+        tarball_urls = dict()
         for day in all_dates:
-            end_year = int(day.end.strftime('%Y'))
-            if end_year > today_year or end_year < 1996:
-                continue
-            elif end_year == today_year:
-                suffix = '{}/SRS/{}SRS.txt'.format(
-                    end_year, day.end.strftime('%Y%m%d'))
-            else:
-                suffix = '{}/{}_SRS.tar.gz'.format(
-                    end_year, day.end.strftime('%Y'))
-            url = base_url + suffix
-            result.append(url)
+            day_year = int(day.end.strftime('%Y'))
+            extdict = {name: getattr(day.start.datetime, name) for name in ['year', 'month', 'day']}
+            if 1996 < day_year <= end_year:
+                if day_year in tarball_urls.keys():
+                    result.append((extdict, tarball_urls[day_year]))
+                else:
+                    # Check if there is a tarball
+                    tarball_scraper = Scraper(self.BASE_URL + '%Y/%Y_SRS.tar.gz')
+                    tarball = tarball_scraper.filelist(day)
+                    if tarball:
+                        result.append((extdict, tarball[0]))
+                        tarball_urls[day_year] = tarball[0]
+                        log.debug('Tarball %s found for day %s', tarball, day)
+                    else:
+                        # Check for individual file
+                        log.debug('No tarball found for day %s falling back to single files', day)
+                        srsfile_scraper = Scraper(self.BASE_URL + '%Y/SRS/%Y%m%dSRS.txt')
+                        srsfiles = srsfile_scraper.filelist(day)
+                        if srsfiles:
+                            log.debug('SRS file %s found for day %s falling back to single files',
+                                      srsfiles, day)
+                            result.append((extdict, srsfiles[0]))
+
         return result
 
     def post_search_hook(self, exdict, matchdict):
@@ -197,12 +212,9 @@ class SRSClient(GenericClient):
         matchdict = self._get_match_dict(*args, **kwargs)
         timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         metalist = []
-        for url in self._get_url_for_timerange(timerange):
-            exdict1 = parse(extractor1, url)
-            exdict2 = parse(extractor2, url)
-            exdict = (exdict2 if exdict1 is None else exdict1).named
-            exdict['url'] = url
-            rowdict = self.post_search_hook(exdict, matchdict)
+        for extdict, url in self._get_url_for_timerange(timerange):
+            extdict['url'] = url
+            rowdict = self.post_search_hook(extdict, matchdict)
             metalist.append(rowdict)
         return QueryResponse(metalist, client=self)
 

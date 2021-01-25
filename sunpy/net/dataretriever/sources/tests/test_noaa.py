@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -174,6 +175,13 @@ def test_srs_tar_unpack_midyear():
     assert len(res) == 2
     assert res.data[0].endswith("20110607SRS.txt")
     assert res.data[-1].endswith("20110608SRS.txt")
+
+
+@pytest.mark.remote_data
+def test_srs_missing_tarball():
+    qr = Fido.search(a.Time('2020-01-01', '2020-01-20'), a.Instrument.srs_table)
+    res = Fido.fetch(qr)
+    assert all([Path(path).exists() for path in res])
 
 
 @pytest.mark.remote_data
