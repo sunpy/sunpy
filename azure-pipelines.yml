@@ -161,7 +161,7 @@ stages:
             http --version
         - bash: xonsh ./tools/send_matrix_message.xsh
           env:
-            ROOMID: '%21MeRdFpEonLoCwhoHeT:matrix.org'  # main sunpy room
+            ROOMID: '%21JYqfIVJjWANcHnfktY:cadair.com'  # sunpy development room
             HOMESERVER: 'https://matrix.cadair.com'
             BRANCH: $(Build.SourceBranchName)
             ACCESS_TOKEN: $(azurebot_access_token)
