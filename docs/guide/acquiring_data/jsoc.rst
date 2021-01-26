@@ -185,7 +185,7 @@ Upon doing ``Fido.search()`` as described above, only a limited set of keywords 
 object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, ``'T_OBS'`` and ``'WAVELNTH'``.
 
 If you want to get a manual set of keywords in the response object, you can pass the set of keywords using
-:meth:`~sunpy.net.base_client.BaseQueryResponseTable.show` method.
+:meth:`~sunpy.net.base_client.QueryResponseTable.show` method.
 
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
