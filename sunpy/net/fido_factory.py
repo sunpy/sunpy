@@ -18,13 +18,7 @@ import parfive
 from astropy.table import Table
 
 from sunpy.net import attr, vso
-from sunpy.net.base_client import (
-    BaseClient,
-    BaseQueryResponse,
-    QueryResponseColumn,
-    QueryResponseRow,
-    QueryResponseTable,
-)
+from sunpy.net.base_client import BaseClient, QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
 from sunpy.util.decorators import deprecated
 from sunpy.util.parfive_helpers import Downloader, Results
@@ -116,7 +110,7 @@ class UnifiedResponse(Sequence):
         else:
             raise IndexError("UnifiedResponse objects must be sliced with integers.")
 
-        # if only one response matches, we will return a BaseQueryResponse instance.
+        # if only one response matches, we will return a QueryResponseTable instance.
         if not len(ret):
             raise IndexError("No records found for the given index.")
         elif len(ret) == 1:
@@ -341,12 +335,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):
         """
-        Download the records represented by `~sunpy.net.BaseQueryResponse` or
+        Download the records represented by `~sunpy.net.QueryResponseTable` or
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
 
         Parameters
         ----------
-        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.BaseQueryResponse`
+        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.QueryResponseTable`
             Container returned by query method, or multiple.
         path : `str`
             The directory to retrieve the files into. Can refer to any fields
@@ -415,12 +409,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for query_result in query_results:
             if isinstance(query_result, QueryResponseRow):
                 responses = [query_result.as_table()]
-            elif isinstance(query_result, BaseQueryResponse):
+            elif isinstance(query_result, QueryResponseTable):
                 responses = [query_result]
             elif isinstance(query_result, UnifiedResponse):
                 responses = query_result
             else:
-                raise ValueError(f"Query result has an unrecognized type: {type(query_result)}")
+                raise ValueError(f"Query result has an unrecognized type: {type(query_result)} "
+                                 "Allowed types are QueryResponseRow, QueryResponseTable or UnifiedResponse.")
             for block in responses:
                 result = block.client.fetch(block, path=path,
                                             downloader=downloader,

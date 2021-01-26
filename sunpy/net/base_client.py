@@ -140,7 +140,7 @@ class QueryResponseColumn(Column):
         return self.parent_table[(self.name,)]
 
 
-class QueryResponseTable(QTable, BaseQueryResponse):
+class QueryResponseTable(QTable):
     Row = QueryResponseRow
     Column = QueryResponseColumn
 
@@ -157,12 +157,25 @@ class QueryResponseTable(QTable, BaseQueryResponse):
             if isinstance(descr, TableAttribute):
                 setattr(self, attr, kwargs.pop(attr))
 
+    @deprecated("2.1", "The object is a table.")
     def build_table(self):
+        """
+        Return an `astropy.table.Table` representation of the query response.
+        """
         return self
 
     @property
+    @deprecated("2.1", "Slice the table instead.")
     def blocks(self):
+        """
+        A `collections.abc.Sequence` object which contains the records
+        contained within the Query Response.
+        """
         return list(self.iterrows())
+
+    @deprecated("2.1", "use path_format_keys instead")
+    def response_block_properties(self):
+        return self.path_format_keys()
 
     def unhide_columns(self):
         """
@@ -227,6 +240,35 @@ class QueryResponseTable(QTable, BaseQueryResponse):
         # want to bypass it here.
         table.unhide_columns()
         return table
+
+    def path_format_keys(self):
+        """
+        Returns all the names that can be used to format filenames.
+
+        Each one corresponds to a single column in the table, and the format
+        syntax should match the dtype of that column, i.e. for a ``Time``
+        object or a ``Quantity``.
+        """
+        rbp = set(self[0].response_block_map.keys())
+        for row in self[1:]:
+            rbp.intersection(row.response_block_map.keys())
+        return rbp
+
+
+BaseQueryResponse.register(QueryResponseTable)
+
+
+def convert_row_to_table(func):
+    """
+    A wrapper to convert any `.QueryResponseRow` objects to `.QueryResponseTable` objects.
+    """
+    @wraps(func)
+    def wrapper(self, query_results, **kwargs):
+        if isinstance(query_results, QueryResponseRow):
+            query_results = query_results.as_table()
+        return func(self, query_results, **kwargs)
+
+    return wrapper
 
 
 def _print_client(client, html=False):
