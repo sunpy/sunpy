@@ -573,25 +573,39 @@ class GenericMap(NDData):
         """
         Calculate the standard deviation of the data array.
         """
-        return self.data.std(*args, **kwargs)
+        return np.std(self._data_as_quantity, *args, **kwargs)
 
     def mean(self, *args, **kwargs):
         """
         Calculate the mean of the data array.
         """
-        return self.data.mean(*args, **kwargs)
+        return np.mean(self._data_as_quantity, *args, **kwargs)
 
     def min(self, *args, **kwargs):
         """
         Calculate the minimum value of the data array.
         """
-        return self.data.min(*args, **kwargs)
+        return np.min(self._data_as_quantity, *args, **kwargs)
 
     def max(self, *args, **kwargs):
         """
         Calculate the maximum value of the data array.
         """
-        return self.data.max(*args, **kwargs)
+        return np.max(self._data_as_quantity, *args, **kwargs)
+
+    @property
+    def _data_as_quantity(self):
+        """
+        Create a Quantity from the data and unit of the map.
+
+        This doesn't make a copy with the data, so be careful what
+        you do with it. It is only intended for internal use.
+
+        We have to explicitly set dtype to avoid astropy casting integer data
+        to floating point and therefore implicitly taking a copy.
+        """
+        return u.Quantity(self.data, unit=self.unit, copy=False,
+                          dtype=self.data.dtype)
 
     @property
     def unit(self):

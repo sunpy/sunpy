@@ -91,19 +91,19 @@ def test_size(generic_map):
 
 
 def test_min(generic_map):
-    assert generic_map.min() == 1
+    assert generic_map.min() == 1 * u.ct / u.s
 
 
 def test_max(generic_map):
-    assert generic_map.max() == 1
+    assert generic_map.max() == 1 * u.ct / u.s
 
 
 def test_mean(generic_map):
-    assert generic_map.mean() == 1
+    assert generic_map.mean() == 1 * u.ct / u.s
 
 
 def test_std(generic_map):
-    assert generic_map.std() == 0
+    assert generic_map.std() == 0 * u.ct / u.s
 
 
 def test_unit(generic_map):
