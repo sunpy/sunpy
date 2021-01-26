@@ -4,7 +4,7 @@ Querying the GOES flare event list through the HEK
 ==================================================
 
 How to retrieve the GOES flare event list through use of
-SunPy"s Heliophysics Event Knowledgebase (HEK) client.
+SunPy's Heliophysics Event Knowledgebase (HEK) client.
 """
 from sunpy.net import Fido
 from sunpy.net import attrs as a

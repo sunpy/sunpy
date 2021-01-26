@@ -3,7 +3,6 @@ This module provides a wrapper around the VSO API.
 """
 
 import os
-import re
 import cgi
 import copy
 import json
@@ -25,11 +24,10 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
-from . import legacy_response
 from .exceptions import (
     DownloadFailed,
     MissingInformation,
@@ -39,6 +37,7 @@ from .exceptions import (
     UnknownStatus,
     UnknownVersion,
 )
+from .legacy_response import QueryResponse
 from .table_response import VSOQueryResponseTable
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
@@ -46,8 +45,6 @@ DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.
                      'port': 'nsoVSOi'},
                     {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl',
                      'port': 'sdacVSOi'}]
-
-RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 
 class _Str(str):
@@ -161,7 +158,7 @@ class VSOClient(BaseClient):
         obj = self.api.get_type(f"VSO:{atype}")
         return obj(**kwargs)
 
-    def search(self, *query, response_format="legacy"):
+    def search(self, *query, response_format=None):
         """
         Query data from the VSO with the new API. Takes a variable number
         of attributes as parameter, which are chained together using AND.
@@ -184,16 +181,18 @@ class VSOClient(BaseClient):
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> client.search(
         ...    a.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    a.Instrument.eit | a.Instrument.aia)   # doctest:  +REMOTE_DATA
-        <sunpy.net.vso.legacy_response.QueryResponse object at ...>
-        Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
-                                                    ...             Angstrom
-        ------------------- ------------------- ------ ... -------- --------------
-        2010-01-01 00:00:08 2010-01-01 00:00:20   SOHO ... FULLDISK 195.0 .. 195.0
-        2010-01-01 00:12:08 2010-01-01 00:12:20   SOHO ... FULLDISK 195.0 .. 195.0
-        2010-01-01 00:24:10 2010-01-01 00:24:22   SOHO ... FULLDISK 195.0 .. 195.0
-        2010-01-01 00:36:08 2010-01-01 00:36:20   SOHO ... FULLDISK 195.0 .. 195.0
-        2010-01-01 00:48:09 2010-01-01 00:48:21   SOHO ... FULLDISK 195.0 .. 195.0
+        ...    a.Instrument.eit | a.Instrument.aia,
+        ...    response_format="table")   # doctest:  +REMOTE_DATA
+        <sunpy.net.vso.table_response.VSOQueryResponseTable object at ...>
+            Start Time               End Time        Source ... Extent Type   Size
+                                                            ...              Mibyte
+        ----------------------- ----------------------- ------ ... ----------- -------
+        2010-01-01 00:00:08.000 2010-01-01 00:00:20.000   SOHO ...    FULLDISK 2.01074
+        2010-01-01 00:12:08.000 2010-01-01 00:12:20.000   SOHO ...    FULLDISK 2.01074
+        2010-01-01 00:24:10.000 2010-01-01 00:24:22.000   SOHO ...    FULLDISK 2.01074
+        2010-01-01 00:36:08.000 2010-01-01 00:36:20.000   SOHO ...    FULLDISK 2.01074
+        2010-01-01 00:48:09.000 2010-01-01 00:48:21.000   SOHO ...    FULLDISK 2.01074
+
 
         Returns
         -------
@@ -201,6 +200,15 @@ class VSOClient(BaseClient):
             Matched items. Return value is of same type as the one of
             :meth:`VSOClient.search`.
         """
+        if response_format is None:
+            response_format = "legacy"
+            warnings.warn("The default response format from the VSO client will "
+                          "be changing to 'table' in version 3.1. "
+                          "To remove this warning set response_format='legacy' "
+                          "to maintain the old behaviour or response_format='table'"
+                          " to use the new behaviour.",
+                          SunpyDeprecationWarning,
+                          stacklevel=2)
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
         VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
@@ -265,7 +273,7 @@ class VSOClient(BaseClient):
                          provideritem=list(providers.values()))
 
     @staticmethod
-    def mk_filename(pattern, queryresponse, resp, url):
+    def mk_filename(pattern, queryresponserow, resp, url):
         """
         Generate the best possible (or least-worse) filename for a VSO download.
 
@@ -307,8 +315,7 @@ class VSOClient(BaseClient):
             name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 
         fname = pattern.format(file=name,
-                               **dict(zip(queryresponse.colnames,
-                                          queryresponse.columns)))
+                               **queryresponserow.response_block_map)
 
         return fname
 
@@ -382,9 +389,6 @@ class VSOClient(BaseClient):
         --------
         >>> files = fetch(qr) # doctest:+SKIP
         """
-        if isinstance(query_response, QueryResponseRow):
-            query_response = query_response.as_table()
-
         if path is None:
             path = Path(config.get('downloads', 'download_dir')) / '{file}'
         elif isinstance(path, (str, os.PathLike)) and '{file}' not in str(path):

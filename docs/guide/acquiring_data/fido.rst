@@ -259,7 +259,6 @@ Normal slicing operations work as with any other Python sequence, e.g. ``results
 Note that the first (response) index is still necessary even if results are only found for a single client.
 So in this case the first result would be ``results[0, 0]`` rather than ``results[0]`` (the latter would return all results from the first - and only - client and is therefore the same as ``results``).
 
-
 Working with Response Tables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

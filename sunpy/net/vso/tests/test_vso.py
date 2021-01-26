@@ -8,8 +8,8 @@ from sunpy.net import attr
 from sunpy.net import attrs as a
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.table_response import VSOQueryResponseTable, iter_sort_response
 from sunpy.net.vso.legacy_response import QueryResponse
+from sunpy.net.vso.table_response import VSOQueryResponseTable, iter_sort_response
 from sunpy.net.vso.vso import VSOClient, build_client, get_online_vso_url
 from sunpy.tests.mocks import MockObject
 from sunpy.time import TimeRange, parse_time
@@ -19,13 +19,15 @@ class MockQRRecord:
     """
     Used to test sunpy.net.vso.QueryResponse.build_table(...)
     """
-
-    def __init__(self, start_time=None, end_time=None, size=0, source='SOHO', instrument='aia',
-                 extent_type=None):
-        self.data = {"size": size, "time": dict(start=start_time, end=end_time),
-                     "source": source,
-                     "instrument": instrument,
-                     "extent": dict(type=None if extent_type is None else extent_type.type)}
+    def __new__(cls, start_time=None, end_time=None, size=0, source='SOHO', instrument='aia',
+                extent=None, fileid="spam"):
+        return MockObject(size=size,
+                          time=MockObject(start=start_time, end=end_time),
+                          source=source,
+                          instrument=instrument,
+                          provider="SunPy",
+                          extent=extent,
+                          fileid=fileid)
 
 
 class MockQRResponse:
@@ -42,7 +44,7 @@ class MockQRResponse:
         self.provideritem = list()
 
         if records is not None:
-            self.provideritem = records
+            self.provideritem = [MockObject(record=MockObject(recorditem=list(records)))]
 
         if errors is not None:
             self.provideritem.extend([MockObject(error=err) for err in errors])
@@ -283,7 +285,8 @@ def test_path(client, tmpdir):
     """
     qr = client.search(
         core_attrs.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
-        core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA))
+        core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
+        response_format="table")
     tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir)
 
@@ -314,7 +317,7 @@ def test_no_download(client):
     stereo = (core_attrs.Detector('STEREO_B') &
               core_attrs.Instrument('EUVI') &
               core_attrs.Time('1900-01-01', '1900-01-01T00:10:00'))
-    qr = client.search(stereo)
+    qr = client.search(stereo, response_format="table")
     downloader = MockDownloader()
     res = client.fetch(qr, wait=False, downloader=downloader)
     assert downloader.download_called is False
@@ -329,23 +332,6 @@ def test_non_str_instrument():
         core_attrs.Instrument(1234)
 
 
-@pytest.mark.parametrize("waverange, as_dict", [
-    ('3 - 4 ', {'wave_wavemin': '3', 'wave_wavemax': '4', 'wave_waveunit': 'Angstrom'}),
-    ('27', {'wave_wavemin': '27', 'wave_wavemax': '27', 'wave_waveunit': 'Angstrom'}),
-    ('34 - 64 GHz', {'wave_wavemin': '34', 'wave_wavemax': '64', 'wave_waveunit': 'GHz'}),
-    ('12-13keV', {'wave_wavemin': '12', 'wave_wavemax': '13', 'wave_waveunit': 'keV'}),
-])
-def test__parse_waverange(waverange, as_dict):
-    assert vso.vso._parse_waverange(waverange) == as_dict
-
-
-@pytest.mark.parametrize("input, expected", [
-    ('12/01/2020 - 02/10/2018', dict(time_start='12/01/2020', time_end='02/10/2018')),
-])
-def test__parse_date(input, expected):
-    assert vso.vso._parse_date(input) == expected
-
-
 def test_iter_sort_response(mock_response):
     fileids = [i.fileid for i in iter_sort_response(mock_response)]
     # the function would have sorted records w.r.t. start time,
@@ -357,7 +343,7 @@ def test_from_zeep_response(mocker):
     mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
     records = (MockQRRecord(),)
 
-    table = VSOQueryResponseTable.from_zeep_response(records)
+    table = VSOQueryResponseTable.from_zeep_response(MockQRResponse(records), client=None)
 
     # These are the only None values in the table.
     source_ = table['Source']
@@ -396,8 +382,7 @@ def test_QueryResponse_build_table_with_no_start_time(mocker):
 
     records = (MockQRRecord(end_time=a_st.strftime(va._TIMEFORMAT)),)
 
-    vso.QueryResponse(records)
-    table = VSOQueryResponseTable.from_zeep_response(records)
+    table = VSOQueryResponseTable.from_zeep_response(MockQRResponse(records), client=None)
 
     # 'End Time' is valid, there is no 'Start Time' in the table
     assert 'Start Time' not in table.columns
@@ -415,7 +400,7 @@ def test_QueryResponse_build_table_with_no_end_time(mocker):
 
     records = (MockQRRecord(start_time=a_st.strftime(va._TIMEFORMAT)),)
 
-    table = VSOQueryResponseTable.from_zeep_response(records)
+    table = VSOQueryResponseTable.from_zeep_response(MockQRResponse(records), client=None)
     start_time_ = table['Start Time']
     assert len(start_time_) == 1
     assert start_time_[0].value == '2016-02-14 08:08:12.000'
@@ -476,7 +461,7 @@ def test_build_client_params():
 def test_incorrect_content_disposition(client):
     results = client.search(
         core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
-        core_attrs.Instrument('mdi'))
+        core_attrs.Instrument('mdi'), response_format="table")
     files = client.fetch(results[0:1])
 
     assert len(files) == 1
@@ -522,8 +507,10 @@ def test_vso_repr(client):
 
 @pytest.mark.remote_data
 def test_response_block_properties(client):
-    res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom),
-                        a.Sample(10 * u.minute))
+    res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
+                        a.Wavelength(171 * u.angstrom),
+                        a.Sample(10 * u.minute),
+                        response_format="legacy")
     properties = res.response_block_properties()
     assert len(properties) == 0
 
@@ -537,7 +524,7 @@ def test_response_block_properties_table(mocker, mock_response):
     print(table_response)
 
 
-def test_row_to_table(mocker, client, mock_table_response):
+def test_row_to_table(mocker, mock_build_client, client, mock_table_response):
     mock_table_response.client = client
     # we want to assert that as_table is being called, but if it returns an
     # empty list the rest of the fetch method (which does network stuff) is

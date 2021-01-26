@@ -151,7 +151,7 @@ def split_database(source_database, destination_database, *query_string):
     >>> database1 = Database('sqlite:///:memory:')
     >>> database2 = Database('sqlite:///:memory:')
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
-    >>> qr = client.search(a.Time('2011-05-08', '2011-05-08 00:00:05'))  # doctest: +REMOTE_DATA
+    >>> qr = client.search(a.Time('2011-05-08', '2011-05-08 00:00:05'), response_format="legacy")  # doctest: +REMOTE_DATA
     >>> database1.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
     >>> database1, database2 = split_database(database1, database2,
     ...            a.Instrument.aia | a.Instrument.erne)  # doctest: +REMOTE_DATA
@@ -533,7 +533,7 @@ class Database:
         client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
-        qr = client.search(*query)
+        qr = client.search(*query, response_format="legacy")
 
         # don't do anything if querying results in no data
         if not qr:

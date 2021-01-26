@@ -1,11 +1,15 @@
+import re
+import string
 import importlib
 from abc import ABC, abstractmethod
 from textwrap import dedent
+from functools import wraps
 from collections.abc import Sequence
 
 from astropy.table import Column, Row, Table
 
 from sunpy.util._table_attribute import QTable, TableAttribute
+from sunpy.util.decorators import deprecated
 from sunpy.util.util import get_width
 
 __all__ = ['QueryResponseColumn', 'BaseQueryResponse', 'QueryResponseTable', 'BaseClient']
@@ -126,6 +130,24 @@ class QueryResponseRow(Row):
         if key in self.colnames:
             return self[key]
         return default
+
+    @property
+    def response_block_map(self):
+        """
+        A dictionary designed to be used to format a filename.
+
+        This takes all the columns in this Row and lower cases them and
+        replaces spaces with underscores. Also removes any characters not
+        allowed in Python identifiers.
+        """
+        def key_clean(key):
+            key = re.sub('[%s]' % re.escape(string.punctuation), '_', key)
+            key = key.replace(' ', '_')
+            key = ''.join(char for char in key
+                          if char.isidentifier() or char.isnumeric())
+            return key.lower()
+
+        return {key_clean(key): value for key, value in zip(self.colnames, self)}
 
 
 class QueryResponseColumn(Column):

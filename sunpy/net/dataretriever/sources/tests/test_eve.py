@@ -86,7 +86,7 @@ def test_get(LCClient, time, instrument):
     [(a.Time('2012/10/4', '2012/10/5') & a.Instrument.eve & a.Level.zero)])
 def test_fido(LCClient, query):
     qr = Fido.search(query)
-    client = qr.get_response(0).client
+    client = qr[0].client
     assert isinstance(qr, UnifiedResponse)
     assert isinstance(client, eve.EVEClient)
     response = Fido.fetch(qr)
@@ -104,16 +104,16 @@ def test_levels(time):
     """
     eve_a = a.Instrument.eve
     qr = Fido.search(time, eve_a, a.Level.one)
-    clients = {type(a.client) for a in qr.responses}
+    clients = {type(a.client) for a in qr}
     assert clients == {VSOClient}
 
     qr = Fido.search(time, eve_a, a.Level.zero)
-    clients = {type(a.client) for a in qr.responses}
+    clients = {type(a.client) for a in qr}
     assert clients == {eve.EVEClient}
 
     # This is broken because the VSO Eve client doesn't provide a way of allowing Level.
     # qr = Fido.search(time, eve_a, a.Level.zero | a.Level.one)
-    # clients = {type(a.client) for a in qr.responses}
+    # clients = {type(a.client) for a in qr}
     # assert clients == {eve.EVEClient}
 
 

@@ -17,12 +17,12 @@ from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient, QueryResponseTable
+from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 from sunpy.net.jsoc.attrs import walker
+from sunpy.util._table_attribute import TableAttribute
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.parfive_helpers import Downloader, Results
-from sunpy.util._table_attribute import TableAttribute
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -408,6 +408,7 @@ class JSOCClient(BaseClient):
             return requests[0]
         return requests
 
+    @convert_row_to_table
     def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
               downloader=None, wait=True, sleep=10, max_conn=default_max_conn, **kwargs):
         """

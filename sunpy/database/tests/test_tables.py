@@ -66,14 +66,17 @@ def fido_search_result():
 @pytest.fixture
 def query_result():
     client = vso.VSOClient()
-    return client.search(net_attrs.Time('2001/1/1', '2001/1/2'), net_attrs.Instrument('EIT'))
+    return client.search(net_attrs.Time('2001/1/1', '2001/1/2'),
+                         net_attrs.Instrument('EIT'),
+                         response_format="legacy")
 
 
 @pytest.fixture
 def qr_with_none_waves():
     return vso.VSOClient().search(
         net_attrs.Time('20121224T120049.8', '20121224T120049.8'),
-        net_attrs.Provider('SDAC'), net_attrs.Instrument('VIRGO'))
+        net_attrs.Provider('SDAC'), net_attrs.Instrument('VIRGO'),
+        response_format="legacy")
 
 
 @pytest.fixture
@@ -81,14 +84,16 @@ def qr_block_with_missing_physobs():
     return vso.VSOClient().search(
         net_attrs.Time('20130805T120000', '20130805T121000'),
         net_attrs.Instrument('SWAVES'), net_attrs.Source('STEREO_A'),
-        net_attrs.Provider('SSC'), net_attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
+        net_attrs.Provider('SSC'), net_attrs.Wavelength(10 * u.kHz, 160 * u.kHz),
+        response_format="legacy")[0]
 
 
 @pytest.fixture
 def qr_block_with_kev_unit():
     return vso.VSOClient().search(
         net_attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
-        net_attrs.Instrument('RHESSI'))[0]
+        net_attrs.Instrument('RHESSI'),
+        response_format="legacy")[0]
 
 
 def test_fits_header_entry_equality():
@@ -147,7 +152,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid='EVE_L1_esp_2012001_00',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
-        size=-1.0,
+        size=None,
         instrument='EVE',
         wavemin=0.1, wavemax=30.4)
     # 2 entries from goes
