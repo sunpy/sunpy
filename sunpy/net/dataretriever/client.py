@@ -7,7 +7,7 @@ import sunpy
 from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
-from sunpy.net.base_client import BaseClient, QueryResponseTable
+from sunpy.net.base_client import BaseClient, QueryResponseRow, QueryResponseTable
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 from sunpy.util.scraper import Scraper, get_timerange_from_exdict
@@ -211,8 +211,7 @@ class GenericClient(BaseClient):
             elif '{file}' not in str(path):
                 fname = path / '{file}'
 
-            # TODO: This can be replaced with dict(qres[i]) with astropy 4.1
-            temp_dict = dict(zip(qres[i].colnames, qres[i].columns))
+            temp_dict = qres[i].response_block_map
             temp_dict['file'] = str(filename)
             fname = fname.expanduser()
             fname = Path(str(fname).format(**temp_dict))

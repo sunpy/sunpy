@@ -17,7 +17,7 @@ from sunpy import config
 from sunpy.net import Fido, attr
 from sunpy.net import attrs as a
 from sunpy.net import jsoc
-from sunpy.net.base_client import QueryResponseTable
+from sunpy.net.base_client import QueryResponseRow, QueryResponseTable
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
@@ -94,10 +94,8 @@ def check_response(query, unifiedresp):
     if not query_tr:
         raise ValueError("No Time Specified")
 
-    for block in unifiedresp.responses:
-        res_tr = block.time_range()
+    for block in unifiedresp:
         for res in block:
-            assert res['Start Time'] in res_tr
             assert query_instr.lower() == res['Instrument'].lower()
 
 
@@ -106,7 +104,7 @@ def test_save_path(tmpdir):
     qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level.zero)
 
     # Test when path is str
-    files = Fido.fetch(qr, path=str(tmpdir / "{Instrument}" / "{Level}"))
+    files = Fido.fetch(qr, path=str(tmpdir / "{instrument}" / "{level}"))
     for f in files:
         assert str(tmpdir) in f
         assert f"EVE{os.path.sep}0" in f
@@ -118,7 +116,7 @@ def test_save_path_pathlib(tmpdir):
 
     # Test when path is pathlib.Path
     target_dir = tmpdir.mkdir("down")
-    path = pathlib.Path(target_dir, "{Instrument}", "{Level}")
+    path = pathlib.Path(target_dir, "{instrument}", "{level}")
     files = Fido.fetch(qr, path=path)
     for f in files:
         assert target_dir.strpath in f
@@ -177,8 +175,6 @@ def test_fetch():
 
 """
 UnifiedResponse Tests
-
-Use LYRA here because it does not use the internet to return results.
 """
 
 
@@ -250,7 +246,7 @@ def test_responses():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
 
-    for i, resp in enumerate(results.responses):
+    for i, resp in enumerate(results):
         assert isinstance(resp, QueryResponse)
 
     assert i + 1 == len(results)
@@ -264,7 +260,7 @@ def test_repr():
     rep = repr(results)
     rep = rep.split('\n')
     # 6 header lines, the results table and two blank lines at the end
-    assert len(rep) == 6 + len(list(results.responses)[0]) + 2
+    assert len(rep) == 6 + len(list(results)[0]) + 2
 
 
 def filter_queries(queries):
@@ -310,14 +306,12 @@ def test_fido_indexing(queries):
     assert isinstance(res[1][0], Row)
 
     aa = res[0, 0]
-    assert isinstance(aa, BaseQueryResponse)
-    assert len(aa) == 1
-    assert len(aa[0]) == 1
+    assert isinstance(aa, QueryResponseRow)
 
     aa = res[:, 0]
     assert isinstance(aa, UnifiedResponse)
     assert len(aa) == 2
-    assert len(aa.get_response(0)) == 1
+    assert len(aa[0]) == 1
 
     aa = res[0, :]
     assert isinstance(aa, QueryResponseTable)
@@ -417,7 +411,7 @@ def test_vso_errors_with_second_client(mock_download_all):
     assert len(res.errors) == 1
     assert len(res) != qr.file_num
     # Assert that all the XRSClient records are in the output.
-    for resp in qr.responses:
+    for resp in qr:
         if isinstance(resp, XRSClient):
             assert len(resp) == len(res)
 
@@ -500,7 +494,7 @@ def test_fido_metadata_queries():
     assert isinstance(results['hek'], UnifiedResponse)
     assert isinstance(results['hek'][0], QueryResponseTable)
     assert len(results['hek'][1]) == 2
-    assert results[::-1][0] == results['jsoc']
+    assert results[::-1][0] is results['jsoc']
     assert isinstance(results['jsoc'], QueryResponseTable)
 
     files = Fido.fetch(results)
