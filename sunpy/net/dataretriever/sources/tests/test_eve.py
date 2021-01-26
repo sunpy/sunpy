@@ -76,6 +76,9 @@ def test_get(LCClient, time, instrument):
     res = LCClient.fetch(qr1)
     assert len(res) == len(qr1)
 
+    res2 = LCClient.fetch(qr1[0])
+    assert len(res2) == 1
+
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(

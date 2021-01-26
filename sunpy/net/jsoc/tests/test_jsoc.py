@@ -23,8 +23,20 @@ def client():
     return JSOCClient()
 
 
+@pytest.fixture
+def jsoc_response_double():
+    resp = JSOCResponse([{'T_REC': '2011/01/01T00:00', 'INSTRUME': 'AIA'},
+                         {'T_REC': '2011/01/02T00:00', 'INSTRUME': 'AIA'}])
+
+    resp.query_args = [{'start_time': astropy.time.Time("2020-01-01T01:00:36.000"),
+                        'end_time': astropy.time.Time("2020-01-01T01:00:38.000"),
+                        'series': 'hmi.M_45s', 'notify': 'jsoc@cadair.com'}]
+
+    return resp
+
+
 def test_jsocresponse_single():
-    j1 = JSOCResponse(astropy.table.Table(data=[[1, 2, 3, 4]]))
+    j1 = JSOCResponse(data=[[1, 2, 3, 4]])
     assert all(j1 == astropy.table.Table(data=[[1, 2, 3, 4]]))
     assert len(j1) == 4
 
@@ -454,3 +466,12 @@ def test_jsoc_cutout_attrs(client):
     m = sunpy.map.Map(files, sequence=True)
     assert m.all_maps_same_shape()
     assert m.as_array().shape == (1085, 1085, 6)
+
+
+def test_row_and_warning(mocker, client, jsoc_response_double):
+    mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.get_request")
+    request_data = mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.request_data")
+    with pytest.warns(SunpyUserWarning):
+        client.fetch(jsoc_response_double[0], sleep=0)
+
+    assert request_data.called_once_with(jsoc_response_double[0].as_table())

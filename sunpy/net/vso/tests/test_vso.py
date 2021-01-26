@@ -1,6 +1,3 @@
-
-from unittest import mock
-
 import pytest
 from parfive import Results
 
@@ -67,12 +64,17 @@ def mock_response():
 
 
 @pytest.fixture
-def eit(request):
+def mock_table_response(mock_response):
+    return VSOQueryResponseTable.from_zeep_response(mock_response, client=False)
+
+
+@pytest.fixture
+def eit():
     return core_attrs.Instrument('eit')
 
 
 @pytest.fixture
-def client(request):
+def client():
     return vso.VSOClient()
 
 
@@ -252,19 +254,21 @@ def test_wave_repr():
     assert repr(moarwav) == "<sunpy.net.attrs.Wavelength(12.0, 15.0, 'Angstrom')>"
 
 
-@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+@pytest.fixture
+def mock_build_client(mocker):
+    return mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
+
+
 def test_str(mock_build_client):
     qr = VSOQueryResponseTable()
     assert str(qr) == '<No columns>'
 
 
-@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_repr(mock_build_client):
     qr = VSOQueryResponseTable()
     assert '<No columns>' in repr(qr)
 
 
-@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_show(mock_build_client):
     qr = VSOQueryResponseTable()
     qrshow = qr.show('Start Time', 'Source', 'Type')
@@ -349,8 +353,8 @@ def test_iter_sort_response(mock_response):
     assert fileids == ['t1', 't2', 't3', 't4', 'f1', 'f2']
 
 
-@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
-def test_from_zeep_response(mock_build_client):
+def test_from_zeep_response(mocker):
+    mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
     records = (MockQRRecord(),)
 
     table = VSOQueryResponseTable.from_zeep_response(records)
@@ -369,24 +373,25 @@ def test_from_zeep_response(mock_build_client):
     assert size_[0] == 0.0
 
 
-@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
-def test_QueryResponse_build_table_with_extent_type(mock_build_client):
+def test_QueryResponse_build_table_with_extent_type(mocker):
     """
     When explicitly suppling an 'Extent' only the 'type' is stored
     in the built table.
     """
-    e_type = va.Extent(x=1.0, y=2.5, width=37, length=129.2, atype='CORONA')
-    table = VSOQueryResponseTable.from_zeep_response((MockQRRecord(extent_type=e_type),))
+    mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
+    e_type = MockObject(x=1.0, y=2.5, width=37, length=129.2, type='CORONA')
+    table = VSOQueryResponseTable.from_zeep_response(MockQRResponse((MockQRRecord(extent=e_type),)),
+                                                     client=None)
     extent = table['Extent Type'].data
     assert len(extent) == 1
     assert extent[0] == e_type.type
 
 
-@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
-def test_QueryResponse_build_table_with_no_start_time(mock_build_client):
+def test_QueryResponse_build_table_with_no_start_time(mocker):
     """
     Only the 'end' time set, no 'start' time
     """
+    mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
     a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
     records = (MockQRRecord(end_time=a_st.strftime(va._TIMEFORMAT)),)
@@ -401,11 +406,11 @@ def test_QueryResponse_build_table_with_no_start_time(mock_build_client):
     assert end_time_[0].value == '2016-02-14 08:08:12.000'
 
 
-@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
-def test_QueryResponse_build_table_with_no_end_time(mock_build_client):
+def test_QueryResponse_build_table_with_no_end_time(mocker):
     """
     Only the 'start' time is set, no 'end' time
     """
+    mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
     a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
     records = (MockQRRecord(start_time=a_st.strftime(va._TIMEFORMAT)),)
@@ -439,25 +444,25 @@ def test_vso_hmi(client, tmpdir):
         assert all([s == series[0] for s in series])
 
 
-@mock.patch('sunpy.net.vso.vso.check_connection', return_value=None)
-def test_get_online_vso_url(mock_urlopen):
+def test_get_online_vso_url(mocker):
     """
     No wsdl links returned valid HTTP response? Return None
     """
+    mocker.patch('sunpy.net.vso.vso.check_connection', return_value=None)
     assert get_online_vso_url() is None
 
 
-@mock.patch('sunpy.net.vso.vso.get_online_vso_url', return_value=None)
-def test_VSOClient(mock_vso_url):
+def test_VSOClient(mocker):
     """
     Unable to find any valid VSO mirror? Raise ConnectionError
     """
+    mocker.patch('sunpy.net.vso.vso.get_online_vso_url', return_value=None)
     with pytest.raises(ConnectionError):
         VSOClient()
 
 
-@mock.patch('sunpy.net.vso.vso.check_connection', return_value=None)
-def test_build_client(mock_vso_url):
+def test_build_client(mocker):
+    mocker.patch('sunpy.net.vso.vso.check_connection', return_value=None)
     with pytest.raises(ConnectionError):
         build_client(url="http://notathing.com/", port_name="spam")
 
@@ -523,10 +528,20 @@ def test_response_block_properties(client):
     assert len(properties) == 0
 
 
-@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
-def test_response_block_properties_table(mock_build_client, mock_response):
+def test_response_block_properties_table(mocker, mock_response):
+    mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
     legacy_response = QueryResponse.create(mock_response)
     table_response = VSOQueryResponseTable.from_zeep_response(mock_response, client=False)
 
     print(legacy_response)
     print(table_response)
+
+
+def test_row_to_table(mocker, client, mock_table_response):
+    mock_table_response.client = client
+    # we want to assert that as_table is being called, but if it returns an
+    # empty list the rest of the fetch method (which does network stuff) is
+    # skipped.
+    as_table = mocker.patch("sunpy.net.base_client.QueryResponseRow.as_table", return_value=[])
+    client.fetch(mock_table_response[0])
+    assert as_table.called
