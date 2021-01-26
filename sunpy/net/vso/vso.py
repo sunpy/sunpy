@@ -12,6 +12,7 @@ import inspect
 import datetime
 import warnings
 import itertools
+from pathlib import Path
 from functools import partial
 from urllib.error import URLError, HTTPError
 from urllib.parse import urlencode
@@ -52,6 +53,7 @@ RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 class _Str(str):
     """ Subclass of string that contains a meta attribute for the
     record_item associated with the file. """
+    meta = None
 
 
 # ----------------------------------------
@@ -275,24 +277,18 @@ class VSOClient(BaseClient):
         if resp:
             cdheader = resp.headers.get("Content-Disposition", None)
             if cdheader:
-                value, params = cgi.parse_header(cdheader)
+                _, params = cgi.parse_header(cdheader)
                 name = params.get('filename', "")
                 # Work around https://github.com/sunpy/sunpy/issues/3372
                 if name.count('"') >= 2:
                     name = name.split('"')[1]
 
         if name is None:
-            # Advice from the VSO is to fallback to providerid + fileid
+            # Advice from the VSO is to fallback to providerid + fileid for a filename
             # As it's possible multiple providers give the same fileid.
             # However, I haven't implemented this yet as it would be a breaking
             # change to the filenames we expect.
-
-            # I don't know if we still need this bytes check in Python 3 only
-            # land, but I don't dare remove it.
-            if isinstance(queryresponse['fileid'], bytes):
-                fileid = queryresponse['fileid'].decode("ascii", "ignore")
-            else:
-                fileid = queryresponse['fileid']
+            fileid = queryresponserow['fileid']
 
             # Some providers make fileid a path
             # Some also don't specify a file extension, but not a lot we can do
@@ -310,7 +306,6 @@ class VSOClient(BaseClient):
         if not name:
             name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 
-        # This can be replaced with dict(queryresponse) with astropy 4.1
         fname = pattern.format(file=name,
                                **dict(zip(queryresponse.colnames,
                                           queryresponse.columns)))
@@ -391,16 +386,17 @@ class VSOClient(BaseClient):
             query_response = query_response.as_table()
 
         if path is None:
-            path = os.path.join(config.get('downloads', 'download_dir'),
-                                '{file}')
-        elif isinstance(path, str) and '{file}' not in path:
-            path = os.path.join(path, '{file}')
-        path = os.path.expanduser(path)
+            path = Path(config.get('downloads', 'download_dir')) / '{file}'
+        elif isinstance(path, (str, os.PathLike)) and '{file}' not in str(path):
+            path = Path(path) / '{file}'
+        else:
+            path = Path(path)
+        path = path.expanduser()
 
         dl_set = True
         if not downloader:
             dl_set = False
-            downloader = Downloader(progress=progress)
+            downloader = Downloader(progress=progress, overwrite=overwrite)
 
         if isinstance(query_response, (QueryResponse, list)):
             query_response = VSOQueryResponseTable.from_zeep_response(query_response,
@@ -425,7 +421,7 @@ class VSOClient(BaseClient):
         err_results = self.download_all(data_response,
                                         methods,
                                         downloader,
-                                        path,
+                                        str(path),
                                         self.by_fileid(query_response))
 
         if dl_set and not wait:
