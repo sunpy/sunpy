@@ -17,7 +17,7 @@ from sunpy import config
 from sunpy.net import Fido, attr
 from sunpy.net import attrs as a
 from sunpy.net import jsoc
-from sunpy.net.base_client import BaseQueryResponse, QueryResponseTable
+from sunpy.net.base_client import QueryResponseTable
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
@@ -186,18 +186,18 @@ Use LYRA here because it does not use the internet to return results.
 def test_unifiedresponse_slicing():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-    assert isinstance(results[0:2], BaseQueryResponse)
-    assert isinstance(results[0], BaseQueryResponse)
+    assert isinstance(results[0:2], QueryResponseTable)
+    assert isinstance(results[0], QueryResponseTable)
 
 
 @pytest.mark.remote_data
 def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-    assert isinstance(results[::-1], BaseQueryResponse)
+    assert isinstance(results[::-1], QueryResponseTable)
     assert len(results[::-1]) == len(results[::1])
-    assert isinstance(results[0, ::-1], BaseQueryResponse)
-    assert all(results[0][::-1].build_table() == results[0, ::-1].build_table())
+    assert isinstance(results[0, ::-1], QueryResponseTable)
+    assert all(results[0][::-1] == results[0, ::-1])
 
 
 @pytest.mark.remote_data
@@ -320,8 +320,7 @@ def test_fido_indexing(queries):
     assert len(aa.get_response(0)) == 1
 
     aa = res[0, :]
-    assert isinstance(aa, BaseQueryResponse)
-    assert len(aa[0]) == 1
+    assert isinstance(aa, QueryResponseTable)
 
     with pytest.raises(IndexError):
         res[0, 0, 0]
@@ -499,7 +498,7 @@ def test_fido_metadata_queries():
 
     assert len(results['hek']) == 2
     assert isinstance(results['hek'], UnifiedResponse)
-    assert isinstance(results['hek'][0], BaseQueryResponse)
+    assert isinstance(results['hek'][0], QueryResponseTable)
     assert len(results['hek'][1]) == 2
     assert results[::-1][0] == results['jsoc']
     assert isinstance(results['jsoc'], QueryResponseTable)

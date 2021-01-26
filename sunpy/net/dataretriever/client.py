@@ -1,6 +1,8 @@
 from pathlib import Path
 from collections import OrderedDict
 
+import numpy as np
+
 import sunpy
 from sunpy import config
 from sunpy.net import attrs as a
@@ -22,8 +24,8 @@ class QueryResponse(QueryResponseTable):
         """
         Returns the time-span for which records are available.
         """
-        return TimeRange(min(qrblock['Start Time'] for qrblock in self),
-                         max(qrblock['End Time'] for qrblock in self))
+        if 'Start Time' in self.colnames and 'End Time' in self.colnames:
+            return TimeRange(np.min(self['Start Time']), np.max(self['End Time']))
 
     def response_block_properties(self):
         """
@@ -280,12 +282,12 @@ class GenericClient(BaseClient):
         if path is not None:
             path = Path(path)
 
+        if isinstance(qres, QueryResponseRow):
+            qres = qres.as_table()
+
         urls = []
         if len(qres):
-            if isinstance(qres, QueryResponseRow):
-                urls = [qres['url']]
-            else:
-                urls = list(qres['url'])
+            urls = list(qres['url'])
 
         filenames = [url.split('/')[-1] for url in urls]
 
