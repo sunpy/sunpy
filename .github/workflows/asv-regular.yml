@@ -2,8 +2,9 @@ name: asv-benchmarks-daily
 
 on:
   schedule:
-    - cron: '0 5 ***'
-jobs:
+    - cron: '1 5 * * *'
+
+jobs:   
   asv-run:
     runs-on: ubuntu-20.04
     steps:
