@@ -2,7 +2,9 @@
 Classes and helper functions for VSO responses.
 """
 from collections import defaultdict
+from collections.abc import Mapping
 
+import numpy as np
 from zeep.helpers import serialize_object
 
 import astropy.units as u
@@ -50,15 +52,6 @@ class VSOQueryResponseTable(QueryResponseTable):
     hide_keys = ['fileid', 'fileurl']
     errors = TableAttribute(default=[])
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # If we haven't been given a client create one
-        if self.client is None:
-            # Import here to avoid circular import
-            from sunpy.net.vso import VSOClient
-            self.client = VSOClient()
-
     @classmethod
     def from_zeep_response(cls, response, *, client, _sort=True):
         """
@@ -75,12 +68,12 @@ class VSOQueryResponseTable(QueryResponseTable):
         for record in records:
             row = defaultdict(lambda: None)
             for key, value in serialize_object(record).items():
-                if not isinstance(value, dict):
+                if not isinstance(value, Mapping):
                     if key == "size":
                         # size is in bytes with a very high degree of precision.
                         value = (value * u.Kibyte).to(u.Mibyte).round(5)
 
-                    key = key.capitalize() if key in cls.hide_keys else key
+                    key = key.capitalize() if key not in cls.hide_keys else key
                     row[key] = value
                 else:
                     if key == "wave":
@@ -89,9 +82,11 @@ class VSOQueryResponseTable(QueryResponseTable):
                         waveunit = value['waveunit']
                         waveunit = 'keV' if waveunit == 'kev' else waveunit
 
-                        row["Wavelength"] = u.Quantity(
-                            [float(value['wavemin']), float(value['wavemax'])],
-                            unit=waveunit)
+                        row["Wavelength"] = None
+                        if value['wavemin'] is not None and value['wavemax'] is not None:
+                            row["Wavelength"] = u.Quantity(
+                                [float(value['wavemin']), float(value['wavemax'])],
+                                unit=waveunit)
 
                         row["Wavetype"] = value['wavetype']
                         continue
@@ -107,34 +102,20 @@ class VSOQueryResponseTable(QueryResponseTable):
 
         # Reorder the columns to put the most useful ones first.
         data = cls(data, client=client)
-        all_cols = set(data.colnames)
+        all_cols = list(data.colnames)
         first_names = [n for n in ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']
                        if n in all_cols]
-        extra_cols = all_cols.difference(first_names)
-        all_cols = first_names + list(extra_cols)
+        extra_cols = [col for col in all_cols if col not in first_names]
+        all_cols = first_names + extra_cols
         vsotable = data[[col for col in all_cols if data[col] is not None]]
         empty_cols = [col.info.name for col in data.itercols() if col.info.dtype.kind == 'O' and all(val is None for val in col)]
         vsotable.remove_columns(empty_cols)
         return vsotable
 
+    def total_size(self):
+        if 'size' not in self.colnames:
+            return np.nan
+        return np.nansum(self['size'])
+
     def add_error(self, exception):
         self.errors.append(exception)
-
-    def response_block_properties(self):
-        """
-        Returns a set of class attributes on all the response blocks.
-
-        Returns
-        -------
-        s : `set`
-            List of strings, containing attribute names in the response blocks.
-        """
-        s = {a if not a.startswith('_') else None for a in dir(self[0])}
-        for resp in self[1:]:
-            if len(s) == 0:
-                break
-            s = s.intersection({a if not a.startswith('_') else None for a in dir(resp)})
-
-        if None in s:
-            s.remove(None)
-        return s

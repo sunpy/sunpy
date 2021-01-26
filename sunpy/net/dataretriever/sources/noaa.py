@@ -10,7 +10,6 @@ from astropy.time import Time, TimeDelta
 
 from sunpy.extern.parse import parse
 from sunpy.net import attrs as a
-from sunpy.net.base_client import QueryResponseRow
 from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader

@@ -77,12 +77,12 @@ def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
 def test_old_data_access(timerange, url_old, url_new):
     # test first for old data
     qr = Fido.search(timerange, a.Instrument("XRS"), a.Provider("SDAC"))
-    urls = [r['url'] for r in qr.get_response(0)]
+    urls = qr[0]['url']
     assert urls[0] == url_old
 
     # now test for new data
     qr = Fido.search(timerange, a.Instrument("XRS"))
-    urls = [r['url'] for r in qr.get_response(0)]
+    urls = qr[0]['url']
     assert urls[0] == url_new
 
 

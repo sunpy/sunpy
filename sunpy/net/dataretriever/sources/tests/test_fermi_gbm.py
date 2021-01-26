@@ -77,7 +77,7 @@ def test_get(LCClient, time, instrument):
     [(a.Time('2012/10/4', '2012/10/5') & a.Instrument.gbm & a.Detector.n5)])
 def test_fido(LCClient, query):
     qr = Fido.search(query)
-    client = qr.get_response(0).client
+    client = qr[0].client
     assert isinstance(qr, UnifiedResponse)
     assert type(client) == type(LCClient)
     response = Fido.fetch(qr)

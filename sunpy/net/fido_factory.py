@@ -125,18 +125,21 @@ class UnifiedResponse(Sequence):
         """
         return self._list[i]
 
+    @deprecated("2.1", alternative="path_format_keys")
     def response_block_properties(self):
-        """
-        A set of class attributes on all the response blocks.
+        return self.path_format_keys()
 
-        Returns
-        -------
-        s : list
-            List of strings, containing attribute names in the response blocks.
+    def path_format_keys(self):
         """
-        s = self.get_response(0).response_block_properties()
-        for i in range(1, len(self)):
-            s.intersection(self.get_response(i).response_block_properties())
+        Returns all the names that can be used to format filenames.
+
+        Each one corresponds to a single column in the table, and the format
+        syntax should match the dtype of that column, i.e. for a ``Time``
+        object or a ``Quantity``.
+        """
+        s = self[0].path_format_keys()
+        for table in self[1:]:
+            s.intersection(table.path_format_keys())
         return s
 
     @property
@@ -156,7 +159,7 @@ class UnifiedResponse(Sequence):
             `sunpy.net.dataretriever.client.QueryResponse`, `sunpy.net.vso.QueryResponse` or
             `sunpy.net.jsoc.JSOCClient`.
         """
-        return list(self.responses)
+        return list(self)
 
     @property
     @deprecated("2.1", "The same behaviour can be obtained by iterating over the object directly")
@@ -166,8 +169,8 @@ class UnifiedResponse(Sequence):
         objects contained in the `~sunpy.net.fido_factory.UnifiedResponse`
         object.
         """
-        for i in range(len(self)):
-            yield self.get_response(i)
+        for table in self:
+            yield table
 
     @property
     def file_num(self):
@@ -179,7 +182,7 @@ class UnifiedResponse(Sequence):
             ret = 'Results from {} Provider:</br></br>'.format(len(self))
         else:
             ret = 'Results from {} Providers:</br></br>'.format(len(self))
-        for block in self.responses:
+        for block in self:
             ret += "{} Results from the {}:</br>".format(len(block),
                                                          block.client.__class__.__name__)
             ret += block._repr_html_()
