@@ -96,7 +96,7 @@ this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing info
 It does not download the files.
 For instructions on how to download data using Fido, see :ref:`downloading_data`.
 
-To see a summary of results of our query, simple type the name of the variable set to the Fido search, in this case, result::
+To see a summary of the results of our query, simply type the name of the variable set to the Fido search, in this case, result::
 
     >>> result  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
@@ -263,7 +263,7 @@ Working with Response Tables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As we have seen above the `~sunpy.net.fido_factory.UnifiedResponse` object contains many response tables which make up the search results.
-Each of these responses are `~sunpy.net.base_client.QueryResponseTable` objects, these are `astropy.table` objects which means you can interact with them an filter them like any other tabular data.
+Each of the responses are `~sunpy.net.base_client.QueryResponseTable` objects, which are `astropy.table` objects meaning that you can interact with them and filter them like any other tabular data.
 This can be used to interact with results which are metadata only, i.e. searches from the HEK, or it can be used to reduce the number of files downloaded by `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 
 For example if we did a query for some AIA and HMI data::
@@ -397,8 +397,8 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     <BLANKLINE>
     <BLANKLINE>
 
-To give an example of filtering post-search, let's only return the rows in the table which are line of sight magnetograms from or the 94Å passband from AIA.
-You can always do this filtering with the `a.vso.Physobs` and `a.Wavelength` attrs in the search command
+To give an example of filtering post-search, let's only return the rows in the table which are line-of-sight magnetograms from HMI or the 94Å passband from AIA.
+You can also always do this filtering with the `a.vso.Physobs` and `a.Wavelength` attrs in the search command.
 
 First we split the results in to a table for AIA and a table for HMI::
 

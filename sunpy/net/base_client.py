@@ -77,7 +77,7 @@ class BaseQueryResponse(Sequence):
         s : `set`
             List of strings, containing attribute names in the response blocks.
         """
-        set()
+        return set()
 
     def __str__(self):
         """Print out human-readable summary of records retrieved"""
@@ -171,7 +171,7 @@ class QueryResponseTable(QTable):
     hide_keys = TableAttribute()
 
     # This is a work around for https://github.com/astropy/astropy/pull/11217
-    # Remove when min astropy version is > 4.2.1
+    # TODO Remove when min astropy version is > 4.2.1
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for attr in list(kwargs):

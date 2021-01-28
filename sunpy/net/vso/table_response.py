@@ -18,12 +18,12 @@ __all__ = ['VSOQueryResponseTable']
 
 def iter_sort_response(response):
     """
-    Sorts the VSO queryresults by their start time.
+    Sorts the VSO query results by their start time.
 
     Parameters
     ----------
     response : `zeep.objects.QueryResponse`
-        A SOAP Object of a VSO queryresult
+        A SOAP Object of a VSO query result
 
     Returns
     -------
