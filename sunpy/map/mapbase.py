@@ -16,9 +16,7 @@ import numpy as np
 from matplotlib import cm
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
-from packaging import version
 
-import astropy
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import Latitude, Longitude, SkyCoord, UnitSphericalRepresentation
@@ -42,6 +40,12 @@ from sunpy.util.decorators import cached_property_based_on, deprecated
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
+
+# Quadrangle is not present in Astropy<4.2, so we fall back to a vendored version
+try:
+    from astropy.visualization.wcsaxes import Quadrangle
+except ImportError:
+    from sunpy.visualization._quadrangle import Quadrangle
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
@@ -1941,17 +1945,9 @@ class GenericMap(NDData):
 
         Notes
         -----
-        Astropy 4.2+ is required for this method.
-
         Extra keyword arguments to this function are passed through to the
         `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
         """
-        if version.parse(astropy.__version__) < version.parse("4.2.0"):
-            raise ImportError('Astropy >= 4.2 is required for this method. '
-                              'draw_rectangle() may meet your needs.')
-
-        from astropy.visualization.wcsaxes import Quadrangle
-
         bottom_left, top_right = get_rectangle_coordinates(
             bottom_left, top_right=top_right, width=width, height=height)
 

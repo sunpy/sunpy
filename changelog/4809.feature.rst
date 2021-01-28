@@ -1,2 +1,2 @@
-Added :meth:`sunpy.map.GenericMap.draw_quadrangle` to make use of `astropy.visualization.wcsaxes.Quadrangle`, which is available in Astropy 4.2+.
-Unlike with :meth:`sunpy.map.GenericMap.draw_rectangle`, a quadrangle can be aligned with coordinate axes different from those of the map.
+Added :meth:`sunpy.map.GenericMap.draw_quadrangle` for drawing a quadrangle on a map.
+A quadrangle has edges that are aligned with lines of constant latitude and longitude, but these can be in a different coordinate system than that of the map.

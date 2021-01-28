@@ -7,9 +7,7 @@ import matplotlib.colors as mcolor
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from packaging import version
 
-import astropy
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
@@ -130,7 +128,6 @@ def test_rectangle_aia171_top_right(aia171_test_map):
     aia171_test_map.draw_rectangle(bottom_left, top_right=top_right)
 
 
-@pytest.mark.skipif(version.parse(astropy.__version__) < version.parse("4.2.0"), reason="Astropy >= 4.2 is required")
 @figure_test
 def test_quadrangle_aia17_width_height(aia171_test_map):
     aia171_test_map.plot()
@@ -141,7 +138,6 @@ def test_quadrangle_aia17_width_height(aia171_test_map):
     aia171_test_map.draw_quadrangle(bottom_left=bottom_left, width=w, height=h)
 
 
-@pytest.mark.skipif(version.parse(astropy.__version__) < version.parse("4.2.0"), reason="Astropy >= 4.2 is required")
 @figure_test
 def test_quadrangle_aia17_top_right(aia171_test_map):
     aia171_test_map.plot()
@@ -221,7 +217,6 @@ def test_heliographic_rectangle_top_right(heliographic_test_map):
     heliographic_test_map.draw_rectangle(bottom_left, top_right=top_right, color='cyan')
 
 
-@pytest.mark.skipif(version.parse(astropy.__version__) < version.parse("4.2.0"), reason="Astropy >= 4.2 is required")
 @figure_test
 def test_heliographic_quadrangle_width_height(heliographic_test_map):
     heliographic_test_map.plot()
@@ -232,7 +227,6 @@ def test_heliographic_quadrangle_width_height(heliographic_test_map):
     heliographic_test_map.draw_quadrangle(bottom_left, width=w, height=h, edgecolor='cyan')
 
 
-@pytest.mark.skipif(version.parse(astropy.__version__) < version.parse("4.2.0"), reason="Astropy >= 4.2 is required")
 @figure_test
 def test_heliographic_quadrangle_top_right(heliographic_test_map):
     heliographic_test_map.plot()
