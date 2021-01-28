@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 from astropy.visualization import wcsaxes
 
-
 __all__ = ["is_wcsaxes", "gca_wcs", "get_world_transform",
            "default_wcs_grid", "wcsaxes_heliographic_overlay"]
 
