@@ -17,8 +17,9 @@ from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient, BaseQueryResponseTable
+from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 from sunpy.net.jsoc.attrs import walker
+from sunpy.util._table_attribute import TableAttribute
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.parfive_helpers import Downloader, Results
@@ -34,32 +35,27 @@ class NotExportedError(Exception):
     pass
 
 
-class JSOCResponse(BaseQueryResponseTable):
-    def __init__(self, table=None, client=None):
-        """
-        table : `astropy.table.Table`
-        """
-        super().__init__(table, client)
-        self.query_args = getattr(table, 'query_args', None)
-        self.requests = getattr(table, 'requests', None)
+class JSOCResponse(QueryResponseTable):
+    query_args = TableAttribute()
+    requests = TableAttribute()
+    display_keys = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
+    # This variable is used to detect if the result has been sliced before it is passed
+    # to fetch and issue a warning to the user about not being able to post-filter JSOC searches.
+    _original_num_rows = TableAttribute(default=None)
 
-    def __getitem__(self, item):
-        ret = super().__getitem__(item)
-        ret.query_args = self.query_args
-        ret.client = self._client
-        warnings.warn("Downloading of sliced JSOC results is not supported. "
-                      "All the files present in the original response will be downloaded.",
-                      SunpyUserWarning)
-        return ret
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_num_rows = len(self)
 
+    # TODO: remove this method post 3.0
     def build_table(self):
         # remove this check post 3.0
-        if any('keys' in i for i in self.query_args):
-            return self.table
+        if self.query_args is not None and any('keys' in i for i in self.query_args):
+            new_table = self.copy()
+            new_table.display_keys = slice(None)
+            return new_table
 
-        default_columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-        cols_in_table = [colname for colname in default_columns if colname in self.table.colnames]
-        return self.table[cols_in_table]
+        return self
 
 
 class JSOCClient(BaseClient):
@@ -317,8 +313,9 @@ class JSOCClient(BaseClient):
             iargs.update(block)
             # Update blocks with deep copy of iargs because in _make_recordset we use .pop() on element from iargs
             blocks.append(copy.deepcopy(iargs))
-            return_results.append(self._lookup_records(iargs))
+            return_results = astropy.table.vstack([return_results, self._lookup_records(iargs)])
         return_results.query_args = blocks
+        return_results._original_num_rows = len(return_results)
         return return_results
 
     @deprecated(since="2.1", message="use JSOCClient.search() instead", alternative="JSOCClient.search()")
@@ -411,11 +408,19 @@ class JSOCClient(BaseClient):
             return requests[0]
         return requests
 
+    @convert_row_to_table
     def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
               downloader=None, wait=True, sleep=10, max_conn=default_max_conn, **kwargs):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
+
+        .. note::
+
+            **Only complete searches can be downloaded from JSOC**, this means
+            that no slicing operations performed on the results object will
+            affect the number of files downloaded.
+
 
         Parameters
         ----------
@@ -455,7 +460,13 @@ class JSOCClient(BaseClient):
         results : a `~sunpy.net.download.Results` instance
             A Results object
 
-        """
+       """
+        if len(jsoc_response) != jsoc_response._original_num_rows:
+            warnings.warn("Downloading of sliced JSOC results is not supported. "
+                          "All the files present in the original response will "
+                          "be downloaded when passed to fetch().",
+                          SunpyUserWarning)
+
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
 

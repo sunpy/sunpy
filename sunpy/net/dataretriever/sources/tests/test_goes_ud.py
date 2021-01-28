@@ -12,7 +12,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time
 from sunpy.time import is_time_equal, parse_time
-from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -78,12 +77,12 @@ def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
 def test_old_data_access(timerange, url_old, url_new):
     # test first for old data
     qr = Fido.search(timerange, a.Instrument("XRS"), a.Provider("SDAC"))
-    urls = [r['url'] for r in qr.get_response(0)]
+    urls = qr[0]['url']
     assert urls[0] == url_old
 
     # now test for new data
     qr = Fido.search(timerange, a.Instrument("XRS"))
-    urls = [r['url'] for r in qr.get_response(0)]
+    urls = qr[0]['url']
     assert urls[0] == url_new
 
 
@@ -133,11 +132,11 @@ def test_query(LCClient, time):
     assert isinstance(qr1, QueryResponse)
     # We only compare dates here as the start time of the qr will always be the
     # start of the day.
-    assert qr1.time_range().start.strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
+    assert qr1[0]['Start Time'].strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
 
     almost_day = TimeDelta(1*u.day - 1*u.millisecond)
     end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
-    assert is_time_equal(qr1.time_range().end, end)
+    assert is_time_equal(qr1[-1]['End Time'], end)
 
 
 @pytest.mark.remote_data
@@ -193,7 +192,6 @@ def mock_query_object(LCClient):
     start = '2016/1/1'
     end = '2016/1/1 23:59:59'
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'GOES',
@@ -211,8 +209,8 @@ def test_show(LCClient):
     mock_qr = mock_query_object(LCClient)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
-               'Provider', 'SatelliteNumber']
-    assert qrshow0.colnames == allcols
+    allcols = {'Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
+               'Provider', 'SatelliteNumber', 'url'}
+    assert not allcols.difference(qrshow0.colnames)
     assert qrshow1.colnames == ['Start Time', 'Instrument']
     assert qrshow0['Instrument'][0] == 'GOES'
