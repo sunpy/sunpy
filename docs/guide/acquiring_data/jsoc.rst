@@ -501,10 +501,16 @@ Downloading data
 To download the files located by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`,
 you can download them by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`::
 
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
+    ...             a.jsoc.Notify('solar@example.com')  # doctest: +SKIP
     >>> downloaded_files = Fido.fetch(res)  # doctest: +SKIP
 
 To export a request for download, you must have used the `sunpy.net.jsoc.attrs.Notify` attribute at search time to specify your email address.
-Also **only whole queries can be downloaded from JSOC**, this means that no slicing operations performed on the results object will affect the results.
+
+.. note::
+
+   **Only complete searches can be downloaded from JSOC**, this means that no slicing operations performed on the results object will affect the number of files downloaded.
 
 
 Using JSOCClient for complex usage
