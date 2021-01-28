@@ -415,6 +415,13 @@ class JSOCClient(BaseClient):
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
 
+        .. note::
+
+            **Only complete searches can be downloaded from JSOC**, this means
+            that no slicing operations performed on the results object will
+            affect the number of files downloaded.
+
+
         Parameters
         ----------
         jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
