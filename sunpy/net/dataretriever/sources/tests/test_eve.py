@@ -8,7 +8,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.vso import VSOClient
 from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -64,8 +63,8 @@ def test_query(LCClient):
     qr1 = LCClient.search(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
-    assert qr1.time_range().start == parse_time('2012/08/09').to_datetime()
-    assert qr1.time_range().end == parse_time('2012/08/10 23:59:59.999').to_datetime()
+    assert qr1['Start Time'][0].datetime == parse_time('2012/08/09').datetime
+    assert qr1['End Time'][1].datetime == parse_time('2012/08/10 23:59:59.999').datetime
 
 
 @pytest.mark.remote_data
@@ -77,6 +76,9 @@ def test_get(LCClient, time, instrument):
     res = LCClient.fetch(qr1)
     assert len(res) == len(qr1)
 
+    res2 = LCClient.fetch(qr1[0])
+    assert len(res2) == 1
+
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
@@ -84,7 +86,7 @@ def test_get(LCClient, time, instrument):
     [(a.Time('2012/10/4', '2012/10/5') & a.Instrument.eve & a.Level.zero)])
 def test_fido(LCClient, query):
     qr = Fido.search(query)
-    client = qr.get_response(0).client
+    client = qr[0].client
     assert isinstance(qr, UnifiedResponse)
     assert isinstance(client, eve.EVEClient)
     response = Fido.fetch(qr)
@@ -102,16 +104,16 @@ def test_levels(time):
     """
     eve_a = a.Instrument.eve
     qr = Fido.search(time, eve_a, a.Level.one)
-    clients = {type(a.client) for a in qr.responses}
+    clients = {type(a.client) for a in qr}
     assert clients == {VSOClient}
 
     qr = Fido.search(time, eve_a, a.Level.zero)
-    clients = {type(a.client) for a in qr.responses}
+    clients = {type(a.client) for a in qr}
     assert clients == {eve.EVEClient}
 
     # This is broken because the VSO Eve client doesn't provide a way of allowing Level.
     # qr = Fido.search(time, eve_a, a.Level.zero | a.Level.one)
-    # clients = {type(a.client) for a in qr.responses}
+    # clients = {type(a.client) for a in qr}
     # assert clients == {eve.EVEClient}
 
 
@@ -136,7 +138,6 @@ def mock_query_object(LCClient):
     start = '2016/1/1'
     end = '2016/1/1 23:59:59'
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'EVE',
@@ -155,8 +156,8 @@ def test_show(LCClient):
     mock_qr = mock_query_object(LCClient)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
-               'Provider', 'Level']
-    assert qrshow0.colnames == allcols
+    allcols = {'Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
+               'Provider', 'Level', 'url'}
+    assert not allcols.difference(qrshow0.colnames)
     assert qrshow1.colnames == ['Start Time', 'Instrument']
     assert qrshow0['Instrument'][0] == 'EVE'

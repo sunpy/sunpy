@@ -12,10 +12,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 import astropy.table
+import astropy.units as u
 from astropy.time import Time
-from astropy.units import Unit, equivalencies, nm, quantity
+from astropy.units import equivalencies
 
 import sunpy
+import sunpy.net.vso.legacy_response
 from sunpy import config
 from sunpy.io import file_tools as sunpy_filetools
 from sunpy.io import fits
@@ -291,7 +293,8 @@ class DatabaseEntry(DatabaseEntryType, Base):
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> qr = client.search(
         ...     a.Time('2001/1/1', '2001/1/2'),
-        ...     a.Instrument.eit)  # doctest: +REMOTE_DATA
+        ...     a.Instrument.eit,
+        ...     response_format="legacy")  # doctest: +REMOTE_DATA
         >>> entry = DatabaseEntry._from_query_result_block(qr.blocks[0])  # doctest: +REMOTE_DATA
         >>> entry.source  # doctest: +REMOTE_DATA
         'SOHO'
@@ -319,27 +322,27 @@ class DatabaseEntry(DatabaseEntryType, Base):
         unit = None
         if wave.waveunit is None:
             if default_waveunit is not None:
-                unit = Unit(default_waveunit)
+                unit = u.Unit(default_waveunit)
         else:
             # some query response blocks store the unit "kev",
             # but Astropy only understands "keV". See issue #766.
             waveunit = wave.waveunit
             if waveunit == "kev":
                 waveunit = "keV"
-            unit = Unit(waveunit)
+            unit = u.Unit(waveunit)
         if wave.wavemin is None:
             wavemin = None
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemin = unit.to(nm, float(wave.wavemin),
+            wavemin = unit.to(u.nm, float(wave.wavemin),
                               equivalencies.spectral())
         if wave.wavemax is None:
             wavemax = None
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemax = unit.to(nm, float(wave.wavemax),
+            wavemax = unit.to(u.nm, float(wave.wavemax),
                               equivalencies.spectral())
         source = getattr(qr_block, 'source', None)
         provider = getattr(qr_block, 'provider', None)
@@ -374,42 +377,31 @@ class DatabaseEntry(DatabaseEntryType, Base):
         """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
-        source = sr_block.get('Source', None)
-        provider = sr_block.get('Provider', None)
-        physobs = sr_block.get('Physobs', None)
+        source = sr_block.get('Source')
+        provider = sr_block.get('Provider')
+        physobs = sr_block.get('Physobs')
         if physobs is not None:
             physobs = str(physobs)
-        instrument = sr_block.get('Instrument', None)
-        time_start = sr_block['Time'].start.datetime
-        time_end = sr_block['Time'].end.datetime
+        instrument = sr_block.get('Instrument')
+        time_start = sr_block.get('Start Time')
+        if time_start is not None:
+            time_start = time_start.datetime
+        time_end = sr_block.get('End Time')
+        if time_end is not None:
+            time_end = time_end.datetime
 
-        wavelengths = sr_block.get('Wavelength', np.nan)
-        wavelength_temp = {}
-        if isinstance(wavelength_temp, tuple):
-            # Tuple of values
-            wavelength_temp['wavemin'] = wavelengths[0]
-            wavelength_temp['wavemax'] = wavelengths[1]
+        wavelengths = sr_block.get('Wavelength', np.nan * u.nm)
+        if wavelengths is None:
+            wavelengths = np.nan * u.nm
+        if isinstance(wavelengths, u.Quantity):
+            if wavelengths.isscalar:
+                wavemin = wavemax = wavelengths.to_value(u.nm, equivalencies=u.spectral())
+            else:
+                wavemin, wavemax = wavelengths.to_value(u.nm, equivalencies=u.spectral())
         else:
-            # Single Value
-            wavelength_temp['wavemin'] = wavelength_temp['wavemax'] = wavelengths
+            raise TypeError("Expected Wavelength in the Fido response to be None or a Quantity")
 
-        final_values = {}
-        for key, val in wavelength_temp.items():
-            if isinstance(val, quantity.Quantity):
-                unit = getattr(val, 'unit', None)
-                if unit is None:
-                    if default_waveunit is not None:
-                        unit = Unit(default_waveunit)
-                    else:
-                        raise WaveunitNotFoundError(sr_block)
-                final_values[key] = unit.to(nm, float(val.value), equivalencies.spectral())
-            elif val is None or np.isnan(val):
-                final_values[key] = val
-
-        wavemin = final_values['wavemin']
-        wavemax = final_values['wavemax']
-
-        fileid = sr_block.get('url', None)
+        fileid = sr_block.get('url', sr_block.get('fileid'))
         size = None
         return cls(
             source=source, provider=provider, physobs=physobs, fileid=fileid,
@@ -517,7 +509,8 @@ def entries_from_query_result(qr, default_waveunit=None):
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
     >>> qr = client.search(
     ...     a.Time('2001/1/1', '2001/1/2'),
-    ...     a.Instrument.eit)  # doctest: +REMOTE_DATA
+    ...     a.Instrument.eit,
+    ...     response_format="legacy")  # doctest: +REMOTE_DATA
     >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
     >>> entry = next(entries)  # doctest: +REMOTE_DATA
     >>> entry.source  # doctest: +REMOTE_DATA
@@ -585,7 +578,7 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
 
     """
     for entry in sr:
-        if isinstance(entry, sunpy.net.vso.vso.QueryResponse):
+        if isinstance(entry, sunpy.net.vso.legacy_response.QueryResponse):
             # This is because Fido can search the VSO. It
             # returns a VSO QueryResponse.
             for block in entry:
@@ -690,7 +683,7 @@ def entries_from_file(file, default_waveunit=None,
         unit = None
         if waveunit is not None:
             try:
-                unit = Unit(waveunit)
+                unit = u.Unit(waveunit)
             except ValueError:
                 raise WaveunitNotConvertibleError(waveunit)
         for header_entry in entry.fits_header_entries:
@@ -702,7 +695,7 @@ def entries_from_file(file, default_waveunit=None,
                     raise WaveunitNotFoundError(file)
                 # use the value of `unit` to convert the wavelength to nm
                 entry.wavemin = entry.wavemax = unit.to(
-                    nm, value, equivalencies.spectral())
+                    u.nm, value, equivalencies.spectral())
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):

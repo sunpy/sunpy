@@ -11,6 +11,7 @@ from astropy.time import Time, TimeDelta
 from sunpy.extern.parse import parse
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
+from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
@@ -52,6 +53,11 @@ class NOAAIndicesClient(GenericClient):
                 rowdict[key] = rowdict[key][0]
         rowdict['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
         rowdict['Instrument'] = 'NOAA-Indices'
+        # These results are not dependant on time, but we allow time as a
+        # parameter for easy searching, so remove time from the results table
+        # injected by GenericClient.
+        rowdict.pop('Start Time', None)
+        rowdict.pop('End Time', None)
         return QueryResponse([rowdict], client=self)
 
     @classmethod
@@ -102,6 +108,11 @@ class NOAAPredictClient(GenericClient):
                 rowdict[key] = rowdict[key][0]
         rowdict['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
         rowdict['Instrument'] = 'NOAA-Predict'
+        # These results are not dependant on time, but we allow time as a
+        # parameter for easy searching, so remove time from the results table
+        # injected by GenericClient.
+        rowdict.pop('Start Time', None)
+        rowdict.pop('End Time', None)
         return QueryResponse([rowdict], client=self)
 
     @classmethod
@@ -137,10 +148,10 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-         Start Time           End Time      Instrument Physobs Source Provider
-    ------------------- ------------------- ---------- ------- ------ --------
-    2016-01-01 00:00:00 2016-12-31 23:59:59       SOON     SRS   SWPC     NOAA
-    2016-01-01 00:00:00 2016-12-31 23:59:59       SOON     SRS   SWPC     NOAA
+           Start Time               End Time        Instrument ... Source Provider
+    ----------------------- ----------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00.000 2016-01-02 00:00:00.000       SOON ...   SWPC     NOAA
+    2016-01-01 00:00:00.000 2016-01-02 00:00:00.000       SOON ...   SWPC     NOAA
     <BLANKLINE>
     <BLANKLINE>
 
@@ -174,14 +185,17 @@ class SRSClient(GenericClient):
         # update the extracted metadata to include the queried times rather
         # than those scraped from the downloaded zip (which includes full year data).
         rowdict = super().post_search_hook(exdict, matchdict)
-        rowdict["Time"] = matchdict["Time"]
+        rowdict["Start Time"] = matchdict["Start Time"]
+        rowdict["End Time"] = matchdict["End Time"]
+        rowdict["Start Time"].format = 'iso'
+        rowdict["End Time"].format = 'iso'
         return rowdict
 
     def search(self, *args, **kwargs):
         extractor1 = '{}/warehouse/{:4d}/SRS/{year:4d}{month:2d}{day:2d}SRS.txt'
         extractor2 = '{}/warehouse/{year:4d}/{}'
         matchdict = self._get_match_dict(*args, **kwargs)
-        timerange = matchdict['Time']
+        timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         metalist = []
         for url in self._get_url_for_timerange(timerange):
             exdict1 = parse(extractor1, url)
@@ -214,7 +228,7 @@ class SRSClient(GenericClient):
         for i, [url, qre] in enumerate(zip(urls, qres)):
             name = url.split('/')[-1]
 
-            day = Time(qre['Time'].start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+            day = Time(qre['Start Time'].strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
 
             if name not in filenames:
                 filenames.append(name)

@@ -53,10 +53,10 @@ class RHESSIClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the RHESSIClient:
-         Start Time           End Time      Instrument ... Source Provider
-    ------------------- ------------------- ---------- ... ------ --------
-    2016-01-01 00:00:00 2016-01-01 23:59:59     RHESSI ... RHESSI     NASA
-    2016-01-02 00:00:00 2016-01-02 23:59:59     RHESSI ... RHESSI     NASA
+           Start Time               End Time        Instrument ... Source Provider
+    ----------------------- ----------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999     RHESSI ... RHESSI     NASA
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999     RHESSI ... RHESSI     NASA
     <BLANKLINE>
     <BLANKLINE>
 
@@ -153,7 +153,7 @@ class RHESSIClient(GenericClient):
 
     def search(self, *args, **kwargs):
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
-        timerange = matchdict['Time']
+        timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         metalist = []
         for url in self.get_observing_summary_filename(timerange):
             exdict = parse(pattern, url).named

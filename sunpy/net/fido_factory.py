@@ -18,8 +18,9 @@ import parfive
 from astropy.table import Table
 
 from sunpy.net import attr, vso
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.net.base_client import BaseClient, QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
+from sunpy.util.decorators import deprecated
 from sunpy.util.parfive_helpers import Downloader, Results
 from sunpy.util.util import get_width
 
@@ -43,24 +44,41 @@ class UnifiedResponse(Sequence):
         """
         Parameters
         ----------
-        results : `sunpy.net.base_client.BaseQueryResponse`
+        results : `sunpy.net.base_client.QueryResponseTable`
             One or more QueryResponse objects.
         """
         self._list = []
         self._numfile = 0
         for result in results:
-            if not isinstance(result, BaseQueryResponse):
+            if isinstance(result, QueryResponseRow):
+                result = result.as_table()
+
+            if isinstance(result, QueryResponseColumn):
+                result = result.as_table()
+
+            if not isinstance(result, QueryResponseTable):
                 raise TypeError(
-                    f"{type(result)} is not derived from sunpy.net.base_client.BaseQueryResponse")
+                    f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
 
             self._list.append(result)
-            self._numfile = len(result)
+            self._numfile += len(result)
 
     def __len__(self):
         return len(self._list)
 
-    def __iter__(self):
-        return self.responses
+    def _getitem_string(self, aslice):
+        ret = []
+        for res in self._list:
+            clientname = res.client.__class__.__name__
+            if aslice.lower() == clientname.lower().split('client')[0]:
+                ret.append(res)
+
+        if len(ret) == 1:
+            ret = ret[0]
+        elif len(ret) == 0:
+            raise IndexError(f"{aslice} is not a valid key, valid keys are: {','.join(self.keys())}")
+
+        return ret
 
     def __getitem__(self, aslice):
         """
@@ -69,21 +87,12 @@ class UnifiedResponse(Sequence):
         The first index is to the client and the second index is the records
         returned from those clients.
         """
-        # Just a single int as a slice, we are just indexing client.
-        # Convert it to a slice so we still return a list.
-        if isinstance(aslice, int):
-            aslice = slice(aslice, aslice + 1)
-
-        if isinstance(aslice, slice):
+        if isinstance(aslice, (int, slice)):
             ret = self._list[aslice]
 
         # using the client's name for indexing the responses.
         elif isinstance(aslice, str):
-            ret = []
-            for res in self._list:
-                clientname = res.client.__class__.__name__
-                if aslice.lower() == clientname.lower().split('client')[0]:
-                    ret.append(res)
+            ret = self._getitem_string(aslice)
 
         # Make sure we only have a length two slice.
         elif isinstance(aslice, tuple):
@@ -92,49 +101,56 @@ class UnifiedResponse(Sequence):
                                  "be sliced with one or two indices.")
 
             # Indexing both client and records, but only for one client.
-            if isinstance(aslice[0], int):
-                client_resp = self._list[aslice[0]]
-                ret = [client_resp[aslice[1]]]
-
-            # Indexing both client and records for multiple clients.
+            if isinstance(aslice[0], str):
+                intermediate = self._getitem_string(aslice[0])
             else:
                 intermediate = self._list[aslice[0]]
+
+            if isinstance(intermediate, list):
                 ret = []
                 for client_resp in intermediate:
                     ret.append(client_resp[aslice[1]])
+            else:
+                ret = intermediate[aslice[1]]
 
         else:
-            raise IndexError("UnifiedResponse objects must be sliced with integers.")
+            raise IndexError("UnifiedResponse objects must be sliced with integers or strings.")
 
-        # if only one response matches, we will return a BaseQueryResponse instance.
-        if not len(ret):
-            raise IndexError("No records found for the given index.")
-        elif len(ret) == 1:
-            return ret[0]
-        else:
-            return UnifiedResponse(*ret)
+        if isinstance(ret, (QueryResponseTable, QueryResponseColumn, QueryResponseRow)):
+            return ret
 
-    def get_response(self, i):
+        return UnifiedResponse(*ret)
+
+    @deprecated("2.1", "The same behaviour can now be obtained by indexing the object directly")
+    def get_response(self, i):  # pragma: no cover
         """
         Get the actual response rather than another UnifiedResponse object.
         """
         return self._list[i]
 
+    @deprecated("2.1", alternative="path_format_keys")
     def response_block_properties(self):
-        """
-        A set of class attributes on all the response blocks.
+        return self.path_format_keys()
 
-        Returns
-        -------
-        s : list
-            List of strings, containing attribute names in the response blocks.
+    def path_format_keys(self):
         """
-        s = self.get_response(0).response_block_properties()
-        for i in range(1, len(self)):
-            s.intersection(self.get_response(i).response_block_properties())
+        Returns all the names that can be used to format filenames.
+
+        Only the keys which can be used to format all results from all
+        responses contained in this `~.UnifiedResponse` are returned. Each
+        individual response might have more keys available.
+
+        Each one corresponds to a single column in the table, and the format
+        syntax should match the dtype of that column, i.e. for a ``Time``
+        object or a ``Quantity``.
+        """
+        s = self[0].path_format_keys()
+        for table in self[1:]:
+            s = s.intersection(table.path_format_keys())
         return s
 
     @property
+    @deprecated("2.1", "All objects contained in the sequence are now Table objects")
     def tables(self):
         """
         Returns a list of `astropy.table.Table` for all responses present in a specific
@@ -150,23 +166,37 @@ class UnifiedResponse(Sequence):
             `sunpy.net.dataretriever.client.QueryResponse`, `sunpy.net.vso.QueryResponse` or
             `sunpy.net.jsoc.JSOCClient`.
         """
-        tables = []
-        for block in self.responses:
-            tables.append(block.build_table())
-        return tables
+        return list(self)
 
     @property
-    def responses(self):
+    @deprecated("2.1", "The same behaviour can be obtained by iterating over the object directly")
+    def responses(self):  # pragma: no cover
         """
         A generator of all the `sunpy.net.dataretriever.client.QueryResponse`
         objects contained in the `~sunpy.net.fido_factory.UnifiedResponse`
         object.
         """
-        for i in range(len(self)):
-            yield self.get_response(i)
+        for table in self:
+            yield table
+
+    def keys(self):
+        """
+        Names of the contained responses.
+
+        One name may map to more than one response.
+        """
+        ret = []
+        for res in self._list:
+            clientname = res.client.__class__.__name__.lower().split('client')[0]
+            if clientname not in ret:
+                ret.append(clientname)
+        return ret
 
     @property
     def file_num(self):
+        """
+        The number of records returned in all responses.
+        """
         return self._numfile
 
     def _repr_html_(self):
@@ -175,7 +205,7 @@ class UnifiedResponse(Sequence):
             ret = 'Results from {} Provider:</br></br>'.format(len(self))
         else:
             ret = 'Results from {} Providers:</br></br>'.format(len(self))
-        for block in self.responses:
+        for block in self:
             ret += "{} Results from the {}:</br>".format(len(block),
                                                          block.client.__class__.__name__)
             ret += block._repr_html_()
@@ -192,7 +222,7 @@ class UnifiedResponse(Sequence):
             ret = 'Results from {} Provider:\n\n'.format(len(self))
         else:
             ret = 'Results from {} Providers:\n\n'.format(len(self))
-        for block in self.responses:
+        for block in self:
             ret += "{} Results from the {}:\n".format(len(block), block.client.__class__.__name__)
             lines = repr(block).split('\n')
             ret += '\n'.join(lines[1:])
@@ -214,7 +244,19 @@ class UnifiedResponse(Sequence):
         `list` of `astropy.table.Table`
             A list of tables showing values for specified columns.
         """
-        return [i.show(*cols) for i in self._list]
+        return type(self)(*[i.show(*cols) for i in self._list])
+
+    @property
+    def all_colnames(self):
+        """
+        Returns all the colnames in any of the tables in this response.
+
+        Any column names in this list are valid inputs to :meth:`.UnifiedResponse.show`.
+        """
+        colnames = set(self[0].colnames)
+        for resp in self[1:]:
+            colnames.union(resp.colnames)
+        return sorted(list(colnames))
 
 
 query_walker = attr.AttrWalker()
@@ -309,7 +351,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # This is because the VSO _can_handle_query is very broad because we
         # don't know the full list of supported values we can search for (yet).
         if len(results) > 1:
-            vso_results = list(filter(lambda r: isinstance(r, vso.QueryResponse), results))
+            vso_results = list(filter(lambda r: isinstance(r, vso.VSOQueryResponseTable), results))
             for vres in vso_results:
                 if len(vres) == 0:
                     results.remove(vres)
@@ -319,12 +361,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):
         """
-        Download the records represented by `~sunpy.net.BaseQueryResponse` or
+        Download the records represented by `~sunpy.net.QueryResponseTable` or
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
 
         Parameters
         ----------
-        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.BaseQueryResponse`
+        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.QueryResponseTable`
             Container returned by query method, or multiple.
         path : `str`
             The directory to retrieve the files into. Can refer to any fields
@@ -391,12 +433,15 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         reslist = []
         for query_result in query_results:
-            if isinstance(query_result, BaseQueryResponse):
+            if isinstance(query_result, QueryResponseRow):
+                responses = [query_result.as_table()]
+            elif isinstance(query_result, QueryResponseTable):
                 responses = [query_result]
             elif isinstance(query_result, UnifiedResponse):
-                responses = query_result.responses
+                responses = query_result
             else:
-                raise ValueError(f"Query result has an unrecognized type: {type(query_result)}")
+                raise ValueError(f"Query result has an unrecognized type: {type(query_result)} "
+                                 "Allowed types are QueryResponseRow, QueryResponseTable or UnifiedResponse.")
             for block in responses:
                 result = block.client.fetch(block, path=path,
                                             downloader=downloader,
@@ -455,7 +500,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         results = []
         for client in candidate_widget_types:
             tmpclient = client()
-            results.append(tmpclient.search(*query))
+            kwargs = dict()
+            # Handle the change in response format in the VSO
+            if isinstance(tmpclient, vso.VSOClient):
+                kwargs = dict(response_format="table")
+            results.append(tmpclient.search(*query, **kwargs))
 
         # This method is called by `search` and the results are fed into a
         # UnifiedResponse object.

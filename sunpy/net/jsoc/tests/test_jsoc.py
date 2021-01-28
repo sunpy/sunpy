@@ -23,25 +23,27 @@ def client():
     return JSOCClient()
 
 
-def test_jsocresponse_double():
-    j1 = JSOCResponse(table=astropy.table.Table(data=[[1, 2, 3, 4]]))
-    j1.append(astropy.table.Table(data=[[1, 2, 3, 4]]))
-    assert isinstance(j1, JSOCResponse)
-    assert all(j1.table == astropy.table.vstack([astropy.table.Table(
-        data=[[1, 2, 3, 4]]), astropy.table.Table(data=[[1, 2, 3, 4]])]))
+@pytest.fixture
+def jsoc_response_double():
+    resp = JSOCResponse([{'T_REC': '2011/01/01T00:00', 'INSTRUME': 'AIA'},
+                         {'T_REC': '2011/01/02T00:00', 'INSTRUME': 'AIA'}])
+
+    resp.query_args = [{'start_time': astropy.time.Time("2020-01-01T01:00:36.000"),
+                        'end_time': astropy.time.Time("2020-01-01T01:00:38.000"),
+                        'series': 'hmi.M_45s', 'notify': 'jsoc@cadair.com'}]
+
+    return resp
 
 
 def test_jsocresponse_single():
-    j1 = JSOCResponse(table=None)
-    assert len(j1) == 0
-    j1.append(astropy.table.Table(data=[[1, 2, 3, 4]]))
-    assert all(j1.table == astropy.table.Table(data=[[1, 2, 3, 4]]))
+    j1 = JSOCResponse(data=[[1, 2, 3, 4]])
+    assert all(j1 == astropy.table.Table(data=[[1, 2, 3, 4]]))
     assert len(j1) == 4
 
 
 def test_empty_jsoc_response():
     Jresp = JSOCResponse()
-    assert len(Jresp.table) == 0
+    assert len(Jresp) == 0
     assert Jresp.query_args is None
     assert Jresp.requests is None
     assert len(Jresp) == 0
@@ -80,17 +82,17 @@ def test_post_pass(client):
 def test_build_table(client):
     responses = client.search(
         a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
+        a.jsoc.Series('hmi.M_45s'))
     table = responses.build_table()
     assert isinstance(table, astropy.table.Table)
 
     columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-    assert columns == table.colnames
+    assert columns == table._display_table.colnames
 
 
 def test_show(client):
     jdict = {'TELESCOP': ['SDO/HMI', 'SDO/AIA'], 'CAR_ROT': [2145, 2145]}
-    responses = JSOCResponse(table=astropy.table.Table(jdict))
+    responses = JSOCResponse(astropy.table.Table(jdict))
     showtable = responses.show('TELESCOP')
     assert isinstance(showtable, astropy.table.Table)
     assert showtable.colnames == ['TELESCOP']
@@ -464,3 +466,12 @@ def test_jsoc_cutout_attrs(client):
     m = sunpy.map.Map(files, sequence=True)
     assert m.all_maps_same_shape()
     assert m.as_array().shape == (1085, 1085, 6)
+
+
+def test_row_and_warning(mocker, client, jsoc_response_double):
+    mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.get_request")
+    request_data = mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.request_data")
+    with pytest.warns(SunpyUserWarning):
+        client.fetch(jsoc_response_double[0], sleep=0)
+
+    assert request_data.called_once_with(jsoc_response_double[0].as_table())

@@ -107,7 +107,7 @@ def test_hek_client():
 
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
-    assert type(hek_query) == hek.hek.HEKResponse
+    assert type(hek_query) == hek.hek.HEKTable
 
 
 @pytest.mark.remote_data
@@ -121,7 +121,7 @@ def test_hek_empty_search_result():
 
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
-    assert type(hek_query) == hek.hek.HEKResponse
+    assert type(hek_query) == hek.hek.HEKTable
     assert len(hek_query) == 0
 
 
@@ -169,7 +169,7 @@ def test_mixed_results_get():
     client = hek.HEKClient()
     result = client.search(attrs.Time('2013/02/01 00:00:00', '2013/02/01 23:30:00'),
                            attrs.hek.FRM.Name == 'SPoCA')
-    assert isinstance(result, hek.hek.HEKResponse)
+    assert isinstance(result, hek.hek.HEKTable)
     assert len(result) == 89
     assert result[0]["SOL_standard"] == 'SOL2013-01-31T20:13:31L219C160'
 
@@ -181,7 +181,7 @@ def test_mixed_results_get_2():
     client = hek.HEKClient()
     result = client.search(attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
                            attrs.hek.EventType("FL"))
-    assert isinstance(result, hek.hek.HEKResponse)
+    assert isinstance(result, hek.hek.HEKTable)
     assert len(result) == 19
     assert result[0]["SOL_standard"] == 'SOL2011-08-08T01:30:04L247C075'
 
