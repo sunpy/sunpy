@@ -1947,6 +1947,10 @@ class GenericMap(NDData):
         -----
         Extra keyword arguments to this function are passed through to the
         `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
+
+        Examples
+        --------
+        .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
         """
         bottom_left, top_right = get_rectangle_coordinates(
             bottom_left, top_right=top_right, width=width, height=height)
