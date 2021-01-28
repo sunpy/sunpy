@@ -182,7 +182,7 @@ UnifiedResponse Tests
 def test_unifiedresponse_slicing():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-    assert isinstance(results[0:2], QueryResponseTable)
+    assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], QueryResponseTable)
 
 
@@ -190,7 +190,7 @@ def test_unifiedresponse_slicing():
 def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-    assert isinstance(results[::-1], QueryResponseTable)
+    assert isinstance(results[::-1], UnifiedResponse)
     assert len(results[::-1]) == len(results[::1])
     assert isinstance(results[0, ::-1], QueryResponseTable)
     assert all(results[0][::-1] == results[0, ::-1])
