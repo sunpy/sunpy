@@ -1971,7 +1971,6 @@ class GenericMap(NDData):
         axes.add_artist(quad)
         return quad
 
-    @deprecated(since="2.1", alternative='draw_quadrangle')
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
                        axes=None, top_right=None, **kwargs):
