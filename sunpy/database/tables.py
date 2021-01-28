@@ -395,13 +395,13 @@ class DatabaseEntry(DatabaseEntryType, Base):
             wavelengths = np.nan * u.nm
         if isinstance(wavelengths, u.Quantity):
             if wavelengths.isscalar:
-                wavemin = wavemax = wavelengths
+                wavemin = wavemax = wavelengths.to_value(u.nm, equivalencies=u.spectral())
             else:
-                wavemin, wavemax = wavelengths
+                wavemin, wavemax = wavelengths.to_value(u.nm, equivalencies=u.spectral())
         else:
             raise TypeError("Expected Wavelength in the Fido response to be None or a Quantity")
 
-        fileid = sr_block.get('url')
+        fileid = sr_block.get('url', sr_block.get('fileid'))
         size = None
         return cls(
             source=source, provider=provider, physobs=physobs, fileid=fileid,

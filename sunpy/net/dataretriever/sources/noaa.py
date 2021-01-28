@@ -56,8 +56,8 @@ class NOAAIndicesClient(GenericClient):
         # These results are not dependant on time, but we allow time as a
         # parameter for easy searching, so remove time from the results table
         # injected by GenericClient.
-        del rowdict['Start Time']
-        del rowdict['End Time']
+        rowdict.pop('Start Time', None)
+        rowdict.pop('End Time', None)
         return QueryResponse([rowdict], client=self)
 
     @classmethod
@@ -111,8 +111,8 @@ class NOAAPredictClient(GenericClient):
         # These results are not dependant on time, but we allow time as a
         # parameter for easy searching, so remove time from the results table
         # injected by GenericClient.
-        del rowdict['Start Time']
-        del rowdict['End Time']
+        rowdict.pop('Start Time', None)
+        rowdict.pop('End Time', None)
         return QueryResponse([rowdict], client=self)
 
     @classmethod
