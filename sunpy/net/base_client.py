@@ -246,6 +246,9 @@ class QueryResponseTable(QTable):
         """
         Return a table with only ``cols`` present.
 
+        If no ``cols`` are specified, all columns will be shown, including any
+        hidden by default.
+
         This differs slightly from ``QueryResponseTable[cols]`` as it allows
         keys which are not in the table to be requested.
         """
