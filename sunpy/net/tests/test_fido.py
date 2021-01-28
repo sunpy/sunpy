@@ -11,13 +11,13 @@ from parfive import Results
 from parfive.utils import FailedDownload
 
 import astropy.units as u
-from astropy.table import Row, Table
+from astropy.table import Table
 
 from sunpy import config
 from sunpy.net import Fido, attr
 from sunpy.net import attrs as a
 from sunpy.net import jsoc
-from sunpy.net.base_client import QueryResponseRow, QueryResponseTable
+from sunpy.net.base_client import QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
@@ -294,13 +294,37 @@ def test_fido_indexing(queries):
     assume(query1.attrs[1].start != query2.attrs[1].start)
 
     res = Fido.search(query1 | query2)
-
     assert len(res) == 2
-    assert isinstance(res[0][0], Row)
-    assert isinstance(res[1][0], Row)
+
+    assert isinstance(res[1:], UnifiedResponse)
+    assert len(res[1:]) == 1
+    assert isinstance(res[0:1], UnifiedResponse)
+    assert len(res[0:1]) == 1
+
+    assert isinstance(res[1:, 0], UnifiedResponse)
+    assert len(res[1:, 0]) == 1
+    assert isinstance(res[0:1, 0], UnifiedResponse)
+    assert len(res[0:1, 0]) == 1
+
+    assert isinstance(res[0][0], QueryResponseRow)
+    assert isinstance(res[1][0], QueryResponseRow)
+    assert isinstance(res[1, 0:1], QueryResponseTable)
 
     aa = res[0, 0]
     assert isinstance(aa, QueryResponseRow)
+
+    aa = res[0, 'Instrument']
+    assert isinstance(aa, QueryResponseColumn)
+
+    aa = res[:, 'Instrument']
+    assert isinstance(aa, UnifiedResponse)
+    for table in aa:
+        assert len(table.columns) == 1
+
+    aa = res[0, ('Instrument',)]
+    assert isinstance(aa, QueryResponseTable)
+    for table in aa:
+        assert len(table.columns) == 1
 
     aa = res[:, 0]
     assert isinstance(aa, UnifiedResponse)
@@ -309,6 +333,15 @@ def test_fido_indexing(queries):
 
     aa = res[0, :]
     assert isinstance(aa, QueryResponseTable)
+
+    aa = res[0, 1:]
+    assert isinstance(aa, QueryResponseTable)
+
+    if len(res.keys()) == len(res):
+        aa = res[res.keys()[0], 1:]
+        assert isinstance(aa, QueryResponseTable)
+        aa = res[res.keys()[0], 'Instrument']
+        assert isinstance(aa, QueryResponseColumn)
 
     with pytest.raises(IndexError):
         res[0, 0, 0]
@@ -495,3 +528,20 @@ def test_fido_metadata_queries():
     assert len(files) == len(results['jsoc'])
 
     assert results.keys() == ['hek', 'jsoc']
+
+
+def test_path_format_keys():
+    t1 = QueryResponseTable({'Start Time': ['2011/01/01', '2011/01/02'],
+                             '!excite!': ['cat', 'rabbit'],
+                             '01 wibble': ['parsnip', 'door']})
+    assert t1.path_format_keys() == {'start_time', '_excite_', '01_wibble'}
+
+    t2 = QueryResponseTable({'End Time': ['2011/01/01', '2011/01/02'],
+                             '!excite!': ['cat', 'rabbit']})
+    assert t2.path_format_keys() == {'_excite_', 'end_time'}
+
+    unif = UnifiedResponse(t1, t2)
+    assert unif.path_format_keys() == {'_excite_'}
+
+    with pytest.warns(SunpyDeprecationWarning):
+        assert unif.response_block_properties() == {'_excite_'}

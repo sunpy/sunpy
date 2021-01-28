@@ -66,6 +66,20 @@ class UnifiedResponse(Sequence):
     def __len__(self):
         return len(self._list)
 
+    def _getitem_string(self, aslice):
+        ret = []
+        for res in self._list:
+            clientname = res.client.__class__.__name__
+            if aslice.lower() == clientname.lower().split('client')[0]:
+                ret.append(res)
+
+        if len(ret) == 1:
+            ret = ret[0]
+        elif len(ret) == 0:
+            raise IndexError(f"{aslice} is not a valid key, valid keys are: {','.join(self.keys())}")
+
+        return ret
+
     def __getitem__(self, aslice):
         """
         Support slicing the UnifiedResponse as a 2D object.
@@ -73,21 +87,12 @@ class UnifiedResponse(Sequence):
         The first index is to the client and the second index is the records
         returned from those clients.
         """
-        # Just a single int as a slice, we are just indexing client.
-        # Convert it to a slice so we still return a list.
-        if isinstance(aslice, int):
-            aslice = slice(aslice, aslice + 1)
-
-        if isinstance(aslice, slice):
+        if isinstance(aslice, (int, slice)):
             ret = self._list[aslice]
 
         # using the client's name for indexing the responses.
         elif isinstance(aslice, str):
-            ret = []
-            for res in self._list:
-                clientname = res.client.__class__.__name__
-                if aslice.lower() == clientname.lower().split('client')[0]:
-                    ret.append(res)
+            ret = self._getitem_string(aslice)
 
         # Make sure we only have a length two slice.
         elif isinstance(aslice, tuple):
@@ -96,30 +101,28 @@ class UnifiedResponse(Sequence):
                                  "be sliced with one or two indices.")
 
             # Indexing both client and records, but only for one client.
-            if isinstance(aslice[0], int):
-                client_resp = self._list[aslice[0]]
-                ret = [client_resp[aslice[1]]]
-
-            # Indexing both client and records for multiple clients.
+            if isinstance(aslice[0], str):
+                intermediate = self._getitem_string(aslice[0])
             else:
                 intermediate = self._list[aslice[0]]
+
+            if isinstance(intermediate, list):
                 ret = []
                 for client_resp in intermediate:
                     ret.append(client_resp[aslice[1]])
+            else:
+                ret = intermediate[aslice[1]]
 
         else:
-            raise IndexError("UnifiedResponse objects must be sliced with integers.")
+            raise IndexError("UnifiedResponse objects must be sliced with integers or strings.")
 
-        # if only one response matches, we will return a QueryResponseTable instance.
-        if not len(ret):
-            raise IndexError("No records found for the given index.")
-        elif len(ret) == 1:
-            return ret[0]
-        else:
-            return UnifiedResponse(*ret)
+        if isinstance(ret, (QueryResponseTable, QueryResponseColumn, QueryResponseRow)):
+            return ret
+
+        return UnifiedResponse(*ret)
 
     @deprecated("2.1", "The same behaviour can now be obtained by indexing the object directly")
-    def get_response(self, i):
+    def get_response(self, i):  # pragma: no cover
         """
         Get the actual response rather than another UnifiedResponse object.
         """
@@ -133,13 +136,17 @@ class UnifiedResponse(Sequence):
         """
         Returns all the names that can be used to format filenames.
 
+        Only the keys which can be used to format all results from all
+        responses contained in this `~.UnifiedResponse` are returned. Each
+        individual response might have more keys available.
+
         Each one corresponds to a single column in the table, and the format
         syntax should match the dtype of that column, i.e. for a ``Time``
         object or a ``Quantity``.
         """
         s = self[0].path_format_keys()
         for table in self[1:]:
-            s.intersection(table.path_format_keys())
+            s = s.intersection(table.path_format_keys())
         return s
 
     @property
@@ -163,7 +170,7 @@ class UnifiedResponse(Sequence):
 
     @property
     @deprecated("2.1", "The same behaviour can be obtained by iterating over the object directly")
-    def responses(self):
+    def responses(self):  # pragma: no cover
         """
         A generator of all the `sunpy.net.dataretriever.client.QueryResponse`
         objects contained in the `~sunpy.net.fido_factory.UnifiedResponse`
