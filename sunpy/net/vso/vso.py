@@ -24,6 +24,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
+from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
@@ -436,8 +437,9 @@ class VSOClient(BaseClient):
         results._errors += err_results.errors
         return results
 
+    @deprecated("2.1", "This functionality is deprecated as it is replaced by better search support.")
     @staticmethod
-    def link(query_response, maps):
+    def link(query_response, maps):  # pragma: no cover
         """ Return list of paths with records associated with them in
         the meta attribute. """
         if not maps:
