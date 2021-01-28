@@ -495,7 +495,7 @@ For example, to save the data to a subdirectory named after the instrument, use:
 You can see the list of options that can be specified in path for all the files to be downloaded with ``results.path_format_keys``.
 
 Retrying Downloads
-==================
+^^^^^^^^^^^^^^^^^^
 
 If any files failed to download, the progress bar will show an incomplete number of files (i.e. 100/150) and the `parfive.Results` object will contain a list of the URLs that failed to transfer and the error associated with them.
 This can be accessed with the ``.errors`` attribute or by printing the `~parfive.Results` object::
