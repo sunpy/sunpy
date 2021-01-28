@@ -17,6 +17,7 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 """
 import re
 import string
+import inspect
 import keyword
 import textwrap
 from textwrap import dedent
@@ -286,6 +287,23 @@ class DataAttr(Attr):
             raise TypeError("You should not directly instantiate DataAttr, only it's subclasses.")
 
         return super().__new__(cls)
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        # Because __new__() is defined, this will block natural introspection of the arguments for
+        # __init__() in all subclasses because the signature of __new__() takes precedence over the
+        # signature of __init__().  We add a __new__() to all subclasses that do not explicitly
+        # define it with a signature that matches __init__().
+        if '__new__' not in cls.__dict__:
+            unsigned_new = cls.__new__  # the inherited __new__()
+
+            def signed_new(cls, *args, **kwargs):
+                return unsigned_new(cls, *args, **kwargs)
+
+            signed_new.__signature__ = inspect.signature(cls.__init__)
+
+            cls.__new__ = signed_new
 
 
 class DummyAttr(Attr):
