@@ -223,12 +223,6 @@ def test_tables_multiple_response():
     assert all(isinstance(t, Table) for t in tables)
     assert len(tables) == 2
 
-    columns0 = ['Start Time', 'End Time', 'Instrument', 'Physobs',
-                'Source', 'Provider', 'Level']
-    columns1 = ['Start Time', 'End Time', 'Instrument', 'Physobs',
-                'Source', 'Provider']
-    assert columns0 == tables[0].colnames and columns1 == tables[1].colnames
-
     assert all(entry == 'LYRA' for entry in tables[0]['Instrument'])
     assert all(entry == 'RHESSI' for entry in tables[1]['Instrument'])
 
@@ -499,3 +493,5 @@ def test_fido_metadata_queries():
 
     files = Fido.fetch(results)
     assert len(files) == len(results['jsoc'])
+
+    assert results.keys() == ['hek', 'jsoc']

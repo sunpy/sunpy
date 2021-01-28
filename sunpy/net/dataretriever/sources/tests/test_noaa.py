@@ -13,12 +13,17 @@ from sunpy.time import parse_time
 
 
 @pytest.fixture
-def LCClient():
+def indices_client():
     return noaa.NOAAIndicesClient()
 
 
 @pytest.fixture
-def SRSClient():
+def predict_client():
+    return noaa.NOAAPredictClient()
+
+
+@pytest.fixture
+def srs_client():
     return noaa.SRSClient()
 
 
@@ -44,13 +49,13 @@ def mock_query_object(start_date, end_date):
 
 
 @pytest.mark.remote_data
-def test_fetch_working(LCClient, tmpdir):
+def test_fetch_working(indices_client, tmpdir):
     """
     Tests if the online server for noaa is working.
     Uses the url : https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json
     """
-    qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
-                          Instrument('noaa-indices'))
+    qr1 = indices_client.search(Time('2012/10/4', '2012/10/6'),
+                                Instrument('noaa-indices'))
 
     # Mock QueryResponse object
     mock_qr = mock_query_object('2012/10/4', '2012/10/6')
@@ -67,7 +72,7 @@ def test_fetch_working(LCClient, tmpdir):
     assert mock_qr['url'] == qr['url']
 
     target_dir = tmpdir.mkdir("down")
-    download_list = LCClient.fetch(qr1, path=target_dir)
+    download_list = indices_client.fetch(qr1, path=target_dir)
     assert len(download_list) == len(qr1)
     assert download_list[0].split('/')[-1] == 'observed-solar-cycle-indices.json'
 
@@ -80,8 +85,8 @@ def test_fetch_working(LCClient, tmpdir):
      (Time('2008/06/01', '2008/06/02'),
       'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
       'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json')])
-def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    resp = LCClient.search(timerange)
+def test_get_url_for_time_range(indices_client, timerange, url_start, url_end):
+    resp = indices_client.search(timerange)
     urls = [i['url'] for i in resp]
     assert isinstance(urls, list)
     assert urls[0] == url_start
@@ -102,8 +107,8 @@ def test_can_handle_query():
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
             return_value=mock_query_object('2012/8/9', '2012/8/10'))
-def test_query(mock_search, LCClient):
-    qr1 = LCClient.search(
+def test_query(mock_search, indices_client):
+    qr1 = indices_client.search(
         Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 1
@@ -117,12 +122,12 @@ def test_query(mock_search, LCClient):
 @mock.patch('parfive.Downloader.download',
             return_value=None)
 @mock.patch('parfive.Downloader.enqueue_file')
-def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path, LCClient):
+def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
     path = tmp_path / "sub"
     path.mkdir()
-    qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
-                          Instrument('noaa-indices'))
-    LCClient.fetch(qr1, path=path / "{file}")
+    qr1 = indices_client.search(Time('2012/10/4', '2012/10/6'),
+                                Instrument('noaa-indices'))
+    indices_client.fetch(qr1, path=path / "{file}")
 
     # Here we assert that the `fetch` function has called the parfive
     # Downloader.enqueue_file method with the correct arguments. Everything
@@ -139,7 +144,7 @@ def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path, LCClient):
 @mock.patch('parfive.Downloader.download',
             return_value=None)
 @mock.patch('parfive.Downloader.enqueue_file')
-def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, LCClient):
+def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
     path = tmp_path / "sub"
     path.mkdir()
     qr1 = Fido.search(Time('2012/10/4', '2012/10/6'),
@@ -190,11 +195,19 @@ def test_srs_save_path(tmpdir):
 
 
 @pytest.mark.filterwarnings('ignore:ERFA function')
-def test_srs_out_of_range(SRSClient):
-    res = SRSClient.search(a.Time('1995/01/01', '1995/02/01'))
+def test_srs_out_of_range(srs_client):
+    res = srs_client.search(a.Time('1995/01/01', '1995/02/01'))
     assert len(res) == 0
-    res = SRSClient.search(a.Time('2995/01/01', '2995/02/01'))
+    res = srs_client.search(a.Time('2995/01/01', '2995/02/01'))
     assert len(res) == 0
+
+
+def test_no_time(predict_client, indices_client):
+    res = indices_client.search(a.Instrument.noaa_indices)
+    assert len(res) == 1
+
+    res = predict_client.search(a.Instrument.noaa_predict)
+    assert len(res) == 1
 
 
 def test_attr_reg():
@@ -204,15 +217,15 @@ def test_attr_reg():
     assert a.Instrument.soon == a.Instrument("SOON")
 
 
-def test_client_repr(LCClient):
+def test_client_repr(indices_client):
     """
     Repr check
     """
-    output = str(LCClient)
+    output = str(indices_client)
     assert output[:50] == 'sunpy.net.dataretriever.sources.noaa.NOAAIndicesCl'
 
 
-def test_show(LCClient):
+def test_show():
     mock_qr = mock_query_object('2012/10/4', '2012/10/6')
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Source', 'Instrument')

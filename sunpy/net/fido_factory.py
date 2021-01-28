@@ -172,8 +172,24 @@ class UnifiedResponse(Sequence):
         for table in self:
             yield table
 
+    def keys(self):
+        """
+        Names of the contained responses.
+
+        One name may map to more than one response.
+        """
+        ret = []
+        for res in self._list:
+            clientname = res.client.__class__.__name__.lower().split('client')[0]
+            if clientname not in ret:
+                ret.append(clientname)
+        return ret
+
     @property
     def file_num(self):
+        """
+        The number of records returned in all responses.
+        """
         return self._numfile
 
     def _repr_html_(self):
