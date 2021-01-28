@@ -4,7 +4,7 @@ names of the columns in the results table.
 
 
 For results from the VSO the keys are no longer separated with ``.``, and are
-the based on the displayed column names, for results from the ``dataretriever``
+based on the displayed column names. For results from the ``dataretriever``
 clients the only main change is that the keys are now lower case, where they
 were capitilized before. You can use the `~.UnifiedResponse.path_format_keys`
 method to see all the possible keys for a particular search.
