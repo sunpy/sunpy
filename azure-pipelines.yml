@@ -60,7 +60,7 @@ stages:
             pytest: false
             libraries: {}
 
-          - linux: py38
+          - linux: py39
 
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
@@ -140,8 +140,8 @@ stages:
           test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
           submodules: false
           targets:
-            - wheels_cp3[78]-manylinux*x86_64
-            - wheels_cp3[78]-macosx*
+            - wheels_cp3[789]-manylinux*x86_64
+            - wheels_cp3[789]-macosx*
             - sdist
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
