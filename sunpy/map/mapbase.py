@@ -2052,8 +2052,8 @@ class GenericMap(NDData):
                 pad = 0.12  # Pad to compensate for ticks and axes labels
             else:
                 pad = 0.05  # Default value for vertical colorbar
-            figure.colorbar(im, pad=pad).set_label(str(self.unit) 
-                            if self.unit is not None else "", rotation=0)
+            figure.colorbar(im, pad=pad).set_label(str(self.unit)
+                                                   if self.unit is not None else "", rotation=0)
 
         if draw_limb:
             self.draw_limb(axes=axes)
