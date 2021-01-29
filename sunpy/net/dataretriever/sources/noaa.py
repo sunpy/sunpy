@@ -6,8 +6,7 @@ import tarfile
 from datetime import datetime
 from collections import OrderedDict
 
-from astropy import units as u
-from astropy.time import Time, TimeDelta
+from astropy.time import Time
 
 from sunpy import log
 from sunpy.net import attrs as a
@@ -178,7 +177,7 @@ class SRSClient(GenericClient):
             return result
 
         # Search for tarballs for all years in the query
-        if end_year == start_year:
+        if end_year == start_year and end_year != cur_year:
             end_year += 1
         tarball_timerange = TimeRange(f'{start_year}-01-01', f'{end_year}-01-01')
         tarball_urls = dict()
@@ -190,13 +189,13 @@ class SRSClient(GenericClient):
             year = date.to_datetime().year
             max_tarball_year = year
             tarball_urls[year] = tb_url
-            log.debug('Tarball found for year %d', year)
+            log.debug('SRS tarball found for year %d', year)
 
         # Create a new time range for the times not covered by tarballs, have to assume tarballs
         # cover a year, and look for individual srs file for this time range.
         srs_urls = dict()
         min_file_year = max_tarball_year if max_tarball_year else start_year
-        min_file_date = datetime(min_file_year+1, 1, 1, 0, 0, 0)
+        min_file_date = datetime(min_file_year, 1, 1, 0, 0, 0)
         if min_file_date <= timerange.end.datetime:
             file_timerange = TimeRange(f'{min_file_year}-01-01', timerange.end)
             srsfile_scraper = Scraper(self.BASE_URL + '%Y/SRS/%Y%m%dSRS.txt')
@@ -211,7 +210,7 @@ class SRSClient(GenericClient):
         for day in timerange.get_dates():
             day_ymd = (day.datetime.year, day.datetime.month, day.datetime.day)
             extdict = {name: getattr(day.datetime, name) for name in ['year', 'month', 'day']}
-            if 1996 < day_ymd[0] <= cur_year:
+            if self.MIN_YEAR < day_ymd[0] <= cur_year:
                 if day_ymd[0] in tarball_urls.keys():
                     result.append((extdict, tarball_urls[day_ymd[0]]))
                 elif day_ymd in srs_urls.keys():
@@ -219,15 +218,15 @@ class SRSClient(GenericClient):
 
         return result
 
-    def post_search_hook(self, exdict, matchdict):
-        # update the extracted metadata to include the queried times rather
-        # than those scraped from the downloaded zip (which includes full year data).
-        rowdict = super().post_search_hook(exdict, matchdict)
-        rowdict["Start Time"] = matchdict["Start Time"]
-        rowdict["End Time"] = matchdict["End Time"]
-        rowdict["Start Time"].format = 'iso'
-        rowdict["End Time"].format = 'iso'
-        return rowdict
+    # def post_search_hook(self, exdict, matchdict):
+    #     # update the extracted metadata to include the queried times rather
+    #     # than those scraped from the downloaded zip (which includes full year data).
+    #     rowdict = super().post_search_hook(exdict, matchdict)
+    #     rowdict["Start Time"] = matchdict["Start Time"]
+    #     rowdict["End Time"] = matchdict["End Time"]
+    #     rowdict["Start Time"].format = 'iso'
+    #     rowdict["End Time"].format = 'iso'
+    #     return rowdict
 
     def search(self, *args, **kwargs):
         extractor1 = '{}/warehouse/{:4d}/SRS/{year:4d}{month:2d}{day:2d}SRS.txt'
@@ -236,7 +235,7 @@ class SRSClient(GenericClient):
         timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         metalist = []
         for extdict, url in self._get_url_for_timerange(timerange):
-            extdict['url'] = url
+            extdict['Url'] = url
             rowdict = self.post_search_hook(extdict, matchdict)
             metalist.append(rowdict)
         return QueryResponse(metalist, client=self)
@@ -255,7 +254,7 @@ class SRSClient(GenericClient):
         Results Object
         """
 
-        urls = [qrblock['url'] for qrblock in qres]
+        urls = [qrblock['Url'] for qrblock in qres]
 
         filenames = []
         local_filenames = []
@@ -263,7 +262,7 @@ class SRSClient(GenericClient):
         for i, [url, qre] in enumerate(zip(urls, qres)):
             name = url.split('/')[-1]
 
-            day = Time(qre['Start Time'].strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+            day = qre['Start Time']
 
             if name not in filenames:
                 filenames.append(name)
