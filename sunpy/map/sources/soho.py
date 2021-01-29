@@ -39,10 +39,10 @@ class EITMap(GenericMap):
         # Assume pixel units are arcesc if not given
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
-
+        if 'waveunit' not in header or not header['waveunit']:
+            header['waveunit'] = "Angstrom"
         super().__init__(data, header, **kwargs)
 
-        self.meta['waveunit'] = self.meta.get('waveunit', "Angstrom")
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
