@@ -79,6 +79,11 @@ kcor.name = 'MLSO KCor'
 rhessi = ct.rhessi_color_table()
 std_gamma_2 = ct.std_gamma_2()
 
+euvi195 = ct.euvi_color_table(195*u.angstrom)
+euvi284 = ct.euvi_color_table(284*u.angstrom)
+euvi304 = ct.euvi_color_table(304*u.angstrom)
+euvi171 = ct.euvi_color_table(171*u.angstrom)
+
 cmlist = {
     'goes-rsuvi94': goesrsuvi94,
     'goes-rsuvi131': goesrsuvi131,
@@ -133,6 +138,10 @@ cmlist = {
     'kcor': kcor,
     'rhessi': rhessi,
     'std_gamma_2': std_gamma_2,
+    'euvi171': euvi171,
+    'euvi195': euvi195,
+    'euvi284': euvi284,
+    'euvi304': euvi304,
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
