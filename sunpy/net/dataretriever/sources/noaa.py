@@ -3,6 +3,7 @@
 # Google Summer of Code 2014
 import pathlib
 import tarfile
+from datetime import datetime
 from collections import OrderedDict
 
 from astropy import units as u
@@ -150,49 +151,78 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
+<<<<<<< HEAD
            Start Time               End Time        Instrument ... Source Provider
     ----------------------- ----------------------- ---------- ... ------ --------
     2016-01-01 00:00:00.000 2016-01-02 00:00:00.000       SOON ...   SWPC     NOAA
     2016-01-01 00:00:00.000 2016-01-02 00:00:00.000       SOON ...   SWPC     NOAA
+=======
+         Start Time           End Time      Instrument Physobs Source Provider
+    ------------------- ------------------- ---------- ------- ------ --------
+    2016-01-01 00:00:00 2016-01-01 23:59:59       SOON     SRS   SWPC     NOAA
+    2016-01-02 00:00:00 2016-01-02 23:59:59       SOON     SRS   SWPC     NOAA
+>>>>>>> 4f282c106... Update scraper to use relativedelta not units
     <BLANKLINE>
     <BLANKLINE>
 
     """
     BASE_URL = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
+    MIN_YEAR = 1996
 
     def _get_url_for_timerange(self, timerange):
         """
-        Returns a list of urls corresponding to a
-        given time-range.
+        Returns a list of urls corresponding to a given time-range.
         """
         result = list()
-        total_days = int(timerange.days.value) + 1
-        all_dates = timerange.split(total_days)
-        end_year = int(Time.now().strftime('%Y'))
+
+        # Validate time range and return early if out side min/max
+        cur_year = Time.now().datetime.year
+        req_start_year = timerange.start.datetime.year
+        req_end_year = timerange.end.datetime.year
+        start_year = req_start_year if self.MIN_YEAR < req_start_year <= cur_year else None
+        end_year = req_end_year if self.MIN_YEAR < req_end_year <= cur_year else None
+        if start_year is None and end_year is None:
+            return result
+
+        # Search for tarballs for all years in the query
+        if end_year == start_year:
+            end_year += 1
+        tarball_timerange = TimeRange(f'{start_year}-01-01', f'{end_year}-01-01')
         tarball_urls = dict()
-        for day in all_dates:
-            day_year = int(day.end.strftime('%Y'))
-            extdict = {name: getattr(day.start.datetime, name) for name in ['year', 'month', 'day']}
-            if 1996 < day_year <= end_year:
-                if day_year in tarball_urls.keys():
-                    result.append((extdict, tarball_urls[day_year]))
-                else:
-                    # Check if there is a tarball
-                    tarball_scraper = Scraper(self.BASE_URL + '%Y/%Y_SRS.tar.gz')
-                    tarball = tarball_scraper.filelist(day)
-                    if tarball:
-                        result.append((extdict, tarball[0]))
-                        tarball_urls[day_year] = tarball[0]
-                        log.debug('Tarball %s found for day %s', tarball, day)
-                    else:
-                        # Check for individual file
-                        log.debug('No tarball found for day %s falling back to single files', day)
-                        srsfile_scraper = Scraper(self.BASE_URL + '%Y/SRS/%Y%m%dSRS.txt')
-                        srsfiles = srsfile_scraper.filelist(day)
-                        if srsfiles:
-                            log.debug('SRS file %s found for day %s falling back to single files',
-                                      srsfiles, day)
-                            result.append((extdict, srsfiles[0]))
+        tarball_scraper = Scraper(self.BASE_URL + '%Y/%Y_SRS.tar.gz')
+        tarballs = tarball_scraper.filelist(tarball_timerange)
+        max_tarball_year = None
+        for tb_url in tarballs:
+            date = tarball_scraper._extractDateURL(tb_url)
+            year = date.to_datetime().year
+            max_tarball_year = year
+            tarball_urls[year] = tb_url
+            log.debug('Tarball found for year %d', year)
+
+        # Create a new time range for the times not covered by tarballs, have to assume tarballs
+        # cover a year, and look for individual srs file for this time range.
+        srs_urls = dict()
+        min_file_year = max_tarball_year if max_tarball_year else start_year
+        min_file_date = datetime(min_file_year+1, 1, 1, 0, 0, 0)
+        if min_file_date <= timerange.end.datetime:
+            file_timerange = TimeRange(f'{min_file_year}-01-01', timerange.end)
+            srsfile_scraper = Scraper(self.BASE_URL + '%Y/SRS/%Y%m%dSRS.txt')
+            srsfiles = srsfile_scraper.filelist(file_timerange)
+            for srs_url in srsfiles:
+                date = srsfile_scraper._extractDateURL(srs_url)
+                srs_urls[(date.datetime.year, date.datetime.month, date.datetime.day)] = srs_url
+                log.debug('SRS file found for year %d', date)
+
+        # Now iterate over all days and if the day is in a year we have a tarball for or a day there
+        # is a individual srs file add to the result with corresponding extdict
+        for day in timerange.get_dates():
+            day_ymd = (day.datetime.year, day.datetime.month, day.datetime.day)
+            extdict = {name: getattr(day.datetime, name) for name in ['year', 'month', 'day']}
+            if 1996 < day_ymd[0] <= cur_year:
+                if day_ymd[0] in tarball_urls.keys():
+                    result.append((extdict, tarball_urls[day_ymd[0]]))
+                elif day_ymd in srs_urls.keys():
+                    result.append((extdict, srs_urls[day_ymd]))
 
         return result
 

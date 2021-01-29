@@ -179,7 +179,7 @@ def test_srs_tar_unpack_midyear():
 
 @pytest.mark.remote_data
 def test_srs_missing_tarball():
-    qr = Fido.search(a.Time('2020-01-01', '2020-01-20'), a.Instrument.srs_table)
+    qr = Fido.search(a.Time('2020-01-01', '2020-01-02'), a.Instrument.srs_table)
     res = Fido.fetch(qr)
     assert all([Path(path).exists() for path in res])
 
@@ -202,6 +202,7 @@ def test_srs_save_path(tmpdir):
     assert files[1].endswith("20161002SRS.txt")
 
 
+@pytest.mark.remote_data
 @pytest.mark.filterwarnings('ignore:ERFA function')
 def test_srs_out_of_range(srs_client):
     res = srs_client.search(a.Time('1995/01/01', '1995/02/01'))
