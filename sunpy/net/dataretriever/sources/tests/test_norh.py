@@ -11,7 +11,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import range_time, time_attr
 from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -67,10 +66,10 @@ def test_query(time, wave):
         # There are no observations everyday
         #  so the results found have to be equal or later than the queried time
         #  (looking at the date because it may search for miliseconds, but only date is available)
-        assert qr1.time_range().start.strftime('%Y-%m-%d') >= time.start.strftime('%Y-%m-%d')
+        assert qr1[0]['Start Time'].strftime('%Y-%m-%d') >= time.start.strftime('%Y-%m-%d')
         #  and the end time equal or smaller.
         # hypothesis can give same start-end, but the query will give you from start to end (so +1)
-        assert qr1.time_range().end <= time.end + TimeDelta(1*u.day)
+        assert qr1[-1]['End Time'] <= time.end + TimeDelta(1*u.day)
 
 
 @pytest.mark.remote_data
@@ -115,7 +114,6 @@ def mock_query_object(LCClient):
     end = '2016/1/1 23:59:59'
     wave = 17*u.GHz
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'NORH',
@@ -132,9 +130,9 @@ def test_show(LCClient):
     mock_qr = mock_query_object(LCClient)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Wavelength', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Instrument', 'Source',
-               'Provider', 'Wavelength']
-    assert qrshow0.colnames == allcols
+    allcols = {'Start Time', 'End Time', 'Instrument', 'Source',
+               'Provider', 'Wavelength', 'url'}
+    assert not allcols.difference(qrshow0.colnames)
     assert qrshow1.colnames == ['Wavelength', 'Instrument']
     assert qrshow0['Instrument'][0] == 'NORH'
     assert qrshow1['Wavelength'][0] == 17*u.GHz

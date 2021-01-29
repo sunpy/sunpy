@@ -78,11 +78,12 @@ class HelioviewerClient:
         Finds the closest image available for the specified source and date.
         **This does not download any file.**
 
-        This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_ from the Helioviewer API.
+        This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_
+        from the Helioviewer API.
 
         .. note::
-            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-            can then be used to get required information.
+            We can use ``observatory`` and ``measurement`` or ``instrument`` and ``measurement`` to
+            get the value for source ID which can then be used to get required information.
 
         Parameters
         ----------
@@ -134,13 +135,13 @@ class HelioviewerClient:
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
-        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-        can then be used to get required information.
-        This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_
+        from the Helioviewer API.
 
         .. note::
-            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-            can then be used to get required information.
+            We can use ``observatory`` and ``measurement`` or ``instrument`` and ``measurement``
+            to get the value for source ID which can then be used to get required information.
 
         Parameters
         ----------
@@ -199,13 +200,13 @@ class HelioviewerClient:
         """
         Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section
         of Helioviewer-specific metadata.
-        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-        can then be used to get required information.
-        This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_
+        from the Helioviewer API.
 
         .. note::
-            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-            can then be used to get required information.
+            We can use ``observatory`` and ``measurement`` or ``instrument`` and ``measurement``
+            to get the value for source ID which can then be used to get required information.
 
         Parameters
         ----------

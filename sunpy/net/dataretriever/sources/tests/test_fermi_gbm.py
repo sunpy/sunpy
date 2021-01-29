@@ -11,7 +11,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import time_attr
 from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -78,7 +77,7 @@ def test_get(LCClient, time, instrument):
     [(a.Time('2012/10/4', '2012/10/5') & a.Instrument.gbm & a.Detector.n5)])
 def test_fido(LCClient, query):
     qr = Fido.search(query)
-    client = qr.get_response(0).client
+    client = qr[0].client
     assert isinstance(qr, UnifiedResponse)
     assert type(client) == type(LCClient)
     response = Fido.fetch(qr)
@@ -105,7 +104,6 @@ def mock_query_object(LCClient):
     start = '2016/1/1'
     end = '2016/1/1 23:59:59'
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'GBM',
@@ -125,8 +123,8 @@ def test_show(LCClient):
     mock_qr = mock_query_object(LCClient)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
-               'Provider', 'Resolution', 'Detector']
-    assert qrshow0.colnames == allcols
+    allcols = {'Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
+               'Provider', 'Resolution', 'Detector', 'url'}
+    assert not allcols.difference(qrshow0.colnames)
     assert qrshow1.colnames == ['Start Time', 'Instrument']
     assert qrshow0['Instrument'][0] == 'GBM'

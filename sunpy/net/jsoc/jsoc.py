@@ -17,8 +17,9 @@ from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient, BaseQueryResponseTable
+from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 from sunpy.net.jsoc.attrs import walker
+from sunpy.util._table_attribute import TableAttribute
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.parfive_helpers import Downloader, Results
@@ -34,32 +35,27 @@ class NotExportedError(Exception):
     pass
 
 
-class JSOCResponse(BaseQueryResponseTable):
-    def __init__(self, table=None, client=None):
-        """
-        table : `astropy.table.Table`
-        """
-        super().__init__(table, client)
-        self.query_args = getattr(table, 'query_args', None)
-        self.requests = getattr(table, 'requests', None)
+class JSOCResponse(QueryResponseTable):
+    query_args = TableAttribute()
+    requests = TableAttribute()
+    display_keys = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
+    # This variable is used to detect if the result has been sliced before it is passed
+    # to fetch and issue a warning to the user about not being able to post-filter JSOC searches.
+    _original_num_rows = TableAttribute(default=None)
 
-    def __getitem__(self, item):
-        ret = super().__getitem__(item)
-        ret.query_args = self.query_args
-        ret.client = self._client
-        warnings.warn("Downloading of sliced JSOC results is not supported. "
-                      "All the files present in the original response will be downloaded.",
-                      SunpyUserWarning)
-        return ret
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_num_rows = len(self)
 
+    # TODO: remove this method post 3.0
     def build_table(self):
         # remove this check post 3.0
-        if any('keys' in i for i in self.query_args):
-            return self.table
+        if self.query_args is not None and any('keys' in i for i in self.query_args):
+            new_table = self.copy()
+            new_table.display_keys = slice(None)
+            return new_table
 
-        default_columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-        cols_in_table = [colname for colname in default_columns if colname in self.table.colnames]
-        return self.table[cols_in_table]
+        return self
 
 
 class JSOCClient(BaseClient):
@@ -212,10 +208,10 @@ class JSOCClient(BaseClient):
         Build a JSOC query and submit it to JSOC for processing.
 
         Takes a variable number of `~sunpy.net.jsoc.attrs` as parameters,
-        which are chained together using the AND (`&`) operator.
+        which are chained together using the AND (``&``) operator.
 
         Complex queries to be easily formed using logical operators such as
-        `&` and `|`, in the same way as the VSO client.
+        ``&`` and ``|``, in the same way as the VSO client.
 
         Parameters
         ----------
@@ -268,25 +264,25 @@ class JSOCClient(BaseClient):
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
             ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
-            >>> print(response.show('T_REC', 'DATAMEAN', 'OBS_VR'))  # doctest: +REMOTE_DATA
-                         T_REC               DATAMEAN            OBS_VR
-            ----------------------- ------------------ ------------------
-            2014.01.01_00:00:45_TAI        1906.518188        1911.202614
-            2014.01.01_00:01:30_TAI        1908.876221        1913.945512
-            2014.01.01_00:02:15_TAI          1911.7771 1916.6679989999998
-            2014.01.01_00:03:00_TAI        1913.422485 1919.3699239999999
-            2014.01.01_00:03:45_TAI        1916.500488        1922.050862
-            2014.01.01_00:04:30_TAI        1920.414795 1924.7110050000001
-            2014.01.01_00:05:15_TAI        1922.636963         1927.35015
-            2014.01.01_00:06:00_TAI 1924.6973879999998        1929.968523
-            2014.01.01_00:06:45_TAI        1927.758301 1932.5664510000001
-            2014.01.01_00:07:30_TAI        1929.646118         1935.14288
-            2014.01.01_00:08:15_TAI        1932.097046        1937.698521
-            2014.01.01_00:09:00_TAI 1935.7286379999998         1940.23353
-            2014.01.01_00:09:45_TAI        1937.754028        1942.747605
-            2014.01.01_00:10:30_TAI 1940.1462399999998        1945.241147
+            >>> print(response.show('T_REC', 'WAVELNTH', 'CAR_ROT'))  # doctest: +REMOTE_DATA
+                     T_REC          WAVELNTH CAR_ROT
+            ----------------------- -------- -------
+            2014.01.01_00:00:45_TAI   6173.0    2145
+            2014.01.01_00:01:30_TAI   6173.0    2145
+            2014.01.01_00:02:15_TAI   6173.0    2145
+            2014.01.01_00:03:00_TAI   6173.0    2145
+            2014.01.01_00:03:45_TAI   6173.0    2145
+            2014.01.01_00:04:30_TAI   6173.0    2145
+            2014.01.01_00:05:15_TAI   6173.0    2145
+            2014.01.01_00:06:00_TAI   6173.0    2145
+            2014.01.01_00:06:45_TAI   6173.0    2145
+            2014.01.01_00:07:30_TAI   6173.0    2145
+            2014.01.01_00:08:15_TAI   6173.0    2145
+            2014.01.01_00:09:00_TAI   6173.0    2145
+            2014.01.01_00:09:45_TAI   6173.0    2145
+            2014.01.01_00:10:30_TAI   6173.0    2145
 
-            *Example 3*
+        *Example 3*
 
         Request data of ``aia.lev1_euv_12s`` on the basis of PrimeKeys other than ``T_REC``::
 
@@ -317,8 +313,9 @@ class JSOCClient(BaseClient):
             iargs.update(block)
             # Update blocks with deep copy of iargs because in _make_recordset we use .pop() on element from iargs
             blocks.append(copy.deepcopy(iargs))
-            return_results.append(self._lookup_records(iargs))
+            return_results = astropy.table.vstack([return_results, self._lookup_records(iargs)])
         return_results.query_args = blocks
+        return_results._original_num_rows = len(return_results)
         return return_results
 
     @deprecated(since="2.1", message="use JSOCClient.search() instead", alternative="JSOCClient.search()")
@@ -372,8 +369,8 @@ class JSOCClient(BaseClient):
 
         Returns
         -------
-        requests : `~drms.ExportRequest` object or
-                   a list of  `~drms.ExportRequest` objects
+        requests : `~drms.client.ExportRequest` object or
+                   a list of  `~drms.client.ExportRequest` objects
 
             Request Id can be accessed by requests.id
             Request status can be accessed by requests.status
@@ -411,11 +408,19 @@ class JSOCClient(BaseClient):
             return requests[0]
         return requests
 
+    @convert_row_to_table
     def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
               downloader=None, wait=True, sleep=10, max_conn=default_max_conn, **kwargs):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
+
+        .. note::
+
+            **Only complete searches can be downloaded from JSOC**, this means
+            that no slicing operations performed on the results object will
+            affect the number of files downloaded.
+
 
         Parameters
         ----------
@@ -433,7 +438,7 @@ class JSOCClient(BaseClient):
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
 
         max_conn : `int`
@@ -444,7 +449,7 @@ class JSOCClient(BaseClient):
 
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
+           any effect if ``downloader`` is not `None`.
 
         sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
@@ -455,7 +460,13 @@ class JSOCClient(BaseClient):
         results : a `~sunpy.net.download.Results` instance
             A Results object
 
-        """
+       """
+        if len(jsoc_response) != jsoc_response._original_num_rows:
+            warnings.warn("Downloading of sliced JSOC results is not supported. "
+                          "All the files present in the original response will "
+                          "be downloaded when passed to fetch().",
+                          SunpyUserWarning)
+
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
 
@@ -486,8 +497,8 @@ class JSOCClient(BaseClient):
 
         Parameters
         ----------
-        requests : `~drms.ExportRequest`, `str`, `list`
-            `~drms.ExportRequest` objects or `str` request IDs or lists
+        requests : `~drms.client.ExportRequest`, `str`, `list`
+            `~drms.client.ExportRequest` objects or `str` request IDs or lists
             returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
 
         path : `str`

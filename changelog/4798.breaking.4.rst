@@ -1,0 +1,10 @@
+The keys used to format file paths in ``Fido.fetch`` have changed. They are now
+more standardised across all the clients, as they are all extracted from the
+names of the columns in the results table.
+
+
+For results from the VSO the keys are no longer separated with ``.``, and are
+based on the displayed column names. For results from the ``dataretriever``
+clients the only main change is that the keys are now lower case, where they
+were capitilized before. You can use the `~.UnifiedResponse.path_format_keys`
+method to see all the possible keys for a particular search.

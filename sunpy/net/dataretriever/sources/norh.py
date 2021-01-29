@@ -31,10 +31,11 @@ class NoRHClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the NoRHClient:
-         Start Time           End Time      Instrument Source Provider Wavelength
-    ------------------- ------------------- ---------- ------ -------- ----------
-    2016-01-01 00:00:00 2016-01-01 23:59:59       NORH   NAOJ      NRO   17.0 GHz
-    2016-01-02 00:00:00 2016-01-02 23:59:59       NORH   NAOJ      NRO   17.0 GHz
+           Start Time               End Time        ... Provider Wavelength
+                                                    ...             GHz
+    ----------------------- ----------------------- ... -------- ----------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...      NRO       17.0
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...      NRO       17.0
     <BLANKLINE>
     <BLANKLINE>
 

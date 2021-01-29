@@ -151,7 +151,7 @@ def split_database(source_database, destination_database, *query_string):
     >>> database1 = Database('sqlite:///:memory:')
     >>> database2 = Database('sqlite:///:memory:')
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
-    >>> qr = client.search(a.Time('2011-05-08', '2011-05-08 00:00:05'))  # doctest: +REMOTE_DATA
+    >>> qr = client.search(a.Time('2011-05-08', '2011-05-08 00:00:05'), response_format="legacy")  # doctest: +REMOTE_DATA
     >>> database1.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
     >>> database1, database2 = split_database(database1, database2,
     ...            a.Instrument.aia | a.Instrument.erne)  # doctest: +REMOTE_DATA
@@ -533,7 +533,7 @@ class Database:
         client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
-        qr = client.search(*query)
+        qr = client.search(*query, response_format="legacy")
 
         # don't do anything if querying results in no data
         if not qr:
@@ -797,7 +797,7 @@ class Database:
 
         """
         vso_qr = itertools.chain.from_iterable(
-            H2VClient().translate_and_query(query_result))
+            H2VClient().translate_and_query(query_result, vso_response_format="legacy"))
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
 
     def download_from_hek_query_result(self, query_result, client=None, path=None, progress=False,
@@ -808,7 +808,7 @@ class Database:
 
         Parameters
         ----------
-        query_result : `~sunpy.net.hek.HEKResponse` or `~sunpy.net.hek.HEKRow`
+        query_result : `~sunpy.net.hek.HEKTable` or `~sunpy.net.hek.HEKRow`
             The value returned by :meth:`sunpy.net.hek.HEKClient.search`.
         client : `sunpy.net.vso.VSOClient`, optional
             VSO Client instance to use for search and download.
@@ -830,7 +830,8 @@ class Database:
             return
 
         iterator = itertools.chain.from_iterable(
-            H2VClient().translate_and_query(query_result))
+            H2VClient().translate_and_query(query_result,
+                                            vso_response_format="legacy"))
 
         vso_qr = []
 
@@ -969,8 +970,8 @@ class Database:
 
         Parameters
         ----------
-        file : str or file-like object
-            Either a path pointing to a FITS file or a an opened file-like
+        file : str, file object
+            Either a path pointing to a FITS file or an opened file-like
             object. If an opened file object, its mode must be one of the
             following rb, rb+, or ab+.
 

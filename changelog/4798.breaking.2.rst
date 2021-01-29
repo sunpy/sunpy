@@ -1,0 +1,4 @@
+Results from the `~sunpy.net.dataretriever.NOAAIndicesClient` and the
+`~sunpy.net.dataretriever.NOAAPredictClient` no longer have ``Start Time`` or
+``End Time`` in their results table as the results returned from the client are
+not dependant upon the time parameter of a search.

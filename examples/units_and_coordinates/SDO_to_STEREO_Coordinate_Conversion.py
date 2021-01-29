@@ -78,8 +78,8 @@ subaia.plot()
 
 ###############################################################################
 # We now want to crop out this same area on the STEREO EUVI image. First, we
-# create a `SkyCoord` object with the four corners of the box. When we create
-# this object, we use `Map.coordinate_frame` so that the location parameters of
+# create a `~astropy.coordinates.SkyCoord` object with the four corners of the box. When we create
+# this object, we use `sunpy.map.GenericMap.coordinate_frame` so that the location parameters of
 # SDO are correctly set.
 corners = ([aia_bottom_left.Tx, aia_bottom_left.Ty],
            [aia_top_right.Tx, aia_bottom_left.Ty],

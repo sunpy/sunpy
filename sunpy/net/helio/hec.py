@@ -12,7 +12,7 @@ from zeep.transports import Transport
 from astropy.io.votable.table import parse_single_table
 
 from sunpy.net import attrs as a
-from sunpy.net.base_client import BaseClient, BaseQueryResponseTable
+from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.helio import attrs as ha
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
@@ -54,7 +54,7 @@ def votable_handler(xml_table):
     return votable
 
 
-class HECResponse(BaseQueryResponseTable):
+class HECResponse(QueryResponseTable):
     """
     A container for data returned from HEC searches.
     """
@@ -86,7 +86,7 @@ class HECClient(BaseClient):
             link = parser.wsdl_retriever()
         # Disable SSL check.
         session = Session()
-        session.verify = False
+        session.verify = True
         transport = Transport(session=session)
         self.hec_client = Client(link, transport=transport)
 

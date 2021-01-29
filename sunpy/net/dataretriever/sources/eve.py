@@ -25,10 +25,10 @@ class EVEClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the EVEClient:
-         Start Time           End Time      Instrument ... Source Provider Level
-    ------------------- ------------------- ---------- ... ------ -------- -----
-    2016-01-01 00:00:00 2016-01-01 23:59:59        EVE ...    SDO     LASP     0
-    2016-01-02 00:00:00 2016-01-02 23:59:59        EVE ...    SDO     LASP     0
+           Start Time               End Time        Instrument ... Provider Level
+    ----------------------- ----------------------- ---------- ... -------- -----
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        EVE ...     LASP     0
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        EVE ...     LASP     0
     <BLANKLINE>
     <BLANKLINE>
 

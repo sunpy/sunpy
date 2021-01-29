@@ -49,44 +49,24 @@ There is more on the attributes of hek in section 3 of this guide.
 
 So, how many flare detections did the query turn up?
 
-    >>> len(result[0])  # doctest: +REMOTE_DATA
+The result object returned by ``Fido.search`` is a `~.UnifiedResponse` object which contains all the results from any clients used in the search.
+The first thing we need to do is access the results from the HEK client, the only ones for the query we gave.
+
+    >>> len(result['hek'])  # doctest: +REMOTE_DATA
     19
 
-The object returned by the above query is a list of Python dictionary objects.
-Each dictionary consists of key-value pairs that exactly correspond to the parameters listed at http://www.lmsal.com/hek/VOEvent_Spec.html.
+This object is an `astropy.table.Table` object with the columns which correspond to the parameters listed at http://www.lmsal.com/hek/VOEvent_Spec.html.
 
 You can inspect all results very simply:
 
-    >>> result[0] # doctest:+SKIP
-    <sunpy.net.hek.hek.HEKResponse object at ...>
-             SOL_standard          active ... skel_startc2  sum_overlap_scores
-    ------------------------------ ------ ... ------------ --------------------
-    SOL2011-08-08T01:30:04L247C075   true ...         None   12.588887041198964
-    SOL2011-08-08T01:30:04L247C075   true ...         None   12.588887041198964
-    SOL2011-08-08T01:30:04L247C075   true ...         None   12.588887041198964
-    SOL2011-08-09T01:40:04L230C084   true ...         None  37.4574863857972034
-    SOL2011-08-09T02:30:04L319C077   true ...         None  13.6403551847007094
-    SOL2011-08-09T02:30:04L319C077   true ...         None  13.6403551847007094
-    SOL2011-08-09T02:30:04L319C077   true ...         None  13.6403551847007094
-    SOL2011-08-09T07:19:00L296C075   true ...         None                    1
-    SOL2011-08-09T07:19:00L227C090   true ...         None                    0
-    SOL2011-08-09T07:22:38L305C073   true ...         None 0.283032539594587795
-    SOL2011-08-09T07:22:44L305C073   true ...         None                    1
-    SOL2011-08-09T07:48:00L296C073   true ...         None                    0
-    SOL2011-08-09T07:48:00L296C076   true ...         None                    0
-    SOL2011-08-09T07:55:59L305C073   true ...         None                    0
-    SOL2011-08-09T07:59:49L300C077   true ...         None                    0
-    SOL2011-08-09T08:00:03L305C073   true ...         None                    0
-    SOL2011-08-09T08:00:20L305C073   true ...         None                    0
-    SOL2011-08-09T08:00:53L305C073   true ...         None                    0
-    SOL2011-08-09T08:01:21L300C077   true ...         None                    0
+    >>> result['hek']  # doctest: +SKIP
 
 Remember, the HEK query we made returns all the flares in the time-range stored in the HEK, regardless of the feature recognition method.
 The HEK parameter which stores the the feature recognition method is called "frm_name".
-Using list comprehensions, it is easy to get a list of the feature recognition methods used to find each of the flares in the result object, for example:
+We can select just this column:
 
-    >>> [elem["frm_name"] for elem in result]  # doctest:+SKIP
-    [<HEKColumn name='frm_name' dtype='str32' length=19>
+    >>> result["hek"]["frm_name"]  # doctest: +REMOTE_DATA
+    <QueryResponseColumn name='frm_name' dtype='str32' length=19>
                               asainz
                               asainz
                               asainz
@@ -105,7 +85,7 @@ Using list comprehensions, it is easy to get a list of the feature recognition m
     Flare Detective - Trigger Module
     Flare Detective - Trigger Module
     Flare Detective - Trigger Module
-    Flare Detective - Trigger Module]
+    Flare Detective - Trigger Module
 
 It is likely each flare on the Sun was actually detected multiple times by many different methods.
 
@@ -217,8 +197,8 @@ Let's say I want all the flares west of 50 arcseconds OR have a peak flux over 1
 
 and as a check:
 
-    >>> [elem["fl_peakflux"] for elem in result] # doctest: +REMOTE_DATA
-    [<HEKColumn name='fl_peakflux' dtype='object' length=17>
+    >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
+    <QueryResponseColumn name='fl_peakflux' dtype='object' length=17>
        None
        None
        None
@@ -235,10 +215,10 @@ and as a check:
     1375.93
     6275.98
     923.984
-    1019.83]
+    1019.83
 
-    >>> [elem["event_coord1"] for elem in result] # doctest: +REMOTE_DATA
-    [<HEKColumn name='event_coord1' dtype='float64' length=17>
+    >>> result["hek"]["event_coord1"] # doctest: +REMOTE_DATA
+    <QueryResponseColumn name='event_coord1' dtype='float64' length=17>
      51.0
      51.0
      51.0
@@ -255,7 +235,7 @@ and as a check:
     883.2
     883.2
     883.2
-    883.2]
+    883.2
 
 Note that some of the fluxes are returned as "None".
 This is because some feature recognition methods for flares do not report the peak flux.
@@ -265,24 +245,24 @@ Let's say we want all the flares west of 50 arcseconds AND have a peak flux over
 
     >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), (a.hek.Event.Coord1 > 50) and (a.hek.FL.PeakFlux > 1000.0))  # doctest: +REMOTE_DATA
 
-    >>> [elem["fl_peakflux"] for elem in result] # doctest: +REMOTE_DATA
-    [<HEKColumn name='fl_peakflux' dtype='float64' length=7>
+    >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
+    <QueryResponseColumn name='fl_peakflux' dtype='float64' length=7>
     2326.86
     1698.83
     2360.49
     3242.64
     1375.93
     6275.98
-    1019.83]
-    >>> [elem["event_coord1"] for elem in result] # doctest: +REMOTE_DATA
-    [<HEKColumn name='event_coord1' dtype='float64' length=7>
+    1019.83
+    >>> result["hek"]["event_coord1"] # doctest: +REMOTE_DATA
+    <QueryResponseColumn name='event_coord1' dtype='float64' length=7>
     883.2
     883.2
     883.2
     883.2
     883.2
     883.2
-    883.2]
+    883.2
 
 In this case none of the peak fluxes are returned with the value `None`.
 Since we are using an ```and`` logical operator we need a result from the ``(a.hek.FL.PeakFlux > 1000.0)`` filter.

@@ -1,0 +1,9 @@
+All result objects contained within the results of a ``Fido.search()`` (a
+`~sunpy.net.fido_factory.UnifiedResponse` object) are now
+`~sunpy.net.base_client.QueryResponseTable` objects (or subclasses thereof).
+These objects are subclasses of `astropy.table.Table` and can therefore be
+filtered and inspected as tabular objects, and the modified tables can be passed
+to ``Fido.fetch``.
+
+This, while a breaking change for anyone accessing these response objects
+directly, will hopefully make working with ``Fido`` search results much easier.

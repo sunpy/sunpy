@@ -514,8 +514,8 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         """
         Context manager to interpret 2D coordinates as being on the inside of a spherical screen.
 
-        The radius of the screen is the distance between the specified `center` and Sun center.
-        This `center` does not have to be the same as the observer location for the coordinate
+        The radius of the screen is the distance between the specified ``center`` and Sun center.
+        This ``center`` does not have to be the same as the observer location for the coordinate
         frame.  If they are the same, then this context manager is equivalent to assuming that the
         helioprojective "zeta" component is zero.
 

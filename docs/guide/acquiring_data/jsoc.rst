@@ -61,11 +61,9 @@ Constructing a Basic Query
 
 Let's start with a very simple query.  We could ask for all ``hmi.v_45s`` series data
 between January 1st from 00:00 to 01:00, 2014.
-We can add email address to the search query with the `sunpy.net.jsoc.attrs.Notify` attribute.
-Please note you can search without this but right now, you can not add the email address after the search.
 
-    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'),
-    ...                   a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
@@ -136,12 +134,6 @@ that are specified to construct the query.
 ``a.jsoc.Series()`` is compulsory to be provided in each of the jsoc queries. Apart from this,
 at least one PrimeKey must be passed (generally ``a.Time()``).
 
-The third argument::
-
-    >>> a.jsoc.Notify('sunpy@sunpy.org')
-    <sunpy.net.jsoc.attrs.Notify: sunpy@sunpy.org object ...>
-
-tells JSOC what email address you are registered with and to email when your request is ready to download.
 
 Querying with other PrimeKeys
 =============================
@@ -151,7 +143,6 @@ In case of AIA series, ``a.Wavelength()`` can be passed as a PrimeKey::
 
     >>> import astropy.units as u
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                               a.jsoc.Notify('sunpy@sunpy.org'),
     ...                               a.jsoc.Series('aia.lev1_euv_12s'),
     ...                               a.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
 
@@ -194,25 +185,42 @@ Upon doing ``Fido.search()`` as described above, only a limited set of keywords 
 object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, ``'T_OBS'`` and ``'WAVELNTH'``.
 
 If you want to get a manual set of keywords in the response object, you can pass the set of keywords using
-:meth:`~sunpy.net.base_client.BaseQueryResponseTable.show` method.
+:meth:`~sunpy.net.base_client.QueryResponseTable.show` method.
 
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
+    ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
     >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')  # doctest: +REMOTE_DATA
-    [<QTable length=81>
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
     TELESCOP  INSTRUME           T_OBS
-    str7     str10             str23
     -------- ---------- -----------------------
-    SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI
-        ...        ...                     ...
-    SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI]
+     SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:05:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:05:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:06:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:07:22_TAI
+         ...        ...                     ...
+     SDO/HMI HMI_FRONT2 2014.01.01_00:53:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:53:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:54:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:55:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:56:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 Passing an incorrect keyword won't throw an error, but the corresponding column in the table will
 not be displayed.
@@ -220,55 +228,38 @@ not be displayed.
 To display all of the columns, we can use ``show()`` without passing any arguments::
 
     >>> res.show()  # doctest: +REMOTE_DATA
-    [<QTable length=81>
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
             DATE                DATE__OBS        ... CALVER64
-           str20                  str23          ...  int64
     -------------------- ----------------------- ... --------
     2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
     2014-01-05T17:47:10Z 2014-01-01T00:00:24.20Z ...     4370
     2014-01-05T17:48:18Z 2014-01-01T00:01:09.20Z ...     4370
     2014-01-05T17:49:25Z 2014-01-01T00:01:54.20Z ...     4370
+    2014-01-05T17:50:34Z 2014-01-01T00:02:39.20Z ...     4370
+    2014-01-05T17:51:42Z 2014-01-01T00:03:24.20Z ...     4370
+    2014-01-05T17:52:50Z 2014-01-01T00:04:09.20Z ...     4370
+    2014-01-05T17:53:59Z 2014-01-01T00:04:54.20Z ...     4370
+    2014-01-05T17:55:08Z 2014-01-01T00:05:39.20Z ...     4370
+    2014-01-05T17:56:16Z 2014-01-01T00:06:24.20Z ...     4370
                      ...                     ... ...      ...
+    2014-01-05T19:05:49Z 2014-01-01T00:52:09.20Z ...     4370
+    2014-01-05T17:35:43Z 2014-01-01T00:52:54.20Z ...     4370
+    2014-01-05T17:36:54Z 2014-01-01T00:53:39.20Z ...     4370
+    2014-01-05T17:38:01Z 2014-01-01T00:54:24.20Z ...     4370
+    2014-01-05T17:39:09Z 2014-01-01T00:55:09.20Z ...     4370
+    2014-01-05T17:40:17Z 2014-01-01T00:55:54.20Z ...     4370
     2014-01-05T17:41:25Z 2014-01-01T00:56:39.20Z ...     4370
     2014-01-05T17:42:33Z 2014-01-01T00:57:24.20Z ...     4370
     2014-01-05T17:43:41Z 2014-01-01T00:58:09.20Z ...     4370
     2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z ...     4370
-    2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370]
-
-or you can print the results::
-
-    >>> res  # doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at ...>
-    Results from 1 Provider:
-    <BLANKLINE>
-    81 Results from the JSOCClient:
-             T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-    ----------------------- -------- ---------- -------- -------
-    2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-                        ...      ...        ...      ...     ...
-    2014.01.01_00:53:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-    2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370
     Length = 81 rows
     <BLANKLINE>
     <BLANKLINE>
+
 
 Using Segments
 ==============
@@ -294,7 +285,7 @@ Also, if you provide an incorrect segment name, it will throw a meaningful error
 by the given series::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.sharp_720s'), a.jsoc.Notify('sunpy@sunpy.org'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
     ...             a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
     Traceback (most recent call last):
     ...
@@ -304,7 +295,7 @@ by the given series::
 To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`` using ``AND`` operator::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.sharp_720s'), a.jsoc.Notify('sunpy@sunpy.org'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
     ...             a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -345,7 +336,7 @@ using `~sunpy.net.attrs.Sample`. In other words, if you need to query for ``hmi.
 between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
 
     >>> import astropy.units as u
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.v_45s'), a.Sample(10*u.min))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -373,7 +364,7 @@ Complex queries can be built using ``OR`` operators.
 
 Let's look for 2 different series data at the same time::
 
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
@@ -439,7 +430,7 @@ of conditions which get passed to the JSOC.  Let's say you want all the
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
     ...             a.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
-    ...             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
+    ...             a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
@@ -510,7 +501,17 @@ Downloading data
 To download the files located by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`,
 you can download them by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`::
 
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
+    ...             a.jsoc.Notify('solar@example.com')  # doctest: +SKIP
     >>> downloaded_files = Fido.fetch(res)  # doctest: +SKIP
+
+To export a request for download, you must have used the `sunpy.net.jsoc.attrs.Notify` attribute at search time to specify your email address.
+
+.. note::
+
+   **Only complete searches can be downloaded from JSOC**, this means that no slicing operations performed on the results object will affect the number of files downloaded.
+
 
 Using JSOCClient for complex usage
 **********************************
@@ -561,11 +562,11 @@ downloaded. Only then, can we download them. The download request can be staged 
     <ExportRequest id="JSOC_20170713_1461", status=0>
 
 The function `~sunpy.net.jsoc.JSOCClient.request_data` stages the request.
-It returns a `drms.ExportRequest` object, which has many attributes.
+It returns a `drms.client.ExportRequest` object, which has many attributes.
 The most important ones are ``id`` and ``status``. Only when the status is 0, we can
 move to the third step, i.e. downloading the data.
 
-If you are making more than 1 query at a time, it will return a list of `~drms.ExportRequest` objects. Hence, access the
+If you are making more than 1 query at a time, it will return a list of `~drms.client.ExportRequest` objects. Hence, access the
 list elements accordingly. You can get the id and status of the request (if it is not a list) by::
 
     >>> requests.id  # doctest: +SKIP

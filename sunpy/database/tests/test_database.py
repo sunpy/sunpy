@@ -86,14 +86,16 @@ def fido_search_result():
 def query_result():
     return vso.VSOClient().search(
         net_attrs.Time('20130801T200000', '20130801T200030'),
-        net_attrs.Instrument('PLASTIC'))
+        net_attrs.Instrument('PLASTIC'),
+        response_format="legacy")
 
 
 @pytest.fixture
 def download_qr():
     return vso.VSOClient().search(
         net_attrs.Time('2020-03-29', '2020-03-29'),
-        net_attrs.Instrument('AIA'))
+        net_attrs.Instrument('AIA'),
+        response_format="legacy")
 
 
 @pytest.fixture
