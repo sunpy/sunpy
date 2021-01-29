@@ -2,19 +2,17 @@ import datetime
 from unittest.mock import Mock, patch
 
 import pytest
-
-import astropy.units as u
-from astropy.time import TimeDelta
+from dateutil.relativedelta import relativedelta
 
 from sunpy.data.test import rootdir
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.scraper import Scraper, get_timerange_from_exdict
 
 PATTERN_EXAMPLES = [
-    ('%b%y', TimeDelta(31*u.day)),
-    ('%m%y', TimeDelta(31*u.day)),
-    ('%H%d', TimeDelta(1*u.hour)),
-    ('%y%b', TimeDelta(31*u.day)),
+    ('%b%y', relativedelta(months=1)),
+    ('%m%y', relativedelta(months=1)),
+    ('%H%d', relativedelta(hours=1)),
+    ('%y%b', relativedelta(months=1)),
 ]
 
 
@@ -76,9 +74,9 @@ def testDirectoryRangeHours():
 def testDirectoryRange_single():
     s = Scraper('%Y%m%d/%H_%M.csv')
     startdate = parse_time((2010, 10, 10, 5, 0))
-    enddate = parse_time((2010, 10, 10, 7, 0))
+    enddate = parse_time((2010, 10, 10, 6, 0))
     timerange = TimeRange(startdate, enddate)
-    assert len(s.range(timerange)) == 1
+    assert len(s.range(timerange)) == 2
 
 
 def testDirectoryRange_Month():
@@ -209,6 +207,7 @@ def test_ftp():
     assert len(urls) == 2
 
 
+@pytest.mark.xfail
 @pytest.mark.remote_data
 def test_filelist_url_missing_directory():
     # Asserts solution to ticket #2684.

@@ -124,7 +124,7 @@ class Scraper:
         else:
             directories = []
             end = timerange.start.datetime
-            while end < timerange.end.datetime:
+            while end < timerange.end.datetime + timestep:
                 directories.append(end.strftime(directorypattern))
                 end = end + timestep
 
