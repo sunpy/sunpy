@@ -1,0 +1,1 @@
+Add label for colorbar in ```map.peek```.
