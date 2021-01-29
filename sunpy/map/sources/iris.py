@@ -42,8 +42,8 @@ class SJIMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = "SJI"
-        self.meta['waveunit'] = "Angstrom"
-        self.meta['wavelnth'] = header['twave1']
+        self.meta['waveunit'] = header.get('waveunit', "Angstrom")
+        self.meta['wavelnth'] = header.get('wavelnth', 'twave1')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

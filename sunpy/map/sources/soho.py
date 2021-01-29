@@ -42,6 +42,7 @@ class EITMap(GenericMap):
 
         super().__init__(data, header, **kwargs)
 
+        self.meta['waveunit'] = self.meta.get('waveunit', "Angstrom")
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
@@ -50,10 +51,6 @@ class EITMap(GenericMap):
     @property
     def detector(self):
         return "EIT"
-
-    @property
-    def waveunit(self):
-        return "Angstrom"
 
     @property
     def rsun_obs(self):
