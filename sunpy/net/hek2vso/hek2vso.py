@@ -15,7 +15,7 @@ from astropy import units
 
 from sunpy.net import attrs as a
 from sunpy.net import hek, vso
-from sunpy.net.hek import HEKResponse
+from sunpy.net.hek import HEKTable
 
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
@@ -33,7 +33,7 @@ def translate_results_to_query(results):
 
     Parameters
     ----------
-    results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKResponse`
+    results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKTable`
         The HEK results from a HEK query to be translated.
 
     Examples
@@ -52,7 +52,7 @@ def translate_results_to_query(results):
     [[<sunpy.net.attrs.Time(2011-08-08 01:30:04.000, 2011-08-10 00:00:04.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(HMI: Helioseismic and Magnetic Imager) object at ...>, <sunpy.net.attrs.Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>]]
     """
     queries = []
-    if isinstance(results, HEKResponse):
+    if isinstance(results, HEKTable):
         for result in results:
             query = vso_attribute_parse(result)
             queries.append(query)
@@ -152,7 +152,7 @@ class H2VClient:
         return self.translate_and_query(self.hek_results,
                                         limit=limit, progress=progress)
 
-    def translate_and_query(self, hek_results, limit=None, progress=False):
+    def translate_and_query(self, hek_results, limit=None, progress=False, vso_response_format="table"):
         """
         Translates HEK results, makes a VSO query, then returns the results.
 
@@ -162,7 +162,7 @@ class H2VClient:
 
         Parameters
         ----------
-        hek_results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKResponse`
+        hek_results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKTable`
             The results from a HEK query in the form of a list.
         limit : int
             An approximate limit to the desired number of VSO results.
@@ -183,7 +183,7 @@ class H2VClient:
         vso_query = translate_results_to_query(hek_results)
 
         for query in tqdm(vso_query, unit="records"):
-            temp = self.vso_client.search(*query)
+            temp = self.vso_client.search(*query, response_format=vso_response_format)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
             if limit is not None:

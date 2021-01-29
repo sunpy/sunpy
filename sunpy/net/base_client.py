@@ -1,15 +1,18 @@
+import re
+import string
 import importlib
 from abc import ABC, abstractmethod
 from textwrap import dedent
-from warnings import warn
+from functools import wraps
 from collections.abc import Sequence
 
-from astropy.table import QTable, Table, vstack
+from astropy.table import Column, Row, Table
 
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util._table_attribute import QTable, TableAttribute
+from sunpy.util.decorators import deprecated
 from sunpy.util.util import get_width
 
-__all__ = ['BaseQueryResponse', 'BaseQueryResponseTable', 'BaseClient']
+__all__ = ['QueryResponseColumn', 'BaseQueryResponse', 'QueryResponseTable', 'BaseClient']
 
 
 class BaseQueryResponse(Sequence):
@@ -65,7 +68,6 @@ class BaseQueryResponse(Sequence):
         contained within the Query Response.
         """
 
-    @abstractmethod
     def response_block_properties(self):
         """
         Returns a set of class attributes on all the response blocks.
@@ -75,6 +77,7 @@ class BaseQueryResponse(Sequence):
         s : `set`
             List of strings, containing attribute names in the response blocks.
         """
+        return set()
 
     def __str__(self):
         """Print out human-readable summary of records retrieved"""
@@ -109,65 +112,188 @@ class BaseQueryResponse(Sequence):
         return table[valid_cols]
 
 
-class BaseQueryResponseTable(BaseQueryResponse):
+class QueryResponseRow(Row):
     """
-    A base class for tabular results returned from clients.
+    A row subclass which knows about the client of the parent table.
     """
 
-    def __init__(self, table=None, client=None):
-        super().__init__()
-        self.table = table or QTable()
-        self._client = client
+    def as_table(self):
+        """
+        Return this Row as a length one Table
+        """
+        return self.table[self.index:self.index + 1]
+
+    def get(self, key, default=None):
+        """
+        Extract a value from the row if the key is present otherwise return the value of ``default``
+        """
+        if key in self.colnames:
+            return self[key]
+        return default
 
     @property
-    def client(self):
-        return self._client
+    def response_block_map(self):
+        """
+        A dictionary designed to be used to format a filename.
 
-    @client.setter
-    def client(self, client):
-        self._client = client
+        This takes all the columns in this Row and lower cases them and
+        replaces spaces with underscores. Also removes any characters not
+        allowed in Python identifiers.
+        """
+        def key_clean(key):
+            key = re.sub('[%s]' % re.escape(string.punctuation), '_', key)
+            key = key.replace(' ', '_')
+            key = ''.join(char for char in key
+                          if char.isidentifier() or char.isnumeric())
+            return key.lower()
 
-    @property
-    def blocks(self):
-        return list(self.table.iterrows)
+        return {key_clean(key): value for key, value in zip(self.colnames, self)}
 
-    def __len__(self):
-        if self.table:
-            return len(self.table)
-        else:
-            return 0
 
-    def __getitem__(self, item):
-        if isinstance(item, int):
-            item = slice(item, item + 1)
-        ret = type(self)(self.table[item])
-        # On iter we were returning empty rows.
-        if len(ret) == 0:
-            raise IndexError
-        ret.client = self._client
-        return ret
+class QueryResponseColumn(Column):
+    """
+    A column subclass which knows about the client of the parent table.
+    """
 
+    def as_table(self):
+        """
+        Return this Row as a length one Table
+        """
+        return self.parent_table[(self.name,)]
+
+
+class QueryResponseTable(QTable):
+    Row = QueryResponseRow
+    Column = QueryResponseColumn
+
+    client = TableAttribute()
+    display_keys = TableAttribute(default=slice(None))
+    hide_keys = TableAttribute()
+
+    # This is a work around for https://github.com/astropy/astropy/pull/11217
+    # TODO Remove when min astropy version is > 4.2.1
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for attr in list(kwargs):
+            descr = getattr(self.__class__, attr, None)
+            if isinstance(descr, TableAttribute):
+                setattr(self, attr, kwargs.pop(attr))
+
+    @deprecated("2.1", "The object is a table.")
     def build_table(self):
-        return self.table
+        """
+        Return an `astropy.table.Table` representation of the query response.
+        """
+        return self
 
+    @property
+    @deprecated("2.1", "Slice the table instead.")
+    def blocks(self):
+        """
+        A `collections.abc.Sequence` object which contains the records
+        contained within the Query Response.
+        """
+        return list(self.iterrows())
+
+    @deprecated("2.1", "use path_format_keys instead")
     def response_block_properties(self):
-        client_name = self._client.__class__.__name__
-        warn(f"The {client_name} does not support response block properties.",
-             SunpyUserWarning)
-        return set()
+        return self.path_format_keys()
 
-    def append(self, table):
-        if self.table is None:
-            self.table = table
-        else:
-            self.table = vstack([self.table, table])
+    def unhide_columns(self):
+        """
+        Modify this table so that all columns are displayed.
+        """
+        self.display_keys = slice(None)
+        self.hide_keys = None
+        return self
+
+    @property
+    def _display_table(self):
+        """
+        Apply the display_keys and hide_keys attributes to the table.
+
+        This removes any keys in hide keys and then slices by any keys in
+        display_keys to return the correct table.
+        """
+
+        keys = list(self.colnames)
+        if self.hide_keys:
+            # Index only the keys not in hide keys in order
+            [keys.remove(key) for key in self.hide_keys if key in keys]
+
+        if self.display_keys != slice(None):
+            keys = [dk for dk in self.display_keys if dk in keys]
+
+        table = self[keys]
+        # The slicing operation resets display and hide keys to default, but we
+        # have already applied it
+        table.unhide_columns()
+
+        return table
+
+    def __str__(self):
+        """Print out human-readable summary of records retrieved"""
+        return '\n'.join(self._display_table.pformat(show_dtype=False))
+
+    def __repr__(self):
+        """Print out human-readable summary of records retrieved"""
+        return object.__repr__(self) + "\n" + str(self._display_table)
+
+    def _repr_html_(self):
+        return QTable._repr_html_(self._display_table)
 
     def show(self, *cols):
+        """
+        Return a table with only ``cols`` present.
+
+        If no ``cols`` are specified, all columns will be shown, including any
+        hidden by default.
+
+        This differs slightly from ``QueryResponseTable[cols]`` as it allows
+        keys which are not in the table to be requested.
+        """
+        table = self.copy()
+        table.unhide_columns()
+
         if len(cols) == 0:
-            return self.table
-        tablecols = self.table.columns
-        valid_cols = [col for col in cols if col in tablecols]
-        return self.table[valid_cols]
+            return table
+
+        valid_cols = [col for col in cols if col in table.colnames]
+        table = table[valid_cols]
+
+        # The slicing operation resets display and hide keys to default, but we
+        # want to bypass it here.
+        table.unhide_columns()
+        return table
+
+    def path_format_keys(self):
+        """
+        Returns all the names that can be used to format filenames.
+
+        Each one corresponds to a single column in the table, and the format
+        syntax should match the dtype of that column, i.e. for a ``Time``
+        object or a ``Quantity``.
+        """
+        rbp = set(self[0].response_block_map.keys())
+        for row in self[1:]:
+            rbp.intersection(row.response_block_map.keys())
+        return rbp
+
+
+BaseQueryResponse.register(QueryResponseTable)
+
+
+def convert_row_to_table(func):
+    """
+    A wrapper to convert any `.QueryResponseRow` objects to `.QueryResponseTable` objects.
+    """
+    @wraps(func)
+    def wrapper(self, query_results, **kwargs):
+        if isinstance(query_results, QueryResponseRow):
+            query_results = query_results.as_table()
+        return func(self, query_results, **kwargs)
+
+    return wrapper
 
 
 def _print_client(client, html=False):

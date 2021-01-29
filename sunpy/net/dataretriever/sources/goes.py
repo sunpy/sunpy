@@ -6,11 +6,12 @@ from datetime import datetime
 from collections import OrderedDict
 
 import astropy.units as u
+from astropy.time import Time
 
 from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.util.scraper import Scraper, get_timerange_from_exdict
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -50,14 +51,15 @@ class XRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the XRSClient:
-         Start Time           End Time      Instrument ... Source Provider
-    ------------------- ------------------- ---------- ... ------ --------
-    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...   GOES     NOAA
-    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...   GOES     NOAA
-    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...   GOES     NOAA
-    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...   GOES     NOAA
+           Start Time               End Time        Instrument ... Source Provider
+    ----------------------- ----------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS ...   GOES     NOAA
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS ...   GOES     NOAA
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS ...   GOES     NOAA
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS ...   GOES     NOAA
     <BLANKLINE>
     <BLANKLINE>
+
     """
     # GOES XRS data from NASA servers upto GOES 15. The reprocessed 13, 14, 15 data should be taken from NOAA server.
     baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
@@ -78,9 +80,10 @@ class XRSClient(GenericClient):
     def post_search_hook(self, i, matchdict):
         tr = get_timerange_from_exdict(i)
         rowdict = OrderedDict()
-        rowdict["Time"] = TimeRange(tr.start, tr.end)
-        rowdict["Start Time"] = tr.start.strftime(TIME_FORMAT)
-        rowdict["End Time"] = tr.end.strftime(TIME_FORMAT)
+        rowdict['Start Time'] = tr.start
+        rowdict['Start Time'].format = 'iso'
+        rowdict['End Time'] = tr.end
+        rowdict['End Time'].format = 'iso'
         rowdict["Instrument"] = matchdict["Instrument"][0].upper()
         rowdict["SatelliteNumber"] = i["SatelliteNumber"]
         rowdict["Physobs"] = matchdict["Physobs"][0]
@@ -98,10 +101,10 @@ class XRSClient(GenericClient):
         matchdict = self._get_match_dict(*args, **kwargs)
 
         # this is for the case when the timerange overlaps with the provider change.
-        if matchdict["Time"].start < "2009-09-01" and matchdict["Time"].end >= "2009-09-01":
+        if matchdict["Start Time"] < "2009-09-01" and matchdict["End Time"] >= "2009-09-01":
             matchdict_before, matchdict_after = matchdict.copy(), matchdict.copy()
-            matchdict_before["Time"] = TimeRange(matchdict_before["Time"].start, '2009-08-31')
-            matchdict_after["Time"] = TimeRange('2009-09-01', matchdict_after["Time"].end)
+            matchdict_after["Start Time"] = parse_time('2009-09-01')
+            matchdict_before["End Time"] = parse_time('2009-08-31')
             metalist_before = self._get_metalist(matchdict_before)
             metalist_after = self._get_metalist(matchdict_after)
             metalist = metalist_before + metalist_after
@@ -116,8 +119,9 @@ class XRSClient(GenericClient):
         """
         metalist = []
         scraper = Scraper(baseurl, regex=True)
-        filemeta = scraper._extract_files_meta(
-            matchdict["Time"], extractor=pattern, matcher=matchdict)
+        tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
+        filemeta = scraper._extract_files_meta(tr, extractor=pattern,
+                                               matcher=matchdict)
         for i in filemeta:
             rowdict = self.post_search_hook(i, matchdict)
             metalist.append(rowdict)
@@ -130,17 +134,17 @@ class XRSClient(GenericClient):
         """
         metalist = []
         # the data before the re-processed GOES 13, 14, 15 data.
-        if (matchdict["Time"].end < "2009-09-01") or (matchdict["Time"].end >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
+        if (matchdict["End Time"] < "2009-09-01") or (matchdict["End Time"] >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
             metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
 
         # new data from NOAA.
         else:
-            if matchdict["Time"].end >= "2017-02-07":
+            if matchdict["End Time"] >= "2017-02-07":
                 for sat in [16, 17]:
                     metalist += self._get_metalist_fn(matchdict,
                                                       self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
 
-            if matchdict["Time"].end <= "2020-03-04":
+            if matchdict["End Time"] <= "2020-03-04":
                 for sat in [13, 14, 15]:
                     metalist += self._get_metalist_fn(matchdict,
                                                       self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
@@ -198,11 +202,12 @@ class SUVIClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the SUVIClient:
-         Start Time           End Time      Instrument ... Level   Wavelength
-    ------------------- ------------------- ---------- ... ----- --------------
-    2020-07-10 00:00:00 2020-07-10 00:04:00       SUVI ...     2 304.0 Angstrom
-    2020-07-10 00:04:00 2020-07-10 00:08:00       SUVI ...     2 304.0 Angstrom
-    2020-07-10 00:08:00 2020-07-10 00:12:00       SUVI ...     2 304.0 Angstrom
+           Start Time               End Time        Instrument ... Level Wavelength
+                                                               ...        Angstrom
+    ----------------------- ----------------------- ---------- ... ----- ----------
+    2020-07-10 00:00:00.000 2020-07-10 00:04:00.000       SUVI ...     2      304.0
+    2020-07-10 00:04:00.000 2020-07-10 00:08:00.000       SUVI ...     2      304.0
+    2020-07-10 00:08:00.000 2020-07-10 00:12:00.000       SUVI ...     2      304.0
     <BLANKLINE>
     <BLANKLINE>
 
@@ -221,14 +226,14 @@ class SUVIClient(GenericClient):
     def post_search_hook(self, i, matchdict):
 
         # extracting start times and end times
-        start = datetime(i['year'], i['month'], i['day'], i['hour'], i['minute'], i['second'])
-        end = datetime(i['year'], i['month'], i['day'], i['ehour'], i['eminute'], i['esecond'])
-        timerange = TimeRange(start, end)
+        start = Time(datetime(i['year'], i['month'], i['day'], i['hour'], i['minute'], i['second']))
+        start.format = 'iso'
+        end = Time(datetime(i['year'], i['month'], i['day'], i['ehour'], i['eminute'], i['esecond']))
+        end.format = 'iso'
 
         rowdict = OrderedDict()
-        rowdict['Time'] = timerange
-        rowdict['Start Time'] = start.strftime(TIME_FORMAT)
-        rowdict['End Time'] = end.strftime(TIME_FORMAT)
+        rowdict['Start Time'] = start
+        rowdict['End Time'] = end
         rowdict['Instrument'] = matchdict['Instrument'][0].upper()
         rowdict['Physobs'] = matchdict['Physobs'][0]
         rowdict['Source'] = matchdict['Source'][0]
@@ -277,7 +282,8 @@ class SUVIClient(GenericClient):
                     urlpattern = baseurl.format(**formdict)
 
                     scraper = Scraper(urlpattern)
-                    filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern)
+                    tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+                    filesmeta = scraper._extract_files_meta(tr, extractor=pattern)
                     for i in filesmeta:
                         rowdict = self.post_search_hook(i, matchdict)
                         metalist.append(rowdict)

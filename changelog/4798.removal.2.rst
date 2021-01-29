@@ -1,0 +1,4 @@
+The `~.UnifiedResponse.get_response`, `~.UnifiedResponse.tables` and
+`~.UnifiedResponse.responses` attributes of `.UnifiedResponse` have been
+deprecated as they are no longer needed now the object returns the table
+objects it contains when sliced.

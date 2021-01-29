@@ -1,0 +1,8 @@
+:meth:`sunpy.net.vso.VSOClient.search` has a new keyword argument
+``response_type=`` which controls the return type from the ``search()`` method.
+In sunpy 2.1 and 3.0 it will default to the ``"legacy"`` response format, in
+3.1 it will default to the new ``"table"`` response format, and the
+``"legacy"`` format may be deprecated and removed at a later date.
+
+Searches made with ``Fido`` will use the new ``"table"`` response format, so
+this only affects users interacting with the ``VSOClient`` object directly.
