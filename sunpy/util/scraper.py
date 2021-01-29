@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
+from dateutil.relativedelta import relativedelta
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
@@ -117,16 +118,16 @@ class Scraper:
         # find directory structure - without file names
         directorypattern = os.path.dirname(self.pattern) + '/'
         # TODO what if there's not slashes?
-        rangedelta = timerange.dt
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
             return [directorypattern]
         else:
-            # Number of elements in the time range (including end)
-            n_steps = rangedelta.sec/timestep.sec
-            TotalTimeElements = int(round(n_steps)) + 1
-            directories = [(timerange.start + n * timestep).strftime(directorypattern)
-                           for n in range(TotalTimeElements)]  # TODO if date <= endate
+            directories = []
+            end = timerange.start.datetime
+            while end < timerange.end.datetime:
+                directories.append(end.strftime(directorypattern))
+                end = end + timestep
+
             return directories
 
     def _URL_followsPattern(self, url):
@@ -358,17 +359,17 @@ class Scraper:
         """
         try:
             if "%S" in directoryPattern:
-                return TimeDelta(1*u.second)
+                return relativedelta(seconds=1)
             elif "%M" in directoryPattern:
-                return TimeDelta(1*u.minute)
+                return relativedelta(minutes=1)
             elif any(hour in directoryPattern for hour in ["%H", "%I"]):
-                return TimeDelta(1*u.hour)
+                return relativedelta(hours=1)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
-                return TimeDelta(1*u.day)
+                return relativedelta(days=1)
             elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
-                return TimeDelta(31*u.day)
+                return relativedelta(months=1)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
-                return TimeDelta(365*u.day)
+                return relativedelta(years=1)
             else:
                 return None
         except Exception:
