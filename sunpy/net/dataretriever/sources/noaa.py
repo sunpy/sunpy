@@ -151,17 +151,10 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-<<<<<<< HEAD
-           Start Time               End Time        Instrument ... Source Provider
-    ----------------------- ----------------------- ---------- ... ------ --------
-    2016-01-01 00:00:00.000 2016-01-02 00:00:00.000       SOON ...   SWPC     NOAA
-    2016-01-01 00:00:00.000 2016-01-02 00:00:00.000       SOON ...   SWPC     NOAA
-=======
          Start Time           End Time      Instrument Physobs Source Provider
     ------------------- ------------------- ---------- ------- ------ --------
     2016-01-01 00:00:00 2016-01-01 23:59:59       SOON     SRS   SWPC     NOAA
     2016-01-02 00:00:00 2016-01-02 23:59:59       SOON     SRS   SWPC     NOAA
->>>>>>> 4f282c106... Update scraper to use relativedelta not units
     <BLANKLINE>
     <BLANKLINE>
 
