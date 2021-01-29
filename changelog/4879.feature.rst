@@ -1,0 +1,1 @@
+Added a ``longitude`` keyword argument to :func:`~sunpy.sun.carrington_rotation_time` as an alternate way to specify a fractional Carrington rotation.
