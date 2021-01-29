@@ -10,6 +10,60 @@ Overview
 ========
 The SunPy project is pleased to announce the 2.1 release of the sunpy package.
 
+Please find a selection of what we consider to be the biggest changes or features with this release.
+
+Fido Metadata
+=============
+
+Fido provided a unified interface to download data from several services but lacked support for search for metadata provided by catalogues or data providers.
+This has now changed and you can query JSOC, HEK and HEC with Fido::
+
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a
+    >>> results = Fido.search(timerange,
+                      a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
+                      a.jsoc.Series('hmi.m_45s'))
+    >>> results
+    Results from 2 Providers:
+
+    2 Results from the HEKClient:
+                                                                                                                        gs_thumburl                                                                                                                       ...
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ ...
+    http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100731_205448_25495028/www/EDS_FlareDetective-TriggerModule_20100801T033001-20100801T035225_AIA_171_S21W87_ssw_cutout_20100801_033013_AIA_171_S21W87_20100801_033012_context_0180.gif ...
+    http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100801_234037_25860951/www/EDS_FlareDetective-TriggerModule_20100801T033008-20100801T035232_AIA_193_S21W87_ssw_cutout_20100801_033020_AIA_193_S21W87_20100801_033019_context_0180.gif ...
+
+    1 Results from the JSOCClient:
+            T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+    ----------------------- -------- ---------- -------- -------
+    2010.08.01_03:40:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2099
+
+Alongside this, there is easier access to the results from a client by indexing the results by the client name::
+
+    >>> hek_results, jsoc_results = results['hek'], results['jsoc']
+
+In the first example you can see the search results from HEK are not too useful by default.
+The results are truncated as the long urls for the thumbnail take up too many characters and HEK can return up to 100 columns of information.
+With a new method ``show()`` on the results itself, you directly select the columns to display::
+
+    >>> hek_results.show('event_peaktime', 'obs_instrument', 'fl_peakflux')
+    event_peaktime   obs_instrument fl_peakflux
+    ------------------- -------------- -----------
+    2010-08-01T03:40:37            AIA     1027.64
+    2010-08-01T03:40:44            AIA     1441.78
+
+To find the keys for all of the columns you can do::
+
+    >>> hek_results.keys()
+    ['gs_thumburl',
+    'comment_count',
+    'hpc_bbox',
+    ...
+    'area_unit',
+    'obs_lastprocessingdate',
+    'refs']
+
+In addition, if you pass the entire search query into ``Fido.fetch()`` and it will keep over results that have no corresponding data files to retrieve.
+
 Finding map contours
 ====================
 The new :meth:`sunpy.map.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
