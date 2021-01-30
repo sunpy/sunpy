@@ -159,7 +159,7 @@ Support for GOES-16 and GOES-17 X-Ray Sensor (XRS) data
 =======================================================
 We have now included support for the GOES-16 and GOES-17 XRS 1-second data. This data can now be queried and downloaded with `sunpy.net.Fido` and the files read in and analysed as a `sunpy.timeseries.TimeSeries`.
 
-See the following example for how this can be achieved :ref:`sphx_glr_gallery_acquiring_data_goes_xrs_example.py`
+See the following example for how this can be achieved :ref:`sphx_glr_generated_gallery_acquiring_data_goes_xrs_example.py`
 
 Increase in required package versions
 =====================================
