@@ -64,11 +64,11 @@ def test_reshape(aia171_test_map, shape):
     assert im.shape == (shape[0]/2, 2, shape[1]/2, 2)
     # Dimension divides the array shape exactly with remainder
     im = reshape_image_to_4d_superpixel(aia171_test_map.data, (7, 5), (0, 0))
-    assert im.shape == (np.int(shape[0]/7), 7, np.int(shape[1]/5), 5)
+    assert im.shape == (int(shape[0]/7), 7, int(shape[1]/5), 5)
     # Dimension divides the array shape exactly with no remainder, and there is
     # an offset
     im = reshape_image_to_4d_superpixel(aia171_test_map.data, (2, 2), (1, 1))
-    assert im.shape == (np.int(shape[0]/2) - 1, 2, np.int(shape[1]/2) - 1, 2)
+    assert im.shape == (int(shape[0]/2) - 1, 2, int(shape[1]/2) - 1, 2)
     # Dimension divides the array shape exactly with remainder, and there is
     # an offset
     d = (9, 7)
