@@ -22,9 +22,9 @@ This goes over the basics and has links to useful tutorials on git.
    contents/newcomers
    contents/code_standards
    contents/documentation
+   contents/example_gallery
    contents/tests
    contents/pr_review_procedure
-   contents/example_gallery
    contents/units_quantities
    contents/new_objects
    contents/maintainer_workflow
