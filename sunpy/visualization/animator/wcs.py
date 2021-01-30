@@ -191,13 +191,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
                         "The 'ticks' value in the coord_params dictionary must be a dict or a boolean."
                     )
 
-    def _get_main_axes(self):
-        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
-                                 slices=self.slices_wcsaxes)
-
-        self._apply_coord_params(axes)
-
-        return axes
+    def _setup_main_axes(self):
+        self.axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
+                                      slices=self.slices_wcsaxes)
+        self._apply_coord_params(self.axes)
 
     def plot_start_image(self, ax):
         if self.plot_dimensionality == 1:
