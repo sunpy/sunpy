@@ -112,8 +112,7 @@ def test_to_anim(funcanimator):
 
 
 def test_to_axes(funcanimator):
-    ax = funcanimator._get_main_axes()
-    assert isinstance(ax, maxes._subplots.SubplotBase)
+    assert isinstance(funcanimator.axes, maxes.SubplotBase)
 
 
 def test_edges_to_centers_nd():
