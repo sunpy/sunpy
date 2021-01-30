@@ -39,7 +39,7 @@ class BaseFuncAnimator:
         Some arbitrary data.
     slider_functions: `list`
         A list of functions to call when that slider is changed.
-        These functions will have `val`, the axes image object and the slider
+        These functions will have ``val``, the axes image object and the slider
         widget instance passed to them, e.g., ``update_slider(val, im, slider)``
     slider_ranges: `list`
         A list of ``[min,max]`` pairs to set the ranges for each slider or an array

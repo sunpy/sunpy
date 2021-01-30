@@ -512,7 +512,7 @@ class JSOCClient(BaseClient):
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
 
         downloader : `parfive.Downloader`, optional

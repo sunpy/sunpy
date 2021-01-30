@@ -501,7 +501,7 @@ class GenericMap(NDData):
     @property
     def coordinate_frame(self):
         """
-        An `astropy.coordinates.BaseFrame` instance created from the coordinate
+        An `astropy.coordinates.BaseCoordinateFrame` instance created from the coordinate
         information for this Map, or None if the frame cannot be determined.
         """
         try:
@@ -1148,7 +1148,7 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`
+        coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
             The coordinate object to convert to pixel coordinates.
 
         origin : int
@@ -1322,7 +1322,7 @@ class GenericMap(NDData):
         ----------
         angle : `~astropy.units.Quantity`
             The angle (degrees) to rotate counterclockwise.
-        rmatrix : ndarray
+        rmatrix : array-like
             2x2 linear transformation rotation matrix.
         order : int
             Interpolation order to be used. Must be in the range 0-5.
@@ -1356,8 +1356,8 @@ class GenericMap(NDData):
 
         See Also
         --------
-        sunpy.image.transform.affine_transform : The routine this method calls
-        for the rotation.
+        sunpy.image.transform.affine_transform :
+            The routine this method calls for the rotation.
 
         Notes
         -----
@@ -1503,7 +1503,7 @@ class GenericMap(NDData):
             The bottom-left coordinate of the rectangle. If a `~astropy.coordinates.SkyCoord` it can
             have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
-            object with units of `~astropy.units.pix`.
+            object with units of `~astropy.units.si.pix`.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
             The top-right coordinate of the rectangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.

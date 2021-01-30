@@ -845,9 +845,7 @@ class Database:
     def download_from_vso_query_result(self, query_result, client=None,
                                        path=None, progress=False,
                                        ignore_already_added=False, overwrite=False):
-        """download(query_result, client=sunpy.net.vso.VSOClient(),
-        path=None, progress=False, ignore_already_added=False)
-
+        """
         Add new database entries from a VSO query result and download the
         corresponding data files. See :meth:`sunpy.database.Database.download`
         for information about the caching mechanism used and about the
@@ -855,7 +853,7 @@ class Database:
 
         Parameters
         ----------
-        query_result : sunpy.net.vso.QueryResponse
+        query_result : sunpy.net.vso.VSOQueryResponseTable
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
 
@@ -875,7 +873,7 @@ class Database:
 
         Parameters
         ----------
-        query_result : sunpy.net.vso.QueryResponse
+        query_result : sunpy.net.vso.VSOQueryResponseTable
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
 
