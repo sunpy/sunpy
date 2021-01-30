@@ -10,7 +10,33 @@ Overview
 ========
 The SunPy project is pleased to announce the 2.1 release of the sunpy package.
 
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-2.1-metadata`
+* :ref:`whatsnew-2.1-refactor`
+* :ref:`whatsnew-2.1-contours`
+* :ref:`whatsnew-2.1-unitdata`
+* :ref:`whatsnew-2.1-synoptic`
+* :ref:`whatsnew-2.1-cutouts`
+* :ref:`whatsnew-2.1-velocities`
+* :ref:`whatsnew-2.1-reprojecting`
+* :ref:`whatsnew-2.1-performance`
+* :ref:`whatsnew-2.1-goes1617`
+* :ref:`whatsnew-2.1-python`
+
+SunPy 2.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+
+* X commits have been added since 2.0
+* X issues have been closed since 2.0
+* X pull requests have been merged since 2.0
+* X people have contributed since 2.0
+* X new contributors
+
 Please find a selection of what we consider to be the biggest changes or features with this release.
+
+.. _whatsnew-2.1-metadata:
 
 Fido Metadata
 =============
@@ -64,6 +90,8 @@ To find the keys for all of the columns you can do::
 
 In addition, if you pass the entire search query into ``Fido.fetch()`` and it will keep over results that have no corresponding data files to retrieve.
 
+.. _whatsnew-2.1-refactor:
+
 Fido Results Refactor
 =====================
 
@@ -89,13 +117,19 @@ Client Specific changes
   For results from the ``dataretriever`` clients the only main change is that the keys are now lower case, where they were capitilized before.
   You can use the `~.UnifiedResponse.path_format_keys` method to see all the possible keys for a particular search.
 
+.. _whatsnew-2.1-contours:
+
 Finding map contours
 ====================
 The new :meth:`sunpy.map.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
 
+.. _whatsnew-2.1-unitdata:
+
 Map data and units
 ==================
 `~sunpy.map.Map`s now have the ``.unit`` set to the correct `~astropy.units.Unit` if the 'BUNIT' keyword is set in the FITS metadata.
+
+.. _whatsnew-2.1-synoptic:
 
 New synoptic map sources and clients
 ====================================
@@ -103,9 +137,13 @@ New synoptic map sources and clients
 
 It is now possible to search for GONG synoptic maps within `sunpy.net.Fido`, using ``a.Instrument('GONG')``.
 
+.. _whatsnew-2.1-cutouts:
+
 Requesting cutouts from the JSOC
 ================================
 `~sunpy.net.Fido` can now be used to request cutouts from JSOC via the new ``a.jsoc.Cutout`` attr. This includes the ability to adjust the requested field of view to "track" a feature as it moves across the solar disk, perform sub-pixel image registration, and mask off-disk pixels.
+
+.. _whatsnew-2.1-velocities:
 
 Coordinates with velocities
 ===========================
@@ -138,6 +176,8 @@ By transforming this coordinate to `~sunpy.coordinates.frames.HeliocentricInerti
 
 See :ref:`sunpy-coordinates-velocities` for more information.
 
+.. _whatsnew-2.1-reprojecting:
+
 Alternatives for reprojecting a Helioprojective map
 ===================================================
 The typical observation in `~sunpy.coordinates.frames.Helioprojective` coordinates does not contain full 3D information for the sources of emission, so an assumption needs to be made when transforming such coordinates to other coordinate frames.
@@ -149,17 +189,23 @@ See the following example for how this context manager enables alternative repro
 
 .. minigallery:: sunpy.coordinates.Helioprojective.assume_spherical_screen
 
+.. _whatsnew-2.1-performance:
+
 Performance improvements
 ========================
 Several functions in `sunpy.map.maputils` have been significantly sped up with improved algorithms.
 
 In addition, `sunpy.map.Map.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications which make mutiple requests for the map WCS (e.g. plotting), and reducing the number of repeated warnings thrown when metadata is missing.
 
+.. _whatsnew-2.1-goes1617:
+
 Support for GOES-16 and GOES-17 X-Ray Sensor (XRS) data
 =======================================================
 We have now included support for the GOES-16 and GOES-17 XRS 1-second data. This data can now be queried and downloaded with `sunpy.net.Fido` and the files read in and analysed as a `sunpy.timeseries.TimeSeries`.
 
 See the following example for how this can be achieved :ref:`sphx_glr_generated_gallery_acquiring_data_goes_xrs_example.py`
+
+.. _whatsnew-2.1-python:
 
 Increase in required package versions
 =====================================
@@ -169,4 +215,4 @@ We have bumped the minimum version of several packages we depend on; these are t
 - astropy 4.0
 - scipy 1.2
 - parfive 1.1
-- drms 0.6
+- drms 0.6.1
