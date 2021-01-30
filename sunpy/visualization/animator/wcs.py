@@ -34,7 +34,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         axes. The list should be the same length as the number of pixel
         dimensions with ``'x'`` and (optionally) ``'y'`` in the elements
         corresponding to the axes to be plotted. If only ``'x'`` is present a
-        line plot will be drawn. All other elements should be `0`.
+        line plot will be drawn. All other elements should be ``0``.
     coord_params: `dict`, optional
         This dict allows you to override
         `~astropy.visualization.wcsaxes.WCSAxes` parameters for each world

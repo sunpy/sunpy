@@ -361,12 +361,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):
         """
-        Download the records represented by `~sunpy.net.QueryResponseTable` or
+        Download the records represented by `~sunpy.net.base_client.QueryResponseTable` or
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
 
         Parameters
         ----------
-        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.QueryResponseTable`
+        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.base_client.QueryResponseTable`
             Container returned by query method, or multiple.
         path : `str`
             The directory to retrieve the files into. Can refer to any fields
@@ -382,7 +382,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
         downloader : `parfive.Downloader`, optional
             The download manager to use. If specified the ``max_conn``,
