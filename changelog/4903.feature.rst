@@ -1,1 +1,1 @@
-Add label for colorbar in ```map.peek```.
+Colorbar in `sunpy.map.GenericMap.peek` now has a unit label.
