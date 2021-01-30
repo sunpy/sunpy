@@ -266,6 +266,7 @@ class GreatArc:
                         frame=Heliocentric).transform_to(self.start_frame)
 
 
+@u.quantity_input
 def get_rectangle_coordinates(bottom_left, *, top_right=None,
                               width: u.deg = None, height: u.deg = None):
     """
