@@ -10,7 +10,7 @@ from sunpy.net.tests.strategies import time_attr
 from sunpy.time.timerange import TimeRange
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def LCClient():
     return fermi_gbm.GBMClient()
 

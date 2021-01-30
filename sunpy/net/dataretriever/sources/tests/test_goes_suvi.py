@@ -13,7 +13,7 @@ from sunpy.net.tests.strategies import time_attr
 from sunpy.time import TimeRange, parse_time
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def suvi_client():
     return goes.SUVIClient()
 

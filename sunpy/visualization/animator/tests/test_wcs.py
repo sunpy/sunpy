@@ -85,7 +85,7 @@ def wcs_3d():
 ))
 def test_construct_array_animator(wcs_4d, data, slices, dim):
     if dim == 1:
-        pytest.importorskip("astropy", minversion="4.0dev26173")
+        pytest.importorskip("astropy", minversion="4.1")
 
     array_animator = ArrayAnimatorWCS(data, wcs_4d, slices)
 
@@ -193,7 +193,7 @@ def test_array_animator_wcs_2d_extra_sliders(wcs_4d):
 
 @figure_test
 def test_array_animator_wcs_1d_update_plot(wcs_4d):
-    pytest.importorskip("astropy", minversion="4.0dev26173")
+    pytest.importorskip("astropy", minversion="4.1")
     data = np.arange(120).reshape((5, 4, 3, 2))
     a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 0], ylabel="Y axis!")
     a.sliders[0]._slider.set_val(1)
@@ -206,7 +206,7 @@ def test_array_animator_wcs_1d_update_plot_masked(wcs_3d):
     This test ensures the x axis of the line plot is correct even if the whole
     of the initial line plotted at construction of the animator is masked out.
     """
-    pytest.importorskip("astropy", minversion="4.0dev26173")
+    pytest.importorskip("astropy", minversion="4.1")
 
     nelem = np.prod(wcs_3d.array_shape)
     data = np.arange(nelem, dtype=np.float64).reshape(wcs_3d.array_shape)
@@ -240,7 +240,7 @@ def test_array_animator_wcs_coord_params(wcs_4d):
 
 @figure_test
 def test_array_animator_wcs_coord_params_grid(wcs_4d):
-    pytest.importorskip("astropy", minversion="4.0dev26173")
+    pytest.importorskip("astropy", minversion="4.1")
 
     coord_params = {
         'hpln': {

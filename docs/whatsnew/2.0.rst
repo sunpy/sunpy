@@ -10,7 +10,29 @@ Overview
 ========
 
 The SunPy project is pleased to announce the 2.0 release of the sunpy package.
+On this page, you can read about some of the big changes in this release:
 
+* :ref:`whatsnew-2.0-python`
+* :ref:`whatsnew-2.0-search`
+* :ref:`whatsnew-2.0-aiaprep`
+* :ref:`whatsnew-2.0-pixelindex`
+* :ref:`whatsnew-2.0-standards`
+* :ref:`whatsnew-2.0-overview`
+* :ref:`whatsnew-2.0-coordframe`
+* :ref:`whatsnew-2.0-carrington`
+* :ref:`whatsnew-2.0-proxy`
+* :ref:`whatsnew-2.0-citation`
+
+SunPy 2.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+* 1044 commits have been added since 1.1
+* 144 issues have been closed since 1.1
+* 290 pull requests have been merged since 1.1
+* 33 people have contributed since 1.1
+* 16 new contributors
+
+.. _whatsnew-2.0-python:
 
 Increase in required package versions
 =====================================
@@ -22,6 +44,8 @@ We have bumped the minimum version of several packages we depend on:
 * matplotlib>=2.2.2
 * astropy>=3.2
 * parfive>=1.1.0
+
+.. _whatsnew-2.0-search:
 
 Search Attributes
 =================
@@ -59,6 +83,8 @@ So now you can do the following instead::
     Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh, a.Wavelength(17*u.GHz))
 
 
+.. _whatsnew-2.0-aiaprep:
+
 aiaprep is now deprecated
 =========================
 
@@ -66,6 +92,8 @@ With the release of the new `aiapy <https://aiapy.readthedocs.io>`__ package, `s
 Equivalent functionality is provided by the `register` function in aiapy. For more
 details, see the `example on registering and aligning level 1 AIA images <https://aiapy.readthedocs.io/en/latest/generated/gallery/prepping_level_1_data.html>`_
 in the aiapy documentation.
+
+.. _whatsnew-2.0-pixelindex:
 
 Fixes and clarification to pixel indexing
 =========================================
@@ -82,6 +110,8 @@ In particular:
   This is one pixel less than the previously returned value.
   Note that this means the ``reference_pixel`` now does **not** have the same value as the FITS ``CRPIX`` values, which are one-based indices.
 - `sunpy.map.make_fitswcs_header` now correctly interprets the `reference_pixel` argument as being zero-based, in previous releases it incorrectly interpreted the `reference_pixel` as one-based
+
+.. _whatsnew-2.0-standards:
 
 Standardization of `~sunpy.map.GenericMap.submap` and `~sunpy.map.GenericMap.draw_rectangle`
 ============================================================================================
@@ -120,6 +150,8 @@ Which is especially useful when you wish to plot a cropped area of a map, along 
 
 Both these methods delegate the input parsing to a new utility function `sunpy.coordinates.utils.get_rectangle_coordinates`.
 
+.. _whatsnew-2.0-overview:
+
 Graphical overview for Map and MapSequence
 ==========================================
 
@@ -141,6 +173,8 @@ Here's an example of the output for a `~sunpy.map.MapSequence` instance:
 If you are using `Jupyter Notebook <https://jupyter.org/>`__, there is no need to call these methods explicitly to see this graphical overview.
 If you type just the name of the instance, the graphical overview is shown within the notebook itself as a rich representation of the instance, instead of the typical text representation.
 
+.. _whatsnew-2.0-coordframe:
+
 Differential rotation in the coordinate framework
 =================================================
 
@@ -154,6 +188,8 @@ Here are examples of using this class:
 
 A detailed write-up of how to use `~sunpy.coordinates.metaframes.RotatedSunFrame` can be found :ref:`at the RotatedSunFrame documentation<sunpy-coordinates-rotatedsunframe>`.
 
+.. _whatsnew-2.0-carrington:
+
 Changes to Carrington coordinates
 =================================
 
@@ -165,6 +201,8 @@ There may be small differences compared to Carrington coordinates computed by gr
 
 Importantly, the Carrington longitude that is now calculated (including using :func:`sunpy.coordinates.sun.L0`) will not match earlier versions of SunPy.
 A detailed write-up of the calculation approach and comparisons to other resources can be found :ref:`at carrington's functionality documentation<sunpy-coordinates-carrington>`.
+
+.. _whatsnew-2.0-proxy:
 
 Download behind proxies
 =======================
@@ -185,6 +223,8 @@ For example if you use a bash terminal:
     $ export HTTPS_PROXY
 
 these will be used to enable downloads through a proxy.
+
+.. _whatsnew-2.0-citation:
 
 Citation update
 ===============

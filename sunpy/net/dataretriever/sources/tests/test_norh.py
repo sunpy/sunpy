@@ -13,7 +13,7 @@ from sunpy.net.tests.strategies import range_time, time_attr
 from sunpy.time.timerange import TimeRange
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def LCClient():
     return norh.NoRHClient()
 

@@ -15,7 +15,7 @@ from sunpy.time import is_time_equal, parse_time
 from sunpy.time.timerange import TimeRange
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def LCClient():
     return goes.XRSClient()
 
@@ -64,6 +64,22 @@ def test_no_satellite(LCClient):
         LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
 
 
+@pytest.mark.parametrize("time", [
+    Time('2005/4/27', '2005/4/27'),
+    Time('2016/2/4', '2016/2/10')])
+@pytest.mark.remote_data
+def test_query(LCClient, time):
+    qr1 = LCClient.search(time, Instrument('XRS'))
+    assert isinstance(qr1, QueryResponse)
+    # We only compare dates here as the start time of the qr will always be the
+    # start of the day.
+    assert qr1.time_range().start.strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
+
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
+    end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
+    assert is_time_equal(qr1.time_range().end, end)
+
+
 @pytest.mark.remote_data
 def test_fixed_satellite(LCClient):
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
@@ -85,22 +101,6 @@ def test_fixed_satellite(LCClient):
 
     for resp in ans1:
         assert "go08" in resp.url
-
-
-@pytest.mark.parametrize("time", [
-    Time('2005/4/27', '2005/4/27'),
-    Time('2016/2/4', '2016/2/10')])
-@pytest.mark.remote_data
-def test_query(LCClient, time):
-    qr1 = LCClient.search(time, Instrument('XRS'))
-    assert isinstance(qr1, QueryResponse)
-    # We only compare dates here as the start time of the qr will always be the
-    # start of the day.
-    assert qr1.time_range().start.strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
-
-    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
-    end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
-    assert is_time_equal(qr1.time_range().end, end)
 
 
 @pytest.mark.remote_data
