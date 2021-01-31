@@ -5,6 +5,7 @@ import pytest
 
 import astropy.units as u
 from astropy.io import fits
+from astropy.visualization.wcsaxes import WCSAxes
 from astropy.wcs import WCS
 
 from sunpy.tests.helpers import figure_test
@@ -138,6 +139,12 @@ def test_array_animator_wcs_2d_celestial_sliders(wcs_4d):
     data = np.arange(120).reshape((5, 4, 3, 2))
     a = ArrayAnimatorWCS(data, wcs_4d, ['x', 'y', 0, 0])
     return a.fig
+
+
+def test_to_axes(wcs_4d):
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    a = ArrayAnimatorWCS(data, wcs_4d, ['x', 'y', 0, 0])
+    assert isinstance(a.axes, WCSAxes)
 
 
 @figure_test
