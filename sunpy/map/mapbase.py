@@ -2054,7 +2054,7 @@ class GenericMap(NDData):
                 pad = 0.05  # Default value for vertical colorbar
             colorbar_label = str(self.unit) if self.unit is not None else ""
             figure.colorbar(im, pad=pad).set_label(colorbar_label,
-                                                   rotation=0, labelpad = -50, y=-0.02, size=12)
+                                                   rotation=0, labelpad=-50, y=-0.02, size=12)
 
         if draw_limb:
             self.draw_limb(axes=axes)
