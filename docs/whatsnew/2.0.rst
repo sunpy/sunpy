@@ -62,8 +62,8 @@ So now you can do the following instead::
 aiaprep is now deprecated
 =========================
 
-With the release of the new `aiapy <https://aiapy.readthedocs.io>`__ package, `sunpy.instr.aia.aiaprep` will be removed in version 2.1.
-Equivalent functionality is provided by the `register` function in aiapy. For more
+With the release of the new `aiapy <https://aiapy.readthedocs.io>`__ package, ``sunpy.instr.aia.aiaprep`` will be removed in version 2.1.
+Equivalent functionality is provided by the ``register()`` function in aiapy. For more
 details, see the `example on registering and aligning level 1 AIA images <https://aiapy.readthedocs.io/en/latest/generated/gallery/prepping_level_1_data.html>`_
 in the aiapy documentation.
 
@@ -81,7 +81,7 @@ In particular:
 - `sunpy.map.GenericMap.reference_pixel` now returns a zero-based reference pixel.
   This is one pixel less than the previously returned value.
   Note that this means the ``reference_pixel`` now does **not** have the same value as the FITS ``CRPIX`` values, which are one-based indices.
-- `sunpy.map.make_fitswcs_header` now correctly interprets the `reference_pixel` argument as being zero-based, in previous releases it incorrectly interpreted the `reference_pixel` as one-based
+- `sunpy.map.make_fitswcs_header` now correctly interprets the ``reference_pixel`` argument as being zero-based, in previous releases it incorrectly interpreted the ``reference_pixel`` as one-based.
 
 Standardization of `~sunpy.map.GenericMap.submap` and `~sunpy.map.GenericMap.draw_rectangle`
 ============================================================================================
@@ -171,9 +171,9 @@ Download behind proxies
 
 With the release of parfive 1.1, sunpy has been patched to be able to utilize proxy servers when downloading files.
 
-* Proxy URL is read from the environment variables `HTTP_PROXY` or `HTTPS_PROXY`.
-* Proxy Authentication `proxy_auth` should be passed as a `aiohttp.BasicAuth` object, explicitly by the user.
-* Proxy Headers `proxy_headers` should be passed as `dict` object, explicitly by the user.
+* Proxy URL is read from the environment variables ``HTTP_PROXY`` or ``HTTPS_PROXY``.
+* Proxy Authentication ``proxy_auth`` should be passed as a `aiohttp.BasicAuth` object, explicitly by the user.
+* Proxy Headers ``proxy_headers`` should be passed as `dict` object, explicitly by the user.
 
 For example if you use a bash terminal:
 
