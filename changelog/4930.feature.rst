@@ -1,0 +1,1 @@
+Colorbar in `sunpy.map.GenericMap.peek` now has a unit label.
