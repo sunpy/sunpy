@@ -31,9 +31,10 @@ class NOAAIndicesClient(GenericClient):
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    0 Results from the VSOClient:
-    Start Time End Time Source Instrument Type
-    ---------- -------- ------ ---------- ----
+    1 Results from the NOAAIndicesClient:
+         Start Time           End Time      Source  Instrument  Wavelength
+    ------------------- ------------------- ------ ------------ ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00   sdic noaa-indices        nan
     <BLANKLINE>
     <BLANKLINE>
     """
@@ -70,7 +71,7 @@ class NOAAIndicesClient(GenericClient):
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'noaa-indices':
+            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'noaa-indices':
                 return all(chklist)
         return False
 
