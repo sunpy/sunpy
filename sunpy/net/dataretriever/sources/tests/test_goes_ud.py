@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 
 import astropy.units as u
 from astropy.time import TimeDelta
@@ -15,7 +15,7 @@ from sunpy.time import is_time_equal, parse_time
 from sunpy.time.timerange import TimeRange
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def LCClient():
     return goes.XRSClient()
 
@@ -48,6 +48,7 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(goes_time())
 def test_can_handle_query(time):
     ans1 = goes.XRSClient._can_handle_query(time, Instrument('XRS'))
@@ -140,8 +141,8 @@ def test_fido(time, instrument):
     assert len(response) == qr._numfile
 
 
-@settings(deadline=10000, max_examples=5)
 @pytest.mark.remote_data
+@settings(deadline=10000, max_examples=5, suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(goes_time())
 def test_time_for_url(LCClient, time):
     time = time.start.strftime("%Y/%m/%d")

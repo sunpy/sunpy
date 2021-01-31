@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given
+from hypothesis import HealthCheck, given, settings
 
 import sunpy.net.dataretriever.sources.fermi_gbm as fermi_gbm
 from sunpy.net import Fido
@@ -10,7 +10,7 @@ from sunpy.net.tests.strategies import time_attr
 from sunpy.time.timerange import TimeRange
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def LCClient():
     return fermi_gbm.GBMClient()
 
@@ -29,6 +29,7 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(time_attr())
 def test_can_handle_query(LCClient, time):
     ans1 = LCClient._can_handle_query(time, a.Instrument.gbm)
