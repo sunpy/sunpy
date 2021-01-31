@@ -13,7 +13,7 @@ The instrument subclass implements the instrument-specific code to parse the met
 
 In practice, the instrument subclass is not directly accessed by users.
 The `~sunpy.map.Map` factory is the primary interface for creating Map objects.
-Any subclass of `~sunpy.map.GenericMap` which defines a method named `~sunpy.map.GenericMap.is_datasource_for` will automatically be registered with the `~sunpy.map.Map` factory.
+Any subclass of `~sunpy.map.GenericMap` which defines a method named ``is_datasource_for()`` will automatically be registered with the `~sunpy.map.Map` factory.
 The ``is_datasource_for`` method is used by the `~sunpy.map.Map` factory to check if a file should use a particular instrument Map class.
 This function can run any test it needs to determine this.
 For example, it might check the value of the ``INSTRUMENT`` key in the metadata dictionary.

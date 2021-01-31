@@ -389,7 +389,7 @@ class GenericTimeSeries:
         >>> timeseries_1.concatenate(timeseries_2) # doctest: +SKIP
         >>> timeseries_1.concatenate([timeseries_2, timeseries_3]) # doctest: +SKIP
 
-        Set `same_source` to `True` if the sources of the time series are the same.
+        Set ``same_source`` to `True` if the sources of the time series are the same.
 
         >>> timeseries_1.concatenate([timeseries_2, timeseries_3], same_source=True) # doctest: +SKIP
         """
@@ -625,7 +625,7 @@ class GenericTimeSeries:
 
         Returns
         -------
-        `~pandas.core.frame.DataFrame`
+        `~pandas.DataFrame`
         """
         return self._data
 

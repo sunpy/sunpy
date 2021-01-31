@@ -149,7 +149,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     Level 0CS data is primarily used for space weather.
     It is provided near real-time and is crudely calibrated 1-minute averaged broadband irradiances from ESP and MEGS-P broadband.
-    For other levels of EVE data, use `~sunpy.net.Fido`, with `sunpy.net.attrs.Instrument('eve')`.
+    For other levels of EVE data, use `~sunpy.net.Fido`, with ``sunpy.net.attrs.Instrument('eve')``.
 
     Data is available starting on 2010/03/01.
 
