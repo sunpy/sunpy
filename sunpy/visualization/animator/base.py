@@ -109,6 +109,7 @@ class BaseFuncAnimator:
         self.timer = None
 
         # Set up axes
+        self.axes = None
         self._make_axes_grid()
         self._add_widgets()
         self._set_active_slider(0)
@@ -248,16 +249,16 @@ class BaseFuncAnimator:
 # =============================================================================
 #   Build the figure and place the widgets
 # =============================================================================
-    def _get_main_axes(self):
+    def _setup_main_axes(self):
         """
         Allow replacement of main axes by subclassing.
+        This method must set the ``axes`` attribute.
         """
-        if not len(self.fig.axes):
-            self.fig.add_subplot(111)
-        return self.fig.axes[0]
+        if self.axes is None:
+            self.axes = self.fig.add_subplot(111)
 
     def _make_axes_grid(self):
-        self.axes = self._get_main_axes()
+        self._setup_main_axes()
 
         # Split up the current axes so there is space for start & stop buttons
         self.divider = make_axes_locatable(self.axes)
