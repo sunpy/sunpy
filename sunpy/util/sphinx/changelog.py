@@ -19,7 +19,7 @@ class ChangeLog(Directive):
     The directive takes one argument which is the location of your
     ``pyproject.toml`` file (towncrier configuration) relative to the
     ``conf.py`` file *not* the file in which the directive is located.
-    If this argument is not specified it defaults to `"../"`.
+    If this argument is not specified it defaults to :file:`"../"`.
 
     Examples
     --------

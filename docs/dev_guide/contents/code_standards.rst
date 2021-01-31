@@ -55,7 +55,7 @@ Formatting
 We enforce a minimum level of code style with our continuous intergration (the name is ``sunpy.sunpy (python_codestyle [linux]``).
 This runs a tool called `pre-commit <https://pre-commit.com/>`__.
 
-The settings and tools we use for the pre-commit can be found in the file `.pre-commit-config.yaml` at the root of the sunpy git repository.
+The settings and tools we use for the pre-commit can be found in the file :file:`.pre-commit-config.yaml` at the root of the sunpy git repository.
 Some of the checks are:
 * Checks (but doesn't fix) various PEP8 issues with flake8.
 * Sort all imports in any Python files with isort.
@@ -146,7 +146,7 @@ Instead of running the pre-commit command each time you can install the git hook
 
     $ pre-commit install
 
-which installs a command to `.git/hooks/pre-commit` which will run these tools at the time you do ``git commit`` and means you don't have to run the first command each time.
+which installs a command to :file:`.git/hooks/pre-commit` which will run these tools at the time you do ``git commit`` and means you don't have to run the first command each time.
 We only suggest doing the install step if you are comfortable with git and the pre-commit tool.
 
 Documentation and Testing
@@ -188,7 +188,7 @@ Any other standard output, warnings, and errors should follow these rules:
 
 * For warnings, one should always use ``warnings.warn(message, warning_class)``.
   These get redirected to ``log.warning()`` by default, but one can still use the standard warning-catching mechanism and custom warning classes.
-  The warning class should be either class:`~sunpy.utils.exceptions.SunPyUserWarning` or inherit from it.
+  The warning class should be either class:`~sunpy.util.SunpyUserWarning` or inherit from it.
 
 Including C Code
 ================

@@ -77,7 +77,7 @@ class GenericClient(BaseClient):
         Constructs a dictionary using the query and registered Attrs that represents
         all possible values of the extracted metadata for files that matches the query.
         The returned dictionary is used to validate the metadata of searched files
-        in `:func:~sunpy.util.scraper.Scraper._extract_files_meta`.
+        in :func:`~sunpy.util.scraper.Scraper._extract_files_meta`.
 
         Parameters
         ----------
@@ -120,7 +120,7 @@ class GenericClient(BaseClient):
     def pre_search_hook(cls, *args, **kwargs):
         """
         Helper function to return the baseurl, pattern and matchdict
-        for the client required by `:func:~sunpy.net.dataretriever.GenericClient.search`
+        for the client required by :func:`~sunpy.net.dataretriever.GenericClient.search`
         before using the scraper.
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
@@ -146,7 +146,7 @@ class GenericClient(BaseClient):
 
     def post_search_hook(self, exdict, matchdict):
         """
-        Helper function used after `:func:~sunpy.net.dataretriever.GenericClient.search`
+        Helper function used after :func:`~sunpy.net.dataretriever.GenericClient.search`
         which makes the extracted metadata representable in a query response table.
 
         Parameters

@@ -63,7 +63,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     `sunpy.timeseries.GenericTimeSeries`
         If the input results in a single timeseries object that will be returned, or if ``concatenate=True``.
 
-    `list` of `~sunpy.timeseries.GenericTimeseries`
+    `list` of `~sunpy.timeseries.GenericTimeSeries`
         If multiple inputs are parsed, they will be returned in a list, unless
         ``concatenate=True`` is set when they will be combined into a single
         timeseries.
