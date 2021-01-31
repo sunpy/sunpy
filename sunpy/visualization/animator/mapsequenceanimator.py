@@ -109,6 +109,8 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         """
         Create an axes which is a `~astropy.visualization.wcsaxes.WCSAxes`.
         """
+        if _FORCE_NO_WCSAXES:
+            self.axes = self.fig.add_subplot(111)
         if self.axes is None:
             self.axes = self.fig.add_subplot(111, projection=self.mapsequence[0].wcs)
 
