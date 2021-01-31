@@ -669,10 +669,10 @@ def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
     superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
     assert_quantity_allclose(
         superpixel_map_sum.dimensions[0],
-        np.int((aia171_test_map.dimensions[0] / dimensions[0]).value) * u.pix - 1 * u.pix)
+        int((aia171_test_map.dimensions[0] / dimensions[0]).value) * u.pix - 1 * u.pix)
     assert_quantity_allclose(
         superpixel_map_sum.dimensions[1],
-        np.int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
+        int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
 
 
 def test_superpixel_err(generic_map):
