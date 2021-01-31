@@ -111,7 +111,7 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         """
         if _FORCE_NO_WCSAXES:
             self.axes = self.fig.add_subplot(111)
-        if self.axes is None:
+        elif self.axes is None:
             self.axes = self.fig.add_subplot(111, projection=self.mapsequence[0].wcs)
 
     def plot_start_image(self, ax):
