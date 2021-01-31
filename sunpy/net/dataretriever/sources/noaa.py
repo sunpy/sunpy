@@ -31,13 +31,11 @@ class NOAAIndicesClient(GenericClient):
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    1 Results from the NOAAIndicesClient:
-         Start Time           End Time      Source  Instrument  Wavelength
-    ------------------- ------------------- ------ ------------ ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00   sdic noaa-indices        nan
+    0 Results from the VSOClient:
+    Start Time End Time Source Instrument Type
+    ---------- -------- ------ ---------- ----
     <BLANKLINE>
     <BLANKLINE>
-
     """
     @staticmethod
     def _get_url_for_timerange(timerange, **kwargs):
