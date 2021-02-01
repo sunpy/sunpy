@@ -2,7 +2,7 @@ name: asv-benchmarks-daily
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/55 * * * *'
 
 jobs:   
   asv-run:
