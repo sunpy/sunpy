@@ -1,4 +1,4 @@
-sunpy 3.0.0 ()
+sunpy 2.1.0 ()
 ==============
 
 Backwards Incompatible Changes
