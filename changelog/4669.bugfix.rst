@@ -1,1 +1,0 @@
-Fixed a bug with the mapping of a WCS header to a coordinate frame if the observer location is provided in Carrington coordinates.

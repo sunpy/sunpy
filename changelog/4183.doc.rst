@@ -1,2 +1,0 @@
-Fixed example usage of :func:`~sunpy.io.fits.read` to account for the fact that it returns a list
-of data-header pairs rather than the data-header pairs directly.

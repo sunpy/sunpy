@@ -1,3 +1,0 @@
-`~.BaseQueryResponse.response_block_properties` has been renamed to
-`~.BaseQueryResponse.path_format_keys`, on the return objects from all
-``search()`` methods on all clients and from ``Fido.search()``.

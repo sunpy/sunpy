@@ -1,1 +1,0 @@
-Add support for GOES XRS netcdf files to be read as a `sunpy.timeseries.XRSTimeSeries`.

@@ -1,2 +1,0 @@
-VSO results where the size was ``-1`` (missing data) now return ``None`` rather
-than ``-1`` to be consistent with other missing data in the VSO results.

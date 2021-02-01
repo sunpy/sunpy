@@ -1,1 +1,0 @@
-Added information about the :meth:`~sunpy.map.mapsequence.plot` return type.

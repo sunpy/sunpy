@@ -1,3 +1,0 @@
-The ``max_conn`` argument to :meth:`Fido.fetch` is now correctly respected by
-the JSOC client. Previously the JSOC client would default to 4 connections no
-matter what the value passed to :meth:`Fido.fetch` was.
