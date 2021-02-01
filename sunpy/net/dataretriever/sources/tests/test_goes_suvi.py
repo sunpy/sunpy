@@ -1,7 +1,7 @@
 import tempfile
 
 import pytest
-from hypothesis import given
+from hypothesis import HealthCheck, given, settings
 
 import astropy.units as u
 
@@ -18,6 +18,7 @@ def suvi_client():
     return goes.SUVIClient()
 
 
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(time_attr())
 def test_can_handle_query(suvi_client, time):
     ans1 = suvi_client._can_handle_query(time, a.Instrument.suvi)

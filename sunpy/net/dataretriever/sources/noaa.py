@@ -37,7 +37,6 @@ class NOAAIndicesClient(GenericClient):
     2016-01-01 00:00:00 2016-01-02 00:00:00   sdic noaa-indices        nan
     <BLANKLINE>
     <BLANKLINE>
-
     """
     @staticmethod
     def _get_url_for_timerange(timerange, **kwargs):
@@ -72,7 +71,7 @@ class NOAAIndicesClient(GenericClient):
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'noaa-indices':
+            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'noaa-indices':
                 return all(chklist)
         return False
 

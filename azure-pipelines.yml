@@ -53,15 +53,14 @@ jobs:
         - python-devel
 
     envs:
-      - macos: py36
-        name: py36_test
-        posargs: -n=1
+      - macos: py38
+        name: py38_test
 
       - windows: py37
         name: py37_test
 
-      - linux: py38-online
-        name: py38_test_online
+      - linux: py39-online
+        name: py39_test_online
 
       - linux32: py38-32bit
         name: py38_test_32bit
@@ -95,13 +94,13 @@ jobs:
       submodules: false
 
       targets:
-        - wheels_cp3[678]-manylinux*x86_64
-        - wheels_cp3[678]-macosx*
+        - wheels_cp3[6789]-manylinux*x86_64
+        - wheels_cp3[6789]-macosx*
         - sdist
       dependsOn:
-        - py36_test
-        - py37_test
-        - py38_test_online
-        - py38_test_32bit
-        - py36_test_oldestdeps
         - py36_conda
+        - py36_test_oldestdeps
+        - py37_test
+        - py38_test
+        - py38_test_32bit
+        - py39_test_online

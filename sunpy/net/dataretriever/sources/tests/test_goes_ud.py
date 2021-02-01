@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 
 import astropy.units as u
 from astropy.time import TimeDelta
@@ -48,6 +48,7 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(goes_time())
 def test_can_handle_query(time):
     ans1 = goes.XRSClient._can_handle_query(time, Instrument('XRS'))
@@ -62,6 +63,22 @@ def test_can_handle_query(time):
 def test_no_satellite(LCClient):
     with pytest.raises(ValueError):
         LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
+
+
+@pytest.mark.parametrize("time", [
+    Time('2005/4/27', '2005/4/27'),
+    Time('2016/2/4', '2016/2/10')])
+@pytest.mark.remote_data
+def test_query(LCClient, time):
+    qr1 = LCClient.search(time, Instrument('XRS'))
+    assert isinstance(qr1, QueryResponse)
+    # We only compare dates here as the start time of the qr will always be the
+    # start of the day.
+    assert qr1.time_range().start.strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
+
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
+    end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
+    assert is_time_equal(qr1.time_range().end, end)
 
 
 @pytest.mark.remote_data
@@ -85,22 +102,6 @@ def test_fixed_satellite(LCClient):
 
     for resp in ans1:
         assert "go08" in resp.url
-
-
-@pytest.mark.parametrize("time", [
-    Time('2005/4/27', '2005/4/27'),
-    Time('2016/2/4', '2016/2/10')])
-@pytest.mark.remote_data
-def test_query(LCClient, time):
-    qr1 = LCClient.search(time, Instrument('XRS'))
-    assert isinstance(qr1, QueryResponse)
-    # We only compare dates here as the start time of the qr will always be the
-    # start of the day.
-    assert qr1.time_range().start.strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
-
-    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
-    end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
-    assert is_time_equal(qr1.time_range().end, end)
 
 
 @pytest.mark.remote_data
@@ -140,8 +141,8 @@ def test_fido(time, instrument):
     assert len(response) == qr._numfile
 
 
-@settings(deadline=10000, max_examples=5)
 @pytest.mark.remote_data
+@settings(deadline=10000, max_examples=5, suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(goes_time())
 def test_time_for_url(LCClient, time):
     time = time.start.strftime("%Y/%m/%d")

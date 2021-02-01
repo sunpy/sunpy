@@ -183,28 +183,28 @@ your map simply type::
 
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> my_map  # doctest: +REMOTE_DATA
-    <sunpy.map.sources.sdo.AIAMap object at 0x...>
+    <sunpy.map.sources.sdo.AIAMap object at ...>
     SunPy Map
     ---------
-    Observatory:		 SDO
-    Instrument:		 AIA 3
-    Detector:		 AIA
-    Measurement:		 171.0 Angstrom
-    Wavelength:		 171.0 Angstrom
-    Observation Date:	 2011-06-07 06:33:02
-    Exposure Time:		 0.234256 s
-    Dimension:		 [1024. 1024.] pix
-    Coordinate System:	 helioprojective
-    Scale:			 [2.402792 2.402792] arcsec / pix
-    Reference Pixel:	 [512.5 512.5] pix
-    Reference Coord:	 [3.22309951 1.38578135] arcsec
+    Observatory:                 SDO
+    Instrument:          AIA 3
+    Detector:            AIA
+    Measurement:                 171.0 Angstrom
+    Wavelength:          171.0 Angstrom
+    Observation Date:    2011-06-07 06:33:02
+    Exposure Time:               0.234256 s
+    Dimension:           [1024. 1024.] pix
+    Coordinate System:   helioprojective
+    Scale:                       [2.402792 2.402792] arcsec / pix
+    Reference Pixel:     [511.5 511.5] pix
+    Reference Coord:     [3.22309951 1.38578135] arcsec
     array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
             -127.96519  , -127.96519  ],
            [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
             -104.04137  , -127.919716 ],
            [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
              -37.95505  , -127.87541  ],
-            ...,
+           ...,
            [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
             -128.01454  , -128.01454  ],
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
@@ -743,14 +743,14 @@ To coalign a `~sunpy.map.MapSequence`, simply import
 the function and apply it to your `~sunpy.map.MapSequence`::
 
     >>> from sunpy.image.coalignment import mapsequence_coalign_by_match_template
-    >>> coaligned = mapsequence_coalign_by_match_template(mc)  # doctest: +REMOTE_DATA
+    >>> coaligned = mapsequence_coalign_by_match_template(mc, repair_nonfinite=False)  # doctest: +REMOTE_DATA
 
 This will return a new `~sunpy.map.MapSequence`, coaligned to a template extracted from the
 center of the first map in the `~sunpy.map.MapSequence`, with the map dimensions clipped as
 required.  The coalignment algorithm provides many more options for handling
 the coalignment of `~sunpy.map.MapSequence` type::
 
-    >>> help(mapsequence_coalign_by_match_template)   # doctest: +SKIP
+    >>> help(mapsequence_coalign_by_match_template, repair_nonfinite=False)   # doctest: +SKIP
 
 for a full list of options and functionality.
 
@@ -758,7 +758,7 @@ If you just want to calculate the shifts required to compensate for solar
 rotation relative to the first map in the `~sunpy.map.MapSequence` without applying them, use::
 
     >>> from sunpy.image.coalignment import calculate_match_template_shift
-    >>> shifts = calculate_match_template_shift(mc)  # doctest: +REMOTE_DATA
+    >>> shifts = calculate_match_template_shift(mc, repair_nonfinite=False)  # doctest: +REMOTE_DATA
 
 This is the function used to calculate the shifts in `~sunpy.map.MapSequence` coalignment
 function above.  Please see `~sunpy.image.coalignment.calculate_match_template_shift` to learn more about its features.

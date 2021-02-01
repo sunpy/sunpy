@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
@@ -16,6 +16,12 @@ from sunpy.time.timerange import TimeRange
 @pytest.fixture
 def LCClient():
     return norh.NoRHClient()
+
+
+# Don't use time_attr here for speed.
+def test_query_no_wave(LCClient):
+    with pytest.raises(ValueError):
+        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh)
 
 
 @pytest.mark.remote_data
@@ -41,6 +47,7 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 
 @given(time_attr())
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_can_handle_query(LCClient, time):
     ans1 = LCClient._can_handle_query(time, a.Instrument.norh)
     assert ans1 is True
@@ -54,7 +61,7 @@ def test_can_handle_query(LCClient, time):
 @pytest.mark.remote_data
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
 @given(time=range_time(Time('1992-6-1')))
-@settings(max_examples=2, deadline=50000)
+@settings(max_examples=2, deadline=50000, suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_query(LCClient, time, wave):
     qr1 = LCClient.search(time, a.Instrument.norh, wave)
     assert isinstance(qr1, QueryResponse)
@@ -67,12 +74,6 @@ def test_query(LCClient, time, wave):
         #  and the end time equal or smaller.
         # hypothesis can give same start-end, but the query will give you from start to end (so +1)
         assert qr1.time_range().end <= time.end + TimeDelta(1*u.day)
-
-
-# Don't use time_attr here for speed.
-def test_query_no_wave(LCClient):
-    with pytest.raises(ValueError):
-        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh)
 
 
 def test_wavelength_range(LCClient):

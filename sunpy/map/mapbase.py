@@ -77,21 +77,21 @@ class GenericMap(NDData):
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> aia   # doctest: +REMOTE_DATA
-    <sunpy.map.sources.sdo.AIAMap object at 0x...>
+    <sunpy.map.sources.sdo.AIAMap object at ...>
     SunPy Map
     ---------
-    Observatory:		 SDO
-    Instrument:		 AIA 3
-    Detector:		 AIA
-    Measurement:		 171.0 Angstrom
-    Wavelength:		 171.0 Angstrom
-    Observation Date:	 2011-06-07 06:33:02
-    Exposure Time:		 0.234256 s
-    Dimension:		 [1024. 1024.] pix
-    Coordinate System:	 helioprojective
-    Scale:			 [2.402792 2.402792] arcsec / pix
-    Reference Pixel:	 [512.5 512.5] pix
-    Reference Coord:	 [3.22309951 1.38578135] arcsec
+    Observatory:                 SDO
+    Instrument:          AIA 3
+    Detector:            AIA
+    Measurement:                 171.0 Angstrom
+    Wavelength:          171.0 Angstrom
+    Observation Date:    2011-06-07 06:33:02
+    Exposure Time:               0.234256 s
+    Dimension:           [1024. 1024.] pix
+    Coordinate System:   helioprojective
+    Scale:                       [2.402792 2.402792] arcsec / pix
+    Reference Pixel:     [511.5 511.5] pix
+    Reference Coord:     [3.22309951 1.38578135] arcsec
     array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
             -127.96519  , -127.96519  ],
            [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
@@ -105,7 +105,6 @@ class GenericMap(NDData):
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
             -128.03072  , -128.03072  ]], dtype=float32)
-
     >>> aia.spatial_units   # doctest: +REMOTE_DATA
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
@@ -1494,7 +1493,7 @@ class GenericMap(NDData):
         Reference Coord:     [3.22309951 1.38578135] arcsec
         ...
 
-        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +REMOTE_DATA
+        >>> aia.submap([0,0]*u.pixel, top_right=[5,5]*u.pixel)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at 0x...>
         SunPy Map
         ---------
@@ -1515,7 +1514,7 @@ class GenericMap(NDData):
         >>> width = 10 * u.arcsec
         >>> height = 10 * u.arcsec
         >>> aia.submap(bl, width=width, height=height)   # doctest: +REMOTE_DATA
-        <sunpy.map.sources.sdo.AIAMap object at 0x7f91aecc5438>
+        <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
         Observatory:         SDO
@@ -1534,7 +1533,7 @@ class GenericMap(NDData):
 
         >>> bottom_left_vector = SkyCoord([0, 10]  * u.deg, [0, 10] * u.deg, frame='heliographic_stonyhurst')
         >>> aia.submap(bottom_left_vector)   # doctest: +REMOTE_DATA
-        <sunpy.map.sources.sdo.AIAMap object at 0x7f91aece8be0>
+        <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
         Observatory:         SDO
@@ -1557,7 +1556,8 @@ class GenericMap(NDData):
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
         # parse input arguments
-        pixel_corners = u.Quantity(self._parse_submap_input(bottom_left, top_right, width, height)).T
+        pixel_corners = u.Quantity(self._parse_submap_input(
+            bottom_left, top_right, width, height)).T
 
         # The pixel corners result is in Cartesian order, so the first index is
         # columns and the second is rows.

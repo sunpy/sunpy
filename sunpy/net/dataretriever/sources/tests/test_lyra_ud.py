@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given
+from hypothesis import HealthCheck, given, settings
 
 import sunpy.net.dataretriever.sources.lyra as lyra
 from sunpy.net import Fido
@@ -38,6 +38,7 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(range_time('2010-01-06'))
 def test_can_handle_query(LCClient, time):
     ans1 = LCClient._can_handle_query(
