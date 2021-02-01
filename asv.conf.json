@@ -13,11 +13,6 @@
     // project being benchmarked
     "repo": "https://github.com/sunpy/sunpy",
 
-    // The Python project's subdirectory in your repo.  If missing or
-    // the empty string, the project is assumed to be located at the root
-    // of the repository.
-    // "repo_subdir": "",
-
     // Customizable commands for building, installing, and
     // uninstalling the project. See asv.conf.json documentation.
     //
