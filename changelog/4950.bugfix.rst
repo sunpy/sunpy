@@ -1,1 +1,1 @@
-Error message in `Fido.fetch` when `Notify` is missing is now specified.
+Improved error message from :meth:`sunpy.net.Fido.fetch` when no email has been supplied for JSOC data.
