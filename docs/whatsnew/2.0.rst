@@ -26,6 +26,7 @@ On this page, you can read about some of the big changes in this release:
 SunPy 2.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
+
 * 1044 commits have been added since 1.1
 * 144 issues have been closed since 1.1
 * 290 pull requests have been merged since 1.1
