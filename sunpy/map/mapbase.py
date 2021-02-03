@@ -19,7 +19,7 @@ from matplotlib.figure import Figure
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import Latitude, Longitude, SkyCoord, UnitSphericalRepresentation
+from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
@@ -1899,7 +1899,7 @@ class GenericMap(NDData):
                                                            height=height)
 
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-        height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
+        height = top_right.spherical.lat - bottom_left.spherical.lat
 
         if not axes:
             axes = plt.gca()
@@ -1914,7 +1914,7 @@ class GenericMap(NDData):
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
         kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
-                  'color': 'white',
+                  'edgecolor': 'white',
                   'fill': False}
         kwergs.update(kwargs)
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
