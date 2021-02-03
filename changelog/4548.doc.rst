@@ -1,1 +1,0 @@
-Added description for a counter-intuitive section in the :ref:`sphx_glr_generated_gallery_differential_rotation_reprojected_map.py` example.

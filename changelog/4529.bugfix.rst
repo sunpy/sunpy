@@ -1,1 +1,0 @@
-Fixed an issue on `TimeRange.get_dates()` where the function would return the wrong number of days if less than 24 hours had passed

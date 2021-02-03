@@ -1,1 +1,0 @@
-`~sunpy.net.jsoc.attrs.Keys` is deprecated; all fields are returned by default and can be filtered post search.

@@ -1,2 +1,0 @@
-The maximum number of connections opened by the JSOC downloader has been reduced
-from 4 to 2. This should prevent downloads of large numbers of files crashing.

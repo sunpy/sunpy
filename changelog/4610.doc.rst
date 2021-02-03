@@ -1,1 +1,0 @@
-Added :ref:`sunpy-coordinates-velocities` to explain how to use velocity information in the coordinates framework.

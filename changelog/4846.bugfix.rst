@@ -1,1 +1,0 @@
-Fixing the `CROTA` meta keyword in EUVI FITS to `CROTAn` standard.

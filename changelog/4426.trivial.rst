@@ -1,2 +1,0 @@
-Raise a better error message if trying to load a FITS file that contains only
-one dimensional data.

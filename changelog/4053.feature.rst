@@ -1,1 +1,0 @@
-Added `HMISynopticMap` in `sunpy.map.sources.sdo`, as a subclass of `HMIMap`, for handling the Synoptic maps from the HMI.

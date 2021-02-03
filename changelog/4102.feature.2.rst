@@ -1,1 +1,0 @@
-The ephemeris functions :func:`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst()`, :func:`~sunpy.coordinates.ephemeris.get_earth()`, and :func:`~sunpy.coordinates.ephemeris.get_horizons_coord()` can now optionally return the body's velocity as part of the output coordinate.

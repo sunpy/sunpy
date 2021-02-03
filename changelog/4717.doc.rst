@@ -1,2 +1,0 @@
-Added more information on which FITS keywords are used for various `sunpy.map.GenericMap`
-properties.

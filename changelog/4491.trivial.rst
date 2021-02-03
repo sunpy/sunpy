@@ -1,4 +1,0 @@
-If the ``top_right`` corner given to :meth:`sunpy.map.Map.submap` is
-below or to the right of the ``bottom_left`` corner, a warning is no longer
-raised (as the rectangle is still well defined), but a message is still logged
-at the debug level to the sunpy logger.

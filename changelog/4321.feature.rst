@@ -1,4 +1,0 @@
-Refactoring of `~sunpy.net.dataretriever` which adds these capabilities to `~sunpy.net.dataretriever.QueryResponse`:
-
-- Any ``attr`` shall not be defaulted to a hard-coded value in all subclasses of `~sunpy.net.dataretriever.GenericClient`; thus records for all possible ``attrs`` shall be returned if it is not specified in the query.
-- `~sunpy.net.dataretriever.QueryResponse` can now show more columns; thus all metadata extractable from matching file URLs shall be shown and for a client, non-spported ``attrs`` shall not be shown in the response tables.

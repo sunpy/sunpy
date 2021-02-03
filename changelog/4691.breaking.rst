@@ -1,2 +1,0 @@
-The class inheritance for `~sunpy.coordinates.metaframes.RotatedSunFrame` and the frames it creates has been changed in order to stop depending on unsupported behavior in the underlying machinery.
-The return values for some :func:`isinstance`/:func:`issubclass` calls will be different, but the API for `~sunpy.coordinates.metaframes.RotatedSunFrame` is otherwise unchanged.

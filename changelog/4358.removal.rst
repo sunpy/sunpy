@@ -1,1 +1,0 @@
-`~sunpy.net.hek.attrs.Time` is deprecated; `~sunpy.net.attrs.Time` should be used instead.
