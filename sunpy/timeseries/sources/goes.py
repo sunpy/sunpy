@@ -210,7 +210,11 @@ class XRSTimeSeries(GenericTimeSeries):
                 xrsb = np.array(d["xrsb_flux"])
                 start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since")
                 times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
-
+            elif "bkd1d_xrsa_flux" in d.variables:
+                xrsa = np.array(d["bkd1d_xrsa_flux"])
+                xrsb = np.array(d["bkd1d_xrsb_flux"])
+                start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since")
+                times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
             else:
                 raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
 
