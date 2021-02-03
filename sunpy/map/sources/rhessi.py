@@ -46,11 +46,11 @@ class RHESSIMap(GenericMap):
         # than one image (schriste)
         # Fix some broken/misapplied keywords
         if self.meta['ctype1'] == 'arcsec':
-            self.meta['cunit1'] = self.meta.get('cunit1', 'arcsec')
-            self.meta['ctype1'] = self.meta.get('ctype1', 'HPLN-TAN')
+            self.meta['cunit1'] = 'arcsec'
+            self.meta['ctype1'] = 'HPLN-TAN'
         if self.meta['ctype2'] == 'arcsec':
-            self.meta['cunit2'] = self.meta.get('cunit2', 'arcsec')
-            self.meta['ctype2'] = self.meta.get('ctype2', 'HPLT-TAN')
+            self.meta['cunit2'] = 'arcsec'
+            self.meta['ctype2'] = 'HPLT-TAN'
 
         self.meta['waveunit'] = self.meta.get('waveunit', 'keV')
         self.meta['wavelnth'] = self.meta.get('wavelnth',
