@@ -1,1 +1,0 @@
-The listings for the sample data (`sunpy.data.sample`) are now sorted.

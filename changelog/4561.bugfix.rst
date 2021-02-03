@@ -1,1 +1,0 @@
-Clear rotation metadata for SOHO/LASCO Helioviewer JPEG2000 images, as they are already rotated correctly.

@@ -1,3 +1,0 @@
-`sunpy.io.fits.header_to_fits` now excludes any keys that have associated NaN
-values, as these are not valid in a FITS header, and throws a warning if this
-happens.

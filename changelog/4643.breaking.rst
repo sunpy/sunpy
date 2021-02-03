@@ -1,1 +1,0 @@
-Due to upstream changes, the parsing logic for the `~sunpy.net.hec.HECClient` now returns strings and not bytes for :meth:`~sunpy.net.hec.HECClient.get_table_names`.

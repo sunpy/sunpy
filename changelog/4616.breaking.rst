@@ -1,6 +1,0 @@
-The following `~sunpy.map.Map` methods have had support for specific positional
-arguments removed. They must now be passed as keyword arguments
-(i.e. ``m.method(keyword_arg=value)``).
-
-- :meth:`~sunpy.map.Map.submap`: ``width``, ``height``.
-- :meth:`~sunpy.map.Map.draw_rectangle`: ``width``, ``height``, ``axes``, ``top_right``.

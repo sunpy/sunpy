@@ -1,1 +1,0 @@
-Previously slicing the result of ``Fido.search()`` (a `~sunpy.net.fido_factory.UnifiedResponse` object) so that it had a length of one returned another `~sunpy.net.fido_factory.UnifiedResponse` object, now it will return a `~sunpy.net.base_client.QueryResponseTable` object, which is a subclass of `astropy.table.Table`.

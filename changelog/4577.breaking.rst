@@ -1,1 +1,0 @@
-The ``.size`` property of a coordinate frame with no associated data will now raise an error instead of returning 0.

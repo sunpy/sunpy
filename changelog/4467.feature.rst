@@ -1,5 +1,0 @@
-The `sunpy.map.GenericMap.wcs` property is now cached, and will be recomputed
-only if changes are made to the map metadata. This improves performance of a
-number of places in the code base, and only one warning will now be raised
-about WCS fixes for a given set of metadata (as opposed to a warning each time
-``.wcs`` is accessed)

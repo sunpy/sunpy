@@ -1,2 +1,0 @@
-The ability to to filter search results from the `~sunpy.net.vso.VSOClient` was broken.
-This has now been restored.

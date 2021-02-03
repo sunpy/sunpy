@@ -1,2 +1,0 @@
-Added :func:`~sunpy.util.scraper.get_timerange_from_exdict` which finds time range for a URL using its metadata.
-Added :meth:`~sunpy.util.scraper.Scraper.isvalid_time` that checks whether the file corresponds to a desired time range.

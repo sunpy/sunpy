@@ -1,1 +1,0 @@
-Added a context manager (:meth:`~sunpy.coordinates.frames.Helioprojective.assume_spherical_screen`) to interpret `~sunpy.coordinates.frames.Helioprojective` coordinates as being on the inside of a spherical screen instead of on the surface of the Sun.

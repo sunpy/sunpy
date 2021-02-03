@@ -1,2 +1,0 @@
-The `sunpy.net.hek.hek.HEKColumn` class has been removed, the ``HEKTable`` class
-now uses the standard `astropy.table.Column` class.
