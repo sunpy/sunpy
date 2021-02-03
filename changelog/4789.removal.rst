@@ -1,1 +1,0 @@
-The `.VSOClient.link` method is deprecated as it is no longer used.

@@ -1,3 +1,0 @@
-Support for :func:`sunpy.coordinates.wcs_utils.solar_wcs_frame_mapping` to
-use the ``.heliographic_observer`` and ``.rsun`` attributes on a
-`~astropy.wcs.WCS` is depreacted, and will raise an error in sunpy 3.1.

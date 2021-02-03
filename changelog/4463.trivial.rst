@@ -1,9 +1,0 @@
-The following functions in `sunpy.map` have had their performance greatly increased,
-with runtimes typically improving by a factor of 20x. This has been achieved by
-improving many of the checks so that they only require checking the edge pixels of a
-map as opposed to all of the pixels.
-
-- :func:`~sunpy.map.contains_full_disk`
-- :func:`~sunpy.map.is_all_off_disk`
-- :func:`~sunpy.map.is_all_on_disk`
-- :func:`~sunpy.map.contains_limb`

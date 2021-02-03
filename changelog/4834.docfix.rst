@@ -1,2 +1,0 @@
-Ensure that all attrs are documented and clean the `sunpy.net.hek.attrs`
-namespace of non-attr objects.

@@ -1,1 +1,0 @@
-Add two new colormaps (``rhessi`` and ``std_gamma_2``) that are used for plotting RHESSI maps.

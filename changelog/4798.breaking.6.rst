@@ -1,2 +1,0 @@
-The `sunpy.net.vso.QueryResponse.search` method has been removed as it has not
-worked since the 1.0 release of sunpy.

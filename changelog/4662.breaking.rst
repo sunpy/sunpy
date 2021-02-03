@@ -1,2 +1,0 @@
-Reduced the selection of dependent packages installed by default via ``pip``, which means that some of our sub-packages will not fully import.
-You can install all dependencies by specifying ``[all]``, or you can install sub-package-specific dependencies by specifying, e.g., ``[map]`` or ``[timeseries]``.

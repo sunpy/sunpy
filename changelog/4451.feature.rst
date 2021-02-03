@@ -1,3 +1,0 @@
-`sunpy.map.Map` instances now have their ``.unit`` attribute set from the
-``'BUNIT'`` FITS keyword. If the keyword cannot be parsed, or is not present
-the unit is set to `None`.

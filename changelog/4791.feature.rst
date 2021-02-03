@@ -1,1 +1,0 @@
-Added support for "%Y/%m/%dT%H:%M" to :func:`sunpy.time.parse_time`.
