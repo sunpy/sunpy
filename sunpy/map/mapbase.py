@@ -1941,11 +1941,6 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
-        if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
-            # The decorator assigns the first positional arg to top_right and so on.
-            height = width
-            width = top_right
-            top_right = None
 
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
