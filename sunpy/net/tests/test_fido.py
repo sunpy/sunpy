@@ -496,9 +496,9 @@ def test_fido_no_time(mocker):
 def test_jsoc_missing_email():
     res = Fido.search(a.Time("2011/01/01", "2011/01/01 00:01"), a.jsoc.Series.aia_lev1_euv_12s)
 
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(ValueError, match="Pass attrs.jsoc.Notify with a JSOC registered email as an argument to fido.search"):
         Fido.fetch(res)
-    assert excinfo.value.args[0] == 'Pass attrs.jsoc.Notify with a JSOC registered email as an argument to fido.search'
+
 
 @pytest.mark.remote_data
 def test_slice_jsoc():
