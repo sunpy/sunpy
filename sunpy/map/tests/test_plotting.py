@@ -128,6 +128,16 @@ def test_rectangle_aia171_top_right(aia171_test_map):
 
 
 @figure_test
+def test_rectangle_aia171_hgs_width_height(aia171_test_map):
+    aia171_test_map.plot()
+    bottom_left = SkyCoord(
+        0 * u.deg, -60 * u.deg, frame='heliographic_stonyhurst', obstime=aia171_test_map.date)
+    w = 45 * u.deg
+    h = 120 * u.deg
+    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
+
+
+@figure_test
 def test_plot_masked_aia171(aia171_test_map_with_mask):
     aia171_test_map_with_mask.plot()
 
