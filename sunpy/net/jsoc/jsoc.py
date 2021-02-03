@@ -463,7 +463,7 @@ class JSOCClient(BaseClient):
        """
         for resp in jsoc_response.query_args:
             if 'notify' not in resp:
-                raise ValueError('Email address is not specified by a.jsoc.Notify')
+                raise ValueError('Pass attrs.jsoc.Notify with a JSOC registered email as an argument to fido.search')
 
         if len(jsoc_response) != jsoc_response._original_num_rows:
             warnings.warn("Downloading of sliced JSOC results is not supported. "
