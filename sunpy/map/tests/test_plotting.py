@@ -184,7 +184,7 @@ def test_heliographic_rectangle_width_height(heliographic_test_map):
         60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
     w = 13 * u.deg
     h = 13 * u.deg
-    heliographic_test_map.draw_rectangle(bottom_left, width=w, height=h, color='cyan')
+    heliographic_test_map.draw_rectangle(bottom_left, width=w, height=h, edgecolor='cyan')
 
 
 @figure_test
@@ -193,7 +193,7 @@ def test_heliographic_rectangle_top_right(heliographic_test_map):
     bottom_left = SkyCoord(
         60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
     top_right = SkyCoord(73 * u.deg, 63 * u.deg, frame=heliographic_test_map.coordinate_frame)
-    heliographic_test_map.draw_rectangle(bottom_left, top_right=top_right, color='cyan')
+    heliographic_test_map.draw_rectangle(bottom_left, top_right=top_right, edgecolor='cyan')
 
 
 # See https://github.com/sunpy/sunpy/issues/4294 to track this warning. Ideally
