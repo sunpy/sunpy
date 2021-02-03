@@ -1,0 +1,4 @@
+`sunpy.map.GenericMap.date` now has its time scale set from the 'TIMESYS' FITS keyword,
+if it is present. If it isn't present the time scale defaults to 'utc', which is unchanged
+default behaviour, so this change will only affect maps with a 'TIMESYS' keyword
+that is not set to 'UTC'.
