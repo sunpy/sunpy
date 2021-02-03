@@ -1941,11 +1941,13 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
-
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
+
+        bottom_left = bottom_left.transform_to(self.coordinate_frame)
+        top_right = top_right.transform_to(self.coordinate_frame)
 
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = top_right.spherical.lat - bottom_left.spherical.lat
@@ -1957,8 +1959,7 @@ class GenericMap(NDData):
         else:
             axes_unit = self.spatial_units[0]
 
-        coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.spherical.lon, coord.spherical.lat), unit=axes_unit).value
+        bottom_left = u.Quantity(self._get_lon_lat(bottom_left), unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
