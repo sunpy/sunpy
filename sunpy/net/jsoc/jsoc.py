@@ -461,6 +461,10 @@ class JSOCClient(BaseClient):
             A Results object
 
        """
+        for resp in jsoc_response.query_args:
+            if not 'notify' in resp:
+                raise ValueError('Email address is not specified by a.jsoc.Notify')
+
         if len(jsoc_response) != jsoc_response._original_num_rows:
             warnings.warn("Downloading of sliced JSOC results is not supported. "
                           "All the files present in the original response will "
