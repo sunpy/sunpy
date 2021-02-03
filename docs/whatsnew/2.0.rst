@@ -114,8 +114,6 @@ In particular:
 
 .. _whatsnew-2.0-standards:
 
-.. _whatsnew-2.0-standards:
-
 Standardization of `~sunpy.map.GenericMap.submap` and `~sunpy.map.GenericMap.draw_rectangle`
 ============================================================================================
 
