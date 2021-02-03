@@ -207,6 +207,36 @@ class QueryResponseTable(QTable):
         self.hide_keys = None
         return self
 
+    def _reorder_columns(self, first_columns, remove_empty=True):
+        """
+        Generate a new version of this table with ``first_columns`` at the start.
+
+        Parameters
+        ----------
+        first_columns : list
+           The column names to put at the start of the table.
+
+        remove_empty : bool, optional
+           Remove columns where all values are `None`.
+
+        Returns
+        -------
+        new_table : QueryResponseTable
+            A sliced version of this table instance so that the columns are
+            reordered.
+        """
+        all_cols = list(self.colnames)
+        first_names = [n for n in first_columns if n in all_cols]
+        extra_cols = [col for col in all_cols if col not in first_names]
+        all_cols = first_names + extra_cols
+        new_table = self[[col for col in all_cols if data[col] is not None]]
+
+        if remove_empty:
+            empty_cols = [col.info.name for col in self.itercols() if col.info.dtype.kind == 'O' and all(val is None for val in col)]
+            new_table.remove_columns(empty_cols)
+
+        return new_table
+
     @property
     def _display_table(self):
         """
