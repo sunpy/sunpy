@@ -462,7 +462,7 @@ class JSOCClient(BaseClient):
 
        """
         for resp in jsoc_response.query_args:
-            if not 'notify' in resp:
+            if 'notify' not in resp:
                 raise ValueError('Email address is not specified by a.jsoc.Notify')
 
         if len(jsoc_response) != jsoc_response._original_num_rows:
