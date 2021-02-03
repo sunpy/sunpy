@@ -74,9 +74,9 @@ def testDirectoryRangeHours():
 def testDirectoryRange_single():
     s = Scraper('%Y%m%d/%H_%M.csv')
     startdate = parse_time((2010, 10, 10, 5, 0))
-    enddate = parse_time((2010, 10, 10, 6, 0))
+    enddate = parse_time((2010, 10, 10, 7, 0))
     timerange = TimeRange(startdate, enddate)
-    assert len(s.range(timerange)) == 2
+    assert len(s.range(timerange)) == 1
 
 
 def testDirectoryRange_Month():
@@ -152,7 +152,7 @@ def testURL_patternMillisecondsZeroPadded():
     # Asserts solution to ticket #1954.
     # Milliseconds must be zero-padded in order to match URL lengths.
     now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
-    with patch('datetime.datetime', now=now_mock):
+    with patch('sunpy.util.scraper.datetime', now=now_mock):
         s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
     now_mock.assert_called_once()
     assert s.now == 'fd_20190419_000000_004.fts'
@@ -207,7 +207,6 @@ def test_ftp():
     assert len(urls) == 2
 
 
-@pytest.mark.xfail
 @pytest.mark.remote_data
 def test_filelist_url_missing_directory():
     # Asserts solution to ticket #2684.

@@ -187,6 +187,7 @@ def test_srs_missing_tarball(mock_ftp_nlst):
     assert urls[1].endswith('20200102SRS.txt')
 
 
+@no_vso
 @pytest.mark.remote_data
 def test_srs_current_year():
     year = datetime.date.today().year

@@ -4,10 +4,10 @@ This module provides a web scraper.
 import os
 import re
 import calendar
-import datetime
 import warnings
 from time import sleep
 from ftplib import FTP
+from datetime import datetime
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
@@ -87,9 +87,9 @@ class Scraper:
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         milliseconds = re.search(r'\%e', self.pattern)
         if not milliseconds:
-            self.now = datetime.datetime.now().strftime(self.pattern)
+            self.now = datetime.now().strftime(self.pattern)
         else:
-            now = datetime.datetime.now()
+            now = datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
             self.now = now.strftime('{start}{milli:03d}{end}'.format(
                 start=self.pattern[0:milliseconds.start()],
@@ -123,12 +123,53 @@ class Scraper:
             return [directorypattern]
         else:
             directories = []
-            end = timerange.start.datetime
-            while end < timerange.end.datetime + timestep:
-                directories.append(end.strftime(directorypattern))
-                end = end + timestep
+            cur = self._date_floor(timerange.start, timestep)
+            end = self._date_floor(timerange.end, timestep) + timestep
+            while cur < end:
+                directories.append(cur.strftime(directorypattern))
+                cur = cur + timestep
 
             return directories
+
+    @staticmethod
+    def _date_floor(date, timestep):
+        """
+        Return the "floor" of the given date and time step.
+
+        Parameters
+        ----------
+        datetime : `datetime.datetime` or `astropy.time.Time`
+            The date to floor
+        timestep : `dateutil.relativedelta.relativedelta`
+            The smallest time step to floor
+        Returns
+        -------
+        `datetime.datetime`
+            The time floored at the given time step
+
+        """
+        date_parts = [int(p) for p in date.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
+        date_parts[-1] = date_parts[-1] % 60
+        date = datetime(*date_parts)
+        orig_time_tup = date.timetuple()
+        if timestep == relativedelta(seconds=1):
+            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
+                            orig_time_tup.tm_hour, orig_time_tup.tm_min, orig_time_tup.tm_sec)
+        elif timestep == relativedelta(minutes=1):
+            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
+                            orig_time_tup.tm_hour, orig_time_tup.tm_min, 0)
+        elif timestep == relativedelta(hours=1):
+            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
+                            orig_time_tup.tm_hour, 0, 0)
+        elif timestep == relativedelta(days=1):
+            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
+                            0, 0, 0)
+        elif timestep == relativedelta(months=1):
+            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, 1, 0, 0, 0)
+        elif timestep == relativedelta(years=1):
+            new_time_tup = (orig_time_tup.tm_year, 1, 1, 0, 0, 0)
+
+        return datetime(*new_time_tup)
 
     def _URL_followsPattern(self, url):
         """
@@ -432,7 +473,7 @@ def get_timerange_from_exdict(exdict):
     timetypes = ['hour', 'minute', 'second', 'millisecond']
     dtlist = [int(exdict.get(d, 1)) for d in datetypes]
     dtlist.extend([int(exdict.get(t, 0)) for t in timetypes])
-    startTime = Time(datetime.datetime(*dtlist))
+    startTime = Time(datetime(*dtlist))
 
     tdelta = 1*u.millisecond
     if "year" in exdict:
