@@ -465,7 +465,7 @@ class JSOCClient(BaseClient):
             if 'notify' not in resp:
                 raise ValueError('A registered email is required to get data from JSOC. '
                                  'Please supply an email with attrs.jsoc.Notify to Fido.search. '
-                                 'Then pass those news results back into Fido.fetch')
+                                 'Then pass those new results back into Fido.fetch')
 
         if len(jsoc_response) != jsoc_response._original_num_rows:
             warnings.warn("Downloading of sliced JSOC results is not supported. "
