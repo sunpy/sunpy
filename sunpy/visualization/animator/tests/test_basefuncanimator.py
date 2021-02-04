@@ -47,7 +47,7 @@ def test_base_func_init(fig, colorbar, buttons):
     tfa._set_active_slider(1)
     assert tfa.active_slider == 1
 
-    fig = plt.figure()
+    fig = tfa.fig
     event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='down')
     tfa._key_press(event)
     assert tfa.active_slider == 0
