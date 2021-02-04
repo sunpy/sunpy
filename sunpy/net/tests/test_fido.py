@@ -493,6 +493,14 @@ def test_fido_no_time(mocker):
 
 
 @pytest.mark.remote_data
+def test_jsoc_missing_email():
+    res = Fido.search(a.Time("2011/01/01", "2011/01/01 00:01"), a.jsoc.Series.aia_lev1_euv_12s)
+
+    with pytest.raises(ValueError, match=r"A registered email is required to get data from JSOC.*"):
+        Fido.fetch(res)
+
+
+@pytest.mark.remote_data
 def test_slice_jsoc():
     tstart = '2011/06/07 06:32:45'
     tend = '2011/06/07 06:33:15'
