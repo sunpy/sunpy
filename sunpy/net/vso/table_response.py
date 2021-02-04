@@ -102,15 +102,9 @@ class VSOQueryResponseTable(QueryResponseTable):
 
         # Reorder the columns to put the most useful ones first.
         data = cls(data, client=client)
-        all_cols = list(data.colnames)
-        first_names = [n for n in ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']
-                       if n in all_cols]
-        extra_cols = [col for col in all_cols if col not in first_names]
-        all_cols = first_names + extra_cols
-        vsotable = data[[col for col in all_cols if data[col] is not None]]
-        empty_cols = [col.info.name for col in data.itercols() if col.info.dtype.kind == 'O' and all(val is None for val in col)]
-        vsotable.remove_columns(empty_cols)
-        return vsotable
+        return data._reorder_columns(['Start Time', 'End Time', 'Source',
+                                      'Instrument', 'Type', 'Wavelength'],
+                                     remove_empty=True)
 
     def total_size(self):
         if 'size' not in self.colnames:
