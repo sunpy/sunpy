@@ -1,0 +1,2 @@
+Fixed a handling bug in :meth:`~sunpy.map.GenericMap.draw_rectangle` when the rectangle is specified in a different coordinate frame than that of the map.
+A couple of other minor bugs in :meth:`~sunpy.map.GenericMap.draw_rectangle` were also fixed.
