@@ -19,7 +19,7 @@ from matplotlib.figure import Figure
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import Latitude, Longitude, SkyCoord, UnitSphericalRepresentation
+from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
@@ -1941,19 +1941,16 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
-        if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
-            # The decorator assigns the first positional arg to top_right and so on.
-            height = width
-            width = top_right
-            top_right = None
-
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
 
+        bottom_left = bottom_left.transform_to(self.coordinate_frame)
+        top_right = top_right.transform_to(self.coordinate_frame)
+
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-        height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
+        height = top_right.spherical.lat - bottom_left.spherical.lat
 
         if not axes:
             axes = plt.gca()
@@ -1962,13 +1959,12 @@ class GenericMap(NDData):
         else:
             axes_unit = self.spatial_units[0]
 
-        coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.spherical.lon, coord.spherical.lat), unit=axes_unit).value
+        bottom_left = u.Quantity(self._get_lon_lat(bottom_left), unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
         kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
-                  'color': 'white',
+                  'edgecolor': 'white',
                   'fill': False}
         kwergs.update(kwargs)
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
