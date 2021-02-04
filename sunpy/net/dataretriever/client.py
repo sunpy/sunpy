@@ -210,6 +210,8 @@ class GenericClient(BaseClient):
                 fname = default_dir / '{file}'
             elif '{file}' not in str(path):
                 fname = path / '{file}'
+            else:
+                fname = path
 
             temp_dict = qres[i].response_block_map
             temp_dict['file'] = str(filename)
