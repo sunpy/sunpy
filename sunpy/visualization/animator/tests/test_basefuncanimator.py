@@ -29,8 +29,12 @@ def button_func1(*args, **kwargs):
 
 
 @pytest.mark.parametrize('fig, colorbar, buttons', ((None, False, [[], []]),
-                                                    (plt.figure(), True, [[button_func1], ["hi"]])))
+                                                    (plt.figure, True, [[button_func1], ["hi"]])))
 def test_base_func_init(fig, colorbar, buttons):
+    # We need to create figures within the test function rather than in parametrize()
+    if callable(fig):
+        fig = fig()
+
     data = np.random.random((3, 10, 10))
     func0 = partial(update_plotval, data=data)
     func1 = partial(update_plotval, data=data*10)
@@ -94,6 +98,10 @@ def test_base_func_init(fig, colorbar, buttons):
     event.inaxes = tfa.sliders[0]
     tfa._mouse_click(event)
     assert tfa.active_slider == 0
+
+    # Close the figure if it is a pyplot figure
+    if fig in [plt.figure(i) for i in plt.get_fignums()]:
+        plt.close(fig)
 
 
 @pytest.fixture
