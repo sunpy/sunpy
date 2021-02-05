@@ -98,7 +98,7 @@ def test_base_func_init(fig, colorbar, buttons):
     assert tfa.active_slider == 0
 
 
-# Make sure figures created through pyplot and not work
+# Make sure figures created directly and through pyplot work
 @pytest.fixture(params=[plt.figure, mfigure.Figure])
 def funcanimator(request):
     data = np.random.random((3, 10, 10))
@@ -117,6 +117,23 @@ def test_to_anim(funcanimator):
 
 def test_to_axes(funcanimator):
     assert isinstance(funcanimator.axes, maxes.SubplotBase)
+
+
+def test_axes_set():
+    data = np.random.random((3, 10, 10))
+    funcs = [partial(update_plotval, data=data)]
+    ranges = [(0, 3)]
+
+    # Create Figure for animator
+    fig1 = plt.figure()
+    # Create new Figure, Axes, and set current axes
+    fig2, ax = plt.subplots()
+    plt.sca(ax)
+    ani = FuncAnimatorTest(data, funcs, ranges, fig=fig1)
+    # Make sure the animator axes is now the current axes
+    assert plt.gca() is ani.axes
+
+    [plt.close(f) for f in [fig1, fig2]]
 
 
 def test_edges_to_centers_nd():
