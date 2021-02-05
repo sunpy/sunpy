@@ -619,7 +619,7 @@ class GenericMap(NDData):
             timesys_meta = self.meta.get('timesys', '').upper()
             if timesys_meta != 'TAI':
                 warnings.warn('Found "TAI" in time string, ignoring TIMESYS keyword '
-                              f'which is set to "{timesys_meta}".')
+                              f'which is set to "{timesys_meta}".', SunpyUserWarning)
         else:
             # UTC is the FITS standard default
             timesys = self.meta.get('timesys', 'UTC')
