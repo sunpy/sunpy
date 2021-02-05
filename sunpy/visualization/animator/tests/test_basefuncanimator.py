@@ -4,6 +4,7 @@ import matplotlib.animation as mplanim
 import matplotlib.axes as maxes
 import matplotlib.backend_bases as mback
 import matplotlib.figure as mfigure
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
@@ -97,14 +98,16 @@ def test_base_func_init(fig, colorbar, buttons):
     assert tfa.active_slider == 0
 
 
-@pytest.fixture
-def funcanimator():
+# Make sure figures created through pyplot and not work
+@pytest.fixture(params=[plt.figure, mfigure.Figure])
+def funcanimator(request):
     data = np.random.random((3, 10, 10))
     func = partial(update_plotval, data=data)
     funcs = [func]
     ranges = [(0, 3)]
+    fig = request.param()
 
-    return FuncAnimatorTest(data, funcs, ranges)
+    return FuncAnimatorTest(data, funcs, ranges, fig=fig)
 
 
 def test_to_anim(funcanimator):
