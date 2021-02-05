@@ -209,7 +209,7 @@ class BaseFuncAnimator:
         self.fig.canvas.mpl_connect('key_press_event', self._key_press)
 
     def _add_colorbar(self, im):
-        self.colorbar = plt.colorbar(im, self.cax)
+        self.colorbar = self.fig.colorbar(im, self.cax)
 
 # =============================================================================
 #   Figure event callback functions
