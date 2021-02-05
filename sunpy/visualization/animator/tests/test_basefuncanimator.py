@@ -3,7 +3,7 @@ from functools import partial
 import matplotlib.animation as mplanim
 import matplotlib.axes as maxes
 import matplotlib.backend_bases as mback
-import matplotlib.pyplot as plt
+import matplotlib.figure as mfigure
 import numpy as np
 import pytest
 
@@ -28,13 +28,10 @@ def button_func1(*args, **kwargs):
     print(*args, **kwargs)
 
 
-@pytest.mark.parametrize('fig, colorbar, buttons', ((None, False, [[], []]),
-                                                    (plt.figure, True, [[button_func1], ["hi"]])))
+@pytest.mark.parametrize('fig, colorbar, buttons',
+                         ((None, False, [[], []]),
+                          (mfigure.Figure(), True, [[button_func1], ["hi"]])))
 def test_base_func_init(fig, colorbar, buttons):
-    # We need to create figures within the test function rather than in parametrize()
-    if callable(fig):
-        fig = fig()
-
     data = np.random.random((3, 10, 10))
     func0 = partial(update_plotval, data=data)
     func1 = partial(update_plotval, data=data*10)
@@ -51,7 +48,7 @@ def test_base_func_init(fig, colorbar, buttons):
     tfa._set_active_slider(1)
     assert tfa.active_slider == 1
 
-    fig = plt.figure()
+    fig = tfa.fig
     event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='down')
     tfa._key_press(event)
     assert tfa.active_slider == 0
@@ -98,10 +95,6 @@ def test_base_func_init(fig, colorbar, buttons):
     event.inaxes = tfa.sliders[0]
     tfa._mouse_click(event)
     assert tfa.active_slider == 0
-
-    # Close the figure if it is a pyplot figure
-    if fig in [plt.figure(i) for i in plt.get_fignums()]:
-        plt.close(fig)
 
 
 @pytest.fixture

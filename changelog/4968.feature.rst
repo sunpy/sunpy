@@ -1,0 +1,2 @@
+Figures directly created using `matplotlib.figure.Figure` can now be
+used with `sunpy.visualisation.animator.BaseFuncAnimator`.

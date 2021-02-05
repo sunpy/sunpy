@@ -115,7 +115,11 @@ class BaseFuncAnimator:
         self._set_active_slider(0)
 
         # Set the current axes to the main axes so commands like plt.ylabel() work.
-        plt.sca(self.axes)
+        #
+        # Only do this if figure has a manager, so directly constructed figures
+        # (ie. via matplotlib.figure.Figure()) work.
+        if self.fig.canvas.manager is not None:
+            plt.sca(self.axes)
 
         # Do Plot
         self.im = self.plot_start_image(self.axes)
