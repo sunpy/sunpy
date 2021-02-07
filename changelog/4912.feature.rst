@@ -1,0 +1,4 @@
+``Map`` statistical methods (`~sunpy.map.GenericMap.std`,
+`~sunpy.map.GenericMap.mean`, `~sunpy.map.GenericMap.min`,
+`~sunpy.map.GenericMap.max`) now return a `~astropy.units.Quantity` with the
+correct units set.
