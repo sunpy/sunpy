@@ -1,4 +1,5 @@
 import os
+import logging
 import tempfile
 import importlib
 
@@ -7,12 +8,16 @@ import pytest
 import astropy
 import astropy.config.paths
 
+from sunpy.util import SunpyUserWarning
+
 # Force MPL to use non-gui backends for testing.
 try:
     import matplotlib
+    import matplotlib.pyplot as plt
 except ImportError:
-    pass
+    HAVE_MATPLOTLIB = False
 else:
+    HAVE_MATPLOTLIB = True
     matplotlib.use('Agg')
 
 # Don't actually import pytest_remotedata because that can do things to the
@@ -22,6 +27,10 @@ HAVE_REMOTEDATA = remotedata_spec is not None
 
 # Do not collect the sample data file because this would download the sample data.
 collect_ignore = ["data/sample.py"]
+
+
+console_logger = logging.getLogger()
+console_logger.setLevel('INFO')
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -136,3 +145,16 @@ def pytest_runtest_setup(item):
     if isinstance(item, pytest.Function):
         if 'remote_data' in item.keywords and not HAVE_REMOTEDATA:
             pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
+
+    # Confirm that the pyplot figure stack is empty before the test
+    if HAVE_MATPLOTLIB and plt.get_fignums():
+        raise SunpyUserWarning(f"There are stale pyplot figures prior to running {item.name}")
+
+
+def pytest_runtest_teardown(item):
+    # Clear the pyplot figure stack if it is not empty after the test
+    # You can see these log messages by passing "-o log_cli=true" to pytest on the command line
+    if HAVE_MATPLOTLIB and plt.get_fignums():
+        console_logger.info(f"Removing {len(plt.get_fignums())} pyplot figure(s) "
+                            f"left open by {item.name}")
+        plt.close('all')
