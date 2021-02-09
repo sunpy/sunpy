@@ -203,6 +203,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         elif self.plot_dimensionality == 2:
             artist = self.plot_start_image_2d(ax)
 
+        self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
         return artist
 
     def update_plot(self, val, artist, slider):
