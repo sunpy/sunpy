@@ -213,6 +213,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         the matplotlib artist.
         """
         ind = int(val)
+        if ind == int(slider.cval):
+            return
         ax_ind = self.slider_axes[slider.slider_ind]
         self.frame_slice[ax_ind] = ind
         self.slices_wcsaxes[self.wcs.pixel_n_dim - ax_ind - 1] = ind
@@ -262,15 +264,14 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
         Update the line plot.
         """
-        if val != slider.cval:
-            self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
-            line.set_ydata(self.data[self.frame_index])
+        self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
+        line.set_ydata(self.data[self.frame_index])
 
-            # If we are not setting ylim globally then we set it per frame.
-            if self.ylim == 'dynamic':
-                self.axes.set_ylim(self.data[self.frame_index].min(),
-                                   self.data[self.frame_index].max())
-            slider.cval = val
+        # If we are not setting ylim globally then we set it per frame.
+        if self.ylim == 'dynamic':
+            self.axes.set_ylim(self.data[self.frame_index].min(),
+                               self.data[self.frame_index].max())
+        slider.cval = val
 
     def plot_start_image_2d(self, ax):
         """
@@ -302,7 +303,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
         Update the image plot.
         """
-        if val != slider.cval:
-            self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
-            im.set_array(self.data_transposed)
-            slider.cval = val
+        self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
+        im.set_array(self.data_transposed)
+        slider.cval = val
