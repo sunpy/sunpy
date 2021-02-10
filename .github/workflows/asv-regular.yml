@@ -2,7 +2,7 @@ name: asv-benchmarks-daily
 
 on:
   schedule:
-    - cron: '0 7 * * *'
+    - cron: '*/5 * * * *'
 
 jobs:   
   asv-run:
@@ -41,7 +41,7 @@ jobs:
         run : asv machine --machine GH-Actions --os ubuntu-20.04 --arch x64 --cpu "2-core unknown" --ram 7GB
 
       - name: Run benchmarks for commits since v2.1
-        run : taskset -c 0 asv run 2.1..
+        run : taskset -c 0 asv run -- skip-existing-successful 2.1..
 
       - name: Install SSH Client 🔑
         uses: webfactory/ssh-agent@v0.4.1
