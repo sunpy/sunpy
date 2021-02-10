@@ -8,7 +8,7 @@ class TimeSuite:
     function
     """
     def time_is_time(self):
-        t = is_time('1995-11-31 23:59:60')
+        t = is_time('1995-12-31 23:59:60')
 
 
 class MemSuite:
