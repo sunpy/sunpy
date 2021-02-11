@@ -1,0 +1,2 @@
+Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_zoom_map_example.py`)
+demonstrating how to add a zoomed-in region next to a full disk image.
