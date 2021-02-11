@@ -146,7 +146,6 @@ stages:
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
     - stage: CronNotifier
-      condition: failed()
       dependsOn:
         - SecondPhaseTests
         - CronTests
@@ -166,4 +165,4 @@ stages:
             BRANCH: $(Build.SourceBranchName)
             ACCESS_TOKEN: $(azurebot_access_token)
             BUILDID: $(Build.BuildId)
-            STATUS: Failed
+            STATUS: $(Agent.JobStatus)
