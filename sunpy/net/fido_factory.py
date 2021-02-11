@@ -17,6 +17,7 @@ import parfive
 
 from astropy.table import Table
 
+from sunpy import config
 from sunpy.net import attr, vso
 from sunpy.net.base_client import BaseClient, QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
@@ -403,12 +404,19 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> filepaths = Fido.fetch(filepaths)  # doctest: +SKIP
 
         """
-        if path is not None:
-            exists = list(filter(lambda p: p.exists(), Path(path).resolve().parents))
+        if path is None:
+            path = Path(config.get('downloads', 'download_dir')) / '{file}'
+        elif isinstance(path, (str, os.PathLike)) and '{file}' not in str(path):
+            path = Path(path) / '{file}'
+        else:
+            path = Path(path)
+        path = path.expanduser()
 
-            if not os.access(exists[0], os.W_OK):
-                raise PermissionError('You do not have permission to write'
-                                      f' to the directory {exists[0]}.')
+        # Ensure we have write permissions to the path
+        exists = list(filter(lambda p: p.exists(), Path(path).resolve().parents))
+        if not os.access(exists[0], os.W_OK):
+            raise PermissionError('You do not have permission to write'
+                                  f' to the directory {exists[0]}.')
 
         if "wait" in kwargs:
             raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
@@ -446,15 +454,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                 result = block.client.fetch(block, path=path,
                                             downloader=downloader,
                                             wait=False, **kwargs)
-                if result is not NotImplemented:
+                if result not in (NotImplemented, None):
                     reslist.append(result)
 
         results = downloader.download()
         # Combine the results objects from all the clients into one Results
         # object.
         for result in reslist:
-            if result is None:
-                continue
             if not isinstance(result, Results):
                 raise TypeError(
                     "If wait is False a client must return a parfive.Downloader and either None"
