@@ -18,17 +18,19 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         operations-per-run: 50
         days-before-issue-stale: 99999999 # Never mark issues as stale
-        days-before-pr-stale: 60
+        days-before-pr-stale: 150
         days-before-close: 30
         stale-pr-label: 'Stale'
         stale-pr-message: >-
-          This pull request has been automatically marked as stale because it has not
-          had any activity for the past five months. It will be closed if no further
-          activity occurs. If the ideas in this pull request are still worth
-          implementing, please make sure you open an issue to keep track of that idea!
+          Hello :wave:,
+          Thanks for your contribution to sunpy!
+          
+          I have marked this pull request as stale because there hasn't had any activity in five months.
+          If you are still working on this, or if it's waiting on a maintainer to look at it then please let us know and we will keep it open.
+          
+          If nobody comments on this pull request for another month I will close it.
         close-pr-message: >-
-          This pull request has been automatically closed since there was no activity
-          for a month since it was marked as stale. If the ideas in this pull request
-          are still worth implementing, please make sure you open an issue to keep track
-          of that idea!
+          Hello :wave:,
+          This pull request has had no activity since my last reminder, so I am going to close it.
+          If at any time you want to come back to this please feel free to reopen it!
         exempt-pr-labels:  'Keep Open'
