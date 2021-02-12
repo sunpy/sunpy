@@ -12,6 +12,8 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
+from sunpy.coordinates.metaframes import RotatedSunFrame
+from sunpy.coordinates.transformations import transform_with_sun_center
 from sunpy.map.maputils import map_edges
 from sunpy.physics.differential_rotation import (
     _get_bounding_coordinates,
@@ -174,6 +176,27 @@ def test_solar_rotate_coordinate():
 
         # Test that the SkyCoordinate is Helioprojective
         assert isinstance(d.frame, frames.Helioprojective)
+
+
+def test_consistency_with_rotatedsunframe():
+    old_observer = frames.HeliographicStonyhurst(10*u.deg, 20*u.deg, 1*u.AU, obstime='2001-01-01')
+    new_observer = frames.HeliographicStonyhurst(30*u.deg, 40*u.deg, 2*u.AU, obstime='2001-01-08')
+
+    hpc_coord = SkyCoord(100*u.arcsec, 200*u.arcsec, frame='helioprojective',
+                         observer=old_observer, obstime=old_observer.obstime)
+
+    # Perform the differential rotation using solar_rotate_coordinate()
+    result1 = solar_rotate_coordinate(hpc_coord, observer=new_observer)
+
+    # Perform the differential rotation using RotatedSunFrame, with translational motion of the Sun
+    # ignored using transform_with_sun_center()
+    rsf_coord = RotatedSunFrame(base=hpc_coord, rotated_time=new_observer.obstime)
+    with transform_with_sun_center():
+        result2 = rsf_coord.transform_to(result1.replicate_without_data())
+
+    assert_quantity_allclose(result1.Tx, result2.Tx)
+    assert_quantity_allclose(result1.Ty, result2.Ty)
+    assert_quantity_allclose(result1.distance, result2.distance)
 
 
 # Testing using observer inputs
