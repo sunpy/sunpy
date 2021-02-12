@@ -59,8 +59,10 @@ class XRSTimeSeries(GenericTimeSeries):
     _source = 'xrs'
 
     _netcdf_read_kw = {}
-    if h5netcdf.__version__ >= LooseVersion("0.9"):
+    if h5netcdf.__version__ == LooseVersion("0.9"):
         _netcdf_read_kw['decode_strings'] = True
+    if h5netcdf.__version__ >= LooseVersion("0.10"):
+        _netcdf_read_kw['decode_vlen_strings'] = True
 
     @peek_show
     def peek(self, title="GOES Xray Flux", **kwargs):
