@@ -1,0 +1,34 @@
+name: Stale Bot
+
+on:
+  schedule:
+#            ┌───────── minute (0 - 59)
+#            │ ┌───────── hour (0 - 23)
+#            │ │ ┌───────── day of the month (1 - 31)
+#            │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
+#            │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
+    - cron: '0 1 * * 1' # Every Monday at 1am UTC
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        operations-per-run: 50
+        days-before-issue-stale: 99999999 # Never mark issues as stale
+        days-before-pr-stale: 60
+        days-before-close: 30
+        stale-pr-label: 'Stale'
+        stale-pr-message: >-
+          This pull request has been automatically marked as stale because it has not
+          had any activity for the past five months. It will be closed if no further
+          activity occurs. If the ideas in this pull request are still worth
+          implementing, please make sure you open an issue to keep track of that idea!
+        close-pr-message: >-
+          This pull request has been automatically closed since there was no activity
+          for a month since it was marked as stale. If the ideas in this pull request
+          are still worth implementing, please make sure you open an issue to keep track
+          of that idea!
+        exempt-pr-labels:  'Keep Open'
