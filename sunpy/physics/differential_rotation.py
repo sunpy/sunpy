@@ -276,8 +276,8 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     >>> new_observer = get_body("earth", end_time)
     >>> solar_rotate_coordinate(c, observer=new_observer)
     <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
-        (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-        (-363.04027419, 104.87807178, 1.00241935)>
+        (-5.68434189e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        (-378.27830452, 105.70767875, 1.00245134)>
     """
     # Check the input and create the new observer
     new_observer = _get_new_observer(coordinate.obstime, observer, time)
