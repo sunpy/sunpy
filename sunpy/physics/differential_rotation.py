@@ -297,14 +297,14 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
         heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
                                         heliographic_coordinate.lat,
                                         heliographic_coordinate.radius,
-                                        obstime=new_observer.obstime,
-                                        observer=new_observer,
+                                        obstime=coordinate.obstime,
                                         frame=HeliographicStonyhurst)
 
-        # Calculate where the rotated co-ordinate appears as seen by new observer,
-        # and then transform it into the co-ordinate system of the input
-        # co-ordinate.
-        return heliographic_rotated.transform_to(coordinate.frame.name)
+        # Calculate where the rotated co-ordinate appears as seen by new observer
+        # for the co-ordinate system of the input co-ordinate.
+        frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
+                                                               obstime=new_observer.obstime)
+        return heliographic_rotated.transform_to(frame_newobs)
 
 
 def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
