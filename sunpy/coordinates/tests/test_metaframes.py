@@ -232,3 +232,30 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     assert_quantity_allclose(result3.lat, result1.lat)
     # Use the `spherical` property since the name of the component varies with frame
     assert_quantity_allclose(result3.spherical.distance, result1.spherical.distance)
+
+
+@pytest.mark.parametrize("indirect_fixture",
+                         ["rot_hgs", "rot_hci"], indirect=True)
+def test_obstime_change(indirect_fixture):
+    base_class, rot_frame = indirect_fixture
+
+    # Transforming a RotatedSun coordinate to a different obstime should give the same answer
+    # as first transforming to its base and then transforming to the different obstime
+    new_frame = base_class(obstime='2001-01-31')
+    new_implicit = rot_frame.transform_to(new_frame)
+    new_explicit = rot_frame.transform_to(rot_frame.base).transform_to(new_frame)
+
+    assert_longitude_allclose(new_implicit.lon, new_explicit.lon, atol=1e-10*u.deg)
+
+
+@pytest.mark.parametrize("indirect_fixture",
+                         ["rot_hgs", "rot_hci"], indirect=True)
+def test_obstime_change_loopback(indirect_fixture):
+    base_class, rot_frame = indirect_fixture
+
+    # Doing a explicit loopback transformation through an intermediate frame with a different
+    # obstime should get back to the original coordinate
+    int_frame = base_class(obstime='2001-01-31')
+    loopback = rot_frame.transform_to(int_frame).transform_to(rot_frame)
+
+    assert_longitude_allclose(loopback.lon, rot_frame.lon, atol=1e-10*u.deg)
