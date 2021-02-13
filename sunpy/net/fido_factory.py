@@ -517,7 +517,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return results
 
     def __repr__(self):
-        return object.__repr__(self) + "\n" + str(self)
+        return object.__repr__(self) + "\n" + self._print_clients(visible_entries=15)
 
     def __str__(self):
         """
@@ -529,9 +529,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         This enables the "pretty" printing of the Fido Clients with html.
         """
-        return self._print_clients(html=True)
+        return self._print_clients(visible_entries=15, html=True)
 
-    def _print_clients(self, html=False) -> str:
+    def _print_clients(self, html=False, visible_entries=None) -> str:
         width = -1 if html else get_width()
 
         t = Table(names=["Client", "Description"], dtype=["U80", "U120"])
@@ -541,7 +541,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for key in BaseClient._registry.keys():
             t.add_row((key.__name__, dedent(
                 key.__doc__.partition("\n\n")[0].replace("\n    ", " "))))
-        lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+        lines.extend(t.pformat_all(max_lines=visible_entries,
+                                   show_dtype=False, max_width=width, align="<", html=html))
         return '\n'.join(lines)
 
 
