@@ -55,11 +55,6 @@ stages:
             - libopenjp2-7
 
         envs:
-          - linux: codestyle
-            name: style_check
-            pytest: false
-            libraries: {}
-
           - linux: py39
 
   - stage: SecondPhaseTests
@@ -77,7 +72,6 @@ stages:
         libraries:
           apt:
             - libopenjp2-7
-            - graphviz
           brew:
             - openjpeg
 
@@ -86,17 +80,55 @@ stages:
 
           - windows: py38
 
-          - linux: build_docs
-            posargs: " "
-            pytest: false
-
           - linux: py38-online
-
-          - linux: py37-oldestdeps
 
           - linux: py38-conda
             libraries: {}
 
+
+  # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
+  - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'master'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
+
+    # Under non-release conditions these jobs are run on GitHub actions to lessen the load on Azure.
+    # However, we need to run them before we build a release to ensure they pass.
+    - stage: PreRelease
+      dependsOn: SecondPhaseTests
+      jobs:
+      - template: run-tox-env.yml@OpenAstronomy
+        parameters:
+          default_python: '3.8'
+          submodules: false
+          coverage: codecov
+          toxdeps: tox-pypi-filter
+          posargs: -n=4
+
+          libraries:
+            apt:
+              - libopenjp2-7
+              - graphviz
+
+          envs:
+            - linux: py37-oldestdeps
+
+            - linux: build_docs
+              posargs: " "
+              pytest: false
+
+    - stage: Release
+      dependsOn: PreRelease
+      jobs:
+      - template: publish.yml@OpenAstronomy
+        parameters:
+          # Only Upload to PyPI on tags
+          ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
+            pypi_connection_name : 'PyPI'
+          test_extras: 'dev'
+          test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
+          submodules: false
+          targets:
+            - wheels_cp3[789]-manylinux*x86_64
+            - wheels_cp3[789]-macosx*
+            - sdist
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
     - stage: CronTests
@@ -115,37 +147,14 @@ stages:
             apt:
               - libopenjp2-7
               - graphviz
-            yum:
-              - openssl-devel
-              - freetype-devel
-              - libpng-devel
-              - hdf5-devel
 
           envs:
             - linux: py38-hypothesis
 
             - linux: py38-devdeps
 
-  # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
-  - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'master'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
-    - stage: Release
-      dependsOn: SecondPhaseTests
-      jobs:
-      - template: publish.yml@OpenAstronomy
-        parameters:
-          # Only Upload to PyPI on tags
-          ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
-            pypi_connection_name : 'PyPI'
-          test_extras: 'dev'
-          test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
-          submodules: false
-          targets:
-            - wheels_cp3[789]-manylinux*x86_64
-            - wheels_cp3[789]-macosx*
-            - sdist
-
-  - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
     - stage: CronNotifier
+      condition: succeededOrFailed()
       dependsOn:
         - SecondPhaseTests
         - CronTests

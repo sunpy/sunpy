@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toxenv: codestyle
+            os: ubuntu-latest
+            python: 3.8
+            cov: false
+
+          - toxenv: py37-oldestdeps
+            os: ubuntu-latest
+            python: 3.7
+
+          - toxenv: build_docs
+            os: ubuntu-latest
+            python: 3.8
+
+    name: ${{ matrix.name || format('{0} [{1}]', matrix.toxenv, matrix.os) }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install Tox
+        run: python -m pip install --upgrade tox
+
+      # Only append the cov report flag to the tox command when the cov flag is true (defaults to true)
+      - name: Compute pytest flags
+        id: pytest
+        if: ${{ !(contains(matrix.cov, 'false')) }}
+        run: echo '::set-output name=pytest_flags::--cov-report=xml:${{ github.workspace }}/coverage.xml'
+
+      - name: Run Tox
+        run: tox ${{ matrix.toxargs }} -e ${{ matrix.toxenv }} -- ${{ steps.pytest.outputs.pytest_flags || '' }} ${{ matrix.toxposargs }}
+
+      # Only run codecov when the cov flag is true (defaults to true)
+      - name: Upload coverage to codecov
+        if: ${{ !(contains(matrix.cov, 'false')) }}
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+
+  cron_tests:
+    if: contains(github.event.pull_request.labels.*.name, 'Extra Tests')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toxenv: py38-hypothesis
+            os: ubuntu-latest
+            python: 3.8
+
+          - toxenv: py38-devdeps
+            os: ubuntu-latest
+            python: 3.8
+
+    name: ${{ matrix.name || format('{0} [{1}]', matrix.toxenv, matrix.os) }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install Tox
+        run: python -m pip install --upgrade tox
+
+      - name: Run Tox
+        run: tox ${{ matrix.toxargs }} -e ${{ matrix.toxenv }} -- ${{ matrix.toxposargs }}
