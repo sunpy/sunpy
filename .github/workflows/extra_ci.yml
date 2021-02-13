@@ -1,13 +1,12 @@
 name: extra
 
 on:
-  push:
   pull_request:
     # We also want this workflow triggered if the 'Extra CI' label is added
     # The first three are the defaults
     types:
       - opened
-      - synchronized
+      - synchronize
       - reopened
       - labeled
 
