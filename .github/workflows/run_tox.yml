@@ -40,7 +40,7 @@ jobs:
 
       - name: Install Graphviz and openjpeg
         if: matrix.os == 'ubuntu-latest'
-        run: apt install -y libopenjp2-7 graphviz
+        run: sudo apt-get install -y libopenjp2-7 graphviz
 
       - name: Install Tox
         run: python -m pip install --upgrade tox
@@ -75,7 +75,8 @@ jobs:
             os: ubuntu-latest
             python: 3.8
 
-    name: ${{ (matrix.name || format('{0} [{1}]', matrix.toxenv, matrix.os)) || 'Extra Tests' }}
+    name: 'Extra Tests'
+    # name: ${{ (matrix.name || format('{0} [{1}]', matrix.toxenv, matrix.os)) || 'Extra Tests' }}
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -91,7 +92,7 @@ jobs:
 
       - name: Install Graphviz and openjpeg
         if: matrix.os == 'ubuntu-latest'
-        run: apt install -y libopenjp2-7 graphviz
+        run: sudo apt-get install -y libopenjp2-7 graphviz
 
       - name: Install Tox
         run: python -m pip install --upgrade tox
