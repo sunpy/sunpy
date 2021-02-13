@@ -32,7 +32,7 @@ jobs:
           If nobody comments on this pull request for another month, it will be closed.
         close-pr-message: >-
           Hello again :wave:,
-          Wew want to thank you again for your contribution to sunpy!
+          We want to thank you again for your contribution to sunpy!
 
           This pull request has had no activity since my last reminder, so I am going to close it.
           If at any time you want to come back to this please feel free to reopen it!
