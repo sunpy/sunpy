@@ -22,6 +22,7 @@ jobs:
           - toxenv: build_docs
             os: ubuntu-latest
             python: 3.8
+            cov: false
 
     name: ${{ matrix.name || format('{0} [{1}]', matrix.toxenv, matrix.os) }}
     runs-on: ${{ matrix.os }}
@@ -70,7 +71,7 @@ jobs:
             os: ubuntu-latest
             python: 3.8
 
-    name: ${{ matrix.name || format('{0} [{1}]', matrix.toxenv, matrix.os) }}
+    name: ${{ (matrix.name || format('{0} [{1}]', matrix.toxenv, matrix.os)) || 'Extra Tests' }}
     runs-on: ${{ matrix.os }}
 
     steps:
