@@ -38,6 +38,10 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      - name: Install Graphviz and openjpeg
+        if: matrix.os == 'ubuntu-latest'
+        run: apt install -y libopenjp2-7 graphviz
+
       - name: Install Tox
         run: python -m pip install --upgrade tox
 
@@ -84,6 +88,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
+
+      - name: Install Graphviz and openjpeg
+        if: matrix.os == 'ubuntu-latest'
+        run: apt install -y libopenjp2-7 graphviz
 
       - name: Install Tox
         run: python -m pip install --upgrade tox
