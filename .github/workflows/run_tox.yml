@@ -62,7 +62,7 @@ jobs:
           file: ./coverage.xml
 
   cron_tests:
-    if: contains(github.event.pull_request.labels.*.name, 'Extra Tests')
+    if: contains(github.event.pull_request.labels.*.name, 'Extra CI')
     strategy:
       fail-fast: false
       matrix:
@@ -75,8 +75,7 @@ jobs:
             os: ubuntu-latest
             python: 3.8
 
-    name: 'Extra Tests'
-    # name: ${{ (matrix.name || format('{0} [{1}]', matrix.toxenv, matrix.os)) || 'Extra Tests' }}
+    name: 'Extra CI'
     runs-on: ${{ matrix.os }}
 
     steps:
