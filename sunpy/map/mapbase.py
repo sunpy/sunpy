@@ -610,6 +610,20 @@ class GenericMap(NDData):
         This is taken from the 'DATE-OBS' FITS keyword.
         """
         time = self.meta.get('date-obs', None)
+        # Get the time scale
+        if time is not None and 'TAI' in time:
+            # SDO specifies the 'TAI' scale in their time string, which is parsed
+            # by parse_time(). If a different timescale is also present, warn the
+            # user that it will be ignored.
+            timesys = 'TAI'
+            timesys_meta = self.meta.get('timesys', '').upper()
+            if timesys_meta != 'TAI':
+                warnings.warn('Found "TAI" in time string, ignoring TIMESYS keyword '
+                              f'which is set to "{timesys_meta}".', SunpyUserWarning)
+        else:
+            # UTC is the FITS standard default
+            timesys = self.meta.get('timesys', 'UTC')
+
         if time is None:
             if self._default_time is None:
                 warnings.warn("Missing metadata for observation time, "
@@ -618,7 +632,8 @@ class GenericMap(NDData):
                               SunpyUserWarning)
                 self._default_time = parse_time('now')
             time = self._default_time
-        return parse_time(time)
+
+        return parse_time(time, scale=timesys.lower())
 
     @property
     def detector(self):
