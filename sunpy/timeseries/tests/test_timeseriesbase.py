@@ -635,11 +635,12 @@ def test_concatenation_different_data_list_error(eve_test_ts, fermi_gbm_test_ts)
 
 
 def test_generic_construction_concatenation():
+    nrows = 10
     # Generate the data and the corrisponding dates
     base = parse_time(datetime.datetime.today())
-    times = base - TimeDelta(np.arange(24 * 60)*u.minute)
-    intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
-    intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
+    times = base - TimeDelta(np.arange(nrows)*u.minute)
+    intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (nrows))))
+    intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (nrows))))
 
     # Create the data DataFrame, header MetaDict and units OrderedDict
     data = DataFrame(intensity1, index=times, columns=['intensity'])
