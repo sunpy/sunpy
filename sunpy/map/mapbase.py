@@ -345,7 +345,7 @@ class GenericMap(NDData):
 
         # Plot the CDF of the pixel values using a symmetric-log horizontal scale
         fig = Figure(figsize=(4.8, 2.4), constrained_layout=True)
-        # Figure instances in matplotlib<3.1 do not create a canvas by default
+        # TODO: Figure instances in matplotlib<3.1 do not create a canvas by default
         if fig.canvas is None:
             FigureCanvasBase(fig)
         ax = fig.subplots()
