@@ -137,13 +137,13 @@ def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
                                           path / "observed-solar-cycle-indices.json"))
 
 
-@no_vso
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
             return_value=mock_query_object('2012/10/4', '2012/10/6'))
 # The return value of download is irrelevant
 @mock.patch('parfive.Downloader.download',
             return_value=None)
 @mock.patch('parfive.Downloader.enqueue_file')
+@no_vso
 def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
     path = tmp_path / "sub"
     path.mkdir()
@@ -159,6 +159,7 @@ def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
                                           path / "observed-solar-cycle-indices.json"))
 
 
+@no_vso
 @pytest.mark.remote_data
 def test_srs_tar_unpack():
     qr = Fido.search(a.Instrument("soon") & a.Time("2015/01/01", "2015/01/01T23:59:29"))
@@ -167,6 +168,7 @@ def test_srs_tar_unpack():
     assert res.data[0].endswith("20150101SRS.txt")
 
 
+@no_vso
 @pytest.mark.remote_data
 def test_srs_tar_unpack_midyear():
     qr = Fido.search(a.Instrument("soon") & a.Time("2011/06/07", "2011/06/08T23:59:29"))
@@ -191,12 +193,13 @@ def test_srs_missing_tarball(mock_ftp_nlst):
 @pytest.mark.remote_data
 def test_srs_current_year():
     year = datetime.date.today().year
-    qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/01/01", f"{year}/01/01T23:59:29"))
+    qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/02/01", f"{year}/02/01T23:59:29"))
     res = Fido.fetch(qr)
     assert len(res) == 1
-    assert res.data[0].endswith(f"{year}0101SRS.txt")
+    assert res.data[0].endswith(f"{year}0201SRS.txt")
 
 
+@no_vso
 @pytest.mark.remote_data
 def test_srs_save_path(tmpdir):
     qr = Fido.search(a.Instrument.srs_table, a.Time("2016/10/01", "2016/10/02"))

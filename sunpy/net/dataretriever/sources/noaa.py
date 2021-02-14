@@ -13,10 +13,9 @@ from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
+from sunpy.util.scraper import Scraper
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
-
-from sunpy.util.scraper import Scraper
 
 
 class NOAAIndicesClient(GenericClient):
@@ -166,7 +165,6 @@ class SRSClient(GenericClient):
         Returns a list of urls corresponding to a given time-range.
         """
         result = list()
-
         # Validate time range and return early if out side min/max
         cur_year = Time.now().datetime.year
         req_start_year = timerange.start.datetime.year
@@ -218,19 +216,7 @@ class SRSClient(GenericClient):
 
         return result
 
-    # def post_search_hook(self, exdict, matchdict):
-    #     # update the extracted metadata to include the queried times rather
-    #     # than those scraped from the downloaded zip (which includes full year data).
-    #     rowdict = super().post_search_hook(exdict, matchdict)
-    #     rowdict["Start Time"] = matchdict["Start Time"]
-    #     rowdict["End Time"] = matchdict["End Time"]
-    #     rowdict["Start Time"].format = 'iso'
-    #     rowdict["End Time"].format = 'iso'
-    #     return rowdict
-
     def search(self, *args, **kwargs):
-        extractor1 = '{}/warehouse/{:4d}/SRS/{year:4d}{month:2d}{day:2d}SRS.txt'
-        extractor2 = '{}/warehouse/{year:4d}/{}'
         matchdict = self._get_match_dict(*args, **kwargs)
         timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         metalist = []
@@ -253,20 +239,14 @@ class SRSClient(GenericClient):
         -------
         Results Object
         """
-
         urls = [qrblock['Url'] for qrblock in qres]
-
         filenames = []
         local_filenames = []
-
-        for i, [url, qre] in enumerate(zip(urls, qres)):
+        for url, qre in zip(urls, qres):
             name = url.split('/')[-1]
-
             day = qre['Start Time']
-
             if name not in filenames:
                 filenames.append(name)
-
             if name.endswith('.gz'):
                 local_filenames.append('{}SRS.txt'.format(day.strftime('%Y%m%d')))
             else:
@@ -284,37 +264,28 @@ class SRSClient(GenericClient):
         # OrderedDict is required to maintain ordering because it will be zipped with paths later
         urls = list(OrderedDict.fromkeys(urls))
 
-        dobj = Downloader(max_conn=5)
-
+        downloader = Downloader(max_conn=2)
         for aurl, fname in zip(urls, paths):
-            dobj.enqueue_file(aurl, filename=fname)
+            downloader.enqueue_file(aurl, filename=fname)
 
-        paths = dobj.download()
+        paths = downloader.download()
 
         outfiles = []
         for fname, srs_filename in zip(local_paths, local_filenames):
-
             name = fname.name
-
             past_year = False
-            for i, fname2 in enumerate(paths):
+            for fname2 in paths:
                 fname2 = pathlib.Path(fname2)
-
                 if fname2.name.endswith('.txt'):
                     continue
-
                 year = fname2.name.split('_SRS')[0]
-
                 if year in name:
-                    TarFile = tarfile.open(fname2)
-                    filepath = fname.parent
-                    member = TarFile.getmember('SRS/' + srs_filename)
-                    member.name = name
-                    TarFile.extract(member, path=filepath)
-                    TarFile.close()
-
+                    with tarfile.open(fname2) as open_tar:
+                        filepath = fname.parent
+                        member = open_tar.getmember('SRS/' + srs_filename)
+                        member.name = name
+                        open_tar.extract(member, path=filepath)
                     outfiles.append(fname)
-
                     past_year = True
                     break
 
