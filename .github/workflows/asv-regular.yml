@@ -1,8 +1,6 @@
 name: asv-benchmarks-daily
 
 on:
-  push:
-    branches: asv-ci-regular
   schedule:
     - cron: '0 3 * * *'
 
