@@ -1,0 +1,2 @@
+Add an ``SRS_TABLE`` file to the sample data, and use it in the magnetogram
+plotting example.

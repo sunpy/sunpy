@@ -135,6 +135,14 @@ def test_date(generic_map):
     assert isinstance(generic_map.date, Time)
 
 
+def test_date_scale(generic_map):
+    # Check that default time scale is UTC
+    assert 'timesys' not in generic_map.meta
+    assert generic_map.date.scale == 'utc'
+    generic_map.meta['timesys'] = 'tai'
+    assert generic_map.date.scale == 'tai'
+
+
 def test_date_aia(aia171_test_map):
     assert aia171_test_map.date == parse_time('2011-02-15T00:00:00.34')
 

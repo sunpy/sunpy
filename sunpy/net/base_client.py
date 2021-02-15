@@ -326,7 +326,7 @@ def convert_row_to_table(func):
     return wrapper
 
 
-def _print_client(client, html=False):
+def _print_client(client, html=False, visible_entries=None):
     """
     Given a BaseClient instance will print out each registered attribute.
 
@@ -358,7 +358,8 @@ def _print_client(client, html=False):
     lines = [class_name, dedent(client.__doc__.partition("\n\n")[0])]
     if html:
         lines = [f"<p>{line}</p>" for line in lines]
-    lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+    lines.extend(t.pformat_all(max_lines=visible_entries, show_dtype=False,
+                               max_width=width, align="<", html=html))
     return '\n'.join(lines)
 
 
@@ -422,19 +423,19 @@ class BaseClient(ABC):
         """
         Returns the normal repr plus the pretty client __str__.
         """
-        return object.__repr__(self) + "\n" + str(self)
+        return object.__repr__(self) + "\n" + _print_client(visible_entries=15, client=self)
 
     def __str__(self):
         """
         This enables the "pretty" printing of BaseClient.
         """
-        return _print_client(self)
+        return _print_client(client=self)
 
     def _repr_html_(self):
         """
         This enables the "pretty" printing of the BaseClient with html.
         """
-        return _print_client(self, html=True)
+        return _print_client(visible_entries=15, client=self, html=True)
 
     @abstractmethod
     def search(self, *args, **kwargs):
