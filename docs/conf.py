@@ -37,6 +37,7 @@ if on_rtd:
     os.environ['HOME'] = '/home/docs/'
     os.environ['LANG'] = 'C'
     os.environ['LC_ALL'] = 'C'
+    os.environ['HIDE_PARFIVE_PROGESS'] = 'True'
 
 # -- Non stdlib imports --------------------------------------------------------
 
