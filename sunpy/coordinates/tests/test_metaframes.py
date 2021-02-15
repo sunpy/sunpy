@@ -192,7 +192,7 @@ def test_alternate_rotation_model():
                                    f.HeliocentricInertial])
 @given(lon=longitudes(), lat=latitudes(),
        obstime=times(), rotated_time1=times(), rotated_time2=times())
-@settings(deadline=None)
+@settings(deadline=None, max_examples=10)
 def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_time2):
     # Tests the transformations (to, from, and loopback) for consistency with `diff_rot` output
 
