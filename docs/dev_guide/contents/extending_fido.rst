@@ -381,7 +381,7 @@ The simplest (but unlikely) scenario is that you know the filename for each file
 In the situation where you wish to be told the filename by the webserver you are downloading the file from, it is a little more complex, you need to pass a callback function to :meth:`parfive.Downloader.enqueue_file` which will calculate the full filename in the context of the download, where the headers can be inspected for the filename the webserver provides.
 
 The filename callback passed to :meth:`parfive.Downloader.enqueue_file` accepts two arguments ``resp`` and ``url``.
-``resp`` is an `aiohttp.ClientResponse` object which is returned when `parfive` requests the URL. 
+``resp`` is an `aiohttp.ClientResponse` object which is returned when `parfive` requests the URL.
 This response object allows us to inspect the headers of the response before the data is downloaded.
 ``url`` is the URL that was requested to generate the ``resp`` response.
 
