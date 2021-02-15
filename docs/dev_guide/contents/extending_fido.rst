@@ -147,7 +147,7 @@ it would be passed to the client as::
 
 So you can process each element of the OR in turn without having to consult any other part of the query.
 
-If the query the user provided contains an OR statement you get passed, an instance of `~sunpy.net.attr.AttrOr` and each sub-element of that `~sunpy.net.attr.AttrOr` will be `~sunpy.net.attr.AttrAnd` (or a single other attr class).
+If the query the user provided contains an OR statement you get passed an instance of `~sunpy.net.attr.AttrOr` and each sub-element of that `~sunpy.net.attr.AttrOr` will be `~sunpy.net.attr.AttrAnd` (or a single other attr class).
 If the user query dosen't contain an OR you get a single `~.Attr` instance or an `~.AttrAnd`.
 
 For example you could get any of the following queries (using ``&`` for AND and ``|`` for OR):
@@ -234,7 +234,7 @@ If we want our client to support searching by ``a.Time`` and ``a.Level`` as in t
         return params.update({'level': attr.value})
 
 
-This combination of creators and appliers would allow support any combination of queries consisting of ``a.Time`` and ``a.Level``.
+This combination of creators and appliers would allow support of any combination of queries consisting of ``a.Time`` and ``a.Level``.
 Obviously, most clients would want to support more attrs than these two, and this could be done by adding more applier functions.
 
 Adding "Attrs" to Registry
@@ -242,9 +242,9 @@ Adding "Attrs" to Registry
 
 Registering of "attrs" ensures discoverability of search attributes supported by the corresponding SunPy Client.
 For adding them to the Registry, we need to define a ``classmethod`` :meth:`~sunpy.net.base_client.BaseClient.register_values` that returns a dictionary of registered values.
-This dictionary should have `~sunpy.net.attr.Attr` classes as keys and a list of tuples corresponding to that key representing the possible values key "attr" can take.
+This dictionary should have `~sunpy.net.attr.Attr` classes as keys and a list of tuples corresponding to that key representing the possible values the key "attr" can take.
 Each tuple comprises of two elements.
-The first one is value and the second element contains a brief description of that value.
+The first one is a value and the second element contains a brief description of that value.
 An example of writing ``register_values()`` for `~sunpy.net.dataretriever.client.GenericClient` is provided above.
 Please note that it can be defined in a similar way for full clients too.
 
@@ -276,7 +276,7 @@ The ``search()`` method has the job of taking a set of user queries and returnin
 The general flow of a ``search()`` method is:
 
 * Call your instance of an `.AttrWalker` to convert the input into a form expected by your API.
-* Make as many requests to your API as needed to furfill the query. (Generally one per element of the outer `.AttrOr`).
+* Make as many requests to your API as needed to fulfill the query. (Generally one per element of the outer `.AttrOr`).
 * Process the response from your API into an instance of `.QueryResponseTable`.
 
 To process the query with the `.AttrWalker`, call the :meth:`.AttrWalker.create` method::
@@ -296,7 +296,7 @@ Assuming the walker is the one we defined above, queries would be a list of dict
          queries = walker.create(query)
 
 
-Once the walker has processed the query into a form designed to be passed to your API, your ``search()`` method then needs to iterate over these parameters, make the requests and process the results in to a table.
+Once the walker has processed the query into a form designed to be passed to your API, your ``search()`` method then needs to iterate over these parameters, make the requests, and process the results into a table.
 
 In the following example we pretend our client has a method ``_make_search(query_parameters)`` which takes the query parameters and makes a request to our API.
 We also pretend that the response is a json object in the form of a Python dictionary, which we want to put into the table.
@@ -381,7 +381,8 @@ The simplest (but unlikely) scenario is that you know the filename for each file
 In the situation where you wish to be told the filename by the webserver you are downloading the file from, it is a little more complex, you need to pass a callback function to :meth:`parfive.Downloader.enqueue_file` which will calculate the full filename in the context of the download, where the headers can be inspected for the filename the webserver provides.
 
 The filename callback passed to :meth:`parfive.Downloader.enqueue_file` accepts two arguments ``resp`` and ``url``.
-``resp`` is an `aiohttp.ClientResponse` object which is returned when `parfive` requests the URL, this response object allows us to inspect the headers of the response before the data is downloaded.
+``resp`` is an `aiohttp.ClientResponse` object which is returned when `parfive` requests the URL. 
+This response object allows us to inspect the headers of the response before the data is downloaded.
 ``url`` is the URL that was requested to generate the ``resp`` response.
 
 To combine the formatting of the row with the extraction of the filename from the headers it is common to use `functools.partial` to generate many functions with different fixed parameters.
