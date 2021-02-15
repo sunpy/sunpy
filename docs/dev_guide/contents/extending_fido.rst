@@ -11,6 +11,8 @@ If your web service provides a list of HTTP or FTP URLs that can easily be obtai
 If the service you want to add requires making requests to an API with parameters for the search and getting a list of results in return, then you probably want to write a "full" client, which gives you full control.
 
 Before writing a new client, ensure you are familiar with how searches are specified by the `sunpy.net.attr` system including combining them with logical operations.
+When choosing a name for your new client it should have the form ``<name>Client`` as sunpy will split the name the name of the class to extract the name of your client.
+The main place this is done is when constructing a `~.UnifiedResponse` object, the name part can be used to index the response object.
 
 
 .. _new_scraper_client:
