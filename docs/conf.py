@@ -225,6 +225,7 @@ sphinx_gallery_conf = {
     'plot_gallery': 'True',
     'remove_config_comments': True,
     'doc_module': ('sunpy'),
+    'only_warn_on_example_error': True,
 }
 
 # -- Stability Page ------------------------------------------------------------

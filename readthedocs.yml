@@ -14,6 +14,7 @@ sphinx:
 
 python:
    install:
+      - requirements: docs/.rtd_requirements.txt
       - method: pip
         extra_requirements:
            - dev
