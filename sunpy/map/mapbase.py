@@ -328,15 +328,41 @@ class GenericMap(NDData):
         if fig.canvas is None:
             FigureCanvasBase(fig)
         ax = fig.subplots()
-        ax.hist(finite_data.ravel(), bins=100, histtype='stepfilled')
+        values, bins, patches = ax.hist(finite_data.ravel(), bins=100)
+        norm_centers = norm(0.5 * (bins[:-1] + bins[1:])).data
+        for c, p in zip(norm_centers, patches):
+            plt.setp(p, "facecolor", cmap(c))
+        ax.plot(np.array([bins[:-1], bins[1:]]).T.ravel(),
+                np.array([values, values]).T.ravel())
         ax.set_facecolor('white')
         ax.semilogy()
         # Explicitly set the power limits for the X axis formatter to avoid text overlaps
         ax.xaxis.get_major_formatter().set_powerlimits((-3, 4))
-        ax.set_xlabel('Pixel value')
+        ax.set_xlabel('Pixel value in linear bins')
         ax.set_ylabel('# of pixels')
-        ax.set_title('Distribution of pixels with finite values')
+        ax.set_title('Distribution of pixel values [click for cumulative]')
         hist_src = _figure_to_base64(fig)
+
+        # Plot the CDF of the pixel values using a symmetric-log horizontal scale
+        fig = Figure(figsize=(4.8, 2.4), constrained_layout=True)
+        # TODO: Figure instances in matplotlib<3.1 do not create a canvas by default
+        if fig.canvas is None:
+            FigureCanvasBase(fig)
+        ax = fig.subplots()
+        n_bins = 256
+        bins = norm.inverse(np.arange(n_bins + 1) / n_bins)
+        values, _, patches = ax.hist(finite_data.ravel(), bins=bins, cumulative=True)
+        for i, p in enumerate(patches):
+            plt.setp(p, "facecolor", cmap((i + 0.5) / n_bins))
+        ax.plot(np.array([bins[:-1], bins[1:]]).T.ravel(),
+                np.array([values, values]).T.ravel())
+        ax.set_facecolor('white')
+        ax.set_xscale('symlog')
+        ax.set_yscale('log')
+        ax.set_xlabel('Pixel value in equalized bins')
+        ax.set_ylabel('Cumulative # of pixels')
+        ax.set_title('Cumulative distribution of pixel values')
+        cdf_src = _figure_to_base64(fig)
 
         return textwrap.dedent(f"""\
             <pre>{html.escape(object.__repr__(self))}</pre>
@@ -362,7 +388,13 @@ class GenericMap(NDData):
                 <tr>
                 </tr>
                 <tr>
-                    <td><img src='data:image/png;base64,{hist_src}'/></td>
+                    <td><img src='data:image/png;base64,{hist_src}'
+                             src2='data:image/png;base64,{cdf_src}'
+                             onClick='var temp = this.src;
+                                      this.src = this.getAttribute("src2");
+                                      this.setAttribute("src2", temp)'
+                        />
+                    </td>
                 </tr>
             </table>""")
 
