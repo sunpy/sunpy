@@ -55,6 +55,10 @@ This client scrapes all the URLs available under the base url ``http://lasp.colo
 The ``pattern`` attribute is used to populate the results table from the URLs matched with the ``baseurl``, this includes some of the time definitions, as well as names of attrs, in this case "Level".
 The supported time keys are: 'year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond'.
 
+The attrs returned in the ``register_values()`` method are used to match your client to a search, as well as adding their values to the attr.
+This means that after this client has been imported, running ``print(a.Provider)`` will show that the ``EVEClient`` has registered a provider value of ``LASP``.
+In addition to this, a sanitized, lower cased version of the value will be available for tab completing, e.g. `a.Provider.lasp` or `a.Level.zero`.
+
 
 More Complex Clients
 --------------------
@@ -332,7 +336,7 @@ Writing a Fetch Method
 ----------------------
 
 The ``fetch()`` method of a Fido client is responsible for converting a set of search results (possibly sliced by the user) into a set of URLs to be downloaded.
-Due to the history of clients and how they were implemented in sunpy, some existing clients support use not through the ``Fido`` wrapper, this makes them appear more complex.
+Due to the history of clients and how they were implemented in sunpy, some existing clients support use outside of the``Fido`` wrapper, this makes them appear more complex.
 In this example we are going to write a ``fetch()`` method which is designed only to be called from ``Fido``.
 
 The parameters for such a method should be::
