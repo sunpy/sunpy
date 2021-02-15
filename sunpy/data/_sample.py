@@ -73,7 +73,7 @@ def _download_sample_data(base_url, sample_files, overwrite):
     `parfive.Results`
         Download results. Will behave like a list of files.
     """
-    dl = Downloader(overwrite=overwrite, progress=False, headers={'Accept-Encoding': 'identity'})
+    dl = Downloader(overwrite=overwrite, progress=True, headers={'Accept-Encoding': 'identity'})
     for url_file_name, fname in sample_files:
         url = urljoin(base_url, url_file_name)
         dl.enqueue_file(url, filename=fname)
@@ -83,7 +83,7 @@ def _download_sample_data(base_url, sample_files, overwrite):
 
 def _retry_sample_data(results):
     # In case we have a broken file on disk, overwrite it.
-    dl = Downloader(overwrite=True, progress=False, headers={'Accept-Encoding': 'identity'})
+    dl = Downloader(overwrite=True, progress=True, headers={'Accept-Encoding': 'identity'})
     for err in results.errors:
         file_name = err.filepath_partial().name
         log.debug(
