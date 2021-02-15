@@ -37,6 +37,7 @@ if on_rtd:
     os.environ['HOME'] = '/home/docs/'
     os.environ['LANG'] = 'C'
     os.environ['LC_ALL'] = 'C'
+    os.environ['HIDE_PARFIVE_PROGESS'] = 'True'
 
 # -- Non stdlib imports --------------------------------------------------------
 
@@ -225,6 +226,7 @@ sphinx_gallery_conf = {
     'plot_gallery': 'True',
     'remove_config_comments': True,
     'doc_module': ('sunpy'),
+    'only_warn_on_example_error': True,
 }
 
 # -- Stability Page ------------------------------------------------------------
