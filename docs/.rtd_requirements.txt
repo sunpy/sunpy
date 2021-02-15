@@ -1,1 +1,0 @@
-git+https://github.com/Cadair/sphinx-gallery@skip_on_fail#egg=sphinx-gallery
