@@ -135,9 +135,7 @@ class Wavelength(Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<sunpy.net.attrs.Wavelength({!r}, {!r}, '{!s}')>".format(self.min.value,
-                                                                         self.max.value,
-                                                                         self.unit)
+        return f"<sunpy.net.attrs.Wavelength({self.min.value}, {self.max.value}, '{self.unit}')>"
 
 
 class Instrument(SimpleAttr):
