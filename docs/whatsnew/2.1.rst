@@ -41,7 +41,7 @@ Please find a selection of what we consider to be the biggest changes or feature
 Fido Metadata
 =============
 
-Fido provided a unified interface to download data from several services but lacked support for search for metadata provided by catalogues or data providers.
+Fido provides a unified interface to download data from several services but lacked support for search for metadata provided by catalogues or data providers.
 This has now changed and you can query JSOC, HEK and HEC with Fido::
 
     >>> from sunpy.net import Fido
@@ -88,14 +88,14 @@ To find the keys for all of the columns you can do::
     'obs_lastprocessingdate',
     'refs']
 
-In addition, if you pass the entire search query into ``Fido.fetch()`` and it will keep over results that have no corresponding data files to retrieve.
+In addition, if you pass the entire search query into ``Fido.fetch()`` and it will ignore results that have no corresponding data files to retrieve.
 
 .. _whatsnew-2.1-refactor:
 
 Fido Results Refactor
 =====================
 
-While working on the above change, several bugs and poor design choices where fixed regarding the object (`~sunpy.net.fido_factory.UnifiedResponse`) that is returned from a ``Fido.search()``.
+While working on the above change, several changes were made to the way that results are returned from ``Fido.search()`` and the search methods of the underlying clients.
 
 We have tried to minimize any breaking changes here and we believe that for most users the difference between 2.0 and 2.1 will be minor.
 
@@ -103,19 +103,15 @@ The key highlights you will want to be aware of are:
 
 * Previously slicing the result of ``Fido.search()`` (a `~sunpy.net.fido_factory.UnifiedResponse` object) so that it had a length of one returned another `~sunpy.net.fido_factory.UnifiedResponse` object, now it will return a `~sunpy.net.base_client.QueryResponseTable` object, which is a subclass of `astropy.table.Table`.
 
-* All result objects contained within the results of a ``Fido.search()`` (a `~sunpy.net.fido_factory.UnifiedResponse` object) are now `~sunpy.net.base_client.QueryResponseTable` objects (or subclasses thereof).
+* All result objects contained within the results of a ``Fido.search()`` are now `~sunpy.net.base_client.QueryResponseTable` objects (or subclasses thereof).
   These objects are subclasses of `astropy.table.Table` and can therefore be filtered and inspected as tabular objects, and the modified tables can be passed to ``Fido.fetch``.
 
-The search results object returned from ``Fido.search`` (`~sunpy.net.fido_factory.UnifiedResponse`) now correctly counts all results in it's `~sunpy.net.fido_factory.UnifiedResponse.file_num` property.
+* The keys available to be used when formatting the ``path=`` argument to ``Fido.fetch()`` have changed. This is to standardise them over the results from more clients and make them easier to use.
+  You can use the `~.UnifiedResponse.path_format_keys` method to see all the possible keys for a particular search.
 
-Client Specific changes
------------------------
+* The search results object returned from ``Fido.search`` now correctly counts all results in it's `~sunpy.net.fido_factory.UnifiedResponse.file_num` property.
 
 * Results from the `~sunpy.net.dataretriever.NOAAIndicesClient` and the `~sunpy.net.dataretriever.NOAAPredictClient` no longer have ``Start Time`` or ``End Time`` in their results table as the results returned from the client are not dependant upon the time parameter of a search.
-
-* For results from the VSO the keys are no longer separated with ``.``, and are based on the displayed column names.
-  For results from the ``dataretriever`` clients the only main change is that the keys are now lower case, where they were capitilized before.
-  You can use the `~.UnifiedResponse.path_format_keys` method to see all the possible keys for a particular search.
 
 .. _whatsnew-2.1-contours:
 
@@ -216,3 +212,4 @@ We have bumped the minimum version of several packages we depend on; these are t
 - scipy 1.2
 - parfive 1.1
 - drms 0.6.1
+- matplotlib 3.1.1
