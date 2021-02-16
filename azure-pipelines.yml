@@ -146,6 +146,7 @@ stages:
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
     - stage: CronNotifier
+      condition: succeededOrFailed()
       dependsOn:
         - SecondPhaseTests
         - CronTests
