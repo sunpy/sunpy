@@ -1,0 +1,2 @@
+Fixed a bug when transforming from `~sunpy.coordinates.metaframes.RotatedSunFrame` to another frame at a different observation time that resulted in small inaccuracies.
+The translational motion of the Sun was not being handled correctly.
