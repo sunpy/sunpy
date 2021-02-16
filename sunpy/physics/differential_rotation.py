@@ -4,10 +4,10 @@ from copy import deepcopy
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, get_body
+from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord
 from astropy.time import TimeDelta
 
-from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective
+from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective, get_earth
 from sunpy.coordinates.transformations import transform_with_sun_center
 from sunpy.map import (
     contains_full_disk,
@@ -201,7 +201,7 @@ def _get_new_observer(initial_obstime, observer, time):
             new_observer_time = initial_obstime + time
         else:
             new_observer_time = parse_time(time)
-        new_observer = get_body("earth", new_observer_time)
+        new_observer = get_earth(new_observer_time)
     return new_observer
 
 
@@ -261,23 +261,22 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     Example
     -------
     >>> import astropy.units as u
-    >>> from astropy.coordinates import SkyCoord, get_body
-    >>> from sunpy.coordinates import Helioprojective
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import Helioprojective, get_body_heliographic_stonyhurst
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
     >>> from sunpy.time import parse_time
     >>> start_time = parse_time('2010-09-10 12:34:56')
-    >>> end_time = parse_time('2010-09-11 13:34:56')
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time,
     ...              observer="earth", frame=Helioprojective)
-    >>> solar_rotate_coordinate(c, time=end_time)  # doctest: +SKIP
-    <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
-        (9.40248797e-16, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-        (-363.04027419, 104.87807178, 1.00241935)>
-    >>> new_observer = get_body("earth", end_time)
-    >>> solar_rotate_coordinate(c, observer=new_observer)
+    >>> solar_rotate_coordinate(c, time=start_time + 25*u.hr)  # doctest: +SKIP
     <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
         (-5.68434189e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         (-378.27830452, 105.70767875, 1.00245134)>
+    >>> new_observer = get_body_heliographic_stonyhurst("earth", start_time + 6*u.day)
+    >>> solar_rotate_coordinate(c, observer=new_observer)
+    <SkyCoord (Helioprojective: obstime=2010-09-16T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-16T12:34:56.000): (lon, lat, radius) in (deg, deg, AU)
+        (2.65061438e-14, 7.18706547, 1.00534174)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        (620.42567049, 126.13662663, 1.00185786)>
     """
     # Check the input and create the new observer
     new_observer = _get_new_observer(coordinate.obstime, observer, time)
