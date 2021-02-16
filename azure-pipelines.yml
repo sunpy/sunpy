@@ -151,6 +151,11 @@ stages:
         - SecondPhaseTests
         - CronTests
         - Release
+      variables:
+        ${{ if not(or(containsValue(dependencies.*.result, 'Failed'), containsValue(dependencies.*.result, 'Skipped'))) }}:
+          status: "Succeeded"
+        ${{ if or(containsValue(dependencies.*.result, 'Failed'), containsValue(dependencies.*.result, 'Skipped')) }}:
+          status: "Failed"
       jobs:
       - job: notify
         pool:
@@ -166,4 +171,4 @@ stages:
             BRANCH: $(Build.SourceBranchName)
             ACCESS_TOKEN: $(azurebot_access_token)
             BUILDID: $(Build.BuildId)
-            STATUS: $(Agent.JobStatus)
+            STATUS: $(variables.status)
