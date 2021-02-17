@@ -15,6 +15,8 @@ import sunpy.map
 from sunpy.tests.helpers import figure_test
 from sunpy.util.metadata import MetaDict
 
+testpath = sunpy.data.test.rootdir
+
 
 @pytest.fixture
 def aia_map():
@@ -217,6 +219,11 @@ def test_quicklook(mapsequence_all_the_same):
 
         for m in mapsequence_all_the_same.maps:
             assert m._repr_html_() in html_string
+
+
+@pytest.fixture
+def hmi_test_map():
+    return sunpy.map.Map(os.path.join(testpath, 'resampled_hmi.fits'))
 
 
 @figure_test
