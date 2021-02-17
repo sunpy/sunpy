@@ -17,8 +17,6 @@ from sunpy.util.scraper import Scraper
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
-from sunpy.util.scraper import Scraper
-
 
 class NOAAIndicesClient(GenericClient):
     """
