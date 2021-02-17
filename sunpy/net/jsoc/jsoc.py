@@ -301,23 +301,23 @@ class JSOCClient(BaseClient):
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
             ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
-            >>> print(response.show('T_REC', 'WAVELNTH', 'CAR_ROT'))  # doctest: +REMOTE_DATA
-                     T_REC          WAVELNTH CAR_ROT
-            ----------------------- -------- -------
-            2014.01.01_00:00:45_TAI   6173.0    2145
-            2014.01.01_00:01:30_TAI   6173.0    2145
-            2014.01.01_00:02:15_TAI   6173.0    2145
-            2014.01.01_00:03:00_TAI   6173.0    2145
-            2014.01.01_00:03:45_TAI   6173.0    2145
-            2014.01.01_00:04:30_TAI   6173.0    2145
-            2014.01.01_00:05:15_TAI   6173.0    2145
-            2014.01.01_00:06:00_TAI   6173.0    2145
-            2014.01.01_00:06:45_TAI   6173.0    2145
-            2014.01.01_00:07:30_TAI   6173.0    2145
-            2014.01.01_00:08:15_TAI   6173.0    2145
-            2014.01.01_00:09:00_TAI   6173.0    2145
-            2014.01.01_00:09:45_TAI   6173.0    2145
-            2014.01.01_00:10:30_TAI   6173.0    2145
+            >>> print(response)  # doctest: +REMOTE_DATA
+                    T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+            ----------------------- -------- ---------- -------- -------
+            2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:08:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:09:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:09:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:10:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
 
         *Example 3*
 

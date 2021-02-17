@@ -73,7 +73,7 @@ HELIO
 .. automodapi:: sunpy.net.helio
    :headings: ^"
 
-.. automodapi:: sunpy.net.helio.attrs
+.. automodapi:: sunpy.net.helio.hec
    :headings: ^"
 
 Helioviewer
