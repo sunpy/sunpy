@@ -339,7 +339,7 @@ def test_entries_from_file_time_string_parse_format():
 
     assert len(entries) == 4
     entry = entries[0]
-    assert len(entry.fits_header_entries) == 17
+    assert len(entry.fits_header_entries) == 16
 
     assert entry.observation_time_start == datetime(2011, 6, 7, 0, 0)
     assert entry.observation_time_end == datetime(2011, 6, 7, 0, 0)
