@@ -4,6 +4,7 @@ This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
 import datetime
 from pathlib import Path
 from collections import OrderedDict
+from distutils.version import LooseVersion
 
 import h5netcdf
 import matplotlib.dates
@@ -16,6 +17,7 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 import sunpy.io
+from sunpy import log
 from sunpy.io.file_tools import UnrecognizedFileTypeError
 from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
@@ -55,6 +57,12 @@ class XRSTimeSeries(GenericTimeSeries):
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'xrs'
+
+    _netcdf_read_kw = {}
+    if h5netcdf.__version__ == LooseVersion("0.9"):
+        _netcdf_read_kw['decode_strings'] = True
+    if h5netcdf.__version__ >= LooseVersion("0.10"):
+        _netcdf_read_kw['decode_vlen_strings'] = True
 
     @peek_show
     def peek(self, title="GOES Xray Flux", **kwargs):
@@ -196,10 +204,9 @@ class XRSTimeSeries(GenericTimeSeries):
         filepath : `~str`
             The path of the file to parse
         """
+        with h5netcdf.File(filepath, mode="r", **XRSTimeSeries._netcdf_read_kw) as d:
 
-        with h5netcdf.File(filepath, mode="r") as d:
-
-            header =  MetaDict(OrderedDict(d.attrs))
+            header = MetaDict(OrderedDict(d.attrs))
             if "a_flux" in d.variables:
                 xrsa = np.array(d["a_flux"])
                 xrsb = np.array(d["b_flux"])
@@ -235,7 +242,8 @@ class XRSTimeSeries(GenericTimeSeries):
         if "filepath" in kwargs.keys():
             try:
                 if sunpy.io.detect_filetype(kwargs["filepath"]) == "hdf5":
-                    with h5netcdf.File(kwargs["filepath"], mode="r") as f:
+                    with h5netcdf.File(kwargs["filepath"], mode="r", **cls._netcdf_read_kw) as f:
                         return "XRS" in f.attrs["summary"].astype("str")
-            except Exception:
+            except Exception as e:
+                log.debug(f'Reading {kwargs["filepath"]} failed with the following exception:\n{e}')
                 return False

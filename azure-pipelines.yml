@@ -60,7 +60,7 @@ stages:
             pytest: false
             libraries: {}
 
-          - linux: py38
+          - linux: py39
 
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
@@ -84,7 +84,7 @@ stages:
         envs:
           - macos: py37
 
-          - windows: py39
+          - windows: py38
 
           - linux: build_docs
             posargs: " "
@@ -140,13 +140,12 @@ stages:
           test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
           submodules: false
           targets:
-            - wheels_cp3[78]-manylinux*x86_64
-            - wheels_cp3[78]-macosx*
+            - wheels_cp3[789]-manylinux*x86_64
+            - wheels_cp3[789]-macosx*
             - sdist
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
     - stage: CronNotifier
-      condition: failed()
       dependsOn:
         - SecondPhaseTests
         - CronTests
@@ -166,4 +165,4 @@ stages:
             BRANCH: $(Build.SourceBranchName)
             ACCESS_TOKEN: $(azurebot_access_token)
             BUILDID: $(Build.BuildId)
-            STATUS: Failed
+            STATUS: $(Agent.JobStatus)

@@ -60,7 +60,7 @@ def online_query(draw, instrument=online_instruments()):
 
 
 @no_vso
-@settings(deadline=50000)
+@settings(deadline=50000, max_examples=10)
 @given(offline_query())
 def test_offline_fido(query):
     unifiedresp = Fido.search(query)
@@ -284,7 +284,7 @@ def test_path_read_only(tmp_path):
 
 
 @no_vso
-@settings(deadline=50000)
+@settings(deadline=50000, max_examples=10)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_indexing(queries):
     query1, query2 = queries
@@ -357,7 +357,7 @@ def test_fido_indexing(queries):
 
 
 @no_vso
-@settings(deadline=50000)
+@settings(deadline=50000, max_examples=10)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_iter(queries):
     query1, query2 = queries
@@ -373,7 +373,7 @@ def test_fido_iter(queries):
 
 
 @no_vso
-@settings(deadline=50000)
+@settings(deadline=50000, max_examples=10)
 @given(offline_query())
 def test_repr2(query):
     res = Fido.search(query)
@@ -490,6 +490,14 @@ def test_fido_no_time(mocker):
     Fido.search(a.jsoc.Series("test"))
 
     jsoc_mock.assert_called_once()
+
+
+@pytest.mark.remote_data
+def test_jsoc_missing_email():
+    res = Fido.search(a.Time("2011/01/01", "2011/01/01 00:01"), a.jsoc.Series.aia_lev1_euv_12s)
+
+    with pytest.raises(ValueError, match=r"A registered email is required to get data from JSOC.*"):
+        Fido.fetch(res)
 
 
 @pytest.mark.remote_data

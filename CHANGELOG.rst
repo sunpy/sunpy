@@ -175,9 +175,9 @@ Improved Documentation
 - Changed quoted sentence (that we suggest authors add to their research papers) in CITATION.rst (`#3896 <https://github.com/sunpy/sunpy/pull/3896>`__)
 - Add example of how to use SunPy's HEK client to search for the GOES flare event list. (`#3953 <https://github.com/sunpy/sunpy/pull/3953>`__)
 - Improved the doc layout of `sunpy.data.sample`. (`#4034 <https://github.com/sunpy/sunpy/pull/4034>`__)
-- Made improvements to the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_secchi_starfield.py`. (`#4039 <https://github.com/sunpy/sunpy/pull/4039>`__)
+- Made improvements to STEREO starfield gallery example. (`#4039 <https://github.com/sunpy/sunpy/pull/4039>`__)
 - Improved the documentation of `sunpy.map.GenericMap.resample`. (`#4043 <https://github.com/sunpy/sunpy/pull/4043>`__)
-- Updated the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_secchi_starfield.py` to use all of the information in the star catalog. (`#4116 <https://github.com/sunpy/sunpy/pull/4116>`__)
+- Updated the STEREO starfield example to use all of the information in the star catalog. (`#4116 <https://github.com/sunpy/sunpy/pull/4116>`__)
 - Mini-galleries are now easier to create in the documentation thanks to a custom Sphinx directive (``minigallery``).
   The page :ref:`sunpy-coordinates-rotatedsunframe` has an example of a mini-gallery at the bottom. (`#4124 <https://github.com/sunpy/sunpy/pull/4124>`__)
 - Added `sunpy.visualization.colormaps.color_tables` to the docs. (`#4182 <https://github.com/sunpy/sunpy/pull/4182>`__)

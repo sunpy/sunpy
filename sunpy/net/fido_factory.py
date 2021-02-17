@@ -17,6 +17,7 @@ import parfive
 
 from astropy.table import Table
 
+from sunpy import config
 from sunpy.net import attr, vso
 from sunpy.net.base_client import BaseClient, QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
@@ -361,12 +362,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):
         """
-        Download the records represented by `~sunpy.net.QueryResponseTable` or
+        Download the records represented by `~sunpy.net.base_client.QueryResponseTable` or
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
 
         Parameters
         ----------
-        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.QueryResponseTable`
+        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.base_client.QueryResponseTable`
             Container returned by query method, or multiple.
         path : `str`
             The directory to retrieve the files into. Can refer to any fields
@@ -382,7 +383,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
         downloader : `parfive.Downloader`, optional
             The download manager to use. If specified the ``max_conn``,
@@ -403,12 +404,19 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> filepaths = Fido.fetch(filepaths)  # doctest: +SKIP
 
         """
-        if path is not None:
-            exists = list(filter(lambda p: p.exists(), Path(path).resolve().parents))
+        if path is None:
+            path = Path(config.get('downloads', 'download_dir')) / '{file}'
+        elif isinstance(path, (str, os.PathLike)) and '{file}' not in str(path):
+            path = Path(path) / '{file}'
+        else:
+            path = Path(path)
+        path = path.expanduser()
 
-            if not os.access(exists[0], os.W_OK):
-                raise PermissionError('You do not have permission to write'
-                                      f' to the directory {exists[0]}.')
+        # Ensure we have write permissions to the path
+        exists = list(filter(lambda p: p.exists(), Path(path).resolve().parents))
+        if not os.access(exists[0], os.W_OK):
+            raise PermissionError('You do not have permission to write'
+                                  f' to the directory {exists[0]}.')
 
         if "wait" in kwargs:
             raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
@@ -446,15 +454,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                 result = block.client.fetch(block, path=path,
                                             downloader=downloader,
                                             wait=False, **kwargs)
-                if result is not NotImplemented:
+                if result not in (NotImplemented, None):
                     reslist.append(result)
 
         results = downloader.download()
         # Combine the results objects from all the clients into one Results
         # object.
         for result in reslist:
-            if result is None:
-                continue
             if not isinstance(result, Results):
                 raise TypeError(
                     "If wait is False a client must return a parfive.Downloader and either None"
@@ -511,7 +517,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return results
 
     def __repr__(self):
-        return object.__repr__(self) + "\n" + str(self)
+        return object.__repr__(self) + "\n" + self._print_clients(visible_entries=15)
 
     def __str__(self):
         """
@@ -523,9 +529,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         This enables the "pretty" printing of the Fido Clients with html.
         """
-        return self._print_clients(html=True)
+        return self._print_clients(visible_entries=15, html=True)
 
-    def _print_clients(self, html=False) -> str:
+    def _print_clients(self, html=False, visible_entries=None) -> str:
         width = -1 if html else get_width()
 
         t = Table(names=["Client", "Description"], dtype=["U80", "U120"])
@@ -535,7 +541,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for key in BaseClient._registry.keys():
             t.add_row((key.__name__, dedent(
                 key.__doc__.partition("\n\n")[0].replace("\n    ", " "))))
-        lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+        lines.extend(t.pformat_all(max_lines=visible_entries,
+                                   show_dtype=False, max_width=width, align="<", html=html))
         return '\n'.join(lines)
 
 

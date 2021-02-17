@@ -207,6 +207,36 @@ class QueryResponseTable(QTable):
         self.hide_keys = None
         return self
 
+    def _reorder_columns(self, first_columns, remove_empty=True):
+        """
+        Generate a new version of this table with ``first_columns`` at the start.
+
+        Parameters
+        ----------
+        first_columns : list
+           The column names to put at the start of the table.
+        remove_empty : bool, optional
+           Remove columns where all values are `None`.
+           Defaults to ``True``.
+
+        Returns
+        -------
+        new_table : QueryResponseTable
+            A sliced version of this table instance so that the columns are
+            reordered.
+        """
+        all_cols = list(self.colnames)
+        first_names = [n for n in first_columns if n in all_cols]
+        extra_cols = [col for col in all_cols if col not in first_names]
+        all_cols = first_names + extra_cols
+        new_table = self[[col for col in all_cols if self[col] is not None]]
+
+        if remove_empty:
+            empty_cols = [col.info.name for col in self.itercols() if col.info.dtype.kind == 'O' and all(val is None for val in col)]
+            new_table.remove_columns(empty_cols)
+
+        return new_table
+
     @property
     def _display_table(self):
         """
@@ -296,7 +326,7 @@ def convert_row_to_table(func):
     return wrapper
 
 
-def _print_client(client, html=False):
+def _print_client(client, html=False, visible_entries=None):
     """
     Given a BaseClient instance will print out each registered attribute.
 
@@ -328,7 +358,8 @@ def _print_client(client, html=False):
     lines = [class_name, dedent(client.__doc__.partition("\n\n")[0])]
     if html:
         lines = [f"<p>{line}</p>" for line in lines]
-    lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+    lines.extend(t.pformat_all(max_lines=visible_entries, show_dtype=False,
+                               max_width=width, align="<", html=html))
     return '\n'.join(lines)
 
 
@@ -392,19 +423,19 @@ class BaseClient(ABC):
         """
         Returns the normal repr plus the pretty client __str__.
         """
-        return object.__repr__(self) + "\n" + str(self)
+        return object.__repr__(self) + "\n" + _print_client(visible_entries=15, client=self)
 
     def __str__(self):
         """
         This enables the "pretty" printing of BaseClient.
         """
-        return _print_client(self)
+        return _print_client(client=self)
 
     def _repr_html_(self):
         """
         This enables the "pretty" printing of the BaseClient with html.
         """
-        return _print_client(self, html=True)
+        return _print_client(visible_entries=15, client=self, html=True)
 
     @abstractmethod
     def search(self, *args, **kwargs):
@@ -415,8 +446,7 @@ class BaseClient(ABC):
         """
 
     @abstractmethod
-    def fetch(self, *query_results, path=None, overwrite=False, progress=True,
-              max_conn=5, downloader=None, wait=True, **kwargs):
+    def fetch(self, query_results, *, path, downloader, **kwargs):
         """
         This enables the user to fetch the data using the client, after a search.
 
@@ -426,22 +456,14 @@ class BaseClient(ABC):
             Results to download.
         path : `str` or `pathlib.Path`, optional
             Path to the download directory
-        overwrite : `bool`, optional
-            Replace files with the same name if True.
-        progress : `bool`, optional
-            Print progress info to terminal.
-        max_conns : `int`, optional
-            Maximum number of download connections.
-        downloader : `parfive.Downloader`, optional
+        downloader : `parfive.Downloader`
             The download manager to use.
-        wait : `bool`, optional
-           If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
 
         Returns
         -------
         `parfive.Results`
-            The results object, can be `None` if ``wait`` is `False`.
+            The results object, can be `None` if ``wait`` is `False` and
+            ``downloader`` is not None.
         """
 
     @classmethod

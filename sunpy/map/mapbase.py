@@ -19,7 +19,7 @@ from matplotlib.figure import Figure
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import Latitude, Longitude, SkyCoord, UnitSphericalRepresentation
+from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
@@ -328,15 +328,41 @@ class GenericMap(NDData):
         if fig.canvas is None:
             FigureCanvasBase(fig)
         ax = fig.subplots()
-        ax.hist(finite_data.ravel(), bins=100, histtype='stepfilled')
+        values, bins, patches = ax.hist(finite_data.ravel(), bins=100)
+        norm_centers = norm(0.5 * (bins[:-1] + bins[1:])).data
+        for c, p in zip(norm_centers, patches):
+            plt.setp(p, "facecolor", cmap(c))
+        ax.plot(np.array([bins[:-1], bins[1:]]).T.ravel(),
+                np.array([values, values]).T.ravel())
         ax.set_facecolor('white')
         ax.semilogy()
         # Explicitly set the power limits for the X axis formatter to avoid text overlaps
         ax.xaxis.get_major_formatter().set_powerlimits((-3, 4))
-        ax.set_xlabel('Pixel value')
+        ax.set_xlabel('Pixel value in linear bins')
         ax.set_ylabel('# of pixels')
-        ax.set_title('Distribution of pixels with finite values')
+        ax.set_title('Distribution of pixel values [click for cumulative]')
         hist_src = _figure_to_base64(fig)
+
+        # Plot the CDF of the pixel values using a symmetric-log horizontal scale
+        fig = Figure(figsize=(4.8, 2.4), constrained_layout=True)
+        # TODO: Figure instances in matplotlib<3.1 do not create a canvas by default
+        if fig.canvas is None:
+            FigureCanvasBase(fig)
+        ax = fig.subplots()
+        n_bins = 256
+        bins = norm.inverse(np.arange(n_bins + 1) / n_bins)
+        values, _, patches = ax.hist(finite_data.ravel(), bins=bins, cumulative=True)
+        for i, p in enumerate(patches):
+            plt.setp(p, "facecolor", cmap((i + 0.5) / n_bins))
+        ax.plot(np.array([bins[:-1], bins[1:]]).T.ravel(),
+                np.array([values, values]).T.ravel())
+        ax.set_facecolor('white')
+        ax.set_xscale('symlog')
+        ax.set_yscale('log')
+        ax.set_xlabel('Pixel value in equalized bins')
+        ax.set_ylabel('Cumulative # of pixels')
+        ax.set_title('Cumulative distribution of pixel values')
+        cdf_src = _figure_to_base64(fig)
 
         return textwrap.dedent(f"""\
             <pre>{html.escape(object.__repr__(self))}</pre>
@@ -362,7 +388,13 @@ class GenericMap(NDData):
                 <tr>
                 </tr>
                 <tr>
-                    <td><img src='data:image/png;base64,{hist_src}'/></td>
+                    <td><img src='data:image/png;base64,{hist_src}'
+                             src2='data:image/png;base64,{cdf_src}'
+                             onClick='var temp = this.src;
+                                      this.src = this.getAttribute("src2");
+                                      this.setAttribute("src2", temp)'
+                        />
+                    </td>
                 </tr>
             </table>""")
 
@@ -501,7 +533,7 @@ class GenericMap(NDData):
     @property
     def coordinate_frame(self):
         """
-        An `astropy.coordinates.BaseFrame` instance created from the coordinate
+        An `astropy.coordinates.BaseCoordinateFrame` instance created from the coordinate
         information for this Map, or None if the frame cannot be determined.
         """
         try:
@@ -657,6 +689,20 @@ class GenericMap(NDData):
         This is taken from the 'DATE-OBS' FITS keyword.
         """
         time = self.meta.get('date-obs', None)
+        # Get the time scale
+        if time is not None and 'TAI' in time:
+            # SDO specifies the 'TAI' scale in their time string, which is parsed
+            # by parse_time(). If a different timescale is also present, warn the
+            # user that it will be ignored.
+            timesys = 'TAI'
+            timesys_meta = self.meta.get('timesys', '').upper()
+            if timesys_meta != 'TAI':
+                warnings.warn('Found "TAI" in time string, ignoring TIMESYS keyword '
+                              f'which is set to "{timesys_meta}".', SunpyUserWarning)
+        else:
+            # UTC is the FITS standard default
+            timesys = self.meta.get('timesys', 'UTC')
+
         if time is None:
             if self._default_time is None:
                 warnings.warn("Missing metadata for observation time, "
@@ -665,7 +711,8 @@ class GenericMap(NDData):
                               SunpyUserWarning)
                 self._default_time = parse_time('now')
             time = self._default_time
-        return parse_time(time)
+
+        return parse_time(time, scale=timesys.lower())
 
     @property
     def detector(self):
@@ -1148,7 +1195,7 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`
+        coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
             The coordinate object to convert to pixel coordinates.
 
         origin : int
@@ -1322,7 +1369,7 @@ class GenericMap(NDData):
         ----------
         angle : `~astropy.units.Quantity`
             The angle (degrees) to rotate counterclockwise.
-        rmatrix : ndarray
+        rmatrix : array-like
             2x2 linear transformation rotation matrix.
         order : int
             Interpolation order to be used. Must be in the range 0-5.
@@ -1356,8 +1403,8 @@ class GenericMap(NDData):
 
         See Also
         --------
-        sunpy.image.transform.affine_transform : The routine this method calls
-        for the rotation.
+        sunpy.image.transform.affine_transform :
+            The routine this method calls for the rotation.
 
         Notes
         -----
@@ -1503,7 +1550,7 @@ class GenericMap(NDData):
             The bottom-left coordinate of the rectangle. If a `~astropy.coordinates.SkyCoord` it can
             have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
-            object with units of `~astropy.units.pix`.
+            object with units of `~astropy.units.si.pix`.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
             The top-right coordinate of the rectangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.
@@ -1941,19 +1988,16 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
-        if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
-            # The decorator assigns the first positional arg to top_right and so on.
-            height = width
-            width = top_right
-            top_right = None
-
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
 
+        bottom_left = bottom_left.transform_to(self.coordinate_frame)
+        top_right = top_right.transform_to(self.coordinate_frame)
+
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-        height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
+        height = top_right.spherical.lat - bottom_left.spherical.lat
 
         if not axes:
             axes = plt.gca()
@@ -1962,13 +2006,12 @@ class GenericMap(NDData):
         else:
             axes_unit = self.spatial_units[0]
 
-        coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.spherical.lon, coord.spherical.lat), unit=axes_unit).value
+        bottom_left = u.Quantity(self._get_lon_lat(bottom_left), unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
         kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
-                  'color': 'white',
+                  'edgecolor': 'white',
                   'fill': False}
         kwergs.update(kwargs)
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
@@ -2052,7 +2095,9 @@ class GenericMap(NDData):
                 pad = 0.12  # Pad to compensate for ticks and axes labels
             else:
                 pad = 0.05  # Default value for vertical colorbar
-            figure.colorbar(im, pad=pad)
+            colorbar_label = str(self.unit) if self.unit is not None else ""
+            figure.colorbar(im, pad=pad).set_label(colorbar_label,
+                                                   rotation=0, labelpad=-50, y=-0.02, size=12)
 
         if draw_limb:
             self.draw_limb(axes=axes)

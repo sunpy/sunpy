@@ -72,9 +72,9 @@ def deprecated(since, message='', name='', alternative='', pending=False,
         The type of this object, if the automatically determined one
         needs to be overridden.
 
-    warning_type : warning
+    warning_type : `~exceptions.Warning`
         Warning to be issued.
-        Default is `~sunpy.utils.exceptions.SunpyDeprecationWarning`.
+        Default is `~sunpy.util.exceptions.SunpyDeprecationWarning`.
     """
     major, minor = get_removal_version(since)
     removal_version = f"{major}.{minor}"

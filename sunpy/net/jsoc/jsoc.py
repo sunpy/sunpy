@@ -461,6 +461,12 @@ class JSOCClient(BaseClient):
             A Results object
 
        """
+        for resp in jsoc_response.query_args:
+            if 'notify' not in resp:
+                raise ValueError('A registered email is required to get data from JSOC. '
+                                 'Please supply an email with attrs.jsoc.Notify to Fido.search. '
+                                 'Then pass those new results back into Fido.fetch')
+
         if len(jsoc_response) != jsoc_response._original_num_rows:
             warnings.warn("Downloading of sliced JSOC results is not supported. "
                           "All the files present in the original response will "
@@ -512,7 +518,7 @@ class JSOCClient(BaseClient):
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
 
         downloader : `parfive.Downloader`, optional

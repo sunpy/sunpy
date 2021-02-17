@@ -26,7 +26,7 @@ class TimeRange:
        Regardless of how a `sunpy.time.TimeRange` is constructed it will always
        provide a positive time range where the start time is before the end time.
 
-       `~sunpy.time.TimeRange.__contains__` has been implemented which means you can
+       ``__contains__`` has been implemented which means you can
        check if a time is within the time range you have created.
        Please see the example section below.
 

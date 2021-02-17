@@ -8,6 +8,7 @@ from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, get_bo
 from astropy.time import TimeDelta
 
 from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective
+from sunpy.coordinates.transformations import transform_with_sun_center
 from sunpy.map import (
     contains_full_disk,
     coordinate_is_on_solar_disk,
@@ -25,7 +26,7 @@ __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
 @u.quantity_input
 def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='sidereal'):
-    """
+    r"""
     This function computes the change in longitude over days in degrees.
 
     Parameters
@@ -51,10 +52,29 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     longitude_delta : `~astropy.units.Quantity`
         The change in longitude over days (units=degrees)
 
+    Notes
+    -----
+    The rotation rate at a heliographic latitude :math:`\theta` is given by
+
+    .. math::
+
+        A + B \sin^{2} \left (\theta \right ) + C \sin^{4} \left ( \theta \right )
+
+    where :math:`A, B, C` are constants that depend on the model:
+
+    ========= ===== ====== ====== ==========
+    Model     A     B      C      Unit
+    ========= ===== ====== ====== ==========
+    howard    2.894 -0.428 -0.370 microrad/s
+    snodgrass 2.851 -0.343 -0.474 microrad/s
+    allen     14.44 -3.0   0      deg/day
+    ========= ===== ====== ====== ==========
+
+    1 microrad/s is approximately 4.95 deg/day.
+
     References
     ----------
 
-    * `IDL code equivalent <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro>`__
     * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
     * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
 
@@ -66,15 +86,26 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     >>> import numpy as np
     >>> import astropy.units as u
     >>> from sunpy.physics.differential_rotation import diff_rot
-    >>> rotation = diff_rot(2 * u.day, 30 * u.deg)
+    >>> diff_rot(2 * u.day, 30 * u.deg)
+    <Longitude 27.36432679 deg>
 
     Default rotation over two days for a number of latitudes:
 
-    >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
+    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
+    <Longitude [22.05449682, 23.03214991, 24.12033958, 25.210281  ,
+                26.21032832, 27.05716463, 27.71932645, 28.19299667,
+                28.49196765, 28.63509765, 28.63509765, 28.49196765,
+                28.19299667, 27.71932645, 27.05716463, 26.21032832,
+                25.210281  , 24.12033958, 23.03214991, 22.05449682] deg>
 
     With rotation type 'allen':
 
-    >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
+    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
+    <Longitude [23.58186667, 24.14800185, 24.82808733, 25.57737945,
+            26.34658134, 27.08508627, 27.74430709, 28.28087284,
+            28.6594822 , 28.85522599, 28.85522599, 28.6594822 ,
+            28.28087284, 27.74430709, 27.08508627, 26.34658134,
+            25.57737945, 24.82808733, 24.14800185, 23.58186667] deg>
     """
 
     latitude = latitude.to(u.deg)
@@ -222,6 +253,11 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
         The locations of the input coordinates after the application of
         solar rotation as seen from the point-of-view of the new observer.
 
+    Notes
+    -----
+    The translational motion of the Sun over the time interval will be ignored.
+    See :func:`~sunpy.coordinates.transform_with_sun_center`.
+
     Example
     -------
     >>> import astropy.units as u
@@ -240,8 +276,8 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     >>> new_observer = get_body("earth", end_time)
     >>> solar_rotate_coordinate(c, observer=new_observer)
     <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
-        (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-        (-363.04027419, 104.87807178, 1.00241935)>
+        (-5.68434189e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        (-378.27830452, 105.70767875, 1.00245134)>
     """
     # Check the input and create the new observer
     new_observer = _get_new_observer(coordinate.obstime, observer, time)
@@ -267,14 +303,16 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
         heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
                                         heliographic_coordinate.lat,
                                         heliographic_coordinate.radius,
-                                        obstime=new_observer.obstime,
-                                        observer=new_observer,
+                                        obstime=coordinate.obstime,
                                         frame=HeliographicStonyhurst)
 
-        # Calculate where the rotated co-ordinate appears as seen by new observer,
-        # and then transform it into the co-ordinate system of the input
-        # co-ordinate.
-        return heliographic_rotated.transform_to(coordinate.frame.name)
+        # Calculate where the rotated co-ordinate appears as seen by new observer
+        # for the co-ordinate system of the input co-ordinate.  The translational
+        # motion of the Sun will be ignored for the transformation.
+        frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
+                                                               obstime=new_observer.obstime)
+        with transform_with_sun_center():
+            return heliographic_rotated.transform_to(frame_newobs)
 
 
 def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
@@ -399,6 +437,11 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     xy2 : `numpy.ndarray`
         Pixel coordinates in the map corresponding to the input pixels in the
         warped image.
+
+    Notes
+    -----
+    The translational motion of the Sun over the time interval will be ignored.
+    See :func:`~sunpy.coordinates.transform_with_sun_center`.
     """
     # Suppress NaN warnings in coordinate transforms
     with warnings.catch_warnings():
@@ -422,9 +465,6 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
                                      frame=Helioprojective)
 
         heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
-        # Now transform the HGS coordinates to the obstime of the input map (to account for movement of Earth)
-        heliographic_coordinate = heliographic_coordinate.transform_to(
-            HeliographicStonyhurst(obstime=smap.date))
 
         # Compute the differential rotation.
         drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
@@ -437,12 +477,13 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
                                  obstime=heliographic_coordinate.obstime,
                                  frame=HeliographicStonyhurst)
 
-        # As seen from the map observer, which coordinates are on disk and which are behind the Sun.
-        where_off_disk_from_map_observer = rotated_coord.transform_to(
-            Heliocentric(observer=smap.observer_coordinate)).z.value < 0
+        with transform_with_sun_center():
+            # As seen from the map observer, which coordinates are behind the Sun.
+            where_off_disk_from_map_observer = rotated_coord.transform_to(
+                Heliocentric(observer=smap.observer_coordinate)).z.value < 0
 
-        # Re-project the pixels which are on disk back to location of the original observer
-        coordinates_at_map_observer = rotated_coord.transform_to(smap.coordinate_frame)
+            # Re-project the pixels which are on disk back to location of the original observer
+            coordinates_at_map_observer = rotated_coord.transform_to(smap.coordinate_frame)
 
         # Go back to pixel co-ordinates
         x2, y2 = smap.world_to_pixel(coordinates_at_map_observer)
@@ -506,6 +547,11 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     `~sunpy.map.GenericMap`
         A map with the result of applying solar differential rotation to the
         input map.
+
+    Notes
+    -----
+    The translational motion of the Sun over the time interval will be ignored.
+    See :func:`~sunpy.coordinates.transform_with_sun_center`.
     """
     # If the entire map is off-disk, return an error so the user is aware.
     if is_all_off_disk(smap):

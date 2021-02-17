@@ -33,7 +33,7 @@ class HelioviewerClient:
     @lazyproperty
     def data_sources(self):
         """
-        We trawl through the return from `getDataSources` to create a clean
+        We trawl through the return from ``getDataSources`` to create a clean
         dictionary for all available sourceIDs.
 
         Here is a list of all of them: https://api.helioviewer.org/docs/v2/#appendix_datasources
@@ -288,7 +288,7 @@ class HelioviewerClient:
         Parameters
         ----------
         date : `astropy.time.Time`, `str`
-            A `parse_time` parsable string or `~astropy.time.Time` object
+            A `~sunpy.time.parse_time` parsable string or `~astropy.time.Time` object
             for the desired date of the image
         image_scale : `float`
             The zoom scale of the image in arcseconds per pixel.
