@@ -152,24 +152,20 @@ class Scraper:
         date_parts[-1] = date_parts[-1] % 60
         date = datetime(*date_parts)
         orig_time_tup = date.timetuple()
-        if timestep == relativedelta(seconds=1):
-            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
-                            orig_time_tup.tm_hour, orig_time_tup.tm_min, orig_time_tup.tm_sec)
-        elif timestep == relativedelta(minutes=1):
-            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
-                            orig_time_tup.tm_hour, orig_time_tup.tm_min, 0)
+        time_tup = [orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
+                    orig_time_tup.tm_hour, orig_time_tup.tm_min, orig_time_tup.tm_sec]
+        if timestep == relativedelta(minutes=1):
+            time_tup[-1] = 0
         elif timestep == relativedelta(hours=1):
-            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
-                            orig_time_tup.tm_hour, 0, 0)
+            time_tup[-2:] = [0, 0]
         elif timestep == relativedelta(days=1):
-            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
-                            0, 0, 0)
+            time_tup[-3:] = [0, 0, 0]
         elif timestep == relativedelta(months=1):
-            new_time_tup = (orig_time_tup.tm_year, orig_time_tup.tm_mon, 1, 0, 0, 0)
+            time_tup[-4:] = [1, 0, 0, 0]
         elif timestep == relativedelta(years=1):
-            new_time_tup = (orig_time_tup.tm_year, 1, 1, 0, 0, 0)
+            time_tup[-5:] = [1, 1, 0, 0, 0]
 
-        return datetime(*new_time_tup)
+        return datetime(*time_tup)
 
     def _URL_followsPattern(self, url):
         """

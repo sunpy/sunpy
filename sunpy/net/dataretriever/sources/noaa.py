@@ -196,8 +196,8 @@ class SRSClient(GenericClient):
         # cover a year, and look for individual srs file for this time range.
         srs_urls = dict()
         min_file_year = max_tarball_year if max_tarball_year else start_year
-        min_file_date = datetime(max_tarball_year, 12, 31, 23, 59, 59) if max_tarball_year else \
-            datetime(start_year, 1, 1, 0, 0, 0)
+        min_file_date = (datetime(max_tarball_year, 12, 31, 23, 59, 59) if max_tarball_year else
+                         datetime(start_year, 1, 1, 0, 0, 0))
         max_file_date = min(timerange.end.datetime, Time.now().datetime)
         if min_file_date < max_file_date:
             file_timerange = TimeRange(f'{min_file_year}-01-01', max_file_date)
