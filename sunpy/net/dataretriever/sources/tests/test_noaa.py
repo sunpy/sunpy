@@ -180,8 +180,7 @@ def test_srs_tar_unpack_midyear():
 
 @no_vso
 @pytest.mark.remote_data
-@mock.patch('ftplib.FTP.nlst', side_effect=[[''], [''],
-                                            ['20200101SRS.txt', '20200102SRS.txt'], ['']])
+@mock.patch('ftplib.FTP.nlst', side_effect=[[''], ['20200101SRS.txt', '20200102SRS.txt']])
 def test_srs_missing_tarball(mock_ftp_nlst):
     qr = Fido.search(a.Time('2020-01-01', '2020-01-02'), a.Instrument.srs_table)
     urls = [qrblock['Url'] for qrblock in qr[0]]
@@ -216,6 +215,16 @@ def test_srs_out_of_range(srs_client):
     assert len(res) == 0
     res = srs_client.search(a.Time('2995/01/01', '2995/02/01'))
     assert len(res) == 0
+
+
+@pytest.mark.remote_data
+@pytest.mark.filterwarnings('ignore:ERFA function')
+def test_srs_start_or_end_out_of_range(srs_client):
+    res = srs_client.search(a.Time('1995/12/30', '1996/01/02'))
+    assert len(res) == 1
+    cur_year = datetime.date.today().year
+    res = srs_client.search(a.Time(f'{cur_year}/01/01', f'{cur_year+2}/01/01'))
+    assert len(res) > 0
 
 
 def test_no_time(predict_client, indices_client):

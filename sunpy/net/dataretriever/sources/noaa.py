@@ -151,10 +151,10 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-         Start Time           End Time      Instrument Physobs Source Provider
-    ------------------- ------------------- ---------- ------- ------ --------
-    2016-01-01 00:00:00 2016-01-01 23:59:59       SOON     SRS   SWPC     NOAA
-    2016-01-02 00:00:00 2016-01-02 23:59:59       SOON     SRS   SWPC     NOAA
+           Start Time               End Time        Instrument ... Source Provider
+    ----------------------- ----------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       SOON ...   SWPC     NOAA
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       SOON ...   SWPC     NOAA
     <BLANKLINE>
     <BLANKLINE>
 
@@ -167,19 +167,22 @@ class SRSClient(GenericClient):
         Returns a list of urls corresponding to a given time-range.
         """
         result = list()
-        # Validate time range and return early if out side min/max
+        # Validate time range srs generated daily since 1996
         cur_year = Time.now().datetime.year
         req_start_year = timerange.start.datetime.year
         req_end_year = timerange.end.datetime.year
-        start_year = req_start_year if self.MIN_YEAR < req_start_year <= cur_year else None
-        end_year = req_end_year if self.MIN_YEAR < req_end_year <= cur_year else None
-        if start_year is None and end_year is None:
+
+        # Return early if both start and end are less than or greater than limits
+        if req_start_year <= req_end_year < self.MIN_YEAR \
+                or req_end_year >= req_start_year > cur_year:
             return result
 
+        # No point in searching below the min or above max years
+        start_year = max(req_start_year, self.MIN_YEAR)
+        end_year = min(req_end_year, cur_year)
+
         # Search for tarballs for all years in the query
-        if end_year == start_year and end_year != cur_year:
-            end_year += 1
-        tarball_timerange = TimeRange(f'{start_year}-01-01', f'{end_year}-01-01')
+        tarball_timerange = TimeRange(f'{start_year}-01-01', f'{end_year}-12-31 23:59:59.999')
         tarball_urls = dict()
         tarball_scraper = Scraper(self.BASE_URL + '%Y/%Y_SRS.tar.gz')
         tarballs = tarball_scraper.filelist(tarball_timerange)
@@ -195,9 +198,11 @@ class SRSClient(GenericClient):
         # cover a year, and look for individual srs file for this time range.
         srs_urls = dict()
         min_file_year = max_tarball_year if max_tarball_year else start_year
-        min_file_date = datetime(min_file_year, 1, 1, 0, 0, 0)
-        if min_file_date <= timerange.end.datetime:
-            file_timerange = TimeRange(f'{min_file_year}-01-01', timerange.end)
+        min_file_date = datetime(max_tarball_year, 12, 31, 23, 59, 59) if max_tarball_year else \
+            datetime(start_year, 1, 1, 0, 0, 0)
+        max_file_date = min(timerange.end.datetime, Time.now().datetime)
+        if min_file_date < max_file_date:
+            file_timerange = TimeRange(f'{min_file_year}-01-01', max_file_date)
             srsfile_scraper = Scraper(self.BASE_URL + '%Y/SRS/%Y%m%dSRS.txt')
             srsfiles = srsfile_scraper.filelist(file_timerange)
             for srs_url in srsfiles:
@@ -208,9 +213,9 @@ class SRSClient(GenericClient):
         # Now iterate over all days and if the day is in a year we have a tarball for or a day there
         # is a individual srs file add to the result with corresponding extdict
         for day in timerange.get_dates():
-            day_ymd = (day.datetime.year, day.datetime.month, day.datetime.day)
-            extdict = {name: getattr(day.datetime, name) for name in ['year', 'month', 'day']}
-            if self.MIN_YEAR < day_ymd[0] <= cur_year:
+            day_ymd = (int(day.strftime('%Y')), int(day.strftime('%m')), int(day.strftime('%d')))
+            extdict = {'year': day_ymd[0], 'month': day_ymd[1], 'day': day_ymd[2]}
+            if self.MIN_YEAR <= day_ymd[0] <= cur_year:
                 if day_ymd[0] in tarball_urls.keys():
                     result.append((extdict, tarball_urls[day_ymd[0]]))
                 elif day_ymd in srs_urls.keys():
@@ -223,7 +228,7 @@ class SRSClient(GenericClient):
         timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         metalist = []
         for extdict, url in self._get_url_for_timerange(timerange):
-            extdict['Url'] = url
+            extdict['url'] = url
             rowdict = self.post_search_hook(extdict, matchdict)
             metalist.append(rowdict)
         return QueryResponse(metalist, client=self)
@@ -241,7 +246,7 @@ class SRSClient(GenericClient):
         -------
         Results Object
         """
-        urls = [qrblock['Url'] for qrblock in qres]
+        urls = [qrblock['url'] for qrblock in qres]
         filenames = []
         local_filenames = []
         for url, qre in zip(urls, qres):
