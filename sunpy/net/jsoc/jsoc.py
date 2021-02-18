@@ -300,27 +300,26 @@ class JSOCClient(BaseClient):
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-            ...                          a.jsoc.Series('hmi.v_45s'),
-            ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
+            ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
-                    T_REC            DATAMEAN     OBS_VR
-            ----------------------- ----------- -----------
-            2014.01.01_00:00:45_TAI 1906.518188 1911.202614
-            2014.01.01_00:01:30_TAI 1908.876221 1913.945512
-            2014.01.01_00:02:15_TAI   1911.7771 1916.667999
-            2014.01.01_00:03:00_TAI 1913.422485 1919.369924
-            2014.01.01_00:03:45_TAI 1916.500488 1922.050862
-            2014.01.01_00:04:30_TAI 1920.414795 1924.711005
-            2014.01.01_00:05:15_TAI 1922.636963  1927.35015
-            2014.01.01_00:06:00_TAI 1924.697388 1929.968523
-            2014.01.01_00:06:45_TAI 1927.758301 1932.566451
-            2014.01.01_00:07:30_TAI 1929.646118  1935.14288
-            2014.01.01_00:08:15_TAI 1932.097046 1937.698521
-            2014.01.01_00:09:00_TAI 1935.728638  1940.23353
-            2014.01.01_00:09:45_TAI 1937.754028 1942.747605
-            2014.01.01_00:10:30_TAI  1940.14624 1945.241147
+                    T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+            ----------------------- -------- ---------- -------- -------
+            2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:08:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:09:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:09:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+            2014.01.01_00:10:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
 
-            *Example 3*
+        *Example 3*
 
         Request data of ``aia.lev1_euv_12s`` on the basis of PrimeKeys other than ``T_REC``::
 

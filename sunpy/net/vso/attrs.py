@@ -355,10 +355,13 @@ def _(attr, results):
 
 
 # Deprecate old classes
+_deprecation_template = "``sunpy.net.vso.attrs.{name}`` is deprecated, please use `sunpy.net.attrs.{name}`"
+
+
 class _DeprecatedAttr:
     def __init__(self, *args, **kwargs):
         name = type(self).__name__
-        warnings.warn(f"sunpy.net.vso.attrs.{name} is deprecated, please use sunpy.net.attrs.{name}",
+        warnings.warn(_deprecation_template.format(name=name),
                       SunpyDeprecationWarning)
         super().__init__(*args, **kwargs)
 
@@ -370,8 +373,10 @@ for _name in _deprecated_names:
     # Dynamically construct a class which inherits the class with the
     # deprecation warning in the __init__ first and the class it's deprecating
     # second.
-    cls = type(_name, (_DeprecatedAttr, getattr(_attrs, _name)), {})
+    _new_attr = getattr(_attrs, _name)
+    _doc = f"{_deprecation_template.format(name=_name)}\n{_new_attr.__doc__}"
+    _cls = type(_name, (_DeprecatedAttr, _new_attr), {'__doc__': _doc})
     # Add the new class to the modules namespace
-    setattr(sys.modules[__name__], _name, cls)
+    setattr(sys.modules[__name__], _name, _cls)
 
 __all__ += _deprecated_names

@@ -9,8 +9,8 @@ information through the `~sunpy.net.hek` module, which was developed through
 support from the European Space Agency Summer of Code in Space
 (ESA-SOCIS) 2011.
 
-1. Setting up the client
-************************
+Setting up the client
+**********************
 
 SunPy's HEK module is in sunpy.net.  It can be imported into your
 session as follows:
@@ -20,8 +20,8 @@ session as follows:
 
 This creates a client that we will use to interact with the HEK.
 
-2. A simple query
-*****************
+A simple query
+**************
 
 To search the HEK, you need a start time, an end time, and an event
 type.  Times are specified as strings or Python datetime objects.  Event types
@@ -59,9 +59,8 @@ set the flare event type using the syntax::
 There is more on the attributes of hek.attrs in section 4 of this
 guide.
 
-
-3. The result
-*************
+The result
+**********
 
 So, how many flare detections did the query turn up?
 
@@ -112,8 +111,8 @@ object, for example:
 It is likely each flare on the Sun was actually detected multiple
 times by many different methods.
 
-4. More complex queries
-***********************
+More complex queries
+********************
 
 The HEK client allows you to make more complex queries.  There are two
 key features you need to know in order to make use of the full power
@@ -261,8 +260,8 @@ from the ``(hek.attrs.FL.PeakFlux > 1000.0)`` filter.  Flares that have
 cases the client returns only those results from the HEK that
 definitely satisfy the criteria passed to it.
 
-5. Getting data for your event
-******************************
+Getting data for your event
+***************************
 
 The 'hek2vso' module allows you to take an HEK event and acquire VSO
 records specific to that event.
