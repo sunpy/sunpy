@@ -137,13 +137,13 @@ def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
                                           path / "observed-solar-cycle-indices.json"))
 
 
-@no_vso
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
             return_value=mock_query_object('2012/10/4', '2012/10/6'))
 # The return value of download is irrelevant
 @mock.patch('parfive.Downloader.download',
             return_value=None)
 @mock.patch('parfive.Downloader.enqueue_file')
+@no_vso
 def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
     path = tmp_path / "sub"
     path.mkdir()
@@ -159,6 +159,7 @@ def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
                                           path / "observed-solar-cycle-indices.json"))
 
 
+@no_vso
 @pytest.mark.remote_data
 def test_srs_tar_unpack():
     qr = Fido.search(a.Instrument("soon") & a.Time("2015/01/01", "2015/01/01T23:59:29"))
@@ -167,6 +168,7 @@ def test_srs_tar_unpack():
     assert res.data[0].endswith("20150101SRS.txt")
 
 
+@no_vso
 @pytest.mark.remote_data
 def test_srs_tar_unpack_midyear():
     qr = Fido.search(a.Instrument("soon") & a.Time("2011/06/07", "2011/06/08T23:59:29"))
@@ -176,15 +178,27 @@ def test_srs_tar_unpack_midyear():
     assert res.data[-1].endswith("20110608SRS.txt")
 
 
+@no_vso
+@pytest.mark.remote_data
+@mock.patch('ftplib.FTP.nlst', side_effect=[[''], ['20200101SRS.txt', '20200102SRS.txt']])
+def test_srs_missing_tarball(mock_ftp_nlst):
+    qr = Fido.search(a.Time('2020-01-01', '2020-01-02'), a.Instrument.srs_table)
+    urls = [qrblock['url'] for qrblock in qr[0]]
+    assert urls[0].endswith('20200101SRS.txt')
+    assert urls[1].endswith('20200102SRS.txt')
+
+
+@no_vso
 @pytest.mark.remote_data
 def test_srs_current_year():
     year = datetime.date.today().year
-    qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/01/01", f"{year}/01/01T23:59:29"))
+    qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/02/01", f"{year}/02/01T23:59:29"))
     res = Fido.fetch(qr)
     assert len(res) == 1
-    assert res.data[0].endswith(f"{year}0101SRS.txt")
+    assert res.data[0].endswith(f"{year}0201SRS.txt")
 
 
+@no_vso
 @pytest.mark.remote_data
 def test_srs_save_path(tmpdir):
     qr = Fido.search(a.Instrument.srs_table, a.Time("2016/10/01", "2016/10/02"))
@@ -194,12 +208,23 @@ def test_srs_save_path(tmpdir):
     assert files[1].endswith("20161002SRS.txt")
 
 
+@pytest.mark.remote_data
 @pytest.mark.filterwarnings('ignore:ERFA function')
 def test_srs_out_of_range(srs_client):
     res = srs_client.search(a.Time('1995/01/01', '1995/02/01'))
     assert len(res) == 0
     res = srs_client.search(a.Time('2995/01/01', '2995/02/01'))
     assert len(res) == 0
+
+
+@pytest.mark.remote_data
+@pytest.mark.filterwarnings('ignore:ERFA function')
+def test_srs_start_or_end_out_of_range(srs_client):
+    res = srs_client.search(a.Time('1995/12/30', '1996/01/02'))
+    assert len(res) == 1
+    cur_year = datetime.date.today().year
+    res = srs_client.search(a.Time(f'{cur_year}/01/01', f'{cur_year+2}/01/01'))
+    assert len(res) > 0
 
 
 def test_no_time(predict_client, indices_client):

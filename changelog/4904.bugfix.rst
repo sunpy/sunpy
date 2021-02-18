@@ -1,0 +1,2 @@
+Fixed the `~.SRSClient` which silently failed to download the SRS files when the tarball for the previous years did not exist.
+Client now actually searches for the tarballs and srs files on the ftp archive before returning them as results.
