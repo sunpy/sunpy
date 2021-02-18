@@ -28,11 +28,6 @@
             "name": "Florian Mayer"
         },
         {
-            "name": "V. Keith Hughitt",
-            "orcid": "0000-0003-0787-9559",
-            "affiliation": "Center for Cancer Research, National Cancer Institute, Bethesda, MD 20892-9760, USA"
-        },
-        {
             "name": "Albert Y. Shih",
             "orcid": "0000-0001-6874-2594",
             "affiliation": "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
@@ -41,6 +36,11 @@
             "name": "David Stansby",
             "orcid": "0000-0002-1365-1908",
             "affiliation": "Mullard Space Science Laboratory, University College London, Surrey, UK"
+        },
+        {
+            "name": "V. Keith Hughitt",
+            "orcid": "0000-0003-0787-9559",
+            "affiliation": "Center for Cancer Research, National Cancer Institute, Bethesda, MD 20892-9760, USA"
         },
         {
             "name": "Daniel F. Ryan",
@@ -231,6 +231,9 @@
             "affiliation": "Jadavpur University, Kolkata"
         },
         {
+            "name": "Kateryna Ivashkiv"
+        },
+        {
             "name": "Johan Freiherr von Forstner",
             "orcid": "0000-0002-1390-4776",
             "affiliation": "Institut für Experimentelle und Angewandte Physik, University of Kiel, Germany"
@@ -239,9 +242,6 @@
             "name": "Juanjo Bazán",
             "orcid": "0000-0001-7699-3983",
             "affiliation": "CIEMAT, Astroparticle physics, Madrid, Spain."
-        },
-        {
-            "name": "Kateryna Ivashkiv"
         },
         {
             "name": "Kris Akira Stern",
@@ -284,6 +284,9 @@
             "affiliation": "ABV-Indian Institute of Information Technology and Management, Gwalior, MP 474015, India"
         },
         {
+            "name": "SophieLemos"
+        },
+        {
             "name": "Ankit Agrawal"
         },
         {
@@ -315,9 +318,6 @@
         },
         {
             "name": "Pankaj Mishra"
-        },
-        {
-            "name": "sophielemos"
         },
         {
             "name": "Deepankar Sharma"
@@ -358,6 +358,10 @@
             "name": "Erik M. Bray"
         },
         {
+            "name": "Jeffrey Aaron Paul",
+            "affiliation": "(Dayananda Sagar College of Engineering, Bangalore)"
+        },
+        {
             "name": "Rutuja Surve"
         },
         {
@@ -376,6 +380,9 @@
         },
         {
             "name": "Abhigyan Bose"
+        },
+        {
+            "name": "Abhishek Pandey"
         },
         {
             "name": "Adrian Price-Whelan",
@@ -421,9 +428,6 @@
             "name": "Priyank Lodha"
         },
         {
-            "name": "SophieLemos"
-        },
-        {
             "name": "Thomas Robitaille"
         },
         {
@@ -437,9 +441,6 @@
         },
         {
             "name": "neerajkulk"
-        },
-        {
-            "name": "Abhishek Pandey"
         },
         {
             "name": "Andrew Hill"
@@ -504,7 +505,9 @@
             "name": "Brandon Stone"
         },
         {
-            "name": "Conor MacBride"
+            "name": "Conor MacBride",
+            "orcid": "0000-0002-9901-8723",
+            "affiliation": "Astrophysics Research Centre, School of Mathematics and Physics, Queen’s University Belfast, Belfast BT7 1NN, UK"
         },
         {
             "name": "Emmanuel Arias"
@@ -541,9 +544,6 @@
             "name": "Jaylen Wimbish"
         },
         {
-            "name": "Jeffrey Aaron Paul"
-        },
-        {
             "name": "Juan Camilo Buitrago-Casas"
         },
         {
@@ -558,6 +558,11 @@
         },
         {
             "name": "Koustav Ghosh"
+        },
+        {
+            "name": "Kritika Ranjan",
+            "orcid": "0000-0001-5638-016X",
+            "affiliation": "Jain (Deemed-to-be University), Bangalore"
         },
         {
             "name": "Manas Mangaonkar"
@@ -601,7 +606,13 @@
             "affiliation": "Department of Chemical Engineering, Indian Institute of Technology Kharagpur, 721302, India"
         },
         {
+            "name": "Tathagata Paul"
+        },
+        {
             "name": "Tessa D. Wilkinson"
+        },
+        {
+            "name": "Thomas A Caswell"
         },
         {
             "name": "Tiago M. D. Pereira",
@@ -617,6 +628,9 @@
             "name": "Yudhik Agrawal",
             "orcid": "0000-0003-3827-6857",
             "affiliation": "International Institute of Information Technology, Hyderabad 500 032, India"
+        },
+        {
+            "name": "nakul-shahdadpuri"
         },
         {
             "name": "platipo"
