@@ -18,12 +18,14 @@ class GONGClient(GenericClient):
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    3 Results from the GONGClient:
+    5 Results from the GONGClient:
            Start Time               End Time        Instrument ... Source ExtentType
     ----------------------- ----------------------- ---------- ... ------ ----------
     2019-12-31 22:14:00.000 2019-12-31 22:14:59.999       GONG ...    NSO   SYNOPTIC
     2019-12-31 23:04:00.000 2019-12-31 23:04:59.999       GONG ...    NSO   SYNOPTIC
     2019-12-31 23:54:00.000 2019-12-31 23:54:59.999       GONG ...    NSO   SYNOPTIC
+    2020-01-01 00:14:00.000 2020-01-01 00:14:59.999       GONG ...    NSO   SYNOPTIC
+    2020-01-01 01:14:00.000 2020-01-01 01:14:59.999       GONG ...    NSO   SYNOPTIC
     <BLANKLINE>
     <BLANKLINE>
 

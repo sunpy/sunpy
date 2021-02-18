@@ -54,7 +54,7 @@ def offline_instruments():
     Returns a strategy for any instrument that does not need the internet to do
     a query.
     """
-    offline_instr = ['noaa-indices', 'noaa-predict', 'soon']
+    offline_instr = ['noaa-indices', 'noaa-predict']
     offline_instr = st.builds(a.Instrument, st.sampled_from(offline_instr))
 
     return st.one_of(offline_instr)
@@ -65,7 +65,7 @@ def online_instruments():
     Returns a strategy for any instrument that does need the internet to do
     a query.
     """
-    online_instr = ['lyra', 'goes', 'eve', 'rhessi', 'norh']
+    online_instr = ['lyra', 'goes', 'eve', 'rhessi', 'norh', 'soon']
     online_instr = st.builds(a.Instrument, st.sampled_from(online_instr))
 
     return online_instr
