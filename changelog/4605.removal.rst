@@ -1,2 +1,0 @@
-`sunpy.test.hash` has been removed, the functionality has been moved into the
-`pytest-mpl <https://github.com/matplotlib/pytest-mpl>`__ package.

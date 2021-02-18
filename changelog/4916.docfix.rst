@@ -1,1 +1,0 @@
-Fixed the display of arguments in the documentation for `~sunpy.net.Fido` attributes (`sunpy.net.attrs`).

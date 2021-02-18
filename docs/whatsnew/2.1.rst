@@ -22,18 +22,19 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-2.1-contours`
 * :ref:`whatsnew-2.1-performance`
 * :ref:`whatsnew-2.1-python`
+* :ref:`whatsnew-2.1-contributors`
 
 SunPy 2.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
-* X commits have been added since 2.0
-* X issues have been closed since 2.0
-* X pull requests have been merged since 2.0
-* X people have contributed since 2.0
-* X new contributors
+* 1148 commits have been added since 2.0
+* 202 issues have been closed since 2.0
+* 306 pull requests have been merged since 2.0
+* 38 people have contributed since 2.0
+* 19 of which are new contributors
 
-Please find a selection of what we consider to be the biggest changes or features with this release.
+Please find below a selection of what we consider to be the biggest changes or features with this release.
 
 .. _whatsnew-2.1-goes1617:
 
@@ -212,3 +213,51 @@ We have bumped the minimum version of several packages we depend on; these are t
 - parfive 1.1
 - drms 0.6.1
 - matplotlib 2.2.2
+
+.. _whatsnew-2.1-contributors:
+
+Contributors to this Release
+============================
+
+The people who have contributed to the code for this release are:
+
+-  Abhijeet Manhas
+-  Abhishek Pandey  *
+-  Adrian Price-Whelan
+-  Albert Y. Shih
+-  Aryan Chouhan  *
+-  Conor MacBride  *
+-  Daniel Ryan
+-  David Pérez-Suárez
+-  David Stansby
+-  Dipanshu Verma  *
+-  Erik Tollerud  *
+-  Jai Ram Rideout
+-  Jeffrey Aaron Paul  *
+-  Johan L. Freiherr von Forstner  *
+-  Kateryna Ivashkiv  *
+-  Koustav Ghosh  *
+-  Kris Akira Stern
+-  Kritika Ranjan  *
+-  Laura Hayes
+-  Lazar Zivadinovic
+-  Nabil Freij
+-  Rutuja Surve
+-  Sashank Mishra
+-  Shane Maloney
+-  Shubham Jain  *
+-  SophieLemos  *
+-  Steven Christe
+-  Stuart Mumford
+-  Sudeep Sidhu  *
+-  Tathagata Paul  *
+-  Thomas A Caswell  *
+-  Will Barnes
+-  honey
+-  mridulpandey
+-  nakul-shahdadpuri  *
+-  platipo  *
+-  resakra  *
+-  sophielemos  *
+
+Where a * indicates that this release contains their first contribution to SunPy.

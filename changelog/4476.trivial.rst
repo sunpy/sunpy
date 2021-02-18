@@ -1,2 +1,0 @@
-Creating a `~sunpy.util.MetaDict` with dictionary keys that are not strings now
-raises as user-friendly `ValueError` which prints all the non-compliant keys.

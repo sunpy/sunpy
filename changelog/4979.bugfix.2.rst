@@ -1,2 +1,0 @@
-Fixed two bugs with :func:`~sunpy.physics.differential_rotation.differential_rotate` and :func:`~sunpy.physics.differential_rotation.solar_rotate_coordinate` that resulted in significant inaccuracies.
-Both functions now ignore the translational motion of the Sun.

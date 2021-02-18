@@ -1,2 +1,0 @@
-For :meth:`sunpy.map.GenericMap.quicklook` and :meth:`sunpy.map.MapSequence.quicklook` (also used for the HTML reprsentation shown in Jupyter notebooks), the histogram is now shaded corresponding to the colormap of the plotted image.
-Clicking on the histogram will toggle an alternate version of the histogram.

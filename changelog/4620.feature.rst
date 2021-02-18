@@ -1,3 +1,0 @@
-sunpy now sets auxillary parameters on `sunpy.map.Map.wcs` using the
-`astropy.wcs.wcs.aux` attribute. This stores observer information, along with
-the reference solar radius if present.
