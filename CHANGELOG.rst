@@ -156,6 +156,11 @@ Deprecations
 Features
 --------
 
+
+- For :meth:`sunpy.map.GenericMap.quicklook` and :meth:`sunpy.map.MapSequence.quicklook` (also used for the HTML reprsentation shown in Jupyter notebooks), the histogram is now shaded corresponding to the colormap of the plotted image.
+  Clicking on the histogram will toggle an alternate version of the histogram. (`#4931 <https://github.com/sunpy/sunpy/pull/4931>`__)
+- Add an ``SRS_TABLE`` file to the sample data, and use it in the magnetogram
+  plotting example. (`#4993 <https://github.com/sunpy/sunpy/pull/4993>`__)
 - Added a `sunpy.map.GenericMap.contour()` method to find the contours on a map. (`#3909 <https://github.com/sunpy/sunpy/pull/3909>`__)
 - Added a context manager (:meth:`~sunpy.coordinates.frames.Helioprojective.assume_spherical_screen`)
   to interpret `~sunpy.coordinates.frames.Helioprojective` coordinates as being on
@@ -231,6 +236,24 @@ Features
 Bug Fixes
 ---------
 
+- `sunpy.map.GenericMap.date` now has its time scale set from the 'TIMESYS' FITS keyword,
+  if it is present. If it isn't present the time scale defaults to 'UTC', which is unchanged
+  default behaviour, so this change will only affect maps with a 'TIMESYS' keyword
+  that is not set to 'UTC'. (`#4881 <https://github.com/sunpy/sunpy/pull/4881>`__)
+- Fixed the `~.SRSClient` which silently failed to download the SRS files when the tarball for the previous years did not exist.
+  Client now actually searches for the tarballs and srs files on the ftp archive before returning them as results. (`#4904 <https://github.com/sunpy/sunpy/pull/4904>`__)
+- No longer is the WAVEUNIT keyword injected into a data source if it is missing from the file's metadata. (`#4926 <https://github.com/sunpy/sunpy/pull/4926>`__)
+- Map sources no longer overwrite FITS metadata keywords if they are present in
+  the original metadata. The particular map sources that have been fixed are
+  `~sunpy.map.SJIMap`, `~sunpy.map.KCorMap`, `~sunpy.map.RHESSIMap`,
+  `~sunpy.map.EITMap`, `~sunpy.map.EUVIMap`, `~sunpy.map.SXTMap`. (`#4926 <https://github.com/sunpy/sunpy/pull/4926>`__)
+- Fixed a handling bug in :meth:`~sunpy.map.GenericMap.draw_rectangle` when the rectangle is specified in a different coordinate frame than that of the map.
+  A couple of other minor bugs in :meth:`~sunpy.map.GenericMap.draw_rectangle` were also fixed. (`#4929 <https://github.com/sunpy/sunpy/pull/4929>`__)
+- Improved error message from :meth:`sunpy.net.Fido.fetch` when no email has been supplied for JSOC data. (`#4950 <https://github.com/sunpy/sunpy/pull/4950>`__)
+- Fixed a bug when transforming from `~sunpy.coordinates.metaframes.RotatedSunFrame` to another frame at a different observation time that resulted in small inaccuracies.
+  The translational motion of the Sun was not being handled correctly. (`#4979 <https://github.com/sunpy/sunpy/pull/4979>`__)
+- Fixed two bugs with :func:`~sunpy.physics.differential_rotation.differential_rotate` and :func:`~sunpy.physics.differential_rotation.solar_rotate_coordinate` that resulted in significant inaccuracies.
+  Both functions now ignore the translational motion of the Sun. (`#4979 <https://github.com/sunpy/sunpy/pull/4979>`__)
 - The ability to to filter search results from the `~sunpy.net.vso.VSOClient` was broken.
   This has now been restored. (`#4011 <https://github.com/sunpy/sunpy/pull/4011>`__)
 - Fixed a bug where transformation errors were not getting raised in some situations when a coordinate frame had ``obstime`` set to the default value of ``None`` and `~astropy.coordinates.SkyCoord` was not being used.
@@ -317,6 +340,8 @@ Bug Fixes
 Added/Improved Documentation
 ----------------------------
 
+- Added a developer guide for writing a new ``Fido`` client. (`#4387 <https://github.com/sunpy/sunpy/pull/4387>`__)
+- Added an example of how to use Matplotlib's axes range functionality when plotting a Map with WCSAxes. (`#4792 <https://github.com/sunpy/sunpy/pull/4792>`__)
 - Add links to Thompson 2006 paper on solar coordinates to synoptic map example. (`#3549 <https://github.com/sunpy/sunpy/pull/3549>`__)
 - Clarified the meaning of ``.bottom_left_coord`` and ``.top_right_coord`` in
   `sunpy.map.GenericMap`. (`#3706 <https://github.com/sunpy/sunpy/pull/3706>`__)
@@ -364,6 +389,10 @@ Documentation Fixes
 Trivial/Internal Changes
 ------------------------
 
+- ``Fido.fetch`` now always specifies a ``path=`` argument of type `pathlib.Path`
+  to the ``fetch`` method of the client. This path will default to the configured
+  sunpy download dir, will have the user directory expanded, will have the
+  ``{file}`` placeholder and will be tested to ensure that it is writeable. (`#4949 <https://github.com/sunpy/sunpy/pull/4949>`__)
 - Added information on what went wrong when `sunpy.map.GenericMap.wcs` fails to parse
   a FITS header into a WCS. (`#4335 <https://github.com/sunpy/sunpy/pull/4335>`__)
 - Fixed the `~sunpy.coordinates.frames.Helioprojective` docstring to be clear about the names of the coordinate components. (`#4351 <https://github.com/sunpy/sunpy/pull/4351>`__)
