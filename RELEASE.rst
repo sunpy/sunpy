@@ -1,60 +1,61 @@
-The SunPy project is happy to announce the release of SunPy 2.0!
+The SunPy project is happy to announce the release of SunPy 2.1!
 SunPy is an open-source Python library for Solar Physics data analysis and visualization.
 
-This release is our second long(er) term support release, that we will be supporting with bug fixes until 3.0 in roughly a year's time.
-With this release, the 1.0 and 1.1 releases will no longer recieve bug fixes and we encourage everyone to upgrade to 2.0.
+This is an intermediate release between the 2.0 and 3.0 long term support releases.
 
 The major highlights of this release are:
 
-* `~sunpy.net.Fido` now supports tab completion of search attributes.
-  This allows you to do ``a.Instrument.AIA``, and print ``a.Instrument`` to see the list of known supported instruments.
-* `~sunpy.instr.aia.aiaprep` has been deprecated in favor of the functionality in the `aiapy <https://aiapy.readthedocs.io/>`__ package.
-* Various fixes and clarifications to pixel indexing in the `sunpy.map` subpackage.
-* Standardization of specifying rectangles in coordinate space in the :meth:`~sunpy.map.GenericMap.submap` and :meth:`~sunpy.map.GenericMap.draw_rectangle` methods of `~sunpy.map.GenericMap`.
-* HTML quicklook previews of `~sunpy.map.GenericMap` and `~sunpy.map.MapSequence` instances are available with the new :meth:`~sunpy.map.GenericMap.quicklook` and :meth:`~sunpy.map.MapSequence.quicklook` methods, respectively.
-  This is also the default display in `Jupyter <https://jupyter.org/>`__ notebooks.
-* Integration of differential rotation into the `sunpy.coordinates` framework.
-  This enables, amongst other things, the warping of images with the `reproject <https://reproject.readthedocs.io/>`__ package and the plotting of rotated grid lines with :ref:`WCSAxes <astropy:wcsaxes>`.
-
-See `What's New in SunPy 2.0 <https://docs.sunpy.org/en/stable/whatsnew/2.0.html>`__ for more details and the `Full Changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__ for the full list of over 100 changes in 2.0.
+* Support for the GOES-16 and GOES-17 XRS 1-second data. This data can now be queried and downloaded with `sunpy.net.Fido` and the files read in and analysed as a `sunpy.timeseries.TimeSeries`.
+* ``sunpy.net.Fido`` now supports metadata only searches; currently supported metadata providers are HEK, HELIO and JSOC.
+* ``sunpy.net.Fido`` now returns results to users in Astropy Table objects to allow easier manipulation and filtering of results.
+* Cutouts of regions of interest can now be requested from the JSOC export service through ``sunpy.net.Fido``.
+* It is now supported to transform coordinates with attached velocities, and the various ephemeris functions can optionally include velocity information. Transformations between coordinate frames will account for both any change in orientation of the velocity vector and any induced velocity due to relative motion between the frames.
+* Several functions in `sunpy.map` have been significantly sped up with improved algorithms.
 
 
-This release of SunPy contains 1044 commits in 290 merged pull requests closing 144 issues from 33 people, 16 of which are first-time contributors to SunPy.
+See `What's New in SunPy 2.1 <https://docs.sunpy.org/en/stable/whatsnew/2.1.html>`__ for more details and the `Full Changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__ for the full list of over 160 changes in 2.1.
+
+This release of SunPy contains 1148 commits in 306 merged pull requests closing 202 issues from 38 people, 19 of which are first-time contributors to SunPy.
 
 The people who have contributed to the code for this release are:
 
-    Abhijeet Manhas  *
-    Abijith B  *
-    Albert Y. Shih
-    Amogh J  *
-    Arfon Smith  *
-    Arib Alam  *
-    David Pérez-Suárez
-    David Stansby
-    Deepankar Sharma
-    Jack Ireland
-    Jai Ram Rideout
-    James Paul Mason
-    Kris Akira Stern  *
-    Laura Hayes
-    Lazar Zivadinovic  *
-    Mark Cheung  *
-    Monica Bobra
-    Nabil Freij
-    Ole Streicher
-    Pankaj Mishra  *
-    Raahul Singh
-    Rajiv Ranjan Singh
-    Rutuja Surve  *
-    Sarthak Jain
-    Sashank Mishra  *
-    Steven Christe
-    Stuart Mumford
-    Swapnil Kannojia  *
-    Utkarsh Parkhi  *
-    Will Barnes
-    abijith-bahuleyan  *
-    honey  *
-    mridulpandey  *
+-  Abhijeet Manhas
+-  Abhishek Pandey  *
+-  Adrian Price-Whelan
+-  Albert Y. Shih
+-  Aryan Chouhan  *
+-  Conor MacBride  *
+-  Daniel Ryan
+-  David Pérez-Suárez
+-  David Stansby
+-  Dipanshu Verma  *
+-  Erik Tollerud  *
+-  Jai Ram Rideout
+-  Jeffrey Aaron Paul  *
+-  Johan L. Freiherr von Forstner  *
+-  Kateryna Ivashkiv  *
+-  Koustav Ghosh  *
+-  Kris Akira Stern
+-  Kritika  *
+-  Laura Hayes
+-  Lazar Zivadinovic
+-  Nabil Freij
+-  Rutuja Surve
+-  Sashank Mishra
+-  Shane Maloney
+-  Shubham Jain  *
+-  SophieLemos  *
+-  Steven Christe
+-  Stuart Mumford
+-  Sudeep Sidhu  *
+-  Tathagata Paul  *
+-  Thomas A Caswell  *
+-  Will Barnes
+-  honey
+-  mridulpandey
+-  nakul-shahdadpuri  *
+-  platipo  *
+-  resakra  *
+-  sophielemos  *
 
-Where a * indicates their first contribution to SunPy.
+Where a * indicates that this release contains their first contribution to SunPy.
