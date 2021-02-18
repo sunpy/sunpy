@@ -238,7 +238,7 @@ The people who have contributed to the code for this release are:
 -  Kateryna Ivashkiv  *
 -  Koustav Ghosh  *
 -  Kris Akira Stern
--  Kritika  *
+-  Kritika Ranjan  *
 -  Laura Hayes
 -  Lazar Zivadinovic
 -  Nabil Freij

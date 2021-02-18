@@ -358,7 +358,8 @@
             "name": "Erik M. Bray"
         },
         {
-            "name": "Jeffrey Aaron Paul"
+            "name": "Jeffrey Aaron Paul",
+            "affiliation": "(Dayananda Sagar College of Engineering, Bangalore)"
         },
         {
             "name": "Rutuja Surve"
@@ -504,7 +505,9 @@
             "name": "Brandon Stone"
         },
         {
-            "name": "Conor MacBride"
+            "name": "Conor MacBride",
+            "orcid": "0000-0002-9901-8723",
+            "affiliation": "Astrophysics Research Centre, School of Mathematics and Physics, Queen’s University Belfast, Belfast BT7 1NN, UK"
         },
         {
             "name": "Emmanuel Arias"
@@ -557,7 +560,9 @@
             "name": "Koustav Ghosh"
         },
         {
-            "name": "Kritika"
+            "name": "Kritika Ranjan",
+            "orcid": "0000-0001-5638-016X",
+            "affiliation": "Jain (Deemed-to-be University), Bangalore"
         },
         {
             "name": "Manas Mangaonkar"
