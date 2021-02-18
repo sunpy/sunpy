@@ -3,13 +3,16 @@
 # Google Summer of Code 2014
 import pathlib
 import tarfile
+from datetime import datetime
 from collections import OrderedDict
 
-from astropy import units as u
-from astropy.time import Time, TimeDelta
+from astropy.time import Time
 
-from sunpy.net.dataretriever import GenericClient
+from sunpy import log
+from sunpy.net.dataretriever import GenericClient, QueryResponse
+from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
+from sunpy.util.scraper import Scraper
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
@@ -178,34 +181,87 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-         Start Time           End Time        Source  Instrument Wavelength
-    ------------------- ------------------- --------- ---------- ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
-    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
+           Start Time               End Time        Instrument ... Source Provider
+    ----------------------- ----------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       SOON ...   SWPC     NOAA
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       SOON ...   SWPC     NOAA
     <BLANKLINE>
     <BLANKLINE>
 
     """
+    BASE_URL = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
+    MIN_YEAR = 1996
 
-    def _get_url_for_timerange(self, timerange, **kwargs):
+    def _get_url_for_timerange(self, timerange):
+        """
+        Returns a list of urls corresponding to a given time-range.
+        """
         result = list()
-        base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
-        total_days = int(timerange.days.value) + 1
-        all_dates = timerange.split(total_days)
-        today_year = int(Time.now().strftime('%Y'))
-        for day in all_dates:
-            end_year = int(day.end.strftime('%Y'))
-            if end_year > today_year or end_year < 1996:
-                continue
-            elif end_year == today_year:
-                suffix = '{}/SRS/{}SRS.txt'.format(
-                    end_year, day.end.strftime('%Y%m%d'))
-            else:
-                suffix = '{}/{}_SRS.tar.gz'.format(
-                    end_year, day.end.strftime('%Y'))
-            url = base_url + suffix
-            result.append(url)
+        # Validate time range srs generated daily since 1996
+        cur_year = Time.now().datetime.year
+        req_start_year = timerange.start.datetime.year
+        req_end_year = timerange.end.datetime.year
+
+        # Return early if both start and end are less than or greater than limits
+        if req_start_year <= req_end_year < self.MIN_YEAR \
+                or req_end_year >= req_start_year > cur_year:
+            return result
+
+        # No point in searching below the min or above max years
+        start_year = max(req_start_year, self.MIN_YEAR)
+        end_year = min(req_end_year, cur_year)
+
+        # Search for tarballs for all years in the query
+        tarball_timerange = TimeRange(f'{start_year}-01-01', f'{end_year}-12-31 23:59:59.999')
+        tarball_urls = dict()
+        tarball_scraper = Scraper(self.BASE_URL + '%Y/%Y_SRS.tar.gz')
+        tarballs = tarball_scraper.filelist(tarball_timerange)
+        max_tarball_year = None
+        for tb_url in tarballs:
+            date = tarball_scraper._extractDateURL(tb_url)
+            year = date.to_datetime().year
+            max_tarball_year = year
+            tarball_urls[year] = tb_url
+            log.debug('SRS tarball found for year %d', year)
+
+        # Create a new time range for the times not covered by tarballs, have to assume tarballs
+        # cover a year, and look for individual srs file for this time range.
+        srs_urls = dict()
+        min_file_year = max_tarball_year if max_tarball_year else start_year
+        min_file_date = (datetime(max_tarball_year, 12, 31, 23, 59, 59) if max_tarball_year else
+                         datetime(start_year, 1, 1, 0, 0, 0))
+        max_file_date = min(timerange.end.datetime, Time.now().datetime)
+        if min_file_date < max_file_date:
+            file_timerange = TimeRange(f'{min_file_year}-01-01', max_file_date)
+            srsfile_scraper = Scraper(self.BASE_URL + '%Y/SRS/%Y%m%dSRS.txt')
+            srsfiles = srsfile_scraper.filelist(file_timerange)
+            for srs_url in srsfiles:
+                date = srsfile_scraper._extractDateURL(srs_url)
+                srs_urls[(date.datetime.year, date.datetime.month, date.datetime.day)] = srs_url
+                log.debug('SRS file found for year %d', date)
+
+        # Now iterate over all days and if the day is in a year we have a tarball for or a day there
+        # is a individual srs file add to the result with corresponding extdict
+        for day in timerange.get_dates():
+            day_ymd = (int(day.strftime('%Y')), int(day.strftime('%m')), int(day.strftime('%d')))
+            extdict = {'year': day_ymd[0], 'month': day_ymd[1], 'day': day_ymd[2]}
+            if self.MIN_YEAR <= day_ymd[0] <= cur_year:
+                if day_ymd[0] in tarball_urls.keys():
+                    result.append((extdict, tarball_urls[day_ymd[0]]))
+                elif day_ymd in srs_urls.keys():
+                    result.append((extdict, srs_urls[day_ymd]))
+
         return result
+
+    def search(self, *args, **kwargs):
+        matchdict = self._get_match_dict(*args, **kwargs)
+        timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+        metalist = []
+        for extdict, url in self._get_url_for_timerange(timerange):
+            extdict['url'] = url
+            rowdict = self.post_search_hook(extdict, matchdict)
+            metalist.append(rowdict)
+        return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
         """
@@ -220,21 +276,14 @@ class SRSClient(GenericClient):
         -------
         Results Object
         """
-
-        urls = [qrblock.url for qrblock in qres]
-
+        urls = [qrblock['url'] for qrblock in qres]
         filenames = []
         local_filenames = []
-
-        for i, [url, qre] in enumerate(zip(urls, qres)):
+        for url, qre in zip(urls, qres):
             name = url.split('/')[-1]
-
-            # temporary fix !!! coz All QRBs have same start_time values
-            day = Time(qre.time.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
-
+            day = qre['Start Time']
             if name not in filenames:
                 filenames.append(name)
-
             if name.endswith('.gz'):
                 local_filenames.append('{}SRS.txt'.format(day.strftime('%Y%m%d')))
             else:
@@ -252,37 +301,28 @@ class SRSClient(GenericClient):
         # OrderedDict is required to maintain ordering because it will be zipped with paths later
         urls = list(OrderedDict.fromkeys(urls))
 
-        dobj = Downloader(max_conn=5)
-
+        downloader = Downloader(max_conn=2)
         for aurl, fname in zip(urls, paths):
-            dobj.enqueue_file(aurl, filename=fname)
+            downloader.enqueue_file(aurl, filename=fname)
 
-        paths = dobj.download()
+        paths = downloader.download()
 
         outfiles = []
         for fname, srs_filename in zip(local_paths, local_filenames):
-
             name = fname.name
-
             past_year = False
-            for i, fname2 in enumerate(paths):
+            for fname2 in paths:
                 fname2 = pathlib.Path(fname2)
-
                 if fname2.name.endswith('.txt'):
                     continue
-
                 year = fname2.name.split('_SRS')[0]
-
                 if year in name:
-                    TarFile = tarfile.open(fname2)
-                    filepath = fname.parent
-                    member = TarFile.getmember('SRS/' + srs_filename)
-                    member.name = name
-                    TarFile.extract(member, path=filepath)
-                    TarFile.close()
-
+                    with tarfile.open(fname2) as open_tar:
+                        filepath = fname.parent
+                        member = open_tar.getmember('SRS/' + srs_filename)
+                        member.name = name
+                        open_tar.extract(member, path=filepath)
                     outfiles.append(fname)
-
                     past_year = True
                     break
 

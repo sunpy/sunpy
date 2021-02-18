@@ -3,18 +3,21 @@ This module provides a web scraper.
 """
 import os
 import re
-import datetime
+import calendar
 import warnings
 from ftplib import FTP
+from datetime import datetime
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
+from dateutil.relativedelta import relativedelta
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
+from sunpy.time import TimeRange
 from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['Scraper']
@@ -70,6 +73,7 @@ class Scraper:
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
+
     def __init__(self, pattern, regex=False, **kwargs):
         if regex:
             self.pattern = pattern
@@ -81,9 +85,9 @@ class Scraper:
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         milliseconds = re.search(r'\%e', self.pattern)
         if not milliseconds:
-            self.now = datetime.datetime.now().strftime(self.pattern)
+            self.now = datetime.now().strftime(self.pattern)
         else:
-            now = datetime.datetime.now()
+            now = datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
             self.now = now.strftime('{start}{milli:03d}{end}'.format(
                 start=self.pattern[0:milliseconds.start()],
@@ -112,17 +116,54 @@ class Scraper:
         # find directory structure - without file names
         directorypattern = os.path.dirname(self.pattern) + '/'
         # TODO what if there's not slashes?
-        rangedelta = timerange.dt
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
             return [directorypattern]
         else:
-            # Number of elements in the time range (including end)
-            n_steps = rangedelta.sec/timestep.sec
-            TotalTimeElements = int(round(n_steps)) + 1
-            directories = [(timerange.start + n * timestep).strftime(directorypattern)
-                           for n in range(TotalTimeElements)]  # TODO if date <= endate
+            directories = []
+            cur = self._date_floor(timerange.start, timestep)
+            end = self._date_floor(timerange.end, timestep) + timestep
+            while cur < end:
+                directories.append(cur.strftime(directorypattern))
+                cur = cur + timestep
+
             return directories
+
+    @staticmethod
+    def _date_floor(date, timestep):
+        """
+        Return the "floor" of the given date and time step.
+
+        Parameters
+        ----------
+        datetime : `datetime.datetime` or `astropy.time.Time`
+            The date to floor
+        timestep : `dateutil.relativedelta.relativedelta`
+            The smallest time step to floor
+        Returns
+        -------
+        `datetime.datetime`
+            The time floored at the given time step
+
+        """
+        date_parts = [int(p) for p in date.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
+        date_parts[-1] = date_parts[-1] % 60
+        date = datetime(*date_parts)
+        orig_time_tup = date.timetuple()
+        time_tup = [orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
+                    orig_time_tup.tm_hour, orig_time_tup.tm_min, orig_time_tup.tm_sec]
+        if timestep == relativedelta(minutes=1):
+            time_tup[-1] = 0
+        elif timestep == relativedelta(hours=1):
+            time_tup[-2:] = [0, 0]
+        elif timestep == relativedelta(days=1):
+            time_tup[-3:] = [0, 0, 0]
+        elif timestep == relativedelta(months=1):
+            time_tup[-4:] = [1, 0, 0, 0]
+        elif timestep == relativedelta(years=1):
+            time_tup[-5:] = [1, 1, 0, 0, 0]
+
+        return datetime(*time_tup)
 
     def _URL_followsPattern(self, url):
         """
@@ -316,18 +357,63 @@ class Scraper:
         """
         try:
             if "%S" in directoryPattern:
-                return TimeDelta(1*u.second)
+                return relativedelta(seconds=1)
             elif "%M" in directoryPattern:
-                return TimeDelta(1*u.minute)
+                return relativedelta(minutes=1)
             elif any(hour in directoryPattern for hour in ["%H", "%I"]):
-                return TimeDelta(1*u.hour)
+                return relativedelta(hours=1)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
-                return TimeDelta(1*u.day)
+                return relativedelta(days=1)
             elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
-                return TimeDelta(31*u.day)
+                return relativedelta(months=1)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
-                return TimeDelta(365*u.day)
+                return relativedelta(years=1)
             else:
                 return None
         except Exception:
             raise
+
+
+def get_timerange_from_exdict(exdict):
+    """
+    Function to get URL's timerange using extracted metadata.
+    It computes start and end times first using the given
+    dictionary and then returns a timerange.
+
+    Parameters
+    ----------
+    exdict : `dict`
+        Metadata extracted from the file's url.
+
+    Returns
+    -------
+    `~sunpy.time.TimeRange`
+        The time range of the file.
+    """
+    datetypes = ['year', 'month', 'day']
+    timetypes = ['hour', 'minute', 'second', 'millisecond']
+    dtlist = [int(exdict.get(d, 1)) for d in datetypes]
+    dtlist.extend([int(exdict.get(t, 0)) for t in timetypes])
+    startTime = Time(datetime(*dtlist))
+
+    tdelta = 1*u.millisecond
+    if "year" in exdict:
+        if calendar.isleap(int(exdict['year'])):
+            tdelta = 366*u.day
+        else:
+            tdelta = 365*u.day
+    if "month" in exdict:
+        days_in_month = calendar.monthrange(int(exdict['year']), int(exdict['month']))[1]
+        tdelta = days_in_month*u.day
+    if "day" in exdict:
+        tdelta = 1*u.day
+    if "hour" in exdict:
+        tdelta = 1*u.hour
+    if "minute" in exdict:
+        tdelta = 1*u.minute
+    if "second" in exdict:
+        tdelta = 1*u.second
+
+    endTime = startTime + TimeDelta(tdelta) - TimeDelta(1*u.millisecond)
+    file_timerange = TimeRange(startTime, endTime)
+    return file_timerange
