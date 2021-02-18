@@ -139,7 +139,9 @@ def get_header(afile):
                 if card.comment != '':
                     keydict.update({card.keyword: card.comment})
             header['KEYCOMMENTS'] = keydict
-            header['WAVEUNIT'] = extract_waveunit(header)
+            waveunit = extract_waveunit(header)
+            if waveunit is not None:
+                header['WAVEUNIT'] = waveunit
 
             headers.append(header)
     finally:

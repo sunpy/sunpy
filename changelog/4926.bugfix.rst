@@ -1,0 +1,4 @@
+Map sources no longer overwrite FITS metadata keywords if they are present in
+the original metadata. The particular map sources that have been fixed are
+`~sunpy.map.SJIMap`, `~sunpy.map.KCorMap`, `~sunpy.map.RHESSIMap`,
+`~sunpy.map.EITMap`, `~sunpy.map.EUVIMap`, `~sunpy.map.SXTMap`.

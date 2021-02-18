@@ -37,7 +37,7 @@ class EUVIMap(GenericMap):
         self.plot_settings['cmap'] = 'euvi{wl:d}'.format(wl=int(self.wavelength.value))
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
-        self.meta['waveunit'] = 'Angstrom'
+        self.meta['waveunit'] = self.meta.get('waveunit', 'Angstrom')
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
