@@ -1,1 +1,0 @@
-Renamed the gallery example folder with reprojection examples.

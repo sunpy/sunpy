@@ -1,2 +1,0 @@
-All calculations of the angular radius of the Sun now use the same underlying code with the accurate calculation.
-The previous inaccuracy was a relative error of ~0.001% (0.01 arcseconds) for an observer at 1 AU, but could be as large as ~0.5% for Parker Solar Probe perihelia.

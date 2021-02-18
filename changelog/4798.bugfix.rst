@@ -1,6 +1,0 @@
-The search results object returned from ``Fido.search``
-(`~sunpy.net.fido_factory.UnifiedResponse`) now correcly counts all results in
-it's `~sunpy.net.fido_factory.UnifiedResponse.file_num` property. Note that
-because some ``Fido`` clients now return metadata only results, this is really
-the number of records and does not always correspond to the number of files
-that would be downloaded.

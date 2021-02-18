@@ -1,4 +1,0 @@
-The ``lytaf_path`` argument (which previously did nothing) has been removed from
-- `sunpy.instr.lyra.remove_lytaf_events_from_timeseries`
-- `sunpy.instr.lyra.get_lytaf_events`
-- `sunpy.instr.lyra.get_lytaf_event_types`

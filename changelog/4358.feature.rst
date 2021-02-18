@@ -1,1 +1,0 @@
-`~sunpy.net.helio.hec.HECClient` and  `~sunpy.net.hek.hek.HEKClient` now inherit `~sunpy.net.BaseClient` which makes them compatible with the `~sunpy.net.fido_factory.UnifiedDownloaderFactory` (``Fido``).
