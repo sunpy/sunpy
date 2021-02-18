@@ -195,7 +195,7 @@ for i, line in enumerate(lines):
         outl += '  *'
     shortlog.append(outl)
 
-shortlog = list(map(lambda x: '    ' + x, shortlog))
+shortlog = list(map(lambda x: '-  ' + x, shortlog))
 
 # Get PR info
 
@@ -220,4 +220,4 @@ print("The people who have contributed to the code for this release are:")
 print()
 print(output)
 print()
-print(f"Where a * indicates their first contribution to {pretty_project_name}.")
+print(f"Where a * indicates that this release contains their first contribution to {pretty_project_name}.")
