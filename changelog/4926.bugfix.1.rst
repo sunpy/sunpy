@@ -1,0 +1,1 @@
+No longer is the WAVEUNIT keyword injected into a data source if it is missing from the file's metadata.

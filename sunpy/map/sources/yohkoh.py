@@ -56,7 +56,7 @@ class SXTMap(GenericMap):
         # use simple trigonometry to calculate the distance of the center of
         # the Sun from the spacecraft.  Note that the small angle approximation
         # is used, and the solar radius stored in SXT FITS files is in arcseconds.
-        self.meta['dsun_apparent'] = constants.au
+        self.meta['dsun_apparent'] = self.meta.get('dsun_apparent', constants.au)
         if 'solar_r' in self.meta:
             self.meta['dsun_apparent'] = constants.radius/(np.deg2rad(self.meta['solar_r']/3600.0))
 

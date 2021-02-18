@@ -52,8 +52,9 @@ class RHESSIMap(GenericMap):
             self.meta['cunit2'] = 'arcsec'
             self.meta['ctype2'] = 'HPLT-TAN'
 
-        self.meta['waveunit'] = 'keV'
-        self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
+        self.meta['waveunit'] = self.meta.get('waveunit', 'keV')
+        self.meta['wavelnth'] = self.meta.get('wavelnth',
+                                              [self.meta['energy_l'], self.meta['energy_h']])
         self.plot_settings['cmap'] = 'rhessi'
 
         if ('TIMESYS' in self.meta and
