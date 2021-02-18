@@ -12,6 +12,8 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
+from sunpy.coordinates.metaframes import RotatedSunFrame
+from sunpy.coordinates.transformations import transform_with_sun_center
 from sunpy.map.maputils import map_edges
 from sunpy.physics.differential_rotation import (
     _get_bounding_coordinates,
@@ -168,16 +170,36 @@ def test_solar_rotate_coordinate():
         assert isinstance(d, SkyCoord)
 
         # Test the coordinate
-        np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -371.8885208634674, decimal=1)
-        np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 105.35006656251727, decimal=1)
-        np.testing.assert_allclose(d.distance.to(u.km).value, 1.499642e+08, rtol=1e-5)
+        np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -386.4519332773052, decimal=1)
+        np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 106.1647811048218, decimal=1)
+        np.testing.assert_allclose(d.distance.to(u.km).value, 1.499689e+08, rtol=1e-5)
 
         # Test that the SkyCoordinate is Helioprojective
         assert isinstance(d.frame, frames.Helioprojective)
 
 
-def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+def test_consistency_with_rotatedsunframe():
+    old_observer = frames.HeliographicStonyhurst(10*u.deg, 20*u.deg, 1*u.AU, obstime='2001-01-01')
+    new_observer = frames.HeliographicStonyhurst(30*u.deg, 40*u.deg, 2*u.AU, obstime='2001-01-08')
 
+    hpc_coord = SkyCoord(100*u.arcsec, 200*u.arcsec, frame='helioprojective',
+                         observer=old_observer, obstime=old_observer.obstime)
+
+    # Perform the differential rotation using solar_rotate_coordinate()
+    result1 = solar_rotate_coordinate(hpc_coord, observer=new_observer)
+
+    # Perform the differential rotation using RotatedSunFrame, with translational motion of the Sun
+    # ignored using transform_with_sun_center()
+    rsf_coord = RotatedSunFrame(base=hpc_coord, rotated_time=new_observer.obstime)
+    with transform_with_sun_center():
+        result2 = rsf_coord.transform_to(result1.replicate_without_data())
+
+    assert_quantity_allclose(result1.Tx, result2.Tx)
+    assert_quantity_allclose(result1.Ty, result2.Ty)
+    assert_quantity_allclose(result1.distance, result2.distance)
+
+
+def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
     with pytest.raises(ValueError):
