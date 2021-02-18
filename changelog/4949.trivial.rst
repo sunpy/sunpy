@@ -1,4 +1,0 @@
-``Fido.fetch`` now always specifies a ``path=`` argument of type `pathlib.Path`
-to the ``fetch`` method of the client. This path will default to the configured
-sunpy download dir, will have the user directory expanded, will have the
-``{file}`` placeholder and will be tested to ensure that it is writeable.
