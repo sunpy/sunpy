@@ -15,7 +15,6 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-2.1-metadata`
 * :ref:`whatsnew-2.1-refactor`
 * :ref:`whatsnew-2.1-contours`
-* :ref:`whatsnew-2.1-unitdata`
 * :ref:`whatsnew-2.1-synoptic`
 * :ref:`whatsnew-2.1-cutouts`
 * :ref:`whatsnew-2.1-velocities`
@@ -35,6 +34,14 @@ By the numbers:
 * X new contributors
 
 Please find a selection of what we consider to be the biggest changes or features with this release.
+
+.. _whatsnew-2.1-goes1617:
+
+Support for GOES-16 and GOES-17 X-Ray Sensor (XRS) data
+=======================================================
+We have now included support for the GOES-16 and GOES-17 XRS 1-second data. This data can now be queried and downloaded with `sunpy.net.Fido` and the files read in and analysed as a `sunpy.timeseries.TimeSeries`.
+
+.. minigallery:: sunpy.net.attrs.goes.SatelliteNumber
 
 .. _whatsnew-2.1-metadata:
 
@@ -90,12 +97,14 @@ To find the keys for all of the columns you can do::
 
 In addition, if you pass the entire search query into ``Fido.fetch()`` and it will ignore results that have no corresponding data files to retrieve.
 
+.. minigallery:: sunpy.net.attrs.hek.FL sunpy.net.attrs.hek.EventType
+
 .. _whatsnew-2.1-refactor:
 
 Fido Results Refactor
 =====================
 
-While working on the above change, several changes were made to the way that results are returned from ``Fido.search()`` and the search methods of the underlying clients.
+While working on the above change, several changes were made to the way that results are returned from :meth:`sunpy.net.Fido.search` and the search methods of the underlying clients.
 
 We have tried to minimize any breaking changes here and we believe that for most users the difference between 2.0 and 2.1 will be minor.
 
@@ -113,18 +122,6 @@ The key highlights you will want to be aware of are:
 
 * Results from the `~sunpy.net.dataretriever.NOAAIndicesClient` and the `~sunpy.net.dataretriever.NOAAPredictClient` no longer have ``Start Time`` or ``End Time`` in their results table as the results returned from the client are not dependent upon the time parameter of a search.
 
-.. _whatsnew-2.1-contours:
-
-Finding map contours
-====================
-The new :meth:`sunpy.map.GenericMap.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
-
-.. _whatsnew-2.1-unitdata:
-
-Map data and units
-==================
-`~sunpy.map.Map` instances now have the ``.unit`` set to the correct `~astropy.units.Unit` if the 'BUNIT' keyword is set in the FITS metadata.
-
 .. _whatsnew-2.1-synoptic:
 
 New synoptic map sources and clients
@@ -138,6 +135,8 @@ It is now possible to search for GONG synoptic maps within `sunpy.net.Fido`, usi
 Requesting cutouts from the JSOC
 ================================
 `~sunpy.net.Fido` can now be used to request cutouts from JSOC via the new ``a.jsoc.Cutout`` attr. This includes the ability to adjust the requested field of view to "track" a feature as it moves across the solar disk, perform sub-pixel image registration, and mask off-disk pixels.
+
+.. minigallery:: sunpy.net.attrs.jsoc.Cutout
 
 .. _whatsnew-2.1-velocities:
 
@@ -185,21 +184,21 @@ See the following example for how this context manager enables alternative repro
 
 .. minigallery:: sunpy.coordinates.Helioprojective.assume_spherical_screen
 
+.. _whatsnew-2.1-contours:
+
+Finding map contours
+====================
+The new :meth:`sunpy.map.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
+
+.. minigallery:: sunpy.map.GenericMap.contour
+
 .. _whatsnew-2.1-performance:
 
 Performance improvements
 ========================
-Several functions in `sunpy.map.maputils` have been significantly sped up with improved algorithms.
+Several functions in `sunpy.map` have been significantly sped up with improved algorithms.
 
-In addition, `sunpy.map.GenericMap.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications that make multiple requests for the map WCS (e.g., plotting), and reducing the number of repeated warnings thrown when metadata is missing.
-
-.. _whatsnew-2.1-goes1617:
-
-Support for GOES-16 and GOES-17 X-Ray Sensor (XRS) data
-=======================================================
-We have now included support for the GOES-16 and GOES-17 XRS 1-second data. This data can now be queried and downloaded with `sunpy.net.Fido` and the files read in and analysed as a `sunpy.timeseries.TimeSeries`.
-
-See the following example for how this can be achieved: :ref:`sphx_glr_generated_gallery_acquiring_data_goes_xrs_example.py`
+In addition, `sunpy.map.GenericMap.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications which make mutiple requests for the map WCS (e.g. plotting), and reducing the number of repeated warnings thrown when metadata is missing.
 
 .. _whatsnew-2.1-python:
 
