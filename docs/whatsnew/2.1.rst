@@ -12,15 +12,15 @@ The SunPy project is pleased to announce the 2.1 release of the sunpy package.
 
 On this page, you can read about some of the big changes in this release:
 
+* :ref:`whatsnew-2.1-goes1617`
 * :ref:`whatsnew-2.1-metadata`
 * :ref:`whatsnew-2.1-refactor`
-* :ref:`whatsnew-2.1-contours`
 * :ref:`whatsnew-2.1-synoptic`
 * :ref:`whatsnew-2.1-cutouts`
 * :ref:`whatsnew-2.1-velocities`
 * :ref:`whatsnew-2.1-reprojecting`
+* :ref:`whatsnew-2.1-contours`
 * :ref:`whatsnew-2.1-performance`
-* :ref:`whatsnew-2.1-goes1617`
 * :ref:`whatsnew-2.1-python`
 
 SunPy 2.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
