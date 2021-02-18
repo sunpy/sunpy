@@ -174,8 +174,9 @@ def test_srs_tar_unpack_midyear():
     qr = Fido.search(a.Instrument("soon") & a.Time("2011/06/07", "2011/06/08T23:59:29"))
     res = Fido.fetch(qr)
     assert len(res) == 2
-    assert res.data[0].endswith("20110607SRS.txt")
-    assert res.data[-1].endswith("20110608SRS.txt")
+    files = sorted(res.data)
+    assert files[0].endswith("20110607SRS.txt")
+    assert files[-1].endswith("20110608SRS.txt")
 
 
 @no_vso
@@ -183,7 +184,7 @@ def test_srs_tar_unpack_midyear():
 @mock.patch('ftplib.FTP.nlst', side_effect=[[''], ['20200101SRS.txt', '20200102SRS.txt']])
 def test_srs_missing_tarball(mock_ftp_nlst):
     qr = Fido.search(a.Time('2020-01-01', '2020-01-02'), a.Instrument.srs_table)
-    urls = [qrblock['url'] for qrblock in qr[0]]
+    urls = [qr.get_response(0).blocks[i].url[1] for i in range(2)]
     assert urls[0].endswith('20200101SRS.txt')
     assert urls[1].endswith('20200102SRS.txt')
 
@@ -204,6 +205,7 @@ def test_srs_save_path(tmpdir):
     qr = Fido.search(a.Instrument.srs_table, a.Time("2016/10/01", "2016/10/02"))
     files = Fido.fetch(qr, path=str(tmpdir))
     assert len(files) == 2
+    files = sorted(files)
     assert files[0].endswith("20161001SRS.txt")
     assert files[1].endswith("20161002SRS.txt")
 
@@ -219,11 +221,11 @@ def test_srs_out_of_range(SRSClient):
 
 @pytest.mark.remote_data
 @pytest.mark.filterwarnings('ignore:ERFA function')
-def test_srs_start_or_end_out_of_range(srs_client):
-    res = srs_client.search(a.Time('1995/12/30', '1996/01/02'))
+def test_srs_start_or_end_out_of_range(SRSClient):
+    res = SRSClient.search(a.Time('1995/12/30', '1996/01/02'))
     assert len(res) == 1
     cur_year = datetime.date.today().year
-    res = srs_client.search(a.Time(f'{cur_year}/01/01', f'{cur_year+2}/01/01'))
+    res = SRSClient.search(a.Time(f'{cur_year}/01/01', f'{cur_year+2}/01/01'))
     assert len(res) > 0
 
 

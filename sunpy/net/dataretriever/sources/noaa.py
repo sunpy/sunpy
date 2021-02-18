@@ -9,7 +9,7 @@ from collections import OrderedDict
 from astropy.time import Time
 
 from sunpy import log
-from sunpy.net.dataretriever import GenericClient, QueryResponse
+from sunpy.net.dataretriever import GenericClient
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 from sunpy.util.scraper import Scraper
@@ -181,18 +181,17 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-           Start Time               End Time        Instrument ... Source Provider
-    ----------------------- ----------------------- ---------- ... ------ --------
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       SOON ...   SWPC     NOAA
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       SOON ...   SWPC     NOAA
+         Start Time           End Time        Source  Instrument Wavelength
+    ------------------- ------------------- --------- ---------- ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
+    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
     <BLANKLINE>
     <BLANKLINE>
-
     """
     BASE_URL = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
     MIN_YEAR = 1996
 
-    def _get_url_for_timerange(self, timerange):
+    def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns a list of urls corresponding to a given time-range.
         """
@@ -253,16 +252,6 @@ class SRSClient(GenericClient):
 
         return result
 
-    def search(self, *args, **kwargs):
-        matchdict = self._get_match_dict(*args, **kwargs)
-        timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-        metalist = []
-        for extdict, url in self._get_url_for_timerange(timerange):
-            extdict['url'] = url
-            rowdict = self.post_search_hook(extdict, matchdict)
-            metalist.append(rowdict)
-        return QueryResponse(metalist, client=self)
-
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
         """
         Download a set of results.
@@ -276,18 +265,20 @@ class SRSClient(GenericClient):
         -------
         Results Object
         """
-        urls = [qrblock['url'] for qrblock in qres]
+        urls = [qrblock.url[1] for qrblock in qres]
         filenames = []
-        local_filenames = []
+        local_filenames = set()
         for url, qre in zip(urls, qres):
             name = url.split('/')[-1]
-            day = qre['Start Time']
+            start_date = qre.time.start
+            end_date = qre.time.end
             if name not in filenames:
                 filenames.append(name)
             if name.endswith('.gz'):
-                local_filenames.append('{}SRS.txt'.format(day.strftime('%Y%m%d')))
+                local_filenames.add('{}SRS.txt'.format(start_date.strftime('%Y%m%d')))
+                local_filenames.add('{}SRS.txt'.format(end_date.strftime('%Y%m%d')))
             else:
-                local_filenames.append(name)
+                local_filenames.add(name)
 
         if path is not None:
             path = pathlib.Path(path)
