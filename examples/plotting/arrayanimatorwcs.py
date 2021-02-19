@@ -4,7 +4,7 @@ Creating a visualization with ArrayAnimatorWCS
 ==============================================
 
 This example shows how to create a simple visualization using
-`~sunpy.visualization.animator.ArrayAnimatorWCS`.
+`~sunpy.visualisation.animator.ArrayAnimatorWCS`.
 """
 # Start by importing the necessary modules.
 
