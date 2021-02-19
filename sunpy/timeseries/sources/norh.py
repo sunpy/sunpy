@@ -120,7 +120,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         # the FITS header
         obs_start_time = parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
         length = len(data)
-        cadence = np.float(header['CDELT1'])
+        cadence = float(header['CDELT1'])
         sec_array = np.linspace(0, length - 1, int(length / cadence))
 
         norh_time = obs_start_time + TimeDelta(sec_array*u.second)

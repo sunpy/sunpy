@@ -1,2 +1,0 @@
-Added a warning when a 2D `~sunpy.coordinates.frames.Helioprojective` coordinate is upgraded to a 3D coordinate and the number type is lower precision than the native Python float.
-This 2D->3D upgrade is performed internally when transforming a 2D `~sunpy.coordinates.frames.Helioprojective` coordinate to any other coordinate frame.

@@ -1,2 +1,0 @@
-Allow `sunpy.visualization.animators.ArrayAnimatorWCS` to disable ticks for
-a coordinate, by setting ``ticks: False`` in the ``coord_params`` dictionary.

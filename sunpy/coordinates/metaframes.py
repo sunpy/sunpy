@@ -79,7 +79,7 @@ def _make_rotatedsun_cls(framecls):
     def reference_to_rotatedsun(reference_coord, rotatedsun_frame):
         # Transform to HCI
         hci_frame = HeliocentricInertial(obstime=rotatedsun_frame.base.obstime)
-        hci_coord = reference_coord.transform_to(hci_frame)
+        hci_coord = reference_coord.transform_to(hci_frame)  # obstime change handled here
         oldrepr = hci_coord.spherical
 
         # Rotate the coordinate in HCI
@@ -100,7 +100,8 @@ def _make_rotatedsun_cls(framecls):
     def rotatedsun_to_reference(rotatedsun_coord, reference_frame):
         # Transform to HCI
         from_coord = rotatedsun_coord.base.realize_frame(rotatedsun_coord.data)
-        hci_coord = from_coord.transform_to(HeliocentricInertial(obstime=reference_frame.obstime))
+        hci_frame = HeliocentricInertial(obstime=rotatedsun_coord.base.obstime)
+        hci_coord = from_coord.transform_to(hci_frame)
         oldrepr = hci_coord.spherical
 
         # Rotate the coordinate in HCI
@@ -113,8 +114,8 @@ def _make_rotatedsun_cls(framecls):
         newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
 
         # Transform back from HCI
-        hci_coord = HeliocentricInertial(newrepr, obstime=reference_frame.obstime)
-        return hci_coord.transform_to(reference_frame)
+        hci_coord = hci_frame.realize_frame(newrepr)
+        return hci_coord.transform_to(reference_frame)  # obstime change handled here
 
     _rotatedsun_cache[framecls] = _RotatedSunFramecls
     return _RotatedSunFramecls
@@ -148,6 +149,8 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
         between this time and the observation time in ``base``.
     rotation_model : `str`
         Accepted model names are ``'howard'`` (default), ``'snodgrass'``, and ``'allen'``.
+        See the documentation for :func:`~sunpy.physics.differential_rotation.diff_rot` for differences
+        between these models.
 
     Notes
     -----

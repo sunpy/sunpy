@@ -14,13 +14,8 @@ quick example think about how the system should handle Instrument('aia') &
 Instrument('eit').
 """
 
-
 import sys
 import warnings
-from functools import singledispatch as _singledispatch
-
-import astropy.units as u
-from astropy.time import Time as AstropyTime
 
 from sunpy.util.exceptions import SunpyDeprecationWarning
 from .. import _attrs
@@ -209,6 +204,7 @@ _walker.add_converter(Extent)(
     )
 )
 
+
 _walker.add_converter(_attrs.Time)(
     lambda x: _attr.ValueAttr({
         ('time', 'start'): x.start.strftime(_TIMEFORMAT),
@@ -218,9 +214,11 @@ _walker.add_converter(_attrs.Time)(
     })
 )
 
+
 _walker.add_converter(_attr.SimpleAttr)(
     lambda x: _attr.ValueAttr({(x.__class__.__name__.lower(), ): x.value})
 )
+
 
 _walker.add_converter(_attrs.Wavelength)(
     lambda x: _attr.ValueAttr({
@@ -229,102 +227,6 @@ _walker.add_converter(_attrs.Wavelength)(
         ('wave', 'waveunit'): x.unit.name,
     })
 )
-
-# The idea of using a multi-method here - that means a method which dispatches
-# by type but is not attached to said class - is that the attribute classes are
-# designed to be used not only in the context of VSO but also elsewhere (which
-# AttrAnd and AttrOr obviously are - in the HEK module). If we defined the
-# filter method as a member of the attribute classes, we could only filter
-# one type of data (that is, VSO data).
-
-
-@_singledispatch
-def _filter_results(*args, **kwargs):
-    raise TypeError(f"a[0] is not a type that can filter QueryResponse objects.")
-
-
-# If we filter with ANDed together attributes, the only items are the ones
-# that match all of them - this is implementing  by ANDing the pool of items
-# with the matched items - only the ones that match everything are there
-# after this.
-@_filter_results.register(_attr.AttrAnd)
-def _(attr, results):
-    res = set(results)
-    for elem in attr.attrs:
-        res &= _filter_results(elem, res)
-    return res
-
-
-# If we filter with ORed attributes, the only attributes that should be
-# removed are the ones that match none of them. That's why we build up the
-# resulting set by ORing all the matching items.
-@_filter_results.register(_attr.AttrOr)
-def _(attr, results):
-    res = set()
-    for elem in attr.attrs:
-        res |= _filter_results(elem, results)
-    return res
-
-
-# Filter out items by comparing attributes.
-@_filter_results.register(_attr.SimpleAttr)
-def _(attr, results):
-    attrname = attr.__class__.__name__.lower()
-    return {
-        item for item in results
-        # Some servers seem to omit some fields. No way to filter there.
-        if not hasattr(item, attrname) or
-        getattr(item, attrname).lower() == attr.value.lower()
-    }
-
-
-# The dummy attribute does not filter at all.
-@_filter_results.register(_attr.DummyAttr, Field)
-def _(attr, results):
-    return set(results)
-
-
-@_filter_results.register(_attrs.Wavelength)
-def _(attr, results):
-    return {
-        it for it in results
-        if
-        it.wave.wavemax is not None
-        and
-        attr.min <= u.Quantity(it.wave.wavemax, unit=it.wave.waveunit).to(
-            u.angstrom, equivalencies=u.spectral())
-        and
-        it.wave.wavemin is not None
-        and
-        attr.max >= u.Quantity(it.wave.wavemin, unit=it.wave.waveunit).to(
-            u.angstrom, equivalencies=u.spectral())
-    }
-
-
-@_filter_results.register(_attrs.Time)
-def _(attr, results):
-    return {
-        it for it in results
-        if
-        it.time.end is not None
-        and
-        attr.min <= AstropyTime.strptime(it.time.end, _TIMEFORMAT)
-        and
-        it.time.start is not None
-        and
-        attr.max >= AstropyTime.strptime(it.time.start, _TIMEFORMAT)
-    }
-
-
-@_filter_results.register(Extent)
-def _(attr, results):
-    return {
-        it for it in results
-        if
-        it.extent.type is not None
-        and
-        it.extent.type.lower() == attr.type.lower()
-    }
 
 
 # Deprecate old classes

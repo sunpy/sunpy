@@ -1,1 +1,0 @@
-Previously slicing a `~sunpy.net.fido_factory.UnifiedResponse` down to length one returned another `~sunpy.net.fido_factory.UnifiedResponse`, now it will return a `~sunpy.net.base_client.BaseQueryResponse` object.

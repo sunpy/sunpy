@@ -1,2 +1,0 @@
-Improved the file processing logic for EVE L0CS files, which may have fixed a
-bug where the first line of data was parsed incorrectly.

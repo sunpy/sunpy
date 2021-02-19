@@ -2,19 +2,17 @@ import datetime
 from unittest.mock import Mock, patch
 
 import pytest
-
-import astropy.units as u
-from astropy.time import TimeDelta
+from dateutil.relativedelta import relativedelta
 
 from sunpy.data.test import rootdir
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.scraper import Scraper, get_timerange_from_exdict
 
 PATTERN_EXAMPLES = [
-    ('%b%y', TimeDelta(31*u.day)),
-    ('%m%y', TimeDelta(31*u.day)),
-    ('%H%d', TimeDelta(1*u.hour)),
-    ('%y%b', TimeDelta(31*u.day)),
+    ('%b%y', relativedelta(months=1)),
+    ('%m%y', relativedelta(months=1)),
+    ('%H%d', relativedelta(hours=1)),
+    ('%y%b', relativedelta(months=1)),
 ]
 
 
@@ -154,7 +152,7 @@ def testURL_patternMillisecondsZeroPadded():
     # Asserts solution to ticket #1954.
     # Milliseconds must be zero-padded in order to match URL lengths.
     now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
-    with patch('datetime.datetime', now=now_mock):
+    with patch('sunpy.util.scraper.datetime', now=now_mock):
         s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
     now_mock.assert_called_once()
     assert s.now == 'fd_20190419_000000_004.fts'

@@ -1,1 +1,0 @@
-`sunpy.sun` functions now make use of the `~astropy.coordinates.GeocentricTrueEcliptic` frame to simplify internal calculations, but the returned values are unchanged.

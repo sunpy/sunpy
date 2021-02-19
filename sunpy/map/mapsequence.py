@@ -393,7 +393,7 @@ class MapSequence:
 
         Parameters
         ----------
-        fig: matplotlib.Figure
+        fig: matplotlib.figure.Figure
             Figure to use to create the explorer
 
         resample: list

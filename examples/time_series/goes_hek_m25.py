@@ -25,7 +25,7 @@ files = Fido.fetch(results)
 goes = TimeSeries(files)
 
 ###############################################################################
-# Next let's retrieve `~sunpy.net.hek.HEKResponse` from the Fido result
+# Next let's retrieve `~sunpy.net.hek.HEKTable` from the Fido result
 # and then load the first row from HEK results into ``flares_hek``.
 hek_results = results['hek']
 flares_hek = hek_results[0]

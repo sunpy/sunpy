@@ -1,2 +1,0 @@
-Added a list of possible signatures to
-`sunpy.timeseries.metadata.TimeSeriesMetaData`.

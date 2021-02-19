@@ -1,2 +1,0 @@
-:func:`sunpy.time.parse_time` now correctly parses lists of time strings that
-have one of the built in sunpy time formats.

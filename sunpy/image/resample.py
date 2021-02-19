@@ -100,9 +100,9 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
         otherwise ``orig`` is resampled by ``(i-1)/(x-1) * (j-1)/(y-1)``.
         This prevents extrapolation one element beyond bounds of input array.
     """
-    old_coords = [np.arange(i, dtype=np.float) + offset for i in orig.shape]
+    old_coords = [np.arange(i, dtype=float) + offset for i in orig.shape]
     scale = (orig.shape - m1) / (dimensions - m1)
-    new_coords = [(np.arange(dimensions[i], dtype=np.float) + offset) * scale[i] for i in
+    new_coords = [(np.arange(dimensions[i], dtype=float) + offset) * scale[i] for i in
                   range(len(dimensions))]
 
     # first interpolation - for ndims = any

@@ -1,1 +1,0 @@
-All coordinate frames will now show the velocity if it exists in the underlying data.

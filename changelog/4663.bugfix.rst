@@ -1,2 +1,0 @@
-Fixed a significant performance bug that affected all coordinate transformations.
-Transformations have been sped up by a factor a few.

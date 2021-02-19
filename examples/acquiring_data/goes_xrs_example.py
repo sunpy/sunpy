@@ -14,7 +14,7 @@ In this example we are going to look at how you can query and
 retrieve the GOES XRS data using `~sunpy.net.Fido` and load it
 into a `~sunpy.timeseries.TimeSeries`.
 
-Some things are to note. NOAA have recently re-processed the GOES 13,
+Some things to note: NOAA have recently re-processed the GOES 13,
 14 and 15 XRS science quality data, such that the SWPC scaling factor
 has been removed. This means that the fluxes will have a different values,
 and so will flare peak fluxes from previous 13, 14 and 15 XRS data. See

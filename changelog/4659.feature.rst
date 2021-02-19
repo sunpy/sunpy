@@ -1,2 +1,0 @@
-The `~sunpy.coordinates.frames.HeliographicCarrington` frame now accepts the specification of ``observer='self'`` to indicate that the coordinate itself is also the observer for the coordinate frame.
-This functionality greatly simplifies working with locations of observatories that are provided in Carrington coordinates.

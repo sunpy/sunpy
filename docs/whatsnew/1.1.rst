@@ -141,7 +141,7 @@ SunPy 1.1 provides a data manager for versioning and caching remote files.
 The objective of this is to provide a way for data required for functions, such as instrument correction routines, to depend on non-local data in a reliable way.
 The data manager also guarantees that a specific version of the code uses a specific data file, with the ability for users to specify updated files.
 
-This works by providing the URL of a remote file and a SHA256 hash to the `sunpy.data.manager.require <sunpy.data.data_manager.Manager.require>` decorator which can be added to functions that require these specific data files from remote sources.
+This works by providing the URL of a remote file and a SHA256 hash to the `sunpy.data.manager.require <sunpy.data.data_manager.DataManager.require>` decorator which can be added to functions that require these specific data files from remote sources.
 If the specified hash does not match that of the remote version, an exception is raised to make the user aware of any changes on the remote server or corruption of local files.
 Additionally, `sunpy.data.cache <sunpy.data.data_manager.Cache>` can be used to avoid re-downloading files that already exist on a user's local machine, thus saving disk space and internet bandwidth.
 
@@ -153,7 +153,7 @@ Support for SUVI Data
 =====================
 
 The Solar Ultraviolet Imager (SUVI) is a EUV instrument imaging the full disk of the Sun in six passbands, and is onboard the latest of the Geostationary Operational Environmental Satellite (GOES) missions.
-`~sunpy.map.SUVIMap` provides SunPy map support for loading SUVI FITS image data, and the `~sunpy.net.sources.goes.SUVIClient` adds support to search for SUVI data hosted by NOAA via `Fido <sunpy.net.fido_factory.UnifiedDownloader>`. It supports searching for wavelength, level of data (level 2 data which consists of stacked level 1b images and original level 1b files), as well as GOES satellite number (>= GOES 16).
+`~sunpy.map.sources.SUVIMap` provides SunPy map support for loading SUVI FITS image data, and the `~sunpy.net.dataretriever.SUVIClient` adds support to search for SUVI data hosted by NOAA via `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`. It supports searching for wavelength, level of data (level 2 data which consists of stacked level 1b images and original level 1b files), as well as GOES satellite number (>= GOES 16).
 
 .. _whatsnew-1.1-WISPR:
 
@@ -183,22 +183,22 @@ We will continue to look for ways to improve import times.
 Notable Breaking Changes or Removed functionality
 =================================================
 
-- Importing `sunpy.timeseries.timeseriesbase` no longer automatically imports
+- Importing `sunpy.timeseries` no longer automatically imports
   Matplotlib. (`#3376 <https://github.com/sunpy/sunpy/pull/3376>`__)
-- `NOAAIndicesTimeSeries.peek` now checks that the `type` argument is a
+- `sunpy.timeseries.sources.NOAAIndicesTimeSeries.peek` now checks that the `type` argument is a
   valid string, and raises a `ValueError` if it isn't. (`#3378 <https://github.com/sunpy/sunpy/pull/3378>`__)
 - Observer-based coordinate frames (`~sunpy.coordinates.frames.Heliocentric` and `~sunpy.coordinates.frames.Helioprojective`) no longer assume a default observer (Earth) if no observer is specified.  These frames can now be used with no observer specified, but most transformations cannot be performed for such frames.  This removal of a default observer only affects `sunpy.coordinates`, and has no impact on the default observer in `sunpy.map`. (`#3388 <https://github.com/sunpy/sunpy/pull/3388>`__)
 - The colormap stored in SunPy's Map subclasses (ie. ``map.plot_settings['cmap']``)
-  can now be colormap string instead of the full `matplotlib.colormap.Colormap`
-  object. To get the full `Colormap` object use the new attribute
+  can now be colormap string instead of the full `matplotlib.colors.Colormap`
+  object. To get the full `~matplotlib.colors.Colormap` object use the new attribute
   ``map.cmap``. (`#3412 <https://github.com/sunpy/sunpy/pull/3412>`__)
 - Fix a warning in `sunpy.map.GenericMap.rotate` where the truth value of an array
   was being calculated. This changes the behavior of
   `~sunpy.map.GenericMap.rotate` when the ``angle=`` parameter is not an
   `~astropy.units.Quantity` object to raise `TypeError` rather than `ValueError`. (`#3456 <https://github.com/sunpy/sunpy/pull/3456>`__)
 - Removed the step of repairing images (replacing non-finite entries with local mean) before coaligning them. The user is expected to do this themselves before coaligning images. If NaNs/non-finite entries are present, a warning is thrown.
-  The function `sunpy.image.coalignment.repair_image_nonfinite` is deprecated. (`#3287 <https://github.com/sunpy/sunpy/pull/3287>`__)
-- The method to convert a `~sunpy.coordinates.frames.Helioprojective` frame from 2D to 3D has been renamed from `~sunpy.coordinates.frames.Helioprojective.calculate_distance` to `~sunpy.coordinates.frames.Helioprojective.make_3d`.  This method is not typically directly called by users. (`#3389 <https://github.com/sunpy/sunpy/pull/3389>`__)
+  The function ``sunpy.image.coalignment.repair_image_nonfinite`` is deprecated. (`#3287 <https://github.com/sunpy/sunpy/pull/3287>`__)
+- The method to convert a `~sunpy.coordinates.frames.Helioprojective` frame from 2D to 3D has been renamed from ``sunpy.coordinates.frames.Helioprojective.calculate_distance`` to `~sunpy.coordinates.frames.Helioprojective.make_3d`.  This method is not typically directly called by users. (`#3389 <https://github.com/sunpy/sunpy/pull/3389>`__)
 - `sunpy.visualization.animator.ImageAnimatorWCS` is now deprecated in favour of
   `~sunpy.visualization.animator.ArrayAnimatorWCS`. (`#3407 <https://github.com/sunpy/sunpy/pull/3407>`__)
 - ``sunpy.cm`` has been moved to `sunpy.visualization.colormaps` and will be

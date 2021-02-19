@@ -8,17 +8,17 @@ import inspect
 from itertools import chain
 
 import astropy.table
-from astropy.table import Column, Row
+from astropy.table import Row
 from astropy.time import Time
 
 import sunpy.net._attrs as core_attrs
 from sunpy.net import attr
-from sunpy.net.base_client import BaseClient, BaseQueryResponseTable
+from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.hek import attrs
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
-__all__ = ['HEKClient', 'HEKResponse', 'HEKRow']
+__all__ = ['HEKClient', 'HEKTable', 'HEKRow']
 
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
 
@@ -113,9 +113,9 @@ class HEKClient(BaseClient):
             ndata.append(new)
 
         if len(ndata) == 1:
-            return HEKResponse(self._download(ndata[0]), client=self)
+            return HEKTable(self._download(ndata[0]), client=self)
         else:
-            return HEKResponse(self._merge(self._download(data) for data in ndata), client=self)
+            return HEKTable(self._merge(self._download(data) for data in ndata), client=self)
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """
@@ -139,33 +139,10 @@ class HEKClient(BaseClient):
         return cls.check_attr_types_in_query(qr, required, optional)
 
 
-class HEKResponse(BaseQueryResponseTable):
-    """
-    A container for data returned from HEK searches.
-    """
-
-    def __iter__(self):
-        return (t for t in self.table)
-
-    def __getitem__(self, item):
-        table_item = self.table.__getitem__(item)
-
-        if table_item.__class__ == Column:
-            table_item.__class__ = HEKColumn
-        elif table_item.__class__ == Row:
-            table_item.__class__ = HEKRow
-
-        return table_item
-
-
-class HEKColumn(Column):
-    pass
-
-
 class HEKRow(Row):
     """
     Handles the response from the HEK.  Each HEKRow object is a subclass
-    of `astropy.Table.row`.  The column-row key-value pairs correspond to the
+    of `astropy.table.Table.row`.  The column-row key-value pairs correspond to the
     HEK feature/event properties and their values, for that record from the
     HEK.  Each HEKRow object also has extra properties that relate HEK
     concepts to VSO concepts.
@@ -214,3 +191,10 @@ class HEKRow(Row):
             return self[key]
         except KeyError:
             return default
+
+
+class HEKTable(QueryResponseTable):
+    """
+    A container for data returned from HEK searches.
+    """
+    Row = HEKRow
