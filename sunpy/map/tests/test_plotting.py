@@ -7,6 +7,7 @@ import matplotlib.colors as mcolor
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from matplotlib.figure import Figure
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -263,3 +264,12 @@ def test_plot_norm_error(aia171_test_map):
         aia171_test_map.plot(norm=norm, vmin=0)
     with pytest.raises(ValueError, match='Cannot manually specify vmax'):
         aia171_test_map.plot(norm=norm, vmax=0)
+
+
+def test_quadrangle_no_wcsaxes(aia171_test_map):
+    ax = Figure().add_subplot(projection=None)  # create a non-WCSAxes plot
+
+    bottom_left = SkyCoord(
+        [0, 1] * u.arcsec, [0, 1] * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    with pytest.raises(TypeError, match='WCSAxes'):
+        aia171_test_map.draw_quadrangle(bottom_left, axes=ax)

@@ -2007,6 +2007,9 @@ class GenericMap(NDData):
 
         if not axes:
             axes = plt.gca()
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            raise TypeError("The axes need to be an instance of WCSAxes. You may have neglected "
+                            "to use `projection=` when creating the axes.")
 
         kwergs = {
             "transform": axes.get_transform(bottom_left.frame.replicate_without_data()),
