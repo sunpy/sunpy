@@ -41,6 +41,12 @@ from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning,
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
+# Quadrangle is not present in Astropy<4.2, so we fall back to a vendored version
+try:
+    from astropy.visualization.wcsaxes import Quadrangle
+except ImportError:
+    from sunpy.visualization._quadrangle import Quadrangle
+
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
@@ -1948,6 +1954,72 @@ class GenericMap(NDData):
         axes.add_artist(circ)
 
         return [circ]
+
+    @u.quantity_input
+    def draw_quadrangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
+                        axes=None, top_right=None, **kwargs):
+        """
+        Draw a quadrangle defined in world coordinates on the plot using Astropy's
+        `~astropy.visualization.wcsaxes.patches.Quadrangle`.
+
+        This draws a quadrangle that has corners at ``(bottom_left, top_right)``,
+        and has sides aligned with the coordinate axes of the frame of ``bottom_left``,
+        which may be different from the coordinate axes of the map.
+
+        If ``width`` and ``height`` are specified, they are respectively added to the
+        longitude and latitude of the ``bottom_left`` coordinate to calculate a
+        ``top_right`` coordinate.
+
+        Parameters
+        ----------
+        bottom_left : `~astropy.coordinates.SkyCoord`
+            The bottom-left coordinate of the quadrangle. It can
+            have shape ``(2,)`` to simultaneously define ``top_right``.
+        top_right : `~astropy.coordinates.SkyCoord`
+            The top-right coordinate of the quadrangle.
+        width : `astropy.units.Quantity`, optional
+            The width of the quadrangle. Required if ``top_right`` is omitted.
+        height : `astropy.units.Quantity`
+            The height of the quadrangle. Required if ``top_right`` is omitted.
+        axes : `matplotlib.axes.Axes`
+            The axes on which to plot the quadrangle. Defaults to the current
+            axes.
+
+        Returns
+        -------
+        quad : `~astropy.visualization.wcsaxes.patches.Quadrangle`
+            The added patch
+
+        Notes
+        -----
+        Extra keyword arguments to this function are passed through to the
+        `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
+
+        Examples
+        --------
+        .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
+        """
+        bottom_left, top_right = get_rectangle_coordinates(
+            bottom_left, top_right=top_right, width=width, height=height)
+
+        width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
+        height = top_right.spherical.lat - bottom_left.spherical.lat
+
+        if not axes:
+            axes = plt.gca()
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            raise TypeError("The axes need to be an instance of WCSAxes. You may have neglected "
+                            "to use `projection=` when creating the axes.")
+
+        kwergs = {
+            "transform": axes.get_transform(bottom_left.frame.replicate_without_data()),
+            "edgecolor": "white",
+            "fill": False,
+        }
+        kwergs.update(kwargs)
+        quad = Quadrangle(self._get_lon_lat(bottom_left), width, height, **kwergs)
+        axes.add_artist(quad)
+        return quad
 
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
