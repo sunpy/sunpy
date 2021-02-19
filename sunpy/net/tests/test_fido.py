@@ -39,8 +39,6 @@ def offline_query(draw, instrument=offline_instruments()):
     # If we have AttrAnd then we don't have GOES
     if isinstance(query, a.Instrument) and query.value == 'goes':
         query &= draw(goes_time())
-    elif isinstance(query, a.Instrument) and query.value == 'soon':
-        query &= draw(srs_time())
     else:
         query = attr.and_(query, draw(time_attr()))
     return query
@@ -54,6 +52,8 @@ def online_query(draw, instrument=online_instruments()):
         query &= a.Level.zero
     if isinstance(query, a.Instrument) and query.value == 'norh':
         query &= a.Wavelength(17*u.GHz)
+    if isinstance(query, a.Instrument) and query.value == 'soon':
+        query &= draw(srs_time())
 
     return query
 
