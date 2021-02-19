@@ -7,6 +7,7 @@ import matplotlib.colors as mcolor
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from matplotlib.figure import Figure
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -15,6 +16,7 @@ import sunpy
 import sunpy.coordinates
 import sunpy.data.test
 import sunpy.map
+from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.tests.helpers import figure_test, fix_map_wcs
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -138,6 +140,26 @@ def test_rectangle_aia171_hgs_width_height(aia171_test_map):
 
 
 @figure_test
+def test_quadrangle_aia17_width_height(aia171_test_map):
+    aia171_test_map.plot()
+    bottom_left = SkyCoord(
+        50 * u.deg, -10 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
+    w = 30 * u.deg
+    h = 90 * u.deg
+    aia171_test_map.draw_quadrangle(bottom_left=bottom_left, width=w, height=h)
+
+
+@figure_test
+def test_quadrangle_aia17_top_right(aia171_test_map):
+    aia171_test_map.plot()
+    bottom_left = SkyCoord(
+        50 * u.deg, -10 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
+    top_right = SkyCoord(
+        65 * u.deg, 50 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
+    aia171_test_map.draw_quadrangle(bottom_left, top_right=top_right)
+
+
+@figure_test
 def test_plot_masked_aia171(aia171_test_map_with_mask):
     aia171_test_map_with_mask.plot()
 
@@ -206,6 +228,26 @@ def test_heliographic_rectangle_top_right(heliographic_test_map):
     heliographic_test_map.draw_rectangle(bottom_left, top_right=top_right, edgecolor='cyan')
 
 
+@figure_test
+def test_heliographic_quadrangle_width_height(heliographic_test_map):
+    heliographic_test_map.plot()
+    bottom_left = SkyCoord(
+        60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
+    w = 13 * u.deg
+    h = 13 * u.deg
+    heliographic_test_map.draw_quadrangle(bottom_left, width=w, height=h, edgecolor='cyan')
+
+
+@figure_test
+def test_heliographic_quadrangle_top_right(heliographic_test_map):
+    heliographic_test_map.plot()
+    bottom_left = SkyCoord(
+        60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
+    top_right = SkyCoord(
+        80 * u.deg, 90 * u.deg, frame=heliographic_test_map.coordinate_frame)
+    heliographic_test_map.draw_quadrangle(bottom_left, top_right=top_right, edgecolor='cyan')
+
+
 # See https://github.com/sunpy/sunpy/issues/4294 to track this warning. Ideally
 # it should not be filtered, and the cause of it fixed.
 @pytest.mark.filterwarnings(r'ignore:Numpy has detected that you \(may be\) writing to an array with\noverlapping memory')
@@ -222,3 +264,12 @@ def test_plot_norm_error(aia171_test_map):
         aia171_test_map.plot(norm=norm, vmin=0)
     with pytest.raises(ValueError, match='Cannot manually specify vmax'):
         aia171_test_map.plot(norm=norm, vmax=0)
+
+
+def test_quadrangle_no_wcsaxes(aia171_test_map):
+    ax = Figure().add_subplot(projection=None)  # create a non-WCSAxes plot
+
+    bottom_left = SkyCoord(
+        [0, 1] * u.arcsec, [0, 1] * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    with pytest.raises(TypeError, match='WCSAxes'):
+        aia171_test_map.draw_quadrangle(bottom_left, axes=ax)
