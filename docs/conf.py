@@ -169,7 +169,8 @@ nitpick_ignore = [
     ('py:class', "Unit('deg')"),
     ('py:class', "Unit('arcsec')"),
     ('py:class', "Unit('%')"),
-    ('py:class', 'array-like')
+    ('py:class', 'array-like'),
+    ('py:obj', 'parfive'),
 ]
 
 # -- Options for intersphinx extension -----------------------------------------
