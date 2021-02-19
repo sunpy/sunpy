@@ -1,10 +1,9 @@
 """
-==========================================================
-Drawing a Rectangle on a map
-==========================================================
+============================
+Drawing a rectangle on a map
+============================
 
-In this example we are going to look at how we can plot rectangles on maps
-while describing the dimensions using different methods.
+How to draw a rectangle on a map
 """
 import matplotlib.pyplot as plt
 
@@ -15,69 +14,79 @@ import sunpy.data.sample
 import sunpy.map
 
 ################################################################################
-# We use the `~sunpy.map.GenericMap.draw_rectangle` method to draw the rectangles.
+# The purpose of this example is to demonstrate how to draw a rectangle on a map
+# using :meth:`~sunpy.map.GenericMap.draw_rectangle`.  Let's start with a sample
+# AIA image.
+
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-fig = plt.figure(figsize=(5, 5))
-aia_map.plot()
 
 ################################################################################
-# The first option is to provide the top left and bottom right corners as a
-# single `~astropy.coordinates.SkyCoord`.
+# Here are four different ways to draw a rectangle.  The first three ways
+# directly calls the `~astropy.coordinates.SkyCoord` class.  The fourth way
+# converts pixel coordinates to the equivalent `~astropy.coordinates.SkyCoord`
+# objects using the :meth:`~sunpy.map.GenericMap.pixel_to_world`.
+
+fig = plt.figure(figsize=(5, 5))
 fig.add_subplot(111, projection=aia_map)
+aia_map.plot(clip_interval=(1, 99.99)*u.percent)
+
+# Specify two opposite corners of the rectangle as a single, two-element
+# SkyCoord object
+
 coords = SkyCoord(
-    Tx=(-400, 300) * u.arcsec,
-    Ty=(-300, 200) * u.arcsec,
+    Tx=(100, 500) * u.arcsec,
+    Ty=(200, 500) * u.arcsec,
     frame=aia_map.coordinate_frame,
 )
 aia_map.draw_rectangle(
     coords,
-    color="blue",
+    edgecolor="blue",
     linestyle="-",
+    linewidth=2,
+    label='2-element SkyCoord'
 )
-aia_map.plot()
 
-################################################################################
-# The second option is to pass the bottom left and top right corners as
-# separate `~astropy.coordinates.SkyCoord` objects.
-fig.add_subplot(111, projection=aia_map)
-bottom_left = SkyCoord(-400 * u.arcsec, -300 * u.arcsec, frame=aia_map.coordinate_frame)
-top_right = SkyCoord(300 * u.arcsec, 200 * u.arcsec, frame=aia_map.coordinate_frame)
+# Specify two opposite corners of the rectangle as separate SkyCoord objects
+
+bottom_left = SkyCoord(-500 * u.arcsec, 200 * u.arcsec, frame=aia_map.coordinate_frame)
+top_right = SkyCoord(-100 * u.arcsec, 500 * u.arcsec, frame=aia_map.coordinate_frame)
 aia_map.draw_rectangle(
     bottom_left,
     top_right=top_right,
-    color="green",
+    edgecolor="green",
     linestyle="--",
+    linewidth=2,
+    label='two SkyCoords'
 )
-aia_map.plot()
 
-################################################################################
-# The third option is to provide the coordinate of the bottom left corner along with the
-# width and the height of the rectangle.
-fig.add_subplot(111, projection=aia_map)
-bottom_left = SkyCoord(-400 * u.arcsec, -300 * u.arcsec, frame=aia_map.coordinate_frame)
-width = 700 * u.arcsec
-height = 500 * u.arcsec
+# Specify one corner of the rectangle and the rectangle's width and height
+
+bottom_left = SkyCoord(-500 * u.arcsec, -500 * u.arcsec, frame=aia_map.coordinate_frame)
+width = 400 * u.arcsec
+height = 300 * u.arcsec
 aia_map.draw_rectangle(
     bottom_left,
     width=width,
     height=height,
-    color="yellow",
+    edgecolor="yellow",
     linestyle="-.",
+    linewidth=2,
+    label='width/height'
 )
-aia_map.plot()
 
-################################################################################
-# We also have a fourth option - to specify the dimensions in terms of pixel coordinates.
-#
-# To do this, we use the `~sunpy.map.GenericMap.pixel_to_world` method to convert the
-# pixel coordinates to world coordinates.
-fig.add_subplot(111, projection=aia_map)
-bottom_left = aia_map.pixel_to_world(350 * u.pixel, 390 * u.pixel)
-top_right = aia_map.pixel_to_world(650 * u.pixel, 600 * u.pixel)
+# Draw a desired rectangle in pixel coordinates by first converting to SkyCoord
+# objects
+
+bottom_left = aia_map.pixel_to_world(600 * u.pixel, 350 * u.pixel)
+top_right = aia_map.pixel_to_world(800 * u.pixel, 450 * u.pixel)
 aia_map.draw_rectangle(
     bottom_left,
     top_right=top_right,
-    color="red",
+    edgecolor="red",
     linestyle=":",
+    linewidth=2,
+    label='pixel_to_world()'
 )
-aia_map.plot()
+
+plt.legend()
+plt.show()
