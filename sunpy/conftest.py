@@ -108,6 +108,15 @@ def tmp_dl_dir(request):
         del os.environ["SUNPY_DOWNLOADDIR"]
 
 
+@pytest.fixture(scope='session', autouse=True)
+def set_columns(request):
+    orig_columns = os.environ.get("COLUMNS", None)
+    os.environ['COLUMNS'] = '180'
+    yield
+    if orig_columns is not None:
+        os.environ['COLUMNS'] = orig_columns
+
+
 @pytest.fixture()
 def undo_download_dir_patch():
     """
