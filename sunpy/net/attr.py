@@ -31,7 +31,7 @@ _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 # Matches any number.
 NUMBER_REGEX = re.compile(r"^(\d+$|\d(?:\.\d+)?)")
 
-__all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
+__all__ = ['Attr', 'DataAttr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
            'ValueAttr', 'and_', 'or_', 'AttrWalker']
 
 
