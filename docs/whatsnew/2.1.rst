@@ -105,7 +105,7 @@ In addition, if you pass the entire search query into ``Fido.fetch()`` and it wi
 Fido Results Refactor
 =====================
 
-While working on the above change, several changes were made to the way that results are returned from :meth:`sunpy.net.Fido.search` and the search methods of the underlying clients.
+While working on the above change, several changes were made to the way that results are returned from ``sunpy.net.Fido.search`` and the search methods of the underlying clients.
 
 We have tried to minimize any breaking changes here and we believe that for most users the difference between 2.0 and 2.1 will be minor.
 
@@ -189,7 +189,7 @@ See the following example for how this context manager enables alternative repro
 
 Finding map contours
 ====================
-The new :meth:`sunpy.map.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
+The new :meth:`sunpy.map.GenericMap.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
 
 .. minigallery:: sunpy.map.GenericMap.contour
 

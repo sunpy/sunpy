@@ -211,7 +211,7 @@ Download behind proxies
 With the release of parfive 1.1, sunpy has been patched to be able to utilize proxy servers when downloading files.
 
 * Proxy URL is read from the environment variables ``HTTP_PROXY`` or ``HTTPS_PROXY``.
-* Proxy Authentication ``proxy_auth`` should be passed as a `aiohttp.BasicAuth` object, explicitly by the user.
+* Proxy Authentication ``proxy_auth`` should be passed as a ``aiohttp.BasicAuth`` object, explicitly by the user.
 * Proxy Headers ``proxy_headers`` should be passed as `dict` object, explicitly by the user.
 
 For example if you use a bash terminal:
