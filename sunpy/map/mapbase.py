@@ -1951,7 +1951,7 @@ class GenericMap(NDData):
         c_kw.update(kwargs)
 
         circ = patches.Circle([0, 0], **c_kw)
-        axes.add_artist(circ)
+        axes.add_patch(circ)
 
         return [circ]
 
@@ -2018,7 +2018,7 @@ class GenericMap(NDData):
         }
         kwergs.update(kwargs)
         quad = Quadrangle(self._get_lon_lat(bottom_left), width, height, **kwergs)
-        axes.add_artist(quad)
+        axes.add_patch(quad)
         return quad
 
     @u.quantity_input
@@ -2087,7 +2087,7 @@ class GenericMap(NDData):
                   'fill': False}
         kwergs.update(kwargs)
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
-        axes.add_artist(rect)
+        axes.add_patch(rect)
         return [rect]
 
     @u.quantity_input
