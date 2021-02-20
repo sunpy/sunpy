@@ -29,6 +29,19 @@ sohoeit195 = ct.eit_color_table(195*u.angstrom)
 sohoeit284 = ct.eit_color_table(284*u.angstrom)
 sohoeit304 = ct.eit_color_table(304*u.angstrom)
 
+# Solar Orbiter EUI
+# These are deliberately the same as AIA
+solohri_euv174 = ct.aia_color_table(171*u.angstrom)
+solohri_euv174.name = 'SolO EUI HRI 174 angstrom'
+solofsi174 = ct.aia_color_table(171*u.angstrom)
+solofsi174.name = 'SolO EUI FSI 174 angstrom'
+solofsi304 = ct.aia_color_table(304*u.angstrom)
+solofsi304.name = 'SolO EUI FSI 304 angstrom'
+# Lyman alpha is a modified IDL red color table
+solohri_lya1216 = ct.idl_3
+solohri_lya1216[:, 2] = solohri_lya1216[:, 0] * np.linspace(0, 1, 256)
+solohri_lya1216 = ct._cmap_from_rgb(*solohri_lya1216.T, 'SolO EUI HRI Lyman Alpha')
+
 goesrsuvi94 = ct.suvi_color_table(94*u.angstrom)
 goesrsuvi131 = ct.suvi_color_table(131*u.angstrom)
 goesrsuvi171 = ct.suvi_color_table(171*u.angstrom)
@@ -142,6 +155,10 @@ cmlist = {
     'euvi195': euvi195,
     'euvi284': euvi284,
     'euvi304': euvi304,
+    'solar orbiterfsi174': solofsi174,
+    'solar orbiterfsi304': solofsi304,
+    'solar orbiterhri_euv174': solohri_euv174,
+    'solar orbiterhri_lya1216': solohri_lya1216,
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
