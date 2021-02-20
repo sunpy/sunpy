@@ -45,6 +45,14 @@ def testDirectoryRange():
     assert s.range(timerange) == directory_list
 
 
+def testDirectoryRegex():
+    s = Scraper('https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/'
+                'psp_fld_l2_(\\w){7}_(\\d){8}_v(\\d){2}.cdf', regex=True)
+    timerange = TimeRange('2019-02-01', '2019-02-03')
+    directory = s.range(timerange)
+    assert directory == ['https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/']
+
+
 def testDirectoryRangeFalse():
     s = Scraper('%Y%m%d/%Y%m%d_%H.fit.gz')
     directory_list = ['20091230/', '20091231/', '20100101/',
