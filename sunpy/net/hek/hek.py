@@ -12,6 +12,7 @@ from astropy.table import Row
 from astropy.time import Time
 
 import sunpy.net._attrs as core_attrs
+from sunpy import log
 from sunpy.net import attr
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.hek import attrs
@@ -61,7 +62,9 @@ class HEKClient(BaseClient):
 
         while True:
             data['page'] = page
-            fd = urllib.request.urlopen(self.url+urllib.parse.urlencode(data))
+            url = self.url + urllib.parse.urlencode(data)
+            log.debug(f'Opening {url}')
+            fd = urllib.request.urlopen(url)
             try:
                 result = codecs.decode(fd.read(), encoding='utf-8', errors='replace')
                 result = json.loads(result)
