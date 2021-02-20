@@ -114,8 +114,8 @@ class Scraper:
             Notice that these directories may not exist in the archive.
         """
         # find directory structure - without file names
-        directorypattern = os.path.dirname(self.pattern) + '/'
-        # TODO what if there's not slashes?
+        if '/' in self.pattern:
+            directorypattern = '/'.join(self.pattern.split('/')[:-1]) + '/'
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
             return [directorypattern]
