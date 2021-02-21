@@ -310,7 +310,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         print(self.imshow_kwargs)
         if 'vmax' in self.imshow_kwargs and self.imshow_kwargs['vmax'] == 'auto':
             # set clip interval to 90% of maximum value
-            clip_interval=(1, 90)*u.percent
+            clip_interval = (1, 90)*u.percent
             clip_percentages = clip_interval.to('%').value
             vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data_transposed)
             return vmin, vmax
