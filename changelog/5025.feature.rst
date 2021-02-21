@@ -1,0 +1,1 @@
+Added dynamic z axis option to the animators.
