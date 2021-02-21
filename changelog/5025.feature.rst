@@ -1,3 +1,2 @@
-Added dynamic z axis option to `sunpy.visualization.animator`.
-Specifying ``vmax='auto'`` calculates and updates the colormap
-according to the current slice shown.
+Added the ability to dynamically scale `sunpy.visualization.animator` instances.
+By specifying ``vmax="auto"`` will now clip the minimum and maximum at each slider step to 1% and 90% respectively.
