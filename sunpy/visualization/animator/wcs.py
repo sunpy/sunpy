@@ -282,8 +282,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
 
-        if self.imshow_kwargs.get('vmax') == 'auto':
-            imshow_args['vmin'], imshow_args['vmax'] = self.get_2d_plot_limts()
+        imshow_args['vmin'], imshow_args['vmax'] = self.get_2d_plot_limts()
 
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
 
