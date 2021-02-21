@@ -3,6 +3,7 @@ from functools import partial
 import numpy as np
 
 import astropy.units as u
+from astropy.visualization import AsymmetricPercentileInterval
 from astropy.wcs.wcsapi import BaseLowLevelWCS
 
 from sunpy.extern import modest_image
@@ -281,6 +282,9 @@ class ArrayAnimatorWCS(ArrayAnimator):
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
 
+        if 'vmax' in imshow_args and imshow_args['vmax'] == 'auto':
+            imshow_args['vmin'], imshow_args['vmax'] = self.update_bounds()
+
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
 
         if 'extent' in imshow_args:
@@ -299,10 +303,25 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         return im
 
+    def update_bounds(self):
+        """
+        Update vmin/vmax when set to 'auto'.
+        """
+        print(self.imshow_kwargs)
+        if 'vmax' in self.imshow_kwargs and self.imshow_kwargs['vmax'] == 'auto':
+            # set clip interval to 90% of maximum value
+            clip_interval=(1, 90)*u.percent
+            clip_percentages = clip_interval.to('%').value
+            vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data_transposed)
+            return vmin, vmax
+
     def update_plot_2d(self, val, im, slider):
         """
         Update the image plot.
         """
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
+        vmin, vmax = self.update_bounds()
         im.set_array(self.data_transposed)
+        self.update_bounds()
+        im.set_clim(vmin, vmax)
         slider.cval = val
