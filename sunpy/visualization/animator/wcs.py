@@ -283,7 +283,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         imshow_args.update(self.imshow_kwargs)
 
         if 'vmax' in imshow_args and imshow_args['vmax'] == 'auto':
-            imshow_args['vmin'], imshow_args['vmax'] = self.update_bounds()
+            imshow_args['vmin'], imshow_args['vmax'] = self.get_2d_plot_clip_bounds()
 
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
 
@@ -303,19 +303,16 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         return im
 
-    def update_bounds(self):
+    def get_2d_plot_clip_bounds(self):
         """
         Update vmin/vmax when set to 'auto'.
         """
-        print(self.imshow_kwargs)
-        if 'vmax' in self.imshow_kwargs and self.imshow_kwargs['vmax'] == 'auto':
-            # set clip interval to 90% of maximum value
+        if self.imshow_kwargs.get('vmax') == 'auto':
             clip_interval = (1, 90)*u.percent
-            clip_percentages = clip_interval.to('%').value
-            vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data_transposed)
+            clip_percentages = clip_interval.to('%')
+            clip_limits = AsymmetricPercentileInterval(*clip_percentages.value)
+            vmin, vmax = clip_limits.get_limits(self.data_transposed)
             return vmin, vmax
-        else:
-            return None
 
     def update_plot_2d(self, val, im, slider):
         """
@@ -324,7 +321,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
         im.set_array(self.data_transposed)
 
-        bounds = self.update_bounds()
+        bounds = self.get_2d_plot_clip_bounds()
         if bounds is not None:
             vmin, vmax = bounds
             im.set_clim(vmin, vmax)
