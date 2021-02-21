@@ -46,11 +46,11 @@ def testDirectoryRange():
 
 
 def testDirectoryRegex():
-    s = Scraper('https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/'
-                'psp_fld_l2_(\\w){7}_(\\d){8}_v(\\d){2}.cdf', regex=True)
+    # Test for Windows where '\' is a path separator and not part of the regex
+    s = Scraper('scheme://a.url.with/a/few/forward/slashes/andbacklash\\inthename.ext', regex=True)
     timerange = TimeRange('2019-02-01', '2019-02-03')
     directory = s.range(timerange)
-    assert directory == ['https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/rfs_lfr/2019/']
+    assert directory == ['scheme://a.url.with/a/few/forward/slashes/']
 
 
 def testDirectoryRangeFalse():
