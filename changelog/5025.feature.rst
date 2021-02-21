@@ -1,2 +1,3 @@
 Added dynamic z axis option to `sunpy.visualization.animator`.
-Specifying ``vmax='auto'`` calculates and updates the files of 
+Specifying ``vmax='auto'`` calculates and updates the colormap
+according to the current slice shown.
