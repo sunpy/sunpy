@@ -322,7 +322,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
         Update the image plot.
         """
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
-        vmin, vmax = self.update_bounds()
         im.set_array(self.data_transposed)
 
         bounds = self.update_bounds()
