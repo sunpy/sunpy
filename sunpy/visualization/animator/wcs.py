@@ -305,7 +305,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
     def get_2d_plot_limts(self):
         """
-        Update vmin/vmax when set to 'auto'.
+        Get vmin, vmax of a data slice when "vmax" is set to "auto".
         """
         vmin, vmax = None, None
         if self.imshow_kwargs.get('vmax') == 'auto':
