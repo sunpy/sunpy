@@ -309,8 +309,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
         vmin, vmax = None, None
         if self.imshow_kwargs.get('vmax') == 'auto':
-            percent_limits = (1, 90)*u.percent).to('%').value
-            vmin, vmax = AsymmetricPercentileInterval(percent_limits).get_limits(self.data_transposed)
+            percent_limits = ((1, 90)*u.percent).to('%').value
+            vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
         return vmin, vmax
 
     def update_plot_2d(self, val, im, slider):
