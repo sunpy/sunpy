@@ -314,6 +314,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
             clip_percentages = clip_interval.to('%').value
             vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data_transposed)
             return vmin, vmax
+        else:
+            return None
 
     def update_plot_2d(self, val, im, slider):
         """
@@ -322,6 +324,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
         vmin, vmax = self.update_bounds()
         im.set_array(self.data_transposed)
-        self.update_bounds()
-        im.set_clim(vmin, vmax)
+
+        bounds = self.update_bounds()
+        if bounds is not None:
+            vmin, vmax = bounds
+            im.set_clim(vmin, vmax)
+
         slider.cval = val
