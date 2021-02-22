@@ -124,7 +124,8 @@ def test_rectangle_aia171_top_right(aia171_test_map):
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     top_right = SkyCoord(
         100 * u.arcsec, 100 * u.arcsec, frame=aia171_test_map.coordinate_frame)
-    aia171_test_map.draw_rectangle(bottom_left, top_right=top_right)
+    aia171_test_map.draw_rectangle(bottom_left, top_right=top_right, label='Rectangle')
+    plt.legend()  # Check that the 'Rectangle' label shows up in the legend
 
 
 @figure_test
