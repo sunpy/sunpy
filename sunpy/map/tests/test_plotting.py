@@ -124,7 +124,8 @@ def test_rectangle_aia171_top_right(aia171_test_map):
     w = 100 * u.arcsec
     h = 100 * u.arcsec
     bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=w, height=h)
-    aia171_test_map.draw_rectangle(bottom_left, top_right=top_right)
+    aia171_test_map.draw_rectangle(bottom_left, top_right=top_right, label='Rectangle')
+    plt.legend()  # Check that the 'Rectangle' label shows up in the legend
 
 
 @figure_test
