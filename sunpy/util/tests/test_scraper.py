@@ -45,6 +45,14 @@ def testDirectoryRange():
     assert s.range(timerange) == directory_list
 
 
+def testDirectoryRegex():
+    # Test for Windows where '\' is a path separator and not part of the regex
+    s = Scraper('scheme://a.url.with/a/few/forward/slashes/andbacklash\\inthename.ext', regex=True)
+    timerange = TimeRange('2019-02-01', '2019-02-03')
+    directory = s.range(timerange)
+    assert directory == ['scheme://a.url.with/a/few/forward/slashes/']
+
+
 def testDirectoryRangeFalse():
     s = Scraper('%Y%m%d/%Y%m%d_%H.fit.gz')
     directory_list = ['20091230/', '20091231/', '20100101/',
