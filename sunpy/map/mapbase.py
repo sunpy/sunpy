@@ -40,6 +40,7 @@ from sunpy.util.decorators import cached_property_based_on, deprecated
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
+from sunpy.visualization.colormaps import cm as sunpy_cm
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
@@ -221,6 +222,16 @@ class GenericMap(NDData):
                               }
         if plot_settings:
             self.plot_settings.update(plot_settings)
+
+        # Try and set the colormap. This is not always possible if this method
+        # is run before map sources fix some of their metadata, so
+        # just ignore any exceptions raised.
+        try:
+            cmap = self._get_cmap_name()
+            if cmap in sunpy_cm.cmlist:
+                self.plot_settings['cmap'] = cmap
+        except Exception:
+            pass
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
