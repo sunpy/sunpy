@@ -241,7 +241,7 @@ class MDISynopticMap(MDIMap):
             header['date-obs'] = header['t_obs']
             header['date-obs'] = parse_time(header['date-obs']).isot
         for i in [1, 2]:
-            if header[f'CRDER{i}'] == 'nan':
+            if header.get(f'CRDER{i}') == 'nan':
                 header.pop(f'CRDER{i}')
         super().__init__(data, header, **kwargs)
 
