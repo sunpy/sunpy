@@ -1,2 +1,2 @@
 Added the ability to dynamically scale `sunpy.visualization.animator` instances.
-By specifying ``vmax="auto"``, it will now clip the minimum and maximum at each slider step to 1% and 90% respectively.
+By specifying ``vmax="auto"`` or ``vmin="auto"``, it will now clip the minimum and maximum at each slider step to 1% and 99% respectively.

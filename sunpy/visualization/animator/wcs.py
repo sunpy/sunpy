@@ -282,8 +282,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
 
-        if self.imshow_kwargs.get('vmax') == 'auto':
-            imshow_args['vmin'], imshow_args['vmax'] = self.get_2d_plot_limts()
+        if self.imshow_kwargs.get('vmin') == 'auto' :
+            imshow_args['vmin'], _ = self.get_2d_plot_limts()
+        if self.imshow_kwargs.get('vmax') == 'auto' :
+            _, imshow_args['vmax'] = self.get_2d_plot_limts()
 
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
 
@@ -305,12 +307,16 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
     def get_2d_plot_limts(self):
         """
-        Get vmin, vmax of a data slice when "vmax" is set to "auto".
+        Get vmin, vmax of a data slice when "vmax" or "vmin" is set to "auto".
         """
         vmin, vmax = None, None
+        if self.imshow_kwargs.get('vmin') == 'auto':
+            percent_limits = ((1, 99)*u.percent).to('%').value
+            vmin, _ = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
         if self.imshow_kwargs.get('vmax') == 'auto':
-            percent_limits = ((1, 90)*u.percent).to('%').value
-            vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
+            percent_limits = ((1, 99)*u.percent).to('%').value
+            _, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
+
         return vmin, vmax
 
     def update_plot_2d(self, val, im, slider):
