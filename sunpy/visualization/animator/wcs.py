@@ -64,7 +64,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         Sets the minimum threshold for all slices of the animation. 
         If specified as "auto", clips the minimum and maximum at each slider step to 1% and 99%
     vmax: `int` or `str`, optional
-        if specified as "auto", clips the minimum and maximum at each slider step to 1% and 99%
+        Sets the maximum threshold for all slices of the animation. 
+        If specified as "auto", clips the minimum and maximum at each slider step to 1% and 99%
     """
 
     def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None, **kwargs):
