@@ -62,10 +62,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
        the y-axis on an image plot should be done via ``coord_params``.
     vmin: `int` or `str`, optional
         Sets the minimum threshold for all slices of the animation. 
-        If specified as "auto", clips the minimum and maximum at each slider step to 1% and 99%
+        If specified as "auto", clips the minimum at each slider step to 1%
     vmax: `int` or `str`, optional
         Sets the maximum threshold for all slices of the animation. 
-        If specified as "auto", clips the minimum and maximum at each slider step to 1% and 99%
+        If specified as "auto", clips the maximum at each slider step to 99%
     """
 
     def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None, **kwargs):
