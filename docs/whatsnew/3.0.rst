@@ -1,0 +1,40 @@
+.. doctest-skip-all
+
+.. _whatsnew-3.0:
+
+************************
+What's New in SunPy 3.0?
+************************
+
+Overview
+========
+The SunPy project is pleased to announce the 3.0 release of the sunpy package.
+
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-3.0-python`
+
+SunPy 3.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+
+* X commits have been added since 2.0
+* X issues have been closed since 2.0
+* X pull requests have been merged since 2.0
+* X people have contributed since 2.0
+* X of which are new contributors
+
+Please find below a selection of what we consider to be the biggest changes or features with this release.
+
+.. _whatsnew-3.0-python:
+
+Increase in required package versions
+=====================================
+We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 3.0:
+
+- python 3.7
+
+.. _whatsnew-3.0-contributors:
+
+Contributors to this Release
+============================
