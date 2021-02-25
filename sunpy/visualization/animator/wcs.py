@@ -68,7 +68,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         If specified as "auto", clips the maximum at each slider step to 99%
     """
 
-    def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None, **kwargs):
+    def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None,
+                 clip_interval: u.percent = None, **kwargs):
         if not isinstance(wcs, BaseLowLevelWCS):
             raise ValueError("A WCS object should be provided that implements the astropy WCS API.")
         if wcs.pixel_n_dim != data.ndim:
@@ -93,6 +94,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.coord_params = coord_params
         self.ylim = ylim
         self.ylabel = ylabel
+        self.clip_interval = clip_interval
 
         extra_slider_labels = []
         if "slider_functions" in kwargs and "slider_labels" not in kwargs:
@@ -287,9 +289,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
 
-        if 'clip_interval' in self.imshow_kwargs:
+        if self.clip_interval is not None:
             imshow_args['vmin'], imshow_args['vmax'] = self._get_2d_plot_limits()
-            imshow_args.pop('clip_interval')
 
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
 
@@ -313,13 +314,11 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
         Get vmin, vmax of a data slice when clip_interval is specified.
         """
-        vmin, vmax = None, None
-        if self.imshow_kwargs.get('clip_interval') is not None:
-            if len(self.imshow_kwargs.get('clip_interval')) == 2:
-                percent_limits = self.imshow_kwargs.get('clip_interval').to('%').value
-                vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
-            else:
-                raise ValueError('A range of 2 values must be specified for clip_interval.')
+        if len(self.clip_interval) == 2:
+            percent_limits = self.clip_interval.to('%').value
+            vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
+        else:
+            raise ValueError('A range of 2 values must be specified for clip_interval.')
         return vmin, vmax
 
 
@@ -330,7 +329,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
         im.set_array(self.data_transposed)
 
-        vmin, vmax = self._get_2d_plot_limits()
-        im.set_clim(vmin, vmax)
+        if self.clip_interval is not None:
+            vmin, vmax = self._get_2d_plot_limits()
+            im.set_clim(vmin, vmax)
 
         slider.cval = val
