@@ -287,10 +287,9 @@ class ArrayAnimatorWCS(ArrayAnimator):
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
 
-        if self.imshow_kwargs.get('vmin') == 'auto':
-            imshow_args['vmin'], _ = self.get_2d_plot_limts()
-        if self.imshow_kwargs.get('vmax') == 'auto':
-            _, imshow_args['vmax'] = self.get_2d_plot_limts()
+        if 'clip_interval' in self.imshow_kwargs:
+            imshow_args['vmin'], imshow_args['vmax'] = self._get_2d_plot_limits()
+            imshow_args.pop('clip_interval')
 
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
 
@@ -310,19 +309,19 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         return im
 
-    def get_2d_plot_limts(self):
+    def _get_2d_plot_limits(self):
         """
-        Get vmin, vmax of a data slice when "vmax" or "vmin" is set to "auto".
+        Get vmin, vmax of a data slice when clip_interval is specified.
         """
         vmin, vmax = None, None
-        if self.imshow_kwargs.get('vmin') == 'auto':
-            percent_limits = ((1, 99)*u.percent).to('%').value
-            vmin, _ = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
-        if self.imshow_kwargs.get('vmax') == 'auto':
-            percent_limits = ((1, 99)*u.percent).to('%').value
-            _, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
-
+        if self.imshow_kwargs.get('clip_interval') is not None:
+            if len(self.imshow_kwargs.get('clip_interval')) == 2:
+                percent_limits = self.imshow_kwargs.get('clip_interval').to('%').value
+                vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
+            else:
+                raise ValueError('A range of 2 values must be specified for clip_interval.')
         return vmin, vmax
+
 
     def update_plot_2d(self, val, im, slider):
         """
@@ -331,7 +330,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
         im.set_array(self.data_transposed)
 
-        vmin, vmax = self.get_2d_plot_limts()
+        vmin, vmax = self._get_2d_plot_limits()
         im.set_clim(vmin, vmax)
 
         slider.cval = val

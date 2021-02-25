@@ -135,23 +135,9 @@ def test_array_animator_wcs_2d_simple_plot(wcs_4d):
 
 
 @figure_test
-def test_array_animator_wcs_2d_vmin_auto(wcs_4d):
+def test_array_animator_wcs_2d_clip_interval(wcs_4d):
     data = np.arange(120).reshape((5, 4, 3, 2))
-    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'], vmin='auto')
-    return a.fig
-
-
-@figure_test
-def test_array_animator_wcs_2d_vmax_auto(wcs_4d):
-    data = np.arange(120).reshape((5, 4, 3, 2))
-    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'], vmax='auto')
-    return a.fig
-
-
-@figure_test
-def test_array_animator_wcs_2d_vmin_vmax_auto(wcs_4d):
-    data = np.arange(120).reshape((5, 4, 3, 2))
-    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'], vmin='auto', vmax='auto')
+    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'], clip_interval=(1, 99)*u.percent)
     return a.fig
 
 
