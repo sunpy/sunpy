@@ -60,12 +60,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
     ylabel: `string`, optional
        The yaxis label to use when drawing a line plot. Setting the label on
        the y-axis on an image plot should be done via ``coord_params``.
-    vmin: `int` or `str`, optional
-        Sets the minimum threshold for all slices of the animation. 
-        If specified as "auto", clips the minimum at each slider step to 1%
-    vmax: `int` or `str`, optional
-        Sets the maximum threshold for all slices of the animation. 
-        If specified as "auto", clips the maximum at each slider step to 99%
+
+    clip_interval : two-element `~astropy.units.Quantity`, optional
+        If provided, the data for each map will be clipped to the percentile interval bounded by the two
+        numbers.
     """
 
     def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None,
