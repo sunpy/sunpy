@@ -90,6 +90,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.coord_params = coord_params
         self.ylim = ylim
         self.ylabel = ylabel
+
+        if clip_interval is not None and len(clip_interval) == 2:
+            raise ValueError('A range of 2 values must be specified for clip_interval.')
+
         self.clip_interval = clip_interval
 
         extra_slider_labels = []
@@ -285,7 +289,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
 
-        if self.clip_interval:
+        if self.clip_interval is not None:
             imshow_args['vmin'], imshow_args['vmax'] = self._get_2d_plot_limits()
 
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
@@ -310,11 +314,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
         Get vmin, vmax of a data slice when clip_interval is specified.
         """
-        if len(self.clip_interval) == 2:
-            percent_limits = self.clip_interval.to('%').value
-            vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
-        else:
-            raise ValueError('A range of 2 values must be specified for clip_interval.')
+        percent_limits = self.clip_interval.to('%').value
+        vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
         return vmin, vmax
 
 
@@ -325,7 +326,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
         im.set_array(self.data_transposed)
 
-        if self.clip_interval:
+        if self.clip_interval is not None:
             vmin, vmax = self._get_2d_plot_limits()
             im.set_clim(vmin, vmax)
 
