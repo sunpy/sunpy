@@ -62,8 +62,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
        the y-axis on an image plot should be done via ``coord_params``.
 
     clip_interval : two-element `~astropy.units.Quantity`, optional
-        If provided, the data for each map will be clipped to the percentile interval bounded by the two
-        numbers.
+        If provided, the data for each step will be clipped to the percentile interval bounded by the two numbers.
     """
 
     def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None,
