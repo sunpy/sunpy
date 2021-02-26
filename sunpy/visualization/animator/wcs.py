@@ -91,7 +91,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.ylim = ylim
         self.ylabel = ylabel
 
-        if clip_interval is not None and len(clip_interval) == 2:
+        if clip_interval is not None and len(clip_interval) != 2:
             raise ValueError('A range of 2 values must be specified for clip_interval.')
 
         self.clip_interval = clip_interval
