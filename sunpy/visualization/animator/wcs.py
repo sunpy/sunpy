@@ -60,7 +60,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
     ylabel: `string`, optional
        The yaxis label to use when drawing a line plot. Setting the label on
        the y-axis on an image plot should be done via ``coord_params``.
-
     clip_interval : two-element `~astropy.units.Quantity`, optional
         If provided, the data for each step will be clipped to the percentile interval bounded by the two numbers.
     """
