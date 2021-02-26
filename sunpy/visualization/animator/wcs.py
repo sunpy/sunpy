@@ -318,7 +318,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
         vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
         return vmin, vmax
 
-
     def update_plot_2d(self, val, im, slider):
         """
         Update the image plot.
