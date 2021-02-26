@@ -285,7 +285,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
 
-        if self.clip_interval is not None:
+        if self.clip_interval:
             imshow_args['vmin'], imshow_args['vmax'] = self._get_2d_plot_limits()
 
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
