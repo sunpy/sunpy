@@ -325,7 +325,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
         im.set_array(self.data_transposed)
 
-        if self.clip_interval is not None:
+        if self.clip_interval:
             vmin, vmax = self._get_2d_plot_limits()
             im.set_clim(vmin, vmax)
 
