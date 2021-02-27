@@ -218,26 +218,9 @@ def test_wsdl_retriever_wsdl(mock_taverna_parser, mock_webservice_parser, mock_l
         wsdl_retriever()
 
 
-@mock.patch('sunpy.net.helio.parser.urllib.request.urlopen')
-def test_link_test(mock_urlopen):
-    """
-    Read from an open, 'mocked', URL.
-    """
-
-    class MockFile:
-
-        def __init__(self, content):
-            self.content = content
-
-        def read(self):
-            return self.content
-
-        def close(self):
-            return
-
-    expected = '<!doctype html><title>T</title>'
-    mock_urlopen.return_value = MockFile(expected)
-    assert link_test('http://www/google.com') == expected
+@pytest.mark.remote_data
+def test_link_test():
+    assert b"# SunPy Sample Data" in link_test('http://data.sunpy.org/sunpy/README.md')
 
 # The following two tests for `link_test` have empty URLs as arguments. This is because
 # when running the tests under Py2.7, I was getting the following error:
