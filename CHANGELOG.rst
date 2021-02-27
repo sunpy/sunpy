@@ -1,3 +1,49 @@
+Sunpy v2.0.8 (2021-02-27)
+=========================
+
+Bug Fixes
+---------
+
+- `sunpy.map.GenericMap.date` now has its time scale set from the 'TIMESYS' FITS keyword,
+  if it is present. If it isn't present the time scale defaults to 'UTC', which is unchanged
+  default behaviour, so this change will only affect maps with a 'TIMESYS' keyword
+  that is not set to 'UTC'. (`#4881 <https://github.com/sunpy/sunpy/pull/4881>`__)
+- Fixed the `~.SRSClient` which silently failed to download the SRS files when the tarball for the previous years did not exist.
+  Client now actually searches for the tarballs and srs files on the ftp archive before returning them as results. (`#4904 <https://github.com/sunpy/sunpy/pull/4904>`__)
+- Fixed a handling bug in :meth:`~sunpy.map.GenericMap.draw_rectangle` when the rectangle is specified in a different coordinate frame than that of the map.
+  A couple of other minor bugs in :meth:`~sunpy.map.GenericMap.draw_rectangle` were also fixed. (`#4929 <https://github.com/sunpy/sunpy/pull/4929>`__)
+- Fixed two bugs with :func:`~sunpy.physics.differential_rotation.differential_rotate` and :func:`~sunpy.physics.differential_rotation.solar_rotate_coordinate` that resulted in significant inaccuracies.
+  Both functions now ignore the translational motion of the Sun. (`#4979 <https://github.com/sunpy/sunpy/pull/4979>`__)
+- Fixed a bug when transforming from `~sunpy.coordinates.metaframes.RotatedSunFrame` to another frame at a different observation time that resulted in small inaccuracies.
+  The translational motion of the Sun was not being handled correctly. (`#4979 <https://github.com/sunpy/sunpy/pull/4979>`__)
+- Fixed the drawing methods of `sunpy.map.GenericMap` (e.g., :meth:`~sunpy.map.GenericMap.draw_rectangle`) so that any text labels will appear in the legend. (`#5019 <https://github.com/sunpy/sunpy/pull/5019>`__)
+- Fixed bug in `sunpy.until.scraper.Scraper` which caused URL patterns containing backslashes to be incorrectly parsed on Windows. (`#5022 <https://github.com/sunpy/sunpy/pull/5022>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_plot_rectangle.py`) for drawing rectangles on maps. (`#4528 <https://github.com/sunpy/sunpy/pull/4528>`__)
+- Added an example of how to use Matplotlib's axes range functionality when plotting a Map with WCSAxes. (`#4792 <https://github.com/sunpy/sunpy/pull/4792>`__)
+
+
+Documentation Fixes
+-------------------
+
+- Ensure that all attrs are documented and clean the `sunpy.net.hek.attrs`
+  namespace of non-attr objects. (`#4834 <https://github.com/sunpy/sunpy/pull/4834>`__)
+- Fixed miscellaneous issues with the gallery example :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_hmi.py`. (`#4843 <https://github.com/sunpy/sunpy/pull/4843>`__)
+- Fixed the display of arguments in the documentation for `~sunpy.net.Fido` attributes (`sunpy.net.attrs`). (`#4916 <https://github.com/sunpy/sunpy/pull/4916>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- The listings for the sample data (`sunpy.data.sample`) are now sorted. (`#4838 <https://github.com/sunpy/sunpy/pull/4838>`__)
+- Changed the implementation of a `hypothesis`-based test so that it does not raise an error with `hypothesis` 6.0.0. (`#4852 <https://github.com/sunpy/sunpy/pull/4852>`__)
+- Added Python 3.9 Wheels. (`#4938 <https://github.com/sunpy/sunpy/pull/4938>`__)
+
+
 Sunpy v2.0.7 (2021-01-06)
 =========================
 

@@ -1,1 +1,0 @@
-Added an example of how to use Matplotlib's axes range functionality when plotting a Map with WCSAxes.
