@@ -1,3 +1,26 @@
+Sunpy v2.1.1 (2021-02-27)
+=========================
+
+Features
+--------
+
+- Added colormaps for Solar Orbiter EUI images. These are used automatically
+  when an EUI image is loaded. (`#5023 <https://github.com/sunpy/sunpy/pull/5023>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed the drawing methods of `sunpy.map.GenericMap` (e.g., :meth:`~sunpy.map.GenericMap.draw_rectangle`) so that any text labels will appear in the legend. (`#5019 <https://github.com/sunpy/sunpy/pull/5019>`__)
+- Fixed bug in `sunpy.until.scraper.Scraper` which caused URL patterns containing backslashes to be incorrectly parsed on Windows. (`#5022 <https://github.com/sunpy/sunpy/pull/5022>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_plot_rectangle.py`) for drawing rectangles on maps. (`#4528 <https://github.com/sunpy/sunpy/pull/4528>`__)
+
+
 sunpy 2.1.0 (2020-02-21)
 ========================
 
