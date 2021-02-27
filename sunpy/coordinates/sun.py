@@ -93,7 +93,7 @@ def sky_position(t='now', equinox_of_date=True):
 
 
 @u.quantity_input
-def carrington_rotation_time(crot: u.one, longitude: u.deg = None):
+def carrington_rotation_time(crot, longitude: u.deg = None):
     """
     Return the time of a given Carrington rotation.
 
@@ -108,7 +108,7 @@ def carrington_rotation_time(crot: u.one, longitude: u.deg = None):
 
     Parameters
     ----------
-    crot : `~astropy.units.Quantity`
+    crot : `int`, `float`, `~astropy.units.Quantity`
         Carrington rotation number(s). Can be a fractional rotation number.
 
     longitude : `~astropy.units.Quantity`
@@ -119,6 +119,7 @@ def carrington_rotation_time(crot: u.one, longitude: u.deg = None):
     -------
     `astropy.time.Time`
     """
+    crot = crot << u.one
     if longitude is not None:
         if not quantity_allclose(crot%1, 0):
             raise ValueError("Carrington rotation number(s) must be integral if `longitude` is provided.")
