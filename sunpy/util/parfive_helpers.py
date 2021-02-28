@@ -25,7 +25,7 @@ class Downloader(parfive.Downloader):
         if progress:
             kwargs["progress"] = False
 
-        if headers:
+        if headers and parfive.__version__ >= "1.1.0":
             kwargs['headers'] = headers
 
         super().__init__(*args, **kwargs)
