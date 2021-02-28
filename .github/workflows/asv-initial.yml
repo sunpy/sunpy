@@ -3,10 +3,11 @@ name: asv-benchmarks
 on:
   push:
     branches:
-      - asv-ci
       - master
+
 jobs:
   asv-run:
+    if: github.repository == "sunpy/sunpy"
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout sunpy repo

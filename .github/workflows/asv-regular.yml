@@ -2,10 +2,16 @@ name: asv-benchmarks-daily
 
 on:
   schedule:
-    - cron: '0 3 * * *'
+#            ┌───────── minute (0 - 59)
+#            │ ┌───────── hour (0 - 23)
+#            │ │ ┌───────── day of the month (1 - 31)
+#            │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
+#            │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
+    - cron: '0 3 * * 0' # Every day at 3am UTC
 
 jobs:
   asv-run:
+    if: github.repository == "sunpy/sunpy"
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout sunpy repo
