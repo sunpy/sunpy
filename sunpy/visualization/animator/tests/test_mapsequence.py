@@ -28,12 +28,15 @@ def test_construct_map_sequence_animator(test_map_sequence):
 @figure_test
 def test_map_sequence_animator_wcs_simple_plot(test_map_sequence):
     map_animator = MapSequenceAnimator(test_map_sequence)
+    map_animator._annotate_plot(0)
     return map_animator.fig
 
 
-def test_axes(test_map_sequence):
+def test_axes():
     map_animator = MapSequenceAnimator(test_map_sequence)
     assert isinstance(map_animator.axes, WCSAxes)
+    start_img = map_animator.plot_start_image(map_animator.axes)
+    assert isinstance(start_img.axes, WCSAxes)
 
 
 @figure_test
