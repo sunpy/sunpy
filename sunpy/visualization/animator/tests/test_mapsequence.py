@@ -1,16 +1,13 @@
 import os
 
-import matplotlib.pyplot as plt
-
-import numpy as np
 import pytest
 
 from astropy.visualization.wcsaxes import WCSAxes
 
-from sunpy.visualization.animator import MapSequenceAnimator
 import sunpy.data.test
 import sunpy.map
 from sunpy.tests.helpers import figure_test
+from sunpy.visualization.animator import MapSequenceAnimator
 
 testpath = sunpy.data.test.rootdir
 
