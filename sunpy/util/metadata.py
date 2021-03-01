@@ -31,7 +31,7 @@ class MetaDict(OrderedDict):
             elif isinstance(adict, dict):
                 tags = OrderedDict((k.upper(), v) for k, v in adict.items())
             else:
-                raise TypeError("Can not create a MetaDict from this type input")
+                raise TypeError(f"Can not create a MetaDict from this input of type {type(adict)}")
             args[0] = tags
 
         super().__init__(*args)
