@@ -45,22 +45,18 @@ class AIAMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        if 'bunit' not in header and 'pixlunit' in header:
+            # PIXLUNIT is not a FITS standard keyword
+            header['bunit'] = header['pixlunit']
+
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
         self.meta['detector'] = self.meta.get('detector', "AIA")
-        if 'bunit' not in self.meta and 'pixlunit' in self.meta:
-            # PIXLUNIT is not a FITS standard keyword
-            self.meta['bunit'] = self.meta['pixlunit']
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
-        # DN is not a FITS standard unit, so convert to counts
-        if self.meta.get('bunit', None) == 'DN':
-            self.meta['bunit'] = 'ct'
-        if self.meta.get('bunit', None) == 'DN/s':
-            self.meta['bunit'] = 'ct/s'
 
     @property
     def _supported_observer_coordinates(self):

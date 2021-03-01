@@ -28,7 +28,7 @@ from astropy.visualization.wcsaxes import WCSAxes
 import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
-from sunpy import config
+from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
@@ -197,6 +197,7 @@ class GenericMap(NDData):
         # Correct possibly missing meta keywords
         self._fix_date()
         self._fix_naxis()
+        self._fix_unit()
 
         # Setup some attributes
         self._nickname = None
@@ -1149,6 +1150,20 @@ class GenericMap(NDData):
         if 'bitpix' not in self.meta:
             float_fac = -1 if self.dtype.kind == "f" else 1
             self.meta['bitpix'] = float_fac * 8 * self.dtype.itemsize
+
+    def _fix_unit(self):
+        """
+        Fix some common unit strings that aren't technically FITS standard
+        compliant, but obvious enough that we can covert them into something
+        that's standards compliant.
+        """
+        unit = self.meta.get('bunit', None)
+        replacements = {'Gauss': 'G',
+                        'DN': 'ct',
+                        'DN/s': 'ct/s'}
+        if unit in replacements:
+            log.debug(f'Changing BUNIT from "{unit}" to "{replacements[unit]}"')
+            self.meta['bunit'] = replacements[unit]
 
     def _get_cmap_name(self):
         """Build the default color map name."""
