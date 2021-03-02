@@ -1487,6 +1487,8 @@ class GenericMap(NDData):
             warnings.warn("Integer input data has been cast to float64.",
                           SunpyUserWarning)
             new_data = self.data.astype(np.float64)
+        else:
+             new_data = self.data
 
         new_data = np.pad(new_data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
