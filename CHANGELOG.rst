@@ -1,5 +1,5 @@
-sunpy 2.1.0 (2020-02-21)
-========================
+2.1.0 (2020-02-21)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -426,8 +426,8 @@ Trivial/Internal Changes
 - Changed the implementation of a ``hypothesis``-based test so that it does not raise an error with ``hypothesis`` 6.0.0. (`#4852 <https://github.com/sunpy/sunpy/pull/4852>`__)
 
 
-Sunpy v2.0.0 (2020-06-12)
-=========================
+2.0.0 (2020-06-12)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -644,8 +644,8 @@ Trivial/Internal Changes
   closely match the new sunpy package template (`#4188 <https://github.com/sunpy/sunpy/pull/4188>`__)
 
 
-sunpy v1.1.0 (2020-01-10)
-=========================
+1.1.0 (2020-01-10)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -844,8 +844,8 @@ Trivial/Internal Changes
 - Fix tests for `sunpy.data.data_manager` and ensure they are correctly executed with pytest. (`#3550 <https://github.com/sunpy/sunpy/pull/3550>`__)
 
 
-sunpy 1.0.0 (2019-06-01)
-========================
+1.0.0 (2019-06-01)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
