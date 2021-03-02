@@ -24,6 +24,7 @@ import sunpy.data.test
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import sun
+from sunpy.map.sources import AIAMap
 from sunpy.time import parse_time
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
@@ -32,10 +33,16 @@ testpath = sunpy.data.test.rootdir
 
 
 def test_fits_data_comparison(aia171_test_map):
-    """Make sure the data is the same in pyfits and SunPy"""
+    """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
         data = fits.open(os.path.join(testpath, 'aia_171_level1.fits'))[0].data
     np.testing.assert_allclose(aia171_test_map.data, data)
+
+
+def test_header_fits_io():
+    with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
+        with fits.open(os.path.join(testpath, 'aia_171_level1.fits')) as hdu:
+            AIAMap(hdu[0].data, hdu[0].header)
 
 
 def test_get_item(generic_map):
