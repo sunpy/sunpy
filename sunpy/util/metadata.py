@@ -3,6 +3,7 @@ This module provides a generalized dictionary class that deals with header
 parsing, normalization, and maintaining coherence between keys and keycomments.
 """
 from collections import OrderedDict
+from collections.abc import Mapping
 
 __all__ = ['MetaDict']
 
@@ -34,8 +35,11 @@ class MetaDict(OrderedDict):
             adict = args[0]
             if isinstance(adict, list) or isinstance(adict, tuple):
                 items = adict
-            elif isinstance(adict, dict):
-                items = adict.items()
+            elif isinstance(adict, Mapping):
+                # Cast to a dict here, since a Mapping doesn't have to define
+                # a .items() method (but has enough methods to be converted to
+                # a dict)
+                items = dict(adict).items()
             else:
                 raise TypeError(f"Can not create a MetaDict from this input of type {type(adict)}")
 
