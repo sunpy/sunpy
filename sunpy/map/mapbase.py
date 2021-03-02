@@ -1443,6 +1443,7 @@ class GenericMap(NDData):
         -----
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
+        This function always type casts integer data to float
 
         See :func:`sunpy.image.transform.affine_transform` for details on the
         transformations, situations when the underlying data is modified prior
