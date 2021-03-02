@@ -265,6 +265,3 @@ os.environ["JSOC_EMAIL"] = "jsoc@cadair.com"
 def setup(app):
     # Generate the stability page
     app.connect("source-read", rstjinja)
-    if is_release:
-        from sphinx_changelog.directive import DummyChangelog
-        app.add_directive('changelog', DummyChangelog, override=True)
