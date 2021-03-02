@@ -1467,7 +1467,7 @@ class GenericMap(NDData):
                           SunpyUserWarning)
             new_data = self.data.astype(np.float64)
         else:
-             new_data = self.data
+            new_data = self.data
 
         new_data = np.pad(new_data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
