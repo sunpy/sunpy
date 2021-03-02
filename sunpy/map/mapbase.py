@@ -1461,7 +1461,10 @@ class GenericMap(NDData):
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
 
-        new_data = np.pad(self.data,
+        if issubclass(aiamap.data.dtype.type, numbers.Integral):
+            new_data = self.data.astype(np.float64)
+
+        new_data = np.pad(new_data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
                           mode='constant',
                           constant_values=(missing, missing))
