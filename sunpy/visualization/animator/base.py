@@ -119,7 +119,7 @@ class BaseFuncAnimator:
         #
         # Only do this if figure has a manager, so directly constructed figures
         # (ie. via matplotlib.figure.Figure()) work.
-        if self.fig.canvas.manager is not None:
+        if hasattr(self.fig.canvas, "manager") and self.fig.canvas.manager is not None:
             plt.sca(self.axes)
 
         # Do Plot
