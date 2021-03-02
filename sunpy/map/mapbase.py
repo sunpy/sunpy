@@ -3,6 +3,7 @@ Map is a generic Map class from which all other Map classes inherit from.
 """
 import copy
 import html
+import numbers
 import textwrap
 import warnings
 import webbrowser
@@ -1482,7 +1483,9 @@ class GenericMap(NDData):
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
 
-        if issubclass(aiamap.data.dtype.type, numbers.Integral):
+        if issubclass(self.data.dtype.type, numbers.Integral):
+            warnings.warn("Integer input data has been cast to float64.",
+                          SunpyUserWarning)
             new_data = self.data.astype(np.float64)
 
         new_data = np.pad(new_data,
