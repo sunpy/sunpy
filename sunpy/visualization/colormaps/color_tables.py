@@ -21,12 +21,14 @@ cmap_data_dir = pathlib.Path(__file__).parent.absolute() / 'data'
 
 # The following values describe color table 3 for IDL (Red Temperature)
 idl_3 = np.loadtxt(cmap_data_dir / 'idl_3.csv', delimiter=',')
+idl_3.setflags(write=False)
 r0, g0, b0 = idl_3[:, 0], idl_3[:, 1], idl_3[:, 2]
 
 c0 = np.arange(256, dtype='f')
 c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
 c2 = (np.arange(256)**2 / 255.0).astype('f')
 c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
+[c.setflags(write=False) for c in [c0, c1, c2, c3]]
 
 aia_wave_dict = {
     1600*u.angstrom: (c3, c3, c2),
@@ -109,6 +111,7 @@ sxt_gold_g = 255 * (np.arange(256)**1.25) / (255.0**1.25)
 sxt_gold_b = np.concatenate((np.zeros(185), 255.0 * np.arange(71) / 71.0))
 
 grayscale = np.arange(256)
+grayscale.setflags(write=False)
 
 
 def sxt_color_table(sxt_filter):
