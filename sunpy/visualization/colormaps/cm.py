@@ -38,7 +38,7 @@ solofsi174.name = 'SolO EUI FSI 174 angstrom'
 solofsi304 = ct.aia_color_table(304*u.angstrom)
 solofsi304.name = 'SolO EUI FSI 304 angstrom'
 # Lyman alpha is a modified IDL red color table
-solohri_lya1216 = ct.idl_3
+solohri_lya1216 = ct.idl_3.copy()
 solohri_lya1216[:, 2] = solohri_lya1216[:, 0] * np.linspace(0, 1, 256)
 solohri_lya1216 = ct._cmap_from_rgb(*solohri_lya1216.T, 'SolO EUI HRI Lyman Alpha')
 
