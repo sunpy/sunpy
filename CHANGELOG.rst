@@ -1,5 +1,11 @@
-Sunpy v2.0.8 (2021-02-27)
+Sunpy v2.0.8 (2021-03-03)
 =========================
+
+Features
+--------
+
+- Add an ``SRS_TABLE`` file to the sample data, and use it in the magnetogram
+  plotting example. (`#4993 <https://github.com/sunpy/sunpy/pull/4993>`__)
 
 Bug Fixes
 ---------
