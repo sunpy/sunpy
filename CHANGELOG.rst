@@ -1,3 +1,17 @@
+Sunpy v2.1.2 (2021-03-04)
+=========================
+
+Bug Fixes
+---------
+
+- Constructing a `~sunpy.util.MetaDict` is now more lenient, and accepts
+  any class that inherits from `collections.abc.Mapping`. This fixes a
+  regression where headers read with `astropy.io.fits` raised an error when
+  passed to individual `~sunpy.map` sources. (`#5047 <https://github.com/sunpy/sunpy/pull/5047>`__)
+- Prevented some colormaps being accidentally modified depending on the order
+  and method through which they were accessed. (`#5054 <https://github.com/sunpy/sunpy/pull/5054>`__)
+
+
 Sunpy v2.1.1 (2021-02-27)
 =========================
 
