@@ -3,6 +3,7 @@ from functools import partial
 import numpy as np
 
 import astropy.units as u
+from astropy.visualization import AsymmetricPercentileInterval
 from astropy.wcs.wcsapi import BaseLowLevelWCS
 
 from sunpy.extern import modest_image
@@ -59,10 +60,12 @@ class ArrayAnimatorWCS(ArrayAnimator):
     ylabel: `string`, optional
        The yaxis label to use when drawing a line plot. Setting the label on
        the y-axis on an image plot should be done via ``coord_params``.
-
+    clip_interval : two-element `~astropy.units.Quantity`, optional
+        If provided, the data for each step will be clipped to the percentile interval bounded by the two numbers.
     """
 
-    def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None, **kwargs):
+    def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None,
+                 clip_interval: u.percent = None, **kwargs):
         if not isinstance(wcs, BaseLowLevelWCS):
             raise ValueError("A WCS object should be provided that implements the astropy WCS API.")
         if wcs.pixel_n_dim != data.ndim:
@@ -87,6 +90,11 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.coord_params = coord_params
         self.ylim = ylim
         self.ylabel = ylabel
+
+        if clip_interval is not None and len(clip_interval) != 2:
+            raise ValueError('A range of 2 values must be specified for clip_interval.')
+
+        self.clip_interval = clip_interval
 
         extra_slider_labels = []
         if "slider_functions" in kwargs and "slider_labels" not in kwargs:
@@ -281,6 +289,9 @@ class ArrayAnimatorWCS(ArrayAnimator):
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
 
+        if self.clip_interval is not None:
+            imshow_args['vmin'], imshow_args['vmax'] = self._get_2d_plot_limits()
+
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
 
         if 'extent' in imshow_args:
@@ -299,10 +310,23 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         return im
 
+    def _get_2d_plot_limits(self):
+        """
+        Get vmin, vmax of a data slice when clip_interval is specified.
+        """
+        percent_limits = self.clip_interval.to('%').value
+        vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
+        return vmin, vmax
+
     def update_plot_2d(self, val, im, slider):
         """
         Update the image plot.
         """
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
         im.set_array(self.data_transposed)
+
+        if self.clip_interval is not None:
+            vmin, vmax = self._get_2d_plot_limits()
+            im.set_clim(vmin, vmax)
+
         slider.cval = val
