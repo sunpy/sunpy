@@ -9,7 +9,7 @@ isort:skip_file
 import os
 import sys
 import datetime
-from pkg_resources import get_distribution, DistributionNotFound
+from pkg_resources import get_distribution
 from packaging.version import Version
 
 # -- Check for dependencies ----------------------------------------------------
