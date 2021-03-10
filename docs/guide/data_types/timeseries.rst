@@ -252,7 +252,7 @@ type:
     import sunpy.timeseries as ts
     import sunpy.data.sample
     ts_plot = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
-    fig = ts_plot.peek()
+    fig = ts_plot.plot()
 
 This will open a matplotlib plot on your screen. The `~sunpy.timeseries.GenericTimeSeries.peek`
 method provides a view on data customised for each source while `~sunpy.timeseries.GenericTimeSeries.plot`
