@@ -141,6 +141,19 @@ def test_array_animator_wcs_2d_clip_interval(wcs_4d):
     return a.fig
 
 
+def test_array_animator_wcs_2d_clip_interval_change(wcs_4d):
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    pclims = [5, 95]
+    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'],
+                         clip_interval=pclims * u.percent)
+    lims0 = a._get_2d_plot_limits()
+    a.update_plot(1, a.im, a.sliders[0]._slider)
+    lims1 = a._get_2d_plot_limits()
+    assert np.all(lims0 != lims1)
+    assert np.all(lims0 == np.percentile(data[..., 0, 0], pclims))
+    assert np.all(lims1 == np.percentile(data[..., 1, 0], pclims))
+
+
 @figure_test
 def test_array_animator_wcs_2d_celestial_sliders(wcs_4d):
     data = np.arange(120).reshape((5, 4, 3, 2))
