@@ -22,7 +22,8 @@ from astropy.io import fits
 data = np.zeros((1000, 1000))
 
 # Define coordinates and frame of reference and make the header using sunpy.map.make_fitswcs_header
-skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
+skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28',
+                    observer='earth', frame=frames.Helioprojective)
 header = sunpy.map.make_fitswcs_header(data, skycoord)
 
 # Use the sunpy.map.Map to make the blank map
@@ -39,8 +40,8 @@ im = blank_map.plot()
 ax.set_autoscale_on(False)
 
 # Coordinates that are being plotted - (0, 0), (50, 100) and (400, 400)
-xc = [0,50,400] * u.arcsec
-yc = [0,100,400] * u.arcsec
+xc = [0, 50, 400] * u.arcsec
+yc = [0, 100, 400] * u.arcsec
 
 # Place and mark coordinates on the plot
 coords = SkyCoord(xc, yc, frame=blank_map.coordinate_frame)
