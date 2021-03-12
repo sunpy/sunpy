@@ -69,7 +69,7 @@ file_goes15 = Fido.fetch(result_goes15)
 #############################################################
 # Lets now load this data into a `~sunpy.timeseries.TimeSeries`,
 # and inspect the data using `~sunpy.timeseries.GenericTimeSeries.peek()`
-goes_15 = ts.TimeSeries(file_goes15)
+goes_15 = ts.TimeSeries(file_goes15, source='xrs')
 goes_15.peek()
 
 ###############################################################
@@ -125,5 +125,5 @@ print(results_16)
 files = Fido.fetch(results_16)
 # We use the `concatenate=True` keyword argument in TimeSeries, as
 # we have two files and want to create one timeseries from them.
-goes_16 = ts.TimeSeries(files, concatenate=True)
+goes_16 = ts.TimeSeries(files, concatenate=True, source='xrs')
 goes_16.peek()
