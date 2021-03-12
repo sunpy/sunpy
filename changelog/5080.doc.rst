@@ -1,0 +1,1 @@
+Updated the `goes_xrs_example` with correct keywords to handle netcdf files.
