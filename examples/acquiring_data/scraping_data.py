@@ -10,9 +10,11 @@ range or at a specific time.
 """
 
 from sunpy.util.scraper import Scraper
+from sunpy.time import TimeRange
 
 #######################################################
 # Include the sunpy scraper
+# Include TimeRange which will be used later
 
 url_pattern = ('https://solarmonitor.org/data/'
                '%Y/%m/%d/fits/{instrument}/'
@@ -36,8 +38,6 @@ print("URL now: ", scraper.now)
 # and print what url does this have if try to scrape
 # data for Date-time = now!
 
-
-from sunpy.time import TimeRange
 timerange = TimeRange('2006-12-01', '2006-12-01T16:00:00')
 print("List of url within given time range: ", scraper.filelist(timerange))
 
@@ -60,14 +60,12 @@ for tb_url in tarballs:
 
 print("Year wise arranged tarballs: ")
 for each_year, tar_list in urls.items():
-	print(each_year, tar_list)
+    print(each_year, tar_list)
 
 #######################################################
 # Search for tarballs for an year range. First get the
 # list of valid url from given time range, then add it
 # at the appropriate index of dictionary.
-
-
 
 prefix = r'https://solarmonitor.org/data/'
 url_pattern = prefix + r'%Y/%m/%d/fits/(\D){4}/(\D){4}_halph_fd_%Y%m%d_%H%M%S.fts.gz'
@@ -75,7 +73,7 @@ url_pattern = prefix + r'%Y/%m/%d/fits/(\D){4}/(\D){4}_halph_fd_%Y%m%d_%H%M%S.ft
 scraper = Scraper(url_pattern, regex=True)
 
 print(scraper._URL_followsPattern("https://solarmonitor.org/data/"
-              "2006/12/01/fits/bbso/bbso_halph_fd_20061201_115944.fts.gz"))
+      "2006/12/01/fits/bbso/bbso_halph_fd_20061201_115944.fts.gz"))
 
 #######################################################
 # Using regex for URL pattern
