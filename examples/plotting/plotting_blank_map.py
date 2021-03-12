@@ -1,11 +1,10 @@
-  
 """
-==============================================
-Plot Positions on a blank Map
-==============================================
-This example shows how to plot random positions on a blank map
+=============================
+Plot positions on a blank map
+=============================
+This example showcases how to plot positions on a blank map.
+It is commonly seen in papers and presentations to show HPC positions of events that occurred at different times and therefore no single observation is appropriate.
 """
-# Start by importing the necessary modules.
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,7 +17,8 @@ from astropy.coordinates import SkyCoord
 from astropy.io import fits
 
 ################################################################################
-# Creating blank map data with zeros
+# First we will create a blank map using with an array of zeros.
+# Since there is no WCS information, we will need to construct a header to pass to Map.
 data = np.zeros((1000, 1000))
 
 # Define coordinates and frame of reference and make the header using sunpy.map.make_fitswcs_header
@@ -30,6 +30,8 @@ header = sunpy.map.make_fitswcs_header(data, skycoord)
 blank_map = sunpy.map.Map(data, header)
 
 ################################################################################
+
+# Now we have constructed the map, we can plot it and mark important locations to it.
 
 # Initialize the plot and add the map to it
 fig = plt.figure()
@@ -48,8 +50,8 @@ coords = SkyCoord(xc, yc, frame=blank_map.coordinate_frame)
 p = ax.plot_coord(coords, 'o')
 
 # Set title
-ax.set_title('Custom plot with WCSAxes')
+ax.set_title('Potting random points on a blank map')
 
 # Add the colorbar and display the plot
-plt.colorbar()
+# plt.colorbar()
 plt.show()
