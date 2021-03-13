@@ -26,13 +26,13 @@ data = np.full((1000, 1000), 0)
 # Define coordinates and frame of reference and make the header using sunpy.map.make_fitswcs_header
 skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28',
                     observer='earth', frame=frames.Helioprojective)
+# Scale set to the following for solar limb to be in the field of view
 header = sunpy.map.make_fitswcs_header(data, skycoord, scale=[2,2]*u.arcsec/u.pixel)
 
-# Use the sunpy.map.Map to make the blank map
+# Use sunpy.map.Map to create the blank map
 blank_map = sunpy.map.Map(data, header)
 
 ################################################################################
-
 # Now we have constructed the map, we can plot it and mark important locations to it.
 
 # Initialize the plot and add the map to it
@@ -54,7 +54,7 @@ coords = SkyCoord(xc, yc, frame=blank_map.coordinate_frame)
 p = ax.plot_coord(coords, 'o')
 
 # Set title
-ax.set_title('Potting random points on a blank map')
+ax.set_title('Plotting random points on a blank map')
 
 # Display the plot
 plt.show()
