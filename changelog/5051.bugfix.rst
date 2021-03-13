@@ -1,2 +1,2 @@
-Added conversion of `int` to `float` when `sunpy.map.GenericMap.rotate` is called,
-fixing faulty plots when `skimage` is used.
+Added warning to `sunpy.map.GenericMap.rotate` when specified `missing` value is not compatible
+with `GenericMap`.
