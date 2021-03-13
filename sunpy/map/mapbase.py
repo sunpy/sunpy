@@ -31,7 +31,7 @@ import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
 from sunpy import config, log
-from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, Helioprojective, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
@@ -1978,50 +1978,122 @@ class GenericMap(NDData):
                                                            rsun=self.rsun_meters,
                                                            **kwargs)
 
-    def draw_limb(self, axes=None, **kwargs):
+    def draw_limb(self, axes=None, *, resolution=1000, **kwargs):
         """
-        Draws a circle representing the solar limb
+        Draws the solar limb as seen by the map's observer.
+
+        The limb is a circle for only the simplest plots.  If the coordinate frame of
+        the limb is different from the coordinate frame of the plot axes, not only
+        may the limb not be a true circle, a portion of the limb may be hidden from
+        the observer.  In that case, the circle is divided into visible and hidden
+        segments, represented by solid and dotted lines, respectively.
 
         Parameters
         ----------
-        axes: `~matplotlib.axes` or None
-            Axes to plot limb on or None to use current axes.
+        axes : `~matplotlib.axes` or ``None``
+            Axes to plot limb on or ``None`` to use current axes.
+        resolution : `int`
+            The number of points to use to represent the limb.
 
         Returns
         -------
-        circ: list
-            A list containing the `~matplotlib.patches.Circle` object that
-            has been added to the axes.
+        visible : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the visible part of the limb (i.e., the
+            "near" side of the Sun).
+        hidden : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the hidden part of the limb (i.e., the
+            "far" side of the Sun).
 
         Notes
         -----
-        Keyword arguments are passed onto `matplotlib.patches.Circle`.
+        Keyword arguments are passed onto the patches.
+
+        If the limb is a true circle, ``visible`` will instead be
+        `~matplotlib.patches.Circle` and ``hidden`` will be ``None``.
+
+        To avoid trigger Matplotlib auto-scaling, these patches are added as generic
+        artists instead of patches.  One consequence is that the plot legend is not
+        populated automatically when the limb is specified with a text label.
         """
         # Put import here to reduce sunpy.map import time
         from matplotlib import patches
+        from matplotlib.path import Path
 
         # Don't use _check_axes() here, as drawing the limb works fine on none-WCSAxes,
         # even if the image is rotated relative to the axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
+        is_wcsaxes = wcsaxes_compat.is_wcsaxes(axes)
 
-        transform = wcsaxes_compat.get_world_transform(axes)
-        if wcsaxes_compat.is_wcsaxes(axes):
-            radius = self.rsun_obs.to(u.deg).value
-        else:
-            radius = self.rsun_obs.value
-        c_kw = {'radius': radius,
-                'fill': False,
+        c_kw = {'fill': False,
                 'color': 'white',
-                'zorder': 100,
-                'transform': transform
-                }
+                'zorder': 100}
         c_kw.update(kwargs)
 
-        circ = patches.Circle([0, 0], **c_kw)
-        axes.add_artist(circ)
+        # Obtain the solar radius and the world->pixel transform
+        if not is_wcsaxes:
+            radius = self.rsun_obs.value
+            transform = axes.transData
+        else:
+            radius = self.rsun_obs.to_value(u.deg)
 
-        return [circ]
+            if isinstance(self.coordinate_frame, Helioprojective):
+                frame = self.coordinate_frame
+            else:
+                frame = Helioprojective(observer=self.observer_coordinate,
+                                        obstime=self.date, rsun=self.rsun_meters)
+            transform = axes.get_transform(frame)
+
+        # transform is always passed on as a keyword argument
+        c_kw.setdefault('transform', transform)
+
+        # If not WCSAxes or if the map's frame matches the axes's frame, we can use Circle
+        if not is_wcsaxes or frame == axes._transform_pixel2world.frame_out:
+            c_kw.setdefault('radius', radius)
+
+            circ = patches.Circle([0, 0], **c_kw)
+            axes.add_artist(circ)
+
+            return circ, None
+
+        # Otherwise, we use Polygon to be able to distort the limb
+
+        theta = np.linspace(0, 2*np.pi, resolution+1)[:-1] << u.rad
+        # Use the Cartesian approximation of helioprojective coordinates because the Sun is small
+        Tx, Ty = radius * np.cos(theta), radius * np.sin(theta)
+
+        # Perform the round-trip transformation world->pixel->world
+        true_vertices = np.array([Tx, Ty]).T
+        apparent_vertices = transform.inverted().transform(transform.transform(true_vertices))
+
+        # Points that move by less than 1 arcmin are intepreted to be on the "near" side of the Sun
+        diff_Tx = Longitude((true_vertices[:, 0] - apparent_vertices[:, 0]) << u.deg,
+                            wrap_angle=180*u.deg)
+        diff_Ty = (true_vertices[:, 1] - apparent_vertices[:, 1]) << u.deg
+        discrepancy = np.sqrt(diff_Tx ** 2 + diff_Ty ** 2)
+        near = discrepancy < 10*u.arcsec
+
+        # Create the Polygon for the near side of the Sun (using a solid line)
+        if 'linestyle' not in kwargs:
+            c_kw['linestyle'] = '-'
+        visible = patches.Polygon(true_vertices, **c_kw)
+        visible_codes = visible.get_path().codes
+        visible_codes[:-1][~near] = Path.MOVETO
+        visible_codes[-1] = Path.MOVETO if not near[0] else Path.LINETO
+
+        # Create the Polygon for the far side of the Sun (using a dotted line)
+        if 'linestyle' not in kwargs:
+            c_kw['linestyle'] = ':'
+        hidden = patches.Polygon(true_vertices, **c_kw)
+        hidden_codes = hidden.get_path().codes
+        hidden_codes[:-1][near] = Path.MOVETO
+        hidden_codes[-1] = Path.MOVETO if near[0] else Path.LINETO
+
+        # Add both patches as artists rather than patches to avoid triggering auto-scaling
+        axes.add_artist(visible)
+        axes.add_artist(hidden)
+
+        return visible, hidden
 
     @u.quantity_input
     def draw_quadrangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
