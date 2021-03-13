@@ -747,12 +747,6 @@ def test_rotate(aia171_test_map):
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
-def test_rotate_with_skimage(generic_map):
-    skimage_rotated_map = generic_map.rotate(missing=np.nan, order=3)
-    scipy_rotated_map = generic_map.rotate(missing=np.nan, order=3, use_scipy=True)
-    assert np.isnan(skimage_rotated_map.data).sum() > np.isnan(scipy_rotated_map.data).sum()
-
-
 def test_rotate_pad_crpix(generic_map):
     rotated_map = generic_map.rotate(30*u.deg)
     # This tests that the reference pixel of the map is in the expected place.
