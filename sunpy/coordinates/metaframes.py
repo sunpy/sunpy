@@ -12,7 +12,7 @@ from sunpy import log
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from .frames import BaseHeliographic, HeliocentricInertial, SunPyBaseCoordinateFrame
+from .frames import BaseHeliographic, HeliographicStonyhurst, SunPyBaseCoordinateFrame
 from .offset_frame import NorthOffsetFrame
 from .transformations import _transformation_debug
 
@@ -69,20 +69,19 @@ def _make_rotatedsun_cls(framecls):
     def rotatedsun_to_rotatedsun(from_rotatedsun_coord, to_rotatedsun_frame):
         """Transform between two rotated-Sun frames."""
         # This transform goes through the parent frames on each side.
-        # from_frame -> from_frame.base -> to_frame.base -> to_frame
-        intermediate_from = from_rotatedsun_coord.transform_to(from_rotatedsun_coord.base)
-        intermediate_to = intermediate_from.transform_to(to_rotatedsun_frame.base)
-        return intermediate_to.transform_to(to_rotatedsun_frame)
+        # from_frame -> HGS -> to_frame
+        int_frame = HeliographicStonyhurst(obstime=from_rotatedsun_coord.base.obstime)
+        int_coord = from_rotatedsun_coord.transform_to(int_frame)
+        return int_coord.transform_to(to_rotatedsun_frame)
 
-    @frame_transform_graph.transform(FunctionTransform, framecls, _RotatedSunFramecls)
-    @_transformation_debug(f"{framecls.__name__}->{_RotatedSunFramecls.__name__}")
-    def reference_to_rotatedsun(reference_coord, rotatedsun_frame):
-        # Transform to HCI
-        hci_frame = HeliocentricInertial(obstime=rotatedsun_frame.base.obstime)
-        hci_coord = reference_coord.transform_to(hci_frame)  # obstime change handled here
-        oldrepr = hci_coord.spherical
+    @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, _RotatedSunFramecls)
+    @_transformation_debug(f"HGS->{_RotatedSunFramecls.__name__}")
+    def reference_to_rotatedsun(hgs_coord, rotatedsun_frame):
+        int_frame = HeliographicStonyhurst(obstime=rotatedsun_frame.base.obstime)
+        int_coord = hgs_coord.transform_to(int_frame)  # obstime change handled here
+        oldrepr = int_coord.spherical
 
-        # Rotate the coordinate in HCI
+        # Rotate the coordinate in HGS
         from sunpy.physics.differential_rotation import diff_rot
         log.debug(f"Applying {rotatedsun_frame.duration} of solar rotation")
         newlon = oldrepr.lon - diff_rot(rotatedsun_frame.duration,
@@ -91,20 +90,20 @@ def _make_rotatedsun_cls(framecls):
                                         frame_time='sidereal')
         newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
 
-        # Transform back from HCI
-        new_coord = hci_coord.realize_frame(newrepr).transform_to(rotatedsun_frame.base)
+        # Transform from HGS
+        new_coord = int_coord.realize_frame(newrepr).transform_to(rotatedsun_frame.base)
         return rotatedsun_frame.realize_frame(new_coord.data)
 
-    @frame_transform_graph.transform(FunctionTransform, _RotatedSunFramecls, framecls)
-    @_transformation_debug(f"{_RotatedSunFramecls.__name__}->{framecls.__name__}")
-    def rotatedsun_to_reference(rotatedsun_coord, reference_frame):
-        # Transform to HCI
+    @frame_transform_graph.transform(FunctionTransform, _RotatedSunFramecls, HeliographicStonyhurst)
+    @_transformation_debug(f"{_RotatedSunFramecls.__name__}->HGS")
+    def rotatedsun_to_reference(rotatedsun_coord, hgs_frame):
+        # Transform to HGS
         from_coord = rotatedsun_coord.base.realize_frame(rotatedsun_coord.data)
-        hci_frame = HeliocentricInertial(obstime=rotatedsun_coord.base.obstime)
-        hci_coord = from_coord.transform_to(hci_frame)
-        oldrepr = hci_coord.spherical
+        int_frame = HeliographicStonyhurst(obstime=rotatedsun_coord.base.obstime)
+        int_coord = from_coord.transform_to(int_frame)
+        oldrepr = int_coord.spherical
 
-        # Rotate the coordinate in HCI
+        # Rotate the coordinate in HGS
         from sunpy.physics.differential_rotation import diff_rot
         log.debug(f"Applying {rotatedsun_coord.duration} of solar rotation")
         newlon = oldrepr.lon + diff_rot(rotatedsun_coord.duration,
@@ -113,9 +112,9 @@ def _make_rotatedsun_cls(framecls):
                                         frame_time='sidereal')
         newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
 
-        # Transform back from HCI
-        hci_coord = hci_frame.realize_frame(newrepr)
-        return hci_coord.transform_to(reference_frame)  # obstime change handled here
+        # Transform from HGS
+        int_coord = int_frame.realize_frame(newrepr)
+        return int_coord.transform_to(hgs_frame)  # obstime change handled here
 
     _rotatedsun_cache[framecls] = _RotatedSunFramecls
     return _RotatedSunFramecls
