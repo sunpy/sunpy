@@ -1464,13 +1464,10 @@ class GenericMap(NDData):
         pad_y = int(np.max((diff[0], 0)))
 
         if issubclass(self.data.dtype.type, numbers.Integral):
-            warnings.warn("Integer input data has been cast to float64.",
+            warnings.warn("Integer map data is incompatilbe with specified missing value",
                           SunpyUserWarning)
-            new_data = self.data.astype(np.float64)
-        else:
-            new_data = self.data
 
-        new_data = np.pad(new_data,
+        new_data = np.pad(self.data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
                           mode='constant',
                           constant_values=(missing, missing))
