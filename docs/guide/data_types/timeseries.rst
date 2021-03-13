@@ -250,6 +250,7 @@ type:
 
     import sunpy.timeseries as ts
     import sunpy.data.sample
+
     ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
     ts.peek()
 
@@ -264,9 +265,14 @@ use the sunpy plot as the foundation for a more complicated figure:
    :include-source:
 
    import matplotlib.pyplot as plt
+
+   import sunpy.timeseries as ts
+   import sunpy.data.sample
+
+   ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
    fig, ax = plt.subplots()
-   ts_plot.plot(axes=ax)
-   # Can modify the figure here
+   ts.plot(axes=ax)
+   # Modify the figure here
    fig.savefig('figure.png')
 
 
