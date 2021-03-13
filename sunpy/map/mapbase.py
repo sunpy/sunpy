@@ -1977,7 +1977,7 @@ class GenericMap(NDData):
         c_kw.update(kwargs)
 
         circ = patches.Circle([0, 0], **c_kw)
-        axes.add_patch(circ)
+        axes.add_artist(circ)
 
         return [circ]
 
