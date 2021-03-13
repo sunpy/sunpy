@@ -9,8 +9,8 @@ The example uses `sunpy.util.scraper.Scraper` to scrape data on a given time
 range or at a specific time.
 """
 
-from sunpy.util.scraper import Scraper
 from sunpy.time import TimeRange
+from sunpy.util.scraper import Scraper
 
 #######################################################
 # Include the sunpy scraper
