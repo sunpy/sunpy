@@ -145,7 +145,7 @@ stages:
             - sdist
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
-    - stage: CronNotifier
+    - stage: CronNotifier_OK
       condition: succeeded()
       dependsOn:
         - SecondPhaseTests
@@ -169,7 +169,7 @@ stages:
             STATUS: Succeeded
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
-    - stage: CronNotifier
+    - stage: CronNotifier_Fail
       condition: failed()
       dependsOn:
         - SecondPhaseTests
