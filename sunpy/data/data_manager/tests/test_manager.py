@@ -1,6 +1,6 @@
+import os
 from pathlib import Path
 
-import os
 import pytest
 
 from sunpy.data.data_manager.tests.mocks import MOCK_HASH, write_to_test_file

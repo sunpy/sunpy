@@ -1,0 +1,1 @@
+Fixed bug where `DataManager` used to break upon deleting `data_manager.db`.
