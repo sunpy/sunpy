@@ -147,17 +147,9 @@ def test_file_changed(data_function, storage):
         data_function()
 
 
-def test_delete_db(manager, sqlstorage):
-    details = {
-        'file_hash': MOCK_HASH,
-        'file_path': '/tmp/test_file',
-        'url': 'http://example.com/test_file',
-        'time': '2019-06-17T19:16:55.159274',
-    }
-    sqlstorage.store(details)
-
+def test_delete_db(sqlmanager, sqlstorage):
     # Download the file
-    @manager.require('test_file', ['http://example.com/test_file'], MOCK_HASH)
+    @sqlmanager.require('test_file', ['http://example.com/test_file'], MOCK_HASH)
     def test_function():
         pass
 
