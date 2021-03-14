@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import os
 import pytest
 
 from sunpy.data.data_manager.tests.mocks import MOCK_HASH, write_to_test_file
@@ -144,3 +145,26 @@ def test_file_changed(data_function, storage):
     # Now it should error
     with pytest.warns(SunpyUserWarning):
         data_function()
+
+
+def test_delete_db(manager, sqlstorage):
+    details = {
+        'file_hash': MOCK_HASH,
+        'file_path': '/tmp/test_file',
+        'url': 'http://example.com/test_file',
+        'time': '2019-06-17T19:16:55.159274',
+    }
+    sqlstorage.store(details)
+
+    # Download the file
+    @manager.require('test_file', ['http://example.com/test_file'], MOCK_HASH)
+    def test_function():
+        pass
+
+    test_function()
+
+    # The DB file was then deleted
+    os.remove(str(sqlstorage._db_path))
+
+    # SQLite should not throw an error
+    test_function()
