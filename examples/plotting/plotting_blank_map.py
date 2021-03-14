@@ -11,12 +11,11 @@ different times and therefore no single observation is appropriate.
 import matplotlib.pyplot as plt
 import numpy as np
 
-import sunpy.map
-from sunpy.coordinates import frames
-
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-from astropy.io import fits
+
+import sunpy.map
+from sunpy.coordinates import frames
 
 ################################################################################
 # First we will create a blank map using with an array of zeros.
