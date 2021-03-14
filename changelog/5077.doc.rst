@@ -1,0 +1,1 @@
+Added an example `plotting_blank_map.py` on how to plot on a blank map
