@@ -1,0 +1,1 @@
+sunpy/CITATION.rst
