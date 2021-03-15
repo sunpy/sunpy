@@ -1,1 +1,1 @@
-Added an example `plotting_blank_map.py` on how to plot on a blank map
+Added a gallery example  (:ref:`sphx_glr_generated_gallery_plotting_plotting_blank_map.py`) on how to create a blank map and mark locations.

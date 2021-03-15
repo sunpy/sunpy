@@ -53,7 +53,7 @@ coords = SkyCoord(xc, yc, frame=blank_map.coordinate_frame)
 p = ax.plot_coord(coords, 'o')
 
 # Set title
-ax.set_title('Plotting random points on a blank map')
+ax.set_title('Plotting fixed points on a blank map')
 
 # Display the plot
 plt.show()
