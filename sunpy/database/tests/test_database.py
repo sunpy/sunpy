@@ -1045,7 +1045,7 @@ def test_fetch_separate_filenames():
 def test_disable_undo(database, download_query, tmpdir):
     entry = DatabaseEntry()
     with disable_undo(database) as db:
-        db.set_cache_size(5)
+        db.set_cache_size(10)
         db.add(entry)
         db.commit()
         db.remove(entry)
