@@ -11,6 +11,7 @@ from contextlib import contextmanager
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm.exc import ObjectDeletedError
 
 from astropy import units
 
@@ -1029,7 +1030,7 @@ class Database:
             remove_entry_cmd()
         try:
             del self._cache[database_entry.id]
-        except KeyError:
+        except (KeyError, ObjectDeletedError):
             # entry cannot be removed because it was already removed or never
             # existed in the database. This can be safely ignored, the user
             # doesn't even know there's a cache here
