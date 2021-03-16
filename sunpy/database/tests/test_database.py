@@ -149,7 +149,7 @@ def test_tags_unique(database):
     database.add(entry)
     database.commit()
     entry.tags.append(Tag('foo'))
-    with pytest.raises(sqlalchemy.orm.exc.FlushError):
+    with pytest.raises((sqlalchemy.exc.SAWarning, sqlalchemy.orm.exc.FlushError)):
         database.commit()
 
 
@@ -278,7 +278,7 @@ def test_tag_duplicates_before_adding(database):
     database.tag(entry2, 'tag')
     database.add(entry1)
     database.add(entry2)
-    with pytest.raises(sqlalchemy.orm.exc.FlushError):
+    with pytest.raises((sqlalchemy.exc.SAWarning, sqlalchemy.orm.exc.FlushError)):
         database.commit()
 
 
