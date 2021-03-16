@@ -114,11 +114,12 @@ pos = ax2.get_position().get_points()
 cax = fig.add_axes([
     pos[0, 0], pos[1, 1]+0.01, pos[1, 0]-pos[0, 0], 0.025
 ])
-cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
+cbar = fig.colorbar(im, cax=cax, orientation='horizontal', label="abc")
 
 # For the colorbar we want it to have three fixed ticks
 
 cbar.locator = matplotlib.ticker.FixedLocator([-1e2, 0, 1e2])
+cbar.set_label("LOS Magnetic Field [Gauss]", labelpad=-40, rotation=0)
 cbar.update_ticks()
 cbar.ax.xaxis.set_ticks_position('top')
 
