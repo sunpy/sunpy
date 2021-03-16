@@ -20,7 +20,7 @@ from sunpy.coordinates import frames
 ################################################################################
 # First we will create a blank map using with an array of zeros.
 # Since there is no WCS information, we will need to construct a header to pass to Map.
-data = np.zeros((1000, 1000))
+data = np.full((1000, 1000), np.nan)
 
 # Define coordinates and frame of reference and make the header using sunpy.map.make_fitswcs_header
 skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28',
