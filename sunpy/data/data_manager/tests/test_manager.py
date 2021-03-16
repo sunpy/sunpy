@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -144,3 +145,18 @@ def test_file_changed(data_function, storage):
     # Now it should error
     with pytest.warns(SunpyUserWarning):
         data_function()
+
+
+def test_delete_db(sqlmanager, sqlstorage):
+    # Download the file
+    @sqlmanager.require('test_file', ['http://example.com/test_file'], MOCK_HASH)
+    def test_function():
+        pass
+
+    test_function()
+
+    # The DB file was then deleted
+    os.remove(str(sqlstorage._db_path))
+
+    # SQLite should not throw an error
+    test_function()
