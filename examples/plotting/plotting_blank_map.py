@@ -20,7 +20,7 @@ from sunpy.coordinates import frames
 ################################################################################
 # First we will create a blank map using with an array of zeros.
 # Since there is no WCS information, we will need to construct a header to pass to Map.
-data = np.full((1000, 1000), 0)
+data = np.zeros((1000, 1000))
 
 # Define coordinates and frame of reference and make the header using sunpy.map.make_fitswcs_header
 skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28',
@@ -37,12 +37,11 @@ blank_map = sunpy.map.Map(data, header)
 # Initialize the plot and add the map to it
 fig = plt.figure()
 ax = plt.subplot(projection=blank_map)
+
+# Plot the map with alpha=0 to provide white plot
 blank_map.plot(alpha=0)
 blank_map.draw_limb(color="k")
 blank_map.draw_grid(color="k")
-
-# Prevent the image from being re-scaled while overplotting.
-ax.set_autoscale_on(False)
 
 # Coordinates that are being plotted - (0, 0), (50, 100) and (400, 400)
 xc = [0, 50, 400] * u.arcsec
