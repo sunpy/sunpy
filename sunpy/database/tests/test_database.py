@@ -73,7 +73,7 @@ def fido_search_result():
     # A search query with responses from all instruments
     # No JSOC query
     return Fido.search(
-        net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Time("2012/1/1", "2012/1/1 12:00:00"),
         net_attrs.Instrument('lyra') & net_attrs.Level.two | net_attrs.Instrument('eve') |
         net_attrs.Instrument('XRS') | net_attrs.Instrument('noaa-indices') |
         net_attrs.Instrument('noaa-predict') |
@@ -149,7 +149,7 @@ def test_tags_unique(database):
     database.add(entry)
     database.commit()
     entry.tags.append(Tag('foo'))
-    with pytest.raises((sqlalchemy.exc.SAWarning, sqlalchemy.orm.exc.FlushError)):
+    with pytest.raises((sqlalchemy.exc.SAWarning, sqlalchemy.orm.exc.FlushError, sqlalchemy.exc.IntegrityError)):
         database.commit()
 
 
@@ -278,7 +278,7 @@ def test_tag_duplicates_before_adding(database):
     database.tag(entry2, 'tag')
     database.add(entry1)
     database.add(entry2)
-    with pytest.raises((sqlalchemy.exc.SAWarning, sqlalchemy.orm.exc.FlushError)):
+    with pytest.raises((sqlalchemy.exc.SAWarning, sqlalchemy.orm.exc.FlushError, sqlalchemy.exc.IntegrityError)):
         database.commit()
 
 
@@ -446,7 +446,7 @@ def test_add_already_existing_entry_ignore(database):
 @pytest.mark.remote_data
 def test_add_entry_from_hek_qr(database):
     hek_res = hek.HEKClient().search(
-        net_attrs.Time('2011/08/09 07:23:56', '2011/08/09 07:24:00'),
+        net_attrs.Time('2020/08/09 07:23:56', '2020/08/09 08:23:56'),
         hek.attrs.EventType('FL'))
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
@@ -457,9 +457,7 @@ def test_add_entry_from_hek_qr(database):
 
 @pytest.mark.remote_data
 def test_hek_query_download(monkeypatch, database, tmpdir):
-
     assert len(database) == 0
-
     records = ['94_1331820530-1331820530', '94_1331820542-1331820542',
                '94_1331820554-1331820554', '94_1331820566-1331820566',
                '94_1331820578-1331820578', '94_1331820590-1331820590',
@@ -631,11 +629,11 @@ def test_add_entries_from_qr_ignore_duplicates(database, query_result):
 def test_add_entry_fido_search_result(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
-    assert len(database) == 66
+    assert len(database) == 35
     database.undo()
     assert len(database) == 0
     database.redo()
-    assert len(database) == 66
+    assert len(database) == 35
 
 
 @pytest.mark.remote_data
@@ -654,7 +652,7 @@ def test_add_entries_from_fido_search_result_JSOC_client(database):
 def test_add_entries_from_fido_search_result_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
-    assert len(database) == 66
+    assert len(database) == 35
     with pytest.raises(EntryAlreadyAddedError):
         database.add_from_fido_search_result(fido_search_result)
 
@@ -663,9 +661,9 @@ def test_add_entries_from_fido_search_result_duplicates(database, fido_search_re
 def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
-    assert len(database) == 66
+    assert len(database) == 35
     database.add_from_fido_search_result(fido_search_result, True)
-    assert len(database) == 2*66
+    assert len(database) == 2*35
 
 
 def test_add_fom_path(database):
