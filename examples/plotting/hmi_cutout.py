@@ -3,11 +3,12 @@
 HMI Showcase: Cutout
 ====================
 
-This example demonstrates how to plot a cutout region of a `~sunpy.map.Map` with connector lines
-that indicate the region of interest in the full-disk image.
+This example demonstrates how to plot a cutout region of a `~sunpy.map.Map`
+with connector lines that indicate the region of interest in the full-disk
+image.
 
-Since this example deals with the creation of a specific style of image, there are multiple lines that deal directly with matplotlib axes.
-Furthermore, unlike other examples, since this deals with the creation of one figure, there are fewer breaks in the example.
+Since this example deals with the creation of a specific style of image, there
+are multiple lines that deal directly with matplotlib axes.
 """
 import matplotlib.colors
 import matplotlib.pyplot as plt
@@ -29,14 +30,16 @@ right_corner = SkyCoord(Tx=158*u.arcsec, Ty=350*u.arcsec, frame=magnetogram.coor
 
 ##############################################################################
 # We clean up the magnetogram by masking off all data that is beyond the solar
-# limb. From here on, the rest of the comments will be inside the code block.
+# limb.
 
 hpc_coords = sunpy.map.all_coordinates_from_map(magnetogram)
 mask = ~sunpy.map.coordinate_is_on_solar_disk(hpc_coords)
 magnetogram_big = sunpy.map.Map(magnetogram.data, magnetogram.meta, mask=mask)
 
+##############################################################################
+# We create the figure in two stages.   From here on, the rest of the comments
+# will be inside the code block.
 
-# We create the figure in two stages.
 # The first stage is plotting the full-disk magnetogram.
 fig = plt.figure(figsize=(7.2, 4.8))
 
@@ -68,6 +71,7 @@ lon, lat = ax2.coords[0], ax2.coords[1]
 lon.frame.set_linewidth(1)
 lat.frame.set_linewidth(1)
 lon.set_axislabel('Helioprojective Longitude',)
+lon.set_ticks_position('b')
 lat.set_axislabel('Helioprojective Latitude',)
 lat.set_axislabel_position('r')
 lat.set_ticks_position('r')
