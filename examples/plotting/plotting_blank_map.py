@@ -4,7 +4,7 @@ Plot positions on a blank map
 =============================
 
 This example showcases how to plot positions on a blank map.
-It is commonly seen in papers and presentations to show HPC positions of events that occurred at
+It is commonly used to show HelioProjective Cartesian (HPC) positions of events that occurred at
 different times and therefore no single observation is appropriate.
 """
 
@@ -20,13 +20,13 @@ from sunpy.coordinates import frames
 ################################################################################
 # First we will create a blank map using with an array of zeros.
 # Since there is no WCS information, we will need to construct a header to pass to Map.
-data = np.full((100, 100), np.nan)
+data = np.full((10, 10), np.nan)
 
 # Define coordinates and frame of reference and make the header using sunpy.map.make_fitswcs_header
 skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28',
                     observer='earth', frame=frames.Helioprojective)
 # Scale set to the following for solar limb to be in the field of view
-header = sunpy.map.make_fitswcs_header(data, skycoord, scale=[3, 3]*u.arcsec/u.pixel)
+header = sunpy.map.make_fitswcs_header(data, skycoord, scale=[220, 220]*u.arcsec/u.pixel)
 
 # Use sunpy.map.Map to create the blank map
 blank_map = sunpy.map.Map(data, header)
