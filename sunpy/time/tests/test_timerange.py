@@ -276,3 +276,19 @@ def test_get_dates_daylist_less_24_hours():
     assert len(daylist) == 2
     assert daylist[0] == day_one
     assert daylist[1] == day_two
+
+
+def test_intersects():
+    tr1 = sunpy.time.TimeRange('2020-01-01', '2020-01-02')
+    tr2 = sunpy.time.TimeRange('2020-01-03', '2020-01-04')
+    assert not tr1.intersects(tr2)
+    assert not tr2.intersects(tr1)
+
+    # Check interval edges intersect
+    tr2 = sunpy.time.TimeRange('2020-01-02', '2020-01-04')
+    assert tr1.intersects(tr2)
+    assert tr2.intersects(tr1)
+
+    tr2 = sunpy.time.TimeRange('2020-01-01', '2020-01-04')
+    assert tr1.intersects(tr2)
+    assert tr2.intersects(tr1)
