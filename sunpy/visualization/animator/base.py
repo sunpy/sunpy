@@ -46,7 +46,8 @@ class BaseFuncAnimator:
         of values for all points of the slider.
         (The slider update function decides which to support.)
     fig: `matplotlib.figure.Figure`, optional
-        `~matplotlib.figure.Figure` to use. Defaults to `None`.
+        `~matplotlib.figure.Figure` to use. Defaults to `None`, in which case a new
+        figure is created.
     interval: `int`, optional
         Animation interval in milliseconds. Defaults to 200.
     colorbar: `bool`, optional
@@ -115,7 +116,11 @@ class BaseFuncAnimator:
         self._set_active_slider(0)
 
         # Set the current axes to the main axes so commands like plt.ylabel() work.
-        plt.sca(self.axes)
+        #
+        # Only do this if figure has a manager, so directly constructed figures
+        # (ie. via matplotlib.figure.Figure()) work.
+        if hasattr(self.fig.canvas, "manager") and self.fig.canvas.manager is not None:
+            plt.sca(self.axes)
 
         # Do Plot
         self.im = self.plot_start_image(self.axes)
@@ -147,7 +152,10 @@ class BaseFuncAnimator:
         Parameters
         ----------
         axes: `matplotlib.axes.Axes`, optional
-            The `matplotlib.axes.Axes` to animate. Defaults to `None`.
+            The `matplotlib.axes.Axes` to animate. Defaults to `None`, in which
+            case the Axes associated with this animator are used. Passing a
+            custom Axes can be useful if you want to create the animation on
+            a custom figure that is not the figure set up by this Animator.
         slider: `int`, optional
             The slider to animate along. Defaults to 0.
         startframe: `int`, optional
@@ -162,7 +170,7 @@ class BaseFuncAnimator:
         Extra keywords are passed to `matplotlib.animation.FuncAnimation`.
         """
         if not axes:
-            axes = plt.gca()
+            axes = self.axes
         anim_fig = axes.get_figure()
 
         if endframe is None:
@@ -205,7 +213,7 @@ class BaseFuncAnimator:
         self.fig.canvas.mpl_connect('key_press_event', self._key_press)
 
     def _add_colorbar(self, im):
-        self.colorbar = plt.colorbar(im, self.cax)
+        self.colorbar = self.fig.colorbar(im, self.cax)
 
 # =============================================================================
 #   Figure event callback functions
