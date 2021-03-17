@@ -118,6 +118,17 @@ def carrington_rotation_time(crot, longitude: u.deg = None):
     Returns
     -------
     `astropy.time.Time`
+
+    Examples
+    --------
+    >>> from sunpy.coordinates.sun import carrington_rotation_time
+    >>> import astropy.units as u
+    >>> carrington_rotation_time(2242)
+    <Time object: scale='utc' format='iso' value=2021-03-17 22:31:37.030>
+    >>> carrington_rotation_time(2000.25)
+    <Time object: scale='utc' format='iso' value=2003-02-27 02:52:57.315>
+    >>> carrington_rotation_time(2000, 270*u.deg)
+    <Time object: scale='utc' format='iso' value=2003-02-27 02:52:57.315>
     """
     crot = crot << u.one
     if longitude is not None:
