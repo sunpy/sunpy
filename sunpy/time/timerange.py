@@ -443,3 +443,26 @@ class TimeRange:
         """
         this_time = parse_time(time)
         return this_time >= self.start and this_time <= self.end
+
+    def intersects(self, other):
+        """
+        Return `True` if this interval overlaps with *other*.
+
+        Parameters
+        ----------
+        other : sunpy.time.TimeRange
+            Other `~sunpy.time.TimeRange` to check for intersection.
+
+        Notes
+        -----
+        Both intervals are treated as closed, i.e., their endpoints are included.
+        """
+        # Order intervals so int1 has the earliest start time
+        if other.start > self.start:
+            int_first = self
+            int_second = other
+        else:
+            int_first = other
+            int_second = self
+
+        return int_second.start <= int_first.end
