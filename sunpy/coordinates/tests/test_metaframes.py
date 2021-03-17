@@ -84,8 +84,10 @@ def test_class_creation(indirect_fixture):
 
     # Check that one-leg transformations have been created
     assert len(frame_transform_graph.get_transform(rot_class, rot_class).transforms) == 1
-    assert len(frame_transform_graph.get_transform(f.HeliographicStonyhurst, rot_class).transforms) == 1
-    assert len(frame_transform_graph.get_transform(rot_class, f.HeliographicStonyhurst).transforms) == 1
+    assert len(frame_transform_graph.get_transform(
+        f.HeliographicStonyhurst, rot_class).transforms) == 1
+    assert len(frame_transform_graph.get_transform(
+        rot_class, f.HeliographicStonyhurst).transforms) == 1
 
     # Check that the base frame is in the cache
     assert base_class in _rotatedsun_cache
@@ -264,7 +266,7 @@ def test_obstime_change_loopback(indirect_fixture):
 
 
 @pytest.mark.parametrize("indirect_fixture",
-                         ["rot_hgs", "rot_hgc", "rot_hci", "rot_hcc", "rot_hpc", "rot_hme"], indirect=True)
+                         ["rot_hgs", "rot_hgc", "rot_hci", "rot_hcc", "rot_hpc"], indirect=True)
 def test_tranformation_to_nonobserver_frame(indirect_fixture):
     base_class, rot_frame = indirect_fixture
 
