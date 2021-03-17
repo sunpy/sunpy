@@ -25,6 +25,7 @@ data = np.full((10, 10), np.nan)
 # Define coordinates and frame of reference and make the header using sunpy.map.make_fitswcs_header
 skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28',
                     observer='earth', frame=frames.Helioprojective)
+
 # Scale set to the following for solar limb to be in the field of view
 header = sunpy.map.make_fitswcs_header(data, skycoord, scale=[220, 220]*u.arcsec/u.pixel)
 
