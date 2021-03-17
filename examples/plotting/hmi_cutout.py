@@ -21,38 +21,36 @@ import sunpy.map
 from sunpy.data.sample import HMI_LOS_IMAGE
 
 ##############################################################################
-# Firstly, we will use the HMI LOS image within the sunpy sample data and focus
-# the cutout over an active region near the solar center.
+# First, we use the sample HMI LOS image and focus the cutout over an active
+# region near the solar center.
 
 magnetogram = sunpy.map.Map(HMI_LOS_IMAGE).rotate()
 left_corner = SkyCoord(Tx=-142*u.arcsec, Ty=50*u.arcsec, frame=magnetogram.coordinate_frame)
 right_corner = SkyCoord(Tx=158*u.arcsec, Ty=350*u.arcsec, frame=magnetogram.coordinate_frame)
 
 ##############################################################################
-# As there is "data" off the limb of the magetogram, we will need to mask it away.
-# We will create a second sunpy map that holds this masked data for use later.
-# From here the rest of the comments will be inside the code block.
+# We clean up the magnetogram by masking off all data that is beyond the solar
+# limb.  From here on, the rest of the comments will be inside the code block.
 
-x, y = np.meshgrid(*[np.arange(v.value) for v in magnetogram.dimensions]) * u.pixel
-hpc_coords = magnetogram.pixel_to_world(x, y)
-solar_rad = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / magnetogram.rsun_obs
-mask = np.ma.masked_greater(solar_rad, 1)
-magnetogram_big = sunpy.map.Map(magnetogram.data, magnetogram.meta, mask=mask.mask)
+hpc_coords = sunpy.map.all_coordinates_from_map(magnetogram)
+mask = ~sunpy.map.coordinate_is_on_solar_disk(hpc_coords)
+magnetogram_big = sunpy.map.Map(magnetogram.data, magnetogram.meta, mask=mask)
 
 
-# The next stage is to setup the figure in two stages.
-# The first stage is dealing with the full disk image.
+# We create the figure in two stages.
+# The first stage is plotting the full-disk magnetogram.
 
-fig = plt.figure()
+fig = plt.figure(figsize=(7.2, 4.8))
 
-# We want to create a nice normalation range for the image
+# We create a nice normalization range for the image
 
 norm = matplotlib.colors.SymLogNorm(50, vmin=-7.5e2, vmax=7.5e2)
 
-# Plot the first magnetogram
+# Plot the full-disk magnetogram
 
 ax1 = fig.add_subplot(121, projection=magnetogram_big)
 magnetogram_big.plot(axes=ax1, cmap='RdBu_r', norm=norm, annotate=False,)
+magnetogram_big.draw_grid(axes=ax1, color='k', alpha=0.25, lw=0.5)
 
 # These lines deal with hiding the axis, its ticks and labels
 
@@ -64,36 +62,31 @@ lat.set_ticks_visible(False)
 lon.set_ticklabel_visible(False)
 lat.set_ticklabel_visible(False)
 
-# We will draw the rectangle around the region we plan to showcase in the cutout image.
+# We draw the rectangle around the region we plan to showcase in the cutout image.
 
 magnetogram_big.draw_rectangle(left_corner, height=right_corner.Tx-left_corner.Tx,
                                width=right_corner.Ty-left_corner.Ty, color='k', lw=1)
-# As well as draw the full cooridate grid on top.
-
-magnetogram_big.draw_grid(axes=ax1, color='k', alpha=0.25, lw=0.5)
 
 
-# Following this, we will now deal with the zoomed-in magnetogram.
+# The second stage is plotting the zoomed-in magnetogram.
 
 magnetogram_small = magnetogram.submap(left_corner, top_right=right_corner)
 ax2 = fig.add_subplot(122, projection=magnetogram_small)
 im = magnetogram_small.plot(axes=ax2, norm=norm, cmap='RdBu_r', annotate=False,)
 ax2.grid(alpha=0)
+
+# Unlike the full-disk image, here we just clean up the axis labels and ticks.
+
 lon, lat = ax2.coords[0], ax2.coords[1]
-
-# Unlike the full disk image, here we will just clean up the axis labels and ticks.
-
 lon.frame.set_linewidth(1)
 lat.frame.set_linewidth(1)
-lon.set_ticklabel()
-lat.set_ticklabel(rotation='vertical',)
 lon.set_axislabel('Helioprojective Longitude',)
 lat.set_axislabel('Helioprojective Latitude',)
 lat.set_axislabel_position('r')
 lat.set_ticks_position('r')
 lat.set_ticklabel_position('r')
 
-# Now for the finishing touches, we want to add two lines that will connect
+# Now for the finishing touches, we add two lines that will connect
 # the two images as well as a colorbar.
 
 xpix, ypix = magnetogram_big.world_to_pixel(right_corner)
@@ -114,12 +107,12 @@ pos = ax2.get_position().get_points()
 cax = fig.add_axes([
     pos[0, 0], pos[1, 1]+0.01, pos[1, 0]-pos[0, 0], 0.025
 ])
-cbar = fig.colorbar(im, cax=cax, orientation='horizontal', label="abc")
+cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 
 # For the colorbar we want it to have three fixed ticks
 
 cbar.locator = matplotlib.ticker.FixedLocator([-1e2, 0, 1e2])
-cbar.set_label("LOS Magnetic Field [Gauss]", labelpad=-40, rotation=0)
+cbar.set_label("LOS Magnetic Field [gauss]", labelpad=-40, rotation=0)
 cbar.update_ticks()
 cbar.ax.xaxis.set_ticks_position('top')
 
