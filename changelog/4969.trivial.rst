@@ -1,0 +1,1 @@
+The testing suite now raises a warning if the `~matplotlib.pyplot` figure stack is not empty prior to running a test, and it closes all open figures after finishing each test.
