@@ -10,7 +10,7 @@ import numpy as np
 
 import astropy.time
 import astropy.units as u
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 
 # This is not called but imported to register it
 from sunpy.time.utime import TimeUTime  # NOQA
@@ -63,6 +63,8 @@ TIME_FORMAT_LIST = [
     "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI
 ]
 
+_ONE_DAY_TIMEDELTA = TimeDelta(1 * u.day)
+
 
 def is_time_equal(t1, t2):
     """
@@ -100,15 +102,15 @@ def _regex_parse_time(inp, format):
     try:
         hour = match.group("hour")
     except IndexError:
-        return inp, astropy.time.TimeDelta(0 * u.day)
+        return inp, False
     if hour == "24":
         if not all(
                 _n_or_eq(_group_or_none(match, g, int), 00)
                 for g in ["minute", "second", "microsecond"]):
             raise ValueError
         from_, to = match.span("hour")
-        return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(1 * u.day)
-    return inp, astropy.time.TimeDelta(0 * u.day)
+        return inp[:from_] + "00" + inp[to:], True
+    return inp, False
 
 
 def find_time(string, format):
@@ -208,12 +210,15 @@ def convert_time_str(time_string, **kwargs):
     for time_format in TIME_FORMAT_LIST:
         try:
             try:
-                ts, time_delta = _regex_parse_time(time_string, time_format)
+                ts, add_one_day = _regex_parse_time(time_string, time_format)
             except TypeError:
                 break
             if ts is None:
                 continue
-            return Time.strptime(ts, time_format, **kwargs) + time_delta
+            t = Time.strptime(ts, time_format, **kwargs)
+            if add_one_day:
+                t += _ONE_DAY_TIMEDELTA
+            return t
         except ValueError:
             pass
 
