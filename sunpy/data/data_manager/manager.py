@@ -69,7 +69,8 @@ class DataManager:
                         file_path = uri_parse.netloc + uri_parse.path
                         file_hash = hash_file(file_path)
                     else:
-                        file_path, file_hash, _ = self._cache._download_and_hash([replace['uri']], self._namespace)
+                        file_path, file_hash, _ = self._cache._download_and_hash(
+                                                    [replace['uri']], self._namespace)
                     if replace['hash'] and file_hash != replace['hash']:
                         # if hash provided to replace function doesn't match the hash of the file
                         # raise error
