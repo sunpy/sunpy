@@ -3,6 +3,7 @@
   "sunpy.map.tests.test_compositemap.test_peek_composite_map": "2bbe873f63c7504447c229f880962a60fd1fcf7b8916388210ef8f9002654afa",
   "sunpy.map.tests.test_compositemap.test_plot_composite_map_linewidths": "7d8ab4c0ffecd45de6e2829fa343bb289e107fd3ce4bcc8e7243673f7e472d99",
   "sunpy.map.tests.test_mapsequence.test_norm_animator": "a400eef26fdd915ccf12769031bd8dadedbf8f6a93e31cd5982bffe2484702ee",
+  "sunpy.map.tests.test_mapsequence.test_map_sequence_plot": "1e5435af7bb854d47ebeabf354350f27bf989325aa5d77b930bdcdb043ce25df",
   "sunpy.map.tests.test_plotting.test_plot_aia171": "1e5435af7bb854d47ebeabf354350f27bf989325aa5d77b930bdcdb043ce25df",
   "sunpy.map.tests.test_plotting.test_plot_rotated_aia171": "d07b653c762bf20478ea33e9712e4eacd7bd0a0fc8dbe16964e8b4374f40120d",
   "sunpy.map.tests.test_plotting.test_plot_aia171_clip": "241cb73a89ca5d80b9eb673e6e0fda97b842b38be3ea3f25c06e2f8aeb6a4dfc",
