@@ -1463,7 +1463,7 @@ class GenericMap(NDData):
         pad_y = int(np.max((diff[0], 0)))
 
         if issubclass(self.data.dtype.type, numbers.Integral) and isinstance((missing), float):
-            warnings.warn("Integer map data is incompatibe with specified missing value",
+            warnings.warn("Integer map data is incompatible with specified missing value",
                           SunpyUserWarning)
 
         new_data = np.pad(self.data,
