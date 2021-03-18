@@ -22,6 +22,7 @@ from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 # Import erfa via astropy to make sure we are using the same ERFA library as Astropy
 from astropy.coordinates.sky_coordinate import erfa
+from astropy.tests.helper import quantity_allclose
 from astropy.time import Time
 
 from sunpy import log
@@ -91,23 +92,52 @@ def sky_position(t='now', equinox_of_date=True):
     return ra, dec
 
 
-def carrington_rotation_time(crot):
+@u.quantity_input
+def carrington_rotation_time(crot, longitude: u.deg = None):
     """
     Return the time of a given Carrington rotation.
 
+    Fractional Carrington rotation numbers can be provided in two ways:
+    * Fractional numbers to ``crot``
+    * Integer numbers to ``crot`` and a Carrington longitude to ``longitude``
+
+    Inputs can be arrays.  If both ``crot`` and ``longitude`` are provided, the
+    output shape will be the broadcasted combination.
     The round-trip from this method to `carrington_rotation_number` has
     absolute errors of < 0.11 seconds.
 
     Parameters
     ----------
-    crot : float
-        Carrington rotation number. Can be a fractional cycle number.
+    crot : `int`, `float`, `~astropy.units.Quantity`
+        Carrington rotation number(s). Can be a fractional rotation number.
+
+    longitude : `~astropy.units.Quantity`
+        Carrington longitude(s), which must be > 0 degrees and <= 360 degrees.
+        If provided, ``crot`` must be strictly integral.
 
     Returns
     -------
-    astropy.time.Time
+    `astropy.time.Time`
+
+    Examples
+    --------
+    >>> from sunpy.coordinates.sun import carrington_rotation_time
+    >>> import astropy.units as u
+    >>> carrington_rotation_time(2242)
+    <Time object: scale='utc' format='iso' value=2021-03-17 22:31:37.030>
+    >>> carrington_rotation_time(2000.25)
+    <Time object: scale='utc' format='iso' value=2003-02-27 02:52:57.315>
+    >>> carrington_rotation_time(2000, 270*u.deg)
+    <Time object: scale='utc' format='iso' value=2003-02-27 02:52:57.315>
     """
-    estimate = (constants.mean_synodic_period.to_value('day') *
+    crot = crot << u.one
+    if longitude is not None:
+        if not quantity_allclose(crot%1, 0):
+            raise ValueError("Carrington rotation number(s) must be integral if `longitude` is provided.")
+        if (longitude <= 0*u.deg).any() or (longitude > 360*u.deg).any():
+            raise ValueError("Carrington longitude(s) must be > 0 degrees and <= 360 degrees.")
+        crot = crot + (1 - longitude/(360*u.deg))
+    estimate = (constants.mean_synodic_period *
                 (crot - 1)) + constants.first_carrington_rotation
 
     # The above estimate is inaccurate (see comments below in carrington_rotation_number),
