@@ -38,7 +38,7 @@ class Cache:
         self._cache_dir = Path(cache_dir)
         self._expiry = expiry if expiry is None else TimeDelta(expiry)
 
-    def download(self, urls, redownload=False):
+    def download(self, urls, namespace, redownload=False):
         """
         Downloads the files from the urls.
 
@@ -83,7 +83,7 @@ class Cache:
             else:
                 return Path(details['file_path'])
 
-        file_path, file_hash, url = self._download_and_hash(urls)
+        file_path, file_hash, url = self._download_and_hash(urls, namespace)
 
         self._storage.store({
             'file_hash': file_hash,
@@ -140,7 +140,7 @@ class Cache:
         details = self._storage.find_by_key('url', url)
         return details
 
-    def _download_and_hash(self, urls):
+    def _download_and_hash(self, urls, namespace):
         """
         Downloads the file and returns the path, hash and url it used to download.
 
@@ -155,7 +155,7 @@ class Cache:
             Path, hash and URL of the file.
         """
         def download(url):
-            path = self._cache_dir / get_filename(urlopen(url), url)
+            path = self._cache_dir / (namespace + get_filename(urlopen(url), url))
             # replacement_filename returns a string and we want a Path object
             path = Path(replacement_filename(str(path)))
             self._downloader.download(url, path)
