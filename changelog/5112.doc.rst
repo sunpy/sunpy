@@ -1,1 +1,0 @@
-Updated the `Masking out the solar disk` example by generating the mask using `sunpy.map.coordinate_is_on_solar_disk` instead of calculating normalized radial position for each pixel.
