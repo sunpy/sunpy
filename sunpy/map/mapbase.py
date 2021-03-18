@@ -11,6 +11,7 @@ from io import BytesIO
 from base64 import b64encode
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
+from packaging import version
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -1462,7 +1463,10 @@ class GenericMap(NDData):
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
 
-        if issubclass(self.data.dtype.type, numbers.Integral) and isinstance((missing), float):
+        if version.parse(np.__version__) > version.parse("1.20.0"):
+            raise ImportError('Missing NaN value is not supported for Integer map')
+
+        if issubclass(self.data.dtype.type, numbers.Integral) and (missing == np.nan):
             warnings.warn("Integer map data is incompatible with specified missing value",
                           SunpyUserWarning)
 

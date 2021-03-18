@@ -4,6 +4,7 @@ Test Generic Map
 import os
 import tempfile
 from unittest import mock
+from packaging import version
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -754,10 +755,15 @@ def test_rotate_with_incompatible_missing_dtype():
     header = sunpy.map.make_fitswcs_header(data, coord)
 
     test_map = sunpy.map.Map(data, header)
-    with pytest.warns(SunpyUserWarning,
-                      match='Integer map data is incompatilbe with specified missing value'):
-        test_map.rotate(order=3, missing=np.nan)
 
+    if version.parse(np.__version__) > version.parse("1.20.0"):
+        with pytest.raises(ImportError,
+                           match="Missing NaN value is not supported for Integer map"):
+            test_map.rotate(order=3, missing=np.nan)
+    else:
+        with pytest.warns(SunpyUserWarning,
+                          match='Integer map data is incompatilbe with specified missing value'):
+            test_map.rotate(order=3, missing=np.nan)
 
 
 def test_rotate_pad_crpix(generic_map):
