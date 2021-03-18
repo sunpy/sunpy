@@ -190,3 +190,10 @@ def test_norm_animator(hmi_test_map):
     ani = seq.peek()
     ani._slider_changed(1, ani.sliders[ani.active_slider]._slider)
     return ani.fig
+
+
+@figure_test
+def test_map_sequence_plot(aia171_test_map, hmi_test_map):
+    map_sequence = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
+    map_sequence.plot()
+    

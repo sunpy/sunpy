@@ -1,5 +1,6 @@
 import os
 
+import numpy as np
 import pytest
 
 from astropy.visualization.wcsaxes import WCSAxes
@@ -39,7 +40,6 @@ def test_axes(test_map_sequence):
     assert isinstance(start_img.axes, WCSAxes)
 
 
-@figure_test
 def test_map_sequence_animator_wcs_update_plot(test_map_sequence):
     map_animator = MapSequenceAnimator(test_map_sequence)
     map1 = map_animator.im.get_array()
