@@ -12,7 +12,7 @@ def test_basic(storage, downloader, data_function):
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
-    assert Path(storage._store[0]['file_path']).name == ('test_file')
+    assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
 def test_cache(manager, storage, downloader, data_function):
@@ -24,7 +24,7 @@ def test_cache(manager, storage, downloader, data_function):
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
-    assert Path(storage._store[0]['file_path']).name == ('test_file')
+    assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
 def test_file_tampered(manager, storage, downloader, data_function):
@@ -32,13 +32,13 @@ def test_file_tampered(manager, storage, downloader, data_function):
     Test calling function multiple times does not redownload.
     """
     data_function()
-    write_to_test_file(manager._tempdir + '/test_file', 'b')
+    write_to_test_file(manager._tempdir + '/sunpy.test_file', 'b')
     with pytest.warns(SunpyUserWarning):
         data_function()
 
     assert downloader.times_called == 2
     assert len(storage._store) == 1
-    assert Path(storage._store[0]['file_path']).name == ('test_file')
+    assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
 def test_wrong_hash_provided(manager):
@@ -60,7 +60,7 @@ def test_skip_all(manager, storage, downloader, data_function):
 
     assert downloader.times_called == 2
     assert len(storage._store) == 1
-    assert Path(storage._store[0]['file_path']).name == ('test_file')
+    assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
 def test_override_file(manager, storage, downloader, data_function, tmpdir):
@@ -72,7 +72,7 @@ def test_override_file(manager, storage, downloader, data_function, tmpdir):
         """
         Function to test whether the file name is test_file.
         """
-        assert manager.get('test_file').name == ('test_file')
+        assert manager.get('test_file').name == ('sunpy.test_file')
 
     def override_file_tester(manager):
         """
