@@ -42,8 +42,10 @@ def test_axes(test_map_sequence):
 @figure_test
 def test_map_sequence_animator_wcs_update_plot(test_map_sequence):
     map_animator = MapSequenceAnimator(test_map_sequence)
+    map1 = map_animator.im.get_array()
     map_animator.updatefig(1, map_animator.im, map_animator.sliders[0]._slider)
-    return map_animator.fig
+    map2 = map_animator.im.get_array()
+    assert np.all(map1.data != map2.data)
 
 
 @figure_test
