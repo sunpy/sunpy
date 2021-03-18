@@ -1,2 +1,2 @@
-Added warning to `sunpy.map.GenericMap.rotate` when specified `missing` value is not compatible
-with `GenericMap`.
+Added warning to `sunpy.map.GenericMap.rotate` when specified ``missing`` value is not compatible
+with the data type of the `~sunpy.map.GenericMap`.
