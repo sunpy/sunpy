@@ -1,5 +1,6 @@
 import warnings
 
+import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
@@ -470,6 +471,39 @@ def test_carrington_rotation_starttime(crot, julian_days):
         warnings.filterwarnings("ignore", category=ErfaWarning)
         assert_quantity_allclose(sun.carrington_rotation_time(crot).tt.jd * u.day,
                                  julian_days * u.day, atol=0.11*u.s)
+
+
+@pytest.mark.parametrize("crot, longitude, crot_fractional",
+                         [(2000, 360, 2000.0),
+                          (2000.0, 270, 2000.25)
+                          ])
+def test_carrington_rotation_time_longitude(crot, longitude, crot_fractional):
+    assert sun.carrington_rotation_time(crot*u.one, longitude*u.deg) == \
+        sun.carrington_rotation_time(crot_fractional*u.one)
+
+
+@pytest.mark.parametrize("crot, longitude, crot_fractional",
+                         [
+                             (np.array([2000, 2000]), np.array(
+                                 [180, 90]), np.array([2000.5, 2000.75])),
+                             (2000, np.array([180, 90]), np.array([2000.5, 2000.75])),
+                             (np.array([2000, 2000]), 180, np.array([2000.5, 2000.5]))
+                         ])
+def test_carrington_rotation_time_longitude_numpy(crot, longitude, crot_fractional):
+    assert all(sun.carrington_rotation_time(crot*u.one, longitude*u.deg) ==
+               sun.carrington_rotation_time(crot_fractional*u.one))
+
+
+@pytest.mark.parametrize("crot, longitude",
+                         [
+                             (2000, 0),
+                             (2000, -10),
+                             (2000, 400),
+                             (2000.5, 180),
+                         ])
+def test_carrington_rotation_time_longitude_err(crot, longitude):
+    with pytest.raises(ValueError):
+        sun.carrington_rotation_time(crot*u.one, longitude*u.deg)
 
 
 def test_carrington_rotation_roundtrip():
