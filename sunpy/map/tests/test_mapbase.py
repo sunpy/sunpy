@@ -748,15 +748,16 @@ def test_rotate(aia171_test_map):
 
 
 def test_rotate_with_incompatible_missing_dtype():
-    data = np.arange(0,100).reshape(10,10)
-    coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28',
-                     observer = 'earth', frame = sunpy.coordinates.Helioprojective)
+    data = np.arange(0, 100).reshape(10, 10)
+    coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime='2013-10-28',
+                     observer='earth', frame=sunpy.coordinates.Helioprojective)
     header = sunpy.map.make_fitswcs_header(data, coord)
 
     test_map = sunpy.map.Map(data, header)
     with pytest.warns(SunpyUserWarning,
                       match='Integer map data is incompatilbe with specified missing value'):
-        test_map.rotate(order = 3, missing = np.nan)
+        test_map.rotate(order=3, missing=np.nan)
+
 
 
 def test_rotate_pad_crpix(generic_map):
