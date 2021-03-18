@@ -749,7 +749,7 @@ def test_rotate_with_incompatible_missing_dtype():
 
     test_map = sunpy.map.Map(data, header)
 
-    if version.parse(np.__version__) > version.parse("1.20.0"):
+    if version.parse(np.__version__) >= version.parse("1.20.0"):
         with pytest.raises(ImportError,
                            match="Missing NaN value is not supported for Integer map"):
             test_map.rotate(order=3, missing=np.nan)
