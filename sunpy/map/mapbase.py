@@ -1463,7 +1463,7 @@ class GenericMap(NDData):
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
 
-        if version.parse(np.__version__) > version.parse("1.20.0"):
+        if version.parse(np.__version__) >= version.parse("1.20.0"):
             raise ImportError('Missing NaN value is not supported for Integer map')
 
         if issubclass(self.data.dtype.type, numbers.Integral) and (missing == np.nan):
