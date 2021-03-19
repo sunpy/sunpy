@@ -17,7 +17,6 @@ import numpy as np
 from matplotlib import cm
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
-from packaging import version
 
 import astropy.units as u
 import astropy.wcs
