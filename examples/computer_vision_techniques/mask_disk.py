@@ -23,9 +23,9 @@ hpc_coords = all_coordinates_from_map(aia)
 
 ###############################################################################
 # Now, we can create a mask from the coordinates by using another utility
-# function that gives us a mask that contains all the coordinates that are on
-# the solar disk(marked by True). We also make a slight change to the colormap
-# so that masked values are shown as black instead of the default white.
+# function that gives us a mask that has `True` for those coordinates that are
+# on the solar disk. We also make a slight change to the colormap so that
+# masked values are shown as black instead of the default white.
 mask = coordinate_is_on_solar_disk(hpc_coords)
 palette = aia.cmap
 palette.set_bad('black')
