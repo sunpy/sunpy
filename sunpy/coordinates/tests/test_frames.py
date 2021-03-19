@@ -448,3 +448,18 @@ def test_skycoord_hgs(args, kwargs):
     assert isinstance(sc.frame._data, SphericalRepresentation)
     # Check the value is correct
     assert_quantity_allclose(sc.radius, RSUN_METERS)
+
+
+def test_hpc_mutation():
+    # Check that Helioprojective does not mutate arguments
+    x_orig = -2.67507183
+    y_orig = 2.61410036
+    tx = x_orig * u.arcmin
+    ty = y_orig * u.arcmin
+    obstime = "2020-01-01"
+
+    hpc = Helioprojective(tx, ty, observer="earth", obstime=obstime)
+
+    assert tx.to_value(u.arcmin) == x_orig
+    assert ty.to_value(u.arcmin) == y_orig
+
