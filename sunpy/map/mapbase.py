@@ -1484,10 +1484,9 @@ class GenericMap(NDData):
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
 
-        if issubclass(self.data.dtype.type, numbers.Integral) and (np.isnan(missing)):
-            if version.parse(np.__version__) >= version.parse("1.20.0"):
-                raise ImportError('Missing NaN value is not supported for Integer map')
-            warnings.warn("Integer map data is incompatible with specified missing value",
+        if issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0)):
+            warnings.warn("The specified `missing` value is not an integer, but the data "
+                          "array is of integer type, so the output may be strange.",
                           SunpyUserWarning)
 
         new_data = np.pad(self.data,
