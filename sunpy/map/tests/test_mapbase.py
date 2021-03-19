@@ -756,8 +756,8 @@ def test_rotate_with_incompatible_missing_dtype():
     header = sunpy.map.make_fitswcs_header(data, coord)
     test_map = sunpy.map.Map(data, header)
     with pytest.warns(SunpyUserWarning,
-                        match="The specified `missing` value is not an integer, but the data "
-                        "array is of integer type, so the output may be strange."):
+                      match="The specified `missing` value is not an integer, but the data "
+                      "array is of integer type, so the output may be strange."):
         test_map.rotate(order=3, missing=np.nan)
 
 
