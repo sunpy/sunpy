@@ -8,7 +8,6 @@ from unittest import mock
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from packaging import version
 
 import astropy.units as u
 import astropy.wcs
