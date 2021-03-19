@@ -750,12 +750,13 @@ def test_rotate_with_incompatible_missing_dtype():
     test_map = sunpy.map.Map(data, header)
 
     if version.parse(np.__version__) >= version.parse("1.20.0"):
-        with pytest.raises(ImportError,
-                           match="Missing NaN value is not supported for Integer map"):
+        with pytest.raises(ValueError,
+                           match="cannot convert float NaN to integer"):
             test_map.rotate(order=3, missing=np.nan)
     else:
         with pytest.warns(SunpyUserWarning,
-                          match='Integer map data is incompatilbe with specified missing value'):
+                          match="The specified `missing` value is not an integer, but the data "
+                          "array is of integer type, so the output may be strange."):
             test_map.rotate(order=3, missing=np.nan)
 
 
