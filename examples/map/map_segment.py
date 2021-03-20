@@ -36,7 +36,7 @@ segment = np.logical_and(all_hgs.lon < 10 * u.deg, all_hgs.lon > 0 * u.deg)
 ###############################################################################
 # Let's plot the segment separately
 new_data = np.asarray(segment, dtype='float')
-new_data[new_data == False] = np.nan
+new_data = np.where(new_data == False, np.nan, new_data)
 
 new_frame_map = sunpy.map.Map(new_data * smap.data, smap.meta)
 fig = plt.figure()
