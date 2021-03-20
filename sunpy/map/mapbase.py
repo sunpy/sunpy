@@ -189,6 +189,7 @@ class GenericMap(NDData):
         `is_datasource_for` attribute.
         This is then passed into the Map Factory so we can register them.
         """
+        cls.__doc__ = cls.__doc__ + '\n' + GenericMap.__doc__.split("data array")[1].split("Examples")[0]
         super().__init_subclass__(**kwargs)
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
