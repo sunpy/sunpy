@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pytest
+from packaging import version
 
 import astropy.units as u
 from astropy.coordinates import Longitude, SkyCoord
@@ -199,6 +200,8 @@ def test_consistency_with_rotatedsunframe():
     assert_quantity_allclose(result1.distance, result2.distance)
 
 
+@pytest.mark.xfail(version.parse(np.__version__) >= version.parse("1.20.0"),
+                   reason="numpy >= 1.20.0 doesn't allow NaN to int conversion")
 def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
