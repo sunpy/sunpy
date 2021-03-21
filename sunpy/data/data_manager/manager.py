@@ -1,4 +1,3 @@
-import inspect
 import pathlib
 import warnings
 import functools
@@ -51,12 +50,7 @@ class DataManager:
         def decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                self._namespace = func.__module__.lstrip('.').split('.')[0]
-                if self._namespace == '__main__':
-                    self._namespace = ''
-                else:
-                    self._namespace += '.'
-
+                self._namespace = self._get_module(func)
                 replace = self._skip_file.get(name, None)
                 if replace:
                     uri_parse = urlparse(replace['uri'])
@@ -193,3 +187,10 @@ class DataManager:
             if self._cache._get_by_url(url):
                 return True
         return False
+
+    def _get_module(self, func):
+        # Made into a separate function for the ability to patch in tests
+        module = func.__module__.lstrip('.').split('.')[0] + '.'
+        if module == '__main__.':
+            module = ''
+        return module

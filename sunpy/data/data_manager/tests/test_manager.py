@@ -160,3 +160,22 @@ def test_delete_db(sqlmanager, sqlstorage):
 
     # SQLite should not throw an error
     test_function()
+
+
+def test_same_file_id_different_module(downloader, storage, data_function, data_function_from_fake_module):
+    # Uses name 'test_file' to refer to the file
+    data_function()
+
+    # Change hash of the above file to allow MockDownloader to download another file
+    # Otherwise it will skip the download because a file with the same hash already exists
+    storage._store[0]['file_hash'] = 'abc'
+
+    # This function from a different module uses same name 'test_file' to refer to a different file
+    data_function_from_fake_module()
+
+    assert len(storage._store) == 2
+    assert downloader.times_called == 2
+
+    # Check if the files are namespaced correctly
+    assert Path(storage._store[0]['file_path']).name == 'sunpy.test_file'
+    assert Path(storage._store[1]['file_path']).name == 'fake_module.test_file'

@@ -72,3 +72,26 @@ def data_function(manager):
         manager_tester(manager)
 
     return foo
+
+
+@pytest.fixture
+def module_patched_manager(tmp_path, downloader, storage, mocker):
+    def _get_module(func):
+        return 'fake_module.'
+
+    module_patched_manager = DataManager(Cache(downloader, storage, tmp_path))
+    module_patched_manager._tempdir = str(tmp_path)
+    module_patched_manager._get_module = _get_module
+    m = mock.Mock()
+    m.headers = {'Content-Disposition': 'test_file'}
+    mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
+    yield module_patched_manager
+
+
+@pytest.fixture
+def data_function_from_fake_module(module_patched_manager):
+    @module_patched_manager.require('test_file', ['http://www.example.com/test_file'], mocks.MOCK_HASH)
+    def foo(manager_tester=lambda x: 1):
+        manager_tester(module_patched_manager)
+
+    return foo
