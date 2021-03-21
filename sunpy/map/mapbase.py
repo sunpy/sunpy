@@ -679,13 +679,21 @@ class GenericMap(NDData):
     @property
     def name(self):
         """Human-readable description of the Map."""
-        return self._base_name().format(measurement=self.measurement)
+        if self.measurement == 0 * u.Angstrom:
+            # Don't include measurement if it's the default fallback value
+            return self._base_name().format(measurement='')
+        else:
+            return self._base_name().format(measurement=self.measurement)
 
     @property
     def latex_name(self):
         """LaTeX formatted description of the Map."""
         if isinstance(self.measurement, u.Quantity):
-            return self._base_name().format(measurement=self.measurement._repr_latex_())
+            if self.measurement == 0 * u.Angstrom:
+                # Don't include measurement if it's the default fallback value
+                return self._base_name().format(measurement='')
+            else:
+                return self._base_name().format(measurement=self.measurement._repr_latex_())
         else:
             return self.name
 
