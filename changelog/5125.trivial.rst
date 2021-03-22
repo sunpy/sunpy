@@ -1,0 +1,2 @@
+Added tests for `sunpy.visualization.animator.mapsequenceanimator` and a test for using
+`plot()` with `sunpy.map.MapSequence`,
