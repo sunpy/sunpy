@@ -15,7 +15,7 @@ from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 
 import sunpy.map
-from sunpy.coordinates import Helioprojective, NorthOffsetFrame, RotatedSunFrame, transform_with_sun_center
+from sunpy.coordinates import NorthOffsetFrame
 from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
