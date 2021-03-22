@@ -16,11 +16,11 @@ from astropy.wcs import WCS
 
 import sunpy.map
 from sunpy.coordinates import Helioprojective, NorthOffsetFrame, RotatedSunFrame, transform_with_sun_center
-from sunpy.data.sample import AIA_171_ROLL_IMAGE
+from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
 # We start with the sample data.
-smap = sunpy.map.Map(AIA_171_ROLL_IMAGE)
+smap = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
 # A utility function gives us access to the helioprojective coordinate of each
