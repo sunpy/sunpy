@@ -41,15 +41,18 @@ new_frame_map = sunpy.map.Map(
     smap.meta,
     mask=np.logical_not(segment))
 fig = plt.figure()
-fig.add_subplot(projection=smap)
+ax = plt.subplot(projection=smap)
 new_frame_map.plot()
 plt.show()
 
 ###############################################################################
 # We can perform various mathematical operations on the extracted segment such
 # as averaging the pixel values or finding the sum of the segment.
-mean_pix = np.average(segment)
-sum_pix = np.sum(segment)
+new_frame_mask = np.ma.array(smap.data, mask=np.logical_not(segment))
+
+print(f'Original Map : mean = {smap.data.mean()}, sum = {smap.data.sum()}')
+print(
+    f'Segmented Map : mean = {new_frame_mask.mean()}, sum = {new_frame_mask.sum()}')
 
 ###############################################################################
 # This example can also be extended while using NorthOffsetFrame
@@ -68,17 +71,20 @@ segment = np.logical_and(
 
 ###############################################################################
 # Let's plot the ofsetted segment separately
-ofsetted_map = sunpy.map.Map(
+offsetted_map = sunpy.map.Map(
     smap.data,
     smap.meta,
     mask=np.logical_not(segment))
 fig = plt.figure()
-fig.add_subplot(projection=smap)
-ofsetted_map.plot()
+ax = plt.subplot(projection=smap)
+offsetted_map.plot()
 plt.show()
 
 ###############################################################################
 # We can also find the maximum, minimum or average pixel values of the segment
-mean_pix = np.average(segment)
-max_pix = np.max(segment*smap.data)
-min_pix = np.min(segment*smap.data)
+# and compare it with the original map.
+offset_mask = np.ma.array(smap.data, mask=np.logical_not(segment))
+print(
+    f'Original Map : mean = {smap.data.mean()}, maximum value = {smap.data.max()}, minimum value = {smap.data.min()}')
+print(
+    f'Segmented Map : mean = {offset_mask.mean()}, maximum value = {offset_mask.max()}, minimum value = {offset_mask.min()}')
