@@ -546,8 +546,8 @@ class AttrWalker:
         creators = list(self.createmm.registry.keys())
         appliers = list(self.applymm.registry.keys())
         return f"""{super().__repr__()}
-Registered creators: {creators}
-Registered appliers: {appliers}"""
+Registered creators:\n {creators}\n
+Registered appliers:\n {appliers}"""
 
     @staticmethod
     def _unknown_type(*args, **kwargs):
