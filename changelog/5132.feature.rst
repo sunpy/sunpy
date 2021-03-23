@@ -1,1 +1,1 @@
-Added Rigid Rotation Model to :func:`~sunpy.physics.differential_rotation.diff_rot`, which can be used by passing `rot_type` as `"rigid"`.
+Added Rigid Rotation Model to :func:`~sunpy.physics.differential_rotation.diff_rot`, which can be used by passing ``rot_type`` as "rigid".
