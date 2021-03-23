@@ -20,7 +20,7 @@ from sunpy.map import (
 from sunpy.map.header_helper import get_observer_meta
 from sunpy.sun.constants import sidereal_rotation_rate
 from sunpy.time import parse_time
-from sunpy.util import expand_list 
+from sunpy.util import expand_list
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
