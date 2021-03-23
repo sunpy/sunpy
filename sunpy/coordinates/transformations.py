@@ -47,6 +47,7 @@ from astropy.coordinates.transformations import (
     FunctionTransform,
     FunctionTransformWithFiniteDifference,
 )
+from astropy.time import Time
 
 from sunpy import log
 from sunpy.sun import constants
@@ -215,7 +216,7 @@ def _observers_are_equal(obs_1, obs_2):
     return np.atleast_1d((u.allclose(obs_1.lat, obs_2.lat) and
                           u.allclose(obs_1.lon, obs_2.lon) and
                           u.allclose(obs_1.radius, obs_2.radius) and
-                          obs_1.obstime == obs_2.obstime)).all()
+                          _times_are_equal(obs_1.obstime, obs_2.obstime))).all()
 
 
 def _check_observer_defined(frame):
@@ -226,6 +227,17 @@ def _check_observer_defined(frame):
         raise ConvertError("This transformation cannot be performed because the "
                            f"{frame.__class__.__name__} frame needs a specified obstime "
                            f"to fully resolve observer='{frame.observer}'.")
+
+
+def _times_are_equal(time_1, time_2):
+    # Checks whether times are equal
+    if isinstance(time_1, Time) and isinstance(time_2, Time):
+        # We explicitly perform the check in TAI to avoid possible numerical precision differences
+        # between a time in UTC and the same time after a UTC->TAI->UTC conversion
+        return np.all(time_1.tai == time_2.tai)
+
+    # We also deem the times equal if they are both None
+    return time_1 is None and time_2 is None
 
 
 # =============================================================================
@@ -240,7 +252,7 @@ def _transform_obstime(frame, obstime):
     If the frame's obstime is None, the frame is copied with the new obstime.
     """
     # If obstime is None or the obstime matches, nothing needs to be done
-    if obstime is None or np.all(frame.obstime == obstime):
+    if obstime is None or _times_are_equal(frame.obstime, obstime):
         return frame
 
     # Transform to the new obstime using the appropriate loopback transformation
@@ -455,7 +467,7 @@ def hpc_to_hpc(from_coo, to_frame):
     It does this by transforming through HGS.
     """
     if _observers_are_equal(from_coo.observer, to_frame.observer) and \
-       np.all(from_coo.obstime == to_frame.obstime):
+       _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
     _check_observer_defined(from_coo)
@@ -618,7 +630,7 @@ def hgs_to_hgs(from_coo, to_frame):
     """
     if to_frame.obstime is None:
         return from_coo.replicate()
-    elif np.all(from_coo.obstime == to_frame.obstime):
+    elif _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
@@ -632,7 +644,7 @@ def hgc_to_hgc(from_coo, to_frame):
     Convert between two Heliographic Carrington frames.
     """
     if _observers_are_equal(from_coo.observer, to_frame.observer) and \
-       np.all(from_coo.obstime == to_frame.obstime):
+       _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
     _check_observer_defined(from_coo)
@@ -652,7 +664,7 @@ def hcc_to_hcc(from_coo, to_frame):
     Convert between two Heliocentric frames.
     """
     if _observers_are_equal(from_coo.observer, to_frame.observer) and \
-       np.all(from_coo.obstime == to_frame.obstime):
+       _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
     _check_observer_defined(from_coo)
@@ -733,7 +745,7 @@ def hee_to_hee(from_coo, to_frame):
     """
     Convert between two Heliocentric Earth Ecliptic frames.
     """
-    if np.all(from_coo.obstime == to_frame.obstime):
+    if _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     elif to_frame.obstime is None:
         return from_coo
@@ -804,7 +816,7 @@ def gse_to_gse(from_coo, to_frame):
     """
     Convert between two Geocentric Solar Ecliptic frames.
     """
-    if np.all(from_coo.obstime == to_frame.obstime):
+    if _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         heecoord = from_coo.transform_to(HeliocentricEarthEcliptic(obstime=from_coo.obstime))
@@ -880,7 +892,7 @@ def hci_to_hci(from_coo, to_frame):
     """
     Convert between two Heliocentric Inertial frames.
     """
-    if np.all(from_coo.obstime == to_frame.obstime):
+    if _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
@@ -960,7 +972,8 @@ def gei_to_gei(from_coo, to_frame):
     """
     Convert between two Geocentric Earth Equatorial frames.
     """
-    if np.all((from_coo.equinox == to_frame.equinox) and (from_coo.obstime == to_frame.obstime)):
+    if _times_are_equal(from_coo.equinox, to_frame.equinox) and \
+       _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
