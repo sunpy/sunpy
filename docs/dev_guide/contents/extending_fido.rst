@@ -125,7 +125,7 @@ You should write a new "full" client if the data you are accessing can not be ac
 
 A new Fido client contains three major components:
 
-* A subclass of `~sunpy.net.base_client.BaseClient` which implements ``search``, ``fetch``, and ``_is_datasource_for``.
+* A subclass of `~sunpy.net.base_client.BaseClient` which implements ``search``, ``fetch``, and ``_can_handle_query``.
 * Zero or more new `~sunpy.net.attr.Attr` classes to specify search parameters unique to your data source.
 * An instance of `~sunpy.net.attr.AttrWalker` which can be used to walk the tree of `~sunpy.net.attr.Attr` instances and convert them into a form useful to your client's search method.
 
@@ -326,7 +326,7 @@ This method gets passed each query (in its independent form), and must either re
 A simple example, which just checks the type of ``attrs`` and not their values would be::
 
   @classmethod
-  def _is_datasource_for(cls, *query):
+  def _can_handle_query(cls, *query):
       query_attrs = set(type(x) for x in query)
       supported_attrs = {a.Time, a.Level}
       return supported_attrs.issuperset(query_attrs)
@@ -502,7 +502,7 @@ An example client class may look something like::
               downloader.enqueue_file(url, filename=filepath)
 
       @classmethod
-      def _is_datasource_for(cls, *query):
+      def _can_handle_query(cls, *query):
           query_attrs = set(type(x) for x in query)
           supported_attrs = {a.Time, a.Level}
           return supported_attrs.issuperset(query_attrs)
