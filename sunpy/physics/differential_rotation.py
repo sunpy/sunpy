@@ -18,8 +18,9 @@ from sunpy.map import (
     on_disk_bounding_coordinates,
 )
 from sunpy.map.header_helper import get_observer_meta
+from sunpy.sun.constants import sidereal_rotation_rate
 from sunpy.time import parse_time
-from sunpy.util import expand_list
+from sunpy.util import expand_list 
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
@@ -43,6 +44,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
         | ``howard`` : Use values from Howard et al. (1990)
         | ``snodgrass`` : Use values from Snodgrass et. al. (1983)
         | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
+        | ``rigid`` : Use values from `~sunpy.sun.constants.sidereal_rotation_rate`.
 
     frame_time : `str`
         One of : ``'sidereal'`` or  ``'synodic'``. Choose 'type of day' time reference frame.
@@ -62,13 +64,14 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
     where :math:`A, B, C` are constants that depend on the model:
 
-    ========= ===== ====== ====== ==========
-    Model     A     B      C      Unit
-    ========= ===== ====== ====== ==========
-    howard    2.894 -0.428 -0.370 microrad/s
-    snodgrass 2.851 -0.343 -0.474 microrad/s
-    allen     14.44 -3.0   0      deg/day
-    ========= ===== ====== ====== ==========
+    ========= ======= ====== ====== ==========
+    Model     A       B      C      Unit
+    ========= ======= ====== ====== ==========
+    howard    2.894   -0.428 -0.370 microrad/s
+    snodgrass 2.851   -0.343 -0.474 microrad/s
+    allen     14.44   -3.0   0      deg/day
+    rigid     14.1844 0      0      deg/day
+    ========= ======= ====== ====== ==========
 
     1 microrad/s is approximately 4.95 deg/day.
 
@@ -115,10 +118,11 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
     rot_params = {'howard': [2.894, -0.428, -0.370] * u.urad / u.second,
                   'snodgrass': [2.851, -0.343, -0.474] * u.urad / u.second,
-                  'allen': [14.44, -3.0, 0] * u.deg / u.day
+                  'allen': [14.44, -3.0, 0] * u.deg / u.day,
+                  'rigid': [sidereal_rotation_rate.value, 0, 0] * u.deg / u.day
                   }
 
-    if rot_type not in ['howard', 'allen', 'snodgrass']:
+    if rot_type not in ['howard', 'allen', 'snodgrass', 'rigid']:
         raise ValueError("rot_type must equal one of "
                          "{{ {} }}".format(" | ".join(rot_params.keys())))
 
