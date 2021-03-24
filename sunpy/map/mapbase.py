@@ -3,6 +3,7 @@ Map is a generic Map class from which all other Map classes inherit from.
 """
 import copy
 import html
+import numbers
 import textwrap
 import warnings
 import webbrowser
@@ -1355,6 +1356,12 @@ class GenericMap(NDData):
         # Pad the image array
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
+
+        if issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
+            warnings.warn(
+                "The specified `missing` value is not an integer, but the data "
+                "array is of integer type, so the output may be strange.",
+                SunpyUserWarning)
 
         new_data = np.pad(self.data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
