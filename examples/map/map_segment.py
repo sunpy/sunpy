@@ -8,11 +8,9 @@ transformed coordinates.
 """
 import matplotlib.pyplot as plt
 import numpy as np
-from reproject import reproject_interp
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-from astropy.wcs import WCS
 
 import sunpy.map
 from sunpy.coordinates import NorthOffsetFrame
