@@ -3,8 +3,8 @@
 Segmenting a Map based on transformation of coordinates
 =======================================================
 
-A demostration creating a segment of a particular map from
-transformed coordinates.
+A demonstration extracting a region of a particular map based on
+world coordinates in different systems.
 """
 import matplotlib.pyplot as plt
 import numpy as np
