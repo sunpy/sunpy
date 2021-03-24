@@ -131,8 +131,8 @@ def test_snodgrass(seconds_per_day):
 
 
 def test_rigid(seconds_per_day):
-    rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='rigid')
-    assert_quantity_allclose(rot, 141.844 * u.deg, rtol=1e-3)
+    rot = diff_rot(10 * seconds_per_day, [0, 30, 60] * u.deg, rot_type='rigid')
+    assert_quantity_allclose(rot, [141.844 * u.deg] * 3, rtol=1e-3)
 
 
 def test_fail(seconds_per_day):
