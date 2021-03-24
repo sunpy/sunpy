@@ -23,6 +23,8 @@ smap = sunpy.map.Map(AIA_171_IMAGE)
 ###############################################################################
 # A utility function gives us access to the helioprojective coordinate of each
 # pixel. From this we then transform the coordinates to the required frame.
+# For this example we are going to extract a region based on the 
+# heliographic Stonyhurst coordinates, so we transform to that frame.
 all_hpc = sunpy.map.all_coordinates_from_map(smap)
 all_hgs = all_hpc.transform_to("heliographic_stonyhurst")
 
