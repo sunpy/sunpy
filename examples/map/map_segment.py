@@ -49,8 +49,7 @@ plt.show()
 new_frame_mask = np.ma.array(smap.data, mask=np.logical_not(segment))
 
 print(f'Original Map : mean = {smap.data.mean()}, sum = {smap.data.sum()}')
-print(
-    f'Segmented Map : mean = {new_frame_mask.mean()}, sum = {new_frame_mask.sum()}')
+print(f"Segmented Map : mean = {new_frame_mask.mean()}, sum = {new_frame_mask.sum()}")
 
 ###############################################################################
 # This example can also be extended while using NorthOffsetFrame
