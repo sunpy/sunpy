@@ -43,6 +43,7 @@ new_frame_map = sunpy.map.Map(
 fig = plt.figure()
 ax = plt.subplot(projection=smap)
 new_frame_map.plot()
+new_frame_map.draw_grid()
 plt.show()
 
 ###############################################################################
