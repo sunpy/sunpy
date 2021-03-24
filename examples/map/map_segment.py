@@ -23,19 +23,26 @@ smap = sunpy.map.Map(AIA_171_IMAGE)
 ###############################################################################
 # A utility function gives us access to the helioprojective coordinate of each
 # pixel. From this we then transform the coordinates to the required frame.
-# For this example we are going to extract a region based on the 
+# For this example we are going to extract a region based on the
 # heliographic Stonyhurst coordinates, so we transform to that frame.
 all_hpc = sunpy.map.all_coordinates_from_map(smap)
 all_hgs = all_hpc.transform_to("heliographic_stonyhurst")
 
 ###############################################################################
 # Let's then segment the data based on coordinates and create a boolean mask
-# where True indicates the segmented mask.
-segment = np.logical_and(all_hgs.lon < 10 * u.deg, all_hgs.lon > 0 * u.deg)
+# where True indicates invalid or deselected data.
+# This is the convention used by the `numpy.ma` module.
+segment = np.logical_or(all_hgs.lon >= 10 * u.deg, all_hgs.lon <= 0 * u.deg)
 
 ###############################################################################
 # Let's plot the segment separately, we create a new map with the segment as the
 # mask.
+# Numpy's masked arrays allow for a combination of standart numpy array and 
+# a mask array. When an element of the mask is True, the corresponding element 
+# of the associated array is said to be masked (invalid).
+# From the segment we now mask out all values where `all_hgs.lon` is NaN.
+segment = np.asarray(all_hgs.lon)*segment
+
 new_frame_map = sunpy.map.Map(
     smap.data,
     smap.meta,
@@ -49,7 +56,7 @@ plt.show()
 ###############################################################################
 # We can perform various mathematical operations on the extracted segment such
 # as averaging the pixel values or finding the sum of the segment.
-new_frame_mask = np.ma.array(smap.data, mask=np.logical_not(segment))
+new_frame_mask = np.ma.array(smap.data, mask=segment)
 
 print(f"Original Map : mean = {smap.data.mean()}, sum = {smap.data.sum()}")
 print(f"Segmented Map : mean = {new_frame_mask.mean()}, sum = {new_frame_mask.sum()}")
@@ -66,18 +73,22 @@ f = NorthOffsetFrame(north=north)
 all_hpc = sunpy.map.all_coordinates_from_map(smap)
 ofsetted_coords = all_hpc.transform_to(f)
 segment = np.logical_and(
-    ofsetted_coords.lon < 30 * u.deg,
-    ofsetted_coords.lon > -20 * u.deg)
-
+    ofsetted_coords.lon >= 30 * u.deg,
+    ofsetted_coords.lon <= -20 * u.deg)
+segment = np.asarray(ofsetted_coords.lon)*segment
 ###############################################################################
 # Let's plot the ofsetted segment separately
 offsetted_map = sunpy.map.Map(
     smap.data,
     smap.meta,
-    mask=np.logical_not(segment))
+    mask=segment)
 fig = plt.figure()
 ax = plt.subplot(projection=smap)
 offsetted_map.plot()
+overlay = ax.get_coords_overlay(f)
+overlay[0].set_ticks(spacing=30. * u.deg)
+overlay.grid(ls='--', color='blue')
+offsetted_map.draw_grid()
 plt.show()
 
 ###############################################################################
