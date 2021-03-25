@@ -4,8 +4,8 @@ Plot positions on a blank map
 =============================
 
 This example showcases how to plot positions on a blank map.
-It is commonly used to show HelioProjective Cartesian (HPC) positions of events that occurred at
-different times and therefore no single observation is appropriate.
+It is often useful to plot coordinate positions of events on a blank helioprojective coordinate map. 
+In this example, we create an empty map with a WCS defined by a helioprojective frame as observed from Earth at a certain time, and show how you can plot different coordinates on it.
 """
 
 import matplotlib.pyplot as plt
@@ -22,7 +22,7 @@ from sunpy.coordinates import frames
 # Since there is no WCS information, we will need to construct a header to pass to Map.
 data = np.full((10, 10), np.nan)
 
-# Define coordinates and frame of reference and make the header using sunpy.map.make_fitswcs_header
+# Define a reference coordinate and create a header using sunpy.map.make_fitswcs_header
 skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28',
                     observer='earth', frame=frames.Helioprojective)
 
