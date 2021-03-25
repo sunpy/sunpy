@@ -39,8 +39,7 @@ segment = np.logical_or(all_hgs.lon >= 50 * u.deg, all_hgs.lon <= 0 * u.deg)
 # a mask array. When an element of the mask is `True`, the corresponding element
 # of the associated array is said to be masked (invalid).
 # `More information about numpy's masked arrays <https://numpy.org/doc/stable/reference/maskedarray.generic.html#using-numpy-ma>`
-# From the segment, we now mask out all values where `all_hgs.lon` is
-# NaN.
+# From the segment, we now mask out all values where ``all_hgs.lon`` is NaN.
 segment = np.logical_or(segment, np.isnan(all_hgs.lon))
 
 new_frame_map = sunpy.map.Map(smap.data, smap.meta, mask=segment)
