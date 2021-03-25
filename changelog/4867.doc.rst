@@ -1,0 +1,2 @@
+Added an example (:ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`)
+of how pixel and SkyCoords work when plotted with `~astropy.visualization.wcsaxes`.
