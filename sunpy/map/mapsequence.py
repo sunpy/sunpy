@@ -511,3 +511,24 @@ class MapSequence:
         Return all the meta objects as a list.
         """
         return [m.meta for m in self.maps]
+
+    def save(self, filepath, filetype='auto', **kwargs):
+        """Saves the SunPy Map object to a file.
+
+        Currently SunPy can only save files in the FITS format. In the future
+        support will be added for saving to other formats.
+
+        Parameters
+        ----------
+        filepath : str
+            Location to save file to. 
+            Each map from the sequence will be saved separately.
+        filetype : str
+            'auto' or any supported file extension.
+        kwargs :
+            Any additional keyword arguments are passed to
+            `~sunpy.io.write_file`.
+        """
+        for index, map_seq in enumerate(self.maps):
+            _filepath = filepath+"_{}".format(index)
+            map_seq.save(_filepath, filetype, **kwargs)
