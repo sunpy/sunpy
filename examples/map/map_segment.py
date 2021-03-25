@@ -47,9 +47,8 @@ segment = np.logical_or(
 # From the segment, we now mask out all values where `all_hgs.lon` is
 # NaN.
 segment = np.logical_or(
-    segment, np.logical_not(
-        np.isfinite(
-            all_hgs.lon)))
+    segment, np.isnan(
+        all_hgs.lon))
 
 new_frame_map = sunpy.map.Map(
     smap.data,
@@ -92,9 +91,8 @@ segment = np.logical_or(
 ######################################################################
 # Masking out the NaN values of `ofsetted_coords.lon`, we get
 segment = np.logical_or(
-    segment, np.logical_not(
-        np.isfinite(
-            ofsetted_coords.lon)))
+    segment, np.isnan(
+        ofsetted_coords.lon))
 
 ######################################################################
 # Let's plot the ofsetted segment separately
@@ -114,7 +112,7 @@ plt.show()
 ######################################################################
 # We can also find the maximum, minimum or average pixel values of the segment
 # and compare it with the original map.
-offset_mask = np.ma.array(smap.data, mask=np.segment)
+offset_mask = np.ma.array(smap.data, mask=segment)
 print(f"Original Map : mean = {smap.data.mean()}, "
       f"maximum value = {smap.data.max()}, "
       f"minimum value = {smap.data.min()}")
