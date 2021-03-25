@@ -45,7 +45,6 @@ ax.plot(xx*u.arcsec.to(u.deg), yy*u.arcsec.to(u.deg),
 pixel_coord = [my_map.data.shape[0]/2., my_map.data.shape[1]/2.] * u.pix
 ax.plot(pixel_coord[0], pixel_coord[1], 'x', color='w',
         label=f'Pixel coordinate [{pixel_coord[0]}, {pixel_coord[1]}]')
-ax.coords.grid(color='yellow', linestyle='solid', alpha=0.5)
 
 # As well as defining a point and using `.plot()`, you can also plot a point with WCSAxes using the `.plot_coord()` functionality using a coordinate as a SkyCoord.
 # We can demonstrate this by plotting a point and an arc on a map using two separate SkyCoords.
