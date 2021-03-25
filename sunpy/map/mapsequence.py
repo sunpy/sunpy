@@ -530,5 +530,5 @@ class MapSequence:
             `~sunpy.io.write_file`.
         """
         for index, map_seq in enumerate(self.maps):
-            _filepath = filepath+"_{}".format(index)
+            _filepath = filepath + "_{}".format(index)
             map_seq.save(_filepath, filetype, **kwargs)
