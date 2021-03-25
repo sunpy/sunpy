@@ -32,9 +32,7 @@ all_hgs = all_hpc.transform_to("heliographic_stonyhurst")
 # Let's then segment the data based on coordinates and create a boolean mask
 # where True indicates invalid or deselected data.
 # This is the convention used by the `numpy.ma` module.
-segment = np.logical_or(
-    all_hgs.lon >= 50 * u.deg,
-    all_hgs.lon <= 0 * u.deg)
+segment = np.logical_or(all_hgs.lon >= 50 * u.deg, all_hgs.lon <= 0 * u.deg)
 
 ######################################################################
 # Let's plot the segment separately, we create a new map with the segment as the
@@ -48,10 +46,7 @@ segment = np.logical_or(
 # NaN.
 segment = np.logical_or(segment, np.isnan(all_hgs.lon))
 
-new_frame_map = sunpy.map.Map(
-    smap.data,
-    smap.meta,
-    mask=segment)
+new_frame_map = sunpy.map.Map(smap.data, smap.meta, mask=segment)
 fig = plt.figure()
 ax = plt.subplot(projection=smap)
 new_frame_map.plot()
@@ -63,18 +58,13 @@ plt.show()
 # as averaging the pixel values or finding the sum of the segment.
 new_frame_mask = np.ma.array(smap.data, mask=segment)
 
-print(
-    f"Original Map : mean = {smap.data.mean()}, sum = {smap.data.sum()}")
-print(
-    f"Segmented Map : mean = {new_frame_mask.mean()}, sum = {new_frame_mask.sum()}")
+print(f"Original Map : mean = {smap.data.mean()}, sum = {smap.data.sum()}")
+print(f"Segmented Map : mean = {new_frame_mask.mean()}, sum = {new_frame_mask.sum()}")
 
 ######################################################################
 # This example can also be extended while using NorthOffsetFrame
 # Let us offset the north pole and create the frame
-north = SkyCoord(
-    20 * u.deg,
-    20 * u.deg,
-    frame="heliographic_stonyhurst")
+north = SkyCoord(20 * u.deg, 20 * u.deg, frame="heliographic_stonyhurst")
 f = NorthOffsetFrame(north=north)
 
 ######################################################################
@@ -82,9 +72,8 @@ f = NorthOffsetFrame(north=north)
 # based on conditions
 all_hpc = sunpy.map.all_coordinates_from_map(smap)
 ofsetted_coords = all_hpc.transform_to(f)
-segment = np.logical_or(
-    ofsetted_coords.lon >= 30 * u.deg,
-    ofsetted_coords.lon <= -20 * u.deg)
+segment = np.logical_or(ofsetted_coords.lon >= 30 * u.deg,
+                        ofsetted_coords.lon <= -20 * u.deg)
 
 ######################################################################
 # Masking out the NaN values of `ofsetted_coords.lon`, we get
@@ -92,10 +81,7 @@ segment = np.logical_or(segment, np.isnan(ofsetted_coords.lon))
 
 ######################################################################
 # Let's plot the ofsetted segment separately
-offsetted_map = sunpy.map.Map(
-    smap.data,
-    smap.meta,
-    mask=segment)
+offsetted_map = sunpy.map.Map(smap.data, smap.meta, mask=segment)
 fig = plt.figure()
 ax = plt.subplot(projection=smap)
 offsetted_map.plot()
