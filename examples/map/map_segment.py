@@ -104,7 +104,7 @@ plt.show()
 ######################################################################
 # We can also find the maximum, minimum or average pixel values of the segment
 # and compare it with the original map.
-offset_mask = np.ma.array(smap.data, mask=np.logical_not(segment))
+offset_mask = np.ma.array(smap.data, mask=np.segment)
 print(f"Original Map : mean = {smap.data.mean()}, "
       f"maximum value = {smap.data.max()}, "
       f"minimum value = {smap.data.min()}")
