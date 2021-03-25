@@ -25,7 +25,9 @@ class SOARClient(BaseClient):
         for query_parameters in queries:
             results.append(self._do_search(query_parameters))
         table = astropy.table.vstack(results)
-        return QueryResponseTable(table, client=self)
+        qrt = QueryResponseTable(table, client=self)
+        qrt.hide_keys = ['Data item ID', 'Filename']
+        return qrt
 
     @staticmethod
     def _do_search(query):
