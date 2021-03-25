@@ -4,7 +4,7 @@ Plot positions on a blank map
 =============================
 
 This example showcases how to plot positions on a blank map.
-It is often useful to plot coordinate positions of events on a blank helioprojective coordinate map. 
+It is often useful to plot coordinate positions of events on a blank helioprojective coordinate map.
 In this example, we create an empty map with a WCS defined by a helioprojective frame as observed from Earth at a certain time, and show how you can plot different coordinates on it.
 """
 
