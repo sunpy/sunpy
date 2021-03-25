@@ -46,9 +46,7 @@ segment = np.logical_or(
 # https://numpy.org/doc/stable/reference/maskedarray.generic.html#using-numpy-ma
 # From the segment, we now mask out all values where `all_hgs.lon` is
 # NaN.
-segment = np.logical_or(
-    segment, np.isnan(
-        all_hgs.lon))
+segment = np.logical_or(segment, np.isnan(all_hgs.lon))
 
 new_frame_map = sunpy.map.Map(
     smap.data,
@@ -90,9 +88,7 @@ segment = np.logical_or(
 
 ######################################################################
 # Masking out the NaN values of `ofsetted_coords.lon`, we get
-segment = np.logical_or(
-    segment, np.isnan(
-        ofsetted_coords.lon))
+segment = np.logical_or(segment, np.isnan(ofsetted_coords.lon))
 
 ######################################################################
 # Let's plot the ofsetted segment separately
