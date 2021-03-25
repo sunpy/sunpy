@@ -521,7 +521,7 @@ class MapSequence:
         Parameters
         ----------
         filepath : str
-            Location to save file to. 
+            Location to save file to.
             Each map from the sequence will be saved separately.
         filetype : str
             'auto' or any supported file extension.
