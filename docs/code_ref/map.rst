@@ -85,6 +85,7 @@ which data and metadata pairs match its instrument.
 
 .. automodapi:: sunpy.map.sources
     :no-main-docstr:
+    :inherited-members:
 
 
 Writing a new Instrument Map Class
