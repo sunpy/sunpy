@@ -21,7 +21,7 @@ from sunpy.coordinates.utils import GreatArc
 # Now we will plot a line on the map by using coordinates in arcseconds.
 # The array below `xx` and `yy` are the x and y coordinates that define a
 # line from the Sun center (at 0, 0) to the point (500, 500) in arcsecs.
-# When plotting a map a WCSAxes is created. 
+# When plotting a map a WCSAxes is created.
 # For plotting with WCSAxes, pixel coordinates are expected as a default, however, we can plot world coordinates (i.e. arcsec) by using the ``transform`` keyword.
 # Its important to note that when transforming between world and pixel coordinates
 # the world coordinates need to be in degrees rather than arcsecs.
@@ -47,7 +47,7 @@ ax.plot(pixel_coord[0], pixel_coord[1], 'x', color='w',
         label=f'Pixel coordinate [{pixel_coord[0]}, {pixel_coord[1]}]')
 ax.coords.grid(color='yellow', linestyle='solid', alpha=0.5)
 
-# As well as defining a point and using `.plot()`, you can also plot a point with WCSAxes using the `.plot_coord()` functionality using a coordinate as a SkyCoord. 
+# As well as defining a point and using `.plot()`, you can also plot a point with WCSAxes using the `.plot_coord()` functionality using a coordinate as a SkyCoord.
 # We can demonstrate this by plotting a point and an arc on a map using two separate SkyCoords.
 # Here we will plot a point (at -250,-250) on the map using a SkyCoord.
 ax.plot_coord(SkyCoord(-250*u.arcsec, -250*u.arcsec, frame=my_map.coordinate_frame), "o",
