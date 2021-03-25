@@ -1,12 +1,14 @@
 """
 Test mapsequence functionality
 """
+import tempfile
 from unittest import mock
 
 import numpy as np
 import pytest
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy
 import sunpy.data.test
@@ -196,3 +198,23 @@ def test_norm_animator(hmi_test_map):
 def test_map_sequence_plot(aia171_test_map, hmi_test_map):
     seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
     seq.plot()
+
+
+def test_save(aia171_test_map, hmi_test_map):
+    """Tests the map save function"""
+    seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
+    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+    seq.save(afilename, filetype='fits', overwrite=True)
+    test_seq = sunpy.map.Map(afilename+"_0", afilename+"_1", sequence=True)
+    assert isinstance(test_seq.maps[0], sunpy.map.sources.sdo.AIAMap)
+    assert isinstance(test_seq.maps[1], sunpy.map.sources.sdo.HMIMap)
+
+    assert test_seq.maps[0].meta.keys() == seq.maps[0].meta.keys()
+    for k in seq.maps[0].meta:
+        assert test_seq.maps[0].meta[k] == seq.maps[0].meta[k]
+    assert_quantity_allclose(test_seq.maps[0].data, seq.maps[0].data)
+
+    assert test_seq.maps[1].meta.keys() == seq.maps[1].meta.keys()
+    for k in seq.maps[1].meta:
+        assert test_seq.maps[1].meta[k] == seq.maps[1].meta[k]
+    assert_quantity_allclose(test_seq.maps[1].data, seq.maps[1].data)
