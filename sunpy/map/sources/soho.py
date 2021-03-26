@@ -226,13 +226,18 @@ class MDISynopticMap(MDIMap):
     """
     SOHO MDI synoptic magnetogram Map.
     
-    A synoptic map is an attempt to represent full surface of the Sun but using only observations from the Earth’s viewing direction. 
-    Depending on a type of synoptic map, it could only use the data taken near solar central meridian, or the data from different parts 
-    of solar visible disk and data taken on different days could be averaged together to contribute to a selected range of latitudes 
-    and longitudes. Once the area of synoptic map disappears behind solar limb, it does not change anymore until the area re-appears 
+    A synoptic map is an attempt to represent full surface of the Sun 
+    but using only observations from the Earth’s viewing direction. 
+    Depending on a type of synoptic map, it could only use the data
+    taken near solar central meridian, or the data from different parts 
+    of solar visible disk and data taken on different days could be averaged 
+    together to contribute to a selected range of latitudes 
+    and longitudes. Once the area of synoptic map disappears behind solar limb,
+    it does not change anymore until the area re-appears 
     from East limb of the Sun.
     
-    You can get the sypnotic manegtrogram Map in the  website(http://soi.stanford.edu/magnetic/index5.html) of each day.
+    You can get the sypnotic manegtrogram Map in the  
+    website(http://soi.stanford.edu/magnetic/index5.html) of each day.
     You just have to enter the date and it will give the synoptic magnetogram Map.
     
     References
