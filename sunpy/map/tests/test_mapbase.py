@@ -359,7 +359,7 @@ def test_swapped_ctypes(simple_map):
     assert u.allclose(simple_map.top_right_coord.Ty, 1 * u.arcsec)
 
 
-def test_save(aia171_test_map, generic_map):
+def test_save(aia171_test_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
@@ -373,7 +373,7 @@ def test_save(aia171_test_map, generic_map):
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
-def test_save_compressed(aia171_test_map, generic_map):
+def test_save_compressed(aia171_test_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
