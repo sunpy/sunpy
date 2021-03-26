@@ -1,6 +1,7 @@
 import pytest
 
 from astropy.time import Time
+
 from sunpy.net import attr, attrs, hek
 
 
@@ -207,4 +208,5 @@ def test_convert_time(hek_client_creator):
     assert isinstance(hc['event_starttime'], Time)
     assert isinstance(hc['event_peaktime'], Time)
     assert isinstance(hc['event_endtime'], Time)
+
 
