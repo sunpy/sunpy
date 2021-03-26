@@ -9,13 +9,13 @@ from itertools import chain
 
 import astropy.table
 from astropy.table import Row
-from astropy.time import Time
 
 import sunpy.net._attrs as core_attrs
 from sunpy import log
 from sunpy.net import attr
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.hek import attrs
+from sunpy.time import parse_time
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
@@ -35,11 +35,13 @@ def _freeze(obj):
 
 def convert_time(response_obj):
     """ Helper method that convert time from str to astropy.time.core.Time"""
-    _table = response_obj['hek']
-    _table.replace_column
-    _table.replace_column(name='event_starttime', col=Time(_table['event_starttime']))
-    _table.replace_column(name='event_endtime', col=Time(_table['event_endtime']))
-    _table.replace_column(name='event_peaktime', col=Time(_table['event_peaktime']))
+    if isinstance(response_obj, HEKTable):
+        _table = response_obj
+    else:
+        _table = response_obj['hek']
+    _table.replace_column(name='event_starttime', col=parse_time(_table['event_starttime']))
+    _table.replace_column(name='event_endtime', col=parse_time(_table['event_endtime']))
+    _table.replace_column(name='event_peaktime', col=parse_time(_table['event_peaktime']))
 
 
 class HEKClient(BaseClient):
