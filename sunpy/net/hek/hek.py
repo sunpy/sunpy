@@ -32,6 +32,7 @@ def _freeze(obj):
         return tuple(_freeze(elem) for elem in obj)
     return obj
 
+
 def convert_time(response_obj):
     """ Helper method that convert time from str to astropy.time.core.Time"""
     _table = response_obj['hek']
