@@ -30,18 +30,17 @@ all_hgs = all_hpc.transform_to("heliographic_stonyhurst")
 ######################################################################
 # Let's then segment the data based on coordinates and create a boolean mask
 # where `True` indicates invalid or deselected data.
-# This is the convention used by the `numpy.ma` module.
-segment_mask = np.logical_or(all_hgs.lon >= 50 * u.deg, all_hgs.lon <= 0 * u.deg)
-
-######################################################################
-# Let's plot the segment separately, we create a new map with the segment as the
 # mask. Numpy's masked arrays allow for a combination of standard numpy array and
 # a mask array. When an element of the mask is `True`, the corresponding element
 # of the associated array is said to be masked (invalid).
 # `More information about numpy's masked arrays <https://numpy.org/doc/stable/reference/maskedarray.generic.html#using-numpy-ma>`
 # From the segment, we now mask out all values where ``all_hgs.lon`` is NaN.
+# This is the convention used by the `numpy.ma` module.
+segment_mask = np.logical_or(all_hgs.lon >= 35 * u.deg, all_hgs.lon <= -35 * u.deg)
 segment_mask |= np.isnan(all_hgs.lon)
 
+######################################################################
+# Let's plot the segment separately, we create a new map with the segment as the mask
 new_frame_map = sunpy.map.Map(smap.data, smap.meta, mask=segment_mask)
 fig = plt.figure()
 ax = plt.subplot(projection=smap)
@@ -81,7 +80,7 @@ offsetted_map = sunpy.map.Map(smap.data, smap.meta, mask=segment_mask)
 fig = plt.figure()
 ax = plt.subplot(projection=smap)
 offsetted_map.plot()
-overlay = ax.get_coords_overlay(f)
+overlay = ax.get_coords_overlay(offset_frame)
 overlay[0].set_ticks(spacing=30. * u.deg)
 overlay.grid(ls='--', color='blue')
 offsetted_map.draw_grid(color='red')
@@ -95,5 +94,5 @@ print(f"Original Map : mean = {smap.data.mean()}, "
       f"maximum value = {smap.data.max()}, "
       f"minimum value = {smap.data.min()}")
 print(f"Offsetted segment : mean = {offset_masked_data.mean()}, "
-      f"maximum value = {offset_masked_mask.max()}, "
-      f"minimum value = {offset_masked_mask.min()}")
+      f"maximum value = {offset_masked_data.max()}, "
+      f"minimum value = {offset_masked_data.min()}")
