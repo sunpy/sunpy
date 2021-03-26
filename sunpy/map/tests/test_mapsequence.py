@@ -200,9 +200,9 @@ def test_map_sequence_plot(aia171_test_map, hmi_test_map):
     seq.plot()
 
 
-def test_save(aia171_test_map, hmi_test_map):
+def test_save(aia171_test_map):
     """Tests the map save function"""
-    seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
+    seq = sunpy.map.Map([aia171_test_map, aia171_test_map], sequence=True)
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
     seq.save(afilename, filetype='fits', overwrite=True)
     test_seq = sunpy.map.Map(afilename + "_0", afilename + "_1", sequence=True)
