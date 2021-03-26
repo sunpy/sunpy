@@ -32,6 +32,14 @@ def _freeze(obj):
         return tuple(_freeze(elem) for elem in obj)
     return obj
 
+def convert_time(response_obj):
+    """ Helper method that convert time from str to astropy.time.core.Time"""
+    _table = response_obj['hek']
+    _table.replace_column
+    _table.replace_column(name='event_starttime', col=Time(_table['event_starttime']))
+    _table.replace_column(name='event_endtime', col=Time(_table['event_endtime']))
+    _table.replace_column(name='event_peaktime', col=Time(_table['event_peaktime']))
+
 
 class HEKClient(BaseClient):
     """
@@ -55,13 +63,6 @@ class HEKClient(BaseClient):
     def __init__(self, url=DEFAULT_URL):
         self.url = url
 
-    def _convert_to_Time(self, results):
-        """ Convert time from str to astropy.time.core.Time"""
-        for result in results:
-            result['event_starttime'] = Time(result['event_starttime'])
-            result['event_endtime'] = Time(result['event_endtime'])
-            result['event_peaktime'] = Time(result['event_peaktime'])
-
     def _download(self, data):
         """ Download all data, even if paginated. """
         page = 1
@@ -80,8 +81,6 @@ class HEKClient(BaseClient):
             finally:
                 fd.close()
             results.extend(result['result'])
-
-            self._convert_to_Time(results)
 
             if not result['overmax']:
                 if len(results) > 0:
