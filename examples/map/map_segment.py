@@ -34,7 +34,9 @@ all_hgs = all_hpc.transform_to("heliographic_stonyhurst")
 # a mask array. When an element of the mask is `True`, the corresponding element
 # of the associated array is said to be masked (invalid).
 # For more information about numpy's masked arrays see :mod:`numpy.ma`.
-# We now mask out all values not in our coordinate range and where the coordinates are NaN.
+# We now mask out all values not in our coordinate range or where the
+# coordinates are NaN (because they could not be transformed to the
+# surface of the Sun).
 segment_mask = np.logical_or(all_hgs.lon >= 35 * u.deg, all_hgs.lon <= -35 * u.deg)
 segment_mask |= np.isnan(all_hgs.lon)
 
