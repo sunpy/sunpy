@@ -55,7 +55,7 @@ class SOARClient(BaseClient):
         url = base_url + request_str
         # Get request info
         r = requests.get(url)
-        # TODO: intelligently detect and error on a bad request
+        r.raise_for_status()
 
         # Do some list/dict wrangling
         names = [m['name'] for m in r.json()['metadata']]
