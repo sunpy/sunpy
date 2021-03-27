@@ -1,3 +1,41 @@
+Sunpy v2.1.3 (2021-03-27)
+=========================
+
+Bug Fixes
+---------
+
+- Added warning to :meth:`sunpy.map.GenericMap.rotate` when specified ``missing`` value is not compatible
+  with the number type of the data array. (`#5051 <https://github.com/sunpy/sunpy/pull/5051>`__)
+- Reverted change for `sunpy.map.GenericMap.draw_limb` that made it use "add_artist" as it was changing the FOV of the plotted image. (`#5069 <https://github.com/sunpy/sunpy/pull/5069>`__)
+- Fixed a bug where some `~sunpy.coordinates.metaframes.RotatedSunFrame` transformations could fail with an "observer=None" error. (`#5084 <https://github.com/sunpy/sunpy/pull/5084>`__)
+- Fixed bug where `sunpy.data.data_manager.storage.DataManager` would fail to recover upon deleting the sqlite database file. (`#5089 <https://github.com/sunpy/sunpy/pull/5089>`__)
+- Fixed a bug where coordinate frames were considered different due to an unintended time difference during time handling at the level of numerical precision (i.e., tens of picoseconds).
+  This resulted in the unexpected use of transformation machinery when transforming a coordinate to its own coordinate frame. (`#5127 <https://github.com/sunpy/sunpy/pull/5127>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Added an example (:ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`)
+  of how pixel and SkyCoords work when plotted with `~astropy.visualization.wcsaxes`. (`#4867 <https://github.com/sunpy/sunpy/pull/4867>`__)
+- Added a gallery example  (:ref:`sphx_glr_generated_gallery_plotting_plotting_blank_map.py`) on how to create a blank map and mark locations. (`#5077 <https://github.com/sunpy/sunpy/pull/5077>`__)
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_hmi_cutout.py`)
+  demonstrating how to add a HMI zoomed-in region next to a full disk HMI image. (`#5090 <https://github.com/sunpy/sunpy/pull/5090>`__)
+- Updated the :ref:`sphx_glr_generated_gallery_computer_vision_techniques_mask_disk.py` example to generate the mask using :func:`sunpy.map.coordinate_is_on_solar_disk`. (`#5114 <https://github.com/sunpy/sunpy/pull/5114>`__)
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_map_map_segment.py`)
+  demonstrating how to create a segment of a particular map from transformed coordinates. (`#5121 <https://github.com/sunpy/sunpy/pull/5121>`__)
+- For the various subclasses of `~sunpy.map.GenericMap` (e.g., `~sunpy.map.sources.AIAMap`), the online documentation now shows all of the inherited attributes and methods. (`#5142 <https://github.com/sunpy/sunpy/pull/5142>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Refactored `~sunpy.coordinates.metaframes.RotatedSunFrame` transformations for improved performance. (`#5084 <https://github.com/sunpy/sunpy/pull/5084>`__)
+- Significantly sped up calls to :func:`~sunpy.time.parse_time` for string
+  arguments. This will have knock on effects, including improved performance of
+  querying the VSO. (`#5108 <https://github.com/sunpy/sunpy/pull/5108>`__)
+
+
 Sunpy v2.1.2 (2021-03-04)
 =========================
 

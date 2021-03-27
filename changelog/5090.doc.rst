@@ -1,2 +1,0 @@
-Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_hmi_cutout.py`)
-demonstrating how to add a HMI zoomed-in region next to a full disk HMI image.
