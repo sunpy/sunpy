@@ -83,9 +83,6 @@ class SOARClient(BaseClient):
             filepath = str(path).format(file=row['Filename'])
             downloader.enqueue_file(url, filename=filepath)
 
-        results = downloader.download()
-        return results
-
     @classmethod
     def _can_handle_query(cls, *query):
 
