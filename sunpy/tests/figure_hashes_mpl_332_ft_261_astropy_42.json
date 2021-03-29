@@ -62,3 +62,4 @@
   "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params_grid": "4bb5930ec573f8399470df023d4686601728d35a70527c397f7eed39d07ba0e3",
   "sunpy.visualization.colormaps.tests.test_cm.test_cmap_visual": "447ce9805f832cfe82a1c7c701acc59496febf97343428b004576cdc822d5274"
 }
+
