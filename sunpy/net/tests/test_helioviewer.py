@@ -10,7 +10,7 @@ import pytest
 import sunpy
 import sunpy.map
 from sunpy.net.helioviewer import HelioviewerClient
-from sunpy.tests.helpers import skip_glymur
+from sunpy.tests.helpers import figure_test, skip_glymur
 
 
 @pytest.fixture(scope="function")
@@ -88,6 +88,7 @@ class TestHelioviewerClient:
         assert ('fits' in header1.keys()) and ('fits' in header2.keys())
 
     @skip_glymur
+    @figure_test
     def test_download_jp2_map(self, client):
         """
         Tests getJP2Image API method with Map.
@@ -96,8 +97,8 @@ class TestHelioviewerClient:
         filepath = client.download_jp2('2012/01/01', observatory='SOHO',
                                        instrument='MDI', measurement='continuum')
         map_ = sunpy.map.Map(filepath)
-        assert isinstance(map_, sunpy.map.GenericMap)
-        os.remove(filepath)
+
+        map_.plot()
 
     def test_download_directory_not_exist_all(self, client, tmpdir):
         """
