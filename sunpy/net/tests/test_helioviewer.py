@@ -92,7 +92,7 @@ class TestHelioviewerClient:
     @figure_test
     def test_download_jp2_map(self, client):
         """
-        Tests getJP2Image API method with Map.
+        Tests getJP2Image API method with Map with a figure test.
         """
         filepath = client.download_jp2('2012/01/01', observatory='SOHO',
                                        instrument='MDI', measurement='continuum')
