@@ -97,6 +97,8 @@ class TestHelioviewerClient:
         filepath = client.download_jp2('2012/01/01', observatory='SOHO',
                                        instrument='MDI', measurement='continuum')
         map_ = sunpy.map.Map(filepath)
+        os.remove(filepath)
+
         with pytest.raises(SunpyMetadataWarning, match="Missing metadata for observer: assuming Earth-based observer."):
             map_.plot()
 
