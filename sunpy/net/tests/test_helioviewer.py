@@ -10,7 +10,8 @@ import pytest
 import sunpy
 import sunpy.map
 from sunpy.net.helioviewer import HelioviewerClient
-from sunpy.tests.helpers import skip_glymur
+from sunpy.tests.helpers import figure_test, skip_glymur
+from sunpy.util import SunpyMetadataWarning
 
 
 @pytest.fixture(scope="function")
@@ -88,16 +89,17 @@ class TestHelioviewerClient:
         assert ('fits' in header1.keys()) and ('fits' in header2.keys())
 
     @skip_glymur
-    def test_download_jp2_map(self, client):
+    @figure_test
+    def test_download_jp2_map(self, client, tmp_path):
         """
-        Tests getJP2Image API method with Map.
+        Tests getJP2Image API method with Map with a figure test.
         """
-        # TODO: make this a figure test.
         filepath = client.download_jp2('2012/01/01', observatory='SOHO',
-                                       instrument='MDI', measurement='continuum')
+                                       instrument='MDI', measurement='continuum',
+                                       directory=tmp_path)
         map_ = sunpy.map.Map(filepath)
-        assert isinstance(map_, sunpy.map.GenericMap)
-        os.remove(filepath)
+        with pytest.raises(SunpyMetadataWarning, match="Missing metadata for observer: assuming Earth-based observer."):
+            map_.plot()
 
     def test_download_directory_not_exist_all(self, client, tmpdir):
         """
