@@ -550,13 +550,20 @@ Registered creators:\n {creators}\n
 Registered appliers:\n {appliers}"""
 
     @staticmethod
-    def _unknown_type(*args, **kwargs):
+    def _unknown_type_apply(*args, **kwargs):
         raise TypeError(
-            f"{args[1]} or any of its parents have not been registered with the AttrWalker")
+            f"{args[1]} or any of its parents have not been registered using "
+            "add_applier() with the AttrWalker")
+
+    @staticmethod
+    def _unknown_type_create(*args, **kwargs):
+        raise TypeError(
+            f"{args[1]} or any of its parents have not been registered using "
+            "add_creator() with the AttrWalker")
 
     def __init__(self):
-        self.applymm = seconddispatch(self._unknown_type)
-        self.createmm = seconddispatch(self._unknown_type)
+        self.applymm = seconddispatch(self._unknown_type_apply)
+        self.createmm = seconddispatch(self._unknown_type_create)
 
     def create(self, *args, **kwargs):
         """
