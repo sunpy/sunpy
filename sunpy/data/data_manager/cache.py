@@ -38,7 +38,7 @@ class Cache:
         self._cache_dir = Path(cache_dir)
         self._expiry = expiry if expiry is None else TimeDelta(expiry)
 
-    def download(self, urls, namespace='sunpy.', redownload=False):
+    def download(self, urls, namespace='', redownload=False):
         """
         Downloads the files from the urls.
 
@@ -140,7 +140,7 @@ class Cache:
         details = self._storage.find_by_key('url', url)
         return details
 
-    def _download_and_hash(self, urls, namespace='sunpy.'):
+    def _download_and_hash(self, urls, namespace=''):
         """
         Downloads the file and returns the path, hash and url it used to download.
 

@@ -162,7 +162,8 @@ def test_delete_db(sqlmanager, sqlstorage):
     test_function()
 
 
-def test_same_file_id_different_module(downloader, storage, data_function, data_function_from_fake_module):
+def test_same_file_id_different_module(
+        downloader, storage, data_function, data_function_from_fake_module):
     # Uses name 'test_file' to refer to the file
     data_function()
 
