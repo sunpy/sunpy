@@ -5,7 +5,7 @@ import textwrap
 import warnings
 import webbrowser
 from copy import deepcopy
-from tempfile import NamedTemporaryFile
+from pathlib import Path
 
 import matplotlib.animation
 import numpy as np
@@ -513,7 +513,7 @@ class MapSequence:
         return [m.meta for m in self.maps]
 
     def save(self, filepath, filetype='auto', **kwargs):
-        """Saves the SunPy Map object to a file.
+        """Saves the SunPy Map Sequence object to a file.
 
         Currently SunPy can only save files in the FITS format. In the future
         support will be added for saving to other formats.
@@ -528,7 +528,19 @@ class MapSequence:
         kwargs :
             Any additional keyword arguments are passed to
             `~sunpy.io.write_file`.
+
+        Notes
+        -----
+        The individual maps are saved as with the specified
+        filepath followed by an `_` with the sequence number.
+        If an extension isn't specified it is defaulted to `fits`.
         """
+        filepath_ = Path(filepath)
         for index, map_seq in enumerate(self.maps):
-            _filepath = filepath + "_{}".format(index)
-            map_seq.save(_filepath, filetype, **kwargs)
+            extension = filepath_.suffix
+            path = (filepath_.parent / filepath_.stem).as_posix()
+            if extension == '':
+                path = f"{path}_{index:03}.fits"
+            else:
+                path = f"{path}_{index:03}{extension}"
+            map_seq.save(path, filetype, **kwargs)
