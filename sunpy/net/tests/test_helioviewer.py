@@ -99,7 +99,7 @@ class TestHelioviewerClient:
                                        directory=tmp_path)
         map_ = sunpy.map.Map(filepath)
         with pytest.raises(SunpyMetadataWarning, match="Missing metadata for observer: assuming Earth-based observer."):
-            map_.peek()
+            map_.plot()
 
     def test_download_directory_not_exist_all(self, client, tmpdir):
         """
