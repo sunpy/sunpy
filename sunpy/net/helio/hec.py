@@ -84,9 +84,9 @@ class HECClient(BaseClient):
         if link is None:
             # The default wsdl file
             link = parser.wsdl_retriever()
-        # Disable SSL check.
         session = Session()
-        session.verify = True
+        # Disable SSL check.
+        session.verify = False
         transport = Transport(session=session)
         self.hec_client = Client(link, transport=transport)
 
