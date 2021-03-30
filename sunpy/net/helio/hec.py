@@ -2,6 +2,7 @@
 Access the Helio Event Catalogue
 """
 import io
+import os
 from warnings import warn
 
 from lxml import etree
@@ -85,8 +86,8 @@ class HECClient(BaseClient):
             # The default wsdl file
             link = parser.wsdl_retriever()
         session = Session()
-        # Disable SSL check.
-        session.verify = False
+        # This is for use in our test suite.
+        session.verify = int(os.environ.get("HELIO_SSL", 1))
         transport = Transport(session=session)
         self.hec_client = Client(link, transport=transport)
 
