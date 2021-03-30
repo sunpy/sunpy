@@ -310,7 +310,11 @@ class SRSClient(GenericClient):
                 if year in name:
                     with tarfile.open(fname2) as open_tar:
                         filepath = fname.parent
-                        member = open_tar.getmember('SRS/' + srs_filename)
+                        try:
+                            member = open_tar.getmember('SRS/' + srs_filename)
+                        except KeyError:
+                            # Some tars have a {year}_SRS when extracted, 2010 being one example
+                            member = open_tar.getmember(f'{year}_SRS/' + srs_filename)
                         member.name = name
                         open_tar.extract(member, path=filepath)
                     outfiles.append(fname)

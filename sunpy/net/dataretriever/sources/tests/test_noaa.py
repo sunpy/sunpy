@@ -56,7 +56,6 @@ def test_fetch_working(LCClient, tmpdir):
 
     # Mock QueryResponse object
     mock_qr = mock_query_object('2012/10/4', '2012/10/6')
-
     # Compare if two objects have the same attribute
 
     mock_qr = mock_qr.blocks[0]
@@ -227,6 +226,14 @@ def test_srs_start_or_end_out_of_range(SRSClient):
     cur_year = datetime.date.today().year
     res = SRSClient.search(a.Time(f'{cur_year}/01/01', f'{cur_year+2}/01/01'))
     assert len(res) > 0
+
+
+@pytest.mark.remote_data
+def test_tar_file_broken():
+    # 2010 extracts out to 2010_SRS while other years do SRS only.
+    results = Fido.search(a.Time("2010/5/1", "2010/5/2"), a.Instrument.soon)
+    results = Fido.fetch(results)
+    assert len(results) == 2
 
 
 def test_attr_reg():
