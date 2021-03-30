@@ -225,8 +225,9 @@ def test_srs_start_or_end_out_of_range(srs_client):
 @pytest.mark.remote_data
 def test_tar_file_broken():
     # 2010 extracts out to 2010_SRS while other years do SRS only.
-    results = Fido.search(a.Time("2010/5/1", "2010/10/28"), a.Instrument.soon)
+    results = Fido.search(a.Time("2010/5/1", "2010/5/2"), a.Instrument.soon)
     results = Fido.fetch(results)
+    assert len(results) == 2
 
 
 def test_no_time(predict_client, indices_client):
