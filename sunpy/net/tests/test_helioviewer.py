@@ -2,7 +2,6 @@
 Helioviewer Client tests
 """
 import os
-import tempfile
 import urllib
 from collections import OrderedDict
 
