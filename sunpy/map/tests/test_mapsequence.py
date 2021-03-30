@@ -1,7 +1,6 @@
 """
 Test mapsequence functionality
 """
-import tempfile
 from unittest import mock
 
 import numpy as np
