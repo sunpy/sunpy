@@ -90,13 +90,13 @@ class TestHelioviewerClient:
 
     @skip_glymur
     @figure_test
-    def test_download_jp2_map(self, client, tmpdir):
+    def test_download_jp2_map(self, client, tmp_path):
         """
         Tests getJP2Image API method with Map with a figure test.
         """
         filepath = client.download_jp2('2012/01/01', observatory='SOHO',
                                        instrument='MDI', measurement='continuum',
-                                       directory=tmpdir.dirname)
+                                       directory=tmp_path)
         map_ = sunpy.map.Map(filepath)
         with pytest.raises(SunpyMetadataWarning, match="Missing metadata for observer: assuming Earth-based observer."):
             map_.peek()
