@@ -180,3 +180,45 @@ def test_same_file_id_different_module(
     # Check if the files are namespaced correctly
     assert Path(storage._store[0]['file_path']).name == 'sunpy.test_file'
     assert Path(storage._store[1]['file_path']).name == 'fake_module.test_file'
+
+
+def test_namespacing_with_manager_override_file(
+        module_patched_manager, downloader, storage, data_function_from_fake_module):
+    # Download a file using manager.require()
+    data_function_from_fake_module()
+
+    assert len(storage._store) == 1
+    assert downloader.times_called == 1
+    assert Path(storage._store[0]['file_path']).name == 'fake_module.test_file'
+
+    # Override the file name with a different URI
+    with module_patched_manager.override_file(
+            'test_file', 'http://www.different_uri.com/new_file', MOCK_HASH):
+        data_function_from_fake_module()
+
+        assert downloader.times_called == 2
+
+        # New file entry is stored in manager._file_cache only
+        # It's not stored in InMemStorage or SqlStorage
+        assert len(storage._store) == 1
+
+        assert Path(
+            module_patched_manager._file_cache['test_file']['fake_module.']
+        ).name == 'fake_module.new_file'
+
+        # Storage still contains original test_file
+        assert Path(storage._store[0]['file_path']).name == 'fake_module.test_file'
+
+    # Request the original file again
+    data_function_from_fake_module()
+
+    # File dosn't get redownloaded, instead it is retrieved using the file hash
+    assert downloader.times_called == 2
+
+    # new_file entry in manager._file_cache is replaced with the original test_file
+    assert Path(
+        module_patched_manager._file_cache['test_file']['fake_module.']
+    ).name == 'fake_module.test_file'
+
+    # Storage still contains original test_file
+    assert Path(storage._store[0]['file_path']).name == 'fake_module.test_file'
