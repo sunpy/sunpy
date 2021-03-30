@@ -94,7 +94,6 @@ class TestHelioviewerClient:
         """
         Tests getJP2Image API method with Map with a figure test.
         """
-        # TODO: make this a figure test.
         filepath = client.download_jp2('2012/01/01', observatory='SOHO',
                                        instrument='MDI', measurement='continuum')
         map_ = sunpy.map.Map(filepath)
