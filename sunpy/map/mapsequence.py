@@ -515,8 +515,7 @@ class MapSequence:
     def save(self, filepath, filetype='auto', **kwargs):
         """Saves the SunPy Map Sequence object to a file.
 
-        Currently SunPy can only save files in the FITS format. In the future
-        support will be added for saving to other formats.
+        Currently SunPy can only save files in the FITS format.
 
         Parameters
         ----------
@@ -532,7 +531,7 @@ class MapSequence:
         Notes
         -----
         The individual maps are saved as with the specified
-        filepath followed by an `_` with the sequence number.
+        `filepath` followed by an `_` with a sequence number.
         If an extension isn't specified it is defaulted to `fits`.
         """
         filepath_ = Path(filepath)
