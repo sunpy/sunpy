@@ -2,6 +2,7 @@
 Helioviewer Client tests
 """
 import os
+import tempfile
 import urllib
 from collections import OrderedDict
 
@@ -94,10 +95,12 @@ class TestHelioviewerClient:
         """
         Tests getJP2Image API method with Map with a figure test.
         """
-        filepath = client.download_jp2('2012/01/01', observatory='SOHO',
-                                       instrument='MDI', measurement='continuum')
-        map_ = sunpy.map.Map(filepath)
-        os.remove(filepath)
+        filepath = tempfile.TemporaryDirectory()
+        client.download_jp2('2012/01/01', observatory='SOHO',
+                            instrument='MDI', measurement='continuum', directory=tempfile.name)
+
+        map_ = sunpy.map.Map(filepath.name)
+        filepath.cleanup()
 
         with pytest.raises(SunpyMetadataWarning, match="Missing metadata for observer: assuming Earth-based observer."):
             map_.peek()
