@@ -203,7 +203,9 @@ def test_save(aia171_test_map, hmi_test_map, tmp_path):
     """Tests the MapSequence save function"""
     seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
 
-    seq.save(tmp_path.as_posix(), filetype='fits', overwrite=True)
+    with pytest.raises(ValueError, match="{index} must be specified"):
+        seq.save(f"{tmp_path.as_posix()}_index:03", filetype='fits', overwrite=True)
+    seq.save(f"{tmp_path.as_posix()}_{{index:03}}.fits", filetype='auto', overwrite=True)
 
     test_seq = sunpy.map.Map(f"{tmp_path.as_posix()}_000.fits",
                              f"{tmp_path.as_posix()}_001.fits", sequence=True)

@@ -532,15 +532,11 @@ class MapSequence:
         Notes
         -----
         The individual maps are saved as with the specified
-        `filepath` followed by an `_` with a sequence number.
-        If an extension isn't specified it is defaulted to `fits`.
+        `filepath` based on {index} specified by the user.
         """
-        filepath_ = Path(filepath)
         for index, map_seq in enumerate(self.maps):
-            extension = filepath_.suffix
-            path = (filepath_.parent / filepath_.stem).as_posix()
-            if extension == '':
-                path = f"{path}_{index:03}.fits"
+            filepath_ = filepath.format(index=index)
+            if filepath_ == filepath:
+                raise ValueError("{index} must be specified")
             else:
-                path = f"{path}_{index:03}{extension}"
-            map_seq.save(path, filetype, **kwargs)
+                map_seq.save(filepath_, filetype, **kwargs)
