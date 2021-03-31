@@ -123,6 +123,20 @@ def _set_wcs_aux_obs_coord(wcs, obs_frame):
     wcs.wcs.aux.dsun_obs = obs_frame.radius.to_value(u.m)
 
 
+def _has_complete_observer_info(wcs):
+    """
+    Return `True` if ``wcs`` has complete observer information in its
+    auxillary information.
+
+    If there is too much information (ie both Carrington longitude and
+    heliographic longitude are present), returns `False`.
+    """
+    return (wcs.wcs.aux.hglt_obs is not None and
+            wcs.wcs.aux.dsun_obs is not None and
+            (wcs.wcs.aux.hgln_obs is not None or
+             wcs.wcs.aux.crln_obs is not None))
+
+
 def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     """
     For a given frame, this function returns the corresponding WCS object.
