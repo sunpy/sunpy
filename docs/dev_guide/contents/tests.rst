@@ -259,12 +259,15 @@ Inside this folder will be all the images created, as well as a json file with t
 The current hashes are located within "sunpy/tests/figure_hashes_mpl_<ver>_ft_<ver>_astropy_<ver>.json" and this will be where you will need to update old hashes or create new figure entries if anything changes.
 The filenames are the versions of matplotlib, freetype and astropy used.
 If these versions differ to your local setup, the figure tests will not run.
+In theory, the Python version does not change the results as we have pinned the packages that cause the hash to vary.
 
 If you are adding a new figure test you will need to do a few more steps::
 
-    $ tox -e py38-figure -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_332_ft_261_astropy_403.json
+    $ tox -e py38-figure -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_332_ft_261_astropy_42.json
 
-and for the development figure tests::
+The filename changes if the version of astropy or matplotlib or freetype gets updated.
+So you might need to adjust this command.
+For the development figure tests::
 
     $ tox -e py38-figure-devdeps -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_dev_ft_261_astropy_dev.json
 

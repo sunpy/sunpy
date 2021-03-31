@@ -32,7 +32,7 @@
   "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_width_height": "f1dc10238c83fbdf510d1f912c921fe3b53f437f9a46f3b71ad46b48273369fb",
   "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_top_right": "b4d2229be76ed1fdcfa5740aaeb26ab6eed92608661cf2f34bca3685f524caf1",
   "sunpy.map.tests.test_plotting.test_heliographic_grid_annotations": "eae3267f21837571a7b10bf1e2fe0f672cf59c11ebefa4e5eadc3e9906609be3",
-  "sunpy.net.tests.test_helioviewer.test_download_jp2_map": "67b17ac7c343a1d568d9dfa2bb12e0041e2fc53e8ca1c0e1c2c7693eda2bd0d8",
+  "sunpy.net.tests.test_helioviewer.test_download_jp2_map": "438fdcccc6f879491c876ce24a591843bb60d724e354d1c8124678a356ff3426",
   "sunpy.timeseries.tests.test_timeseriesbase.test_eve_peek": "2a22f93af44971411800e4fcd0d93d2128fe2b9e6b97e576e8372c2cd12d7d78",
   "sunpy.timeseries.tests.test_timeseriesbase.test_esp_peek": "d069eee419c45875cffe9a10c3262f83b3d28ccf7f13ee66ca1b99fe557f09b8",
   "sunpy.timeseries.tests.test_timeseriesbase.test_fermi_gbm_peek": "a0addeae9ec0eda509c976e9058b2d90fa748b2c3d4a64df43b3a064d85f34d9",
