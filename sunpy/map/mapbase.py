@@ -248,6 +248,14 @@ class GenericMap(NDData):
             " coordinate is not yet implemented.")
 
     def _text_summary(self):
+        dt = self.exposure_time
+        wave = self.wavelength
+        measurement = self.measurement
+
+        dt = 'Unknown' if dt is None else dt
+        wave = 'Unknown' if wave is None else wave
+        measurement = 'Unknown' if measurement is None else measurement
+
         return textwrap.dedent("""\
                    SunPy Map
                    ---------
@@ -257,16 +265,16 @@ class GenericMap(NDData):
                    Measurement:\t\t {meas}
                    Wavelength:\t\t {wave}
                    Observation Date:\t {date}
-                   Exposure Time:\t\t {dt:f}
+                   Exposure Time:\t\t {dt}
                    Dimension:\t\t {dim}
                    Coordinate System:\t {coord}
                    Scale:\t\t\t {scale}
                    Reference Pixel:\t {refpix}
                    Reference Coord:\t {refcoord}\
                    """).format(obs=self.observatory, inst=self.instrument, det=self.detector,
-                               meas=self.measurement, wave=self.wavelength,
+                               meas=measurement, wave=wave,
                                date=self.date.strftime(TIME_FORMAT),
-                               dt=self.exposure_time,
+                               dt=dt,
                                dim=u.Quantity(self.dimensions),
                                scale=u.Quantity(self.scale),
                                coord=self._coordinate_frame_name,
@@ -672,10 +680,12 @@ class GenericMap(NDData):
 
     def _base_name(self):
         """Abstract the shared bit between name and latex_name"""
-        return "{nickname} {{measurement}} {date}".format(
-            nickname=self.nickname,
-            date=parse_time(self.date).strftime(TIME_FORMAT)
-        )
+        if self.measurement is None:
+            format_str = "{nickname} {date}"
+        else:
+            format_str = "{nickname} {{measurement}} {date}"
+        return format_str.format(nickname=self.nickname,
+                                 date=parse_time(self.date).strftime(TIME_FORMAT))
 
     @property
     def name(self):
@@ -759,7 +769,8 @@ class GenericMap(NDData):
 
         This is taken from the 'EXPTIME' FITS keyword.
         """
-        return self.meta.get('exptime', 0.0) * self.timeunit
+        if 'exptime' in self.meta:
+            return self.meta['exptime'] * self.timeunit
 
     @property
     def instrument(self):
@@ -771,33 +782,34 @@ class GenericMap(NDData):
         """
         Measurement wavelength.
 
-        This is taken from the 'WAVELNTH' FITS keyword. If the keyword is not
-        present, defaults to 0.
+        This is taken from the 'WAVELNTH' FITS keywords. If the keyword is not
+        present, defaults to `None`. If 'WAVEUNIT' keyword isn't present,
+        defaults to dimensionless units.
         """
-        return u.Quantity(self.meta.get('wavelnth', 0),
-                          self.waveunit)
+        return self.wavelength
 
     @property
     def waveunit(self):
         """
         The `~astropy.units.Unit` of the wavelength of this observation.
 
-        This is taken from the 'WAVEUNIT' FITS keyword.
+        This is taken from the 'WAVEUNIT' FITS keyword. If the keyword is not
+        present, defaults to `None`
         """
-        unit = self.meta.get("waveunit")
-        if unit is None:
-            return u.one
-        return u.Unit(unit)
+        if 'waveunit' in self.meta:
+            return u.Unit(self.meta['waveunit'])
 
     @property
     def wavelength(self):
         """
         Wavelength of the observation.
 
-        This is taken from the 'WAVELNTH' FITS keyword.
+        This is taken from the 'WAVELNTH' FITS keywords. If the keyword is not
+        present, defaults to `None`. If 'WAVEUNIT' keyword isn't present,
+        defaults to dimensionless units.
         """
-        return u.Quantity(self.meta.get('wavelnth', 0),
-                          self.waveunit)
+        if 'wavelnth' in self.meta:
+            return u.Quantity(self.meta['wavelnth'], self.waveunit)
 
     @property
     def observatory(self):

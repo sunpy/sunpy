@@ -1093,3 +1093,18 @@ def test_print_map(generic_map):
     out_str = generic_map.__str__()
     assert isinstance(out_str, str)
     assert out_str in out_repr
+
+
+def test_wavelength_properties(simple_map):
+    simple_map.meta.pop('waveunit', None)
+    simple_map.meta['wavelnth'] = 1
+    assert simple_map.measurement == 1 * u.one
+    assert simple_map.wavelength == 1 * u.one
+
+    simple_map.meta['waveunit'] = ''
+    assert simple_map.measurement == 1 * u.one
+    assert simple_map.wavelength == 1 * u.one
+
+    simple_map.meta['waveunit'] = 'm'
+    assert simple_map.measurement == 1 * u.m
+    assert simple_map.wavelength == 1 * u.m

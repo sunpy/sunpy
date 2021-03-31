@@ -8,8 +8,6 @@ import glob
 
 import pytest
 
-import astropy.units as u
-
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.hinode import SOTMap
@@ -44,7 +42,7 @@ def test_observatory(sot):
 
 def test_measurement(sot):
     """Tests the measurement property of the SOTMap object."""
-    assert sot.measurement == 0 * u.one
+    assert sot.measurement is None
 
 
 def test_instruments(sot):
