@@ -87,7 +87,7 @@ class HECClient(BaseClient):
             link = parser.wsdl_retriever()
         session = Session()
         # This is for use in our test suite.
-        session.verify = int(os.environ.get("HELIO_SSL", 1))
+        session.verify = not(bool(os.environ.get("NO_VERIFY_HELIO_SSL", 0)))
         transport = Transport(session=session)
         self.hec_client = Client(link, transport=transport)
 
