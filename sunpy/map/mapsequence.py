@@ -5,6 +5,7 @@ import textwrap
 import warnings
 import webbrowser
 from copy import deepcopy
+from tempfile import NamedTemporaryFile
 from pathlib import Path
 
 import matplotlib.animation
