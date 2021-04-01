@@ -19,16 +19,15 @@ class GONGClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     5 Results from the GONGClient:
-           Start Time               End Time        Instrument ... Source ExtentType
-    ----------------------- ----------------------- ---------- ... ------ ----------
-    2019-12-31 22:14:00.000 2019-12-31 22:14:59.999       GONG ...    NSO   SYNOPTIC
-    2019-12-31 23:04:00.000 2019-12-31 23:04:59.999       GONG ...    NSO   SYNOPTIC
-    2019-12-31 23:54:00.000 2019-12-31 23:54:59.999       GONG ...    NSO   SYNOPTIC
-    2020-01-01 00:14:00.000 2020-01-01 00:14:59.999       GONG ...    NSO   SYNOPTIC
-    2020-01-01 01:14:00.000 2020-01-01 01:14:59.999       GONG ...    NSO   SYNOPTIC
+           Start Time               End Time        ... Provider ExtentType
+    ----------------------- ----------------------- ... -------- ----------
+    2019-12-31 22:14:00.000 2019-12-31 22:14:59.999 ...      NSO   SYNOPTIC
+    2019-12-31 23:04:00.000 2019-12-31 23:04:59.999 ...      NSO   SYNOPTIC
+    2019-12-31 23:54:00.000 2019-12-31 23:54:59.999 ...      NSO   SYNOPTIC
+    2020-01-01 00:14:00.000 2020-01-01 00:14:59.999 ...      NSO   SYNOPTIC
+    2020-01-01 01:14:00.000 2020-01-01 01:14:59.999 ...      NSO   SYNOPTIC
     <BLANKLINE>
     <BLANKLINE>
-
     """
     baseurl = (r'https://gong2.nso.edu/oQR/zqs/%Y%m/mrzqs%y%m%d/mrzqs%y%m%dt%H%Mc'
                r'(\d){4}_(\d){3}\.fits.gz')
@@ -39,6 +38,6 @@ class GONGClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [("GONG", "Global Oscillation Network Group.")],
                  attrs.Physobs: [("LOS_MAGNETIC_FIELD", "Line of sight magnetic field")],
-                 attrs.Source: [('NSO', 'National Solar Observatory.')],
+                 attrs.Provider: [('NSO', 'National Solar Observatory.')],
                  attrs.ExtentType: [("SYNOPTIC", "Coverage of a complete solar rotation synthesized over time")]}
         return adict
