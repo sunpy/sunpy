@@ -1101,33 +1101,34 @@ def test_fix_bitpix(aia171_test_map):
     assert aia171_test_map.meta['bitpix'] == original
 
 
-def _parse_submap_quantity_input(aia171_test_map):
+def test_parse_submap_quantity_inputs(aia171_test_map):
     bottom_left = (0, 0)*u.arcsec
     top_right = (200, 200)*u.arcsec
     width = 200*u.arcsec
+    height = 300*u.arcsec
 
-    with pytest.raises(ValueError, match="Either top_right alone or both width and height must "
-                       "be specified when bottom_left is a Quantity"):
-        aia171_test_map._parse_submap_quantity_input(bottom_left=bottom_left[0],
-                                                     top_right=None, width=None, height=None)
+    with pytest.raises(ValueError, match=re.escape("Either top_right alone or both width and height "
+                       "must be specified when bottom_left is a Quantity")):
+        aia171_test_map.submap(bottom_left=bottom_left[0],
+                               top_right=None, width=None, height=None)
 
-    with pytest.raises(ValueError, match="bottom_left must have shape (2, ) "
-                       "when specified as a Quantity"):
-        aia171_test_map._parse_submap_quantity_input(bottom_left=bottom_left[0],
-                                                     top_right=top_right,
-                                                     width=None, height=None)
+    with pytest.raises(ValueError, match=re.escape("bottom_left must have shape (2, ) "
+                       "when specified as a Quantity")):
+        aia171_test_map.submap(bottom_left=bottom_left[0],
+                               top_right=top_right, width=None, height=None)
 
-    with pytest.raises(ValueError, match="top_right must have shape (2, ) when specified as "
-                       "a Quantity"):
-        aia171_test_map._parse_submap_quantity_input(bottom_left=bottom_left,
-                                                     top_right=top_right[0], width=None, height=None)
+    with pytest.raises(ValueError, match=re.escape("top_right must have shape (2, ) when specified as "
+                       "a Quantity")):
+        aia171_test_map.submap(bottom_left=bottom_left,
+                               top_right=top_right[0], width=None, height=None)
 
-    with pytest.raises(TypeError, match="When bottom_left is a Quantity, top_right "
-                       "must be a Quantity in units of pixels."):
-        aia171_test_map._parse_submap_quantity_input(bottom_left=bottom_left,
-                                                     top_right=top_right, width=width, height=None)
+    with pytest.raises(TypeError, match=re.escape("When bottom_left is a Quantity, top_right "
+                       "must be a Quantity in units of pixels.")):
+        aia171_test_map.submap(bottom_left=bottom_left,
+                               top_right=top_right, width=None, height=None)
 
-    with pytest.raises(TypeError, match="When bottom_left is a Quantity, width and height "
-                       "must be a Quantity in units of pixels."):
-        aia171_test_map._parse_submap_quantity_input(bottom_left=bottom_left,
-                                                     top_right=None, width=width, height=None)
+    with pytest.raises(TypeError, match=re.escape("When bottom_left is a Quantity, width and height "
+                       "must be a Quantity in units of pixels.")):
+        aia171_test_map.submap(bottom_left=bottom_left,
+                               top_right=None, width=width, height=height)
+
