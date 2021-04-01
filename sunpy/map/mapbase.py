@@ -506,6 +506,8 @@ class GenericMap(NDData):
         w2.wcs.crval = u.Quantity([self._reference_longitude, self._reference_latitude])
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
+        # FITS standard doesn't allow both PC_ij *and* CROTA keywords
+        w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
         w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
