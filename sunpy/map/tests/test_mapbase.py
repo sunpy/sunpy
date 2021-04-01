@@ -1132,4 +1132,3 @@ def test_parse_submap_quantity_inputs(aia171_test_map):
                        "must be a Quantity in units of pixels.")):
         aia171_test_map.submap(bottom_left=bottom_left,
                                top_right=None, width=width, height=height)
-
