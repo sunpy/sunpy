@@ -187,7 +187,7 @@ outmap.plot_settings = maps[0].plot_settings
 outmap.nickname = 'AIA + EUVI/A + EUVI/B'
 
 plt.figure(figsize=(10, 5))
-ax = plt.subplot(projection=out_wcs)
+ax = plt.subplot(projection=outmap.wcs)
 im = outmap.plot(vmin=400)
 
 lon, lat = ax.coords
