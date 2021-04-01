@@ -1122,7 +1122,7 @@ def _parse_submap_quantity_input(aia171_test_map):
                                                      top_right[0], width=None, height=None)
 
     with pytest.raises(TypeError, match="When bottom_left is a Quantity, top_right "
-                       "must be a Quantity in units of pixels."):
+                      "must be a Quantity in units of pixels."):
         aia171_test_map._parse_submap_quantity_input(bottom_left=bottom_left, top_right=
                                                      top_right, width=width, height=None)
 
