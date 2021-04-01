@@ -1114,7 +1114,8 @@ def _parse_submap_quantity_input(aia171_test_map):
     with pytest.raises(ValueError, match="bottom_left must have shape (2, ) "
                        "when specified as a Quantity"):
         aia171_test_map._parse_submap_quantity_input(bottom_left=bottom_left[0],
-                                                     top_right=top_right, width=None, height=None)
+                                                     top_right=top_right,
+                                                     width=None, height=None)
 
     with pytest.raises(ValueError, match="top_right must have shape (2, ) when specified as "
                        "a Quantity"):
