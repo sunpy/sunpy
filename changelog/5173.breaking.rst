@@ -1,0 +1,1 @@
+Changed URL for the ` sunpy.net.dataretriever.sources.SRSClient` to a supported data archive.

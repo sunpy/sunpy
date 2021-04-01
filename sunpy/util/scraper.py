@@ -185,7 +185,7 @@ class Scraper:
         Extracts the date from a particular url following the pattern.
         """
         # remove the user and passwd from files if there:
-        url = url.replace("anonymous:data@sunpy.org@", "")
+        url = url.replace("anonymous:anonymous@", "")
 
         def url_to_list(txt):
             # Substitutes '.' and '_' for '/'.
@@ -316,7 +316,8 @@ class Scraper:
                         retry_after = 1
 
                     log.debug(
-                        f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying.")
+                        f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying."
+                    )
 
                     sleep(retry_after)
 
@@ -332,7 +333,7 @@ class Scraper:
         directories = self.range(timerange)
         filesurls = list()
         ftpurl = urlsplit(directories[0]).netloc
-        with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
+        with FTP(ftpurl, user="anonymous", passwd="anonymous") as ftp:
             for directory in directories:
                 ftp.cwd(urlsplit(directory).path)
                 for file_i in ftp.nlst():
