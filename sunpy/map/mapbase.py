@@ -914,8 +914,11 @@ class GenericMap(NDData):
         Notes
         -----
         This value is taken the ``'rsun_obs'``, ``'solar_r'``, or ``radius``
-        FITS keywords. If none of these keys are present the photospheric limb
-        as seen from the observer coordinate is returned.
+        FITS keywords. If none of these keys are present, the angular radius
+        will be calculated from the radius of the Sun (taken from the
+        ``rsun_ref`` FITS keyword) and the observer distance.  If the
+        ``rsun_ref`` key is not present, the standard radius of the photosphere
+        will be assumed.
         """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
@@ -923,11 +926,11 @@ class GenericMap(NDData):
                                                                     None)))
 
         if rsun_arcseconds is None:
-            warnings.warn("Missing metadata for solar angular radius: assuming photospheric limb "
-                          "as seen from observer coordinate.",
-                          SunpyUserWarning)
-            dsun = self.dsun
-            rsun = sun._angular_radius(constants.radius, dsun)
+            if 'rsun_ref' not in self.meta:
+                warnings.warn("Missing metadata for solar angular radius: assuming the standard "
+                              "radius of the photosphere as seen from the observer distance.",
+                              SunpyUserWarning)
+            rsun = sun._angular_radius(self.rsun_meters, self.dsun)
         else:
             rsun = rsun_arcseconds * u.arcsec
         return rsun
