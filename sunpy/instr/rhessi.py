@@ -1,4 +1,4 @@
-from sunkit_instruments.rhessi import (
+from sunpy.extern.sunkit_instruments.rhessi import (
     backprojection,
     parse_observing_summary_dbase_file,
     parse_observing_summary_hdulist,

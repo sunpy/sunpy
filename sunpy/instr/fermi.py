@@ -1,4 +1,4 @@
-from sunkit_instruments.fermi import (
+from sunpy.extern.sunkit_instruments.fermi import (
     download_weekly_pointing_file,
     get_detector_sun_angles_for_date,
     get_detector_sun_angles_for_time,

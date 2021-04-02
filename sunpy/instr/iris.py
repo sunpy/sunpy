@@ -1,4 +1,4 @@
-from sunkit_instruments.iris import SJI_to_sequence
+from sunpy.extern.sunkit_instruments.iris import SJI_to_sequence
 
 __all__ = ['SJI_to_sequence']
 

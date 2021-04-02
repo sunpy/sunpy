@@ -171,6 +171,7 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "skimage": ("https://scikit-image.org/docs/stable/", None),
     "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
+    "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit_instruments/en/stable/", None),
     "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
     "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),

@@ -1,4 +1,4 @@
-from sunkit_instruments.goes_xrs import (
+from sunpy.extern.sunkit_instruments.goes_xrs import (
     calculate_radiative_loss_rate,
     calculate_temperature_em,
     calculate_xray_luminosity,

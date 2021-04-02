@@ -1,4 +1,4 @@
-from sunkit_instruments.lyra import (
+from sunpy.extern.sunkit_instruments.lyra import (
     get_lytaf_event_types,
     get_lytaf_events,
     remove_lytaf_events_from_timeseries,
