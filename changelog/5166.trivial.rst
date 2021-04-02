@@ -1,0 +1,3 @@
+The ``CROTA`` keywords are no longer set on `sunpy.map.GenericMap.wcs`, as the
+``PC_ij`` keywords are always set and the FITS standard says that these keywords
+must not co-exist.

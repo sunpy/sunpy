@@ -1132,3 +1132,18 @@ def test_parse_submap_quantity_inputs(aia171_test_map):
                        "must be a Quantity in units of pixels.")):
         aia171_test_map.submap(bottom_left=bottom_left,
                                top_right=None, width=width, height=height)
+
+
+def test_wavelength_properties(simple_map):
+    simple_map.meta.pop('waveunit', None)
+    simple_map.meta['wavelnth'] = 1
+    assert simple_map.measurement == 1 * u.one
+    assert simple_map.wavelength == 1 * u.one
+
+    simple_map.meta['waveunit'] = ''
+    assert simple_map.measurement == 1 * u.one
+    assert simple_map.wavelength == 1 * u.one
+
+    simple_map.meta['waveunit'] = 'm'
+    assert simple_map.measurement == 1 * u.m
+    assert simple_map.wavelength == 1 * u.m
