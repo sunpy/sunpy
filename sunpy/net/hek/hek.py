@@ -19,7 +19,7 @@ from sunpy.time import parse_time
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
-__all__ = ['HEKClient', 'HEKTable', 'HEKRow']
+__all__ = ['HEKClient', 'HEKTable', 'HEKRow', 'convert_time']
 
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
 
