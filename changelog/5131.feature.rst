@@ -1,2 +1,2 @@
-Added a :meth:`~sunpy.net.hek._convert_to_Time` method to `sunpy.net.hek`
+Added a :meth:`sunpy.net.hek.convert_time` method to `sunpy.net.hek`
 that converts times from `str` to `astropy.time.core.Time` object.
