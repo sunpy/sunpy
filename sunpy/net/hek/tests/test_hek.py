@@ -2,7 +2,7 @@ import pytest
 
 from astropy.time import Time
 
-from sunpy.net import attr, attrs, hek
+from sunpy.net import attr, attrs, Fido, hek,
 
 
 @pytest.fixture
@@ -23,6 +23,19 @@ def hek_client_creator():
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
     return hek_query
+
+
+@pytest.fixture
+@pytest.mark.remote_data
+def fido_query():
+    event_type = 'FL'
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+
+    res = Fido.search(attrs.Time(tstart, tend),
+                      attrs.hek.EventType(event_type),
+                      attrs.hek.OBS.Observatory == "GOES")
+    return res
 
 
 def test_eventtype_collide():
@@ -202,9 +215,17 @@ def test_mixed_results_get_angstrom():
 
 
 @pytest.mark.remote_data
-def test_convert_time(hek_client_creator):
+def test_convert_time(hek_client_creator, fido_query):
     hc = hek_client_creator
     hek.convert_time(hc)
+
+    assert isinstance(hc['event_starttime'], Time)
+    assert isinstance(hc['event_peaktime'], Time)
+    assert isinstance(hc['event_endtime'], Time)
+
+    res = fido_query
+    hek.convert_time(res)
+
     assert isinstance(hc['event_starttime'], Time)
     assert isinstance(hc['event_peaktime'], Time)
     assert isinstance(hc['event_endtime'], Time)
