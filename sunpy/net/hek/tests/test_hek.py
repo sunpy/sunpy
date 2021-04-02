@@ -2,7 +2,7 @@ import pytest
 
 from astropy.time import Time
 
-from sunpy.net import attr, attrs, Fido, hek,
+from sunpy.net import Fido, attr, attrs, hek
 
 
 @pytest.fixture
