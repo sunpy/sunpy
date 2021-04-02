@@ -34,7 +34,9 @@ def _freeze(obj):
 
 
 def convert_time(response_obj):
-    """ Helper method that convert time from str to astropy.time.core.Time"""
+    """
+    Converts time from str to astropy.time.core.Time for a HEKTable.
+    """
     if isinstance(response_obj, HEKTable):
         _table = response_obj
     else:
