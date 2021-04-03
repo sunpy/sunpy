@@ -23,7 +23,7 @@ def oca():
 
 
 def test_now(attr):
-    """ We can't actually test the value independantly """
+    """ We can't actually test the value independently """
     result, converted = attr.convert_input('now')
 
     assert isinstance(result, Time)
@@ -31,7 +31,7 @@ def test_now(attr):
 
 
 def test_none(attr):
-    """ We can't actually test the value independantly """
+    """ We can't actually test the value independently """
     result, converted = attr.convert_input(None)
 
     assert result is None
