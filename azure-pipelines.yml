@@ -126,6 +126,8 @@ stages:
 
             - linux: py38-devdeps
 
+            - linux: py38-base_deps
+
   # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
   - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'master'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
     - stage: Release
@@ -137,7 +139,7 @@ stages:
           ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
             pypi_connection_name : 'PyPI'
           test_extras: 'dev'
-          test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
+          test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
           submodules: false
           targets:
             - wheels_cp3[789]-manylinux*x86_64
