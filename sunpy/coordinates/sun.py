@@ -38,13 +38,11 @@ __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"
 
 __all__ = [
-    "angular_radius", "sky_position", "carrington_rotation_number",
-    "carrington_rotation_time",
+    "angular_radius", "sky_position", "carrington_rotation_number", "carrington_rotation_time",
     "true_longitude", "apparent_longitude", "true_latitude", "apparent_latitude",
     "mean_obliquity_of_ecliptic", "true_rightascension", "true_declination",
     "true_obliquity_of_ecliptic", "apparent_rightascension", "apparent_declination",
-    "print_params",
-    "B0", "L0", "P", "earth_distance", "orientation"
+    "print_params", "B0", "L0", "P", "earth_distance", "orientation",
 ]
 
 
@@ -132,7 +130,7 @@ def carrington_rotation_time(crot, longitude: u.deg = None):
     """
     crot = crot << u.one
     if longitude is not None:
-        if not quantity_allclose(crot%1, 0):
+        if not quantity_allclose(crot % 1, 0):
             raise ValueError("Carrington rotation number(s) must be integral if `longitude` is provided.")
         if (longitude <= 0*u.deg).any() or (longitude > 360*u.deg).any():
             raise ValueError("Carrington longitude(s) must be > 0 degrees and <= 360 degrees.")

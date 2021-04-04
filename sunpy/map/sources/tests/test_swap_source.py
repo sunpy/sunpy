@@ -1,8 +1,3 @@
-"""Test cases for PROBA2 Map subclasses.
-This particular test file pertains to SWAPMap.
-@Author: Pritish C. (VaticanCameos)
-"""
-
 import os
 import glob
 
@@ -16,31 +11,37 @@ path = sunpy.data.test.rootdir
 fitslist = glob.glob(os.path.join(path, "SWAP", "*"))
 
 
-@pytest.fixture(scope="module", params=fitslist)
+@pytest.fixture(params=fitslist)
 def createSWAP(request):
-    """Creates an SWAPMap from a FITS file."""
+    """
+    Creates an SWAPMap from a FITS file.
+    """
     return Map(request.param)
-
-# SWAP Tests
 
 
 def test_fitstoSWAP(createSWAP):
-    """Tests the creation of SWAPMap using FITS."""
+    """
+    Tests the creation of SWAPMap using FITS.
+    """
     assert isinstance(createSWAP, SWAPMap)
 
 
 def test_is_datasource_for(createSWAP):
-    """Test the is_datasource_for method of SWAPMap.
-    Note that header data to be provided as an argument
-    can be a MetaDict object."""
+    """
+    Test the is_datasource_for method of SWAPMap.
+    """
     assert createSWAP.is_datasource_for(createSWAP.data, createSWAP.meta)
 
 
 def test_observatory(createSWAP):
-    """Tests the observatory property of the SWAPMap object."""
+    """
+    Tests the observatory property of SWAPMap.
+    """
     assert createSWAP.observatory == "PROBA2"
 
 
 def test_measurement(createSWAP):
-    """Tests the measurement property of the SWAPMap object."""
+    """
+    Tests the measurement property of SWAPMap.
+    """
     assert createSWAP.measurement.value == 174

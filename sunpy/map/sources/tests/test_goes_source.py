@@ -1,0 +1,51 @@
+# import os
+# import glob
+
+# import sunpy.data.test
+# from sunpy.map import Map
+# from sunpy.map.sources.goes import SXIMap
+
+# path = sunpy.data.test.rootdir
+# # TODO REPLACE GOES FILE
+# fitspath = glob.glob(os.path.join(path, "hi_20110910_114721_s7h2A.fts"))
+# hi = Map(fitspath)
+
+# # TODO: Test files or at least headers for each filter wheel
+
+
+# def test_fitstoHI():
+#     """
+#     Tests the creation of HIMap to fits.
+#     """
+#     assert isinstance(hi, SXIMap)
+
+
+# def test_is_datasource_for():
+#     """
+#     Test the is_data_source_for method of HIMap.
+
+#     Note that header data to be provided as an argument can be a
+#     MetaDict object.
+#     """
+#     assert hi.is_datasource_for(hi.data, hi.meta)
+
+
+# def test_measurement():
+#     """
+#     Tests the measurement property of the HIMap object.
+#     """
+#     assert hi.measurement == "white-light"
+
+
+# def test_observatory():
+#     """
+#     Tests the observatory property of the HIMap object.
+#     """
+#     assert hi.observatory == "STEREO A"
+
+
+# def test_norm_clip():
+#     """
+#     Tests that the default normalizer has clipping disabled.
+#     """
+#     assert not hi.plot_settings['norm'].clip

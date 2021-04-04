@@ -92,30 +92,37 @@ def hmi_synoptic():
         CHECKSUM= 'cjHPdiENciENciEN'   / HDU checksum updated 2020-04-22T21:01:56
         DATASUM = '2978664836'         / data unit checksum updated 2020-04-22T21:01:56
         """)
-
     header = fits.Header.fromstring(raw_header, sep='\n')
     data = np.random.rand(header['naxis1'], header['naxis2'])
     return Map(data, header)
 
 
 def test_fitstoHMISynoptic(hmi_synoptic):
-    """Tests the creation of HMISynopticMap using FITS."""
+    """
+    Tests the creation of HMISynopticMap using FITS.
+    """
     assert isinstance(hmi_synoptic, HMISynopticMap)
 
 
 def test_is_datasource_for(hmi_synoptic):
-    """Test the is_datasource_for method of HMISynopticMap.
-    Note that header data to be provided as an argument
-    can be a MetaDict object, which in this case is
-    hmi.meta."""
+    """
+    Test the is_datasource_for method of HMISynopticMap.
+
+    Note that header data to be provided as an argument can be a
+    MetaDict object, which in this case is hmi.meta.
+    """
     assert hmi_synoptic.is_datasource_for(hmi_synoptic.data, hmi_synoptic.meta)
 
 
 def test_observatory(hmi_synoptic):
-    """Tests the observatory property of the HMISynopticMap object."""
+    """
+    Tests the observatory property of the HMISynopticMap object.
+    """
     assert hmi_synoptic.observatory == "SDO"
 
 
 def test_measurement(hmi_synoptic):
-    """Tests the measurement property of the HMISynopticMap object."""
+    """
+    Tests the measurement property of the HMISynopticMap object.
+    """
     assert hmi_synoptic.measurement == "carrington"

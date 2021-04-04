@@ -202,7 +202,7 @@ class GenericMap(NDData):
 
         # Setup some attributes
         self._nickname = None
-        # These are palceholders for default attributes, which are only set
+        # These are placeholders for default attributes, which are only set
         # once if their data isn't present in the map metadata.
         self._default_time = None
         self._default_dsun = None
@@ -211,7 +211,6 @@ class GenericMap(NDData):
         self._default_heliographic_longitude = None
 
         # Validate header
-        # TODO: This should be a function of the header, not of the map
         self._validate_meta()
         self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
@@ -1202,11 +1201,11 @@ class GenericMap(NDData):
             CUNIT1, CUNIT2, WAVEUNIT
 
         """
-        msg = ('Image coordinate units for axis {} not present in metadata.')
+        msg = 'Image coordinate units for axis {} ({}) not present in metadata.'
         err_message = []
         for i in [1, 2]:
             if self.meta.get(f'cunit{i}') is None:
-                err_message.append(msg.format(i, i))
+                err_message.append(msg.format(i, f"cunit{i}"))
 
         if err_message:
             err_message.append(

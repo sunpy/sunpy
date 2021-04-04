@@ -168,10 +168,13 @@ class MapFactory(BasicRegistrationFactory):
         for pair in pairs:
             filedata, filemeta = pair
             assert isinstance(filemeta, FileHeader)
+            meta = MetaDict(filemeta)
+            # If the header is an extension, we want to do ignore, maybe?
+            if "xtension" in meta:
+                continue
             # This tests that the data is more than 1D
             if len(np.shape(filedata)) > 1:
                 data = filedata
-                meta = MetaDict(filemeta)
                 new_pairs.append((data, meta))
 
         if not new_pairs:
@@ -216,8 +219,7 @@ class MapFactory(BasicRegistrationFactory):
         """
         # Account for nested lists of items
         args = expand_list(args)
-
-        # Sanitise the input so that each 'type' of input corresponds to a different
+        # Sanitize the input so that each 'type' of input corresponds to a different
         # class, so single dispatch can be used later
         nargs = len(args)
         i = 0
@@ -230,10 +232,10 @@ class MapFactory(BasicRegistrationFactory):
                 args.insert(i, (data, header))
                 nargs -= 1
             elif isinstance(arg, str) and _is_url(arg):
-                # Repalce URL string with a Request object to dispatch on later
+                # Replace URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
             elif _possibly_a_path(arg):
-                # Repalce path strings with Path objects
+                # Replace path strings with Path objects
                 args[i] = pathlib.Path(arg)
             i += 1
 
@@ -251,7 +253,7 @@ class MapFactory(BasicRegistrationFactory):
 
         return data_header_pairs
 
-    # Note that post python 3.8 this can be @functools.singledispatchmethod
+    # TODO: Post python 3.8 this can be @functools.singledispatchmethod
     @seconddispatch
     def _parse_arg(self, arg, **kwargs):
         """
@@ -335,7 +337,7 @@ class MapFactory(BasicRegistrationFactory):
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
-        # matches the arguments.  If it does, use that type.
+        # matches the arguments. If it does, use that type.
         for pair in data_header_pairs:
             if isinstance(pair, GenericMap):
                 new_maps.append(pair)

@@ -1,8 +1,3 @@
-"""Test cases for HINODE Map subclasses.
-This particular test file pertains to XRTMap.
-@Author: Pritish C. (VaticanCameos)
-"""
-
 import os
 import glob
 
@@ -23,34 +18,40 @@ def xrt():
         return Map(fitspath)
 
 
-# XRT Tests
 def test_fitstoXRT(xrt):
-    """Tests the creation of XRTMap using FITS."""
+    """
+    Tests the creation of XRTMap using FITS.
+    """
     assert isinstance(xrt, XRTMap)
 
 
 def test_is_datasource_for(xrt):
-    """Test the is_datasource_for method of XRTMap.
-    Note that header data to be provided as an argument
-    can be a MetaDict object."""
+    """
+    Test the is_datasource_for method of XRTMap.
+    """
     assert xrt.is_datasource_for(xrt.data, xrt.meta)
 
 
 def test_observatory(xrt):
-    """Tests the observatory property of the XRTMap object."""
+    """
+    Tests the observatory property of XRTMap.
+    """
     assert xrt.observatory == "Hinode"
 
 
 def test_measurement(xrt):
-    """Tests the measurement property of the XRTMap object."""
+    """
+    Tests the measurement property of XRTMap.
+    """
     measurement = xrt.filter_wheel1_measurements[5].replace("_", " ")
     measurement += '-' + xrt.filter_wheel2_measurements[1].replace("_", " ")
     assert xrt.measurement == measurement
 
 
 def test_wheel_measurements(xrt):
-    """Tests the filter_wheel_measurements objects present
-    in the XRTMap object."""
+    """
+    Tests the filter_wheel_measurements objects present in XRTMap.
+    """
     assert (xrt.filter_wheel1_measurements ==
             ["Al_med", "Al_poly", "Be_med", "Be_thin", "C_poly", "Open"])
     assert (xrt.filter_wheel2_measurements ==
