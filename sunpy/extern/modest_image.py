@@ -290,7 +290,7 @@ def imshow(axes, X, cmap=None, norm=None, aspect=None,
     if extent is not None:
         im.set_extent(extent)
 
-    axes.images.append(im)
+    axes.add_image(im)
 
     def remove(h):
         axes.images.remove(h)
