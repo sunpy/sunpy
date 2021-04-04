@@ -6,6 +6,7 @@ pycodestyle:
   exclude:
     - setup.py
     - docs/conf.py
+    - sunpy/extern/
 
 descending_issues_order: True
 
