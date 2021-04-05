@@ -30,7 +30,8 @@ import numpy as np
 # inlined figure.
 
 x = np.linspace(-np.pi, np.pi, 300)
-xx, yy = np.meshgrid(x, x)
+y= np.linspace(-np.pi, np.pi, 300)
+xx, yy = np.meshgrid(x, y)
 z = np.cos(xx) + np.cos(yy)
 
 plt.figure()
