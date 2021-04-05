@@ -161,11 +161,9 @@ def make_fitswcs_header(data, coordinate,
                                                   rotation_matrix[1, 0], rotation_matrix[1, 1])
 
     if hasattr(coordinate, 'rsun') and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
-        observer = coordinate.observer.transform_to(
-            frames.HeliographicStonyhurst(obstime=coordinate.observer.obstime)
-        )
-        meta_wcs['rsun_obs'] = sun._angular_radius(getattr(coordinate, 'rsun'),
-                                                   observer.radius).to_value(u.arcsec)
+        meta_wcs['rsun_obs'] = sun._angular_radius(
+            coordinate.rsun, coordinate.observer.radius
+        ).to_value(u.arcsec)
 
     meta_dict = MetaDict(meta_wcs)
 
