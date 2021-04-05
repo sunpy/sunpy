@@ -534,9 +534,9 @@ class MapSequence:
         Examples
         --------
         >>> from sunpy.map import Map
-        >>> import sunpy.data.sample
-        >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.AIA_193_IMAGE, sequence=True)
-        >>> smap.save('map_{index:03}.fits')
+        >>> import sunpy.data.sample # doctest: +REMOTE_DATA
+        >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.AIA_193_IMAGE, sequence=True) # doctest: +REMOTE_DATA
+        >>> smap.save('map_{index:03}.fits') # doctest: +REMOTE_DATA
 
         """
         for index, map_seq in enumerate(self.maps):
