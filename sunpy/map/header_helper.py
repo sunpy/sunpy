@@ -1,4 +1,3 @@
-
 import numpy as np
 
 import astropy.units as u
@@ -8,7 +7,7 @@ from astropy.coordinates import SkyCoord
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
 
-__all__ = ['meta_keywords', 'make_fitswcs_header']
+__all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta']
 
 
 def meta_keywords():
@@ -162,7 +161,9 @@ def make_fitswcs_header(data, coordinate,
                                                   rotation_matrix[1, 0], rotation_matrix[1, 1])
 
     if hasattr(coordinate, 'rsun') and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
-        observer = coordinate.observer.transform_to(frames.HeliographicStonyhurst(obstime=coordinate.observer.obstime))
+        observer = coordinate.observer.transform_to(
+            frames.HeliographicStonyhurst(obstime=coordinate.observer.obstime)
+        )
         meta_wcs['rsun_obs'] = sun._angular_radius(getattr(coordinate, 'rsun'),
                                                    observer.radius).to_value(u.arcsec)
 
@@ -196,6 +197,41 @@ def _get_wcs_meta(coordinate, projection_code):
     cunit1, cunit2 = skycoord_wcs.wcs.cunit
     coord_meta = dict(skycoord_wcs.to_header())
     coord_meta['cunit1'], coord_meta['cunit2'] = cunit1.to_string("fits"), cunit2.to_string("fits")
+
+    return coord_meta
+
+
+@u.quantity_input
+def get_observer_meta(observer, rsun: (u.Mm, None)):
+    """
+    Function to get observer meta from coordinate frame.
+
+    Parameters
+    ----------
+    coordinate : ~`astropy.coordinates.BaseFrame`
+        The coordinate of the observer, must be transformable to Heliographic
+        Stonyhurst.
+    rsun : `astropy.units.Quantity`
+        The radius of the Sun.
+
+    Returns
+    -------
+    `dict`
+        Containing the WCS meta information
+            * hgln_obs, hglt_obs
+            * dsun_obs
+            * rsun_obs
+            * rsun_ref
+    """
+    observer = observer.transform_to(frames.HeliographicStonyhurst(obstime=observer.obstime))
+    coord_meta = {}
+
+    coord_meta['hgln_obs'] = observer.lon.to_value(u.deg)
+    coord_meta['hglt_obs'] = observer.lat.to_value(u.deg)
+    coord_meta['dsun_obs'] = observer.radius.to_value(u.m)
+    if rsun is not None:
+        coord_meta['rsun_ref'] = rsun.to_value(u.m)
+        coord_meta['rsun_obs'] = sun._angular_radius(rsun, observer.radius).to_value(u.arcsec)
 
     return coord_meta
 
