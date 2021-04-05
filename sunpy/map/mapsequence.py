@@ -522,16 +522,21 @@ class MapSequence:
         filepath : str
             Location to save file to.
             Each map from the sequence will be saved separately.
+            The individual maps are saved based on {index} specified
+            by the user.
         filetype : str
             'auto' or any supported file extension.
         kwargs :
             Any additional keyword arguments are passed to
             `~sunpy.io.write_file`.
 
-        Notes
-        -----
-        The individual maps are saved as with the specified
-        `filepath` based on {index} specified by the user.
+        Examples
+        --------
+        >>> from sunpy.map import Map
+        >>> import sunpy.data.sample
+        >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.AIA_193_IMAGE, sequence=True)
+        >>> smap.save('map_{index:03}.fits')
+
         """
         for index, map_seq in enumerate(self.maps):
             filepath_ = filepath.format(index=index)

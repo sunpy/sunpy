@@ -200,7 +200,9 @@ def test_map_sequence_plot(aia171_test_map, hmi_test_map):
 
 
 def test_save(aia171_test_map, hmi_test_map, tmp_path):
-    """Tests the MapSequence save function"""
+    """
+    Tests the MapSequence save function
+    """
     seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
 
     with pytest.raises(ValueError, match="{index} must be specified"):
