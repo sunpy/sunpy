@@ -225,6 +225,10 @@ class MDIMap(GenericMap):
 class MDISynopticMap(MDIMap):
     """
     SOHO MDI synoptic magnetogram Map.
+    
+    The MDISynopticMap class utilises Michelson Doppler Imaging to produce a 
+    magnetogram, which behaves as a sort of a weather map for movement observed 
+    in the Ni 6768 Angstrom solar absorption line.
 
     See the docstring of `MDIMap` for information on the MDI instrument.
     """
