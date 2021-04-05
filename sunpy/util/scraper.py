@@ -76,6 +76,7 @@ class Scraper:
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
+
     def __init__(self, pattern, regex=False, **kwargs):
         if regex:
             self.pattern = pattern
@@ -314,7 +315,8 @@ class Scraper:
                     except Exception:
                         retry_after = 1
 
-                    log.debug(f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying.")
+                    log.debug(
+                        f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying.")
 
                     sleep(retry_after)
 
