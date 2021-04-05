@@ -2,6 +2,7 @@
 Test Generic Map
 """
 import os
+import re
 import tempfile
 from unittest import mock
 
@@ -1093,6 +1094,44 @@ def test_print_map(generic_map):
     out_str = generic_map.__str__()
     assert isinstance(out_str, str)
     assert out_str in out_repr
+
+
+def test_fix_bitpix(aia171_test_map):
+    original = aia171_test_map.meta.pop('bitpix')
+    aia171_test_map._fix_bitpix()
+    assert aia171_test_map.meta['bitpix'] == original
+
+
+def test_parse_submap_quantity_inputs(aia171_test_map):
+    bottom_left = (0, 0)*u.arcsec
+    top_right = (200, 200)*u.arcsec
+    width = 200*u.arcsec
+    height = 300*u.arcsec
+
+    with pytest.raises(ValueError, match=re.escape("Either top_right alone or both width and height "
+                       "must be specified when bottom_left is a Quantity")):
+        aia171_test_map.submap(bottom_left=bottom_left[0],
+                               top_right=None, width=None, height=None)
+
+    with pytest.raises(ValueError, match=re.escape("bottom_left must have shape (2, ) "
+                       "when specified as a Quantity")):
+        aia171_test_map.submap(bottom_left=bottom_left[0],
+                               top_right=top_right, width=None, height=None)
+
+    with pytest.raises(ValueError, match=re.escape("top_right must have shape (2, ) when specified as "
+                       "a Quantity")):
+        aia171_test_map.submap(bottom_left=bottom_left,
+                               top_right=top_right[0], width=None, height=None)
+
+    with pytest.raises(TypeError, match=re.escape("When bottom_left is a Quantity, top_right "
+                       "must be a Quantity in units of pixels.")):
+        aia171_test_map.submap(bottom_left=bottom_left,
+                               top_right=top_right, width=None, height=None)
+
+    with pytest.raises(TypeError, match=re.escape("When bottom_left is a Quantity, width and height "
+                       "must be a Quantity in units of pixels.")):
+        aia171_test_map.submap(bottom_left=bottom_left,
+                               top_right=None, width=width, height=height)
 
 
 def test_wavelength_properties(simple_map):
