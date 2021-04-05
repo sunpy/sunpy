@@ -1,0 +1,1 @@
+Added "rsun_obs" to the output of `sunpy.map.make_fitswcs_header` if "rsun" is in the coordinate argument.
