@@ -513,7 +513,8 @@ class MapSequence:
         return [m.meta for m in self.maps]
 
     def save(self, filepath, filetype='auto', **kwargs):
-        """Saves the SunPy Map Sequence object to a file.
+        """
+        Saves the SunPy Map Sequence object to a file.
 
         Currently SunPy can only save files in the FITS format.
 
