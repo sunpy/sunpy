@@ -1,8 +1,6 @@
 """
 GOES SXI Map subclass definitions.
 """
-
-
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
@@ -30,7 +28,8 @@ class SXIMap(GenericMap):
 
     .. note::
 
-        The second image which is a pixel mask, is ignored and not read into the map.
+        The second image within a file is a pixel mask.
+        This is ignored and not read into the map.
 
     References
     ----------
@@ -40,7 +39,6 @@ class SXIMap(GenericMap):
     * `Instrument Reference <https://doi.org/10.1007/s11207-005-7416-x>`__
     * `SXI Performance <https://doi.org/10.1007/s11207-005-7417-9>`__
     """
-    # TODO: I added all of them, which might not be very useful.
     filter_wheel = ["OPEN", "PTHNA", "PTHNB", "PMEDB", "PMEDA", "PTHK",
                     "BTHNA", "BTHNB", "BMED", "BTHK", "UV", "RDSH"]
 
@@ -55,13 +53,13 @@ class SXIMap(GenericMap):
                                  f'Got {fw}')
             # Necessary fixes to the header
             header['DETECTOR'] = 'SXI'
-            # Save the filter setting
             header['FILTER'] = header.get('WAVELNTH')
             # Update the wavelength with a number since a str is not supported.
             # TODO: change the number according to the filter
             header['WAVELNTH'] = "14"
             header['WAVEUNIT'] = 'Angstrom'
             # Need to switch these as they are not correct
+            # TODO: CAN WE ASSUME THIS FOR ALL FILES?
             crota2 = header['CROTA1']
             crota1 = header['CROTA2']
             header['CROTA1'] = crota1
