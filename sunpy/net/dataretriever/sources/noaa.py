@@ -226,7 +226,7 @@ class SRSClient(GenericClient):
         paths = downloader.download()
         return paths
 
-    @ classmethod
+    @classmethod
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [("SOON", "Solar Region Summary."),
