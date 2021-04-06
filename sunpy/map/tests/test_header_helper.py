@@ -6,11 +6,10 @@ from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 
 import sunpy.map
-from sunpy.coordinates import frames
+from sunpy.coordinates import frames, sun
 from sunpy.util.metadata import MetaDict
 
 
-# test setups
 @pytest.fixture
 def map_data():
     return np.random.rand(10, 10)
@@ -45,7 +44,6 @@ def hpc_test_header_notime():
     return SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective)
 
 
-# tests
 def test_metakeywords():
     meta = sunpy.map.meta_keywords()
     assert isinstance(meta, dict)
@@ -90,16 +88,21 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
     assert header['crpix1'] == 5.5
     assert header['ctype1'] == 'HPLN-TAN'
     assert u.allclose(header['dsun_obs'], hpc_test_header.frame.observer.radius.to_value(u.m))
+    assert u.allclose(header['rsun_ref'] * u.m, hpc_test_header.frame.rsun)
+    assert u.allclose(header['rsun_obs'] * u.arcsec,
+                      sun._angular_radius(header['rsun_ref'] * u.m, header['dsun_obs'] * u.m))
     assert isinstance(WCS(header), WCS)
 
     # Check no observer info for HGS
     header = sunpy.map.make_fitswcs_header(map_data, hgs_test_header)
-    assert header.get('dsun_obs') is None
+    assert 'dsun_obs' not in header
+    assert 'rsun_obs' not in header
     assert isinstance(WCS(header), WCS)
 
     # Check for observer info for HGC
     header = sunpy.map.make_fitswcs_header(map_data, hgc_test_header)
     assert u.allclose(header['dsun_obs'], hgc_test_header.frame.observer.radius.to_value(u.m))
+    assert 'rsun_obs' not in header
     assert isinstance(WCS(header), WCS)
 
     # Check arguments not given as astropy Quantities
