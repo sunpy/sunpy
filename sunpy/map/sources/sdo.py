@@ -142,7 +142,7 @@ class HMISynopticMap(HMIMap):
     The maps are 3600 points in Carrington longitude by
     1440 points equally spaced in sine latitude, and 720 points in Carrington
     longitude by 360 points equally spaced in sine latitude respectively.
-    The map with the lower resolution is produced by applying a boxcar 
+    The map with the lower resolution is produced by applying a boxcar
     average to the high-resolution map.
 
     References
