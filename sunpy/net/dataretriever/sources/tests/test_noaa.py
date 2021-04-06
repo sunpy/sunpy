@@ -178,10 +178,10 @@ def test_srs_tar_unpack_midyear():
 def test_srs_current_year():
     # Current year is nothing but text files, all older years should be tar files.
     year = datetime.date.today().year
-    qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/02/01", f"{year}/02/01T23:59:29"))
+    qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/01/01", f"{year}/01/01T23:59:29"))
     res = Fido.fetch(qr)
     assert len(res) == 1
-    assert res.data[0].endswith(f"{year}0201SRS.txt")
+    assert res.data[0].endswith(f"{year}0101SRS.txt")
 
 
 @no_vso
