@@ -1,0 +1,1 @@
+Added a documentation string to `~sunpy.map.sources.sdo.HMISynopticMap`.
