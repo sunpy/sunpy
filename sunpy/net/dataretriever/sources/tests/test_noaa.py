@@ -175,17 +175,8 @@ def test_srs_tar_unpack_midyear():
 
 @no_vso
 @pytest.mark.remote_data
-@mock.patch('ftplib.FTP.nlst', side_effect=[[''], ['20200101SRS.txt', '20200102SRS.txt']])
-def test_srs_missing_tarball(mock_ftp_nlst):
-    qr = Fido.search(a.Time('2020-01-01', '2020-01-02'), a.Instrument.srs_table)
-    urls = [qrblock['url'] for qrblock in qr[0]]
-    assert urls[0].endswith('20200101SRS.txt')
-    assert urls[1].endswith('20200102SRS.txt')
-
-
-@no_vso
-@pytest.mark.remote_data
 def test_srs_current_year():
+    # Current year is nothing but text files, all older years should be tar files.
     year = datetime.date.today().year
     qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/02/01", f"{year}/02/01T23:59:29"))
     res = Fido.fetch(qr)
