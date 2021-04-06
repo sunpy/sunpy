@@ -1,4 +1,3 @@
-
 import numpy as np
 
 import astropy.units as u
@@ -8,7 +7,7 @@ from astropy.coordinates import SkyCoord
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
 
-__all__ = ['meta_keywords', 'make_fitswcs_header']
+__all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta']
 
 
 def meta_keywords():
@@ -160,6 +159,11 @@ def make_fitswcs_header(data, coordinate,
         (meta_wcs['PC1_1'], meta_wcs['PC1_2'],
          meta_wcs['PC2_1'], meta_wcs['PC2_2']) = (rotation_matrix[0, 0], rotation_matrix[0, 1],
                                                   rotation_matrix[1, 0], rotation_matrix[1, 1])
+
+    if hasattr(coordinate, 'rsun') and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
+        meta_wcs['rsun_obs'] = sun._angular_radius(
+            coordinate.rsun, coordinate.observer.radius
+        ).to_value(u.arcsec)
 
     meta_dict = MetaDict(meta_wcs)
 
