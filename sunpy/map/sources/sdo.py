@@ -133,7 +133,19 @@ class HMIMap(GenericMap):
 
 
 class HMISynopticMap(HMIMap):
+    """
+    SDO/HMI Synoptic Map.
 
+    Synoptic maps are constructed from HMI 720s line-of-sight magnetograms
+    collected over a 27-day solar rotation.
+
+    See `~sunpy.map.sources.sdo.HMIMap` for information on the HMI instrument.
+
+    References
+    ----------
+    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
+    * `JSOC's HMI Synoptic Charts <http://jsoc.stanford.edu/HMI/LOS_Synoptic_charts.html>`__
+    """
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
 
