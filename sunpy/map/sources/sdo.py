@@ -129,7 +129,25 @@ class HMIMap(GenericMap):
 
 
 class HMISynopticMap(HMIMap):
+    """SDO's HMI Synoptic Map.
 
+    Synoptic maps are constructed from HMI 720s line-of-sight Magnetograms
+    collected over a 27-day solar rotation. Near-central-meridian data from
+    20 magnetograms contribute to each point in the final map. Synoptic
+    charts are presented in two projections in each of two sizes.
+    The maps are 3600 points in Carrington longitude by
+    1440 points equally spaced in sine latitude, and 720 points in Carrington
+    longitude by 360 points equally spaced in sine latitude respectively.
+    The map with the lower resolution is produced by applying a boxcar 
+    average to the high-resolution map.
+
+    References
+    ----------
+    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`_
+    * `JSOC's page for Synoptic Charts of the Photospheric LOS Magnetic Field HMI <http://jsoc.stanford.edu/HMI/LOS_Synoptic_charts.html>`_
+
+    See docstring for `HMIMap` for more references and information on the HMI instrument
+    """
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
 
