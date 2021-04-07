@@ -10,8 +10,10 @@ This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
 import io
 import os
 import collections
+from warnings import warn
 
 from sunpy.io.header import FileHeader
+from sunpy.util.exceptions import SunpyUserWarning
 
 try:
     from sunpy.io import _pyana
@@ -45,15 +47,15 @@ def read(filename, debug=False, **kwargs):
     --------
     >>> data = sunpy.io.ana.read(filename)  # doctest: +SKIP
     """
+    if isinstance(filename, io.IOBase):
+        warn("Reader does not support file-object, falling back to using filepath", SunpyUserWarning)
+        filename = filename.name
+
     if not os.path.isfile(filename):
         raise OSError("File does not exist!")
 
     if _pyana is None:
         raise ImportError("C extension for ANA is missing, please rebuild.")
-
-    # NOTE: This can be removed after adding support for file-obj in `sunpy.io._pyana`.
-    if isinstance(filename, io.IOBase):
-        filename = filename.name  # Extracting path from the file-obj
 
     data = _pyana.fzread(filename, debug)
     return [HDPair(data['data'], FileHeader(data['header']))]

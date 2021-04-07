@@ -52,10 +52,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Inputs to parse for timeseries objects. See the example section for a
         detailed list of possible inputs.
 
-    filetype : `str`, optional
-        Supported reader or extension to manually specify the filetype.
-        Supported readers are ('jp2', 'fits', 'ana')
-
     source : `str`, optional
         A string to select the observational source of the data, currently
         necessary to define how files should be read for all instruments.
@@ -131,26 +127,29 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     >>> my_timeseries = sunpy.timeseries.TimeSeries((data, header), data2, header2,
     ...                                             'file1.fits', url, 'eit_*.fits')  # doctest: +SKIP
 
-    * Manually Specify the file-type
+    * Manually specify the file-type
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits', filetype='fits')   # doctest: +SKIP
     """
 
     @staticmethod
-    def _read_file(fname, filetype=None, **kwargs):
+    def _read_file(fname, **kwargs):
         """
         Reading a file with `sunpy.io` for automatic source detection.
 
         Parameters
         ----------
-        fname : `str`
+        fname : `str` or file-like
             The file path to parse.
+        filetype : `str`
+            Manually specify supported reader or extension.
 
         Returns
         -------
         pairs : `list` or `str`
             List of ``(data, header)`` pairs or ``fname`` if the file is not supported or incorrect.
         """
+        filetype = kwargs.pop('filetype', None)
         if 'source' not in kwargs.keys() or not kwargs['source']:
             try:
                 pairs = read_file(fname, filetype=filetype, **kwargs)
@@ -409,7 +408,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         meta = MetaDict(meta)
         return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
 
-    def __call__(self, *args, filetype=None, silence_errors=False, **kwargs):
+    def __call__(self, *args, silence_errors=False, **kwargs):
         """
         Method for running the factory. Takes arbitrary arguments and keyword
         arguments and passes them to a sequence of pre-registered types to
@@ -430,7 +429,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such as `memmap` for FITS files.
         """
         (data_header_unit_tuples, data_header_pairs,
-         already_timeseries, filepaths) = self._parse_args(*args, filetype=filetype, **kwargs)
+         already_timeseries, filepaths) = self._parse_args(*args, **kwargs)
 
         new_timeseries = list()
 
@@ -571,9 +570,9 @@ def _apply_result(data_header_pairs, filepaths, result):
     if read:
         data_header_pairs.append(result)
     else:
-        # Checking for IO Object
         if isinstance(result, io.IOBase):
-            result = result.name  # Ignoring the file-obj at this point
+            warn("Falling back to using filepath", SunpyUserWarning)
+            result = result.name
         filepaths.append(result)
 
     return data_header_pairs, filepaths

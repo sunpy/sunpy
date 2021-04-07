@@ -430,6 +430,18 @@ class TestTimeSeries:
 # Test some other options
 # =============================================================================
 
+    def test_file_handler(self):
+        # Test for file-obj
+        with open(fermi_gbm_filepath, 'rb') as fd:
+            ts_gbm = sunpy.timeseries.TimeSeries(fd)
+            assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
+
+    def test_file_type(self):
+        # Test for file-type
+        ext = os.path.splitext(fermi_gbm_filepath)[1][1:]
+        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, filetype=ext)
+        assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
+
     def test_passed_ts(self):
         # Test an EVE TimeSeries
         with pytest.warns(SunpyUserWarning, match='Unknown units'):
@@ -455,6 +467,19 @@ class TestTimeSeries:
         # Now with silence_errors kwarg set
         with pytest.raises(ValueError, match='Did not find any files'):
             sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
+
+    def test_invalid_filetype(self):
+        # NOTE: Currently testing using `NotImplemented`, this test will need to be updated
+        # after `sunpy.timeseries.timeseriesbase._parse_file` is implemented.
+
+        with pytest.raises(TypeError), pytest.warns(SunpyUserWarning):
+            with open(fermi_gbm_filepath, 'rb') as fd:
+                sunpy.timeseries.TimeSeries(fd, filetype="invalid_extension")
+
+        # Now with silence_errors kwarg set
+        with pytest.raises(TypeError), pytest.warns(SunpyUserWarning):
+            with open(fermi_gbm_filepath, 'rb') as fd:
+                sunpy.timeseries.TimeSeries(fd, filetype="invalid_extension", silence_errors=True)
 
     def test_invalid_file(self):
         invalid_filepath = os.path.join(filepath, 'annotation_ppt.db')

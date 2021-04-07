@@ -3,9 +3,11 @@ This module provides a JPEG 2000 file reader.
 """
 import io
 import collections
+from warnings import warn
 from xml.etree import cElementTree as ET
 
 from sunpy.io.header import FileHeader
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.xml import xml_to_dict
 
 __all__ = ['read', 'get_header', 'write']
@@ -27,9 +29,9 @@ def read(filepath, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    # NOTE: This can be removed after support for file-obj in `glymur.Jp2k`.
     if isinstance(filepath, io.IOBase):
-        filepath = filepath.name  # Extracting path from the file-obj
+        warn("Reader does not support file-object, falling back to using filepath", SunpyUserWarning)
+        filepath = filepath.name
 
     # Put import here to speed up sunpy.io import time
     from glymur import Jp2k

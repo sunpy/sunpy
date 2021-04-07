@@ -5,6 +5,7 @@ import io
 import os
 import re
 import pathlib
+from itertools import chain
 
 try:
     from . import fits
@@ -60,7 +61,7 @@ def read_file(filepath, filetype=None, **kwargs):
 
     Parameters
     ----------
-    filepath : path-like
+    filepath : `str` or file-like
         The file to be read.
     filetype : `str`, optional
         Supported reader or extension to manually specify the filetype.
@@ -78,20 +79,24 @@ def read_file(filepath, filetype=None, **kwargs):
     -----
     Other keyword arguments are passed to the reader used.
     """
+    if not isinstance(filepath, (str, io.IOBase, pathlib.Path)):
+        raise TypeError("expected str, IO or pathlib.Path object")
+
     if isinstance(filepath, io.IOBase):
         _filepath = pathlib.Path(filepath.name)
-
-    if not isinstance(filepath, pathlib.Path):
-        _filepath = pathlib.Path(_filepath)
+    else:
+        _filepath = pathlib.Path(filepath)
 
     # Use the explicitly passed filetype
     if filetype is not None:
-        return _readers[filetype].read(_filepath, **kwargs)
+        if filetype in chain(*_known_extensions):
+            return _readers[filetype].read(filepath, **kwargs)
+        raise UnrecognizedFileTypeError("The requested filetype is not currently supported by SunPy.")
 
     # Go through the known extensions
     for extension, readername in _known_extensions.items():
-        if _filepath.suffix.endswith(extension) or filetype in extension:
-            return _readers[readername].read(_filepath, **kwargs)
+        if _filepath.suffix.endswith(extension):
+            return _readers[readername].read(filepath, **kwargs)
 
     # If filetype is not apparent from the extension, attempt to detect it
     readername = _detect_filetype(_filepath)

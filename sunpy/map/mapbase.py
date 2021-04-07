@@ -201,7 +201,7 @@ class GenericMap(NDData):
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, plot_settings=None, **kwargs):
+    def __init__(self, data, header, plot_settings=None, mask=None, **kwargs):
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim

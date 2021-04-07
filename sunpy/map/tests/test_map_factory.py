@@ -80,6 +80,10 @@ class TestMap:
         eitmap = sunpy.map.Map(a_fname)
         assert isinstance(eitmap, sunpy.map.GenericMap)
 
+        # File name with file-type
+        eitmap = sunpy.map.Map(a_fname, filetype=pathlib.Path(a_fname).suffix[1:])
+        assert isinstance(eitmap, sunpy.map.GenericMap)
+
         # Directory
         directory = pathlib.Path(filepath, "EIT")
         maps = sunpy.map.Map(os.fspath(directory))
@@ -97,6 +101,11 @@ class TestMap:
         maps = sunpy.map.Map(directory)
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+
+        # File-like object
+        with open(a_fname, "rb") as fd:
+            fdmap = sunpy.map.Map(fd)
+            assert isinstance(fdmap, sunpy.map.GenericMap)
 
         # Glob
         pattern = os.path.join(filepath, "EIT", "*")

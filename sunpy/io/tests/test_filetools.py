@@ -8,6 +8,7 @@ import sunpy
 import sunpy.data.test
 import sunpy.io
 from sunpy.tests.helpers import skip_ana, skip_glymur
+from sunpy.util import SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
 
@@ -44,6 +45,15 @@ class TestFiletools:
         assert all([isinstance(p[1],
                                sunpy.io.header.FileHeader) for p in pairs])
 
+        # Test file-object
+        with open(AIA_171_IMAGE, 'rb') as fd:
+            aiapair = sunpy.io.read_file(fd)
+            assert isinstance(aiapair, list)
+            assert len(aiapair) == 1
+            assert len(aiapair[0]) == 2
+            assert isinstance(aiapair[0][0], np.ndarray)
+            assert isinstance(aiapair[0][1], sunpy.io.header.FileHeader)
+
     def test_read_file_fits_gzip(self):
         # Test read gzipped fits file
         for fits_extension in [".fts", ".fit", ".fits"]:
@@ -59,14 +69,25 @@ class TestFiletools:
     @skip_glymur
     def test_read_file_jp2(self):
         # Test read jp2
-        pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir,
-                                               "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
-
+        sdo_aia_jp2 = os.path.join(sunpy.data.test.rootdir, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
+        # Test filepath
+        pair = sunpy.io.read_file(sdo_aia_jp2)
         assert isinstance(pair, list)
         assert len(pair) == 1
         assert len(pair[0]) == 2
         assert isinstance(pair[0][0], np.ndarray)
         assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
+
+        # Test file object
+        with pytest.warns(SunpyUserWarning,
+                          match="Reader does not support file-object, falling back to using filepath"):
+            with open(sdo_aia_jp2, 'rb') as fd:
+                pair = sunpy.io.read_file(fd)
+                assert isinstance(pair, list)
+                assert len(pair) == 1
+                assert len(pair[0]) == 2
+                assert isinstance(pair[0][0], np.ndarray)
+                assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
 
     def test_read_file_header_fits(self):
         # Test FITS
@@ -74,6 +95,15 @@ class TestFiletools:
         assert isinstance(hlist, list)
         assert len(hlist) == 1
         assert isinstance(hlist[0], sunpy.io.header.FileHeader)
+
+    def test_read_file_exceptions(self):
+        # Test filepath type-check
+        with pytest.raises(TypeError, match="expected str, IO or pathlib.Path object"):
+            sunpy.io.read_file(1)
+        # Test invalid filetype
+        with pytest.raises(sunpy.io.file_tools.UnrecognizedFileTypeError,
+                           match="The requested filetype is not currently supported by SunPy"):
+            sunpy.io.read_file(AIA_171_IMAGE, "invalid_extension")
 
     @skip_glymur
     def test_read_file_header_jp2(self):
@@ -110,12 +140,26 @@ class TestFiletools:
 
     @skip_ana
     def test_read_file_ana(self):
-        ana_data = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, "test_ana.fz"))
+        # Test read ana
+        ana_test_file = os.path.join(sunpy.data.test.rootdir, "test_ana.fz")
+        # Test filepath
+        ana_data = sunpy.io.read_file(ana_test_file)
         assert isinstance(ana_data, list)
         assert len(ana_data) == 1
         assert len(ana_data[0]) == 2
         assert isinstance(ana_data[0][0], np.ndarray)
         assert isinstance(ana_data[0][1], sunpy.io.header.FileHeader)
+
+        # Test file object
+        with pytest.warns(SunpyUserWarning,
+                          match="Reader does not support file-object, falling back to using filepath"):
+            with open(ana_test_file, 'rb') as fd:
+                ana_data = sunpy.io.read_file(fd)
+                assert isinstance(ana_data, list)
+                assert len(ana_data) == 1
+                assert len(ana_data[0]) == 2
+                assert isinstance(ana_data[0][0], np.ndarray)
+                assert isinstance(ana_data[0][1], sunpy.io.header.FileHeader)
 
     @skip_ana
     def test_read_file__header_ana(self):

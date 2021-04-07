@@ -1,0 +1,1 @@
+Added support for file-object and file-type in `~sunpy.map.Map` and `~sunpy.timeseries.TimeSeries`.

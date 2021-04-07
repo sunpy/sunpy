@@ -54,10 +54,6 @@ class MapFactory(BasicRegistrationFactory):
         Inputs to parse for map objects. See the examples section for a
         detailed list of accepted inputs.
 
-    filetype : `str`, optional
-        Supported reader or extension to manually specify the filetype.
-        Supported readers are ('jp2', 'fits', 'ana')
-
     sequence : `bool`, optional
         Return a `sunpy.map.MapSequence` object comprised of all the parsed maps.
 
@@ -155,19 +151,23 @@ class MapFactory(BasicRegistrationFactory):
 
     * Any mixture of the above not in a list
 
-    >>> mymap = sunpy.map.Map(((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits'))\
-        # doctest: +SKIP
+    >>> mymap = sunpy.map.Map(((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits'))  # doctest: +SKIP
+
+    * Manually specify the file-type
+
+    >>> mymap = sunpy.map.Map('filename.fits', filetype='fits')  # doctest: +SKIP
     """
 
-    def _read_file(self, fname, filetype=None, **kwargs):
+    def _read_file(self, fname, **kwargs):
         """
         Read in a file name and return the list of (data, meta) pairs in that file.
         """
         # File gets read here. This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
         log.debug(f'Reading {fname}')
+        filetype = kwargs.pop('filetype', None)
         try:
-            pairs = read_file(fname, filetype=filetype, **kwargs)
+            pairs = read_file(fname, filetype, **kwargs)
         except Exception as e:
             msg = f"Failed to read {fname}."
             raise IOError(msg) from e
@@ -198,7 +198,7 @@ class MapFactory(BasicRegistrationFactory):
         else:
             return False
 
-    def _parse_args(self, *args, filetype=None, silence_errors=False, **kwargs):
+    def _parse_args(self, *args, silence_errors=False, **kwargs):
         """
         Parses an args list into data-header pairs.
 
@@ -252,7 +252,7 @@ class MapFactory(BasicRegistrationFactory):
         data_header_pairs = []
         for arg in args:
             try:
-                data_header_pairs += self._parse_arg(arg, filetype=filetype, **kwargs)
+                data_header_pairs += self._parse_arg(arg, **kwargs)
             except NoMapsInFileError as e:
                 if not silence_errors:
                     raise
@@ -282,18 +282,18 @@ class MapFactory(BasicRegistrationFactory):
         return [pair]
 
     @_parse_arg.register(DatabaseEntryType)
-    def _parse_dbase(self, arg, filetype=None, **kwargs):
-        return self._read_file(arg.path, filetype=filetype, **kwargs)
+    def _parse_dbase(self, arg, **kwargs):
+        return self._read_file(arg.path, **kwargs)
 
     @_parse_arg.register(GenericMap)
     def _parse_map(self, arg, **kwargs):
         return [arg]
 
     @_parse_arg.register(Request)
-    def _parse_url(self, arg, filetype=None, **kwargs):
+    def _parse_url(self, arg, **kwargs):
         url = arg.full_url
         path = str(cache.download(url).absolute())
-        pairs = self._read_file(path, filetype=filetype, **kwargs)
+        pairs = self._read_file(path, **kwargs)
         return pairs
 
     @_parse_arg.register(pathlib.Path)
@@ -301,10 +301,10 @@ class MapFactory(BasicRegistrationFactory):
         return parse_path(arg, self._read_file, **kwargs)
 
     @_parse_arg.register(io.IOBase)
-    def _parse_fileobj(self, arg, filetype=None, **kwargs):
-        return self._read_file(arg, filetype=filetype, **kwargs)
+    def _parse_fileobj(self, arg, **kwargs):
+        return self._read_file(arg, **kwargs)
 
-    def __call__(self, *args, filetype=None, composite=False, sequence=False, silence_errors=False, **kwargs):
+    def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
@@ -330,8 +330,7 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
         as `memmap` for FITS files.
         """
-        data_header_pairs = self._parse_args(*args, filetype=filetype, silence_errors=silence_errors,
-                                             **kwargs)
+        data_header_pairs = self._parse_args(*args, silence_errors=silence_errors, **kwargs)
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
