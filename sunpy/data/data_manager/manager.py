@@ -111,7 +111,6 @@ class DataManager:
                 if name not in self._file_cache:
                     self._file_cache[name] = {}
                 self._file_cache[name][self._namespace] = file_path
-
                 result = func(*args, **kwargs)
                 self._namespace = None
                 return result
