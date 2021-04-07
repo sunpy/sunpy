@@ -11,17 +11,15 @@ __all__ = ['EUIMap']
 
 
 class EUIMap(GenericMap):
-    """EUI Image Map
+    """
+    EUI Image Map
 
     The Extreme Ultraviolet Imager (EUI) is a remote sensing instrument onboard the
     Solar Orbiter (SolO) spacecraft. EUI has three telescopes that image the Sun in
-    Lyman-alpha (1216 A) and the EUV (174 A and 304 A). The three telescopes are the
+    Lyman-alpha (1216 Å) and the EUV (174 Å and 304 Å). The three telescopes are the
     Full Sun Imager (FSI) and two High Resolution Imagers (HRI). The FSI images the
-    whole Sun in both 174 and 304. The EUV and Lyman-alpha HRI telescopes image a
-    1000"-by-1000" patch in 174 A and 1216 A, respectively.
-
-    Notes
-    -----
+    whole Sun in both 174 Å and 304 Å. The EUV and Lyman-alpha HRI telescopes image a
+    1000"-by-1000" patch in 174 Å and 1216 Å, respectively.
 
     References
     ----------
@@ -56,11 +54,9 @@ class EUIMap(GenericMap):
                   'representation_type': CartesianRepresentation,
                   'frame': HeliocentricInertial})] + super()._supported_observer_coordinates
 
-    @property
-    def observatory(self):
-        return 'SolO'
-
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EUI image"""
-        return str(header.get('instrume', '')).startswith('EUI')
+        is_solo = 'solar orbiter' in str(header.get('obsrvtry', '')).lower()
+        is_eui = str(header.get('instrume', '')).startswith('EUI')
+        return is_solo and is_eui
