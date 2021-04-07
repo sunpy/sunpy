@@ -1,3 +1,20 @@
+Sunpy v2.0.10 (2021-04-07)
+==========================
+
+Bug Fixes
+---------
+
+- Fixed a bug with failing downloads in 2010 with the `~sunpy.net.dataretriever.sources.SRSClient`. (`#5159 <https://github.com/sunpy/sunpy/pull/5159>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- The ``CROTA`` keywords are no longer set on `sunpy.map.GenericMap.wcs`, as the
+  ``PC_ij`` keywords are always set and the FITS standard says that these keywords
+  must not co-exist. (`#5166 <https://github.com/sunpy/sunpy/pull/5166>`__)
+
+
 Sunpy v2.0.9 (2021-03-27)
 =========================
 
