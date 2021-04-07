@@ -30,9 +30,9 @@ def LCClient():
       'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits'),
      (Time('2020/08/02', '2020/08/04'),
       'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
-      'goes16/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g16_d20200802_v2-0-1.nc',
+      'goes16/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g16_d20200802_v2-1-0.nc',
       'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
-      'goes17/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g17_d20200804_v2-0-1.nc')])
+      'goes17/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g17_d20200804_v2-1-0.nc')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
