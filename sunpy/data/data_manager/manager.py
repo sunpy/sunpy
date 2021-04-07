@@ -190,7 +190,20 @@ class DataManager:
         return False
 
     def _get_module(self, func):
-        # Made into a separate function for the ability to patch in tests
+        """
+        Returns the name of the module (appended with a dot) that a function belongs to.
+        This is made into a separate function for the ability to patch in tests.
+
+        Parameters
+        ----------
+        func : `function`
+            A function who's module is to be found.
+
+        Returns
+        -------
+        `module`:
+            A `str` that represents the module name appended with a dot.
+        """
         module = func.__module__.lstrip('.').split('.')[0] + '.'
         if module == '__main__.':
             module = ''
