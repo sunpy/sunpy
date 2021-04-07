@@ -162,8 +162,8 @@ def test_delete_db(sqlmanager, sqlstorage):
     test_function()
 
 
-def test_same_file_id_different_module(
-        downloader, storage, data_function, data_function_from_fake_module):
+def test_same_file_id_different_module(downloader, storage,
+                                       data_function, data_function_from_fake_module):
     # Uses name 'test_file' to refer to the file
     data_function()
 
@@ -182,8 +182,8 @@ def test_same_file_id_different_module(
     assert Path(storage._store[1]['file_path']).name == 'fake_module.test_file'
 
 
-def test_namespacing_with_manager_override_file(
-        module_patched_manager, downloader, storage, data_function_from_fake_module):
+def test_namespacing_with_manager_override_file(module_patched_manager, downloader,
+                                                storage, data_function_from_fake_module):
     # Download a file using manager.require()
     data_function_from_fake_module()
 

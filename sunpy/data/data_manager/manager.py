@@ -191,7 +191,6 @@ class DataManager:
     def _get_module(self, func):
         """
         Returns the name of the module (appended with a dot) that a function belongs to.
-        This is made into a separate function for the ability to patch in tests.
 
         Parameters
         ----------
