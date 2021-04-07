@@ -1,3 +1,28 @@
+Sunpy v2.1.4 (2021-04-07)
+=========================
+
+Bug Fixes
+---------
+
+- Fixed a bug with failing downloads in 2010 with the `~sunpy.net.dataretriever.sources.SRSClient`. (`#5159 <https://github.com/sunpy/sunpy/pull/5159>`__)
+- If the property `sunpy.map.GenericMap.rsun_obs` needs to calculate the solar angular radius from header information, it now properly uses the ``rsun_ref`` keyword if it is present and does not emit any warning. (`#5172 <https://github.com/sunpy/sunpy/pull/5172>`__)
+- Added a "rsun_obs" keyword to the output of :func:`sunpy.map.make_fitswcs_header` if the coordinate argument has a "rsun" frame attribute. (`#5177 <https://github.com/sunpy/sunpy/pull/5177>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Added a documentation string to `~sunpy.map.sources.sdo.HMISynopticMap`. (`#5186 <https://github.com/sunpy/sunpy/pull/5186>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- The ``CROTA`` keywords are no longer set on `sunpy.map.GenericMap.wcs`, as the
+  ``PC_ij`` keywords are always set and the FITS standard says that these keywords
+  must not co-exist. (`#5166 <https://github.com/sunpy/sunpy/pull/5166>`__)
+
+
 Sunpy v2.1.3 (2021-03-27)
 =========================
 
