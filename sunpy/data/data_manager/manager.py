@@ -196,8 +196,8 @@ class DataManager:
 
         Parameters
         ----------
-        func : `function`
-            A function who's module is to be found.
+        func : function
+            A function whose module is to be found.
 
         Returns
         -------
