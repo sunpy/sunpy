@@ -201,8 +201,7 @@ class DataManager:
 
         Returns
         -------
-        `module`:
-            A `str` that represents the module name appended with a dot.
+        A `str` that represents the module name appended with a dot.
         """
         module = func.__module__.lstrip('.').split('.')[0] + '.'
         if module == '__main__.':
