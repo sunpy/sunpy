@@ -161,7 +161,7 @@ def get_meta_data(header):
     meta_data = {}
     for m in meta_lines:
         if "Corrected Copy" in m:
-            continue
+            meta_data['corrected'] = True
         k, v = m.strip().split(':')[1:]
         meta_data[k.lower()] = v.strip()
     meta_data['issued'] = datetime.datetime.strptime(meta_data['issued'],

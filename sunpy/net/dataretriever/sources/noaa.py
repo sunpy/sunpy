@@ -221,7 +221,7 @@ class SRSClient(GenericClient):
         paths = self._get_full_filenames(qres, filenames, path)
         downloader = Downloader(max_conn=2)
         for aurl, fname in zip(urls, paths):
-            # Need to change the passive command so aioftp can access the server.
+            # Need to change the passive command as the server does not support the aioftp default
             downloader.enqueue_file(aurl, filename=fname, passive_commands=["pasv"])
         paths = downloader.download()
         return paths
