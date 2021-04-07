@@ -514,17 +514,16 @@ class MapSequence:
 
     def save(self, filepath, filetype='auto', **kwargs):
         """
-        Saves the SunPy Map Sequence object to a file.
+        Saves the sequence, with one file per map.
 
-        Currently SunPy can only save files in the FITS format.
+        Currently SunPy can save files only in the FITS format.
 
         Parameters
         ----------
         filepath : str
-            Location to save file to.
-            Each map from the sequence will be saved separately.
-            The individual maps are saved based on {index} specified
-            by the user.
+            Location to save the file(s) to.  The string must contain ``"{index}"``,
+            which will be populated with the corresponding index number for each
+            map.  Format specifiers (e.g., ``"{index:03}"``) can be used.
         filetype : str
             'auto' or any supported file extension.
         kwargs :
@@ -534,14 +533,15 @@ class MapSequence:
         Examples
         --------
         >>> from sunpy.map import Map
-        >>> import sunpy.data.sample # doctest: +REMOTE_DATA
-        >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.AIA_193_IMAGE, sequence=True) # doctest: +REMOTE_DATA
-        >>> smap.save('map_{index:03}.fits') # doctest: +REMOTE_DATA
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE,
+        ...            sunpy.data.sample.AIA_193_IMAGE,
+        ...            sequence=True)  # doctest: +REMOTE_DATA
+        >>> smap.save('map_{index:03}.fits')  # doctest: +REMOTE_DATA
 
         """
+        if filepath.format(index=0) == filepath:
+            raise ValueError("'{index}' must be appear in the string")
+
         for index, map_seq in enumerate(self.maps):
-            filepath_ = filepath.format(index=index)
-            if filepath_ == filepath:
-                raise ValueError("{index} must be specified")
-            else:
-                map_seq.save(filepath_, filetype, **kwargs)
+            map_seq.save(filepath.format(index=index), filetype, **kwargs)
