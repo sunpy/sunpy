@@ -1,6 +1,7 @@
 """
 This module provides a JPEG 2000 file reader.
 """
+import io
 import collections
 from xml.etree import cElementTree as ET
 
@@ -26,6 +27,10 @@ def read(filepath, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
+    # NOTE: This can be removed after support for file-obj in `glymur.Jp2k`.
+    if isinstance(filepath, io.IOBase):
+        filepath = filepath.name  # Extracting path from the file-obj
+
     # Put import here to speed up sunpy.io import time
     from glymur import Jp2k
     header = get_header(filepath)

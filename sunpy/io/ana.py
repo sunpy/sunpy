@@ -7,6 +7,7 @@ This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
 
     The reading and writing of ana files is not supported under Windows.
 """
+import io
 import os
 import collections
 
@@ -49,6 +50,10 @@ def read(filename, debug=False, **kwargs):
 
     if _pyana is None:
         raise ImportError("C extension for ANA is missing, please rebuild.")
+
+    # NOTE: This can be removed after adding support for file-obj in `sunpy.io._pyana`.
+    if isinstance(filename, io.IOBase):
+        filename = filename.name  # Extracting path from the file-obj
 
     data = _pyana.fzread(filename, debug)
     return [HDPair(data['data'], FileHeader(data['header']))]

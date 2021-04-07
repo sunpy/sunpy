@@ -1,6 +1,7 @@
 """
 This module provides a generic file reader.
 """
+import io
 import os
 import re
 import pathlib
@@ -77,19 +78,24 @@ def read_file(filepath, filetype=None, **kwargs):
     -----
     Other keyword arguments are passed to the reader used.
     """
-    filepath = str(pathlib.Path(filepath))
+    if isinstance(filepath, io.IOBase):
+        _filepath = pathlib.Path(filepath.name)
+
+    if not isinstance(filepath, pathlib.Path):
+        _filepath = pathlib.Path(_filepath)
+
     # Use the explicitly passed filetype
     if filetype is not None:
-        return _readers[filetype].read(filepath, **kwargs)
+        return _readers[filetype].read(_filepath, **kwargs)
 
     # Go through the known extensions
     for extension, readername in _known_extensions.items():
-        if filepath.endswith(extension) or filetype in extension:
-            return _readers[readername].read(filepath, **kwargs)
+        if _filepath.suffix.endswith(extension) or filetype in extension:
+            return _readers[readername].read(_filepath, **kwargs)
 
     # If filetype is not apparent from the extension, attempt to detect it
-    readername = _detect_filetype(filepath)
-    return _readers[readername].read(filepath, **kwargs)
+    readername = _detect_filetype(_filepath)
+    return _readers[readername].read(_filepath, **kwargs)
 
 
 def read_file_header(filepath, filetype=None, **kwargs):
