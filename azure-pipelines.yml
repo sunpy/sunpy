@@ -126,7 +126,7 @@ stages:
 
             - linux: py38-devdeps
 
-            - linux: py38-base_deps
+            - linux: base_deps
 
   # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
   - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'master'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
