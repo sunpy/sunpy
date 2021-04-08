@@ -9,7 +9,7 @@ from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy import log
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.time import parse_time
 
@@ -36,11 +36,6 @@ class EITMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
-        if 'waveunit' not in header or not header['waveunit']:
-            header['waveunit'] = "Angstrom"
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
@@ -49,14 +44,27 @@ class EITMap(GenericMap):
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
+    def spatial_units(self):
+        """
+        If not present in CUNIT{1,2} keywords, defaults to arcsec.
+        """
+        return SpatialPair(u.Unit(self.meta.get('cunit1', 'arcsec')),
+                           u.Unit(self.meta.get('cunit2', 'arcsec')))
+
+    @property
+    def waveunit(self):
+        """
+        If WAVEUNIT FITS keyword isn't present, deafults to Angstrom.
+        """
+        unit = self.meta.get("waveunit", "Angstrom") or "Angstrom"
+        return u.Unit(unit)
+
+    @property
     def detector(self):
         return "EIT"
 
     @property
     def rsun_obs(self):
-        """
-        Returns the solar radius as measured by EIT in arcseconds.
-        """
         return u.Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
 
     @property
@@ -95,37 +103,41 @@ class LASCOMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
-        header['cunit1'] = header['cunit1'].lower()
-        header['cunit2'] = header['cunit2'].lower()
-
         super().__init__(data, header, **kwargs)
 
-        # Fill in some missing or broken info
-        # Test if change has already been applied
-        if 'T' not in self.meta['date-obs']:
-            datestr = "{date}T{time}".format(
-                date=self.meta.get('date-obs', self.meta.get('date_obs')),
-                time=self.meta.get('time-obs', self.meta.get('time_obs')))
-            self.meta['date-obs'] = parse_time(datestr).isot
-
-        # If non-standard Keyword is present, correct it too, for compatibility.
-        if 'date_obs' in self.meta:
-            self.meta['date_obs'] = self.meta['date-obs']
         self.plot_settings['cmap'] = 'soholasco{det!s}'.format(det=self.detector[1])
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
+    @property
+    def spatial_units(self):
+        return SpatialPair(u.Unit(self.meta.get('cunit1').lower()),
+                           u.Unit(self.meta.get('cunit2').lower()))
+
+    @property
+    def rotation_matrix(self):
         # For Helioviewer images, clear rotation metadata, as these have already been rotated.
         # Also check that all CROTAn keywords exist to make sure that it's an untouched
         # Helioviewer file.
-        if ('helioviewer' in self.meta
-                and 'crota' in self.meta and 'crota1' in self.meta and 'crota2' in self.meta):
-            log.debug("LASCOMap: Cleaning up CROTAn keywords "
+        if ('helioviewer' in self.meta and
+                'crota' in self.meta and
+                'crota1' in self.meta and
+                'crota2' in self.meta):
+            log.debug("LASCOMap: Ignoring CROTAn keywords "
                       "because the map has already been rotated by Helioviewer")
-            self.meta.pop('crota')
-            self.meta.pop('crota1')
-            self.meta['crota2'] = 0
+            return np.identity(2)
+        else:
+            return super().rotation_matrix
+
+    @property
+    def date(self):
+        date = self.meta.get('date-obs', self.meta.get('date_obs'))
+        # Incase someone fixes the header
+        if 'T' in date:
+            return parse_time(date)
+
+        time = self.meta.get('time-obs', self.meta.get('time_obs'))
+        return parse_time(f"{date}T{time}")
 
     @property
     def nickname(self):
@@ -134,9 +146,6 @@ class LASCOMap(GenericMap):
 
     @property
     def measurement(self):
-        """
-        Returns the type of data taken.
-        """
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
 
@@ -172,16 +181,29 @@ class MDIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
         super().__init__(data, header, **kwargs)
 
-        # Fill in some missing or broken info
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
         threshold = max([abs(vmin), abs(vmax)])
         self.plot_settings['norm'] = colors.Normalize(-threshold, threshold)
+
+    @property
+    def _date_obs(self):
+        if 'T' in self.meta['date-obs']:
+            # Helioviewer MDI files have the full date in DATE_OBS, but we stil
+            # want to let normal FITS files use DATE-OBS
+            return parse_time(self.meta['date-obs'])
+        else:
+            return parse_time(self.meta['date_obs'])
+
+    @property
+    def spatial_units(self):
+        """
+        If not present in CUNIT{1,2} keywords, defaults to arcsec.
+        """
+        return SpatialPair(u.Unit(self.meta.get('cunit1', 'arcsec')),
+                           u.Unit(self.meta.get('cunit2', 'arcsec')))
 
     @staticmethod
     def _is_mdi_map(header):
@@ -206,6 +228,9 @@ class MDIMap(GenericMap):
 
     @property
     def waveunit(self):
+        """
+        Always assumed to be Angstrom.
+        """
         return "Angstrom"
 
     @property
@@ -227,22 +252,36 @@ class MDISynopticMap(MDIMap):
 
     See the docstring of `MDIMap` for information on the MDI instrument.
     """
-    def __init__(self, data, header, **kwargs):
-        # FITS doesn't like "Degree" as a unit
-        if header['cunit1'] == 'Degree':
-            header['cunit1'] = 'deg'
-        # Sine Latitude is not a valid unit - see Thompson 2006, section 5.5
-        # for how to properly represent the cylindrical equal area (CEA) projection
-        if header['cunit2'] == 'Sine Latitude':
-            header['cdelt2'] = 180 / np.pi * header['cdelt2']
-            header['cunit2'] = 'deg'
-        if 'date-obs' not in header:
-            header['date-obs'] = header['t_obs']
-            header['date-obs'] = parse_time(header['date-obs']).isot
-        for i in [1, 2]:
-            if header.get(f'CRDER{i}') == 'nan':
-                header.pop(f'CRDER{i}')
-        super().__init__(data, header, **kwargs)
+    @property
+    def date(self):
+        """
+        Image observation time.
+
+        This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
+        """
+        time = self._get_date('date-obs')
+        if time is None:
+            return self._get_date('t_obs')
+
+    @property
+    def spatial_units(self):
+        cunit1 = self.meta['cunit1']
+        if cunit1 == 'Degree':
+            cunit1 = 'deg'
+
+        cunit2 = self.meta['cunit2']
+        if cunit2 == 'Sine Latitude':
+            cunit2 = 'deg'
+
+        return SpatialPair(u.Unit(cunit1), u.Unit(cunit2))
+
+    @property
+    def scale(self):
+        if self.meta['cunit2'] == 'Sine Latitude':
+            # Since, this map uses the cylindrical equal-area (CEA) projection,
+            # the spacing should be modified to 180/pi times the original value
+            # Reference: Section 5.5, Thompson 2006
+            return SpatialPair(self.meta['cdelt1'], 180 / np.pi * self.meta['cdelt2'])
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

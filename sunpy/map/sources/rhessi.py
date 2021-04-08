@@ -3,8 +3,9 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
-from sunpy import log
-from sunpy.map import GenericMap
+import astropy.units as u
+
+from sunpy.map.mapbase import GenericMap, SpatialPair
 
 __all__ = ['RHESSIMap']
 
@@ -35,42 +36,70 @@ class RHESSIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
-
         super().__init__(data, header, **kwargs)
-
         self._nickname = self.detector
-        # TODO Currently (8/29/2011), cannot read fits files containing more
-        # than one image (schriste)
-        # Fix some broken/misapplied keywords
-        if self.meta['ctype1'] == 'arcsec':
-            self.meta['cunit1'] = 'arcsec'
-            self.meta['ctype1'] = 'HPLN-TAN'
-        if self.meta['ctype2'] == 'arcsec':
-            self.meta['cunit2'] = 'arcsec'
-            self.meta['ctype2'] = 'HPLT-TAN'
-
-        self.meta['waveunit'] = self.meta.get('waveunit', 'keV')
-        self.meta['wavelnth'] = self.meta.get('wavelnth',
-                                              [self.meta['energy_l'], self.meta['energy_h']])
         self.plot_settings['cmap'] = 'rhessi'
 
+    @property
+    def _timesys(self):
+        """
+        RHESSI maps can incorrectly use the TIMESYS keyword for the reference
+        time. If this is the case, returns the FITS default UTC.
+        """
         if ('TIMESYS' in self.meta and
                 self.meta['keycomments']['TIMESYS'] == 'Reference Time'):
-            log.debug('Moving "TIMESYS" FITS keyword to "DATEREF"')
-            self.meta['DATEREF'] = self.meta.pop('TIMESYS')
+            return 'UTC'
+        else:
+            return super()._timesys
 
-        if 'CROTA' in self.meta and 'CROTA2' not in self.meta:
-            log.debug("Renaming 'CROTA' to 'CROTA2'")
-            self.meta['CROTA2'] = self.meta.pop('CROTA')
+    def _rotation_matrix_from_crota(self):
+        """
+        RHESSI maps can have their rotation in CROTA.
+        """
+        return super()._rotation_matrix_from_crota(crota_key='CROTA')
+
+    @property
+    def spatial_units(self):
+        """
+        If CTYPE{1 or 2} are equal to 'arcsec', assumes that CTYPE{1 or 2}
+        respectively are intended to be 'arcsec'.
+        """
+        units = [self.meta.get('cunit1', None), self.meta.get('cunit2', None)]
+        if self.meta['ctype1'] == 'arcsec':
+            units[0] = 'arcsec'
+        if self.meta['ctype2'] == 'arcsec':
+            units[1] = 'arcsec'
+        units = [None if unit is None else u.Unit(unit.lower()) for unit in units]
+        return SpatialPair(units[0], units[1])
+
+    @property
+    def coordinate_system(self):
+        """
+        If CTYPE{1 or 2} are equal to 'arcsec', assumes that CTYPE{1 or 2}
+        respectively are intended to be 'HPLN-TAN' or 'HPLT-TAN'.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1 == 'arcsec':
+            ctype1 = 'HPLN-TAN'
+        if ctype2 == 'arcsec':
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
+
+    @property
+    def waveunit(self):
+        """
+        If the WAVEUNIT FITS keyword is not present, defaults to keV.
+        """
+        unit = self.meta.get("waveunit", 'keV')
+        return u.Unit(unit)
+
+    @property
+    def wavelength(self):
+        return u.Quantity([self.meta['energy_l'], self.meta['energy_h']],
+                          unit=self.waveunit)
 
     @property
     def detector(self):
-        """
-        Returns the name of the detector
-        """
         return self.meta['telescop']
 
     @classmethod

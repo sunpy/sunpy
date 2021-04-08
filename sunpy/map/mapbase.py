@@ -667,6 +667,18 @@ class GenericMap(NDData):
         """
         return self.data.max(*args, **kwargs)
 
+    @staticmethod
+    def _parse_fits_unit(unit_str):
+        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
+        if isinstance(unit, u.UnrecognizedUnit):
+            warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                          'with sunpy.map.Map.\n'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'the FITS unit standards.')
+            unit = None
+        return unit
+
     @property
     def unit(self):
         """
@@ -680,15 +692,7 @@ class GenericMap(NDData):
         if unit_str is None:
             return
 
-        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
-        if isinstance(unit, u.UnrecognizedUnit):
-            warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                          'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
-                          'the FITS unit standards.')
-            unit = None
-        return unit
+        return self._parse_fits_unit(unit_str)
 
 # #### Keyword attribute and other attribute definitions #### #
 
@@ -740,10 +744,17 @@ class GenericMap(NDData):
                 warn_metadata('Found "TAI" in time string, ignoring TIMESYS keyword '
                               f'which is set to "{timesys_meta}".')
         else:
-            # UTC is the FITS standard default
-            timesys = self.meta.get('timesys', 'UTC')
+            timesys = self._timesys
 
         return parse_time(time, scale=timesys.lower())
+
+    @property
+    def _timesys(self):
+        """
+        Time system.
+        """
+        # UTC is the FITS standard default
+        return self.meta.get('timesys', 'UTC')
 
     @property
     def date_start(self):
@@ -1069,6 +1080,13 @@ class GenericMap(NDData):
                                                         'unit': (u.deg, u.deg, u.m),
                                                         'frame': "heliographic_carrington"}), ]
 
+    @property
+    def _default_observer_coordinate(self):
+        """
+        The default obsever coordinate. This can be overriden by map sources
+        to provide a preferred observer coordinate.
+        """
+
     def _remove_existing_observer_location(self):
         """
         Remove all keys that this map might use for observer location.
@@ -1083,6 +1101,10 @@ class GenericMap(NDData):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
         """
+        default = self._default_observer_coordinate
+        if default is not None:
+            return default
+
         missing_meta = {}
         for keys, kwargs in self._supported_observer_coordinates:
             meta_list = [k in self.meta for k in keys]
@@ -1218,19 +1240,31 @@ class GenericMap(NDData):
         else:
             return self._rotation_matrix_from_crota()
 
-    def _rotation_matrix_from_crota(self):
+    @staticmethod
+    def _pc_matrix(lam, angle):
+        """
+        Returns PC matrix from the scale ration (lam) and rotation
+        angle in radians (angle).
+        """
+        return np.array([[np.cos(angle), -1 * lam * np.sin(angle)],
+                         [1/lam * np.sin(angle), np.cos(angle)]])
+
+    def _rotation_matrix_from_crota(self, crota_key='CROTA2'):
         """
         This method converts the deprecated CROTA FITS kwargs to the new
         PC rotation matrix.
 
         This method can be overridden if an instruments header does not use this
         conversion.
+
+        Paramters
+        ---------
+        crota_key : str, optional
+            If specifed, used as a backup keyword after 'CROTA2'.
         """
         lam = self.scale[0] / self.scale[1]
-        p = np.deg2rad(self.meta.get('CROTA2', 0))
-
-        return np.array([[np.cos(p), -1 * lam * np.sin(p)],
-                         [1/lam * np.sin(p), np.cos(p)]])
+        p = np.deg2rad(self.meta.get('CROTA2', self.meta.get(crota_key, 0)))
+        return self._pc_matrix(lam, p)
 
     @property
     def fits_header(self):

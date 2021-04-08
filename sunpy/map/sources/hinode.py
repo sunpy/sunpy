@@ -1,5 +1,4 @@
 """Hinode XRT and SOT Map subclass definitions"""
-from sunpy import log
 from sunpy.map import GenericMap
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
@@ -37,26 +36,32 @@ class XRTMap(GenericMap):
                                   "Be_thick", "Gband", "Ti_poly"]
 
     def __init__(self, data, header, **kwargs):
-
         super().__init__(data, header, **kwargs)
-
-        if self.meta.get('timesys', '').upper() == 'UTC (TBR)':
-            log.debug('Modifying TIMESYS keyword from "UTC (TBR)" to "UTC"')
-            self.meta['timesys'] = 'UTC'
 
         fw1 = header.get('EC_FW1_')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
             raise ValueError('Unpexpected filter wheel 1 in header.')
-        fw1 = fw1.replace("_", " ")
 
         fw2 = header.get('EC_FW2_')
         if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
             raise ValueError('Unpexpected filter wheel 2 in header.')
-        fw2 = fw2.replace("_", " ")
 
-        self.meta['detector'] = "XRT"
-        self.meta['telescop'] = "Hinode"
         self.plot_settings['cmap'] = 'hinodexrt'
+
+    @property
+    def _timesys(self):
+        if self.meta.get('timesys', '').upper() == 'UTC (TBR)':
+            return 'UTC'
+        else:
+            return super()._timesys
+
+    @property
+    def detector(self):
+        return "XRT"
+
+    @property
+    def observatory(self):
+        return "Hinode"
 
     @property
     def measurement(self):
@@ -106,9 +111,6 @@ class SOTMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
-        self.meta['detector'] = "SOT"
-        self.meta['telescop'] = "Hinode"
         self._nickname = self.detector
 
         # TODO (add other options, Now all threated as intensity. This follows
@@ -123,6 +125,14 @@ class SOTMap(GenericMap):
                  }
 
         self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
+
+    @property
+    def detector(self):
+        return "XRT"
+
+    @property
+    def observatory(self):
+        return "Hinode"
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

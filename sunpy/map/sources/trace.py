@@ -3,10 +3,11 @@
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
+import astropy.units as u
 from astropy.visualization import LogStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['TRACEMap']
@@ -46,20 +47,29 @@ class TRACEMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
         super().__init__(data, header, **kwargs)
 
-        # It needs to be verified that these must actually be set and are not
-        # already in the header.
-        self.meta['detector'] = "TRACE"
-        self.meta['obsrvtry'] = "TRACE"
         self._nickname = self.detector
         # Colour maps
         self.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
+
+    @property
+    def spatial_units(self):
+        """
+        If not present in CUNIT{1,2} keywords, defaults to arcsec.
+        """
+        return SpatialPair(u.Unit(self.meta.get('cunit1', 'arcsec')),
+                           u.Unit(self.meta.get('cunit2', 'arcsec')))
+
+    @property
+    def observatory(self):
+        return "TRACE"
+
+    @property
+    def detector(self):
+        return "TRACE"
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -68,9 +78,6 @@ class TRACEMap(GenericMap):
 
     @property
     def measurement(self):
-        """
-        Returns the measurement type.
-        """
         s = self.meta['WAVE_LEN']
         if s == 'WL':
             s = 'white-light'

@@ -70,12 +70,8 @@ class SUVIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
         super().__init__(data, header, **kwargs)
 
-        # Fill in some missing info
-        self.meta["detector"] = "SUVI"
-        self.meta["telescop"] = "GOES-R"
         self._nickname = self.detector
         self.plot_settings["cmap"] = self._get_cmap_name()
         self.plot_settings["norm"] = ImageNormalize(
@@ -94,10 +90,11 @@ class SUVIMap(GenericMap):
 
     @property
     def observatory(self):
-        """
-        Returns the observatory.
-        """
-        return self.meta["telescop"].split("/")[0]
+        return "GOES-R"
+
+    @property
+    def detector(self):
+        return "SUVI"
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
