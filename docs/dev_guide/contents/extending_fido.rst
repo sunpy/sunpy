@@ -4,15 +4,15 @@
 Extending Fido with New Sources of Data
 ***************************************
 
-Sunpy's data search and retrieval tool (``Fido``) is designed to be extensible, so that new sources of data or metadata can be supported, either inside the sunpy package or outside it.
-There are two ways of defining a new client, depending on the complexity of your web service.
+Sunpy's data search and retrieval tool (``Fido``) is designed to be extensible, so that new sources of data or metadata can be supported, either inside or outside the sunpy core package.
+There are two ways of defining a new client, depending on the complexity of the web service.
 A "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` which provides helper methods for downloading from a list of URLs.
-If your web service provides a list of HTTP or FTP URLs that can easily be obtained from a search, this is probably the best approach.
-If the service you want to add requires making requests to an API with parameters for the search and getting a list of results in return, then you probably want to write a "full" client, which gives you full control.
+If the service you want to add has easily accesible HTTP or FTP URLs that have a well defined folder and filename structure, this is probably the best approach.
+If the service you want to add requires making requests to an API with parameters for the search and getting a list of results in return, then you probably want to write a "full" client.
 
-Before writing a new client, ensure you are familiar with how searches are specified by the `sunpy.net.attr` system including combining them with logical operations.
+Before writing a new client, ensure you are familiar with how searches are specified by the `sunpy.net.attr` system, including combining them with logical operations.
 When choosing a name for your new client it should have the form ``<name>Client`` as sunpy will split the name the name of the class to extract the name of your client.
-The main place this is done is when constructing a `~.UnifiedResponse` object, the name part can be used to index the response object.
+The main place this is done is when constructing a `~.UnifiedResponse` object, where the name part can be used to index the response object.
 
 
 .. _new_scraper_client:
@@ -25,14 +25,16 @@ If the data provider you want to integrate does not provide a tree of files with
 
 A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` and requires a minimum of these three components:
 
-* A class method :meth:`~sunpy.net.dataretriever.client.GenericClient.register_values` which registers the "attrs" that are supported by the client.
+* A class method :meth:`~sunpy.net.dataretriever.client.GenericClient.register_values`; this registers the "attrs" that are supported by the client.
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
   Each ``tuple`` contains the attr value and its description.
-* A class attribute ``baseurl``; this is a regex which is used to match all URLs supported by the client.
-* A class attribute ``pattern``; this is a template used to extract the metadata from URLs matched by ``baseurl``, the extraction uses  the :func:`~sunpy.extern.parse.parse` format.
+* A class attribute ``baseurl``; this is a regular expression which is used to match the URLs supported by the client.
+* A class attribute ``pattern``; this is a template used to extract the metadata from URLs matched by ``baseurl``.
+  The extraction uses the :func:`~sunpy.extern.parse.parse` format.
 
 
-For a simple example of a scraper client, we can look at the implementation of `~.EVEClient` in sunpy, a version without docstrings is reproduced below:
+For a simple example of a scraper client, we can look at the implementation of `~.EVEClient` in sunpy.
+A version without docstrings is reproduced below:
 
 .. code-block:: python
 
@@ -54,7 +56,8 @@ For a simple example of a scraper client, we can look at the implementation of `
 
 This client scrapes all the URLs available under the base url ``http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/``.
 `~.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``baseurl`` pattern specifies where in the pattern the time information is located, using `strptime <https://strftime.org/>`__ notation.
-The ``pattern`` attribute is used to populate the results table from the URLs matched with the ``baseurl``, this includes some of the time definitions, as well as names of attrs, in this case "Level".
+The ``pattern`` attribute is used to populate the results table from the URLs matched with the ``baseurl``.
+It includes some of the time definitions, as well as names of attrs (in this case "Level").
 The supported time keys are: 'year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond'.
 
 The attrs returned in the ``register_values()`` method are used to match your client to a search, as well as adding their values to the attr.
@@ -70,7 +73,7 @@ Say, for example, the Wavelength of a file is expressed in the URL as a passband
 This is done addressed with the two following methods:
 
 * :meth:`~sunpy.net.dataretriever.client.GenericClient.pre_search_hook` which will convert the passed attrs to their representation in the URL.
-* :meth:`~sunpy.net.dataretriever.client.GenericClient.post_search_hook` which converts the retrieved metadata from URL to the form in which they are desired to be represented in the response table.
+* :meth:`~sunpy.net.dataretriever.client.GenericClient.post_search_hook` which converts the retrieved metadata from a URL to the form in which they are desired to be represented in the response table.
 
 A good example of the use of these two methods is the `.NoRHClient` in sunpy.
 
