@@ -29,17 +29,8 @@ class KCorMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
         super().__init__(data, header, **kwargs)
 
-        # Fill in some missing info
-        self.meta['observatory'] = 'MLSO'
-        self.meta['detector'] = 'KCor'
-        self.meta['waveunit'] = self.meta.get('waveunit', 'nm')
-        # Since KCor is on Earth, no need to raise the warning in mapbase
-        self.meta['dsun_obs'] = self.meta.get('dsun_obs',
-                                              sun.earth_distance(self.date).to(u.m).value)
-        self.meta['hgln_obs'] = self.meta.get('hgln_obs', 0.0)
         self._nickname = self.detector
 
         self.plot_settings['cmap'] = self._get_cmap_name()
@@ -56,10 +47,26 @@ class KCorMap(GenericMap):
 
     @property
     def observatory(self):
-        """
-        Returns the observatory.
-        """
-        return self.meta['observatory']
+        return "MLSO"
+
+    @property
+    def detector(self):
+        return "KCor"
+
+    @property
+    def waveunit(self):
+        unit = self.meta.get("waveunit", "nm")
+        return u.Unit(unit)
+
+    @property
+    def _supported_observer_coordinates(self):
+        # Override missing metadata in the observer coordinate
+        dsun_obs = self.meta.get('dsun_obs', sun.earth_distance(self.date).to_value(u.m))
+        return [(('hgln_obs', 'hglt_obs', 'dsun_obs'), {'lon': self.meta.get('hgln_obs', 0.0),
+                                                        'lat': self.meta.get('hglt_obs'),
+                                                        'radius': self.meta.get('dsun_obs', dsun_obs),
+                                                        'unit': (u.deg, u.deg, u.m),
+                                                        'frame': "heliographic_stonyhurst"})]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

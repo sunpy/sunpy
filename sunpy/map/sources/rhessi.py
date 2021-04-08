@@ -3,6 +3,8 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
+import astropy.units as u
+
 from sunpy import log
 from sunpy.map import GenericMap
 
@@ -35,26 +37,18 @@ class RHESSIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        # Fix some broken/misapplied keywords
+        if header['ctype1'] == 'arcsec':
+            header['cunit1'] = 'arcsec'
+            header['ctype1'] = 'HPLN-TAN'
+
+        if header['ctype2'] == 'arcsec':
+            header['cunit2'] = 'arcsec'
+            header['ctype2'] = 'HPLT-TAN'
 
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
-        # TODO Currently (8/29/2011), cannot read fits files containing more
-        # than one image (schriste)
-        # Fix some broken/misapplied keywords
-        if self.meta['ctype1'] == 'arcsec':
-            self.meta['cunit1'] = 'arcsec'
-            self.meta['ctype1'] = 'HPLN-TAN'
-        if self.meta['ctype2'] == 'arcsec':
-            self.meta['cunit2'] = 'arcsec'
-            self.meta['ctype2'] = 'HPLT-TAN'
-
-        self.meta['waveunit'] = self.meta.get('waveunit', 'keV')
-        self.meta['wavelnth'] = self.meta.get('wavelnth',
-                                              [self.meta['energy_l'], self.meta['energy_h']])
         self.plot_settings['cmap'] = 'rhessi'
 
         if ('TIMESYS' in self.meta and
@@ -63,10 +57,17 @@ class RHESSIMap(GenericMap):
             self.meta['DATEREF'] = self.meta.pop('TIMESYS')
 
     @property
+    def waveunit(self):
+        unit = self.meta.get("waveunit", 'keV')
+        return u.Unit(unit)
+
+    @property
+    def wavelength(self):
+        return u.Quantity([self.meta['energy_l'], self.meta['energy_h']],
+                          unit=self.waveunit)
+
+    @property
     def detector(self):
-        """
-        Returns the name of the detector
-        """
         return self.meta['telescop']
 
     @classmethod

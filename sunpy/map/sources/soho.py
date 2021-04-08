@@ -9,9 +9,8 @@ from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy import log
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
-from sunpy.time import parse_time
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap', 'MDISynopticMap']
 
@@ -39,14 +38,17 @@ class EITMap(GenericMap):
         # Assume pixel units are arcesc if not given
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
-        if 'waveunit' not in header or not header['waveunit']:
-            header['waveunit'] = "Angstrom"
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+
+    @property
+    def waveunit(self):
+        unit = self.meta.get("waveunit", "Angstrom") or "Angstrom"
+        return u.Unit(unit)
 
     @property
     def detector(self):
@@ -101,26 +103,6 @@ class LASCOMap(GenericMap):
 
         super().__init__(data, header, **kwargs)
 
-        # Fill in some missing or broken info
-        # Test if change has already been applied
-        if 'T' not in self.meta['date-obs']:
-            datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
-                                                                self.meta.get('date_obs')
-                                                                ),
-                                             time=self.meta.get('time-obs',
-                                                                self.meta.get('time_obs')
-                                                                )
-                                             )
-            self.meta['date-obs'] = datestr
-
-        # If non-standard Keyword is present, correct it too, for compatibility.
-        if 'date_obs' in self.meta:
-            self.meta['date_obs'] = self.meta['date-obs']
-        self._nickname = self.instrument + "-" + self.detector
-        self.plot_settings['cmap'] = 'soholasco{det!s}'.format(det=self.detector[1])
-        self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
-
         # For Helioviewer images, clear rotation metadata, as these have already been rotated.
         # Also check that all CROTAn keywords exist to make sure that it's an untouched
         # Helioviewer file.
@@ -131,6 +113,21 @@ class LASCOMap(GenericMap):
             self.meta.pop('crota')
             self.meta.pop('crota1')
             self.meta['crota2'] = 0
+
+        self._nickname = self.instrument + "-" + self.detector
+        self.plot_settings['cmap'] = 'soholasco{det!s}'.format(det=self.detector[1])
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+
+    @property
+    def date(self):
+        date = self.meta.get('date-obs', self.meta.get('date_obs'))
+        # Incase someone fixes the header
+        if 'T' in date:
+            return date
+
+        time=self.meta.get('time-obs', self.meta.get('time_obs'))
+        return f"{date}T{time}"
 
     @property
     def measurement(self):
@@ -228,22 +225,36 @@ class MDISynopticMap(MDIMap):
 
     See the docstring of `MDIMap` for information on the MDI instrument.
     """
-    def __init__(self, data, header, **kwargs):
-        # FITS doesn't like "Degree" as a unit
-        if header['cunit1'] == 'Degree':
-            header['cunit1'] = 'deg'
-        # Sine Latitude is not a valid unit - see Thompson 2006, section 5.5
-        # for how to properly represent the cylindrical equal area (CEA) projection
-        if header['cunit2'] == 'Sine Latitude':
-            header['cdelt2'] = 180 / np.pi * header['cdelt2']
-            header['cunit2'] = 'deg'
-        if 'date-obs' not in header:
-            header['date-obs'] = header['t_obs']
-            header['date-obs'] = parse_time(header['date-obs']).isot
-        for i in [1, 2]:
-            if header.get(f'CRDER{i}') == 'nan':
-                header.pop(f'CRDER{i}')
-        super().__init__(data, header, **kwargs)
+
+    @property
+    def date(self):
+        """
+        Image observation time.
+
+        This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
+        """
+        time = self.meta.get('date-obs', self.meta.get('t_obs'))
+        return self._parse_fits_date(time)
+
+    @property
+    def spatial_units(self):
+        cunit1 = self.meta['cunit1']
+        if cunit1 == 'Degree':
+            cunit1 = 'deg'
+
+        cunit2 = self.meta['cunit2']
+        if cunit2 == 'Sine Latitude':
+            cunit2 = 'deg'
+
+        return SpatialPair(u.Unit(cunit1), u.Unit(cunit2))
+
+    @property
+    def scale(self):
+        if self.meta['cunit2'] == 'Sine Latitude':
+            # Since, this map uses the cylindrical equal-area (CEA) projection,
+            # the spacing should be modified to 180/pi times the original value
+            # Reference: Section 5.5, Thompson 2006
+            return SpatialPair(self.meta['cdelt1'], 180 / np.pi * self.meta['cdelt2'])
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

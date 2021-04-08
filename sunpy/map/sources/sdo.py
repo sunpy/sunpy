@@ -7,8 +7,7 @@ from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEclipti
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy import log
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['AIAMap', 'HMIMap', 'HMISynopticMap']
@@ -45,14 +44,9 @@ class AIAMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        if 'bunit' not in header and 'pixlunit' in header:
-            # PIXLUNIT is not a FITS standard keyword
-            header['bunit'] = header['pixlunit']
-
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
-        self.meta['detector'] = self.meta.get('detector', "AIA")
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
@@ -74,6 +68,17 @@ class AIAMap(GenericMap):
         Returns the observatory.
         """
         return self.meta.get('telescop', '').split('/')[0]
+
+    @property
+    def detector(self):
+        return self.meta.get("detector", "AIA")
+
+    @property
+    def unit(self):
+        unit_str = self.meta.get('bunit', self.meta.get('pixlunit'))
+        if unit_str is None:
+            return
+        return self._parse_fits_unit(unit_str)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -101,10 +106,8 @@ class HMIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
         super().__init__(data, header, **kwargs)
 
-        self.meta['detector'] = self.meta.get('detector', "HMI")
         self._nickname = self.detector
 
     @property
@@ -120,6 +123,10 @@ class HMIMap(GenericMap):
         Returns the observatory.
         """
         return self.meta.get('telescop', '').split('/')[0]
+
+    @property
+    def detector(self):
+        return self.meta.get("detector", "HMI")
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -142,26 +149,38 @@ class HMISynopticMap(HMIMap):
     * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
     * `JSOC's HMI Synoptic Charts <http://jsoc.stanford.edu/HMI/LOS_Synoptic_charts.html>`__
     """
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
 
-        if self.meta['cunit1'] == 'Degree':
-            self.meta['cunit1'] = 'deg'
+    @property
+    def spatial_units(self):
+        cunit1 = self.meta['cunit1']
+        if cunit1 == 'Degree':
+            cunit1 = 'deg'
 
+        cunit2 = self.meta['cunit2']
+        if cunit2 == 'Sine Latitude':
+            cunit2 = 'deg'
+
+        return SpatialPair(cunit1, cunit2)
+
+    @property
+    def scale(self):
         if self.meta['cunit2'] == 'Sine Latitude':
-            log.debug("Editing CUNIT2, CDELT1, CDLET2 keywords to the correct "
-                      "values for a CEA projection.")
-            self.meta['cunit2'] = 'deg'
-
             # Since, this map uses the cylindrical equal-area (CEA) projection,
             # the spacing should be modified to 180/pi times the original value
             # Reference: Section 5.5, Thompson 2006
-            self.meta['cdelt2'] = 180 / np.pi * self.meta['cdelt2']
-            self.meta['cdelt1'] = np.abs(self.meta['cdelt1'])
+            return SpatialPair(np.abs(self.meta['cdelt1']), 180 / np.pi * self.meta['cdelt2'])
 
-        if 'date-obs' not in self.meta and 't_obs' in self.meta:
-            log.debug('Setting "DATE-OBS" keyword from "T_OBS"')
-            self.meta['date-obs'] = self.meta['t_obs']
+        return super().scale
+
+    @property
+    def date(self):
+        """
+        Image observation time.
+
+        This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
+        """
+        time = self.meta.get('date-obs', self.meta.get('T_OBS'))
+        return self._parse_fits_date(time)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

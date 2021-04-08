@@ -655,6 +655,19 @@ class GenericMap(NDData):
         """
         return self.data.max(*args, **kwargs)
 
+    @staticmethod
+    def _parse_fits_unit(unit_str):
+        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
+        if isinstance(unit, u.UnrecognizedUnit):
+            warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                          'with sunpy.map.Map.\n'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'the FITS unit standards.',
+                          SunpyMetadataWarning)
+            unit = None
+        return unit
+
     @property
     def unit(self):
         """
@@ -668,16 +681,7 @@ class GenericMap(NDData):
         if unit_str is None:
             return
 
-        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
-        if isinstance(unit, u.UnrecognizedUnit):
-            warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                          'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
-                          'the FITS unit standards.',
-                          SunpyMetadataWarning)
-            unit = None
-        return unit
+        return self._parse_fits_unit(unit_str)
 
 # #### Keyword attribute and other attribute definitions #### #
 
@@ -714,26 +718,21 @@ class GenericMap(NDData):
         self._nickname = n
 
     @property
-    def date(self):
-        """
-        Image observation time.
+    def time_system(self):
+        return self.meta.get("timesys", "UTC")
 
-        This is taken from the 'DATE-OBS' FITS keyword.
-        """
-        time = self.meta.get('date-obs', None)
+    def _parse_fits_date(self, time):
         # Get the time scale
+        timesys = self.time_system
+
         if time is not None and 'TAI' in time:
             # SDO specifies the 'TAI' scale in their time string, which is parsed
             # by parse_time(). If a different timescale is also present, warn the
             # user that it will be ignored.
-            timesys = 'TAI'
-            timesys_meta = self.meta.get('timesys', '').upper()
-            if timesys_meta != 'TAI':
+            if 'timesys' in self.meta and timesys != 'TAI':
                 warnings.warn('Found "TAI" in time string, ignoring TIMESYS keyword '
-                              f'which is set to "{timesys_meta}".', SunpyUserWarning)
-        else:
-            # UTC is the FITS standard default
-            timesys = self.meta.get('timesys', 'UTC')
+                              f'which is set to "{timesys}".', SunpyUserWarning)
+            timesys = 'TAI'
 
         if time is None:
             if self._default_time is None:
@@ -745,6 +744,16 @@ class GenericMap(NDData):
             time = self._default_time
 
         return parse_time(time, scale=timesys.lower())
+
+    @property
+    def date(self):
+        """
+        Image observation time.
+
+        This is taken from the 'DATE-OBS' FITS keyword.
+        """
+        time = self.meta.get('date-obs', None)
+        return self._parse_fits_date(time)
 
     @property
     def detector(self):
