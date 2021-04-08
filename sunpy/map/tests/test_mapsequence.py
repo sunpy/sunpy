@@ -205,12 +205,14 @@ def test_save(aia171_test_map, hmi_test_map, tmp_path):
     """
     seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
 
-    with pytest.raises(ValueError, match="{index} must be specified"):
-        seq.save(f"{tmp_path.as_posix()}_index:03", filetype='fits', overwrite=True)
-    seq.save(f"{tmp_path.as_posix()}_{{index:03}}.fits", filetype='auto', overwrite=True)
+    with pytest.raises(ValueError, match="'{index}' must be appear in the string"):
+        seq.save("index", filetype='fits', overwrite=True)
 
-    test_seq = sunpy.map.Map(f"{tmp_path.as_posix()}_000.fits",
-                             f"{tmp_path.as_posix()}_001.fits", sequence=True)
+    base_str = (tmp_path / "map").as_posix()
+    seq.save(f"{base_str}_{{index:03}}.fits", filetype='auto', overwrite=True)
+
+    test_seq = sunpy.map.Map(f"{base_str}_000.fits",
+                             f"{base_str}_001.fits", sequence=True)
 
     assert isinstance(test_seq.maps[0], sunpy.map.sources.sdo.AIAMap)
     assert isinstance(test_seq.maps[1], sunpy.map.sources.sdo.HMIMap)
