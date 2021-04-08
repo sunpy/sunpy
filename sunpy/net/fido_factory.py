@@ -531,7 +531,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         return self._print_clients(visible_entries=15, html=True)
 
-    def _print_clients(self, html=False, visible_entries=None) -> str:
+    def _print_clients(self, html=False, visible_entries=None):
         width = -1 if html else get_width()
 
         t = Table(names=["Client", "Description"], dtype=["U80", "U120"])

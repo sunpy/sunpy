@@ -4,7 +4,6 @@ This module provides functions to retrieve system information.
 import io
 import platform
 import textwrap
-from typing import Tuple
 from contextlib import redirect_stdout
 
 from pkg_resources import get_distribution
@@ -14,7 +13,7 @@ from sunpy.extern.distro import linux_distribution
 __all__ = ['system_info', 'find_dependencies', 'missing_dependencies_by_extra']
 
 
-def find_dependencies(package="sunpy", extras=None) -> Tuple[dict, dict]:
+def find_dependencies(package="sunpy", extras=None):
     """
     List installed and missing dependencies.
 
@@ -36,7 +35,7 @@ def find_dependencies(package="sunpy", extras=None) -> Tuple[dict, dict]:
     return missing_requirements, installed_requirements
 
 
-def missing_dependencies_by_extra(package="sunpy", exclude_extras=None) -> dict:
+def missing_dependencies_by_extra(package="sunpy", exclude_extras=None):
     """
     Get all the specified extras for a package and report any missing dependencies.
 
