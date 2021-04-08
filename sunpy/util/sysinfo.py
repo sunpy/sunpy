@@ -64,8 +64,8 @@ def system_info():
     extra_reqs = sorted({extra_req.name.lower() for extra_req in extra_reqs}.difference(base_reqs))
 
     missing_packages, installed_packages = find_dependencies(package="sunpy", extras=["all"])
-    extra_prop = {'System': platform.system(),
-                  'Arch': f"{platform.architecture()[0]}, ({platform.processor()})",
+    extra_prop = {"System": platform.system(),
+                  "Arch": f"{platform.architecture()[0]}, ({platform.processor()})",
                   "Python": platform.python_version(),
                   "SunPy": get_distribution("sunpy").version}
     sys_prop = {**installed_packages, **missing_packages, **extra_prop}
