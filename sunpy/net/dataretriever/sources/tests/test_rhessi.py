@@ -1,7 +1,6 @@
 import socket
 from unittest import mock
 from urllib.error import URLError
-from urllib.request import urlretrieve
 
 import pytest
 
@@ -51,8 +50,6 @@ def test_get_observing_summary_dbase_file_build_correct_url(mock_get_base_url, m
         'http://www.example.com/dbase/hsi_obssumm_filedb_201601.txt')
 
 
-# Test `rhessi.get_base_url()`
-
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.urlopen', return_value=None)
 def test_get_base_url(mock_urlopen):
     """
@@ -79,11 +76,9 @@ def test_get_base_url_on_timeout(mock_urlopen):
         rhessi.get_base_url()
 
 
-# Test `rhessi.get_observing_summary_filename(...)`
-
 def parsed_dbase():
     """
-    The result of calling `parse_observing_summary_dbase_file(...)` on
+    The result of calling `parse_observing_summary_dbase_file...)` on
     https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt but
     only using the first two rows of data.
     """
@@ -109,20 +104,6 @@ def parsed_dbase():
             'npackets': [0, 0, 0, 0, 0]}
 
 
-@pytest.mark.remote_data
-def test_parsed_dbase():
-    """
-    Test that parsed_based still matches what is returned by rhessi.
-    """
-    filename, _ = urlretrieve(
-        "https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt")
-    dbase = parse_observing_summary_dbase_file(filename)
-    rows = {}
-    for key in dbase.keys():
-        rows[key] = dbase[key][:5]
-    assert rows == parsed_dbase()
-
-
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
@@ -133,7 +114,6 @@ def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase
     Given a time range of one day, make sure we get one days data back, i.e. one file.
     """
     filename = LCClient.get_observing_summary_filename(('2003-11-01', '2003-11-01T23:59:59'))
-
     assert len(filename) == 1
     assert filename[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_157.fits'
 
@@ -205,7 +185,6 @@ def mock_query_object(LCClient):
     """
     Creating a Query Response object and prefilling it with some information
     """
-    # Creating a Query Response Object
     start = '2016/1/1'
     end = '2016/1/1 23:59:59'
     obj = {
