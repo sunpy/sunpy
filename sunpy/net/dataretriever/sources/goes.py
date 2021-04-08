@@ -97,9 +97,7 @@ class XRSClient(GenericClient):
         return rowdict
 
     def search(self, *args, **kwargs):
-
         matchdict = self._get_match_dict(*args, **kwargs)
-
         # this is for the case when the timerange overlaps with the provider change.
         if matchdict["Start Time"] < "2009-09-01" and matchdict["End Time"] >= "2009-09-01":
             matchdict_before, matchdict_after = matchdict.copy(), matchdict.copy()
@@ -110,7 +108,6 @@ class XRSClient(GenericClient):
             metalist = metalist_before + metalist_after
         else:
             metalist = self._get_metalist(matchdict)
-
         return QueryResponse(metalist, client=self)
 
     def _get_metalist_fn(self, matchdict, baseurl, pattern):
@@ -136,19 +133,16 @@ class XRSClient(GenericClient):
         # the data before the re-processed GOES 13, 14, 15 data.
         if (matchdict["End Time"] < "2009-09-01") or (matchdict["End Time"] >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
             metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
-
         # new data from NOAA.
         else:
             if matchdict["End Time"] >= "2017-02-07":
                 for sat in [16, 17]:
                     metalist += self._get_metalist_fn(matchdict,
                                                       self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
-
             if matchdict["End Time"] <= "2020-03-04":
                 for sat in [13, 14, 15]:
                     metalist += self._get_metalist_fn(matchdict,
                                                       self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
-
         return metalist
 
     @classmethod

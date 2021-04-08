@@ -1,16 +1,10 @@
 # Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
 # This module was developed under funding provided by
 # Google Summer of Code 2014
-import pathlib
 
-from astropy.time import Time
 
-from sunpy import log
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
-from sunpy.time import TimeRange
-from sunpy.util.parfive_helpers import Downloader
-from sunpy.util.scraper import Scraper
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
@@ -154,77 +148,16 @@ class SRSClient(GenericClient):
     <BLANKLINE>
 
     """
-    BASE_URL = 'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/'
-    MIN_YEAR = 1996
+    baseurl = r'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/%Y/%m/%Y%m%dSRS.txt'
+    pattern = '{}/{year:4d}/{month:2d}/{year:4d}{month:2d}{day:2d}SRS.txt'
 
-    def _get_url_for_timerange(self, timerange):
-        """
-        Returns a list of urls corresponding to a given time-range.
-        """
-        result = list()
-        # Validate time range srs generated daily since 1996
-        cur_year = Time.now().datetime.year
-        req_start_year = timerange.start.datetime.year
-        req_end_year = timerange.end.datetime.year
-
-        # Return early if both start and end are less than or greater than limits
-        if req_start_year <= req_end_year < self.MIN_YEAR or req_end_year >= req_start_year > cur_year:
-            return result
-
-        # Correct given timerange
-        min_file_year = self.MIN_YEAR if self.MIN_YEAR > req_start_year else req_start_year
-        min_file_date = Time(f"{min_file_year}-01-01")
-        new_start = max(timerange.start.datetime, min_file_date)
-        new_end = min(timerange.end.datetime, Time.now().datetime)
-        timerange = TimeRange(new_start, new_end)
-
-        srsfile_scraper = Scraper(self.BASE_URL + '%Y/%m/%Y%m%dSRS.txt')
-        srsfiles = srsfile_scraper.filelist(timerange)
-        srs_urls = dict()
-        for srs_url in srsfiles:
-            date = srsfile_scraper._extractDateURL(srs_url)
-            srs_urls[(date.datetime.year, date.datetime.month, date.datetime.day)] = srs_url
-            day_ymd = (int(date.strftime('%Y')), int(date.strftime('%m')), int(date.strftime('%d')))
-            extdict = {'year': day_ymd[0], 'month': day_ymd[1], 'day': day_ymd[2]}
-            result.append((extdict, srs_urls[day_ymd]))
-            log.debug('SRS file found for year %d', date)
-        return result
-
-    def search(self, *args, **kwargs):
-        matchdict = self._get_match_dict(*args, **kwargs)
-        timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-        metalist = []
-        for extdict, url in self._get_url_for_timerange(timerange):
-            extdict['url'] = url
-            rowdict = self.post_search_hook(extdict, matchdict)
-            metalist.append(rowdict)
-        return QueryResponse(metalist, client=self)
-
-    def fetch(self, qres, path=None, error_callback=None, **kwargs):
+    def fetch(self, *args, **kwargs):
         """
         Download a set of results.
-
-        Parameters
-        ----------
-        qres : `~sunpy.net.dataretriever.QueryResponse`
-            Results to download.
-
-        Returns
-        -------
-        Results Object
         """
-        if path is not None:
-            path = pathlib.Path(path)
-        urls = sorted([qrblock['url'] for qrblock in qres])
-        filenames = [pathlib.Path(url).name for url in urls]
-        # Files to be actually downloaded
-        paths = self._get_full_filenames(qres, filenames, path)
-        downloader = Downloader(max_conn=2)
-        for aurl, fname in zip(urls, paths):
-            # Need to change the passive command as the server does not support the aioftp default
-            downloader.enqueue_file(aurl, filename=fname, passive_commands=["pasv"])
-        paths = downloader.download()
-        return paths
+        # Server does not support the normal aioftp passive command.
+        kwargs["passive_commands"] = ["pasv"]
+        super().fetch(*args, **kwargs)
 
     @classmethod
     def register_values(cls):

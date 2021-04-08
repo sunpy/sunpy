@@ -242,6 +242,7 @@ class GenericClient(BaseClient):
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         filesmeta = scraper._extract_files_meta(tr, extractor=pattern,
                                                 matcher=matchdict)
+        filesmeta = sorted(filesmeta, key=lambda k: k['url'])
         metalist = []
         for i in filesmeta:
             rowdict = self.post_search_hook(i, matchdict)
@@ -249,7 +250,7 @@ class GenericClient(BaseClient):
         return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,
-              progress=True, downloader=None, wait=True):
+              progress=True, downloader=None, wait=True, **kwargs):
         """
         Download a set of results.
 
@@ -274,6 +275,8 @@ class GenericClient(BaseClient):
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
            any effect if `downloader` is not `None`.
+        **kwargs : dict, optional
+            Passed to `parfive.Downloader.enqueue_file`.
 
         Returns
         -------
@@ -300,7 +303,7 @@ class GenericClient(BaseClient):
             downloader = Downloader(progress=progress, overwrite=overwrite)
 
         for url, filename in zip(urls, paths):
-            downloader.enqueue_file(url, filename=filename)
+            downloader.enqueue_file(url, filename=filename, **kwargs)
 
         if dl_set and not wait:
             return
