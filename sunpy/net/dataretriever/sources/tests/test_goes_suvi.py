@@ -148,7 +148,8 @@ def test_get_url_for_time_range_level2_allwave(suvi_client, start, end, expected
 def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_num_files):
     """check that we get all wavelengths if no wavelength is given"""
     goes_sat = a.goes.SatelliteNumber.sixteen
-    qresponse = suvi_client.search(a.Time(start, end), a.Wavelength(wave * u.Angstrom), goes_sat, a.Level('1b'))
+    qresponse = suvi_client.search(a.Time(start, end), a.Wavelength(
+        wave * u.Angstrom), goes_sat, a.Level('1b'))
     urls = [i['url'] for i in qresponse]
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files

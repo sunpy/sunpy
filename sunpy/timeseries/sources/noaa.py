@@ -252,7 +252,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaapredictindices'
 
-    @ peek_show
+    @peek_show
     def peek(self, **plot_args):
         """
         Plots predicted NOAA Indices as a function of time. An example is shown
@@ -289,7 +289,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         fig = axes.get_figure()
         return fig
 
-    @ classmethod
+    @classmethod
     def _parse_file(cls, filepath):
         suffix = Path(filepath).suffix
         if suffix == '.json':
@@ -299,7 +299,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         else:
             raise ValueError(f"{Path(filepath).name} does not have a suffix of '.txt' or '.json'")
 
-    @ classmethod
+    @classmethod
     def is_datasource_for(cls, **kwargs):
         """
         Determines if header corresponds to an NOAA predict indices
@@ -308,8 +308,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
 
-    @ staticmethod
-    @ deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
+    @staticmethod
+    @deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
     def _parse_txt_file(filepath):
         """
         Parses an NOAA Predict indices text file.
@@ -350,7 +350,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             # Todo: check units used.
             return data, MetaDict({'comments': header}), units
 
-    @ staticmethod
+    @staticmethod
     def _parse_json_file(filepath):
         """
         Parses an NOAA Predict indices JSON file.

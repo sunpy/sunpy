@@ -135,7 +135,6 @@ def split_lines(file_lines):
     # Append comments to the comment lines
     for l in section_lines:
         file_lines[l] = '# ' + file_lines[l]
-
     t1_lines = file_lines[section_lines[0]:section_lines[1]]
     # Remove the space so table reads it correctly
     t1_lines[1] = t1_lines[1].replace('Mag Type', 'MagType')
@@ -161,6 +160,9 @@ def get_meta_data(header):
 
     meta_data = {}
     for m in meta_lines:
+        if "Corrected Copy" in m:
+            meta_data['corrected'] = True
+            continue
         k, v = m.strip().split(':')[1:]
         meta_data[k.lower()] = v.strip()
     meta_data['issued'] = datetime.datetime.strptime(meta_data['issued'],

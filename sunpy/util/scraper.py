@@ -316,7 +316,8 @@ class Scraper:
                         retry_after = 1
 
                     log.debug(
-                        f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying.")
+                        f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying."
+                    )
 
                     sleep(retry_after)
 
@@ -334,7 +335,11 @@ class Scraper:
         ftpurl = urlsplit(directories[0]).netloc
         with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
             for directory in directories:
-                ftp.cwd(urlsplit(directory).path)
+                try:
+                    ftp.cwd(urlsplit(directory).path)
+                except Exception as e:
+                    log.debug(f"FTP CWD: {e}")
+                    continue
                 for file_i in ftp.nlst():
                     fullpath = directory + file_i
                     if self._URL_followsPattern(fullpath):

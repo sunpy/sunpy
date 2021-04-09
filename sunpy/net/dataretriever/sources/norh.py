@@ -46,7 +46,7 @@ class NoRHClient(GenericClient):
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         """
-        Converts the wavength specified in the query to its
+        Converts the wavelength specified in the query to its
         representation in the url which can be used by the scraper.
         """
         d = cls._get_match_dict(*args, **kwargs)

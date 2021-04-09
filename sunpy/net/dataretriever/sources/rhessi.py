@@ -152,7 +152,7 @@ class RHESSIClient(GenericClient):
         return urlretrieve(url)
 
     def search(self, *args, **kwargs):
-        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        _, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         timerange = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         metalist = []
         for url in self.get_observing_summary_filename(timerange):

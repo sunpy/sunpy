@@ -27,21 +27,21 @@ from sunpy.util.metadata import MetaDict
 # =============================================================================
 
 filepath = sunpy.data.test.rootdir
-eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
 esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
+eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
+eve_many_filepath = glob.glob(os.path.join(filepath, "eve", "*"))
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
-norh_filepath = os.path.join(filepath, 'tca110810_truncated')
-lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
-rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
-noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
-noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated.json')
-noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
-noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
-goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
 goes_filepath = os.path.join(filepath, 'go1520110607.fits')
+goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
+lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
 new_goes15_filepath = os.path.join(filepath, 'goes_truncated_test_goes15.nc')
 new_goes16_filepath = os.path.join(filepath, 'goes_truncated_test_goes16.nc')
-a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
+noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
+noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
+noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated.json')
+noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
+norh_filepath = os.path.join(filepath, 'tca110810_truncated')
+rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
 
 # =============================================================================
 # Multi file Tests
@@ -52,7 +52,7 @@ class TestTimeSeries:
     @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_concatenate_same_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
-        ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
+        ts_from_list = sunpy.timeseries.TimeSeries(eve_many_filepath, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
         ts_from_folder = sunpy.timeseries.TimeSeries(
@@ -62,12 +62,12 @@ class TestTimeSeries:
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
         ts_from_list.columns == sunpy.timeseries.TimeSeries(
-            a_list_of_many[0], source='EVE', concatenate=True).columns
+            eve_many_filepath[0], source='EVE', concatenate=True).columns
 
     @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_concatenate_different_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
-        ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
+        ts_from_list = sunpy.timeseries.TimeSeries(eve_many_filepath, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         ts_from_folder = sunpy.timeseries.TimeSeries(
             os.path.join(filepath, "eve"), source='EVE', concatenate=True)
@@ -76,12 +76,12 @@ class TestTimeSeries:
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
         ts_from_list.columns == sunpy.timeseries.TimeSeries(
-            a_list_of_many[0], source='EVE', concatenate=True).columns
+            eve_many_filepath[0], source='EVE', concatenate=True).columns
 
     @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_generate_list_of_ts(self):
         # Test making a list TimeSeries from multiple files
-        ts_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE')
+        ts_list = sunpy.timeseries.TimeSeries(eve_many_filepath, source='EVE')
         assert isinstance(ts_list, list)
         for ts in ts_list:
             assert isinstance(ts, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
