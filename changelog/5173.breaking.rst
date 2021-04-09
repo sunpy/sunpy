@@ -1,1 +1,2 @@
-Changed URL for the ` sunpy.net.dataretriever.sources.SRSClient` to a supported data archive.
+Changed URL for the `sunpy.net.dataretriever.sources.SRSClient` from "ftp://ftp.swpc.noaa.gov/pub/warehouse/" to "https://www.ngdc.noaa.gov/stp/spaceweather.html" .
+The old URL is unsupported and we expect the files will be the same but we can not say with 100% certainty.
