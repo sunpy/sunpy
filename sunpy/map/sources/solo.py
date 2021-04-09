@@ -23,9 +23,9 @@ class EUIMap(GenericMap):
 
     References
     ----------
-    * `Solar Orbiter Mission Page <https://sci.esa.int/web/solar-orbiter/>`_
-    * `EUI Instrument Page <https://wwwbis.sidc.be/EUI/EUI/EUI/EUI/EUI/>`_
-    * `Instrument Paper <https://doi.org/10.1051/0004-6361/201936663>`_
+    * `Solar Orbiter Mission Page <https://sci.esa.int/web/solar-orbiter/>`__
+    * `EUI Instrument Page <https://wwwbis.sidc.be/EUI/EUI/EUI/EUI/EUI/>`__
+    * `Instrument Paper <https://doi.org/10.1051/0004-6361/201936663>`__
     """
 
     def __init__(self, data, header, **kwargs):
@@ -34,15 +34,21 @@ class EUIMap(GenericMap):
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
-        self.meta['exptime'] = self.meta.get('xposure', 0.0)
-        # The level number is prepended by the letter L
-        if self.meta.get('level'):
-            self.meta['lvl_num'] = int(self.meta.get('level')[1:])
         # DN is not a FITS standard unit, so convert to counts
         if self.meta.get('bunit', None) == 'DN':
             self.meta['bunit'] = 'ct'
         if self.meta.get('bunit', None) == 'DN/s':
             self.meta['bunit'] = 'ct/s'
+
+    @property
+    def processing_level(self):
+        if self.meta.get('level'):
+            # The level number is prepended by the letter L
+            return int(self.meta.get('level')[1:])
+
+    @property
+    def exposure_time(self):
+        return self.meta.get('xposure', 0.0) * self.timeunit
 
     @property
     def _supported_observer_coordinates(self):
