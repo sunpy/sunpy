@@ -1,1 +1,1 @@
-`sunpy.map.GenericMap` now supports the EUI instrument on Solar Orbiter.
+`sunpy.map.Map` now supports the EUI instrument on Solar Orbiter.
