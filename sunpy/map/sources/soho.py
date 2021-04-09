@@ -127,7 +127,7 @@ class LASCOMap(GenericMap):
             return date
 
         time=self.meta.get('time-obs', self.meta.get('time_obs'))
-        return f"{date}T{time}"
+        return self._parse_fits_date(f"{date}T{time}")
 
     @property
     def measurement(self):

@@ -50,17 +50,21 @@ class TRACEMap(GenericMap):
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
-        # It needs to be verified that these must actually be set and are not
-        # already in the header.
-        self.meta['detector'] = "TRACE"
-        self.meta['obsrvtry'] = "TRACE"
         self._nickname = self.detector
         # Colour maps
         self.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
+
+    @property
+    def observatory(self):
+        return "TRACE"
+
+    @property
+    def detector(self):
+        return "TRACE"
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
