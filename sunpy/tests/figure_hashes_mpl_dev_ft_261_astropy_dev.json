@@ -25,7 +25,7 @@
   "sunpy.map.tests.test_plotting.test_plot_aia171_superpixel_nowcsaxes": "d516c9d6a28fecdf0bde1e9a0c4663fd625a2bfb9e91f158cd1c6ed0eb06e906",
   "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel": "154586d5635f895b5f9170353f70f427e23ab0be4ccabf743e668864653f54e3",
   "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel_nowcsaxes": "ec4cfe2687ea0a1f62f1a80f07e69ef5a89ef5aa2dbebc58599fb16b98ebafcb",
-  "sunpy.map.tests.test_plotting.test_draw_contours_aia": "47b99639e1493626370c296a74eff1450182cbf86d25c784846c1b5258169e0d",
+  "sunpy.map.tests.test_plotting.test_draw_contours_aia": "b78457a0d2ea6ab847540e73e7a266a5cb75dc12fc74222d6a75330bd70ee26c",
   "sunpy.map.tests.test_plotting.test_heliographic_peek": "662a24f525b30ce89ba15b7668518f31d439fa8b0c5ba84da2a71bbda31edb9a",
   "sunpy.map.tests.test_plotting.test_heliographic_rectangle_width_height": "a52dca9100f3f96644e924f283c7ba9bd26db115be3a8e19b91898406d06f9ba",
   "sunpy.map.tests.test_plotting.test_heliographic_rectangle_top_right": "a52dca9100f3f96644e924f283c7ba9bd26db115be3a8e19b91898406d06f9ba",
