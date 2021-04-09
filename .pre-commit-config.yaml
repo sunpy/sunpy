@@ -87,6 +87,7 @@ repos:
       - id: check-yaml
       - id: debug-statements
       - id: check-added-large-files
+        args: ['--enforce-all','--maxkb=100']
       - id: end-of-file-fixer
         exclude: ".*(.fits|.fts|.fit|.txt|tca.*)$"
       - id: mixed-line-ending
