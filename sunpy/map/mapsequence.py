@@ -537,7 +537,7 @@ class MapSequence:
         >>> smap = Map(sunpy.data.sample.HMI_LOS_IMAGE,
         ...            sunpy.data.sample.AIA_1600_IMAGE,
         ...            sequence=True)  # doctest: +REMOTE_DATA
-        >>> smap.save('map_{index:03}.fits')  # doctest: +REMOTE_DATA
+        >>> smap.save('map_{index:03}.fits')  # doctest: +SKIP
 
         """
         if filepath.format(index=0) == filepath:
