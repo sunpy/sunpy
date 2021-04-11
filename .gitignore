@@ -230,3 +230,13 @@ baseline
 .history
 *.orig
 .tmp
+
+### Vagrant: https://www.toptal.com/developers/gitignore/api/vagrant
+# General
+.vagrant/
+
+# Log files (if you are creating logs in debug mode, uncomment this)
+# *.log
+
+### Vagrant Patch ###
+*.box
