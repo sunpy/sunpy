@@ -191,10 +191,12 @@ If you get stuck or want help, just `ask here`_!
 .. _sunpy repository: https://github.com/sunpy/sunpy
 .. _ask here: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
 
-Setting up a development environment using Vagrant
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Setting up a development environment using Vagrant (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The first step is to install `virtualbox`_ and `vagrant`_ .
+If you do not want to install Python to your computer or use a system specific solution, you can use `vagrant`_.
+
+You will need to install `virtualbox`_ and `vagrant`_.
 Then run the following replacing ``<username>`` with your username.
 
 .. code:: bash
@@ -203,7 +205,7 @@ Then run the following replacing ``<username>`` with your username.
     $ cd sunpy-git
     $ vagrant up && vagrant ssh
 
-This will automatically log you in the VM inside the sunpy-dev conda environment with all the dependencies already installed.
+This will automatically log you in the VM inside a sunpy-dev conda environment with all dependencies pre-installed.
 
 .. _virtualbox: https://www.virtualbox.org/manual/ch02.html
 .. _vagrant: https://www.vagrantup.com/docs/installation
