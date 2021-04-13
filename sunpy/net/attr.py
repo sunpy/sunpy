@@ -93,14 +93,15 @@ class AttrMeta(type):
 
     def __getattr__(self, item):
         """
-        Our method for Attrs is to register using the attribute type (i.e. Instrument) as keys in a dictionary.
-        ``_attr_registry`` is a dictionary with the keys being subclasses of Attr
+        Our method for Attrs is to register using the attribute type (i.e. Instrument) as keys
+        in a dictionary. ``_attr_registry`` is a dictionary with the keys being subclasses of Attr
         and the value being the namedtuple of lists.
+
         As a result we index `_attr_registry` with `[self]` which will be the `type`
-        of the `Attr` class to access the dictionary.
-        This will return the namedtuple that has three attributes: `name`, `name_long` and `desc`.
-        Each of which are a list.
-        `name` will be the attribute name, `name_long` is the original name passed in and `desc` the description of the object.
+        of the `Attr` class to access the dictionary. This will return the namedtuple
+        that has three attributes: `name`, `name_long` and `desc`.
+        Each of which are a list. `name` will be the attribute name, `name_long` is
+        the original name passed in and `desc` the description of the object.
         """
         # Get the revelant entries.
         registry = self._attr_registry[self]
@@ -179,7 +180,8 @@ class Attr(metaclass=AttrMeta):
 
         The input has to be a dictionary, with each key being an instance of a client.
         The value for each client has to be a dictionary with each key being a subclass of Attr.
-        The value for each Attr key should be a list of tuples with each tuple of the form (`Name`, `Description`).
+        The value for each Attr key should be a list of tuples with each tuple of the form
+        ``(Name, Description)``.
         If you do not want to add a description, you can put `None` or an empty string.
         We sanitize the name you provide by removing all special characters and making it all lower case.
         If it still invalid we will append to the start of the name to make it a valid attribute name.

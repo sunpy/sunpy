@@ -106,7 +106,7 @@ class Quicklook(_attr.SimpleAttr):
 
     Parameters
     ----------
-    value : boolean
+    value : bool
         Set to True to retrieve quicklook data if available.
 
         Quicklook items are assumed to be generated with a focus on speed rather

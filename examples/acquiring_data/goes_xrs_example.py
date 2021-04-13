@@ -63,7 +63,7 @@ file_goes15 = Fido.fetch(result_goes15)
 # Also just to note, if this will download the file to the
 # ``~/sunpy/data/`` directory on your local machine. You can also
 # define where you want this to download to using the ``path`` keyword
-# argument in `~sunpy.net.sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`
+# argument in `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`
 # (e.g. ``Fido.fetch(result, path=".\")``).
 
 #############################################################

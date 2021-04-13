@@ -185,7 +185,7 @@ the header information as read from the source files. A word of caution: many
 data sources provide little to no meta data so this variable might be empty.
 The meta data is described in more detail later in this guide. Similarly there
 are properties for getting `~sunpy.timeseries.GenericTimeSeries.columns`
-as a list of strings, `~sunpy.timeseries.GenericTimeSeries.get_index`
+as a list of strings, `~sunpy.timeseries.GenericTimeSeries.index`
 values and `~sunpy.timeseries.GenericTimeSeries.time_range` of
 the data.  The actual data in a sunpy TimeSeries object is accessible through
 the `~sunpy.timeseries.GenericTimeSeries.data` attribute.  The
@@ -510,15 +510,14 @@ to better fit your output.  For example: ::
 Similar to the TimeSeries, the metadata has some properties for convenient
 access to the global metadata details, including
 `~sunpy.timeseries.TimeSeriesMetaData.columns` as a list of
-strings, `~sunpy.timeseries.TimeSeriesMetaData.index` values
-and `~sunpy.timeseries.TimeSeriesMetaData.time_range` of the data.
+strings,  and `~sunpy.timeseries.TimeSeriesMetaData.time_range` of the data.
 Beyond this, there are properties to get lists of details for all the entries in
 the `~sunpy.timeseries.TimeSeriesMetaData` object, including
 `~sunpy.timeseries.TimeSeriesMetaData.timeranges`,
 `~sunpy.timeseries.TimeSeriesMetaData.columns` (as a list of string
 column names) and `~sunpy.timeseries.TimeSeriesMetaData.metas`.
-Similar to TimeSeries objects you can `~sunpy.timeseries.TimeSeriesMetaData.truncate`
-and `~sunpy.timeseries.TimeSeriesMetaData.concatenate` `~sunpy.timeseries.TimeSeriesMetaData`
+Similar to TimeSeries objects you can `~sunpy.timeseries.TimeSeriesMetaData.concatenate`
+`~sunpy.timeseries.TimeSeriesMetaData`
 objects, but generally you won't need to do this as it is done automatically
 when actioned on the TimeSeries.
 Note that when truncating a `~sunpy.timeseries.TimeSeriesMetaData`

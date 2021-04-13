@@ -4,7 +4,7 @@ Set Axis Range When Plotting a Map
 ==================================
 
 In this example we are going to look at how to set the axes
-range using Matplotlib's `set_xlim` and `set_ylim` when plotting a
+range using Matplotlib's ``set_xlim`` and ``set_ylim`` when plotting a
 Map with WCSAxes.
 """
 
@@ -24,7 +24,8 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 # Now lets say for example we are only interested in plotting a certain region
 # of this Map. One way this could be done is to create a submap over the region
 # of interest and then plotting that. Another useful way is to set the axes
-# range over which to plot using Matplotlib's `Axes.set_xlim` and `Axes.set_ylim` functionality.
+# range over which to plot using Matplotlib's
+# `~matplotlib.axes.Axes.set_xlim` and `~matplotlib.axes.Axes.set_ylim` functionality.
 # The axes that Matplotlib uses is in pixel coordinates (e.g. of image data array)
 # rather than world coordinates (e.g. in arcsecs) so we need to define our limits that
 # are passed to set_xlim(), set_lim() to pixel coordinates.

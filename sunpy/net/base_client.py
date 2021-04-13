@@ -28,7 +28,7 @@ class BaseQueryResponse(Sequence):
     * The base class does not prescribe how you store the results from your
       client, only that it must be possible to represent them as an astropy
       table in the ``build_table`` method.
-    * `__getitem__` **must** return an instance of the type it was called on.
+    * ``__getitem__`` **must** return an instance of the type it was called on.
       I.e. it must always return an object of ``type(self)``.
 
     """
@@ -332,7 +332,7 @@ def _print_client(client, html=False, visible_entries=None):
 
     Parameters
     ----------
-    client : `sunpy.net.base_client.BaseClient`
+    client : BaseClient
         The instance class to print for.
     html : bool
         Will return a html table instead.
@@ -373,7 +373,7 @@ class BaseClient(ABC):
 
     Most download clients should subclass `~sunpy.net.dataretriever.GenericClient`.
     If the structure of `~sunpy.net.dataretriever.GenericClient`
-    is not useful you should use `~sunpy.net.BaseClient`.
+    is not useful you should use `BaseClient`.
     `~sunpy.net.vso.VSOClient` and `~sunpy.net.jsoc.JSOCClient`
     are examples of download clients that subclass ``BaseClient``.
     """

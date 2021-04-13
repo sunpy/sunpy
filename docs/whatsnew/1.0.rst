@@ -401,7 +401,7 @@ This is just some of the renamed or removed functionality.
   ``[min, max]`` or pixel edges of each array element.
 * The Helioviewer client has been switched to using the newer Helioviewer API. This has meant that we have changed some of the keywords that were passed into client’s methods.
 * Removed ``sunpy.net.jsoc.attrs.Time`` because it served the same purpose as ``sunpy.net.attrs.Time`` after the switch to ``astropy.time.Time``.
-* The deprecated ``sunpy.lightcurve`` (replaced by `sunpy.timeseries`), ``sunpy.wcs`` and ``sunpy.spectra`` (replaced by `radiospectra` module) modules have now been removed.
+* The deprecated ``sunpy.lightcurve`` (replaced by `sunpy.timeseries`), ``sunpy.wcs`` and ``sunpy.spectra`` (replaced by the ``radiospectra`` package) modules have now been removed.
 
 Full change log
 ===============
