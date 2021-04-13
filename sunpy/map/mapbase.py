@@ -1580,7 +1580,7 @@ class GenericMap(NDData):
             The bottom-left coordinate of the rectangle. If a `~astropy.coordinates.SkyCoord` it can
             have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
-            object with units of `~astropy.units.si.pix`.
+            object with units of pixels.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
             The top-right coordinate of the rectangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.

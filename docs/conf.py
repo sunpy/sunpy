@@ -169,6 +169,10 @@ nitpick_ignore = [
     ('py:class', "Unit('deg')"),
     ('py:class', "Unit('arcsec')"),
     ('py:class', "Unit('%')"),
+    ('py:class', "Unit('s')"),
+    ('py:class', "Unit('Angstrom')"),
+    ('py:class', "Unit('arcsec / pix')"),
+    ('py:class', "Unit('W / m2')"),
     ('py:class', 'array-like'),
     ('py:obj', 'parfive'),
 ]
