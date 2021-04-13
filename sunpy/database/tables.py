@@ -496,11 +496,12 @@ def entries_from_query_result(qr, default_waveunit=None):
 
     Parameters
     ----------
-    qr : `sunpy.net.vso.QueryResponse`
+    qr : `sunpy.net.vso.VSOQueryResponseTable`
         The query response from which to build the database entries.
 
     default_waveunit : `str`, optional
-        See :meth:`sunpy.database.DatabaseEntry.from_query_result_block`.
+        The wavelength unit that is used if it cannot be found in the
+        `qr_block`.
 
     Examples
     --------
@@ -607,7 +608,7 @@ def entries_from_file(file, default_waveunit=None,
 
     Parameters
     ----------
-    file : str or file-like object
+    file : str, file object
         Either a path pointing to a FITS file or a an opened file-like object.
         If an opened file object, its mode must be one of the following rb,
         rb+, or ab+.

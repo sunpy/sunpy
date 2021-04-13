@@ -491,7 +491,7 @@ class Database:
 
         Examples
         --------
-        The `~sunpy.Database.database.fetch` method can be used along with the ``overwrite=True``
+        This method can be used along with the ``overwrite=True``
         argument to overwrite and redownload files corresponding to the query, even if
         its entries are already present in the database. Note that the ``overwrite=True``
         argument deletes the old matching database entries and new database entries are
@@ -848,7 +848,7 @@ class Database:
                                        ignore_already_added=False, overwrite=False):
         """
         Add new database entries from a VSO query result and download the
-        corresponding data files. See :meth:`sunpy.database.Database.download`
+        corresponding data files. See :meth:`sunpy.database.Database.fetch`
         for information about the caching mechanism used and about the
         parameters ``client``, ``path``, ``progress``.
 
