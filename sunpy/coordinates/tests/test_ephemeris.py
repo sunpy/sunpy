@@ -131,6 +131,8 @@ class TestUsingDE432s:
     def teardown_class(cls):
         solar_system_ephemeris.set(cls.old_ephemeris)
 
+    @pytest.mark.xfail(reason="JPL HORIZONS is using a newer ephemeris (DE441) than the latest "
+                              "available through Astropy (DE430/DE432s)")
     @given(obstime=times())
     @settings(deadline=5000, max_examples=10)
     def test_consistency_with_horizons(self, obstime):
