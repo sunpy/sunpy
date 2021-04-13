@@ -165,6 +165,7 @@ nitpick_ignore = [
     ('py:class', 'file object'),
     ('py:class', 'function'),
     ('py:obj', 'function'),
+    ('py:class', 'any type'),
     ('py:class', "Unit('pix')"),
     ('py:class', "Unit('deg')"),
     ('py:class', "Unit('arcsec')"),
