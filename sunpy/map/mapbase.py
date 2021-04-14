@@ -2150,6 +2150,7 @@ class GenericMap(NDData):
                 # No map units, so allow non-quantity through
                 return levels
             elif warn_units:
+                # Deprecated in 3.0
                 warnings.warn('Passing contour levels that are not an astropy Quantity is deprecated. '
                               f'Pass levels in units convertible to the map units ({self.unit}) '
                               'or as a perncentage Quantity to remove this warning.',
