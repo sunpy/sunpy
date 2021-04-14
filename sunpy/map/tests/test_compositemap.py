@@ -1,8 +1,11 @@
 """
 Test Composite Map
 """
-
+import numpy as np
 import pytest
+
+import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy.data.test
 import sunpy.map
@@ -17,6 +20,13 @@ pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer')
 
 @pytest.fixture
 def composite_test_map(aia171_test_map, hmi_test_map):
+    # The test maps have wildly different observation times, which throws off compositing
+    hmi_test_map.meta['date-obs'] = aia171_test_map.meta['date-obs']
+    # Also set the HMI observer location to be the same as the AIA observer location
+    del hmi_test_map.meta['crln_obs']
+    del hmi_test_map.meta['crlt_obs']
+    hmi_test_map.meta['hgln_obs'] = aia171_test_map.observer_coordinate.lon.to_value('deg')
+    hmi_test_map.meta['hglt_obs'] = aia171_test_map.observer_coordinate.lat.to_value('deg')
     return sunpy.map.Map(aia171_test_map, hmi_test_map, composite=True)
 
 
@@ -32,9 +42,21 @@ def test_plot_composite_map(composite_test_map):
 
 
 @figure_test
+def test_plot_composite_map_contours(composite_test_map):
+    composite_test_map.set_levels(1, np.arange(-75, 76, 25) << u.percent)
+    composite_test_map.plot()
+
+
+@figure_test
+def test_plot_composite_map_linewidths(composite_test_map):
+    composite_test_map.set_levels(1, np.arange(-75, 76, 25) << u.percent)
+    composite_test_map.plot(linewidths=0.5)
+
+
 def test_remove_composite_map(composite_test_map):
     composite_test_map.remove_map(0)
-    composite_test_map.plot()
+    with pytest.raises(IndexError):
+        composite_test_map.get_map(1)
 
 
 def test_get_composite_map(composite_test_map, aia171_test_map, hmi_test_map):
@@ -62,7 +84,7 @@ def test_get_levels_with_index_composite_map(composite_test_map, aia171_test_map
 
 @figure_test
 def test_set_alpha_composite_map(composite_test_map):
-    composite_test_map.set_alpha(1, 0.1)
+    composite_test_map.set_alpha(1, 0.5)
     composite_test_map.plot()
 
 
@@ -73,6 +95,16 @@ def test_set_alpha_out_of_range_composite_map(composite_test_map):
     assert str(excinfo.value) == 'Alpha value must be between 0 and 1.'
 
 
+def test_set_levels_percent(composite_test_map):
+    numbers = np.arange(10, 100, 10)
+    composite_test_map.set_levels(0, numbers)
+    np.testing.assert_allclose(composite_test_map.get_levels(0), numbers)
+
+    implicit_percentage = np.arange(10, 100, 10)
+    composite_test_map.set_levels(0, implicit_percentage, percent=True)
+    assert_quantity_allclose(composite_test_map.get_levels(0), implicit_percentage << u.percent)
+
+
 @figure_test
 def test_peek_composite_map(composite_test_map):
     composite_test_map.peek()
@@ -81,8 +113,3 @@ def test_peek_composite_map(composite_test_map):
 @figure_test
 def test_peek_composite_map_basic_plot(composite_test_map):
     composite_test_map.peek(basic_plot=True)
-
-
-@figure_test
-def test_plot_composite_map_linewidths(composite_test_map):
-    composite_test_map.plot(linewidths=4)
