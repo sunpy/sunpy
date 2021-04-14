@@ -2,6 +2,8 @@
 
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
+import warnings
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -10,6 +12,7 @@ import astropy.units as u
 from sunpy.coordinates.frames import Helioprojective
 from sunpy.map import GenericMap
 from sunpy.util import expand_list
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 __all__ = ['CompositeMap']
@@ -373,6 +376,12 @@ class CompositeMap:
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self._maps[0].wcs)
 
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            warnings.warn("WCSAxes not being used as the axes object for this plot."
+                          " Plots may have unexpected behaviour. To fix this pass "
+                          "'projection=map' when creating the axes",
+                          SunpyUserWarning)
+
         if annotate:
             axes.set_xlabel(axis_labels_from_ctype(self._maps[0].coordinate_system[0],
                                                    self._maps[0].spatial_units[0]))
@@ -395,20 +404,24 @@ class CompositeMap:
 
             # We need to calculate the imshow `extent` for correct image placement
 
-            # Calculate the corners of the map in degrees
+            # Calculate the corners of the map
             bl = m._get_lon_lat(m.pixel_to_world(-0.5*u.pix, -0.5*u.pix))
             tr = m._get_lon_lat(m.pixel_to_world(*(u.Quantity(m.dimensions) - 0.5*u.pix)))
-            world = u.Quantity([u.Quantity(bl), u.Quantity(tr)]).to_value(u.deg)
+            corners = u.Quantity([u.Quantity(bl), u.Quantity(tr)])
 
-            # Obtain the transformation from coordinates of the map to the WCSAxes pixels
-            world2pix = axes.get_transform(m.coordinate_frame) - axes.transData
+            if wcsaxes_compat.is_wcsaxes(axes):
+                # Obtain the transformation from coordinates of the map to the WCSAxes pixels
+                world2pix = axes.get_transform(m.coordinate_frame) - axes.transData
 
-            # Transform the corners to pixel space, with care taken to avoid NaNs if Helioprojective
-            if isinstance(m.coordinate_frame, Helioprojective):
-                with Helioprojective.assume_spherical_screen(m.observer_coordinate):
-                    pix = world2pix.transform(world)
+                # Transform the corners to pixel space, with care taken to avoid NaNs if Helioprojective
+                if isinstance(m.coordinate_frame, Helioprojective):
+                    with Helioprojective.assume_spherical_screen(m.observer_coordinate):
+                        pix = world2pix.transform(corners.to_value(u.deg))
+                else:
+                    pix = world2pix.transform(corners.to_value(u.deg))
             else:
-                pix = world2pix.transform(world)
+                # If not using WCSAxes, we treat the coordinates directly as in "pixel" space
+                pix = corners.to_value(self._maps[0].spatial_units[0])
 
             extent = pix.T.ravel()
             params["extent"] = extent
