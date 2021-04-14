@@ -7,9 +7,10 @@ import numpy as np
 
 import astropy.units as u
 
+from sunpy.coordinates.frames import Helioprojective
 from sunpy.map import GenericMap
 from sunpy.util import expand_list
-from sunpy.visualization import axis_labels_from_ctype, peek_show
+from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 __all__ = ['CompositeMap']
 
@@ -368,9 +369,9 @@ class CompositeMap:
             List of axes image or quad contour sets that have been plotted.
         """
 
-        # Get current axes
+        # If axes are not provided, create a WCSAxes based on the first map
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self._maps[0].wcs)
 
         if annotate:
             axes.set_xlabel(axis_labels_from_ctype(self._maps[0].coordinate_system[0],
@@ -384,18 +385,34 @@ class CompositeMap:
         # Plot layers of composite map
         for m in self._maps:
             # Parameters for plotting
-            bl = m._get_lon_lat(m.bottom_left_coord)
-            tr = m._get_lon_lat(m.top_right_coord)
-            x_range = list(u.Quantity([bl[0], tr[0]]).to(m.spatial_units[0]).value)
-            y_range = list(u.Quantity([bl[1], tr[1]]).to(m.spatial_units[1]).value)
             params = {
                 "origin": "lower",
-                "extent": x_range + y_range,
                 "cmap": m.plot_settings['cmap'],
                 "norm": m.plot_settings['norm'],
                 "alpha": m.alpha,
                 "zorder": m.zorder,
             }
+
+            # We need to calculate the imshow `extent` for correct image placement
+
+            # Calculate the corners of the map in degrees
+            bl = m._get_lon_lat(m.pixel_to_world(-0.5*u.pix, -0.5*u.pix))
+            tr = m._get_lon_lat(m.pixel_to_world(*(u.Quantity(m.dimensions) - 0.5*u.pix)))
+            world = u.Quantity([u.Quantity(bl), u.Quantity(tr)]).to_value(u.deg)
+
+            # Obtain the transformation from coordinates of the map to the WCSAxes pixels
+            world2pix = axes.get_transform(m.coordinate_frame) - axes.transData
+
+            # Transform the corners to pixel space, with care taken to avoid NaNs if Helioprojective
+            if isinstance(m.coordinate_frame, Helioprojective):
+                with Helioprojective.assume_spherical_screen(m.observer_coordinate):
+                    pix = world2pix.transform(world)
+            else:
+                pix = world2pix.transform(world)
+
+            extent = pix.T.ravel()
+            params["extent"] = extent
+
             params.update(matplot_args)
 
             # The request to show a map layer rendered as a contour is indicated by a
@@ -468,7 +485,7 @@ class CompositeMap:
             figure.add_axes(axes)
             matplot_args.update({'annotate': False})
         else:
-            axes = figure.add_subplot(111)
+            axes = figure.add_subplot(111, projection=self._maps[0])
 
         ret = self.plot(axes=axes, **matplot_args)
 
