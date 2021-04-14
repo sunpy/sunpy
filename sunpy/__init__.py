@@ -9,15 +9,9 @@ An open-source Python library for Solar Physics data analysis.
 """
 import os
 import sys
-import logging
-
-from sunpy.tests.self_test import self_test
-from sunpy.util import system_info
-from sunpy.util.config import load_config, print_config
-from sunpy.util.logger import _init_log
-from .version import version as __version__
 
 # Enforce Python version check during package import.
+# Must be done before any sunpy imports
 __minimum_python_version__ = "3.7"
 
 
@@ -29,6 +23,13 @@ if sys.version_info < tuple(int(val) for val in __minimum_python_version__.split
     # This has to be .format to keep backwards compatibly.
     raise UnsupportedPythonError(
         "sunpy does not support Python < {}".format(__minimum_python_version__))
+
+
+from sunpy.tests.self_test import self_test
+from sunpy.util import system_info
+from sunpy.util.config import load_config, print_config
+from sunpy.util.logger import _init_log
+from .version import version as __version__
 
 
 def _get_bibtex():
