@@ -370,6 +370,11 @@ class CompositeMap:
         -------
         ret : `list`
             List of axes image or quad contour sets that have been plotted.
+
+        Notes
+        -----
+        If the maps have not been rotated to the same orientation, the plot may
+        have unexpected behavior.
         """
 
         # If axes are not provided, create a WCSAxes based on the first map
@@ -392,7 +397,13 @@ class CompositeMap:
         # Define a list of plotted objects
         ret = []
         # Plot layers of composite map
-        for m in self._maps:
+        for index, m in enumerate(self._maps):
+            # Check if the image is not simply oriented, which is an issue even when using WCSAxes
+            if not np.allclose(m.rotation_matrix, np.identity(2)):
+                warnings.warn(f"The axes of the map at index {index} are not aligned to the pixel "
+                              "grid. Plot axes may be incorrect.",
+                              SunpyUserWarning)
+
             # Parameters for plotting
             params = {
                 "origin": "lower",
