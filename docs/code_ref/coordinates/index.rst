@@ -96,8 +96,8 @@ The easiest interface to work with coordinates is through the `~astropy.coordina
   >>> c = SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame=frames.Heliocentric)
   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
   >>> c
-  <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-      (70., -30., 695700.)>
+  <SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+      (70., -30.)>
 
 
 It is also possible to use strings to specify the frame but in that case make sure to
@@ -168,13 +168,13 @@ Heliocentric is typically used with Cartesian components::
 
 Both of the heliographic frames have the components of latitude, longitude and radius::
 
-   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
+   >>> c = SkyCoord(70*u.deg, -30*u.deg, 1*u.AU, frame=frames.HeliographicStonyhurst)
    >>> c.lat
    <Latitude -30. deg>
    >>> c.lon
    <Longitude 70. deg>
    >>> c.radius
-   <Distance 695700. km>
+   <Distance 1. AU>
 
 Heliographic Stonyhurst, when used with Cartesian components, is known as Heliocentric
 Earth Equatorial (HEEQ).  Here's an example of how to use
@@ -206,7 +206,7 @@ coordinates is::
    <SkyCoord (Helioprojective: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
        (0., 0.)>
    >>> c.transform_to(frames.HeliographicCarrington)
-   <SkyCoord (HeliographicCarrington: obstime=2017-07-26T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, AU)
+   <SkyCoord (HeliographicCarrington: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, AU)
        (283.95956776, 5.31701821, 0.00465047)>
 
 It is also possible to transform to any coordinate system implemented in Astropy. This can be used to find the position of the solar limb in AltAz equatorial coordinates::

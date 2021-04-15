@@ -100,14 +100,14 @@ def transform_with_sun_center():
     >>> end_frame = HeliographicStonyhurst(obstime="2001-02-01")
     >>> sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame=start_frame)
     >>> sun_center
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-01-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-01-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0., 0., 0.)>
     >>> sun_center.transform_to(end_frame)  # transformations do not normally follow Sun center
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (-156.66825767, 5.96399877, 0.00027959)>
     >>> with transform_with_sun_center():
     ...     sun_center.transform_to(end_frame)  # now following Sun center
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0., 0., 0.)>
 
     Notes
