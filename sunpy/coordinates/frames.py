@@ -9,7 +9,7 @@ from contextlib import contextmanager
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import Attribute, ConvertError
+from astropy.coordinates import ConvertError, QuantityAttribute
 from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMapping
 from astropy.coordinates.representation import (
     CartesianDifferential,
@@ -87,6 +87,10 @@ def _frame_parameters():
                        "        it must be a solar system body that can be parsed by\n"
                        "        `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`\n"
                        "        at the time ``obstime``. Defaults to Earth center.")
+    ret['rsun'] = ("rsun : `~astropy.units.Quantity`\n"
+                   "        The physical (length) radius of the Sun. Used to convert a 2D\n"
+                   "        to a 3D coordinate as needed for transformations by assuming that the\n"
+                   "        coordinate is on the surface of the Sun. Defaults to the solar radius.")
     ret['equinox'] = (f"equinox : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
                       "        The date for the mean vernal equinox.\n"
                       "        Defaults to the J2000.0 equinox.")
@@ -169,17 +173,26 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
                                 RepresentationMapping('d_distance', 'd_radius', u.km/u.s)],
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    rsun = QuantityAttribute(default=_RSUN, unit=u.km)
 
-        self._make_3d()
+    def make_3d(self):
+        """
+        This method calculates the third coordinate of the frame.
+        It assumes that the coordinate point is on the surface of the Sun.
 
-    def _make_3d(self):
-        # Make 3D if specified as 2D
+        Returns
+        -------
+        new_frame : `~sunpy.coordinates.frames.BaseHeliographic`
+            A new frame instance with all the attributes of the original but
+            now with a third coordinate.
+        """
+        # Check if the coordinate is 2D
         if (self._data is not None and self._data.norm().unit is u.one
                 and u.allclose(self._data.norm(), 1*u.one)):
+            return self.realize_frame(self._data * self.rsun)
 
-            self._data *= _RSUN.to(u.km)
+        # The coordinate is already 3D
+        return self
 
 
 @add_common_docstring(**_frame_parameters())
@@ -208,6 +221,7 @@ class HeliographicStonyhurst(BaseHeliographic):
     {data}
     {lonlat}
     {radius}
+    {rsun}
     {common}
 
     Examples
@@ -219,26 +233,21 @@ class HeliographicStonyhurst(BaseHeliographic):
     ...               frame="heliographic_stonyhurst",
     ...               obstime="2010/01/01T00:00:45")
     >>> sc
-    <SkyCoord (HeliographicStonyhurst: obstime=2010-01-01T00:00:45.000): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicStonyhurst: obstime=2010-01-01T00:00:45.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, km)
         (1., 1., 2.)>
     >>> sc.frame
-    <HeliographicStonyhurst Coordinate (obstime=2010-01-01T00:00:45.000): (lon, lat, radius) in (deg, deg, km)
+    <HeliographicStonyhurst Coordinate (obstime=2010-01-01T00:00:45.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, km)
         (1., 1., 2.)>
     >>> sc = SkyCoord(HeliographicStonyhurst(-10*u.deg, 2*u.deg))
     >>> sc
-    <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-        (-10., 2., 695700.)>
+    <SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+        (-10., 2.)>
     >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
     ...               obstime="2011/01/05T00:00:50",
     ...               frame="heliographic_stonyhurst")
     >>> sc
-    <SkyCoord (HeliographicStonyhurst: obstime=2011-01-05T00:00:50.000): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-01-05T00:00:50.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, km)
     (90., 2.54480438, 45.04442252)>
-
-    Notes
-    -----
-    This frame will always be converted a 3D frame where the radius defaults to
-    ``rsun``.
     """
     name = "heliographic_stonyhurst"
 
@@ -275,6 +284,7 @@ class HeliographicCarrington(BaseHeliographic):
     {lonlat}
     {radius}
     {observer}
+    {rsun}
     {common}
 
     Examples
@@ -287,7 +297,7 @@ class HeliographicCarrington(BaseHeliographic):
     ...               observer="earth",
     ...               obstime="2010/01/01T00:00:30")
     >>> sc
-    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:30.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:30.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
         (1., 2., 3.)>
 
     >>> sc = SkyCoord([1,2,3]*u.deg, [4,5,6]*u.deg, [5,6,7]*u.km,
@@ -295,14 +305,14 @@ class HeliographicCarrington(BaseHeliographic):
     ...               observer="self",
     ...               frame="heliographic_carrington")
     >>> sc
-    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:45.000, observer=self): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:45.000, rsun=695700.0 km, observer=self): (lon, lat, radius) in (deg, deg, km)
         [(1., 4., 5.), (2., 5., 6.), (3., 6., 7.)]>
 
     >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
     ...               obstime="2011/01/05T00:00:50",
     ...               frame="heliographic_carrington")
     >>> sc
-    <SkyCoord (HeliographicCarrington: obstime=2011-01-05T00:00:50.000, observer=None): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicCarrington: obstime=2011-01-05T00:00:50.000, rsun=695700.0 km, observer=None): (lon, lat, radius) in (deg, deg, km)
         (90., 2.54480438, 45.04442252)>
     """
     name = "heliographic_carrington"
@@ -409,10 +419,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         The distance coordinate from the observer for this object.
         Not needed if ``data`` is given.
     {observer}
-    rsun : `~astropy.units.Quantity`
-        The physical (length) radius of the Sun. Used to calculate the position
-        of the limb for calculating distance from the observer to the
-        coordinate. Defaults to the solar radius.
+    {rsun}
     {common}
 
     Examples
@@ -447,7 +454,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
                                       RepresentationMapping('lat', 'Ty', u.arcsec)],
     }
 
-    rsun = Attribute(default=_RSUN.to(u.km))
+    rsun = QuantityAttribute(default=_RSUN, unit=u.km)
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
     def make_3d(self):

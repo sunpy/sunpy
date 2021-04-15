@@ -551,7 +551,8 @@ class GenericMap(NDData):
         # Get observer coord, and transform if needed
         obs_coord = self.observer_coordinate
         if not isinstance(obs_coord.frame, (HeliographicStonyhurst, HeliographicCarrington)):
-            obs_coord = obs_coord.transform_to(HeliographicStonyhurst(obstime=self.date))
+            obs_coord = obs_coord.transform_to(HeliographicStonyhurst(obstime=self.date,
+                                                                      rsun=self.rsun_meters))
 
         sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
@@ -994,7 +995,7 @@ class GenericMap(NDData):
         for keys, kwargs in self._supported_observer_coordinates:
             meta_list = [k in self.meta for k in keys]
             if all(meta_list):
-                sc = SkyCoord(obstime=self.date, **kwargs)
+                sc = SkyCoord(obstime=self.date, rsun=self.rsun_meters, **kwargs)
 
                 # If the observer location is supplied in Carrington coordinates,
                 # the coordinate's `observer` attribute should be set to "self"
@@ -1027,13 +1028,15 @@ class GenericMap(NDData):
     @property
     def carrington_latitude(self):
         """Observer Carrington latitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date)
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+                                           rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lat
 
     @property
     def carrington_longitude(self):
         """Observer Carrington longitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date)
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+                                           rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lon
 
     @property
