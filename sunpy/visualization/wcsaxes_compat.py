@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 from astropy.visualization import wcsaxes
 
+from sunpy.coordinates import HeliographicStonyhurst
+
 __all__ = ["is_wcsaxes", "gca_wcs", "get_world_transform",
            "default_wcs_grid", "wcsaxes_heliographic_overlay"]
 
@@ -104,7 +106,8 @@ def default_wcs_grid(axes):
 
 
 @u.quantity_input
-def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=True, **kwargs):
+def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=True,
+                                 obstime=None, rsun=None, **kwargs):
     """
     Create a heliographic overlay using
     `~astropy.visualization.wcsaxes.WCSAxes`.
@@ -119,6 +122,10 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
         Spacing for longitude and latitude grid in degrees.
     annotate : `bool`
         Passing `False` disables the axes labels and the ticks on the top and right axes.
+    obstime : `~astropy.time.Time`
+        The ``obstime`` to use for the `~sunpy.coordinates.HeliographicStonyhurst` grid.
+    rsun : `~astropy.units.Quantity`
+        The ``rsun`` to use for the `~sunpy.coordinates.HeliographicStonyhurst` grid.
 
     Returns
     -------
@@ -143,7 +150,7 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
     c1.set_ticks_position('bl')
     c2.set_ticks_position('bl')
 
-    overlay = axes.get_coords_overlay('heliographic_stonyhurst')
+    overlay = axes.get_coords_overlay(HeliographicStonyhurst(obstime=obstime, rsun=rsun))
 
     lon = overlay[0]
     lat = overlay[1]

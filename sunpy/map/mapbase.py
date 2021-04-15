@@ -1963,6 +1963,8 @@ class GenericMap(NDData):
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
                                                            annotate=annotate,
+                                                           obstime=self.date,
+                                                           rsun=self.rsun_meters,
                                                            **kwargs)
 
     def draw_limb(self, axes=None, **kwargs):
