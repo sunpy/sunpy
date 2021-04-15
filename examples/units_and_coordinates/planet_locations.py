@@ -23,8 +23,9 @@ planet_coord = [get_body_heliographic_stonyhurst(
 ##############################################################################
 # Let's plot the results. Remember the Sun is at the center of this coordinate
 # system.
+fig = plt.figure()
 ax = plt.subplot(projection='polar')
 for this_planet, this_coord in zip(planet_list, planet_coord):
-    plt.polar(this_coord.lon.to('rad'), this_coord.radius, 'o', label=this_planet)
-plt.legend()
+    ax.plot(this_coord.lon.to('rad'), this_coord.radius, 'o', label=this_planet)
+ax.legend()
 plt.show()

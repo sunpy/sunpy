@@ -79,12 +79,12 @@ ax.add_artist(circle)
 ax.text(earth.lon.to_value("rad")+0.05, earth.radius.to_value(r_unit), "Earth")
 
 for this_satellite, this_coord in [(m.observatory, m.observer_coordinate) for m in maps]:
-    plt.polar(this_coord.lon.to('rad'), this_coord.radius.to(r_unit), 'o', label=this_satellite)
+    ax.plot(this_coord.lon.to('rad'), this_coord.radius.to(r_unit), 'o', label=this_satellite)
 
 ax.set_theta_zero_location("S")
 ax.set_rlim(0, 1.3)
 
-plt.legend()
+ax.legend()
 plt.show()
 
 ######################################################################
