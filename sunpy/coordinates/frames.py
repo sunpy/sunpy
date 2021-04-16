@@ -88,9 +88,10 @@ def _frame_parameters():
                        "        `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`\n"
                        "        at the time ``obstime``. Defaults to Earth center.")
     ret['rsun'] = ("rsun : `~astropy.units.Quantity`\n"
-                   "        The physical (length) radius of the Sun. Used to convert a 2D\n"
-                   "        to a 3D coordinate as needed for transformations by assuming that the\n"
-                   "        coordinate is on the surface of the Sun. Defaults to the solar radius.")
+                   "        The radius of the Sun in length units. Used to convert a 2D\n"
+                   "        coordinate (i.e., no ``radius`` component) to a 3D coordinate by\n"
+                   "        assuming that the coordinate is on the surface of the Sun. Defaults\n"
+                   "        to the photospheric radius as defined in `sunpy.sun.constants`.")
     ret['equinox'] = (f"equinox : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
                       "        The date for the mean vernal equinox.\n"
                       "        Defaults to the J2000.0 equinox.")
@@ -177,14 +178,21 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
 
     def make_3d(self):
         """
-        This method calculates the third coordinate of the frame.
-        It assumes that the coordinate point is on the surface of the Sun.
+        Returns a fully 3D coordinate based on this coordinate.
+
+        If this coordinate is only 2D (i.e., no ``radius`` component) or is a
+        unit vector (i.e., the norm of the coordinate is unity), a new
+        coordinate is created that corresponds to the surface of the Sun.
+        That is, the 3D coordinate will retain the ``lon`` and ``lat``, and
+        ``radius`` will be set to the frame's ``rsun`` frame attribute.
+
+        If this coordinate is already fully 3D, it is directly returned, even
+        if it does not lie on the surface of the Sun.
 
         Returns
         -------
-        new_frame : `~sunpy.coordinates.frames.BaseHeliographic`
-            A new frame instance with all the attributes of the original but
-            now with a third coordinate.
+        frame : `~sunpy.coordinates.frames.BaseHeliographic`
+            The fully 3D coordinate
         """
         # Check if the coordinate is 2D
         if (self._data is not None and self._data.norm().unit is u.one
