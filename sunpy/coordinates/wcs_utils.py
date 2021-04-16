@@ -70,7 +70,7 @@ def solar_wcs_frame_mapping(wcs):
             observer = wcs.heliographic_observer
         else:
             warnings.warn('Observer information present in WCS auxillary information, ignoring '
-                          '.heliographic_observer')
+                          '.heliographic_observer', SunpyUserWarning)
 
     if hasattr(wcs, 'rsun'):
         warnings.warn('Support for the .rsun attribute on a WCS is deprecated. '
@@ -81,7 +81,7 @@ def solar_wcs_frame_mapping(wcs):
             rsun = wcs.rsun
         else:
             warnings.warn('rsun information present in WCS auxillary information, ignoring '
-                          '.rsun')
+                          '.rsun', SunpyUserWarning)
 
     # Truncate the ctype to the first four letters
     ctypes = {c[:4] for c in wcs.wcs.ctype}
