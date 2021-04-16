@@ -27,6 +27,7 @@ def hmi_test_map():
     (data, header), = sunpy.io.read_file(os.path.join(testpath, 'resampled_hmi.fits'))
 
     # Get rid of the blank keyword to prevent some astropy fits fixing warnings
+    header.pop('BLANK')
     header.pop('CRDER2')
     header.pop('CRDER1')
     return sunpy.map.Map((data, header))

@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy
 import sunpy.data.test
@@ -196,3 +197,32 @@ def test_norm_animator(hmi_test_map):
 def test_map_sequence_plot(aia171_test_map, hmi_test_map):
     seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
     seq.plot()
+
+
+def test_save(aia171_test_map, hmi_test_map, tmp_path):
+    """
+    Tests the MapSequence save function
+    """
+    seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
+
+    with pytest.raises(ValueError, match="'{index}' must be appear in the string"):
+        seq.save("index", filetype='fits', overwrite=True)
+
+    base_str = (tmp_path / "map").as_posix()
+    seq.save(f"{base_str}_{{index:03}}.fits", filetype='auto', overwrite=True)
+
+    test_seq = sunpy.map.Map(f"{base_str}_000.fits",
+                             f"{base_str}_001.fits", sequence=True)
+
+    assert isinstance(test_seq.maps[0], sunpy.map.sources.sdo.AIAMap)
+    assert isinstance(test_seq.maps[1], sunpy.map.sources.sdo.HMIMap)
+
+    assert test_seq.maps[0].meta.keys() == seq.maps[0].meta.keys()
+    for k in seq.maps[0].meta:
+        assert test_seq.maps[0].meta[k] == seq.maps[0].meta[k]
+    assert_quantity_allclose(test_seq.maps[0].data, seq.maps[0].data)
+
+    assert test_seq.maps[1].meta.keys() == seq.maps[1].meta.keys()
+    for k in seq.maps[1].meta:
+        assert test_seq.maps[1].meta[k] == seq.maps[1].meta[k]
+    assert_quantity_allclose(test_seq.maps[1].data, seq.maps[1].data)

@@ -511,3 +511,37 @@ class MapSequence:
         Return all the meta objects as a list.
         """
         return [m.meta for m in self.maps]
+
+    def save(self, filepath, filetype='auto', **kwargs):
+        """
+        Saves the sequence, with one file per map.
+
+        Currently SunPy can save files only in the FITS format.
+
+        Parameters
+        ----------
+        filepath : str
+            Location to save the file(s) to.  The string must contain ``"{index}"``,
+            which will be populated with the corresponding index number for each
+            map.  Format specifiers (e.g., ``"{index:03}"``) can be used.
+        filetype : str
+            'auto' or any supported file extension.
+        kwargs :
+            Any additional keyword arguments are passed to
+            `~sunpy.io.write_file`.
+
+        Examples
+        --------
+        >>> from sunpy.map import Map
+        >>> import sunpy.data.sample # doctest: +REMOTE_DATA
+        >>> smap = Map(sunpy.data.sample.HMI_LOS_IMAGE,
+        ...            sunpy.data.sample.AIA_1600_IMAGE,
+        ...            sequence=True)  # doctest: +REMOTE_DATA
+        >>> smap.save('map_{index:03}.fits')  # doctest: +SKIP
+
+        """
+        if filepath.format(index=0) == filepath:
+            raise ValueError("'{index}' must be appear in the string")
+
+        for index, map_seq in enumerate(self.maps):
+            map_seq.save(filepath.format(index=index), filetype, **kwargs)
