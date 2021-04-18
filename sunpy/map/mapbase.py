@@ -1952,11 +1952,7 @@ class GenericMap(NDData):
         -----
         Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
         """
-
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
+        axes = self._check_axes(axes, allow_non_wcsaxes=False)
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
                                                            annotate=annotate,
@@ -1984,6 +1980,8 @@ class GenericMap(NDData):
         # Put import here to reduce sunpy.map import time
         from matplotlib import patches
 
+        # Don't use _check_axes() here, as drawing the limb works fine on none-WCSAxes,
+        # even if the image is rotated relative to the axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
@@ -2049,17 +2047,13 @@ class GenericMap(NDData):
         --------
         .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
         """
+        axes = self._check_axes(axes, allow_non_wcsaxes=False)
+
         bottom_left, top_right = get_rectangle_coordinates(
             bottom_left, top_right=top_right, width=width, height=height)
 
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = top_right.spherical.lat - bottom_left.spherical.lat
-
-        if not axes:
-            axes = plt.gca()
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            raise TypeError("The axes need to be an instance of WCSAxes. You may have neglected "
-                            "to use `projection=` when creating the axes.")
 
         kwergs = {
             "transform": axes.get_transform(bottom_left.frame.replicate_without_data()),
@@ -2110,6 +2104,8 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
+        axes = self._check_axes(axes, allow_non_wcsaxes=True)
+
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
                                                            width=width,
@@ -2121,8 +2117,6 @@ class GenericMap(NDData):
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = top_right.spherical.lat - bottom_left.spherical.lat
 
-        if not axes:
-            axes = plt.gca()
         if wcsaxes_compat.is_wcsaxes(axes):
             axes_unit = u.deg
         else:
@@ -2166,8 +2160,7 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.pyplot.contour` function.
         """
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
+        axes = self._check_axes(axes, allow_non_wcsaxes=True)
 
         # TODO: allow for use of direct input of contours but requires units of
         # map flux which is not yet implemented
@@ -2245,9 +2238,9 @@ class GenericMap(NDData):
             If `True`, the data is plotted at its natural scale; with
             title and axis labels.
 
-        axes: `~matplotlib.axes` or None
+        axes: `~matplotlib.axes.Axes` or None
             If provided the image will be plotted on the given axes. Else the
-            current matplotlib axes will be used.
+            current Matplotlib axes will be used.
 
         title : `str`, `bool`, optional
             The plot title. If `True`, uses the default title for this map.
@@ -2271,19 +2264,7 @@ class GenericMap(NDData):
         >>> aia.draw_grid()   # doctest: +SKIP
 
         """
-        # Get current axes
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
-
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            warnings.warn("WCSAxes not being used as the axes object for this plot."
-                          " Plots may have unexpected behaviour. To fix this pass "
-                          "'projection=map' when creating the axes",
-                          SunpyUserWarning)
-            # Check if the image is properly oriented
-            if not np.array_equal(self.rotation_matrix, np.identity(2)):
-                warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
-                              SunpyUserWarning)
+        axes = self._check_axes(axes, allow_non_wcsaxes=True)
 
         # Normal plot
         plot_settings = copy.deepcopy(self.plot_settings)
@@ -2406,6 +2387,40 @@ class GenericMap(NDData):
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
+
+    def _check_axes(self, axes, allow_non_wcsaxes=False):
+        """
+        - If axes is None, get the current Axes object.
+        - Error if not a WCSAxes (can be turned off).
+        - Return axes.
+
+        Parameters
+        ----------
+        axes : matplotlib.axes.Axes
+            Axes to validate.
+        allow_non_wcsaxes : bool
+            If `True`, allow ``axes`` to not be a `WCSAxes`, and warn. Otherwise
+            raise an error.
+        """
+        if not axes:
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
+
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            if allow_non_wcsaxes:
+                if not np.array_equal(self.rotation_matrix, np.identity(2)):
+                    warnings.warn("The axes of this map are not aligned to the pixel grid. "
+                                  "Plot axes may be incorrect.",
+                                  SunpyUserWarning)
+                warnings.warn("WCSAxes not being used as the axes object for this plot. "
+                              "Plots may have unexpected behaviour. To fix this pass "
+                              "'projection=map' when creating the axes",
+                              SunpyUserWarning)
+            else:
+                raise TypeError("The axes need to be an instance of WCSAxes. "
+                                "You may have neglected to use `projection=map` "
+                                "when creating the axes.")
+
+        return axes
 
 
 class InvalidHeaderInformation(ValueError):
