@@ -285,7 +285,7 @@ Also, if you provide an incorrect segment name, it will throw a meaningful error
 by the given series::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') &
-    ...             a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Series('hmi.sharp_720s') &
     ...             a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
     Traceback (most recent call last):
     ...
