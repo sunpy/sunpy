@@ -90,7 +90,7 @@ Searching for Data Using Fido
 
 For example::
 
-    >>> result = Fido.search(a.Time('2012/3/4' & '2012/3/6'), a.Instrument.lyra, a.Level.two) # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6') & a.Instrument.lyra & a.Level.two) # doctest: +REMOTE_DATA
 
 this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing information on the results which fit the criteria specified by the attrs objects in the above call.
 It does not download the files.
