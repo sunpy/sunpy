@@ -19,7 +19,7 @@ Event types are specified as upper case, two letter strings, and are identical t
     >>> tstart = '2011/08/09 07:23:56'
     >>> tend = '2011/08/09 12:40:29'
     >>> event_type = 'FL'
-    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type))  # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time(tstart,tend) & a.hek.EventType(event_type))  # doctest: +REMOTE_DATA
 
 ``tstart`` and ``tend`` defines the start and end times of the query, and ``event_type`` specifies the event type which in this example we are searching for flares defined as ``FL``.
 Line 6 goes out to the web, contacts the HEK, and queries it for the information you have requested.
@@ -163,13 +163,13 @@ Let's look further at the FRM attribute::
 Let's say I am only interested in those flares identified by the SSW Latest Events tool.
 I can retrieve those entries only from the HEK with the following command:
 
-    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), a.hek.FRM.Name == 'SSW Latest Events')  # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time(tstart,tend) & a.hek.EventType(event_type) & a.hek.FRM.Name == 'SSW Latest Events')  # doctest: +REMOTE_DATA
     >>> len(result[0])  # doctest: +REMOTE_DATA
     2
 
 We can also retrieve all the entries in the time range which were not made by SSW Latest Events with the following command:
 
-    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), a.hek.FRM.Name != 'SSW Latest Events')  # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time(tstart,tend) & a.hek.EventType(event_type) & a.hek.FRM.Name != 'SSW Latest Events')  # doctest: +REMOTE_DATA
     >>> len(result[0])  # doctest: +REMOTE_DATA
     19
 
@@ -177,14 +177,14 @@ We are using Python's comparison operators to filter the returns from Fido.
 Other comparisons are possible.
 For example, let's say I want all the flares that have a peak flux of over 4000.0:
 
-    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), a.hek.FL.PeakFlux > 4000.0)  # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time(tstart,tend) & a.hek.EventType(event_type) & a.hek.FL.PeakFlux > 4000.0)  # doctest: +REMOTE_DATA
     >>> len(result[0])  # doctest: +REMOTE_DATA
     1
 
 Multiple comparisons can be included.
 For example, let's say I want all the flares with a peak flux above 1000 AND west of 800 arcseconds from disk center of the Sun:
 
-    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), a.hek.Event.Coord1 > 800, a.hek.FL.PeakFlux > 1000.0)  # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time(tstart,tend) & a.hek.EventType(event_type) & a.hek.Event.Coord1 > 800 & a.hek.FL.PeakFlux > 1000.0)  # doctest: +REMOTE_DATA
 
 Multiple comparison operators can be used to filter the results back from the HEK.
 
@@ -193,7 +193,7 @@ This makes complex queries easy to create.
 However, some caution is advisable.
 Let's say I want all the flares west of 50 arcseconds OR have a peak flux over 1000.0:
 
-    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), (a.hek.Event.Coord1 > 50) or (a.hek.FL.PeakFlux > 1000.0))  # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time(tstart,tend) & a.hek.EventType(event_type) & (a.hek.Event.Coord1 > 50) or (a.hek.FL.PeakFlux > 1000.0))  # doctest: +REMOTE_DATA
 
 and as a check:
 
@@ -243,7 +243,7 @@ However, because the location of ``event_coord1`` is greater than 50, the entry 
 
 Let's say we want all the flares west of 50 arcseconds AND have a peak flux over 1000.0:
 
-    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), (a.hek.Event.Coord1 > 50) and (a.hek.FL.PeakFlux > 1000.0))  # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time(tstart,tend) & a.hek.EventType(event_type) & (a.hek.Event.Coord1 > 50) and (a.hek.FL.PeakFlux > 1000.0))  # doctest: +REMOTE_DATA
 
     >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
     <QueryResponseColumn name='fl_peakflux' dtype='float64' length=7>
@@ -281,7 +281,7 @@ There are several ways to use this capability.
 For example, you can pass in a list of HEK results and get out the corresponding VSO records.
 Here are the VSO records returned via the tenth result from the HEK query in Section 2 above:
 
-    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type))  # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time(tstart,tend) & a.hek.EventType(event_type))  # doctest: +REMOTE_DATA
     >>> vso_records = h2v.translate_and_query(result[0][10])  # doctest: +REMOTE_DATA
     >>> len(vso_records[0])  # doctest: +REMOTE_DATA
     31

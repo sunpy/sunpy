@@ -296,7 +296,7 @@ is below::
 
   >>> from sunpy.net import Fido, attrs as a
 
-  >>> results = Fido.search(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
+  >>> results = Fido.search(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00") &
   ...                       a.Instrument.eit)   # doctest:  +REMOTE_DATA
   >>> Fido.fetch(results, path="./directory/")  # doctest: +SKIP
   ['./directory/efz20110920.010015',

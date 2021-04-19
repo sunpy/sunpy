@@ -61,7 +61,7 @@ When using a JSOC query in Fido, you must provide a JSOC series and at least one
 
     >>> from sunpy.net import Fido, attrs as a
 
-    >>> result = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('me@email.org')))
+    >>> result = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') & a.jsoc.Series('hmi.v_45s') & a.jsoc.Notify('me@email.org')))
     >>> result
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7fca7050d6a0>
     Results from 1 Provider:
@@ -85,7 +85,7 @@ When using a JSOC query in Fido, you must provide a JSOC series and at least one
     2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
 
-    >>> result = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Notify('me@email.org'), a.jsoc.PrimeKey('WAVELNTH', '171'))
+    >>> result = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') & a.jsoc.Series('aia.lev1_euv_12s') & a.jsoc.Notify('me@email.org') & a.jsoc.PrimeKey('WAVELNTH', '171'))
 
     >>> result
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7fca2981e1d0>

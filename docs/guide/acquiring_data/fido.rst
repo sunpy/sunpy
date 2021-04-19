@@ -90,7 +90,7 @@ Searching for Data Using Fido
 
 For example::
 
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra, a.Level.two) # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time('2012/3/4' & '2012/3/6'), a.Instrument.lyra, a.Level.two) # doctest: +REMOTE_DATA
 
 this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing information on the results which fit the criteria specified by the attrs objects in the above call.
 It does not download the files.
@@ -115,7 +115,7 @@ Queries can be made more flexible or specific by adding more attrs objects to th
 Specific passbands can be searched for by supplying an `~astropy.units.Quantity` to the `a.Wavelength <sunpy.net.attrs.Wavelength>` attribute::
 
     >>> import astropy.units as u
-    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh,
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6') & a.Instrument.norh &
     ...             a.Wavelength(17*u.GHz))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -133,8 +133,8 @@ Specific passbands can be searched for by supplying an `~astropy.units.Quantity`
 Data of a given cadence can also be specified using the Sample attribute.
 To search for data at a given cadence use the `a.Sample <sunpy.net.attrs.Sample>` attribute.
 
-    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.aia,
-    ...             a.Wavelength(171*u.angstrom), a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6') & a.Instrument.aia &
+    ...             a.Wavelength(171*u.angstrom) & a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -170,7 +170,7 @@ To search for data at a given cadence use the `a.Sample <sunpy.net.attrs.Sample>
 To search for data from multiple instruments, wavelengths, times etc., use the pipe ``|`` operator.
 This joins queries together just as the logical ``OR`` operator would::
 
-    >>> Fido.search(a.Time('2012/3/4', '2012/3/4 02:00'),
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/4 02:00') &
     ...             a.Instrument.lyra | a.Instrument.rhessi)  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 3 Providers:
@@ -208,7 +208,7 @@ The results of a search are represented in a `~sunpy.net.fido_factory.UnifiedRes
 For example, the following code returns a response containing LYRA data from the `~sunpy.net.dataretriever.LYRAClient`, and EVE data from the `~sunpy.net.vso.VSOClient`::
 
     >>> from sunpy.net import Fido, attrs as a
-    >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Level.two,
+    >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2") & a.Level.two &
     ...                       a.Instrument.lyra | a.Instrument.eve)  # doctest: +REMOTE_DATA
     >>> results  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
@@ -268,7 +268,7 @@ This can be used to interact with results which are metadata only, i.e. searches
 
 For example if we did a query for some AIA and HMI data::
 
-    >>> results = Fido.search(a.Time("2011/01/01", "2011/01/01 00:10"), a.Instrument.aia | a.Instrument.hmi)  # doctest: +REMOTE_DATA
+    >>> results = Fido.search(a.Time("2011/01/01", "2011/01/01 00:10") & a.Instrument.aia | a.Instrument.hmi)  # doctest: +REMOTE_DATA
     >>> results  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:

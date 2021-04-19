@@ -54,7 +54,7 @@ This has now changed and you can query JSOC, HEK and HEC with Fido::
 
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(timerange,
+    >>> results = Fido.search(timerange &
                       a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
                       a.jsoc.Series('hmi.m_45s'))
     >>> results

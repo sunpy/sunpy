@@ -62,7 +62,7 @@ Constructing a Basic Query
 Let's start with a very simple query.  We could ask for all ``hmi.v_45s`` series data
 between January 1st from 00:00 to 01:00, 2014.
 
-    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') &
     ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
@@ -142,8 +142,8 @@ Other than Time, one other PrimeKey is supported with in-built attribute.
 In case of AIA series, ``a.Wavelength()`` can be passed as a PrimeKey::
 
     >>> import astropy.units as u
-    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                               a.jsoc.Series('aia.lev1_euv_12s'),
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') &
+    ...                               a.jsoc.Series('aia.lev1_euv_12s') &
     ...                               a.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
 
 Note that, only Time and Wavelength are in-built attributes here. If you need to pass any other PrimeKey,
@@ -187,7 +187,7 @@ object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, `
 If you want to get a manual set of keywords in the response object, you can pass the set of keywords using
 :meth:`~sunpy.net.base_client.QueryResponseTable.show` method.
 
-    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') &
     ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
     >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
@@ -284,7 +284,7 @@ A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained
 Also, if you provide an incorrect segment name, it will throw a meaningful error, specifying which segment values are supported
 by the given series::
 
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') &
     ...             a.jsoc.Series('hmi.sharp_720s'),
     ...             a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
     Traceback (most recent call last):
@@ -294,8 +294,8 @@ by the given series::
 
 To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`` using ``AND`` operator::
 
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.sharp_720s'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') &
+    ...             a.jsoc.Series('hmi.sharp_720s') &
     ...             a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -336,8 +336,8 @@ using `~sunpy.net.attrs.Sample`. In other words, if you need to query for ``hmi.
 between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
 
     >>> import astropy.units as u
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.v_45s'), a.Sample(10*u.min))  # doctest: +REMOTE_DATA
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') &
+    ...             a.jsoc.Series('hmi.v_45s') & a.Sample(10*u.min))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -364,7 +364,7 @@ Complex queries can be built using ``OR`` operators.
 
 Let's look for 2 different series data at the same time::
 
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') &
     ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
@@ -429,7 +429,7 @@ of conditions which get passed to the JSOC.  Let's say you want all the
 ``hmi.v_45s`` data from two separate days::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
-    ...             a.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
+    ...             a.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00') &
     ...             a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
@@ -501,8 +501,8 @@ Downloading data
 To download the files located by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`,
 you can download them by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`::
 
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') &
+    ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s') &
     ...             a.jsoc.Notify('solar@example.com')  # doctest: +SKIP
     >>> downloaded_files = Fido.fetch(res)  # doctest: +SKIP
 

@@ -55,7 +55,7 @@ To search with `~sunpy.net.Fido`, you need to specify attributes to search again
 Before sunpy 2.0, you had to supply values, as the following example demonstrates::
 
     >>> from sunpy.net import Fido, attrs as a
-    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument("norh"),
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6') & a.Instrument("norh") &
     ...             a.Wavelength(17*u.GHz))
 
 There was no way to know if the value was correct, but now we have a extenstive list of supported values from the clients and servers we can request data from.
@@ -81,7 +81,7 @@ Furthermore, you can use tab completion to auto-fill the attribute name, for exa
 
 So now you can do the following instead::
 
-    Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh, a.Wavelength(17*u.GHz))
+    Fido.search(a.Time('2012/3/4', '2012/3/6') & a.Instrument.norh & a.Wavelength(17*u.GHz))
 
 
 .. _whatsnew-2.0-aiaprep:
