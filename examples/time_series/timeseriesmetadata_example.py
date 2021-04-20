@@ -16,9 +16,9 @@ from sunpy.time import TimeRange, parse_time
 ##############################################################################
 # Search for Data
 
-goes_res = Fido.search(a.Time("2010-11-03", "2010-11-03 23:59:59"), a.Instrument.xrs,
+goes_res = Fido.search(a.Time("2010-11-03", "2010-11-03 23:59:59") & a.Instrument.xrs &
                        a.goes.SatelliteNumber(15))
-norh_res = Fido.search(a.Time("2010-11-03", "2010-11-03 23:59:59"), a.Instrument.norh,
+norh_res = Fido.search(a.Time("2010-11-03", "2010-11-03 23:59:59") & a.Instrument.norh &
                        a.Wavelength(17 * u.GHz))
 
 ##############################################################################

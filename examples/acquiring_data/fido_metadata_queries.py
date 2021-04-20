@@ -24,7 +24,7 @@ timerange = a.Time('2010/8/1 03:40', '2010/8/1 3:40:10')
 # this, you must supply your own email here.
 jsoc_email = os.environ["JSOC_EMAIL"]
 
-results = Fido.search(timerange,
+results = Fido.search(timerange &
                       a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
                       a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify(jsoc_email))
 

@@ -31,7 +31,7 @@ aia = (a.Instrument.aia &
 wave = a.Wavelength(30 * u.nm, 31 * u.nm)
 
 
-res = Fido.search(wave, aia | stereo)
+res = Fido.search(wave & aia | stereo)
 
 ###############################################################################
 # Download the files:

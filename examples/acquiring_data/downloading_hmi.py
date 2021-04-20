@@ -14,8 +14,8 @@ from sunpy.net import attrs as a
 ###############################################################################
 # To download the required data, we use `sunpy.net.Fido`, a downloader client,
 # to query the Virtual Solar Observatory to acquire HMI data.
-result = Fido.search(a.Time('2020/01/20 00:00:00', '2020/01/20 00:01:00'),
-                     a.Instrument.hmi, a.Physobs.los_magnetic_field)
+result = Fido.search(a.Time('2020/01/20 00:00:00', '2020/01/20 00:01:00') &
+                     a.Instrument.hmi & a.Physobs.los_magnetic_field)
 
 ###############################################################################
 # Now we can see what results we obtained from our search.

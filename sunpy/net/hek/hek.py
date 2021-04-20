@@ -93,7 +93,7 @@ class HEKClient(BaseClient):
         -------
         >>> from sunpy.net import attrs as a, Fido
         >>> timerange = a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29')
-        >>> res = Fido.search(timerange, a.hek.FL, a.hek.FRM.Name == "SWPC")  # doctest: +REMOTE_DATA
+        >>> res = Fido.search(timerange & a.hek.FL & a.hek.FRM.Name == "SWPC")  # doctest: +REMOTE_DATA
         >>> res  #doctest: +SKIP
         <sunpy.net.fido_factory.UnifiedResponse object at ...>
         Results from 1 Provider:

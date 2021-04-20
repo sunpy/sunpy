@@ -24,9 +24,9 @@ from sunpy.net import attrs as a
 # First, query a full frame AIA image.
 t0 = astropy.time.Time('2012-09-24T14:56:03', scale='utc', format='isot')
 q = Fido.search(
-    a.Instrument.aia,
-    a.Physobs.intensity,
-    a.Wavelength(171*u.angstrom),
+    a.Instrument.aia &
+    a.Physobs.intensity &
+    a.Wavelength(171*u.angstrom) &
     a.Time(t0, t0 + 13*u.s),
 )
 m = sunpy.map.Map(Fido.fetch(q))
@@ -69,12 +69,12 @@ jsoc_email = os.environ["JSOC_EMAIL"]
 # centered on the time of the above cutout.
 # We request one image every 2 hours.
 q = Fido.search(
-    a.Time(m_cutout.date - 6*u.h, m_cutout.date + 6*u.h),
-    a.Wavelength(m_cutout.wavelength),
-    a.Sample(2*u.h),
-    a.jsoc.Series.aia_lev1_euv_12s,
-    a.jsoc.Notify(jsoc_email),
-    a.jsoc.Segment.image,
+    a.Time(m_cutout.date - 6*u.h, m_cutout.date + 6*u.h) &
+    a.Wavelength(m_cutout.wavelength) &
+    a.Sample(2*u.h) &
+    a.jsoc.Series.aia_lev1_euv_12s &
+    a.jsoc.Notify(jsoc_email) &
+    a.jsoc.Segment.image &
     cutout,
 )
 

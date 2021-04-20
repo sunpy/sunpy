@@ -16,7 +16,7 @@ class LYRAClient(GenericClient):
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
-    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2") &
     ...                       a.Instrument.lyra)  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>

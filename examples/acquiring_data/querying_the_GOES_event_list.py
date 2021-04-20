@@ -18,8 +18,8 @@ from sunpy.net import attrs as a
 event_type = "FL"
 tstart = "2013/10/28"
 tend = "2013/10/29"
-result = Fido.search(a.Time(tstart, tend),
-                     a.hek.EventType(event_type),
+result = Fido.search(a.Time(tstart, tend) &
+                     a.hek.EventType(event_type) &
                      a.hek.OBS.Observatory == "GOES")
 
 ###################################################################
@@ -48,9 +48,9 @@ print(result["hek"].colnames)
 # a GOES class > M1.0. This can be achieved by using the FL.GOESCls
 # attribute of the HEK client:
 
-result_m1 = Fido.search(a.Time(tstart, tend),
-                        a.hek.EventType(event_type),
-                        a.hek.FL.GOESCls > "M1.0",
+result_m1 = Fido.search(a.Time(tstart, tend) &
+                        a.hek.EventType(event_type) &
+                        a.hek.FL.GOESCls > "M1.0" &
                         a.hek.OBS.Observatory == "GOES")
 
 print(result_m1["hek"])

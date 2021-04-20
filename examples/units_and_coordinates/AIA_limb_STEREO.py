@@ -31,7 +31,7 @@ aia = (a.Instrument.aia &
        a.Time('2011-01-01', '2011-01-02'))
 
 wave = a.Wavelength(30 * u.nm, 31 * u.nm)
-result = Fido.search(wave, aia | stereo)
+result = Fido.search(wave & aia | stereo)
 
 ###############################################################################
 # Let's inspect the result

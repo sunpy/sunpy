@@ -45,7 +45,7 @@ aia = (a.Instrument.aia &
 
 wave = a.Wavelength(19.5 * u.nm, 19.5 * u.nm)
 
-res = Fido.search(wave, aia | euvi)
+res = Fido.search(wave & aia | euvi)
 files = Fido.fetch(res)
 
 ######################################################################

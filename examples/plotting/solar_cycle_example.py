@@ -25,9 +25,9 @@ from sunpy.time import TimeRange
 #
 # We will first search for and then download the data.
 time_range = TimeRange("2008-06-01 00:00", Time.now())
-result = Fido.search(a.Time(time_range), a.Instrument('noaa-indices'))
+result = Fido.search(a.Time(time_range) & a.Instrument('noaa-indices'))
 f_noaa_indices = Fido.fetch(result)
-result = Fido.search(a.Time(time_range.end, time_range.end + TimeDelta(4 * u.year)),
+result = Fido.search(a.Time(time_range.end, time_range.end + TimeDelta(4 * u.year)) &
                      a.Instrument('noaa-predict'))
 f_noaa_predict = Fido.fetch(result)
 

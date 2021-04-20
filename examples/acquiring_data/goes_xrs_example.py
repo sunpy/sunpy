@@ -41,7 +41,7 @@ from sunpy.net import attrs as a
 # `~sunpy.net.Fido`.
 tstart = "2015-06-21 01:00"
 tend = "2015-06-21 23:00"
-result = Fido.search(a.Time(tstart, tend), a.Instrument("XRS"))
+result = Fido.search(a.Time(tstart, tend) & a.Instrument("XRS"))
 print(result)
 
 #############################################################
@@ -51,7 +51,7 @@ print(result)
 # one of these files for our analysis, so we can query by the `sunpy.net.attrs`:
 # `sunpy.net.dataretriever.attrs.goes.SatelliteNumber` to specify what GOES satellite number we want
 # to use.
-result_goes15 = Fido.search(a.Time(tstart, tend), a.Instrument("XRS"), a.goes.SatelliteNumber(15))
+result_goes15 = Fido.search(a.Time(tstart, tend) & a.Instrument("XRS") & a.goes.SatelliteNumber(15))
 print(result_goes15)
 
 #############################################################
@@ -108,14 +108,14 @@ plt.show()
 
 ###############################################################
 # Lets query for some recent data over two days
-results = Fido.search(a.Time("2020-11-20 00:00", "2020-11-21 23:00"), a.Instrument("XRS"))
+results = Fido.search(a.Time("2020-11-20 00:00", "2020-11-21 23:00") & a.Instrument("XRS"))
 print(results)
 
 ###############################################################
 # We can see that we are provided with 4 results, two files for GOES 16
 # and two for GOES 17. Again we can make the query only specifying one
 # GOES satellite number
-results_16 = Fido.search(a.Time("2020-11-20 00:00", "2020-11-21 23:00"), a.Instrument("XRS"),
+results_16 = Fido.search(a.Time("2020-11-20 00:00", "2020-11-21 23:00") & a.Instrument("XRS") &
                          a.goes.SatelliteNumber(16))
 print(results_16)
 

@@ -1,2 +1,1 @@
-Replaced ',' with '&' in fido.search() in following doc files: docs/code_ref/net.rst, docs/guide/acquiring_data/fido.rst, docs/guide/acquiring_data/hek.rst, docs/guide/acquiring_data/jsoc.rst, docs/guide/tour.rst, docs/whatsnew/0.8.rst, docs/whatsnew/0.9.rst, docs/whatsnew/2.0.rst, 
-docs/whatsnew/2.1.rst.
+Replaced ',' with '&' in fido.search() in multiple files.

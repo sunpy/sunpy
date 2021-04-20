@@ -113,7 +113,7 @@ class HECClient(BaseClient):
         >>> from sunpy.net.helio import attrs as ha
         >>> from sunpy.net import attrs as a, Fido
         >>> timerange = a.Time('2005/01/03', '2005/12/03')
-        >>> res = Fido.search(timerange, ha.MaxRecords(10),
+        >>> res = Fido.search(timerange & ha.MaxRecords(10) &
         ...                   ha.TableName('rhessi_hxr_flare'))  # doctest: +REMOTE_DATA
         >>> res  #doctest: +REMOTE_DATA
         <sunpy.net.fido_factory.UnifiedResponse object at ...>
