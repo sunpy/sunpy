@@ -2,6 +2,7 @@ import sunpy.map
 from sunpy.net import Fido, attrs as a
 
 from sunpy.net.soar import Identifier
+from sunpy.net.soar.client import SOARClient
 
 
 def test_search():
@@ -18,3 +19,12 @@ def test_search():
     assert len(files) == 1
 
     eui_map = sunpy.map.Map(files[0])
+
+
+def test_no_results():
+    id = a.Instrument('EUI')
+    time = a.Time('2019-02-01', '2019-02-02')
+    query = id & time
+
+    res = SOARClient().search(query)
+    assert len(res) == 0

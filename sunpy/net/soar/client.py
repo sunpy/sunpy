@@ -64,11 +64,15 @@ class SOARClient(BaseClient):
             for i, name in enumerate(names):
                 info[name].append(entry[i])
 
+        if len(info['begin_time']):
+            info['begin_time'] = parse_time(info['begin_time']).iso
+            info['end_time'] = parse_time(info['end_time']).iso
+
         return astropy.table.QTable({'Instrument': info['instrument'],
                                      'Data product': info['descriptor'],
                                      'Level': info['level'],
-                                     'Start time': parse_time(info['begin_time']).iso,
-                                     'End time': parse_time(info['end_time']).iso,
+                                     'Start time': info['begin_time'],
+                                     'End time': info['end_time'],
                                      'Data item ID': info['data_item_id'],
                                      'Filename': info['filename'],
                                      })
