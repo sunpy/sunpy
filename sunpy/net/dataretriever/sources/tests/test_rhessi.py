@@ -78,7 +78,7 @@ def test_get_base_url_on_timeout(mock_urlopen):
 
 def parsed_dbase():
     """
-    The result of calling `parse_observing_summary_dbase_file...)` on
+    The result of calling `parse_observing_summary_dbase_file(...)` on
     https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt but
     only using the first two rows of data.
     """
