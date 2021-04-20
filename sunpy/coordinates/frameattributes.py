@@ -102,6 +102,10 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         if isinstance(value, str):
             return value, False
         else:
+            # Make sure that the coordinate is 3D
+            if hasattr(value, 'make_3d'):
+                value = value.make_3d()
+
             # Upgrade the coordinate to a `SkyCoord` so that frame attributes will be merged
             if isinstance(value, BaseCoordinateFrame) and not isinstance(value, self._frame):
                 value = SkyCoord(value)

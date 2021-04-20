@@ -160,7 +160,7 @@ def make_fitswcs_header(data, coordinate,
          meta_wcs['PC2_1'], meta_wcs['PC2_2']) = (rotation_matrix[0, 0], rotation_matrix[0, 1],
                                                   rotation_matrix[1, 0], rotation_matrix[1, 1])
 
-    if hasattr(coordinate, 'rsun') and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
+    if getattr(coordinate, 'observer', None) is not None:
         meta_wcs['rsun_obs'] = sun._angular_radius(
             coordinate.rsun, coordinate.observer.radius
         ).to_value(u.arcsec)

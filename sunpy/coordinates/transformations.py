@@ -100,14 +100,14 @@ def transform_with_sun_center():
     >>> end_frame = HeliographicStonyhurst(obstime="2001-02-01")
     >>> sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame=start_frame)
     >>> sun_center
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-01-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-01-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0., 0., 0.)>
     >>> sun_center.transform_to(end_frame)  # transformations do not normally follow Sun center
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (-156.66825767, 5.96399877, 0.00027959)>
     >>> with transform_with_sun_center():
     ...     sun_center.transform_to(end_frame)  # now following Sun center
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0., 0., 0.)>
 
     Notes
@@ -318,6 +318,9 @@ def hgc_to_hgs(hgccoord, hgsframe):
     Convert from Heliographic Carrington to Heliographic Stonyhurst.
     """
     _check_observer_defined(hgccoord)
+
+    hgccoord = hgccoord.make_3d()
+
     if isinstance(hgccoord.observer, str) and hgccoord.observer == "self":
         observer_radius = hgccoord.radius
     else:
@@ -453,6 +456,8 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     Convert from Heliographic Stonyhurst to Heliocentric Cartesian.
     """
     _check_observer_defined(heliocframe)
+
+    heliogcoord = heliogcoord.make_3d()
 
     # Loopback transform HGS if there is a change in obstime
     int_coord = _transform_obstime(heliogcoord, heliocframe.obstime)
@@ -622,6 +627,8 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
     if hgscoord.obstime is None:
         raise ConvertError("To perform this transformation, the HeliographicStonyhurst"
                            " frame needs a specified `obstime`.")
+
+    hgscoord = hgscoord.make_3d()
 
     # Calculate the matrix and offset in the HCRS->HGS direction
     forward_matrix, forward_offset = _affine_params_hcrs_to_hgs(hcrsframe.obstime, hgscoord.obstime)
@@ -862,6 +869,9 @@ def hgs_to_hci(hgscoord, hciframe):
     """
     Convert from Heliographic Stonyhurst to Heliocentric Inertial
     """
+
+    hgscoord = hgscoord.make_3d()
+
     # First transform the HGS coord to the HCI obstime
     int_coord = _transform_obstime(hgscoord, hciframe.obstime)
 

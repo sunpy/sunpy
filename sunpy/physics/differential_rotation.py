@@ -273,12 +273,12 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time,
     ...              observer="earth", frame=Helioprojective)
     >>> solar_rotate_coordinate(c, time=start_time + 25*u.hr)  # doctest: +SKIP
-    <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (-5.68434189e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         (-378.27830452, 105.70767875, 1.00245134)>
     >>> new_observer = get_body_heliographic_stonyhurst("earth", start_time + 6*u.day)
     >>> solar_rotate_coordinate(c, observer=new_observer)
-    <SkyCoord (Helioprojective: obstime=2010-09-16T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-16T12:34:56.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (Helioprojective: obstime=2010-09-16T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-16T12:34:56.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (2.65061438e-14, 7.18706547, 1.00534174)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         (620.42567049, 126.13662663, 1.00185786)>
     """

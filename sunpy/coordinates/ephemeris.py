@@ -72,7 +72,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
     Obtain the location of Venus
 
     >>> get_body_heliographic_stonyhurst('venus', '2012-06-06 04:07:29')
-    <HeliographicStonyhurst Coordinate (obstime=2012-06-06T04:07:29.000): (lon, lat, radius) in (deg, deg, AU)
+    <HeliographicStonyhurst Coordinate (obstime=2012-06-06T04:07:29.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0.07349535, 0.05223575, 0.72605496)>
 
     Obtain the location of Venus as seen from Earth when adjusted for light travel time
@@ -80,14 +80,14 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
     >>> earth = get_body_heliographic_stonyhurst('earth', '2012-06-06 04:07:29')
     >>> get_body_heliographic_stonyhurst('venus', '2012-06-06 04:07:29', observer=earth)
     INFO: Apparent body location accounts for 144.07 seconds of light travel time [sunpy.coordinates.ephemeris]
-    <HeliographicStonyhurst Coordinate (obstime=2012-06-06T04:07:29.000): (lon, lat, radius) in (deg, deg, AU)
+    <HeliographicStonyhurst Coordinate (obstime=2012-06-06T04:07:29.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0.07084926, 0.0520573, 0.72605477)>
 
     Obtain the location and velocity of Mars
 
     >>> mars = get_body_heliographic_stonyhurst('mars', '2001-02-03', include_velocity=True)
     >>> mars
-    <HeliographicStonyhurst Coordinate (obstime=2001-02-03T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <HeliographicStonyhurst Coordinate (obstime=2001-02-03T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (63.03105777, -5.20656151, 1.6251161)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
         (-0.02323686, 0.00073376, -1.4798387)>
@@ -98,7 +98,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import Helioprojective
     >>> SkyCoord(mars).transform_to(Helioprojective(observer=earth))
-    <SkyCoord (Helioprojective: obstime=2001-02-03T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2012-06-06T04:07:29.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (Helioprojective: obstime=2001-02-03T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2012-06-06T04:07:29.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (7.835757e-15, -0.00766698, 1.01475668)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         (-298029.94625805, -21753.50941181, 1.40010091)
      (d_Tx, d_Ty, d_distance) in (arcsec / s, arcsec / s, km / s)
@@ -172,10 +172,10 @@ def get_earth(time='now', *, include_velocity=False):
     --------
     >>> from sunpy.coordinates.ephemeris import get_earth
     >>> get_earth('2001-02-03 04:05:06')
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0., -6.18656962, 0.98567647)>
     >>> get_earth('2001-02-03 04:05:06', include_velocity=True)
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0., -6.18656962, 0.98567647)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
         (6.42643739e-11, -0.00279484, 0.24968506)>
@@ -249,28 +249,28 @@ def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocit
 
     >>> get_horizons_coord('Venus barycenter', '2001-02-03 04:05:06')  # doctest: +REMOTE_DATA
     INFO: Obtained JPL HORIZONS location for Venus Barycenter (2) [sunpy.coordinates.ephemeris]
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (-33.93155836, -1.64998443, 0.71915147)>
 
     Query the location of the SDO spacecraft
 
     >>> get_horizons_coord('SDO', '2011-11-11 11:11:11')  # doctest: +REMOTE_DATA
     INFO: Obtained JPL HORIZONS location for Solar Dynamics Observatory (spac [sunpy.coordinates.ephemeris]
-    <SkyCoord (HeliographicStonyhurst: obstime=2011-11-11T11:11:11.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-11-11T11:11:11.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0.01019118, 3.29640728, 0.99011042)>
 
     Query the location of the SOHO spacecraft via its ID number (-21)
 
     >>> get_horizons_coord(-21, '2004-05-06 11:22:33', 'id')  # doctest: +REMOTE_DATA
     INFO: Obtained JPL HORIZONS location for SOHO (spacecraft) (-21) [sunpy.coordinates.ephemeris]
-    <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0.25234902, -3.55863633, 0.99923086)>
 
     Query the location and velocity of the asteroid Juno
 
     >>> get_horizons_coord('Juno', '1995-07-18 07:17', 'smallbody', include_velocity=True)  # doctest: +REMOTE_DATA
     INFO: Obtained JPL HORIZONS location for 3 Juno (A804 RA) [sunpy.coordinates.ephemeris]
-    <SkyCoord (HeliographicStonyhurst: obstime=1995-07-18T07:17:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=1995-07-18T07:17:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (-25.16107532, 14.59098438, 3.17667664)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
         (-0.03306548, 0.00052415, -2.66709222)>

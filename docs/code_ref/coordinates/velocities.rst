@@ -34,7 +34,7 @@ For any of these functions, if ``include_velocity=True`` is specified, the retur
 
     >>> from sunpy.coordinates import get_body_heliographic_stonyhurst
     >>> get_body_heliographic_stonyhurst('mercury', '2021-01-01', include_velocity=True)
-    <HeliographicStonyhurst Coordinate (obstime=2021-01-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <HeliographicStonyhurst Coordinate (obstime=2021-01-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (-156.46460438, -1.38836399, 0.43234904)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
         (0.09138133, 0.00720229, -7.2513617)>
@@ -74,7 +74,7 @@ Accordingly, the longitude component of Earth's velocity vector will be negligib
     >>> from sunpy.coordinates import get_earth
     >>> earth = get_earth('2021-01-01', include_velocity=True)
     >>> earth
-    <SkyCoord (HeliographicStonyhurst: obstime=2021-01-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2021-01-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0., -3.02983361, 0.98326486)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
         (1.82278759e-09, -0.00487486, -0.01720926)>
@@ -97,7 +97,7 @@ For example, if we take the same coordinate created earlier for Earth, and trans
 
     >>> from sunpy.coordinates import HeliographicStonyhurst
     >>> earth.transform_to(HeliographicStonyhurst(obstime=earth.obstime + 1*u.day))
-    <SkyCoord (HeliographicStonyhurst: obstime=2021-01-02T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (HeliographicStonyhurst: obstime=2021-01-02T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (-1.01325847, -3.02987313, 0.98326043)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
         (-1.15705401e-05, -0.00487486, -0.01698849)>
