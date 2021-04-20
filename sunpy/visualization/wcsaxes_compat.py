@@ -143,6 +143,14 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
     c1.set_ticks_position('bl')
     c2.set_ticks_position('bl')
 
+    # There is a small inaccuracy with the grid overlay if the axes have a custom solar radius
+    # The actual inaccuracy is small, but round-trip checking causes grid lines to "disappear"
+    # The underlying issue cannot be fully fixed given the API of SunPy 2.x
+    # Instead, for SunPy 2.x, we relax the tolerance in WCSAxes for round-trip checking from its
+    #   default value of 1.
+    if getattr(wcsaxes.grid_paths, 'ROUND_TRIP_RTOL', None) == 1.:
+        wcsaxes.grid_paths.ROUND_TRIP_RTOL = 10.
+
     overlay = axes.get_coords_overlay('heliographic_stonyhurst')
 
     lon = overlay[0]
