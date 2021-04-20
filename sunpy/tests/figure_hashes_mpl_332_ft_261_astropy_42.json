@@ -1,6 +1,9 @@
 {
   "sunpy.map.tests.test_compositemap.test_plot_composite_map": "7d8ab4c0ffecd45de6e2829fa343bb289e107fd3ce4bcc8e7243673f7e472d99",
+  "sunpy.map.tests.test_compositemap.test_remove_composite_map": "e73bd91e7044af26e9fe52bddb441a9ef6dc07114a9ec27c11367c4f3fa4cc45",
+  "sunpy.map.tests.test_compositemap.test_set_alpha_composite_map": "2cc7b51976ea772cda5ce18d00fcf03690114eefc6fd027b18b9e9a6726e193f",
   "sunpy.map.tests.test_compositemap.test_peek_composite_map": "a90c67c1f6b8c6818b7a9dfc44e74248ef1e47a830ef21710b15f0c9e518e96f",
+  "sunpy.map.tests.test_compositemap.test_peek_composite_map_basic_plot": "f42ea8432646bed93ccc602991024ecaf3f87064d86ac09a83868222bf45ee18",
   "sunpy.map.tests.test_compositemap.test_plot_composite_map_linewidths": "7d8ab4c0ffecd45de6e2829fa343bb289e107fd3ce4bcc8e7243673f7e472d99",
   "sunpy.map.tests.test_mapsequence.test_norm_animator": "a400eef26fdd915ccf12769031bd8dadedbf8f6a93e31cd5982bffe2484702ee",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot": "1e5435af7bb854d47ebeabf354350f27bf989325aa5d77b930bdcdb043ce25df",
