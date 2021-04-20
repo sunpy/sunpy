@@ -2140,8 +2140,42 @@ class GenericMap(NDData):
         axes.add_patch(rect)
         return [rect]
 
-    @u.quantity_input
-    def draw_contours(self, levels: u.percent, axes=None, **contour_args):
+    def _process_levels_arg(self, levels, warn_units=False):
+        """
+        Accept a percentage or dimensionless or map unit input for contours.
+
+        ``warn_units`` allows legacy option of passing levels that aren't Quantities.
+        This can be removed in sunpy 3.1.
+        """
+        levels = np.atleast_1d(levels)
+        if not hasattr(levels, 'unit'):
+            if self.unit is None:
+                # No map units, so allow non-quantity through
+                return levels
+            elif warn_units:
+                # Deprecated in 3.0
+                warnings.warn('Passing contour levels that are not an astropy Quantity is deprecated. '
+                              f'Pass levels in units convertible to the map units ({self.unit}) '
+                              'or as a perncentage Quantity to remove this warning.',
+                              SunpyDeprecationWarning)
+                return levels
+            else:
+                raise TypeError("The levels argument has no unit attribute, "
+                                "it should be an Astropy Quantity object.")
+
+        if levels.unit == u.percent:
+            return 0.01 * levels.to_value('percent') * np.nanmax(self.data)
+        elif self.unit is not None:
+            return levels.to_value(self.unit)
+        elif levels.unit.is_equivalent(u.dimensionless_unscaled):
+            # Handle case where map data has no units
+            return levels.to_value(u.dimensionless_unscaled)
+        else:
+            # Map data has no units, but levels doesn't have dimensionless units
+            raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
+                               "or in u.dimensionless_unscaled units.")
+
+    def draw_contours(self, levels, axes=None, **contour_args):
         """
         Draw contours of the data.
 
@@ -2149,7 +2183,8 @@ class GenericMap(NDData):
         ----------
         levels : `~astropy.units.Quantity`
             A list of numbers indicating the contours to draw. These are given
-            as a percentage of the maximum value of the map data.
+            as a percentage of the maximum value of the map data, or in units
+            equivalent to the `~sunpy.map.GenericMap.unit` attribute.
 
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the contours. Defaults to the current
@@ -2169,11 +2204,8 @@ class GenericMap(NDData):
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        # TODO: allow for use of direct input of contours but requires units of
-        # map flux which is not yet implemented
-
-        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(),
-                          **contour_args)
+        levels = self._process_levels_arg(levels, warn_units=True)
+        cs = axes.contour(self.data, levels, **contour_args)
         return cs
 
     @peek_show
@@ -2395,13 +2427,7 @@ class GenericMap(NDData):
         """
         from skimage import measure
 
-        if self.unit is not None:
-            try:
-                level = level.to_value(self.unit)
-            # Catch cases where level can't be converted or isn't a Quantity
-            except (AttributeError, u.UnitConversionError) as e:
-                raise u.UnitsError(
-                    f'level must be an astropy quantity convertible to {self.unit}') from e
+        level = self._process_levels_arg(level)
 
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]

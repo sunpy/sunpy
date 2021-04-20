@@ -1080,17 +1080,46 @@ def test_contour(simple_map):
 def test_contour_units(simple_map):
     # Check that contouring with units works as intended
     simple_map.meta['bunit'] = 'm'
+
+    # Same units
     contours = simple_map.contour(1.5 * u.m)
     assert len(contours) == 1
 
+    # Different units, but convertible
     contours_cm = simple_map.contour(150 * u.cm)
     for c1, c2 in zip(contours, contours_cm):
-        np.all(c1 == c2)
+        assert np.all(c1 == c2)
 
-    with pytest.raises(u.UnitsError, match='level must be an astropy quantity convertible to m'):
+    # Percentage
+    contours_percent = simple_map.contour(100 * u.percent)
+    contours_ref = simple_map.contour(np.max(simple_map.data) * simple_map.unit)
+    for c1, c2 in zip(contours_percent, contours_ref):
+        assert np.all(c1 == c2)
+
+
+def test_contour_input(simple_map):
+    simple_map.meta['bunit'] = 'm'
+
+    with pytest.warns(SunpyDeprecationWarning,
+         match='Passing contour levels that are not an astropy Quantity'):
+        simple_map.draw_contours(1.5)
+    with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
         simple_map.contour(1.5)
-    with pytest.raises(u.UnitsError, match='level must be an astropy quantity convertible to m'):
+
+    with pytest.raises(u.UnitsError, match=re.escape("'s' (time) and 'm' (length) are not convertible")):
+        simple_map.draw_contours(1.5 * u.s)
+    with pytest.raises(u.UnitsError, match=re.escape("'s' (time) and 'm' (length) are not convertible")):
         simple_map.contour(1.5 * u.s)
+
+    # With no units, check that dimensionless works
+    simple_map.meta.pop('bunit')
+    simple_map.draw_contours(1.5 * u.dimensionless_unscaled)
+    simple_map.contour(1.5 * u.dimensionless_unscaled)
+
+    with pytest.raises(u.UnitsError, match='This map has no unit'):
+        simple_map.draw_contours(1.5 * u.m)
+    with pytest.raises(u.UnitsError, match='This map has no unit'):
+        simple_map.contour(1.5 * u.m)
 
 
 def test_print_map(generic_map):
