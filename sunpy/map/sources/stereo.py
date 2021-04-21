@@ -31,8 +31,8 @@ class EUVIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
 
-        GenericMap.__init__(self, data, header, **kwargs)
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = 'euvi{wl:d}'.format(wl=int(self.wavelength.value))
         self.plot_settings['norm'] = ImageNormalize(
@@ -101,8 +101,7 @@ class CORMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = 'stereocor{det!s}'.format(det=self.detector[-1])
@@ -148,8 +147,8 @@ class HIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
 
-        GenericMap.__init__(self, data, header, **kwargs)
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = 'stereohi{det!s}'.format(det=self.detector[-1])
         self.plot_settings['norm'] = ImageNormalize(

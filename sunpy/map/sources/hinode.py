@@ -43,7 +43,7 @@ class XRTMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         # converting data array to masked array
         # self.data = ma.masked_where(self.data > SATURATION_LIMIT, self.data)
@@ -110,7 +110,7 @@ class SOTMap(GenericMap):
                         'FG shutterless Stokes', 'SP IQUV 4D array']
 
     def __init__(self, data, header, **kwargs):
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = "SOT"
         self.meta['telescop'] = "Hinode"
