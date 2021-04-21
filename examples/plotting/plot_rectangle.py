@@ -3,7 +3,7 @@
 Drawing a rectangle on a map
 ============================
 
-This example will demonstrate how to draw a rectangle on a map using :meth:`~sunpy.map.GenericMap.draw_rectangle`.
+This example will demonstrate how to draw a rectangle on a map using :meth:`~sunpy.map.GenericMap.draw_quadrangle`.
 """
 import matplotlib.pyplot as plt
 
@@ -35,7 +35,7 @@ coords = SkyCoord(
     Ty=(200, 500) * u.arcsec,
     frame=aia_map.coordinate_frame,
 )
-aia_map.draw_rectangle(
+aia_map.draw_quadrangle(
     coords,
     edgecolor="blue",
     linestyle="-",
@@ -46,7 +46,7 @@ aia_map.draw_rectangle(
 # Specify two opposite corners of the rectangle as separate SkyCoord objects
 bottom_left = SkyCoord(-500 * u.arcsec, 200 * u.arcsec, frame=aia_map.coordinate_frame)
 top_right = SkyCoord(-100 * u.arcsec, 500 * u.arcsec, frame=aia_map.coordinate_frame)
-aia_map.draw_rectangle(
+aia_map.draw_quadrangle(
     bottom_left,
     top_right=top_right,
     edgecolor="green",
@@ -59,7 +59,7 @@ aia_map.draw_rectangle(
 bottom_left = SkyCoord(-500 * u.arcsec, -500 * u.arcsec, frame=aia_map.coordinate_frame)
 width = 400 * u.arcsec
 height = 300 * u.arcsec
-aia_map.draw_rectangle(
+aia_map.draw_quadrangle(
     bottom_left,
     width=width,
     height=height,
@@ -72,7 +72,7 @@ aia_map.draw_rectangle(
 # Draw a desired rectangle in pixel coordinates by first converting to SkyCoord objects
 bottom_left = aia_map.pixel_to_world(600 * u.pixel, 350 * u.pixel)
 top_right = aia_map.pixel_to_world(800 * u.pixel, 450 * u.pixel)
-aia_map.draw_rectangle(
+aia_map.draw_quadrangle(
     bottom_left,
     top_right=top_right,
     edgecolor="red",

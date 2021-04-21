@@ -63,7 +63,7 @@ def test_plot_rotated_aia171(aia171_test_map):
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     w = 100 * u.arcsec
     h = 200 * u.arcsec
-    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
+    aia171_test_map.draw_quadrangle(bottom_left, width=w, height=h)
 
 
 @figure_test
@@ -116,7 +116,7 @@ def test_rectangle_aia171_width_height(aia171_test_map):
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     w = 100 * u.arcsec
     h = 100 * u.arcsec
-    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
+    aia171_test_map.draw_quadrangle(bottom_left, width=w, height=h)
 
 
 @figure_test
@@ -126,18 +126,8 @@ def test_rectangle_aia171_top_right(aia171_test_map):
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     top_right = SkyCoord(
         100 * u.arcsec, 100 * u.arcsec, frame=aia171_test_map.coordinate_frame)
-    aia171_test_map.draw_rectangle(bottom_left, top_right=top_right, label='Rectangle')
+    aia171_test_map.draw_quadrangle(bottom_left, top_right=top_right, label='Rectangle')
     plt.legend()  # Check that the 'Rectangle' label shows up in the legend
-
-
-@figure_test
-def test_rectangle_aia171_hgs_width_height(aia171_test_map):
-    aia171_test_map.plot()
-    bottom_left = SkyCoord(
-        0 * u.deg, -60 * u.deg, frame='heliographic_stonyhurst', obstime=aia171_test_map.date)
-    w = 45 * u.deg
-    h = 120 * u.deg
-    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
 
 
 @figure_test
@@ -209,25 +199,6 @@ def test_draw_contours_aia(aia171_test_map):
 @figure_test
 def test_heliographic_peek(heliographic_test_map):
     heliographic_test_map.peek()
-
-
-@figure_test
-def test_heliographic_rectangle_width_height(heliographic_test_map):
-    heliographic_test_map.plot()
-    bottom_left = SkyCoord(
-        60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
-    w = 13 * u.deg
-    h = 13 * u.deg
-    heliographic_test_map.draw_rectangle(bottom_left, width=w, height=h, edgecolor='cyan')
-
-
-@figure_test
-def test_heliographic_rectangle_top_right(heliographic_test_map):
-    heliographic_test_map.plot()
-    bottom_left = SkyCoord(
-        60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
-    top_right = SkyCoord(73 * u.deg, 63 * u.deg, frame=heliographic_test_map.coordinate_frame)
-    heliographic_test_map.draw_rectangle(bottom_left, top_right=top_right, edgecolor='cyan')
 
 
 @figure_test
