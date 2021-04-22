@@ -2013,7 +2013,9 @@ class GenericMap(NDData):
 
         To avoid triggering Matplotlib auto-scaling, these patches are added as
         artists instead of patches.  One consequence is that the plot legend is not
-        populated automatically when the limb is specified with a text label.
+        populated automatically when the limb is specified with a text label.  See
+        :ref:`sphx_glr_gallery_text_labels_and_annotations_custom_legends.py` in
+        the Matplotlib documentation for examples of creating a custom legend.
         """
         # Put import here to reduce sunpy.map import time
         from matplotlib import patches
