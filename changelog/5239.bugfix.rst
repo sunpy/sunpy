@@ -1,1 +1,1 @@
-Fixed :meth:`sunpy.map.GenericMap.draw_contours` so that the contours can be plotted on axes that correspond to a different map.
+Fixed :meth:`sunpy.map.GenericMap.draw_contours` so that the contours from a map can be plotted on axes with a different coordinate system.
