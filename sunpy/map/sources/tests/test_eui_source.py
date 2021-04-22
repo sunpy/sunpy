@@ -1,17 +1,21 @@
 """Tests for EUI Solar Orbiter Map"""
+import numpy as np
 import pytest
 
 import astropy.units as u
+from astropy.io import fits
 
-from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources import EUIMap
 
 
 @pytest.fixture
 def eui_map(scope="module"):
-    fname = get_test_filepath('solo_L2_eui-hrieuv174-image_20201019T200200202_V01.fits')
-    return Map(fname)
+    raw_header = """
+    """
+    header = fits.Header.fromstring(raw_header, sep='\n')
+    data = np.random.rand(header['naxis1'], header['naxis2'])
+    return Map(data, header)
 
 
 def test_EUIMap(eui_map):
