@@ -31,7 +31,7 @@ import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
 from sunpy import config, log
-from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, Helioprojective, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
@@ -2043,8 +2043,10 @@ class GenericMap(NDData):
         # transform is always passed on as a keyword argument
         c_kw.setdefault('transform', transform)
 
-        # If not WCSAxes or if the map's frame matches the axes's frame, we can use Circle
-        if not is_wcsaxes or self.coordinate_frame == axes._transform_pixel2world.frame_out:
+        # If not WCSAxes or if the map's frame matches the axes's frame and is Helioprojective,
+        # we can use Circle
+        if not is_wcsaxes or (self.coordinate_frame == axes._transform_pixel2world.frame_out
+                              and isinstance(self.coordinate_frame, Helioprojective)):
             c_kw.setdefault('radius', radius)
 
             circ = patches.Circle([0, 0], **c_kw)
