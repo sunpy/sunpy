@@ -31,7 +31,7 @@ import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
 from sunpy import config, log
-from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, Helioprojective, get_earth, sun
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
@@ -2011,7 +2011,7 @@ class GenericMap(NDData):
         If the limb is a true circle, ``visible`` will instead be
         `~matplotlib.patches.Circle` and ``hidden`` will be ``None``.
 
-        To avoid trigger Matplotlib auto-scaling, these patches are added as generic
+        To avoid triggering Matplotlib auto-scaling, these patches are added as
         artists instead of patches.  One consequence is that the plot legend is not
         populated automatically when the limb is specified with a text label.
         """
@@ -2036,19 +2036,13 @@ class GenericMap(NDData):
             transform = axes.transData
         else:
             radius = self.rsun_obs.to_value(u.deg)
-
-            if isinstance(self.coordinate_frame, Helioprojective):
-                frame = self.coordinate_frame
-            else:
-                frame = Helioprojective(observer=self.observer_coordinate,
-                                        obstime=self.date, rsun=self.rsun_meters)
-            transform = axes.get_transform(frame)
+            transform = axes.get_transform('world')
 
         # transform is always passed on as a keyword argument
         c_kw.setdefault('transform', transform)
 
         # If not WCSAxes or if the map's frame matches the axes's frame, we can use Circle
-        if not is_wcsaxes or frame == axes._transform_pixel2world.frame_out:
+        if not is_wcsaxes or self.coordinate_frame == axes._transform_pixel2world.frame_out:
             c_kw.setdefault('radius', radius)
 
             circ = patches.Circle([0, 0], **c_kw)
@@ -2058,36 +2052,46 @@ class GenericMap(NDData):
 
         # Otherwise, we use Polygon to be able to distort the limb
 
-        theta = np.linspace(0, 2*np.pi, resolution+1)[:-1] << u.rad
-        # Use the Cartesian approximation of helioprojective coordinates because the Sun is small
-        Tx, Ty = radius * np.cos(theta), radius * np.sin(theta)
+        # Create the limb coordinate array using Heliocentric Radial
+        limb_radial_distance = self.observer_coordinate.radius * np.cos(self.rsun_obs)
+        limb_hcr_rho = limb_radial_distance * np.sin(self.rsun_obs)
+        limb_hcr_z = self.observer_coordinate.radius - limb_radial_distance * np.cos(self.rsun_obs)
+        limb_hcr_psi = np.linspace(0, 2*np.pi, resolution+1)[:-1] << u.rad
+        limb = SkyCoord(limb_hcr_rho, limb_hcr_psi, limb_hcr_z, representation_type='cylindrical',
+                        frame='heliocentric', observer=self.observer_coordinate, obstime=self.date)
 
-        # Perform the round-trip transformation world->pixel->world
-        true_vertices = np.array([Tx, Ty]).T
-        apparent_vertices = transform.inverted().transform(transform.transform(true_vertices))
+        # Transform the limb to the axes frame and get the 2D vertices
+        axes_frame = axes._transform_pixel2world.frame_out
+        limb_in_axes = limb.transform_to(axes_frame)
+        Tx = limb_in_axes.spherical.lon.to_value(u.deg)
+        Ty = limb_in_axes.spherical.lat.to_value(u.deg)
+        vertices = np.array([Tx, Ty]).T
 
-        # Points that move by less than 1 arcmin are intepreted to be on the "near" side of the Sun
-        diff_Tx = Longitude((true_vertices[:, 0] - apparent_vertices[:, 0]) << u.deg,
-                            wrap_angle=180*u.deg)
-        diff_Ty = (true_vertices[:, 1] - apparent_vertices[:, 1]) << u.deg
-        discrepancy = np.sqrt(diff_Tx ** 2 + diff_Ty ** 2)
-        near = discrepancy < 10*u.arcsec
+        # Determine which points are visible
+        if hasattr(axes_frame, 'observer'):
+            # The reference distance is the distance to the limb for the axes observer
+            rsun = getattr(axes_frame, 'rsun', self.rsun_meters)
+            reference_distance = np.sqrt(axes_frame.observer.radius**2 - rsun**2)
+            is_visible = limb_in_axes.spherical.distance <= reference_distance
+        else:
+            # If the axes has no observer, the entire limb is considered visible
+            is_visible = np.ones_like(limb_in_axes.spherical.distance, np.bool)
 
         # Create the Polygon for the near side of the Sun (using a solid line)
         if 'linestyle' not in kwargs:
             c_kw['linestyle'] = '-'
-        visible = patches.Polygon(true_vertices, **c_kw)
+        visible = patches.Polygon(vertices, **c_kw)
         visible_codes = visible.get_path().codes
-        visible_codes[:-1][~near] = Path.MOVETO
-        visible_codes[-1] = Path.MOVETO if not near[0] else Path.LINETO
+        visible_codes[:-1][~is_visible] = Path.MOVETO
+        visible_codes[-1] = Path.MOVETO if not is_visible[0] else Path.LINETO
 
         # Create the Polygon for the far side of the Sun (using a dotted line)
         if 'linestyle' not in kwargs:
             c_kw['linestyle'] = ':'
-        hidden = patches.Polygon(true_vertices, **c_kw)
+        hidden = patches.Polygon(vertices, **c_kw)
         hidden_codes = hidden.get_path().codes
-        hidden_codes[:-1][near] = Path.MOVETO
-        hidden_codes[-1] = Path.MOVETO if near[0] else Path.LINETO
+        hidden_codes[:-1][is_visible] = Path.MOVETO
+        hidden_codes[-1] = Path.MOVETO if is_visible[0] else Path.LINETO
 
         # Add both patches as artists rather than patches to avoid triggering auto-scaling
         axes.add_artist(visible)
