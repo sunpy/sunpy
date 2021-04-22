@@ -17,6 +17,13 @@ pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer')
 
 @pytest.fixture
 def composite_test_map(aia171_test_map, hmi_test_map):
+    # The test maps both have a rotation angle, which throws off compositing
+    aia171_test_map._data = aia171_test_map.data.astype('float32')
+    aia171_test_map = aia171_test_map.rotate(order=3)
+    hmi_test_map._data = hmi_test_map.data.astype('float32')
+    hmi_test_map = hmi_test_map.rotate(order=3)
+    # The test maps have wildly different observation times, which throws off compositing
+    hmi_test_map.meta['date-obs'] = aia171_test_map.meta['date-obs']
     return sunpy.map.Map(aia171_test_map, hmi_test_map, composite=True)
 
 
