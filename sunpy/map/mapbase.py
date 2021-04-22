@@ -2070,6 +2070,7 @@ class GenericMap(NDData):
         axes.add_patch(quad)
         return quad
 
+    @deprecated("3.0", alternative="draw_quadrangle")
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, top_right=None, width: u.deg = None, height: u.deg = None,
                        axes=None, **kwargs):
