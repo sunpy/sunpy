@@ -2198,12 +2198,16 @@ class GenericMap(NDData):
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
-        `~matplotlib.pyplot.contour` function.
+        `~matplotlib.axes.Axes.contour` function.
         """
         axes = self._check_axes(axes, allow_non_wcsaxes=True)
 
         levels = self._process_levels_arg(levels, warn_units=True)
-        cs = axes.contour(self.data, levels, **contour_args)
+        kwargs = {}
+        if wcsaxes_compat.is_wcsaxes(axes):
+            kwargs['transform'] = axes.get_transform(self.wcs)
+        kwargs.update(contour_args)
+        cs = axes.contour(self.data, levels, **kwargs)
         return cs
 
     @peek_show
