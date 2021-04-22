@@ -1,2 +1,1 @@
 Figure tests automatically delete the unused figures.
-
