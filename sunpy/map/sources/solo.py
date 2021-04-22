@@ -1,4 +1,6 @@
-"""Solar Orbiter Map subclass definitions"""
+"""
+Solar Orbiter Map subclass definitions.
+"""
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch, ImageNormalize
