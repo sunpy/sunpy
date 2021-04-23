@@ -2306,7 +2306,7 @@ class GenericMap(NDData):
         >>> aia.draw_grid()   # doctest: +SKIP
 
         """
-        axes = self._check_axes(axes, allow_non_wcsaxes=True)
+        axes = self._check_axes(axes, allow_non_wcsaxes=True, warn_different_wcs=True)
 
         # Normal plot
         plot_settings = copy.deepcopy(self.plot_settings)
@@ -2424,7 +2424,7 @@ class GenericMap(NDData):
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
 
-    def _check_axes(self, axes, allow_non_wcsaxes=False):
+    def _check_axes(self, axes, allow_non_wcsaxes=False, warn_different_wcs=False):
         """
         - If axes is None, get the current Axes object.
         - Error if not a WCSAxes (can be turned off).
@@ -2436,25 +2436,36 @@ class GenericMap(NDData):
             Axes to validate.
         allow_non_wcsaxes : bool
             If `True`, allow ``axes`` to not be a `WCSAxes`, and warn. Otherwise
-            raise an error.
+            raise an error. Support for this is deprecated, and this keyword can be removed in
+            sunpy 3.1.
+        warn_different_wcs : bool
+            If `True`, warn if the Axes WCS is different from the Map WCS. This is only used for
+            `.plot()`, and can be removed once support is added for plotting a map on a different
+            WCSAxes.
         """
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         if not wcsaxes_compat.is_wcsaxes(axes):
+            # not WCSAxes
             if allow_non_wcsaxes:
                 if not np.array_equal(self.rotation_matrix, np.identity(2)):
                     warnings.warn("The axes of this map are not aligned to the pixel grid. "
                                   "Plot axes may be incorrect.",
                                   SunpyUserWarning)
                 warnings.warn("WCSAxes not being used as the axes object for this plot. "
-                              "Plots may have unexpected behaviour. To fix this pass "
-                              "'projection=map' when creating the axes",
-                              SunpyUserWarning)
+                              "Support for this is deprecated, and will be removed in sunpy 3.1. "
+                              "To fix this pass set the `projection` keyword "
+                              "to this map when creating the axes.",
+                              SunpyDeprecationWarning)
             else:
                 raise TypeError("The axes need to be an instance of WCSAxes. "
-                                "You may have neglected to use `projection=map` "
-                                "when creating the axes.")
+                                "To fix this pass set the `projection` keyword "
+                                "to this map when creating the axes.")
+        elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
+            warnings.warn('The map world coordinate system (WCS) is different from the axes WCS. '
+                          'The map data axes may not correctly align with the coordinate axes.',
+                          SunpyUserWarning)
 
         return axes
 
