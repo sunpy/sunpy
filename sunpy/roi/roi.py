@@ -4,10 +4,12 @@ This module implements a basic region of interest class.
 import textwrap
 
 from sunpy.time import TimeRange, parse_time
+from sunpy.util.decorators import deprecated
 
 __all__ = ['roi']
 
 
+@deprecated(since="3.0")
 class roi:
     """
     A generalized Region Of Interest (ROI) class.
