@@ -181,6 +181,10 @@
       "7-shell Si detector (flight 1),  7-shell CdTe detector (flights 2 & 3)"
     ],
     [
+      "X123",
+      "None"
+    ],
+    [
       "SIT",
       "Suprathermal Ion Telescope"
     ],
@@ -575,6 +579,10 @@
       "Mees Solar Observatory Imaging Spectrograph on Haleakala, Maui"
     ],
     [
+      "X123",
+      "X123 SXR Spectometer"
+    ],
+    [
       "OVSA",
       "Owens Valley Solar Array"
     ],
@@ -797,6 +805,10 @@
       "Geostationary Operational Environmental Satellite (GOES-R) Series 17 "
     ],
     [
+      "MINXSS1",
+      "Miniature X-Ray Solar Spectrometer Cubesat #1"
+    ],
+    [
       "STEREO",
       "None"
     ],
@@ -869,12 +881,12 @@
       "Synoptic Optical Long-term Investigations of the Sun"
     ],
     [
-      "RHESSI",
-      "Reuven Ramaty High Energy Solar Spectroscopic Imager"
-    ],
-    [
       "GOES-12",
       "Geosyncronous Operational Environmental Satellite - 12"
+    ],
+    [
+      "RHESSI",
+      "Reuven Ramaty High Energy Solar Spectroscopic Imager"
     ],
     [
       "ISOON",
@@ -1135,6 +1147,18 @@
   ],
   "level": [
     [
+      "3",
+      "3"
+    ],
+    [
+      "0C",
+      "0C"
+    ],
+    [
+      "2",
+      "2"
+    ],
+    [
       "1b",
       "1b"
     ],
@@ -1147,16 +1171,12 @@
       "1.5"
     ],
     [
-      "3",
-      "3"
-    ],
-    [
       "1.0",
       "1.0"
     ],
     [
-      "2",
-      "2"
+      "0D",
+      "0D"
     ]
   ]
 }
