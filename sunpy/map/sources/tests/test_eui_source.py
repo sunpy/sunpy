@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 from astropy.io import fits
 
 from sunpy.map import Map
@@ -58,7 +59,7 @@ def eui_fsi_map(scope="module"):
         OBS_ID  = 'SEUI_021A_000_000_2ZpG_11K' / unique ID of the individual observation
         TARGET  = 'not defined'        / type of target from planning
         BTYPE   = 'Intensity'          / type of data
-        BUNIT   = 'ct      '           / units of physical value, after BSCALE, BZERO
+        BUNIT   = 'DN      '           / units of physical value, after BSCALE, BZERO
         UCD     = 'phot.count;em.UV.10-50nm' / Unified Content Descriptor
         BLANK   =                32767 / value undefined pixels before BSCALE,BZERO
         PXBEG1  =                    1 / first read-out pixel in dimension 1
@@ -238,6 +239,10 @@ def test_EUIMap(eui_fsi_map):
 
 def test_is_datasource_for(eui_fsi_map):
     assert eui_fsi_map.is_datasource_for(eui_fsi_map.data, eui_fsi_map.meta)
+
+
+def test_observer_coordinate(eui_fsi_map):
+    assert isinstance(eui_fsi_map.observer_coordinate, SkyCoord)
 
 
 def test_observatory(eui_fsi_map):
