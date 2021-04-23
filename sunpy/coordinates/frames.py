@@ -106,8 +106,8 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     This class is not intended to be used directly and has no transformations defined.
 
     * Defines the frame attribute ``obstime`` for observation time.
-    * Defines a default longitude wrap angle of 180 degrees, which can be overridden via the class
-      variable ``_wrap_angle``.
+    * Defines a default wrap angle of 180 degrees for longitude in spherical coordinates,
+      which can be overridden via the class variable ``_wrap_angle``.
     * Inject a nice way of representing the object which the coordinate represents.
     """
     obstime = TimeFrameAttributeSunPy()
@@ -121,7 +121,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
                                 RepresentationMapping('d_distance', 'd_distance', u.km/u.s)],
     }
 
-    _wrap_angle = 180*u.deg
+    _wrap_angle = 180*u.deg  # for longitude in spherical coordinates
 
     def __init__(self, *args, **kwargs):
         self.object_name = None
@@ -139,20 +139,17 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         return
 
     def represent_as(self, base, s='base', in_frame_units=False):
-        """
-        If a frame wrap angle is set, use that wrap angle for any spherical representations.
-        """
         data = super().represent_as(base, s, in_frame_units=in_frame_units)
+
+        # If a frame wrap angle is set, use that wrap angle for any spherical representations.
         if self._wrap_angle is not None and \
            isinstance(data, (UnitSphericalRepresentation, SphericalRepresentation)):
             data.lon.wrap_angle = self._wrap_angle
         return data
 
     def __str__(self):
-        """
-        We override this here so that when you print a SkyCoord it shows the
-        observer as the string and not the whole massive coordinate.
-        """
+        # We override this here so that when you print a SkyCoord it shows the
+        # observer as the string and not the whole massive coordinate.
         if getattr(self, "object_name", None):
             return f"<{self.__class__.__name__} Coordinate for '{self.object_name}'>"
         else:
@@ -392,6 +389,14 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     }
 
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
+
+    def represent_as(self, base, s='base', in_frame_units=False):
+        data = super().represent_as(base, s, in_frame_units=in_frame_units)
+
+        # For cylindrical representations, wrap the `psi` component (natively `phi`) at 360 deg
+        if isinstance(data, CylindricalRepresentation):
+            data.phi.wrap_at(360*u.deg, inplace=True)
+        return data
 
 
 @add_common_docstring(**_frame_parameters())
