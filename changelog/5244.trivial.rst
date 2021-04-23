@@ -1,4 +1,4 @@
-Plotting a `~sunpy.map.GenericMap` on a
+Calling :meth:`sunpy.map.GenericMap.plot` on a
 `~astropy.visualization.wcsaxes.WCSAxes` with a different
 World Coordinate System (WCS) to the map now raises a warning,
 as the map data axes may not correctly align with the coordinate axes.
