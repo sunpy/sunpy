@@ -1,7 +1,6 @@
 import pathlib
 import warnings
 import functools
-from typing import Dict
 from contextlib import contextmanager
 from urllib.parse import urlparse
 
@@ -28,7 +27,7 @@ class DataManager:
 
         self._namespace = None
         self._skip_hash_check = False
-        self._skip_file: Dict[str, str] = {}
+        self._skip_file = {}
 
     def require(self, name, urls, sha_hash):
         """
@@ -51,7 +50,7 @@ class DataManager:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 self._namespace = self._get_module(func)
-                replace = self._skip_file.get(name, None)
+                replace = self._skip_file.get(name)
                 if replace:
                     uri_parse = urlparse(replace['uri'])
                     if uri_parse.scheme in ("", "file"):
