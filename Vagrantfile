@@ -1,40 +1,37 @@
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/focal64"
 
   # Setup machine
   config.vm.provision "shell", privileged: true, inline: <<-SHELL
-    apt install build-essential -y
-  SHELL
-
-  # Install miniconda
-  config.vm.provision "shell", privileged: true, inline: <<-SHELL
-    wget -q https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-    bash miniconda.sh -b -p /home/vagrant/miniconda
-    rm miniconda.sh
-    chown -R vagrant:vagrant /home/vagrant/miniconda
-  SHELL
-  config.vm.provision "shell", privileged: false, inline: <<-SHELL
-    bash -i -c " \
-      /home/vagrant/miniconda/bin/conda init bash && \
-      source ~/.bashrc && \
-      conda update -n base -c defaults conda \
-    "
+    # Set debconf interface
+    export DEBIAN_FRONTEND=noninteractive
+    # Update package lists
+    apt-get -qq update > /dev/null
+    # Install build tools (gcc, python3, pip3, etc)
+    apt-get -qq install gcc python3-dev python3-pip python3-venv python3-wheel > /dev/null
   SHELL
 
   # Setup sunpy dev environment
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
     cd /vagrant
-    bash -i -c " \
-      conda create -y -c=conda-forge -n=sunpy-dev pip && \
-      conda activate sunpy-dev && \
-      pip install -e .[dev] \
-    "
+    # Create virtual environment inside ~/.venv folder
+    python3 -m venv ~/.venv
+    # Install dependencies inside the virtual environment
+    source ~/.venv/bin/activate
+    pip3 install -q --upgrade pip
+    python3 --version && pip3 list
+    pip3 install -e ".[dev]"
   SHELL
 
-  # CD into shared folder and activate conda env on login
+  # Setup login shell
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
+    # Disable Ubuntu welcome message
+    touch ~/.hushlogin
+    # Autologin inside the virtual environment
+    echo "source ~/.venv/bin/activate" >> /home/vagrant/.bashrc
+    # Auto cd into shared folder
     echo "cd /vagrant" >> /home/vagrant/.bashrc
-    echo "conda activate sunpy-dev" >> /home/vagrant/.bashrc
-    echo "conda --version && python --version" >> /home/vagrant/.bashrc
+    # Print useful versions on login
+    echo "python3 --version" >> /home/vagrant/.bashrc
   SHELL
 end
