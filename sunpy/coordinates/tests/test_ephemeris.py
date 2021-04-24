@@ -116,6 +116,22 @@ def test_get_horizons_coord_array_time():
 
 
 @pytest.mark.remote_data
+def test_get_horizons_coord_dict_time():
+    # get_horizons_coord() depends on astroquery
+    pytest.importorskip("astroquery")
+
+    time_dict = {'start': '2013-03-01', 'stop': '2013-03-03', 'step': '1d'}
+    time_ref = Time(['2013-03-01', '2013-03-02', '2013-03-03'])
+
+    e = get_horizons_coord('Geocenter', time_dict)
+    e_ref = get_horizons_coord('Geocenter', time_ref)
+
+    assert_quantity_allclose(e.lon, e_ref.lon, atol=1e-9*u.deg)
+    assert_quantity_allclose(e.lat, e_ref.lat)
+    assert_quantity_allclose(e.radius, e_ref.radius)
+
+
+@pytest.mark.remote_data
 class TestUsingDE432s:
     # This class is for test functions that need the Astropy ephemeris to be set to DE432s
 
