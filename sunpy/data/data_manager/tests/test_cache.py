@@ -2,19 +2,19 @@ from .mocks import MOCK_HASH
 
 
 def test_cache_basic(cache):
-    cache.download('http://example.com')
+    cache.download('http://example.com/abc.text')
     assert cache._downloader.times_called == 1
 
 
 def test_cache_caching(cache):
-    cache.download('http://example.com')
-    cache.download('http://example.com')
+    cache.download('http://example.com/abc.text')
+    cache.download('http://example.com/abc.text')
     assert cache._downloader.times_called == 1
 
 
 def test_cache_redownload(cache):
-    cache.download('http://example.com')
-    cache.download('http://example.com', redownload=True)
+    cache.download('http://example.com/abc.text')
+    cache.download('http://example.com/abc.text', redownload=True)
     assert cache._downloader.times_called == 2
 
 
