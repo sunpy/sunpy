@@ -219,6 +219,7 @@ figure_test_images*
 tags
 sunpy_map.asdf
 baseline
+docs/guide/data_types/figure.png
 
 ### Pycharm(?)
 .idea
