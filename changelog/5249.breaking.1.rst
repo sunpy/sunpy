@@ -1,1 +1,1 @@
-Deprecated `sunpy.roi.chaincode`, as it currently has no obvious use and has never seen any real development work.
+Deprecated `sunpy.roi.chaincode` and created a replacement at `sunpy.net.helio.chaincode`.
