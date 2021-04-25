@@ -15,7 +15,8 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'map_edges', 'solar_angular_radius', 'sample_at_coords',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
            'contains_limb', 'coordinate_is_on_solar_disk',
-           'on_disk_bounding_coordinates']
+           'on_disk_bounding_coordinates',
+           'contains_coordinate']
 
 
 def all_pixel_indices_from_map(smap):
@@ -387,3 +388,32 @@ def on_disk_bounding_coordinates(smap):
     return SkyCoord([np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
                     [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
                     frame=smap.coordinate_frame)
+
+
+def contains_coordinate(smap, coordinates):
+    """
+    Checks whether a coordinate falls within the bounds of a map.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        The input map.
+    coordinates : `~astropy.coordinates.SkyCoord`
+        The input coordinate.
+
+    Returns
+    -------
+    bool
+        `True` if ``coordinates`` falls within the bounds of ``smap``.
+        This includes the edges of the map. If multiple coordinates are input,
+        returns a boolean arrary.
+    """
+    # Dimensions of smap
+    xs, ys = smap.dimensions
+    # Converting coordinates to pixels
+    xc, yc = smap.world_to_pixel(coordinates)
+    point5pix = 0.5 * u.pix
+    return ((xc >= -point5pix) &
+            (xc <= xs - point5pix) &
+            (yc >= -point5pix) &
+            (yc <= ys - point5pix))
