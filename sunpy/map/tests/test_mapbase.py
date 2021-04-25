@@ -30,6 +30,7 @@ from sunpy.map.sources import AIAMap
 from sunpy.time import parse_time
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.metadata import ModifiedItem
 
 testpath = sunpy.data.test.rootdir
 
@@ -1182,3 +1183,21 @@ def test_wavelength_properties(simple_map):
     simple_map.meta['waveunit'] = 'm'
     assert simple_map.measurement == 1 * u.m
     assert simple_map.wavelength == 1 * u.m
+
+
+def test_meta_modifications(aia171_test_map):
+    aiamap = aia171_test_map
+    old_cdelt1 = aiamap.meta['cdelt1']
+    aiamap.meta['cdelt1'] = 20
+
+    assert aiamap.meta.original_meta != aiamap.meta
+    assert aiamap.meta.added_items == {'bunit': 'ct'}
+    assert aiamap.meta.removed_items == {}
+    assert aiamap.meta.modified_items == {'cdelt1': ModifiedItem(old_cdelt1, 20)}
+
+    # Check that rotate doesn't modify the original metadata
+    aiamap_rot = aiamap.rotate(30 * u.deg)
+    assert aiamap_rot.meta.original_meta == aiamap.meta.original_meta
+    assert set(aiamap_rot.meta.added_items.keys()) == set(['bunit', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
+    assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
+    assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])

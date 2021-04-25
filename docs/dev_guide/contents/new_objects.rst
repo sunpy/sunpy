@@ -8,7 +8,7 @@ Writing a new Instrument Map Class
 ==================================
 
 All instrument Map classes are subclasses of the generic `~sunpy.map.GenericMap` subclass.
-`~sunpy.map.GenericMap` expect to be provided the data array as well as header dictionary and will parse the header metadata to the best of its ability based on common standards.
+`~sunpy.map.GenericMap` expects to be provided the data array and a header dictionary and will parse the header metadata to the best of its ability based on common standards.
 The instrument subclass implements the instrument-specific code to parse the metadata, apply any necessary procedures on the data array, as well as defining other things such what color tables to use.
 
 In practice, the instrument subclass is not directly accessed by users.
@@ -52,7 +52,8 @@ The following example shows how this works and includes a sample doc string that
             # will process the header according to common standards
             super(FutureMap, self).__init__(data, header, **kwargs)
 
-            # Any NextGenerationTelescope Instrument-specific manipulation
+            # Any NextGenerationTelescope Instrument-specific manipulation.
+            # This typically involves editing the `self.meta` attribute.
 
         # used by the Map factory to determine if this subclass should be used
         @classmethod
