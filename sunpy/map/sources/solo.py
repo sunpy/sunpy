@@ -3,7 +3,7 @@ Solar Orbiter Map subclass definitions.
 """
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
-from astropy.visualization import AsinhStretch, ImageNormalize
+from astropy.visualization import ImageNormalize, LinearStretch
 
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
@@ -35,12 +35,7 @@ class EUIMap(GenericMap):
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
-        # DN is not a FITS standard unit, so convert to counts
-        if self.meta.get('bunit', None) == 'DN':
-            self.meta['bunit'] = 'ct'
-        if self.meta.get('bunit', None) == 'DN/s':
-            self.meta['bunit'] = 'ct/s'
+            stretch=source_stretch(self.meta, LinearStretch()), clip=False)
 
     @property
     def processing_level(self):
