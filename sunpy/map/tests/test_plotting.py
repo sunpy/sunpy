@@ -18,7 +18,7 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.tests.helpers import figure_test, fix_map_wcs
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
 pytestmark = pytest.mark.filterwarnings('ignore:Missing metadata')
@@ -105,7 +105,7 @@ def test_peek_grid_limb_aia171(aia171_test_map):
 @figure_test
 def test_plot_aia171_nowcsaxes(aia171_test_map):
     ax = plt.gca()
-    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
         aia171_test_map.plot(axes=ax)
 
 
@@ -159,7 +159,7 @@ def test_plot_masked_aia171(aia171_test_map_with_mask):
 @figure_test
 def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
-    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
         aia171_test_map_with_mask.plot(axes=ax)
 
 
@@ -171,7 +171,7 @@ def test_plot_aia171_superpixel(aia171_test_map):
 @figure_test
 def test_plot_aia171_superpixel_nowcsaxes(aia171_test_map):
     ax = plt.gca()
-    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
         aia171_test_map.superpixel(
             (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
 
@@ -185,7 +185,7 @@ def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
 @figure_test
 def test_plot_masked_aia171_superpixel_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
-    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
         aia171_test_map_with_mask.superpixel(
             (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
 
@@ -254,3 +254,11 @@ def test_quadrangle_no_wcsaxes(aia171_test_map):
         [0, 1] * u.arcsec, [0, 1] * u.arcsec, frame=aia171_test_map.coordinate_frame)
     with pytest.raises(TypeError, match='WCSAxes'):
         aia171_test_map.draw_quadrangle(bottom_left, axes=ax)
+
+
+def test_different_wcs_plot_warning(aia171_test_map, hmi_test_map):
+    aia171_test_map.plot()
+    with pytest.warns(SunpyUserWarning,
+                      match=(r'The map world coordinate system \(WCS\) is different '
+                             'from the axes WCS')):
+        hmi_test_map.plot(axes=plt.gca())
