@@ -2,10 +2,13 @@
 This module provides a generalized dictionary class that deals with header
 parsing, normalization, and maintaining coherence between keys and keycomments.
 """
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from collections.abc import Mapping
 
 __all__ = ['MetaDict']
+
+ModifiedItem = namedtuple('ModifiedItem', ['original', 'current'])
+ModifiedItem.__repr__ = lambda t: f"(original={t.original}, current={t.current})"
 
 
 class MetaDict(OrderedDict):
@@ -21,18 +24,27 @@ class MetaDict(OrderedDict):
     `MetaDict`, it will also be removed from the keycomments dictionary.
     Additionally, any extraneous keycomments will be removed when the
     `MetaDict` is instantiated.
+
+    Parameters
+    ----------
+    save_original : bool, optional
+        If `True` (the default), a copy of the original metadata will be saved to the
+        `original_meta` property. Note that this keyword argument is
+        required as an implementation detail to avoid recursion when saving
+        the original contents.
     """
 
-    def __init__(self, *args):
-        """
-        Creates a new MetaDict instance.
-        """
+    def __init__(self, *args, save_original=True):
         # Store all keys as lower-case to allow for case-insensitive indexing
         # OrderedDict can be instantiated from a list of lists or a tuple of tuples
         tags = dict()
         if args:
             args = list(args)
             adict = args[0]
+
+            if isinstance(adict, MetaDict):
+                self._original_meta = adict._original_meta
+
             if isinstance(adict, list) or isinstance(adict, tuple):
                 items = adict
             elif isinstance(adict, Mapping):
@@ -48,10 +60,52 @@ class MetaDict(OrderedDict):
             args[0] = tags
 
         super().__init__(*args)
-
         # Use `copy=True` to avoid mutating the caller's keycomments
         # dictionary (if they provided one).
         self._prune_keycomments(copy=True)
+
+        if save_original and not hasattr(self, '_original_meta'):
+            self._original_meta = MetaDict(*args, save_original=False)
+
+    # Deliberately a property to prevent external modification
+    @property
+    def original_meta(self):
+        """
+        A copy of the dictionary from when it was initialised.
+        """
+        return self._original_meta
+
+    @property
+    def added_items(self):
+        """
+        Items added since initialisation.
+        """
+        return {k: self[k] for k in set(self) - set(self.original_meta)}
+
+    @property
+    def removed_items(self):
+        """
+        Items removed since initialisation.
+        """
+        return {k: self.original_meta[k] for k in set(self.original_meta) - set(self)}
+
+    @property
+    def modified_items(self):
+        """
+        Items modified since initialisation.
+
+        This is a mapping from ``key`` to ``[original_value, current_value]``.
+        """
+        keys = set(self).intersection(set(self.original_meta))
+        return {k: ModifiedItem(self.original_meta[k], self[k]) for k in keys if
+                self[k] != self.original_meta[k]}
+
+    def copy(self):
+        copied = super().copy()
+        # By default the above line will overwrite original_meta,
+        # so manually re-instate it
+        copied._original_meta = self.original_meta
+        return copied
 
     @staticmethod
     def _check_str_keys(items):

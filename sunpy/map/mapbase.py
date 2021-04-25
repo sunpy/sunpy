@@ -22,6 +22,7 @@ import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
+from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
 
@@ -54,6 +55,18 @@ PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 
 _META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata'
+
+# Manually specify the ``.meta`` docstring. This is assigned to the .meta
+# class attribute in GenericMap.__init__()
+_meta_doc = """
+The map metadata.
+
+This is used to intepret the map data. It may
+have been modified from the original metadata by sunpy. See the
+`~sunpy.util.MetaDict.added_items`, `~sunpy.util.MetaDict.removed_items`
+and `~sunpy.util.MetaDict.modified_items` properties of MetaDict
+to query how the metadata has been modified.
+"""
 
 __all__ = ['GenericMap']
 
@@ -164,6 +177,8 @@ class GenericMap(NDData):
     """
 
     _registry = dict()
+    # This overrides the default doc for the meta attribute
+    meta = MetaData(doc=_meta_doc, copy=False)
 
     def __init_subclass__(cls, **kwargs):
         """
