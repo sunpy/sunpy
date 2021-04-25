@@ -2,8 +2,12 @@
 import unittest
 
 import numpy as np
+import pytest
 
 from sunpy.roi.chaincode import Chaincode
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:The Chaincode class is deprecated and may be removed in version 3.1.")
 
 
 class CCTests(unittest.TestCase):

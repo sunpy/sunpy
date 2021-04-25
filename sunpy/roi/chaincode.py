@@ -3,9 +3,12 @@ This module implements a function to understand chaincodes from HELIO.
 """
 import numpy as np
 
+from sunpy.util.decorators import deprecated
+
 __all__ = ["Chaincode"]
 
 
+@deprecated(since="3.0")
 class Chaincode(np.ndarray):
     """
     A tool to infer some information from chaincodes produced by HELIO Feature
@@ -33,7 +36,7 @@ class Chaincode(np.ndarray):
     --------
     >>> from sunpy.roi.chaincode import Chaincode
     >>> cc = Chaincode([-88, 812], "44464655567670006011212222324",
-    ...     xdelta=2.629, ydelta=2.629)
+    ...     xdelta=2.629, ydelta=2.629)   # doctest: +SKIP
     >>> fig = plt.figure()   # doctest: +SKIP
     >>> ax = fig.add_subplot(111)   # doctest: +SKIP
     >>> x,y = zip(cc.coordinates)   # doctest: +SKIP
