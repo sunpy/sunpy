@@ -16,7 +16,7 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
            'contains_limb', 'coordinate_is_on_solar_disk',
            'on_disk_bounding_coordinates',
-           'contains_coordinate']
+           'contains_coordinate', 'contains_solar_center']
 
 
 def all_pixel_indices_from_map(smap):
@@ -207,9 +207,7 @@ def contains_solar_center(smap):
     """
     Returns `True` if smap contains the solar center.
 
-    This is the case if and only if the solar center is inside the edges of the map. This
-    is checked by seeing if the sign of both the x and y coordintaes of the corners are opposite
-    (ie. the (0, 0) point is contained within the map).
+    This is the case if and only if the solar center is inside or on the edges of the map.
 
     Parameters
     ----------
@@ -222,12 +220,7 @@ def contains_solar_center(smap):
         True if the map contains the solar center.
     """
     _verify_coordinate_helioprojective(smap.coordinate_frame)
-    bottom_left = smap.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
-    top_right = smap.pixel_to_world(*(u.Quantity(smap.dimensions) - 0.5 * u.pix))
-    # Test if the x and y component of the coordinate changes sign along
-    # both axes, to check if (0, 0) is contained in the map
-    return ((bottom_left.Tx * top_right.Tx <= 0 * u.deg**2) and
-            (bottom_left.Ty * top_right.Ty <= 0 * u.deg**2))
+    return contains_coordinate(smap, SkyCoord(0*u.arcsec, 0*u.arcsec, frame=smap.coordinate_frame))
 
 
 @u.quantity_input
