@@ -14,6 +14,7 @@ from .proba2 import *
 from .rhessi import *
 from .sdo import *
 from .soho import *
+from .solo import *
 from .source_type import *
 from .stereo import *
 from .suvi import *
