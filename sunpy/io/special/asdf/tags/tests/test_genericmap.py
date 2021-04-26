@@ -24,12 +24,6 @@ def aia171_test_map():
     return sunpy.map.Map(aia_path)
 
 
-# Skip these two tests on windows due to a weird interaction with atomicfile
-# and tmpdir
-skip_windows_asdf = pytest.mark.skipif(platform.system() == 'Windows', reason="See https://github.com/spacetelescope/asdf/pull/632")
-
-
-@skip_windows_asdf
 @asdf_entry_points
 def test_genericmap_basic(aia171_test_map, tmpdir):
 
@@ -38,7 +32,6 @@ def test_genericmap_basic(aia171_test_map, tmpdir):
     assert_roundtrip_tree(tree, tmpdir, extensions=SunpyExtension())
 
 
-@skip_windows_asdf
 @asdf_entry_points
 def test_genericmap_mask(aia171_test_map, tmpdir):
 

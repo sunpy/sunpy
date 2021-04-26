@@ -61,19 +61,12 @@ def test_hgc_100():
             assert hgc.observer.object_name == 'earth'
 
 
-# Skip these two tests on windows due to a weird interaction with atomicfile
-# and tmpdir
-skip_windows_asdf = pytest.mark.skipif(platform.system() == 'Windows', reason="See https://github.com/spacetelescope/asdf/pull/632")
-
-
-@skip_windows_asdf
 @asdf_entry_points
 def test_saveframe(coordframe_scalar, tmpdir):
     tree = {'frame': coordframe_scalar}
     assert_roundtrip_tree(tree, tmpdir)
 
 
-@skip_windows_asdf
 @asdf_entry_points
 def test_saveframe_arr(coordframe_array, tmpdir):
     tree = {'frame': coordframe_array}
