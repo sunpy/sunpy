@@ -108,8 +108,3 @@ def test_set_levels_percent(composite_test_map):
 @figure_test
 def test_peek_composite_map(composite_test_map):
     composite_test_map.peek()
-
-
-@figure_test
-def test_peek_composite_map_basic_plot(composite_test_map):
-    composite_test_map.peek(basic_plot=True)

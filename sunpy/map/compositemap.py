@@ -423,8 +423,7 @@ class CompositeMap:
         return ret
 
     @peek_show
-    def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
-             draw_grid=False, **matplot_args):
+    def peek(self, colorbar=True, draw_limb=True, draw_grid=False, **matplot_args):
         """
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the `~sunpy.map.CompositeMap.plot`
@@ -435,10 +434,6 @@ class CompositeMap:
         colorbar : `bool` or `int`
             Whether to display a colorbar next to the plot.
             If specified as an integer a colorbar is plotted for that index.
-
-        basic_plot : `bool`
-            If true, the data is plotted by itself at it's natural scale; no
-            title, labels, or axes are shown.
 
         draw_limb : `bool`
             If true, draws a circle representing the solar limb.
@@ -452,16 +447,9 @@ class CompositeMap:
         """
 
         # Create a figure and add title and axes
-        figure = plt.figure(frameon=not basic_plot)
+        figure = plt.figure()
 
-        # Basic plot
-        if basic_plot:
-            axes = plt.Axes(figure, [0., 0., 1., 1.])
-            axes.set_axis_off()
-            figure.add_axes(axes)
-            matplot_args.update({'annotate': False})
-        else:
-            axes = figure.add_subplot(111, projection=self._maps[0])
+        axes = figure.add_subplot(111, projection=self._maps[0])
 
         ret = self.plot(axes=axes, **matplot_args)
 
