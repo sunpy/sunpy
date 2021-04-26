@@ -96,7 +96,7 @@ stages:
 
           - linux: py38-conda
             libraries: {}
-          
+
           - linux: pyinstaller
 
 
