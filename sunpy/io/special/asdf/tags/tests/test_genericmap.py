@@ -2,14 +2,11 @@
 isort:skip_file.
 """
 # flake8: noqa: E402
-import platform
-from distutils.version import LooseVersion
 
 import numpy as np
 import pytest
 
 import astropy.units as u
-import asdf
 from asdf.tests.helpers import assert_roundtrip_tree
 
 import sunpy.map

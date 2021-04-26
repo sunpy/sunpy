@@ -1,5 +1,4 @@
-from PyInstaller.utils.hooks import collect_data_files, collect_submodules, copy_metadata, collect_entry_point
-
+from PyInstaller.utils.hooks import collect_data_files, collect_entry_point, collect_submodules, copy_metadata
 
 datas, hiddenimports = collect_entry_point("pytest11")
 

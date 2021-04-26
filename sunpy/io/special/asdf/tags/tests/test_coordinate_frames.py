@@ -1,17 +1,15 @@
 import os
-import platform
-from distutils.version import LooseVersion
 
 import numpy as np
 import pytest
 
+import asdf
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 
 import sunpy.coordinates.frames as frames
 from sunpy.tests.helpers import asdf_entry_points
 
-import asdf
 from asdf.tests.helpers import assert_roundtrip_tree  # NOQA isort:skip
 
 sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
