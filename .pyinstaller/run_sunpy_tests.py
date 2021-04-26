@@ -12,18 +12,34 @@ if getattr(sys, 'frozen', False):
     # Running in a bundle
     bundle_dir = sys._MEIPASS
 
-    SKIP_TESTS = ['test_saveframe', 'test_saveframe_arr', 'test_genericmap_basic', 'test_genericmap_mask',
-                'test_attr_metamagic', 'test_main_nonexisting_module', 'test_main_stdlib_module', 'test_origin', 'test_find_dependencies', 'test_missing_dependencies_by_extra',
-                'test_hgc_100', 'test_missing_dependencies_by_extra']
+    SKIP_TESTS = [
+        'test_saveframe',
+        'test_saveframe_arr',
+        'test_genericmap_basic',
+        'test_genericmap_mask',
+        'test_attr_metamagic',
+        'test_main_nonexisting_module',
+        'test_main_stdlib_module',
+        'test_origin',
+        'test_find_dependencies',
+        'test_missing_dependencies_by_extra',
+        'test_hgc_100',
+        'test_missing_dependencies_by_extra']
 
     sys.exit(pytest.main(['sunpy_tests',
-                        '-k ' + ' and '.join('not ' + test for test in SKIP_TESTS)]))
+                          '-k ' + ' and '.join('not ' + test for test in SKIP_TESTS)]))
 else:
     ROOT = os.path.join(os.path.dirname(__file__), '../')
 
     for root, dirnames, files in os.walk(os.path.join(ROOT, 'sunpy')):
         for dirname in dirnames:
-            final_dir = os.path.relpath(os.path.join(root.replace('sunpy', 'sunpy_tests'), dirname), ROOT)
+            final_dir = os.path.relpath(
+                os.path.join(
+                    root.replace(
+                        'sunpy',
+                        'sunpy_tests'),
+                    dirname),
+                ROOT)
             # We only copy over 'tests' directories, but not sunpy/tests (only
             # sunpy/tests/tests) since that is not just a directory with tests.
             if dirname == 'tests' and not root.endswith('sunpy'):
@@ -40,7 +56,13 @@ else:
         # Copy over all conftest.py files
         for file in files:
             if file == 'conftest.py':
-                final_file = os.path.relpath(os.path.join(root.replace('sunpy', 'sunpy_tests'), file), ROOT)
+                final_file = os.path.relpath(
+                    os.path.join(
+                        root.replace(
+                            'sunpy',
+                            'sunpy_tests'),
+                        file),
+                    ROOT)
                 shutil.copy2(os.path.join(root, file), final_file)
 
         # Add the top-level __init__.py file
