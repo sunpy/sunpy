@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-asdf = pytest.importorskip('asdf', '2.0')
+import asdf
 from asdf.tests.helpers import assert_roundtrip_tree
 
 import sunpy.map
@@ -26,10 +26,7 @@ def aia171_test_map():
 
 # Skip these two tests on windows due to a weird interaction with atomicfile
 # and tmpdir
-skip_windows_asdf = pytest.mark.skipif(
-    (LooseVersion(asdf.__version__) < LooseVersion("2.3.1")
-     and platform.system() == 'Windows'),
-    reason="See https://github.com/spacetelescope/asdf/pull/632")
+skip_windows_asdf = pytest.mark.skipif(platform.system() == 'Windows', reason="See https://github.com/spacetelescope/asdf/pull/632")
 
 
 @skip_windows_asdf
