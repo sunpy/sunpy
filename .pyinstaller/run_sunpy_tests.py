@@ -9,15 +9,15 @@ import pytest
 # asdf path issue with PyInstaller as well.
 
 if getattr(sys, 'frozen', False):
-        # Running in a bundle
-        bundle_dir = sys._MEIPASS
+    # Running in a bundle
+    bundle_dir = sys._MEIPASS
 
-        SKIP_TESTS = ['test_saveframe', 'test_saveframe_arr', 'test_genericmap_basic', 'test_genericmap_mask',
-              'test_attr_metamagic', 'test_main_nonexisting_module', 'test_main_stdlib_module', 'test_origin', 'test_find_dependencies', 'test_missing_dependencies_by_extra',
-              'test_hgc_100', 'test_missing_dependencies_by_extra']
+    SKIP_TESTS = ['test_saveframe', 'test_saveframe_arr', 'test_genericmap_basic', 'test_genericmap_mask',
+                'test_attr_metamagic', 'test_main_nonexisting_module', 'test_main_stdlib_module', 'test_origin', 'test_find_dependencies', 'test_missing_dependencies_by_extra',
+                'test_hgc_100', 'test_missing_dependencies_by_extra']
 
-        sys.exit(pytest.main(['sunpy_tests',
-                            '-k ' + ' and '.join('not ' + test for test in SKIP_TESTS)]))
+    sys.exit(pytest.main(['sunpy_tests',
+                        '-k ' + ' and '.join('not ' + test for test in SKIP_TESTS)]))
 else:
     ROOT = os.path.join(os.path.dirname(__file__), '../')
 
@@ -49,4 +49,4 @@ else:
 
         # Copy the top-level conftest.py
         shutil.copy2(os.path.join(ROOT, 'sunpy', 'conftest.py'),
-                    os.path.join('sunpy_tests', 'conftest.py'))
+                     os.path.join('sunpy_tests', 'conftest.py'))
