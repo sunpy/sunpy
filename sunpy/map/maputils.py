@@ -15,7 +15,8 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'map_edges', 'solar_angular_radius', 'sample_at_coords',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
            'contains_limb', 'coordinate_is_on_solar_disk',
-           'on_disk_bounding_coordinates']
+           'on_disk_bounding_coordinates',
+           'contains_coordinate', 'contains_solar_center']
 
 
 def all_pixel_indices_from_map(smap):
@@ -206,9 +207,7 @@ def contains_solar_center(smap):
     """
     Returns `True` if smap contains the solar center.
 
-    This is the case if and only if the solar center is inside the edges of the map. This
-    is checked by seeing if the sign of both the x and y coordintaes of the corners are opposite
-    (ie. the (0, 0) point is contained within the map).
+    This is the case if and only if the solar center is inside or on the edges of the map.
 
     Parameters
     ----------
@@ -221,12 +220,7 @@ def contains_solar_center(smap):
         True if the map contains the solar center.
     """
     _verify_coordinate_helioprojective(smap.coordinate_frame)
-    bottom_left = smap.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
-    top_right = smap.pixel_to_world(*(u.Quantity(smap.dimensions) - 0.5 * u.pix))
-    # Test if the x and y component of the coordinate changes sign along
-    # both axes, to check if (0, 0) is contained in the map
-    return ((bottom_left.Tx * top_right.Tx <= 0 * u.deg**2) and
-            (bottom_left.Ty * top_right.Ty <= 0 * u.deg**2))
+    return contains_coordinate(smap, SkyCoord(0*u.arcsec, 0*u.arcsec, frame=smap.coordinate_frame))
 
 
 @u.quantity_input
@@ -387,3 +381,32 @@ def on_disk_bounding_coordinates(smap):
     return SkyCoord([np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
                     [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
                     frame=smap.coordinate_frame)
+
+
+def contains_coordinate(smap, coordinates):
+    """
+    Checks whether a coordinate falls within the bounds of a map.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        The input map.
+    coordinates : `~astropy.coordinates.SkyCoord`
+        The input coordinate.
+
+    Returns
+    -------
+    bool
+        `True` if ``coordinates`` falls within the bounds of ``smap``.
+        This includes the edges of the map. If multiple coordinates are input,
+        returns a boolean arrary.
+    """
+    # Dimensions of smap
+    xs, ys = smap.dimensions
+    # Converting coordinates to pixels
+    xc, yc = smap.world_to_pixel(coordinates)
+    point5pix = 0.5 * u.pix
+    return ((xc >= -point5pix) &
+            (xc <= xs - point5pix) &
+            (yc >= -point5pix) &
+            (yc <= ys - point5pix))

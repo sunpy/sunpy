@@ -230,8 +230,8 @@ def test_hpc_low_precision_float_warning():
 # ## Heliographic Tests
 # ==============================================================================
 
-def test_HEE_creation():
-    # Smoke test to make sure HEE constructors work fine
+def test_HEEQ_creation():
+    # Smoke test to make sure HEEQ constructors work fine
     _ = HeliographicStonyhurst(lon=0*u.deg, lat=90*u.deg,
                                obstime=parse_time('2018-12-21'))
     _ = HeliographicStonyhurst(lon=0*u.deg, lat=90*u.deg, radius=1*u.km,
@@ -243,20 +243,15 @@ def test_HEE_creation():
 
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
-@pytest.mark.parametrize("args, kwargs", two_D_parameters[:4] +
+@pytest.mark.parametrize("args, kwargs", two_D_parameters +
                          [(None, {'lat': 0*u.deg, 'lon': 0*u.arcsec})])
 def test_create_hgs_2d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
 
     # Check we have the right class!
     assert isinstance(hgs1, frame)
-    # Check Carrington first because it's a subclass of Stonyhurst
-    if isinstance(hgs1, HeliographicCarrington):
-        # Check that we have a 2D wrap180 representation
-        assert isinstance(hgs1._data, SphericalRepresentation)
-    elif isinstance(hgs1, HeliographicStonyhurst):
-        # Check that we have a 2D wrap180 representation
-        assert isinstance(hgs1._data, SphericalRepresentation)
+    # Check that we have a 2D representation
+    assert isinstance(hgs1._data, UnitSphericalRepresentation)
 
     # Check the attrs are correct
     assert hgs1.lon == 0 * u.deg
@@ -265,29 +260,15 @@ def test_create_hgs_2d(frame, args, kwargs):
     # Check the attrs are in the correct default units
     assert hgs1.lon.unit is u.deg
     assert hgs1.lat.unit is u.deg
-    assert hgs1.radius.unit is u.km
 
+    # Test the value of the rsun frame attribute
+    assert_quantity_allclose(hgs1.rsun, sun.constants.radius)
 
-@pytest.mark.parametrize('frame',
-                         [HeliographicStonyhurst, HeliographicCarrington])
-@pytest.mark.parametrize("args, kwargs", two_D_parameters[4:])
-def test_create_hgs_force_2d(frame, args, kwargs):
-    hgs1 = init_frame(frame, args, kwargs)
-
-    # Check we have the right class!
-    assert isinstance(hgs1, frame)
-
-    kwargs.get('representation_type', None) if kwargs else None
-
-    assert not hasattr(hgs1, 'radius')
-
-    # Check the attrs are correct
-    assert hgs1.lon == 0 * u.deg
-    assert hgs1.lat == 0 * u.deg
-
-    # Check the attrs are in the correct default units
-    assert hgs1.lon.unit is u.deg
-    assert hgs1.lat.unit is u.deg
+    # Test conversion to 3D
+    hgs_3d = hgs1.make_3d()
+    assert_quantity_allclose(hgs_3d.lon, hgs1.lon)
+    assert_quantity_allclose(hgs_3d.lat, hgs1.lat)
+    assert_quantity_allclose(hgs_3d.radius, hgs1.rsun)
 
 
 @pytest.mark.parametrize('frame',
@@ -392,6 +373,18 @@ def test_hcc_default_observer():
     assert not hcc.is_frame_attr_default('observer')
 
 
+@pytest.mark.parametrize('x, y, psi', [(0*u.km, -1*u.km, 270*u.deg),
+                                       (0*u.km, 1*u.km, 90*u.deg),
+                                       (-1*u.km, 0*u.km, 180*u.deg)])
+def test_heliocentric_radial_psi(x, y, psi):
+    # The cylindrical representation of HCC is Heliocentric Radial
+    # Test that the `psi` component is represented as desired
+    # The definition is shifted by 90 degrees relative to Thompson (2006)
+    hcc = Heliocentric(CartesianRepresentation(x, y, 0*u.km), representation_type='cylindrical')
+
+    assert_quantity_allclose(hcc.psi, psi)
+
+
 # ==============================================================================
 # SkyCoord Tests
 # ==============================================================================
@@ -429,22 +422,3 @@ def test_skycoord_hpc(args, kwargs):
         hgs = sc.transform_to("heliographic_stonyhurst")
 
     assert isinstance(hgs.frame, HeliographicStonyhurst)
-
-
-@pytest.mark.parametrize("args, kwargs", two_D_parameters)
-def test_skycoord_hgs(args, kwargs):
-    """
-    Test that when instantiating a HGS frame with SkyCoord correctly replaces
-    distance.
-
-    Note: We only need to test HGS here not HGC as they share the same
-    constructor.
-    """
-
-    RSUN_METERS = sun.constants.get('radius').si
-    sc = SkyCoord(*args, **kwargs, frame=HeliographicStonyhurst(obstime="2011-01-01T00:00:00"))
-
-    # Check that we have upgraded the data to Spherical
-    assert isinstance(sc.frame._data, SphericalRepresentation)
-    # Check the value is correct
-    assert_quantity_allclose(sc.radius, RSUN_METERS)

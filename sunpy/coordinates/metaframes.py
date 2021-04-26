@@ -12,7 +12,7 @@ from sunpy import log
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from .frames import BaseHeliographic, HeliographicStonyhurst, SunPyBaseCoordinateFrame
+from .frames import HeliographicStonyhurst, SunPyBaseCoordinateFrame
 from .offset_frame import NorthOffsetFrame
 from .transformations import _transformation_debug
 
@@ -54,14 +54,6 @@ def _make_rotatedsun_cls(framecls):
     for attr in attrs_to_copy:
         members[attr] = getattr(framecls, attr)
 
-    # Frames based on BaseHeliographic need to include the auto-upgrading from 2D to 3D
-    if issubclass(framecls, BaseHeliographic):
-        def baseheliographic_init(self, *args, **kwargs):
-            RotatedSunFrame.__init__(self, *args, **kwargs)
-            BaseHeliographic._make_3d(self)
-
-        members['__init__'] = baseheliographic_init
-
     _RotatedSunFramecls = type(f'RotatedSun{framecls.__name__}', (RotatedSunFrame,), members)
 
     @frame_transform_graph.transform(FunctionTransform, _RotatedSunFramecls, _RotatedSunFramecls)
@@ -78,7 +70,7 @@ def _make_rotatedsun_cls(framecls):
     @_transformation_debug(f"HGS->{_RotatedSunFramecls.__name__}")
     def reference_to_rotatedsun(hgs_coord, rotatedsun_frame):
         int_frame = HeliographicStonyhurst(obstime=rotatedsun_frame.base.obstime)
-        int_coord = hgs_coord.transform_to(int_frame)  # obstime change handled here
+        int_coord = hgs_coord.make_3d().transform_to(int_frame)  # obstime change handled here
         oldrepr = int_coord.spherical
 
         # Rotate the coordinate in HGS
@@ -99,6 +91,8 @@ def _make_rotatedsun_cls(framecls):
     def rotatedsun_to_reference(rotatedsun_coord, hgs_frame):
         # Transform to HGS
         from_coord = rotatedsun_coord.base.realize_frame(rotatedsun_coord.data)
+        if hasattr(from_coord, 'make_3d'):
+            from_coord = from_coord.make_3d()
         int_frame = HeliographicStonyhurst(obstime=rotatedsun_coord.base.obstime)
         int_coord = from_coord.transform_to(int_frame)
         oldrepr = int_coord.spherical

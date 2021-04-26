@@ -40,8 +40,7 @@ class SXTMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"

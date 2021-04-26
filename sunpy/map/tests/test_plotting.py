@@ -18,7 +18,7 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.tests.helpers import figure_test, fix_map_wcs
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
 pytestmark = pytest.mark.filterwarnings('ignore:Missing metadata')
@@ -63,7 +63,7 @@ def test_plot_rotated_aia171(aia171_test_map):
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     w = 100 * u.arcsec
     h = 200 * u.arcsec
-    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
+    aia171_test_map.draw_quadrangle(bottom_left, width=w, height=h)
 
 
 @figure_test
@@ -105,7 +105,7 @@ def test_peek_grid_limb_aia171(aia171_test_map):
 @figure_test
 def test_plot_aia171_nowcsaxes(aia171_test_map):
     ax = plt.gca()
-    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
         aia171_test_map.plot(axes=ax)
 
 
@@ -116,7 +116,7 @@ def test_rectangle_aia171_width_height(aia171_test_map):
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     w = 100 * u.arcsec
     h = 100 * u.arcsec
-    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
+    aia171_test_map.draw_quadrangle(bottom_left, width=w, height=h)
 
 
 @figure_test
@@ -126,18 +126,8 @@ def test_rectangle_aia171_top_right(aia171_test_map):
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     top_right = SkyCoord(
         100 * u.arcsec, 100 * u.arcsec, frame=aia171_test_map.coordinate_frame)
-    aia171_test_map.draw_rectangle(bottom_left, top_right=top_right, label='Rectangle')
+    aia171_test_map.draw_quadrangle(bottom_left, top_right=top_right, label='Rectangle')
     plt.legend()  # Check that the 'Rectangle' label shows up in the legend
-
-
-@figure_test
-def test_rectangle_aia171_hgs_width_height(aia171_test_map):
-    aia171_test_map.plot()
-    bottom_left = SkyCoord(
-        0 * u.deg, -60 * u.deg, frame='heliographic_stonyhurst', obstime=aia171_test_map.date)
-    w = 45 * u.deg
-    h = 120 * u.deg
-    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
 
 
 @figure_test
@@ -169,7 +159,7 @@ def test_plot_masked_aia171(aia171_test_map_with_mask):
 @figure_test
 def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
-    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
         aia171_test_map_with_mask.plot(axes=ax)
 
 
@@ -181,7 +171,7 @@ def test_plot_aia171_superpixel(aia171_test_map):
 @figure_test
 def test_plot_aia171_superpixel_nowcsaxes(aia171_test_map):
     ax = plt.gca()
-    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
         aia171_test_map.superpixel(
             (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
 
@@ -195,7 +185,7 @@ def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
 @figure_test
 def test_plot_masked_aia171_superpixel_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
-    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
         aia171_test_map_with_mask.superpixel(
             (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
 
@@ -207,27 +197,16 @@ def test_draw_contours_aia(aia171_test_map):
 
 
 @figure_test
+def test_draw_contours_different_wcs(aia171_test_map):
+    aia171_test_map._data = aia171_test_map.data.astype('float32')
+    rotated_map = aia171_test_map.rotate(30*u.deg, order=3)
+    rotated_map.plot()
+    aia171_test_map.draw_contours(u.Quantity(np.arange(1, 100, 10), 'percent'))
+
+
+@figure_test
 def test_heliographic_peek(heliographic_test_map):
     heliographic_test_map.peek()
-
-
-@figure_test
-def test_heliographic_rectangle_width_height(heliographic_test_map):
-    heliographic_test_map.plot()
-    bottom_left = SkyCoord(
-        60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
-    w = 13 * u.deg
-    h = 13 * u.deg
-    heliographic_test_map.draw_rectangle(bottom_left, width=w, height=h, edgecolor='cyan')
-
-
-@figure_test
-def test_heliographic_rectangle_top_right(heliographic_test_map):
-    heliographic_test_map.plot()
-    bottom_left = SkyCoord(
-        60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
-    top_right = SkyCoord(73 * u.deg, 63 * u.deg, frame=heliographic_test_map.coordinate_frame)
-    heliographic_test_map.draw_rectangle(bottom_left, top_right=top_right, edgecolor='cyan')
 
 
 @figure_test
@@ -275,3 +254,11 @@ def test_quadrangle_no_wcsaxes(aia171_test_map):
         [0, 1] * u.arcsec, [0, 1] * u.arcsec, frame=aia171_test_map.coordinate_frame)
     with pytest.raises(TypeError, match='WCSAxes'):
         aia171_test_map.draw_quadrangle(bottom_left, axes=ax)
+
+
+def test_different_wcs_plot_warning(aia171_test_map, hmi_test_map):
+    aia171_test_map.plot()
+    with pytest.warns(SunpyUserWarning,
+                      match=(r'The map world coordinate system \(WCS\) is different '
+                             'from the axes WCS')):
+        hmi_test_map.plot(axes=plt.gca())

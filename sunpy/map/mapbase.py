@@ -22,6 +22,7 @@ import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
+from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
 
@@ -54,6 +55,18 @@ PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 
 _META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata'
+
+# Manually specify the ``.meta`` docstring. This is assigned to the .meta
+# class attribute in GenericMap.__init__()
+_meta_doc = """
+The map metadata.
+
+This is used to intepret the map data. It may
+have been modified from the original metadata by sunpy. See the
+`~sunpy.util.MetaDict.added_items`, `~sunpy.util.MetaDict.removed_items`
+and `~sunpy.util.MetaDict.modified_items` properties of MetaDict
+to query how the metadata has been modified.
+"""
 
 __all__ = ['GenericMap']
 
@@ -164,6 +177,8 @@ class GenericMap(NDData):
     """
 
     _registry = dict()
+    # This overrides the default doc for the meta attribute
+    meta = MetaData(doc=_meta_doc, copy=False)
 
     def __init_subclass__(cls, **kwargs):
         """
@@ -551,7 +566,8 @@ class GenericMap(NDData):
         # Get observer coord, and transform if needed
         obs_coord = self.observer_coordinate
         if not isinstance(obs_coord.frame, (HeliographicStonyhurst, HeliographicCarrington)):
-            obs_coord = obs_coord.transform_to(HeliographicStonyhurst(obstime=self.date))
+            obs_coord = obs_coord.transform_to(HeliographicStonyhurst(obstime=self.date,
+                                                                      rsun=self.rsun_meters))
 
         sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
@@ -994,7 +1010,7 @@ class GenericMap(NDData):
         for keys, kwargs in self._supported_observer_coordinates:
             meta_list = [k in self.meta for k in keys]
             if all(meta_list):
-                sc = SkyCoord(obstime=self.date, **kwargs)
+                sc = SkyCoord(obstime=self.date, rsun=self.rsun_meters, **kwargs)
 
                 # If the observer location is supplied in Carrington coordinates,
                 # the coordinate's `observer` attribute should be set to "self"
@@ -1027,13 +1043,15 @@ class GenericMap(NDData):
     @property
     def carrington_latitude(self):
         """Observer Carrington latitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date)
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+                                           rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lat
 
     @property
     def carrington_longitude(self):
         """Observer Carrington longitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date)
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+                                           rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lon
 
     @property
@@ -1952,14 +1970,12 @@ class GenericMap(NDData):
         -----
         Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
         """
-
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
+        axes = self._check_axes(axes, allow_non_wcsaxes=False)
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
                                                            annotate=annotate,
+                                                           obstime=self.date,
+                                                           rsun=self.rsun_meters,
                                                            **kwargs)
 
     def draw_limb(self, axes=None, **kwargs):
@@ -1984,6 +2000,8 @@ class GenericMap(NDData):
         # Put import here to reduce sunpy.map import time
         from matplotlib import patches
 
+        # Don't use _check_axes() here, as drawing the limb works fine on none-WCSAxes,
+        # even if the image is rotated relative to the axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
@@ -2049,17 +2067,13 @@ class GenericMap(NDData):
         --------
         .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
         """
+        axes = self._check_axes(axes, allow_non_wcsaxes=False)
+
         bottom_left, top_right = get_rectangle_coordinates(
             bottom_left, top_right=top_right, width=width, height=height)
 
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = top_right.spherical.lat - bottom_left.spherical.lat
-
-        if not axes:
-            axes = plt.gca()
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            raise TypeError("The axes need to be an instance of WCSAxes. You may have neglected "
-                            "to use `projection=` when creating the axes.")
 
         kwergs = {
             "transform": axes.get_transform(bottom_left.frame.replicate_without_data()),
@@ -2071,6 +2085,7 @@ class GenericMap(NDData):
         axes.add_patch(quad)
         return quad
 
+    @deprecated("3.0", alternative="draw_quadrangle")
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, top_right=None, width: u.deg = None, height: u.deg = None,
                        axes=None, **kwargs):
@@ -2110,6 +2125,8 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
+        axes = self._check_axes(axes, allow_non_wcsaxes=True)
+
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
                                                            width=width,
@@ -2121,8 +2138,6 @@ class GenericMap(NDData):
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = top_right.spherical.lat - bottom_left.spherical.lat
 
-        if not axes:
-            axes = plt.gca()
         if wcsaxes_compat.is_wcsaxes(axes):
             axes_unit = u.deg
         else:
@@ -2140,8 +2155,42 @@ class GenericMap(NDData):
         axes.add_patch(rect)
         return [rect]
 
-    @u.quantity_input
-    def draw_contours(self, levels: u.percent, axes=None, **contour_args):
+    def _process_levels_arg(self, levels, warn_units=False):
+        """
+        Accept a percentage or dimensionless or map unit input for contours.
+
+        ``warn_units`` allows legacy option of passing levels that aren't Quantities.
+        This can be removed in sunpy 3.1.
+        """
+        levels = np.atleast_1d(levels)
+        if not hasattr(levels, 'unit'):
+            if self.unit is None:
+                # No map units, so allow non-quantity through
+                return levels
+            elif warn_units:
+                # Deprecated in 3.0
+                warnings.warn('Passing contour levels that are not an astropy Quantity is deprecated. '
+                              f'Pass levels in units convertible to the map units ({self.unit}) '
+                              'or as a perncentage Quantity to remove this warning.',
+                              SunpyDeprecationWarning)
+                return levels
+            else:
+                raise TypeError("The levels argument has no unit attribute, "
+                                "it should be an Astropy Quantity object.")
+
+        if levels.unit == u.percent:
+            return 0.01 * levels.to_value('percent') * np.nanmax(self.data)
+        elif self.unit is not None:
+            return levels.to_value(self.unit)
+        elif levels.unit.is_equivalent(u.dimensionless_unscaled):
+            # Handle case where map data has no units
+            return levels.to_value(u.dimensionless_unscaled)
+        else:
+            # Map data has no units, but levels doesn't have dimensionless units
+            raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
+                               "or in u.dimensionless_unscaled units.")
+
+    def draw_contours(self, levels, axes=None, **contour_args):
         """
         Draw contours of the data.
 
@@ -2149,7 +2198,8 @@ class GenericMap(NDData):
         ----------
         levels : `~astropy.units.Quantity`
             A list of numbers indicating the contours to draw. These are given
-            as a percentage of the maximum value of the map data.
+            as a percentage of the maximum value of the map data, or in units
+            equivalent to the `~sunpy.map.GenericMap.unit` attribute.
 
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the contours. Defaults to the current
@@ -2164,16 +2214,16 @@ class GenericMap(NDData):
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
-        `~matplotlib.pyplot.contour` function.
+        `~matplotlib.axes.Axes.contour` function.
         """
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
+        axes = self._check_axes(axes, allow_non_wcsaxes=True)
 
-        # TODO: allow for use of direct input of contours but requires units of
-        # map flux which is not yet implemented
-
-        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(),
-                          **contour_args)
+        levels = self._process_levels_arg(levels, warn_units=True)
+        kwargs = {}
+        if wcsaxes_compat.is_wcsaxes(axes):
+            kwargs['transform'] = axes.get_transform(self.wcs)
+        kwargs.update(contour_args)
+        cs = axes.contour(self.data, levels, **kwargs)
         return cs
 
     @peek_show
@@ -2245,9 +2295,9 @@ class GenericMap(NDData):
             If `True`, the data is plotted at its natural scale; with
             title and axis labels.
 
-        axes: `~matplotlib.axes` or None
+        axes: `~matplotlib.axes.Axes` or None
             If provided the image will be plotted on the given axes. Else the
-            current matplotlib axes will be used.
+            current Matplotlib axes will be used.
 
         title : `str`, `bool`, optional
             The plot title. If `True`, uses the default title for this map.
@@ -2271,19 +2321,7 @@ class GenericMap(NDData):
         >>> aia.draw_grid()   # doctest: +SKIP
 
         """
-        # Get current axes
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
-
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            warnings.warn("WCSAxes not being used as the axes object for this plot."
-                          " Plots may have unexpected behaviour. To fix this pass "
-                          "'projection=map' when creating the axes",
-                          SunpyUserWarning)
-            # Check if the image is properly oriented
-            if not np.array_equal(self.rotation_matrix, np.identity(2)):
-                warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
-                              SunpyUserWarning)
+        axes = self._check_axes(axes, allow_non_wcsaxes=True, warn_different_wcs=True)
 
         # Normal plot
         plot_settings = copy.deepcopy(self.plot_settings)
@@ -2384,7 +2422,7 @@ class GenericMap(NDData):
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> contours = aia.contour(50000 * u.ct)  # doctest: +REMOTE_DATA
         >>> print(contours[0])  # doctest: +REMOTE_DATA
-            <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770): (lon, lat, radius) in (deg, deg, m)
+            <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
         (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
         ...
@@ -2395,17 +2433,56 @@ class GenericMap(NDData):
         """
         from skimage import measure
 
-        if self.unit is not None:
-            try:
-                level = level.to_value(self.unit)
-            # Catch cases where level can't be converted or isn't a Quantity
-            except (AttributeError, u.UnitConversionError) as e:
-                raise u.UnitsError(
-                    f'level must be an astropy quantity convertible to {self.unit}') from e
+        level = self._process_levels_arg(level)
 
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
+
+    def _check_axes(self, axes, allow_non_wcsaxes=False, warn_different_wcs=False):
+        """
+        - If axes is None, get the current Axes object.
+        - Error if not a WCSAxes (can be turned off).
+        - Return axes.
+
+        Parameters
+        ----------
+        axes : matplotlib.axes.Axes
+            Axes to validate.
+        allow_non_wcsaxes : bool
+            If `True`, allow ``axes`` to not be a `WCSAxes`, and warn. Otherwise
+            raise an error. Support for this is deprecated, and this keyword can be removed in
+            sunpy 3.1.
+        warn_different_wcs : bool
+            If `True`, warn if the Axes WCS is different from the Map WCS. This is only used for
+            `.plot()`, and can be removed once support is added for plotting a map on a different
+            WCSAxes.
+        """
+        if not axes:
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
+
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            # not WCSAxes
+            if allow_non_wcsaxes:
+                if not np.array_equal(self.rotation_matrix, np.identity(2)):
+                    warnings.warn("The axes of this map are not aligned to the pixel grid. "
+                                  "Plot axes may be incorrect.",
+                                  SunpyUserWarning)
+                warnings.warn("WCSAxes not being used as the axes object for this plot. "
+                              "Support for this is deprecated, and will be removed in sunpy 3.1. "
+                              "To fix this pass set the `projection` keyword "
+                              "to this map when creating the axes.",
+                              SunpyDeprecationWarning)
+            else:
+                raise TypeError("The axes need to be an instance of WCSAxes. "
+                                "To fix this pass set the `projection` keyword "
+                                "to this map when creating the axes.")
+        elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
+            warnings.warn('The map world coordinate system (WCS) is different from the axes WCS. '
+                          'The map data axes may not correctly align with the coordinate axes.',
+                          SunpyUserWarning)
+
+        return axes
 
 
 class InvalidHeaderInformation(ValueError):

@@ -74,6 +74,7 @@ jobs:
       - run: git clone git@github.com:sunpy/sunpy-figure-tests.git --depth 1 -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
       # Generate Reference images
       - run: pip install --user -U tox tox-pypi-filter
+      - run: rm -rf /home/circleci/sunpy-figure-tests/figures/$TOXENV/*
       - run: tox -- --mpl-generate-path=/home/circleci/sunpy-figure-tests/figures/$TOXENV | tee toxlog
       - run: |
           hashlib=$(grep "^figure_hashes.*\.json$" toxlog)

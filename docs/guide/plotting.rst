@@ -299,7 +299,7 @@ units to plot a AIA image and a zoomed in view of an active region.
     smap.plot()
 
     # Draw a box on the image
-    smap.draw_rectangle(bottom_left, height=length * 2, width=length * 2)
+    smap.draw_quadrangle(bottom_left, height=length * 2, width=length * 2)
 
     # Create a second axis on the plot.
     ax2 = fig.add_subplot(2, 1, 2, projection=submap)

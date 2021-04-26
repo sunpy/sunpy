@@ -58,7 +58,7 @@ for coord in ax1.coords:
     coord.set_ticklabel_visible(False)
 
 # We draw the rectangle around the region we plan to showcase in the cutout image.
-magnetogram_big.draw_rectangle(left_corner, top_right=right_corner, color='k', lw=1)
+magnetogram_big.draw_quadrangle(left_corner, top_right=right_corner, color='k', lw=1)
 
 # The second stage is plotting the zoomed-in magnetogram.
 magnetogram_small = magnetogram.submap(left_corner, top_right=right_corner)
