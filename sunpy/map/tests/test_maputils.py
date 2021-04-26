@@ -13,6 +13,7 @@ from sunpy.map.maputils import (
     all_coordinates_from_map,
     all_corner_coords_from_map,
     all_pixel_indices_from_map,
+    contains_coordinate,
     contains_full_disk,
     contains_limb,
     contains_solar_center,
@@ -239,3 +240,18 @@ def test_functions_raise_non_frame_map(non_helioprojective_map):
         contains_limb(non_helioprojective_map)
     with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
         on_disk_bounding_coordinates(non_helioprojective_map)
+
+
+def test_contains_coord(aia171_test_map):
+    smap = aia171_test_map
+    for coord in [smap.bottom_left_coord,
+                  smap.top_right_coord,
+                  SkyCoord(0*u.deg, 0*u.deg, frame=smap.coordinate_frame)]:
+        assert contains_coordinate(smap, coord)
+
+    assert not contains_coordinate(smap, SkyCoord(2000*u.arcsec, 2000*u.arcsec,
+                                                  frame=smap.coordinate_frame))
+
+    multi_coord = SkyCoord([0, 2000]*u.arcsec, [0, 2000]*u.arcsec,
+                           frame=smap.coordinate_frame)
+    assert (contains_coordinate(smap, multi_coord) == [True, False]).all()

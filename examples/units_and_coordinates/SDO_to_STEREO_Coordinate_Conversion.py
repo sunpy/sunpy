@@ -67,7 +67,7 @@ m = maps['AIA']
 fig = plt.figure()
 ax = fig.add_subplot(111, projection=m)
 m.plot(axes=ax)
-m.draw_rectangle(aia_bottom_left, top_right=aia_top_right)
+m.draw_quadrangle(aia_bottom_left, top_right=aia_top_right)
 
 
 ###############################################################################
@@ -106,8 +106,8 @@ for i, (m, coord) in enumerate(zip([maps['EUVI'], maps['AIA']],
     m.plot(axes=ax)
 
     # coord[3] is the top-right corner coord[0] is the bottom-left corner.
-    m.draw_rectangle(coord[0], top_right=coord[3],
-                     transform=ax.get_transform('world'))
+    m.draw_quadrangle(coord[0], top_right=coord[3],
+                      transform=ax.get_transform('world'))
 
 ###############################################################################
 # We can now zoom in on the region in the EUVI image:

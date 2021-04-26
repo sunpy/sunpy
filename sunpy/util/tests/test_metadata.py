@@ -1,6 +1,8 @@
+import copy
+
 import pytest
 
-from sunpy.util.metadata import MetaDict
+from sunpy.util.metadata import MetaDict, ModifiedItem
 
 
 # TODO: Should these be here and not in util?
@@ -512,3 +514,43 @@ def test_key_case_insensitivity(seas_metadict):
     assert seas_metadict['bering'] == 'Russia'
     assert seas_metadict['BeRinG'] == 'Russia'
     assert seas_metadict.get('BERING') == 'Russia'
+
+
+def test_original_copy():
+    md = MetaDict({'foo': 'bar'})
+    assert md.original_meta == md
+
+    # Add a key, make sure original contents doesn't change
+    md['a'] = 'b'
+    assert md.original_meta != md
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+    assert md.added_items == {'a': 'b'}
+
+    # Check that creating a new MetaDict preserves the original copy
+    md = MetaDict(md)
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+
+    # Check that creating a copy preserves the original copy
+    md = copy.copy(md)
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+
+    # Check that creating a deepcopy preserves the original copy
+    md = copy.deepcopy(md)
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+
+    # Check that creating using .copy() preserves the original copy
+    md = md.copy()
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+
+    # Check modification of items
+    md['foo'] = 'bar1'
+    assert md.modified_items == {'foo': ModifiedItem('bar', 'bar1')}
+
+    # Check removal of items
+    md.pop('foo')
+    assert md.removed_items == {'foo': 'bar'}

@@ -9,7 +9,7 @@ from urllib.request import urlopen, urlretrieve
 from dateutil.rrule import MONTHLY, rrule
 
 from sunpy.extern.parse import parse
-from sunpy.instr import rhessi
+from sunpy.extern.sunkit_instruments.rhessi import parse_observing_summary_dbase_file
 from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.time import TimeRange, parse_time
 
@@ -101,7 +101,7 @@ class RHESSIClient(GenericClient):
         # the dbase files are monthly but contain the daily filenames
         for this_month in month_list:
             dbase_file_name, hdrs = self.get_observing_summary_dbase_file(this_month)
-            dbase_dat = rhessi.parse_observing_summary_dbase_file(dbase_file_name)
+            dbase_dat = parse_observing_summary_dbase_file(dbase_file_name)
             this_month_obssumm_filenames = dbase_dat.get('filename')
             daily_filenames_dates = [datetime.strptime(
                 d[0:20], 'hsi_obssumm_%Y%m%d') for d in this_month_obssumm_filenames]

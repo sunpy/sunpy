@@ -113,7 +113,8 @@ def test_wcs_aux():
     assert result.observer.lat.value == 0
     assert result.observer.lon.value == 0
     assert result.observer.radius.value == 10
-    assert result.rsun.value == header['rsun_ref']
+    assert result.observer.rsun.to_value(u.m) == header['rsun_ref']
+    assert result.rsun.to_value(u.m) == header['rsun_ref']
 
 
 def test_hpc_frame_to_wcs():
