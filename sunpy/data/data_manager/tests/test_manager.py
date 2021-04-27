@@ -15,7 +15,7 @@ def test_basic(storage, downloader, data_function):
     assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
-def test_cache(manager, storage, downloader, data_function):
+def test_download_cache(manager, storage, downloader, data_function):
     """
     Test calling function multiple times does not redownload.
     """

@@ -1,7 +1,7 @@
 import os
 import sys
 import shutil
-
+import sunpy
 import pytest
 
 # Skipping these tests that take check the name of the current module (which ends up starting with
@@ -24,7 +24,14 @@ if getattr(sys, 'frozen', False):
         'test_find_dependencies',
         'test_missing_dependencies_by_extra',
         'test_hgc_100',
-        'test_missing_dependencies_by_extra']
+        'test_missing_dependencies_by_extra',
+        'test_basic',
+        'test_data_manager',
+        'test_file_tampered',
+        'test_download_cache',
+        'test_skip_all',
+        'test_override_file',
+        'test_same_file_id_different_module']
 
     sys.exit(pytest.main(['sunpy_tests',
                           '-k ' + ' and '.join('not ' + test for test in SKIP_TESTS)]))
