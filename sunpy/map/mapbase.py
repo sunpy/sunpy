@@ -2079,7 +2079,7 @@ class GenericMap(NDData):
             is_visible = limb_in_axes.spherical.distance <= reference_distance
         else:
             # If the axes has no observer, the entire limb is considered visible
-            is_visible = np.ones_like(limb_in_axes.spherical.distance, np.bool)
+            is_visible = np.ones_like(limb_in_axes.spherical.distance, bool, subok=False)
 
         # Create the Polygon for the near side of the Sun (using a solid line)
         if 'linestyle' not in kwargs:

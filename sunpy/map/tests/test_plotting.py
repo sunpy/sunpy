@@ -12,6 +12,7 @@ from matplotlib.figure import Figure
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.wcs import WCS
 
 import sunpy
 import sunpy.coordinates
@@ -277,3 +278,31 @@ def test_draw_limb_different_observer(aia171_test_map):
 
     aia171_test_map.plot()
     new_map.draw_limb(color='red')
+
+
+@figure_test
+def test_draw_limb_heliographic_stonyhurst(aia171_test_map):
+    # Create the WCS header for HGS axes
+    header = {
+        'date-obs': aia171_test_map.date.utc.isot,
+        'naxis': 2,
+        'naxis1': 360,
+        'naxis2': 180,
+        'ctype1': 'HGLN-CAR',
+        'ctype2': 'HGLT-CAR',
+        'cdelt1': 1,
+        'cdelt2': 1,
+        'cunit1': 'deg',
+        'cunit2': 'deg',
+        'crpix1': 180.5,
+        'crpix2': 90.5,
+        'crval1': 0,
+        'crval2': 0,
+        'lonpole': 0,
+    }
+    fig = Figure()
+    ax = fig.add_subplot(projection=WCS(header))
+    aia171_test_map.draw_limb(axes=ax, color='red')
+    ax.set_xlim(0, 360)
+    ax.set_ylim(0, 180)
+    return fig
