@@ -212,9 +212,9 @@ class MDIMap(GenericMap):
     @property
     def measurement(self):
         """
-        Returns the type of data in the map.
+        Returns the measurement type.
         """
-        return "magnetogram" if self.meta.get('dpc_obsr', " ").find('Mag') != -1 else "continuum"
+        return self.meta.get('CONTENT', '')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
