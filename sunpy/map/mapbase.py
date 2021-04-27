@@ -2019,7 +2019,6 @@ class GenericMap(NDData):
         """
         # Put import here to reduce sunpy.map import time
         from matplotlib import patches
-        from matplotlib.path import Path
 
         # Don't use _check_axes() here, as drawing the limb works fine on none-WCSAxes,
         # even if the image is rotated relative to the axes
@@ -2081,21 +2080,23 @@ class GenericMap(NDData):
             # If the axes has no observer, the entire limb is considered visible
             is_visible = np.ones_like(limb_in_axes.spherical.distance, bool, subok=False)
 
+        # Identify discontinuities in the limb
+        # Use the same approach as astropy.visualization.wcsaxes.grid_paths.get_lon_lat_path()
+        step = np.sqrt((vertices[1:, 0] - vertices[:-1, 0]) ** 2 +
+                       (vertices[1:, 1] - vertices[:-1, 1]) ** 2)
+        continuous = np.concatenate([[True, True], step[1:] < 100 * step[:-1]])
+
         # Create the Polygon for the near side of the Sun (using a solid line)
         if 'linestyle' not in kwargs:
             c_kw['linestyle'] = '-'
         visible = patches.Polygon(vertices, **c_kw)
-        visible_codes = visible.get_path().codes
-        visible_codes[:-1][~is_visible] = Path.MOVETO
-        visible_codes[-1] = Path.MOVETO if not is_visible[0] else Path.LINETO
+        _modify_polygon_visibility(visible, is_visible & continuous)
 
         # Create the Polygon for the far side of the Sun (using a dotted line)
         if 'linestyle' not in kwargs:
             c_kw['linestyle'] = ':'
         hidden = patches.Polygon(vertices, **c_kw)
-        hidden_codes = hidden.get_path().codes
-        hidden_codes[:-1][is_visible] = Path.MOVETO
-        hidden_codes[-1] = Path.MOVETO if is_visible[0] else Path.LINETO
+        _modify_polygon_visibility(hidden, ~is_visible & continuous)
 
         # Add both patches as artists rather than patches to avoid triggering auto-scaling
         axes.add_artist(visible)
@@ -2575,3 +2576,12 @@ def _figure_to_base64(fig):
     buf = BytesIO()
     fig.savefig(buf, format='png', facecolor='none')  # works better than transparent=True
     return b64encode(buf.getvalue()).decode('utf-8')
+
+
+def _modify_polygon_visibility(polygon, keep):
+    # Put import here to reduce sunpy.map import time
+    from matplotlib.path import Path
+
+    polygon_codes = polygon.get_path().codes
+    polygon_codes[:-1][~keep] = Path.MOVETO
+    polygon_codes[-1] = Path.MOVETO if not keep[0] else Path.LINETO
