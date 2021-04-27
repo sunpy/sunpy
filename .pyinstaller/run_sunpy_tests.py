@@ -1,7 +1,7 @@
 import os
 import sys
 import shutil
-import sunpy
+
 import pytest
 
 # Skipping these tests that take check the name of the current module (which ends up starting with
