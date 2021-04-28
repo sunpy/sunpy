@@ -9,6 +9,7 @@ from textwrap import dedent
 import numpy as np
 import pytest
 
+from astropy.coordinates import Angle
 import astropy.units as u
 from astropy.io import fits
 
@@ -141,15 +142,14 @@ def test_waveunit(mdi):
 
 
 def test_observer(mdi):
-    assert isinstance(mdi.observer_coordinate.frame, frames.HeliographicStonyhurst)
-    assert u.allclose(mdi.observer_coordinate.lat, mdi.meta['CRLT_OBS']*u.deg)
-    assert u.allclose(mdi.observer_coordinate.lon, mdi.meta['CRLN_OBS']*u.deg)
+    assert isinstance(mdi.observer_coordinate.frame.name, 'heliographic_stonyhurst')
+    assert u.allclose(mdi.observer_coordinate.lat, Angle(mdi.meta['CRLT_OBS']*u.degree))
     assert u.allclose(mdi.observer_coordinate.radius, mdi.meta['DSUN_OBS']*u.m)
 
 
 def test_carrington(mdi):
-    assert u.allclose(mdi.carrington_longitude, mdi.meta['CRLN_OBS']*u.deg)
-    assert u.allclose(mdi.carrington_latitude, mdi.meta['CRLT_OBS']*u.deg)
+    assert u.allclose(mdi.carrington_longitude, Angle(mdi.meta['CRLN_OBS']*u.deg))
+    assert u.allclose(mdi.carrington_latitude, Angle(mdi.meta['CRLT_OBS']*u.deg))
 
 
 @pytest.mark.filterwarnings("error")
