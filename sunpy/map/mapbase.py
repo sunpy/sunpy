@@ -31,7 +31,7 @@ import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
 from sunpy import config, log
-from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, Helioprojective, get_earth, sun
+from sunpy.coordinates import HeliographicCarrington, Helioprojective, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
@@ -564,24 +564,21 @@ class GenericMap(NDData):
         if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
             w2.wcs.ctype[1] = 'HPLT-TAN'
 
-        # Set observer coordinate information
-        #
-        # Clear all the aux information that was set earlier. This is to avoid
-        # issues with maps that store multiple observer coordinate keywords.
-        # Note that we have to create a new WCS as it's not possible to modify
-        # wcs.wcs.aux in place.
-        header = w2.to_header()
-        for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
-            header.pop(kw, None)
-        w2 = astropy.wcs.WCS(header)
+        if hasattr(astropy.wcs.utils.wcs_to_celestial_frame(w2), 'observer'):
+            # Set observer coordinate information
+            #
+            # Clear all the aux information that was set earlier. This is to avoid
+            # issues with maps that store multiple observer coordinate keywords.
+            # Note that we have to create a new WCS as it's not possible to modify
+            # wcs.wcs.aux in place.
+            header = w2.to_header()
+            for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
+                header.pop(kw, None)
+            w2 = astropy.wcs.WCS(header)
 
-        # Get observer coord, and transform if needed
-        obs_coord = self.observer_coordinate
-        if not isinstance(obs_coord.frame, (HeliographicStonyhurst, HeliographicCarrington)):
-            obs_coord = obs_coord.transform_to(HeliographicStonyhurst(obstime=self.date,
-                                                                      rsun=self.rsun_meters))
-
-        sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
+            # Get observer coord, and set the aux information
+            obs_coord = self.observer_coordinate
+            sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
         # Validate the WCS here.
         w2.wcs.set()

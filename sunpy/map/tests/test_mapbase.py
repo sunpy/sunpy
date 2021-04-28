@@ -24,7 +24,7 @@ import sunpy.coordinates
 import sunpy.data.test
 import sunpy.map
 import sunpy.sun
-from sunpy.coordinates import sun
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
 from sunpy.map.sources import AIAMap
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
@@ -1259,3 +1259,27 @@ def test_meta_modifications(aia171_test_map):
     assert set(aiamap_rot.meta.added_items.keys()) == set(['bunit', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
     assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
     assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
+
+
+
+def test_no_wcs_observer_info(heliographic_test_map):
+    # Check that HeliographicCarrington WCS has observer info set
+    assert isinstance(heliographic_test_map.coordinate_frame, HeliographicCarrington)
+    wcs_aux = heliographic_test_map.wcs.wcs.aux
+    assert wcs_aux.hgln_obs is not None
+    assert wcs_aux.hglt_obs is not None
+    assert wcs_aux.dsun_obs is not None
+
+    # Remove observer information, and change coordinate system to HeliographicStonyhurst
+    heliographic_test_map.meta.pop('HGLN_OBS')
+    heliographic_test_map.meta.pop('HGLT_OBS')
+    heliographic_test_map.meta.pop('DSUN_OBS')
+    heliographic_test_map.meta['CTYPE1'] = 'HGLN-CAR'
+    heliographic_test_map.meta['CTYPE2'] = 'HGLT-CAR'
+    assert isinstance(heliographic_test_map.coordinate_frame, HeliographicStonyhurst)
+
+    # Check that GenericMap.wcs doesn't set an observer
+    wcs_aux = heliographic_test_map.wcs.wcs.aux
+    assert wcs_aux.hgln_obs is None
+    assert wcs_aux.hglt_obs is None
+    assert wcs_aux.dsun_obs is None
