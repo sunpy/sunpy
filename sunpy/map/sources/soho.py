@@ -178,7 +178,6 @@ class MDIMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing or broken info
-        self._nickname = self.detector + " " + self.measurement
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
         threshold = max([abs(vmin), abs(vmax)])
@@ -202,7 +201,7 @@ class MDIMap(GenericMap):
                 ] + super()._supported_observer_coordinates
 
     @property
-    def detector(self):
+    def instrument(self):
         return "MDI"
 
     @property
