@@ -18,7 +18,7 @@ def test_map_sequence():
     return sunpy.map.Map(
         os.path.join(
             testpath, 'aia_171_level1.fits'), os.path.join(
-            testpath, 'mdi_fd_Ic_6h_01d.5871.0000_s.fits'), sequence=True)
+            testpath, 'mdi.fd_Ic.20101015_230100_TAI.data.fits'), sequence=True)
 
 
 def test_construct_map_sequence_animator(test_map_sequence):

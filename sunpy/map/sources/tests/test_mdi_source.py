@@ -22,7 +22,7 @@ from sunpy.util.exceptions import SunpyMetadataWarning
 @pytest.fixture
 def mdi():
     path = sunpy.data.test.rootdir
-    fitspath = glob.glob(os.path.join(path, "mdi_fd_Ic_6h_01d.5871.0000_s.fits"))
+    fitspath = glob.glob(os.path.join(path, "mdi.fd_Ic.20101015_230100_TAI.data.fits"))
     return Map(fitspath)
 
 
