@@ -142,7 +142,7 @@ def test_waveunit(mdi):
 
 
 def test_observer(mdi):
-    assert isinstance(mdi.observer_coordinate.frame.name, 'heliographic_stonyhurst')
+    assert mdi.observer_coordinate.frame.name == 'heliographic_stonyhurst'
     assert u.allclose(mdi.observer_coordinate.lat, Angle(mdi.meta['CRLT_OBS']*u.degree))
     assert u.allclose(mdi.observer_coordinate.radius, mdi.meta['DSUN_OBS']*u.m)
 
