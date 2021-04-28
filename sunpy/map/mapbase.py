@@ -1997,10 +1997,10 @@ class GenericMap(NDData):
 
         Returns
         -------
-        visible : `~matplotlib.patches.Polygon`
+        visible : `~matplotlib.patches.Polygon` or `~matplotlib.patches.Circle`
             The patch added to the axes for the visible part of the limb (i.e., the
             "near" side of the Sun).
-        hidden : `~matplotlib.patches.Polygon`
+        hidden : `~matplotlib.patches.Polygon` or None
             The patch added to the axes for the hidden part of the limb (i.e., the
             "far" side of the Sun).
 
