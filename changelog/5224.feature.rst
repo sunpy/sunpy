@@ -1,1 +1,1 @@
-Added hook file and tests for using PyInstaller with SunPy.
+Added hook file and tests for using PyInstaller with sunpy.
