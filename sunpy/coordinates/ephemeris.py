@@ -285,6 +285,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocit
         (-0.03306548, 0.00052415, -2.66709222)>
 
     Query the location of Solar Orbiter at a set of 12 regularly sampled times
+
     >>> get_horizons_coord('Solar Orbiter',
     ...                    time={{'start': '2020-12-01',
     ...                           'stop': '2020-12-02',
