@@ -1,1 +1,8 @@
-Deprecated `sunpy.roi.chaincode` and created a replacement at `sunpy.net.helio.chaincode`.
+Deprecated `sunpy.roi.chaincode.Chaincode` and created a replacement at `sunpy.net.helio.Chaincode`.
+
+This replacement has the following changes:
+
+1. Added support for numpy array as an input (it was broken before).
+1. Renamed BoundingBox to boundingbox
+2. Renamed subBoundingBox to sub_boundingbox
+2. Now area and length raise NotImplemented
