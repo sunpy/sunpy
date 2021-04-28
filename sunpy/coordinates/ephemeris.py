@@ -223,7 +223,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocit
         dates; the range dictionary has to be of the form
         {{'start': start_time, 'stop': stop_time, 'step':’n[y|d|m|s]’}}.
         ``start_time`` and ``stop_time`` must be in a parse_time-compatible format,
-        and are intepreted as UTC time. ``step`` must be a string with either a
+        and are interpreted as UTC time. ``step`` must be a string with either a
         number and interval length (e.g. for every 10 seconds, ``'10s'``), or a
         plain number for a number of evenly spaced intervals. For more information
         see the docstring of `astroquery.jplhorizons.HorizonsClass`.
