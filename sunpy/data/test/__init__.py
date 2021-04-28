@@ -7,11 +7,15 @@ import glob
 import fnmatch
 from pathlib import Path
 
+import numpy as np
+
+import astropy.io.fits
 from astropy.utils.data import get_pkg_data_filename
 
 import sunpy
+import sunpy.map
 
-__all__ = ['rootdir', 'file_list', 'get_test_filepath', 'test_data_filenames']
+__all__ = ['rootdir', 'file_list', 'get_test_filepath', 'test_data_filenames', 'get_dummy_map_from_header', 'convert_image_to_header_only']
 
 rootdir = Path(os.path.dirname(sunpy.__file__)) / "data" / "test"
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
@@ -60,3 +64,48 @@ def test_data_filenames():
         test_data_filenames_list.extend(files)
 
     return test_data_filenames_list
+
+
+def get_dummy_map_from_header(filename):
+    """
+    Generate a dummy `~sunpy.map.Map` from header-only test data.
+
+    The "image" will be random numbers with the correct shape
+    as specified by the header.
+    """
+    filepath = get_test_filepath(filename)
+    with open(filepath, 'r') as f:
+        header = astropy.io.fits.Header.fromstring(f.read())
+    data = np.random.rand(header['naxis1'], header['naxis2'])
+    # NOTE: by reading straight from the data header pair, we are skipping
+    # the fixes that are applied in sunpy.io.fits, e.g. the waveunit fix
+    # Would it be better to write this whole map back to a temporary file and then
+    # read it back in by passing in the filename instead?
+    return sunpy.map.Map(data, header)
+
+
+def convert_image_to_header_only(image_path, header_path, **kwargs):
+    """
+    Convert a FITS file containing an image and a header
+    to a plaintext file containing only the string representation
+    of the header.
+
+    This is to be used in the context of generating header-only test data
+    files.
+
+    Parameters
+    -----------
+    image_path : path-like
+        Path to original image data FITS file
+    header_path : path-like
+        Path to header-only test data plaintext file
+
+    See Also
+    --------
+    get_dummy_map_from_header
+    """
+    hdu = kwargs.get('hdu', 0)
+    with astropy.io.fits.open(image_path) as hdul:
+        header = hdul[hdu].header
+    with open(header_path, 'w') as f:
+        f.write(header.tostring())
