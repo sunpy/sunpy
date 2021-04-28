@@ -79,10 +79,10 @@ class Chaincode(np.ndarray):
         return bb
 
     def area(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def length(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def sub_boundingbox(self, xedge=None, yedge=None):
         """

@@ -6,13 +6,13 @@ data:
   comments: Should see no major changes.
 database:
   status: dev
-  comments: While it has not changed recently, it could be subject  to major revisions in future.
+  comments: While it has not changed recently, it could be subject to major revisions in future.
 image:
   status: dev
-  comments: While it has not changed recently, it could be subject  to major revisions in future.
+  comments: While it has not changed recently, it could be subject to major revisions in future.
 instr:
   status: deprecated
-  comments: Will be removed in sunpy 3.1. Please use `sunkit-instruments`.
+  comments: Will be removed in sunpy 3.1. Please use `sunkit_instruments`.
 io:
   status: mature
   comments: Should see no major changes.
@@ -24,7 +24,7 @@ net:
   comments: Any future changes should largely maintain backwards compatibility.
 physics:
   status: dev
-  comments:
+  comments: While it has not changed recently, it could be subject to major revisions in future.
 roi:
   status: deprecated
   comments: Will be removed in sunpy 3.1. There is little functionality.
