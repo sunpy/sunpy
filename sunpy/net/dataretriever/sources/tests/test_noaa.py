@@ -188,7 +188,7 @@ def test_srs_current_year():
 @pytest.mark.remote_data
 def test_srs_save_path(tmpdir):
     qr = Fido.search(a.Instrument.srs_table, a.Time("2016/10/01", "2016/10/02"))
-    files = Fido.fetch(qr, path=str(tmpdir))
+    files = sorted(Fido.fetch(qr, path=str(tmpdir)))
     assert len(files) == 2
     assert files[0].endswith("20161001SRS.txt")
     assert files[1].endswith("20161002SRS.txt")
