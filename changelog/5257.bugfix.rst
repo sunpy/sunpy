@@ -1,4 +1,5 @@
 Added MDI continuum intensity and line-of-sight magnetic field test data. These data were reprocessed at the end of the MDI mission and are available through JSOC. For a complete list of all the MDI observables, see `here <http://soi.stanford.edu/mdi/observables/>`__.
 Changed files with hardcoded MDI fits file names.
-Changed test_mdi_source to test on the instrument name, not the observable.
+Changed test_mdi_source to test on the instrument name, not the observable, and modified values for observer location, distance from SoHO to the Sun, and Carrington latitude and longitude to use keyword information, not hardcoded values.
 Changed MDIMap to use the CONTENT keyword to identify the measurement, similar to HMIMap, and removed the special-case nickname. Now MDIMap defaults to nickname in mapbase.py.
+
