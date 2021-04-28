@@ -9,12 +9,11 @@ from textwrap import dedent
 import numpy as np
 import pytest
 
-from astropy.coordinates import Angle
 import astropy.units as u
+from astropy.coordinates import Angle
 from astropy.io import fits
 
 import sunpy.data.test
-from sunpy.coordinates import frames
 from sunpy.map import Map
 from sunpy.map.sources.soho import MDIMap, MDISynopticMap
 from sunpy.util.exceptions import SunpyMetadataWarning
