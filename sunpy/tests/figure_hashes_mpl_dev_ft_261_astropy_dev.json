@@ -33,6 +33,8 @@
   "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_width_height": "a52dca9100f3f96644e924f283c7ba9bd26db115be3a8e19b91898406d06f9ba",
   "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_top_right": "40591e49e6b32ec3a27b6fc50b9e2fdfcaa9665eca70b6a515dfb9dc7c0b1724",
   "sunpy.map.tests.test_plotting.test_heliographic_grid_annotations": "c7c08b2b6dae1b96c303345b04682060da97a1b304e7f25bcfd40b2154751465",
+  "sunpy.map.tests.test_plotting.test_draw_limb_different_observer": "d85fc7e939ac813274bdf7886c646fdab2fca61659f18009c8f5f2b760c4bb57",
+  "sunpy.map.tests.test_plotting.test_draw_limb_heliographic_stonyhurst": "2f7cf5251db91da34a86b3a72610acc9b257e4c586f2dcf6f10381bd7c3ea186",
   "sunpy.net.tests.test_helioviewer.test_download_jp2_map": "438fdcccc6f879491c876ce24a591843bb60d724e354d1c8124678a356ff3426",
   "sunpy.timeseries.tests.test_timeseriesbase.test_eve_peek": "2a22f93af44971411800e4fcd0d93d2128fe2b9e6b97e576e8372c2cd12d7d78",
   "sunpy.timeseries.tests.test_timeseriesbase.test_esp_peek": "d069eee419c45875cffe9a10c3262f83b3d28ccf7f13ee66ca1b99fe557f09b8",

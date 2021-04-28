@@ -8,7 +8,6 @@ overplot the limb as seen by AIA on an EUVI-B image. Then we overplot the AIA
 coordinate grid on the STEREO image.
 """
 import matplotlib.pyplot as plt
-import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -48,20 +47,11 @@ maps = {m.detector: m.submap(SkyCoord([-1100, 1100], [-1100, 1100],
                                       unit=u.arcsec, frame=m.coordinate_frame))
         for m in sunpy.map.Map(downloaded_files)}
 
-##############################################################################
-# Next, let's calculate points on the limb in the AIA image for the half that
-# can be seen from STEREO's point of view.
-
-r = maps['AIA'].rsun_obs - 1 * u.arcsec  # remove one arcsec so it's on disk.
-# Adjust the following range if you only want to plot on STEREO_A
-th = np.linspace(-180 * u.deg, 0 * u.deg)
-x = r * np.sin(th)
-y = r * np.cos(th)
-coords = SkyCoord(x, y, frame=maps['AIA'].coordinate_frame)
-
 
 ##############################################################################
-# Now, let's plot both maps
+# Now, let's plot both maps, and we draw the limb as seen by AIA onto the
+# EUVI image.  We remove the part of the limb that is hidden because it is on
+# the far side of the Sun from STEREO's point of view.
 
 fig = plt.figure(figsize=(10, 4))
 ax1 = fig.add_subplot(1, 2, 1, projection=maps['AIA'])
@@ -70,7 +60,8 @@ maps['AIA'].draw_limb()
 
 ax2 = fig.add_subplot(1, 2, 2, projection=maps['EUVI'])
 maps['EUVI'].plot(axes=ax2)
-ax2.plot_coord(coords, color='w')
+visible, hidden = maps['AIA'].draw_limb()
+hidden.remove()
 
 
 ##############################################################################
