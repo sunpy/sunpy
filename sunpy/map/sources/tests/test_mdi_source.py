@@ -131,9 +131,9 @@ def test_observatory(mdi):
     assert mdi.observatory == "SOHO"
 
 
-def test_measurement(mdi):
-    """Tests the measurement property of the MDIMap object."""
-    assert mdi.measurement == "continuum"
+def test_instrument(mdi):
+    """Tests the instrument property of the MDIMap object."""
+    assert mdi.instrument == "MDI"
 
 
 def test_waveunit(mdi):
