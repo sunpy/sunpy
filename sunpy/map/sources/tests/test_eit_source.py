@@ -2,26 +2,21 @@
 This particular test file pertains to EITMap.
 @Author: Pritish C. (VaticanCameos)
 """
-
-import os
-import glob
-
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
+from sunpy.data.test import get_dummy_map_from_header, test_data_filenames
 from sunpy.map import Map
 from sunpy.map.sources.soho import EITMap
 
-path = sunpy.data.test.rootdir
-fitslist = glob.glob(os.path.join(path, "EIT", "*"))
+header_list = [f for f in test_data_filenames() if 'EIT' in f and '.header' in f]
 
 
-@pytest.fixture(scope="module", params=fitslist)
+@pytest.fixture(scope="module", params=header_list)
 def createEIT(request):
     """Creates an EITMap from a FITS file."""
-    return Map(request.param)
+    return Map(get_dummy_map_from_header(request.param))
 
 
 # EIT Tests
