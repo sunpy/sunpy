@@ -2364,7 +2364,7 @@ class GenericMap(NDData):
         return figure
 
     @u.quantity_input
-    def plot(self, annotate=True, axes=None, title=True, different_wcs=False,
+    def plot(self, annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
@@ -2387,13 +2387,13 @@ class GenericMap(NDData):
             If provided, the data will be clipped to the percentile interval bounded by the two
             numbers.
 
-        different_wcs : `bool`, optional
-            If `True`, the data will be plotted in a manner that accounts for a
-            any differences between the WCS of the map and the WCS of the
-            `~astropy.visualization.wcsaxes.WCSAxes` axes.  Instead of the default
-            :meth:`~matplotlib.axes.Axes.imshow`, this method will use
-            :meth:`~matplotlib.axes.Axes.pcolormesh`, which is more computationally
-            intensive.
+        autoalign : `bool` or `str`, optional
+            If other than `False`, the plotting accounts for any difference between the
+            WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
+            axes (e.g., a difference in rotation angle).  If `'pcolormesh'`, this
+            method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
+            default :meth:`~matplotlib.axes.Axes.imshow`.  Specifying `True` is
+            equivalent to specifying `'pcolormesh'`.
 
         **imshow_kwargs  : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
@@ -2411,14 +2411,25 @@ class GenericMap(NDData):
 
         Notes
         -----
-        When using ``different_wcs=True`` and `~sunpy.coordinates.Helioprojective`
-        coordinates, portions of the map that are off the solar disk may not appear,
-        which may also inhibit Matplotlib's autoscaling of the plot limits.  The plot
-        limits may need to be set manually.  To preserve the off-disk parts of the map,
-        using the :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen`
-        context manager may be appropriate.
+        The ``autoalign`` functionality is computationally intensive.  If the plot will
+        be interactive, the alternative approach of preprocessing the map (e.g.,
+        de-rotating it) to match the desired axes will result in better performance.
+
+        When combining ``autoalign`` functionality with
+        `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
+        beyond the solar disk may not appear, which may also inhibit Matplotlib's
+        autoscaling of the plot limits.  The plot limits can be set manually.
+        To preserve the off-disk parts of the map, using the
+        :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
+        manager may be appropriate.
         """
-        axes = self._check_axes(axes, allow_non_wcsaxes=True, warn_different_wcs=not different_wcs)
+        # Set the default approach to autoalignment
+        if autoalign not in [False, True, 'pcolormesh']:
+            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
+        if autoalign is True:
+            autoalign = 'pcolormesh'
+
+        axes = self._check_axes(axes, allow_non_wcsaxes=True, warn_different_wcs=autoalign is False)
 
         # Normal plot
         plot_settings = copy.deepcopy(self.plot_settings)
@@ -2480,11 +2491,8 @@ class GenericMap(NDData):
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
-        if different_wcs:
-            if 'aspect' in imshow_args:
-                axes.set_aspect(imshow_args['aspect'])
-            else:
-                axes.set_aspect(1)
+        if autoalign == 'pcolormesh':
+            axes.set_aspect(getattr(imshow_args, 'aspect', 1))
 
             # Remove imshow keyword arguments that are not accepted by pcolormesh
             for item in ['aspect', 'extent', 'interpolation', 'origin']:

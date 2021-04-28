@@ -1,2 +1,1 @@
-Added an optional keyword argument ``different_wcs`` to :meth:`sunpy.map.GenericMap.plot` for plotting a map to axes that correspond to a different WCS.
-The method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the default :meth:`~matplotlib.axes.Axes.imshow`.
+Added an optional keyword argument ``autoalign`` to :meth:`sunpy.map.GenericMap.plot` for plotting a map to axes that correspond to a different WCS.

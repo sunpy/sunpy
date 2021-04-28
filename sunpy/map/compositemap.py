@@ -369,8 +369,9 @@ class CompositeMap:
 
         Notes
         -----
-        If a transformation is required to overlay the maps, the plot limits may need
-        to be manually set because Matplotlib autoscaling may not work as intended.
+        If a transformation is required to overlay the maps with the correct
+        alignment, the plot limits may need to be manually set because
+        Matplotlib autoscaling may not work as intended.
         """
 
         # If axes are not provided, create a WCSAxes based on the first map
@@ -403,9 +404,9 @@ class CompositeMap:
                     if item in matplot_args:
                         del params[item]
 
-                # We tell GenericMap.plot() that we need to plot to a different WCS
+                # We tell GenericMap.plot() that we need to autoalign the map
                 if wcsaxes_compat.is_wcsaxes(axes):
-                    params['different_wcs'] = True
+                    params['autoalign'] = True
 
                 params['annotate'] = False
                 ret.append(m.plot(**params))
