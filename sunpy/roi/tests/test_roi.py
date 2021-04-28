@@ -1,5 +1,10 @@
+import pytest
+
 from sunpy.roi import roi
 from sunpy.time import TimeRange, is_time_equal, parse_time
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:The roi class is deprecated and may be removed in version 3.1.")
 
 
 def test_roi_instance():
