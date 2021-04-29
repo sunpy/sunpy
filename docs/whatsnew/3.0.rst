@@ -39,12 +39,24 @@ Improvements to Visualization of Maps
 Improved Support for Solar Orbiter's EUI Instrument in Map
 ==========================================================
 
+A new map source to support data from the Extreme Ultraviolet Imager (EUI) instrument on the Solar Orbiter (SolO) spacecraft has been added.
+This source improves the accuracy of the observer position by using the heliocentric inertial coordinates as well as correctly setting the processing level, exposure time and colormap.
+Data from EUI will automatically load using this source via `sunpy.map.Map`.
+
 .. _whatsnew-3.0-map-metadata:
 
 Inspect History of Metadata changes in Map
 ==========================================
 
-.. minigallery:: sunpy.util.metadta.MetaDict.original_meta
+The ``.meta`` property of a map now keeps a record of the contents of the metadata (normally a FITS header) when it was created.
+This can be accessed via the `~sunpy.util.metadata.MetaDict.original_meta` property.
+This allows any changes made by sunpy or by the user directly to be tracked with the following properties:
+
+  * `~sunpy.util.metadata.MetaDict.added_items`
+  * `~sunpy.util.metadata.MetaDict.removed_items`
+  * `~sunpy.util.metadata.MetaDict.modified_items`
+
+See the new :ref:`sphx-glr-generated-gallery-map-map-metadata-modification-py` example for details.
 
 .. _whatsnew-3.0-python:
 
