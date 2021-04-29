@@ -160,10 +160,13 @@ def make_fitswcs_header(data, coordinate,
          meta_wcs['PC2_1'], meta_wcs['PC2_2']) = (rotation_matrix[0, 0], rotation_matrix[0, 1],
                                                   rotation_matrix[1, 0], rotation_matrix[1, 1])
 
-    if hasattr(coordinate, 'rsun') and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
-        meta_wcs['rsun_obs'] = sun._angular_radius(
-            coordinate.rsun, coordinate.observer.radius
-        ).to_value(u.arcsec)
+    if getattr(coordinate, 'observer', None) is not None:
+        # Have to check for str, as doing == on a SkyCoord and str raises an error
+        if isinstance(coordinate.observer, str) and coordinate.observer == 'self':
+            dsun_obs = coordinate.radius
+        else:
+            dsun_obs = coordinate.observer.radius
+        meta_wcs['rsun_obs'] = sun._angular_radius(coordinate.rsun, dsun_obs).to_value(u.arcsec)
 
     meta_dict = MetaDict(meta_wcs)
 

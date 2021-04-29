@@ -166,3 +166,10 @@ def test_latlon_order():
     assert ('LN' in header['ctype1']) and header['crval1'] == coord.spherical.lon.to_value()
     # check LAT
     assert 'LT' in header['ctype2'] and header['crval2'] == coord.spherical.lat.to_value()
+
+
+def test_carrington_self_observer():
+    coord = SkyCoord(70*u.deg, -30*u.deg, 1*u.au, observer='self',
+                     obstime='2013-10-28 00:00', frame=frames.HeliographicCarrington)
+    header = sunpy.map.make_fitswcs_header(np.zeros((10, 10)), coord)
+    assert header['rsun_obs'] == sun._angular_radius(coord.rsun, coord.radius).to_value(u.arcsec)
