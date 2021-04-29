@@ -24,12 +24,18 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 # converts pixel coordinates to the equivalent `~astropy.coordinates.SkyCoord`
 # objects using the :meth:`~sunpy.map.GenericMap.pixel_to_world`.
 
+# sphinx_gallery_defer_figures
+
 fig = plt.figure(figsize=(5, 5))
 fig.add_subplot(111, projection=aia_map)
 aia_map.plot(clip_interval=(1, 99.99)*u.percent)
 
+################################################################################
 # Specify two opposite corners of the rectangle as a single, two-element
 # SkyCoord object
+
+# sphinx_gallery_defer_figures
+
 coords = SkyCoord(
     Tx=(100, 500) * u.arcsec,
     Ty=(200, 500) * u.arcsec,
@@ -43,7 +49,11 @@ aia_map.draw_quadrangle(
     label='2-element SkyCoord'
 )
 
+################################################################################
 # Specify two opposite corners of the rectangle as separate SkyCoord objects
+
+# sphinx_gallery_defer_figures
+
 bottom_left = SkyCoord(-500 * u.arcsec, 200 * u.arcsec, frame=aia_map.coordinate_frame)
 top_right = SkyCoord(-100 * u.arcsec, 500 * u.arcsec, frame=aia_map.coordinate_frame)
 aia_map.draw_quadrangle(
@@ -55,7 +65,11 @@ aia_map.draw_quadrangle(
     label='two SkyCoords'
 )
 
+################################################################################
 # Specify one corner of the rectangle and the rectangle's width and height
+
+# sphinx_gallery_defer_figures
+
 bottom_left = SkyCoord(-500 * u.arcsec, -500 * u.arcsec, frame=aia_map.coordinate_frame)
 width = 400 * u.arcsec
 height = 300 * u.arcsec
@@ -69,7 +83,9 @@ aia_map.draw_quadrangle(
     label='width/height'
 )
 
+################################################################################
 # Draw a desired rectangle in pixel coordinates by first converting to SkyCoord objects
+
 bottom_left = aia_map.pixel_to_world(600 * u.pixel, 350 * u.pixel)
 top_right = aia_map.pixel_to_world(800 * u.pixel, 450 * u.pixel)
 aia_map.draw_quadrangle(

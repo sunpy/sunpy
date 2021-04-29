@@ -35,22 +35,36 @@ blank_map = sunpy.map.Map(data, header)
 ################################################################################
 # Now we have constructed the map, we can plot it and mark important locations to it.
 
+################################################################################
 # Initialize the plot and add the map to it
+
+# sphinx_gallery_defer_figures
+
 fig = plt.figure()
 ax = plt.subplot(projection=blank_map)
 blank_map.plot()
 blank_map.draw_limb(color="k")
 blank_map.draw_grid(color="k")
 
+################################################################################
 # Coordinates that are being plotted - (0, 0), (50, 100) and (400, 400)
+
+# sphinx_gallery_defer_figures
+
 xc = [0, 50, 400] * u.arcsec
 yc = [0, 100, 400] * u.arcsec
 
+################################################################################
 # Place and mark coordinates on the plot
+
+# sphinx_gallery_defer_figures
+
 coords = SkyCoord(xc, yc, frame=blank_map.coordinate_frame)
 p = ax.plot_coord(coords, 'o')
 
+################################################################################
 # Set title
+
 ax.set_title('Plotting fixed points on a blank map')
 
 # Display the plot

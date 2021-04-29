@@ -45,6 +45,9 @@ sub_hmi.plot()
 ################################################################################
 # In the next plot we will start by plotting the same aia submap, and draw a
 # heliographic grid on top.
+
+# sphinx_gallery_defer_figures
+
 fig = plt.figure(figsize=(8, 8))
 
 ax = plt.subplot(projection=sub_aia)
@@ -53,19 +56,32 @@ grid = sub_aia.draw_grid()
 
 ax.set_title("AIA 193 with HMI magnetic field strength contours", y=1.1)
 
+################################################################################
 # Now we want to draw the contours, to enhance the appearance of the plot we
 # explicitly list the levels, but then make them symmetric around 0
+
+# sphinx_gallery_defer_figures
+
 levels = [50, 100, 150, 300, 500, 1000] * u.Gauss
 
+################################################################################
 # matplotlib requires the levels to be sorted, so we order them from lowest to
 # highest by reversing the array.
+
+# sphinx_gallery_defer_figures
+
 levels = np.concatenate((-1 * levels[::-1], levels))
 
+################################################################################
 # Before we add the contours to the axis we store the existing bounds of the
 # as overplotting the contours will sometimes change the bounds, we re-apply
 # them to the axis after the contours have been added.
+
+# sphinx_gallery_defer_figures
+
 bounds = ax.axis()
 
+################################################################################
 # We use the map method `~.GenericMap.draw_contours` to simplify this process,
 # but this is a wrapper around `~matplotlib.pyplot.contour`. We set the
 # colormap, line width and transparency of the lines to improve the final
@@ -77,6 +93,9 @@ bounds = ax.axis()
 # the HMI image, and then the ``projection=`` keyword we used when constructing
 # the axis knows how to transform that to the coordinate frame of the AIA image
 # and then to the pixel coordinates of that array.
+
+# sphinx_gallery_defer_figures
+
 cset = sub_hmi.draw_contours(levels,
                              axes=ax,
                              cmap='seismic',
@@ -84,9 +103,11 @@ cset = sub_hmi.draw_contours(levels,
                              transform=ax.get_transform(sub_hmi.wcs))
 ax.axis(bounds)
 
+################################################################################
 # Finally, add a colorbar. We add an extra tick to the colorbar at the 0 point
 # to make it clearer that it is symmetric, and tweak the size and location to
 # fit with the axis better.
+
 plt.colorbar(cset,
              label=f"Magnetic Field Strength [{sub_hmi.unit}]",
              ticks=list(levels.value) + [0],
