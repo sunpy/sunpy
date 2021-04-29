@@ -344,6 +344,10 @@ class CompositeMap:
         """Plots the composite map object by calling :meth:`~sunpy.map.GenericMap.plot`
         or :meth:`~sunpy.map.GenericMap.draw_contours`.
 
+        By default, each map is plotted as an image.  If a given map has levels
+        defined (via :meth:`~sunpy.map.CompositeMap.set_levels`), that map will instead
+        be plotted as contours.
+
         Parameters
         ----------
 
@@ -369,6 +373,9 @@ class CompositeMap:
 
         Notes
         -----
+        If a line-width Matplotlib argument (``linewidth``, ``linewidths``, or ``lw``)
+        is provided, it will apply only to those maps that are plotted as contours.
+
         If a transformation is required to overlay the maps with the correct
         alignment, the plot limits may need to be manually set because
         Matplotlib autoscaling may not work as intended.

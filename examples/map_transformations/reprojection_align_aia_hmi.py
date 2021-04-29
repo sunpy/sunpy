@@ -3,13 +3,19 @@
 Aligning AIA and HMI Data with Reproject
 ========================================
 
-A common case when using data from multiple sources
-is aligning so they have the same reference frame.
-It is also possible to use `reproject` to align data, by reprojecting one image
-to the WCS of another. This is a very generic way of aligning data, and can be
-very accurate.
+This example shows how to reproject one image to be aligned with another image.
 
-You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 or higher installed.
+Here we use the `reproject <https://reproject.readthedocs.io/en/stable/>`__
+package to transform one image to the reference frame of another image.  The
+reference frames are defined by the respective World Coordinate System (WCS)
+information.  This is a very generic way of aligning data, and can be very
+accurate.
+
+You will need ``reproject`` v0.6 or higher installed.
+
+See :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py`
+for an alternate approach to image alignment, where the images are aligned
+as they are plotted, with no modified map created.
 """
 import matplotlib.pyplot as plt
 from reproject import reproject_interp

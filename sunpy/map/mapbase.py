@@ -2492,7 +2492,14 @@ class GenericMap(NDData):
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
         if autoalign == 'pcolormesh':
-            axes.set_aspect(getattr(imshow_args, 'aspect', 1))
+            # We have to handle an `aspect` keyword separately
+            axes.set_aspect(imshow_args.get('aspect', 1))
+
+            # pcolormesh does not do interpolation
+            if imshow_args.get('interpolation', None) not in [None, 'none', 'nearest']:
+                warnings.warn("The interpolation keyword argument is ignored when using autoalign "
+                              "functionality.",
+                              SunpyUserWarning)
 
             # Remove imshow keyword arguments that are not accepted by pcolormesh
             for item in ['aspect', 'extent', 'interpolation', 'origin']:
@@ -2609,7 +2616,8 @@ class GenericMap(NDData):
         elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
             warnings.warn('The map world coordinate system (WCS) is different from the axes WCS. '
                           'The map data axes may not correctly align with the coordinate axes. '
-                          'If this difference in WCS is intended, specify `different_wcs=True`.',
+                          'To automatically transform the data to the coordinate axes, specify '
+                          '`autoalign=True`.',
                           SunpyUserWarning)
 
         return axes
