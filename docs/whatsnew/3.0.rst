@@ -26,6 +26,26 @@ By the numbers:
 
 Please find below a selection of what we consider to be the biggest changes or features with this release.
 
+.. _whatsnew-3.0-map-plotting:
+
+Improvements to Visualization of Maps
+=====================================
+
+.. minigallery:: sunpy.map.GenericMap.draw_quadrangle
+
+
+.. _whatsnew-3.0-map-eui:
+
+Improved Support for Solar Orbiter's EUI Instrument in Map
+==========================================================
+
+.. _whatsnew-3.0-map-metadata:
+
+Inspect History of Metadata changes in Map
+==========================================
+
+.. minigallery:: sunpy.util.metadta.MetaDict.original_meta
+
 .. _whatsnew-3.0-python:
 
 Increase in required package versions
