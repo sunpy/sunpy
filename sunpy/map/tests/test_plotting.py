@@ -306,3 +306,20 @@ def test_draw_limb_heliographic_stonyhurst(aia171_test_map):
     ax.set_xlim(0, 360)
     ax.set_ylim(0, 180)
     return fig
+
+
+@figure_test
+def test_plot_autoalign(aia171_test_map):
+    aia171_test_map._data = aia171_test_map.data.astype('float32')
+    rotated_map = aia171_test_map.rotate(30*u.deg, order=3)
+
+    # Plotting the rotated map on the original projection should appear de-rotated
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    rotated_map.plot(axes=ax, autoalign=True)
+    return fig
+
+
+def test_plot_autoalign_bad_inputs(aia171_test_map):
+    with pytest.raises(ValueError):
+        aia171_test_map.plot(autoalign='bad')

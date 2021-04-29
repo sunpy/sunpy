@@ -2368,11 +2368,11 @@ class GenericMap(NDData):
         return figure
 
     @u.quantity_input
-    def plot(self, annotate=True, axes=None, title=True,
+    def plot(self, annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
-        to plt.imshow() using nearest neighbour interpolation.
+        to :meth:`~matplotlib.axes.Axes.imshow` using nearest neighbor interpolation.
 
         Parameters
         ----------
@@ -2391,8 +2391,16 @@ class GenericMap(NDData):
             If provided, the data will be clipped to the percentile interval bounded by the two
             numbers.
 
+        autoalign : `bool` or `str`, optional
+            If other than `False`, the plotting accounts for any difference between the
+            WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
+            axes (e.g., a difference in rotation angle).  If `'pcolormesh'`, this
+            method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
+            default :meth:`~matplotlib.axes.Axes.imshow`.  Specifying `True` is
+            equivalent to specifying `'pcolormesh'`.
+
         **imshow_kwargs  : `dict`
-            Any additional imshow arguments are passed to `~matplotlib.axes.Axes.imshow`.
+            Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
         Examples
         --------
@@ -2405,8 +2413,27 @@ class GenericMap(NDData):
         >>> aia.draw_limb()   # doctest: +SKIP
         >>> aia.draw_grid()   # doctest: +SKIP
 
+        Notes
+        -----
+        The ``autoalign`` functionality is computationally intensive.  If the plot will
+        be interactive, the alternative approach of preprocessing the map (e.g.,
+        de-rotating it) to match the desired axes will result in better performance.
+
+        When combining ``autoalign`` functionality with
+        `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
+        beyond the solar disk may not appear, which may also inhibit Matplotlib's
+        autoscaling of the plot limits.  The plot limits can be set manually.
+        To preserve the off-disk parts of the map, using the
+        :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
+        manager may be appropriate.
         """
-        axes = self._check_axes(axes, allow_non_wcsaxes=True, warn_different_wcs=True)
+        # Set the default approach to autoalignment
+        if autoalign not in [False, True, 'pcolormesh']:
+            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
+        if autoalign is True:
+            autoalign = 'pcolormesh'
+
+        axes = self._check_axes(axes, allow_non_wcsaxes=True, warn_different_wcs=autoalign is False)
 
         # Normal plot
         plot_settings = copy.deepcopy(self.plot_settings)
@@ -2464,9 +2491,37 @@ class GenericMap(NDData):
                 norm.vmax = imshow_args.pop('vmax')
 
         if self.mask is None:
-            ret = axes.imshow(self.data, **imshow_args)
+            data = self.data
         else:
-            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
+            data = np.ma.array(np.asarray(self.data), mask=self.mask)
+
+        if autoalign == 'pcolormesh':
+            # We have to handle an `aspect` keyword separately
+            axes.set_aspect(imshow_args.get('aspect', 1))
+
+            # pcolormesh does not do interpolation
+            if imshow_args.get('interpolation', None) not in [None, 'none', 'nearest']:
+                warnings.warn("The interpolation keyword argument is ignored when using autoalign "
+                              "functionality.",
+                              SunpyUserWarning)
+
+            # Remove imshow keyword arguments that are not accepted by pcolormesh
+            for item in ['aspect', 'extent', 'interpolation', 'origin']:
+                if item in imshow_args:
+                    del imshow_args[item]
+
+            if wcsaxes_compat.is_wcsaxes(axes):
+                imshow_args.setdefault('transform', axes.get_transform(self.wcs))
+
+            # The quadrilaterals of pcolormesh can slightly overlap, which creates the appearance
+            # of a grid pattern when alpha is not 1.  These settings minimize the overlap.
+            if imshow_args.get('alpha', 1) != 1:
+                imshow_args.setdefault('antialiased', True)
+                imshow_args.setdefault('linewidth', 0)
+
+            ret = axes.pcolormesh(data, **imshow_args)
+        else:
+            ret = axes.imshow(data, **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
@@ -2564,7 +2619,9 @@ class GenericMap(NDData):
                                 "to this map when creating the axes.")
         elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
             warnings.warn('The map world coordinate system (WCS) is different from the axes WCS. '
-                          'The map data axes may not correctly align with the coordinate axes.',
+                          'The map data axes may not correctly align with the coordinate axes. '
+                          'To automatically transform the data to the coordinate axes, specify '
+                          '`autoalign=True`.',
                           SunpyUserWarning)
 
         return axes

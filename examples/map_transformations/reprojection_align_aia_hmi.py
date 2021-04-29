@@ -3,16 +3,24 @@
 Aligning AIA and HMI Data with Reproject
 ========================================
 
-A common case when using data from multiple sources,
-is aligning so they have the same reference frame.
-It is also possible to use `reproject` to align data, by reprojecting one image
-to the WCS of another. This is a very generic way of aligning data, and can be
-very accurate.
+This example shows how to reproject one image to be aligned with another image.
 
-You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 or higher installed.
+Here we use the `reproject <https://reproject.readthedocs.io/en/stable/>`__
+package to transform one image to the reference frame of another image.  The
+reference frames are defined by the respective World Coordinate System (WCS)
+information.  This is a very generic way of aligning data, and can be very
+accurate.
+
+You will need ``reproject`` v0.6 or higher installed.
+
+See :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py`
+for an alternate approach to image alignment, where the images are aligned
+as they are plotted, with no modified map created.
 """
 import matplotlib.pyplot as plt
 from reproject import reproject_interp
+
+import astropy.units as u
 
 import sunpy.data.sample
 import sunpy.map
@@ -32,7 +40,7 @@ map_hmi.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 
 fig = plt.figure(figsize=(12, 5))
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
-map_aia.plot(axes=ax1)
+map_aia.plot(axes=ax1, clip_interval=(1, 99.9)*u.percent)
 ax2 = fig.add_subplot(1, 2, 2, projection=map_hmi)
 map_hmi.plot(axes=ax2)
 
@@ -54,7 +62,7 @@ out_hmi.plot_settings = map_hmi.plot_settings
 
 fig = plt.figure(figsize=(12, 5))
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
-map_aia.plot(axes=ax1)
+map_aia.plot(axes=ax1, clip_interval=(1, 99.9)*u.percent)
 ax2 = fig.add_subplot(1, 2, 2, projection=out_hmi)
 out_hmi.plot(axes=ax2, title='Reprojected HMI image')
 
@@ -64,8 +72,10 @@ out_hmi.plot(axes=ax2, title='Reprojected HMI image')
 
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 1, 1, projection=map_aia)
-map_aia.plot(axes=ax1)
+map_aia.plot(axes=ax1, clip_interval=(1, 99.9)*u.percent)
 out_hmi.plot(axes=ax1, alpha=0.5)
 plt.title('HMI overlaid on AIA')
 
 plt.show()
+
+# sphinx_gallery_thumbnail_number = 2
