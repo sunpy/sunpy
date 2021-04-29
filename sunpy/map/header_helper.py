@@ -161,9 +161,12 @@ def make_fitswcs_header(data, coordinate,
                                                   rotation_matrix[1, 0], rotation_matrix[1, 1])
 
     if getattr(coordinate, 'observer', None) is not None:
-        meta_wcs['rsun_obs'] = sun._angular_radius(
-            coordinate.rsun, coordinate.observer.radius
-        ).to_value(u.arcsec)
+        # Have to check for str, as doing == on a SkyCoord and str raises an error
+        if isinstance(coordinate.observer, str) and coordinate.observer == 'self':
+            dsun_obs = coordinate.radius
+        else:
+            dsun_obs = coordinate.observer.radius
+        meta_wcs['rsun_obs'] = sun._angular_radius(coordinate.rsun, dsun_obs).to_value(u.arcsec)
 
     meta_dict = MetaDict(meta_wcs)
 
