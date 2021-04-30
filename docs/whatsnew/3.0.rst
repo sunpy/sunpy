@@ -22,11 +22,11 @@ SunPy 3.0 also includes a large number of smaller improvements and bug fixes, wh
 
 By the numbers:
 
-* X commits have been added since 2.1
-* X issues have been closed since 2.1
-* X pull requests have been merged since 2.1
-* X people have contributed since 2.1
-* X of which are new contributors
+* 526 commits have been added since 2.1
+* 53 issues have been closed since 2.1
+* 109 pull requests have been merged since 2.1
+* 26 people have contributed since 2.1
+* 10 of which are new contributors
 
 Please find below a selection of what we consider to be the biggest changes or features with this release.
 
@@ -111,3 +111,34 @@ We have bumped the minimum version of several packages we depend on; these are t
 
 Contributors to this Release
 ============================
+
+The people who have contributed to the code for this release are:
+
+-  Abhijeet Manhas
+-  Abhishek Pandey
+-  Adwait Bhope  *
+-  Albert Y. Shih
+-  Amarjit Singh Gaba  *
+-  Aryan Chouhan
+-  David Stansby
+-  Jeffrey Aaron Paul
+-  Kateryna Ivashkiv
+-  Kaustubh Chaudhari  *
+-  Kritika Ranjan
+-  Laura Hayes
+-  Megh Dedhia  *
+-  Monica Bobra
+-  Mouloudi Mohamed Lyes  *
+-  Nabil Freij
+-  Nakul Shahdadpuri
+-  Ratul Das  *
+-  Samriddhi Agarwal  *
+-  Shane Maloney
+-  Stuart Mumford
+-  Tathagata Paul
+-  Thomas A Caswell  *
+-  Varun Bankar  *
+-  Will Barnes
+-  Yukie Nomiya  *
+
+Where a * indicates that this release contains their first contribution to sunpy.
