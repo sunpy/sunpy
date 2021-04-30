@@ -56,8 +56,6 @@ ax.plot(pixel_coord[0], pixel_coord[1], 'x', color='white',
 ################################################################################
 # Using the transform command expects coordinates in degrees and not arcseconds
 
-# sphinx_gallery_defer_figures
-
 map_coord = ([-300, 200] * u.arcsec)
 
 ax.plot(map_coord[0].to('deg'), map_coord[1].to('deg'), 'o', color='white', transform=ax.get_transform('world'),
