@@ -237,19 +237,20 @@ be in meters squared::
 
 This also works with different units, for example ::
 
-    >>> circle_area(4 * u.imperial.foot)
+    >>> from astropy.units import imperial
+    >>> circle_area(4 * imperial.foot)
     <Quantity 50.26548246 ft2>
 
 As demonstrated above, we can convert between different systems of measurement.
 For example, if you want the area of a circle in square feet, but were given
 the radius in meters, then you can convert it before passing it into the function::
 
-    >>> circle_area((4 * u.m).to(u.imperial.foot))
+    >>> circle_area((4 * u.m).to(imperial.foot))
     <Quantity 541.05315022 ft2>
 
 or you can convert the output::
 
-    >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)
+    >>> circle_area(4 * u.m).to(imperial.foot ** 2)
     <Quantity 541.05315022 ft2>
 
 
