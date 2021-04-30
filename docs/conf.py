@@ -59,6 +59,11 @@ release = __version__
 sunpy_version = Version(__version__)
 is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 
+# We want to ignore all warnings in a release version.
+if is_release:
+    import warnings
+    warnings.simplefilter("ignore")
+
 # -- SunPy Sample Data and Config ----------------------------------------------
 
 # We set the logger to debug so that we can see any sample data download errors
