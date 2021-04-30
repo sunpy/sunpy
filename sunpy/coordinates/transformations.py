@@ -60,6 +60,7 @@ from .frames import (
 RSUN_METERS = constants.get('radius').si.to(u.m)
 
 __all__ = ['transform_with_sun_center',
+           'propagate_with_solar_surface',
            'hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
@@ -73,6 +74,10 @@ __all__ = ['transform_with_sun_center',
 
 # Boolean flag for whether to ignore the motion of the center of the Sun in inertial space
 _ignore_sun_motion = False
+
+
+# Boolean flag for applying solar differential rotation for any obstime change
+_apply_diffrot = False
 
 
 @contextmanager
@@ -134,6 +139,21 @@ def transform_with_sun_center():
         yield
     finally:
         _ignore_sun_motion = old_ignore_sun_motion
+
+
+@contextmanager
+def propagate_with_solar_surface():
+    with transform_with_sun_center():
+        try:
+            global _apply_diffrot
+
+            old_apply_diffrot = _apply_diffrot  # nominally False
+
+            log.debug("Apply solar differential rotation for any changes in obstime")
+            _apply_diffrot = True
+            yield
+        finally:
+            _apply_diffrot = old_apply_diffrot
 
 
 # Global counter to keep track of the layer of transformation
@@ -260,7 +280,11 @@ def _transform_obstime(frame, obstime):
     # Transform to the new obstime using the appropriate loopback transformation
     new_frame = frame.replicate(obstime=obstime)
     if frame.obstime is not None:
-        return frame.transform_to(new_frame)
+        if _apply_diffrot:
+            from .metaframes import RotatedSunFrame  # avoid a circular import
+            return RotatedSunFrame(base=frame, rotated_time=obstime).transform_to(new_frame)
+        else:
+            return frame.transform_to(new_frame)
     else:
         return new_frame
 
