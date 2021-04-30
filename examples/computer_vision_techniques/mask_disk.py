@@ -30,7 +30,7 @@ hpc_coords = all_coordinates_from_map(aia)
 # masked values are shown as black instead of the default white.
 
 mask = coordinate_is_on_solar_disk(hpc_coords)
-palette = aia.cmap
+palette = aia.cmap.copy()
 palette.set_bad('black')
 
 ###############################################################################

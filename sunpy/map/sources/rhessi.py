@@ -62,6 +62,10 @@ class RHESSIMap(GenericMap):
             log.debug('Moving "TIMESYS" FITS keyword to "DATEREF"')
             self.meta['DATEREF'] = self.meta.pop('TIMESYS')
 
+        if 'CROTA' in self.meta and 'CROTA2' not in self.meta:
+            log.debug("Renaming 'CROTA' to 'CROTA2'")
+            self.meta['CROTA2'] = self.meta.pop('CROTA')
+
     @property
     def detector(self):
         """
