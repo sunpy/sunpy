@@ -1,2 +1,0 @@
-`~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` now have an ``rsun`` frame attribute to specify the radius of the Sun, which defaults to the photospheric radius defined in `sunpy.sun.constants`.
-This frame attribute is used when converting a 2D coordinate (longitude and latitude, with no specified radial distance) to a 3D coordinate by setting the radial distance to ``rsun`` (i.e., the assumption is that the coordinate is on the surface of the Sun).

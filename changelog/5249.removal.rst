@@ -1,1 +1,0 @@
-Deprecated `sunpy.roi.roi`, as it currently has no obvious use and has never seen any real development work.

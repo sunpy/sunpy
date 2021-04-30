@@ -1,2 +1,0 @@
-Enhanced :meth:`sunpy.map.GenericMap.draw_limb` so that the solar limb can be plotted on axes that correspond to a different map (e.g., with a different observer).
-The part of the limb that is not visible to the axes's observer because it is on the far side of the Sun is shown as dotted rather than solid.

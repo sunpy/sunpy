@@ -1,1 +1,0 @@
-Re-ordered keyword-only arguments of :meth:`sunpy.map.GenericMap.draw_rectangle` to match :meth:`sunpy.map.GenericMap.submap`.

@@ -1,2 +1,0 @@
-Fixed a bug where coordinate frames were considered different due to an unintended time difference during time handling at the level of numerical precision (i.e., tens of picoseconds).
-This resulted in the unexpected use of transformation machinery when transforming a coordinate to its own coordinate frame.

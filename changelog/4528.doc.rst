@@ -1,1 +1,0 @@
-Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_plot_rectangle.py`) for drawing rectangles on maps.

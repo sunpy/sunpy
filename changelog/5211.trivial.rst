@@ -1,2 +1,0 @@
-:func:`~sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` now accepts ``obstime`` and ``rsun`` optional arguments.
-This function is not typically called directly by users.

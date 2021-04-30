@@ -1,1 +1,0 @@
-Fixed the drawing methods of `sunpy.map.GenericMap` (e.g., :meth:`~sunpy.map.GenericMap.draw_rectangle`) so that any text labels will appear in the legend.

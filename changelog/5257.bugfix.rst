@@ -1,1 +1,0 @@
-Changed `MDIMap` to use the "CONTENT" keyword to identify the measurement, similar to `HMIMap`, and removed the special-case nickname. This fixes the broken title on plots.

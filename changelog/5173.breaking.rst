@@ -1,2 +1,0 @@
-Changed URL for the `sunpy.net.dataretriever.sources.SRSClient` from "ftp://ftp.swpc.noaa.gov/pub/warehouse/" to "ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/".
-The old URL is unsupported and we expect the files will be the same but we can not say with 100% certainty.
