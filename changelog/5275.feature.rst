@@ -1,0 +1,1 @@
+Allows :meth:`sunpy.map.GenericMap.draw_quadrangle` to accept ``u.pix`` as input which leads to a rectangular plot.
