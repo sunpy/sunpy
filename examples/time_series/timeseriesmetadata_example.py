@@ -57,14 +57,19 @@ print(large_ts.meta.metadata)
 # The TimeSeriesMetaData class has a number of other properties, including the
 # timerange property that returns a TimeRange for the entire metadata:
 
-large_ts.meta.time_range
+print(large_ts.meta.time_range)
+##############################################################################
 # Further properties can be used to get lists of details, e.g.,
 # List of the time ranges
-large_ts.meta.timeranges
+print(large_ts.meta.timeranges)
+
+##############################################################################
 # List of the column names
-large_ts.meta.columns
+print(large_ts.meta.columns)
+
+##############################################################################
 # List of the meta dictionaries
-large_ts.meta.metas
+print(large_ts.meta.metas)
 
 ##############################################################################
 # When you truncate the TimeSeries, the metadata is truncated too:

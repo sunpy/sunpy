@@ -19,10 +19,10 @@ from sunpy.coordinates import HeliographicStonyhurst, RotatedSunFrame
 from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################
-# Let's use an AIA observation, and plot lines of constant longtiude in
-# heliographic Stonyhurst.  We'll plot the normal lines (prior to applying
+# Let's use an AIA observation, and plot lines of constant longitude in
+# heliographic Stonyhurst. We'll plot the normal lines (prior to applying
 # differential rotation) in white and the differentially rotated lines in
-# blue.  Be aware that the differentially rotated lines are plotted in the
+# blue. Be aware that the differentially rotated lines are plotted in the
 # original coordinate frame, so it doesn't account for any motion of the
 # observer over 27 days.
 

@@ -7,10 +7,10 @@ In this example we are going to look at how we can save and load a
 `~sunpy.map.GenericMap` with `asdf <https://asdf.readthedocs.io/en/latest/>`__.
 
 asdf is a modern file format designed to meet the needs of the astronomy
-community. It has deep integration with Python, sunpy and Astropy as well as
+community. It has deep integration with Python, SunPy and Astropy as well as
 implementations in other languages. It can be used to store known Python
 objects in a portable, well defined file format. It is primarily useful for
-storing complex astropy and sunpy objects in a way that can be loaded back into
+storing complex Astropy and SunPy objects in a way that can be loaded back into
 the same form as they were saved.
 
 Here, even though we will be working with `~sunpy.map.sources.sdo.AIAMap`

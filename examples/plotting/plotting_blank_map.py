@@ -46,7 +46,7 @@ blank_map.draw_limb(color="k")
 blank_map.draw_grid(color="k")
 
 ################################################################################
-# Coordinates that are being plotted - (0, 0), (50, 100) and (400, 400).s
+# Coordinates that are being plotted - (0, 0), (50, 100) and (400, 400).
 
 # sphinx_gallery_defer_figures
 

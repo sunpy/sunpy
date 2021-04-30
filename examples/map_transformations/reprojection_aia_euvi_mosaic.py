@@ -66,16 +66,20 @@ earth = get_body_heliographic_stonyhurst('earth', maps[0].date)
 
 plt.figure(figsize=(8, 8))
 r_unit = u.AU
+
 ax = plt.subplot(projection='polar')
 circle = plt.Circle((0.0, 0.0), (10*u.Rsun).to_value(r_unit),
                     transform=ax.transProjectionAffine + ax.transAxes, color="yellow",
                     alpha=1, label="Sun")
 ax.add_artist(circle)
 ax.text(earth.lon.to_value("rad")+0.05, earth.radius.to_value(r_unit), "Earth")
+
 for this_satellite, this_coord in [(m.observatory, m.observer_coordinate) for m in maps]:
     ax.plot(this_coord.lon.to('rad'), this_coord.radius.to(r_unit), 'o', label=this_satellite)
+
 ax.set_theta_zero_location("S")
 ax.set_rlim(0, 1.3)
+
 ax.legend()
 
 plt.show()

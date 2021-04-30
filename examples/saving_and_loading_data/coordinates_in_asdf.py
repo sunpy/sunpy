@@ -10,7 +10,7 @@ asdf is a modern file format designed to meet the needs of the astronomy
 community. It has deep integration with Python and sunpy and Astropy as well as
 implementations in other languages. It can be used to store known Python
 objects in a portable, well defined file format. It is primarily useful for
-storing complex astropy and sunpy objects in a way that can be loaded back into
+storing complex Astropy and SunPy objects in a way that can be loaded back into
 the same form as they were saved.
 
 .. note::

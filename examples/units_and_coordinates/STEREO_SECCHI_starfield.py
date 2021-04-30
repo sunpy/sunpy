@@ -8,7 +8,7 @@ we often observe stars in these image data. In this example, we will use the
 `Astroquery package <https://astroquery.readthedocs.io/en/latest/>`__ to query the
 `VizieR star catalog <http://vizier.u-strasbg.fr/viz-bin/VizieR>`__ for stars observed
 by the `Gaia satellite <https://sci.esa.int/web/gaia/>`__ within the SECCHI COR2 field of view.
-Then we will use the coordinates framework in Sunpy and AstroPy to transform the coordinates
+Then we will use the coordinates framework in SunPy and AstroPy to transform the coordinates
 returned by VizieR into SECCHI COR2 image coordinates. As a bonus, we'll also identify Mars."
 
 This requires the installation of the `astroquery <https://astroquery.readthedocs.io/en/latest/>`__

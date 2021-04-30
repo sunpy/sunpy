@@ -1,6 +1,6 @@
 """
 ===============
-Sunpy Constants
+sunpy Constants
 ===============
 
 The example shows all of the solar physics specific constants provided by sunpy.
