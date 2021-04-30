@@ -26,6 +26,8 @@ class SOARClient(BaseClient):
             results.append(self._do_search(query_parameters))
         table = astropy.table.vstack(results)
         qrt = QueryResponseTable(table, client=self)
+        filesize = qrt['Filesize'] / (1024 * 1024)
+        qrt['Filesize'] = [f'{f:.1f} MB' for f in filesize]
         qrt.hide_keys = ['Data item ID', 'Filename']
         return qrt
 
@@ -75,6 +77,7 @@ class SOARClient(BaseClient):
                                      'End time': info['end_time'],
                                      'Data item ID': info['data_item_id'],
                                      'Filename': info['filename'],
+                                     'Filesize': info['filesize']
                                      })
 
     def fetch(self, query_results, *, path, downloader, **kwargs):
