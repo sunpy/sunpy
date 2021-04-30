@@ -1,0 +1,3 @@
+:func:`sunpy.coordinates.solar_frame_to_wcs_mapping` now sets the observer auxiliary
+information when a `~sunpy.coordinates.HeliographicCarrington` frame with
+``observer='self'`` is passed.
