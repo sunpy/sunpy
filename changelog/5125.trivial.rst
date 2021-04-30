@@ -1,1 +1,0 @@
-Added tests for `sunpy.visualization.animator.mapsequenceanimator` and :meth:`sunpy.map.MapSequence.plot`.

@@ -1,2 +1,0 @@
-Added a gallery example (:ref:`sphx_glr_generated_gallery_map_map_segment.py`)
-demonstrating how to create a segment of a particular map from transformed coordinates.

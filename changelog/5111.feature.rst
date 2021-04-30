@@ -1,1 +1,0 @@
-Added the ability to namespace files downloaded using `sunpy.data.data_manager.manager.DataManager` by prepending the file name with module name.
