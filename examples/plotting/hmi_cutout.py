@@ -58,7 +58,7 @@ norm = matplotlib.colors.SymLogNorm(50, vmin=-7.5e2, vmax=7.5e2)
 
 ax1 = fig.add_subplot(121, projection=magnetogram_big)
 magnetogram_big.plot(axes=ax1, cmap='RdBu_r', norm=norm, annotate=False,)
-magnetogram_big.draw_grid(axes=ax1, color='k', alpha=0.25, lw=0.5)
+magnetogram_big.draw_grid(axes=ax1, color='black', alpha=0.25, lw=0.5)
 
 ################################################################################
 # These lines deal with hiding the axis, its ticks and labels.
@@ -75,7 +75,7 @@ for coord in ax1.coords:
 
 # sphinx_gallery_defer_figures
 
-magnetogram_big.draw_quadrangle(left_corner, top_right=right_corner, color='k', lw=1)
+magnetogram_big.draw_quadrangle(left_corner, top_right=right_corner, edgecolor='black', lw=1)
 
 ################################################################################
 # The second stage is plotting the zoomed-in magnetogram.
@@ -111,13 +111,13 @@ lat.set_ticklabel_position('r')
 xpix, ypix = magnetogram_big.world_to_pixel(right_corner)
 con1 = ConnectionPatch(
     (0, 1), (xpix.value, ypix.value), 'axes fraction', 'data', axesA=ax2, axesB=ax1,
-    arrowstyle='-', color='k', lw=1
+    arrowstyle='-', color='black', lw=1
 )
 xpix, ypix = magnetogram_big.world_to_pixel(
     SkyCoord(right_corner.Tx, left_corner.Ty, frame=magnetogram_big.coordinate_frame))
 con2 = ConnectionPatch(
     (0, 0), (xpix.value, ypix.value), 'axes fraction', 'data', axesA=ax2, axesB=ax1,
-    arrowstyle='-', color='k', lw=1
+    arrowstyle='-', color='black', lw=1
 )
 ax2.add_artist(con1)
 ax2.add_artist(con2)
