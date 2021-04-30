@@ -39,7 +39,8 @@ comp_map = sunpy.map.Map(aia_smap, hmi_smap, composite=True)
 # Let's set the contours of the HMI map, the second image in our composite map
 # (therefore the index is 1), from a few hundred to a thousand Gauss which
 # is the typical field associated with umbral regions of active regions.
-comp_map.set_levels(index=1, levels=[-1000, -500, -250, 250, 500, 1000])
+levels = [-1000, -500, -250, 250, 500, 1000] * u.G
+comp_map.set_levels(index=1, levels=levels)
 
 ##############################################################################
 # Now let us look at the result. Notice that we can see the coronal structures

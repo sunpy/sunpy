@@ -39,7 +39,7 @@ fig = plt.figure()
 # Add the main axes. Note this is resized to leave room for the slider axes
 ax = fig.add_axes([0.1, 0.2, 0.9, 0.7], projection=map_171)
 
-im_1600 = map_1600.plot(axes=ax)
+im_1600 = map_1600.plot(axes=ax, autoalign=True)
 im_171 = map_171.plot(axes=ax, alpha=0.5, clip_interval=(1, 99.99)*u.percent)
 ax.set_title('AIA 171 + 1600')
 
