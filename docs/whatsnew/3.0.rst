@@ -35,21 +35,21 @@ Please find below a selection of what we consider to be the biggest changes or f
 Improvements to Visualization of Maps
 =====================================
 
-In this release a number of methods on Maps for visualising maps have been improved to be more coordinate aware than in previous releases.
-The first new feature is the `~sunpy.map.GenericMap.draw_quadrangle` method which replaces the old ``draw_rectangle`` method.
-`~sunpy.map.GenericMap.draw_quadrangle` draws rectangles where the edges follow the lines of constant longitude and latitude in the coordinate system in which the box is drawn.
+In this release a number of Map visualisation methods have been improved to be more coordinate aware than previous releases.
+The first new feature is :meth:`sunpy.map.GenericMap.draw_quadrangle` which replaces the old ``draw_rectangle`` method.
+:meth:`~sunpy.map.GenericMap.draw_quadrangle` draws rectangles where the edges follow lines of constant longitude and latitude in the coordinate system in which the box is drawn.
 
 .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
 
-The next change is to the `~sunpy.map.GenericMap.draw_limb` method, which now supports drawing the limb as seen by any observer on any image.
-This means that it is possible to visualize the sections of the limb which are visible in one image on another, or to draw the limb as seen from a specified observer on a synoptic map.
+The next change is to :meth:`sunpy.map.GenericMap.draw_limb`, which now supports drawing the limb as seen by any observer on any image.
+This means that it is possible to visualize the sections of the limb which are visible in one map on another, or to draw the limb as seen from helioprojective map observer on a synoptic map.
 
 .. minigallery:: sunpy.map.GenericMap.draw_limb
 
-Finally, the last major change is to the `~sunpy.map.GenericMap.plot` method, which now supports an ``autoalign=True`` keyword argument.
-This option when set to `True` will use `~matplotlib.axes.Axes.pcolormesh` to transform the image being plotted on an unaligned axes to the correct coordinates.
-This allows for plots of two images with different projections or WCSes to be visualized together correctly.
-It is worth noting that using ``autoalign=True`` is computationally expensive, so when using with interactive plots there is a significant performance penalty.
+The last major change is to :meth:`sunpy.map.GenericMap.plot`, which now has an ``autoalign=True`` keyword argument.
+This option when set to `True` will use :meth:`~matplotlib.axes.Axes.pcolormesh` to transform the image being plotted the correct coordinates of the axes it is being plotted on.
+This allows for plots of two images with different projections to be visualized together correctly.
+It is worth noting that using ``autoalign=True`` is computationally expensive, and when used with interactive plots there is a significant performance penalty every time the plot is modified.
 
 See the :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py` example for details.
 
@@ -64,10 +64,10 @@ Data from EUI will automatically load using this source via `sunpy.map.Map`.
 
 .. _whatsnew-3.0-map-metadata:
 
-Inspect History of Metadata changes in Map
+Inspect history of map metadata changes
 ==========================================
 
-The ``.meta`` property of a map now keeps a record of the contents of the metadata (normally a FITS header) when it was created.
+The ``.meta`` property of a `~sunpy.map.GenericMap` now keeps a record of the contents of the metadata (normally a FITS header) when it was created.
 This can be accessed via the `~sunpy.util.metadata.MetaDict.original_meta` property.
 This allows any changes made by sunpy or by the user directly to be tracked with the following properties:
 
