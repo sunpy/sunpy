@@ -12,16 +12,20 @@ The SunPy project is pleased to announce the 3.0 release of the sunpy package.
 
 On this page, you can read about some of the big changes in this release:
 
+* :ref:`whatsnew-3.0-map-plotting`
+* :ref:`whatsnew-3.0-map-eui`
+* :ref:`whatsnew-3.0-map-metadata`
+* :ref:`whatsnew-3.0-instr`
 * :ref:`whatsnew-3.0-python`
 
 SunPy 3.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
-* X commits have been added since 2.0
-* X issues have been closed since 2.0
-* X pull requests have been merged since 2.0
-* X people have contributed since 2.0
+* X commits have been added since 2.1
+* X issues have been closed since 2.1
+* X pull requests have been merged since 2.1
+* X people have contributed since 2.1
 * X of which are new contributors
 
 Please find below a selection of what we consider to be the biggest changes or features with this release.
@@ -31,8 +35,23 @@ Please find below a selection of what we consider to be the biggest changes or f
 Improvements to Visualization of Maps
 =====================================
 
+In this release a number of methods on Maps for visualising maps have been improved to be more coordinate aware than in previous releases.
+The first new feature is the `~sunpy.map.GenericMap.draw_quadrangle` method which replaces the old ``draw_rectangle`` method.
+`~sunpy.map.GenericMap.draw_quadrangle` draws rectangles where the edges follow the lines of constant longitude and latitude in the coordinate system in which the box is drawn.
+
 .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
 
+The next change is to the `~sunpy.map.GenericMap.draw_limb` method, which now supports drawing the limb as seen by any observer on any image.
+This means that it is possible to visualize the sections of the limb which are visible in one image on another, or to draw the limb as seen from a specified observer on a synoptic map.
+
+.. minigallery:: sunpy.map.GenericMap.draw_limb
+
+Finally, the last major change is to the `~sunpy.map.GenericMap.plot` method, which now supports an ``autoalign=True`` keyword argument.
+This option when set to `True` will use `~matplotlib.axes.Axes.pcolormesh` to transform the image being plotted on an unaligned axes to the correct coordinates.
+This allows for plots of two images with different projections or WCSes to be visualized together correctly.
+It is worth noting that using ``autoalign=True`` is computationally expensive, so when using with interactive plots there is a significant performance penalty.
+
+See the :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py` example for details.
 
 .. _whatsnew-3.0-map-eui:
 
@@ -52,11 +71,19 @@ The ``.meta`` property of a map now keeps a record of the contents of the metada
 This can be accessed via the `~sunpy.util.metadata.MetaDict.original_meta` property.
 This allows any changes made by sunpy or by the user directly to be tracked with the following properties:
 
-  * `~sunpy.util.metadata.MetaDict.added_items`
-  * `~sunpy.util.metadata.MetaDict.removed_items`
-  * `~sunpy.util.metadata.MetaDict.modified_items`
+* `~sunpy.util.metadata.MetaDict.added_items`
+* `~sunpy.util.metadata.MetaDict.removed_items`
+* `~sunpy.util.metadata.MetaDict.modified_items`
 
-See the new :ref:`sphx-glr-generated-gallery-map-map-metadata-modification-py` example for details.
+See the new :ref:`sphx_glr_generated_gallery_map_map_metadata_modification.py` example for details.
+
+.. _whatsnew-3.0-instr:
+
+``sunpy.instr`` Moved to ``sunkit-instruments``
+===============================================
+
+The `sunpy.instr` subpackage has been moved to a separate affiliated package called `sunkit-instruments <https://docs.sunpy.org/projects/sunkit-instruments/>`__.
+This has been done to make the core package align with the goal that instrument specific analysis and processing code should live in affiliated packages.
 
 .. _whatsnew-3.0-python:
 
