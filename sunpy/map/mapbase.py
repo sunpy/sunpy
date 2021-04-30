@@ -2164,7 +2164,7 @@ class GenericMap(NDData):
             left = np.min(pixel_corners[0])
             right = np.max(pixel_corners[0])
             width = (right-left)
-            height=(top-bottom)
+            height = (top-bottom)
             anchor = (bottom, left)*u.pix
             kwargs.update({"vertex_unit": u.pix})
         else:
