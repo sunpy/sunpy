@@ -136,7 +136,7 @@ The people who have contributed to the code for this release are:
 -  Shane Maloney
 -  Stuart Mumford
 -  Tathagata Paul
--  Thomas A Caswell  *
+-  Thomas A Caswell
 -  Varun Bankar  *
 -  Will Barnes
 -  Yukie Nomiya  *
