@@ -111,7 +111,7 @@ class LASCOMap(GenericMap):
                                                                 self.meta.get('time_obs')
                                                                 )
                                              )
-            self.meta['date-obs'] = datestr
+            self.meta['date-obs'] = parse_time(datestr).isot
 
         # If non-standard Keyword is present, correct it too, for compatibility.
         if 'date_obs' in self.meta:
