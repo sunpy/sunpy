@@ -45,14 +45,14 @@ magnetogram_big = sunpy.map.Map(magnetogram.data, magnetogram.meta, mask=mask)
 fig = plt.figure(figsize=(7.2, 4.8))
 
 ################################################################################
-# We create a nice normalization range for the image
+# We create a nice normalization range for the image.
 
 # sphinx_gallery_defer_figures
 
 norm = matplotlib.colors.SymLogNorm(50, vmin=-7.5e2, vmax=7.5e2)
 
 ################################################################################
-# Plot the full-disk magnetogram
+# Plot the full-disk magnetogram.
 
 # sphinx_gallery_defer_figures
 
@@ -61,7 +61,7 @@ magnetogram_big.plot(axes=ax1, cmap='RdBu_r', norm=norm, annotate=False,)
 magnetogram_big.draw_grid(axes=ax1, color='k', alpha=0.25, lw=0.5)
 
 ################################################################################
-# These lines deal with hiding the axis, its ticks and labels
+# These lines deal with hiding the axis, its ticks and labels.
 
 # sphinx_gallery_defer_figures
 
@@ -129,7 +129,7 @@ cax = fig.add_axes([
 cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 
 ################################################################################
-# For the colorbar we want it to have three fixed ticks
+# For the colorbar we want it to have three fixed ticks.
 
 cbar.locator = matplotlib.ticker.FixedLocator([-1e2, 0, 1e2])
 cbar.set_label("LOS Magnetic Field [gauss]", labelpad=-40, rotation=0)

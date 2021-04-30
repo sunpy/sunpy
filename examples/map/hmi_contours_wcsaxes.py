@@ -19,12 +19,14 @@ from sunpy.data.sample import AIA_193_IMAGE, HMI_LOS_IMAGE
 
 ################################################################################
 # First let's load two of the sample files into two Map objects.
+
 aia, hmi = sunpy.map.Map(AIA_193_IMAGE, HMI_LOS_IMAGE)
 
 ################################################################################
 # To make the plot neater, we start by submapping the same region.
 # We define the region in HGS coordinates and then apply the same submap to
 # both the HMI and AIA maps.
+
 bottom_left = SkyCoord(30 * u.deg, -40 * u.deg, frame='heliographic_stonyhurst')
 top_right = SkyCoord(70 * u.deg, 0 * u.deg, frame='heliographic_stonyhurst')
 
@@ -34,6 +36,7 @@ sub_hmi = hmi.submap(bottom_left, top_right=top_right)
 ################################################################################
 # To highlight the fact that the AIA and HMI images are not aligned, let us
 # quickly view the two maps side-by-side.
+
 fig = plt.figure(figsize=(11, 5))
 
 ax = plt.subplot(1, 2, 1, projection=sub_aia)

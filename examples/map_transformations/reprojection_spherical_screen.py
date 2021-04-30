@@ -105,4 +105,5 @@ outmap_screen_off_disk.plot_settings = aia_map.plot_settings
 plt.figure()
 plt.subplot(projection=outmap_screen_off_disk)
 outmap_screen_off_disk.plot()
+
 plt.show()

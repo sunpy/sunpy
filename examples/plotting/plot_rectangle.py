@@ -32,7 +32,7 @@ aia_map.plot(clip_interval=(1, 99.99)*u.percent)
 
 ################################################################################
 # Specify two opposite corners of the rectangle as a single, two-element
-# SkyCoord object
+# SkyCoord object.
 
 # sphinx_gallery_defer_figures
 
@@ -50,7 +50,7 @@ aia_map.draw_quadrangle(
 )
 
 ################################################################################
-# Specify two opposite corners of the rectangle as separate SkyCoord objects
+# Specify two opposite corners of the rectangle as separate SkyCoord objects.
 
 # sphinx_gallery_defer_figures
 
@@ -66,7 +66,7 @@ aia_map.draw_quadrangle(
 )
 
 ################################################################################
-# Specify one corner of the rectangle and the rectangle's width and height
+# Specify one corner of the rectangle and the rectangle's width and height.
 
 # sphinx_gallery_defer_figures
 
@@ -84,7 +84,7 @@ aia_map.draw_quadrangle(
 )
 
 ################################################################################
-# Draw a desired rectangle in pixel coordinates by first converting to SkyCoord objects
+# Draw a desired rectangle in pixel coordinates by first converting to SkyCoord objects.
 
 bottom_left = aia_map.pixel_to_world(600 * u.pixel, 350 * u.pixel)
 top_right = aia_map.pixel_to_world(800 * u.pixel, 450 * u.pixel)
@@ -96,6 +96,6 @@ aia_map.draw_quadrangle(
     linewidth=2,
     label='pixel_to_world()'
 )
-
 plt.legend()
+
 plt.show()

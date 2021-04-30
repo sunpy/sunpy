@@ -6,8 +6,6 @@ Creating a visualization with ArrayAnimatorWCS
 This example shows how to create a simple visualization using
 `~sunpy.visualisation.animator.ArrayAnimatorWCS`.
 """
-# Start by importing the necessary modules.
-
 import matplotlib.pyplot as plt
 
 import astropy.units as u
@@ -75,7 +73,6 @@ plt.show()
 # ``wcs.world_axis_physical_types`` here we use the short ctype identifiers for
 # the latitude and longitude axes.
 
-
 coord_params = {
     'hpln': {
         'axislabel': 'Helioprojective Longitude',
@@ -86,7 +83,6 @@ coord_params = {
         'ticks': {'spacing': 10*u.arcmin, 'color': 'black'}
     },
 }
-
 
 # We have to recreate the visualization since we displayed it earlier.
 wcs_anim = ArrayAnimatorWCS(sequence_array, wcs, [0, 'x', 'y'], vmax=1000,

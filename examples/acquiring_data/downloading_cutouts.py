@@ -22,6 +22,7 @@ from sunpy.net import attrs as a
 
 #####################################################
 # First, query a full frame AIA image.
+
 t0 = astropy.time.Time('2012-09-24T14:56:03', scale='utc', format='isot')
 q = Fido.search(
     a.Instrument.aia,
@@ -34,6 +35,7 @@ m = sunpy.map.Map(Fido.fetch(q))
 #####################################################
 # Next, we will create a submap from this image. We will
 # crop the field of view to active region NOAA 11575.
+
 m_cutout = m.submap(
     SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=m.coordinate_frame),
     top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=m.coordinate_frame),
@@ -48,6 +50,7 @@ m_cutout.peek()
 #
 # First, construct the cutout from the submap
 # above using the `~sunpy.net.jsoc.attrs.Cutout` attribute.
+
 cutout = a.jsoc.Cutout(
     m_cutout.bottom_left_coord,
     top_right=m_cutout.top_right_coord,
@@ -60,6 +63,7 @@ cutout = a.jsoc.Cutout(
 # address once you have registered.
 # See `this page <http://jsoc.stanford.edu/ajax/register_email.html>`_
 # for more details.
+
 jsoc_email = os.environ["JSOC_EMAIL"]
 
 #####################################################
@@ -68,6 +72,7 @@ jsoc_email = os.environ["JSOC_EMAIL"]
 # cutout component. We will download images from a 12 hour interval
 # centered on the time of the above cutout.
 # We request one image every 2 hours.
+
 q = Fido.search(
     a.Time(m_cutout.date - 6*u.h, m_cutout.date + 6*u.h),
     a.Wavelength(m_cutout.wavelength),
@@ -83,12 +88,14 @@ q = Fido.search(
 # set the number of parallel downloads to 2 so as not
 # to overwhelm the JSOC export service with our number
 # of download requests.
+
 files = Fido.fetch(q, max_conn=2)
 files.sort()
 
 #####################################################
 # Now that we've downloaded the files, we can create
 # a `~sunpy.map.MapSequence` from them.
+
 m_seq = sunpy.map.Map(files, sequence=True)
 
 #####################################################
@@ -97,7 +104,9 @@ m_seq = sunpy.map.Map(files, sequence=True)
 # each image in our sequence. We first adjust the plot
 # settings on each image to ensure the colorbar is the
 # same at each time step.
+
 for m in m_seq:
     m.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
 m_seq.peek()
+
 plt.show()

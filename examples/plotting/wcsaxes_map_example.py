@@ -16,6 +16,7 @@ from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
 # We start with the sample data and create a submap of a smaller region.
+
 aia = sunpy.map.Map(AIA_171_IMAGE)
 top_right = SkyCoord(0 * u.arcsec, 1000 * u.arcsec, frame=aia.coordinate_frame)
 bottom_left = SkyCoord(-1000 * u.arcsec, 0 * u.arcsec, frame=aia.coordinate_frame)
@@ -54,12 +55,12 @@ ax.plot(pixel_coord[0], pixel_coord[1], 'x', color='white',
 
 
 ################################################################################
-# Using the transform command expects coordinates in degrees and not arcseconds
+# Using the transform command expects coordinates in degrees and not arcseconds.
 
 map_coord = ([-300, 200] * u.arcsec)
 
 ax.plot(map_coord[0].to('deg'), map_coord[1].to('deg'), 'o', color='white', transform=ax.get_transform('world'),
         label=f'Map coordinate [{map_coord[0]}, {map_coord[1]}]')
-
 plt.legend()
+
 plt.show()
