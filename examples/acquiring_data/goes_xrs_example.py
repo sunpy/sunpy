@@ -26,8 +26,6 @@ Another thing to note is that the GOES XRS client `~sunpy.net.Fido` now
 returns all available GOES data for the specific timerange queried. For
 example, there are times when GOES 13, 14 and 15 overlap and such data is
 available from each satellite. Similarly there are times when GOES 16 and 17 overlap.
-
-Lets query the GOES XRS data over a specified timerange:
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -39,6 +37,7 @@ from sunpy.net import attrs as a
 #############################################################
 # Lets first define our start and end times and query using the
 # `~sunpy.net.Fido`.
+
 tstart = "2015-06-21 01:00"
 tend = "2015-06-21 23:00"
 result = Fido.search(a.Time(tstart, tend), a.Instrument("XRS"))
@@ -46,29 +45,25 @@ print(result)
 
 #############################################################
 # As we can see this now returns three results, one file for GOES
-# 13, one for GOES 14 and one for GOES 15, which can be identfied
+# 13, one for GOES 14 and one for GOES 15, which can be identified
 # by the ``SatelliteNumber`` column. However, we probably will only want
 # one of these files for our analysis, so we can query by the `sunpy.net.attrs`:
 # `sunpy.net.dataretriever.attrs.goes.SatelliteNumber` to specify what GOES satellite number we want
 # to use.
+
 result_goes15 = Fido.search(a.Time(tstart, tend), a.Instrument("XRS"), a.goes.SatelliteNumber(15))
 print(result_goes15)
 
 #############################################################
 # Now we can see that this returns just one file for the GOES 15 data.
 # Lets now download this data using `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`.
+
 file_goes15 = Fido.fetch(result_goes15)
 
 #############################################################
-# Also just to note, if this will download the file to the
-# ``~/sunpy/data/`` directory on your local machine. You can also
-# define where you want this to download to using the ``path`` keyword
-# argument in `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`
-# (e.g. ``Fido.fetch(result, path=".\")``).
-
-#############################################################
 # Lets now load this data into a `~sunpy.timeseries.TimeSeries`,
-# and inspect the data using `~sunpy.timeseries.GenericTimeSeries.peek()`
+# and inspect the data using `~sunpy.timeseries.GenericTimeSeries.peek()`.
+
 goes_15 = ts.TimeSeries(file_goes15)
 goes_15.peek()
 
@@ -76,6 +71,7 @@ goes_15.peek()
 # We can also pull out the individual GOES chanels and plot. The 0.5-4 angstrom
 # channel is known as the "xrsa" channel and the 1-8 angstrom channel is known
 # as the "xrsb" channel.
+
 fig, ax = plt.subplots()
 ax.plot(goes_15.index, goes_15.quantity("xrsb"))
 ax.set_ylabel("Flux (Wm$^{-2}$)")
@@ -87,7 +83,8 @@ plt.show()
 # We can also truncate the data for the time of the large flare,
 # and analyze the different channels. For example, we can plot the
 # derivative which is useful in terms of the Neupert effect when analyzing
-# flares
+# flares.
+
 goes_flare = goes_15.truncate("2015-06-21 09:35", "2015-06-21 10:30")
 fig, ax = plt.subplots()
 ax.plot(goes_flare.index, np.gradient(goes_flare.quantity("xrsb")))
@@ -107,14 +104,16 @@ plt.show()
 # which are now and its now available through sunpy.net.Fido.
 
 ###############################################################
-# Lets query for some recent data over two days
+# Lets query for some recent data over two days.
+
 results = Fido.search(a.Time("2020-11-20 00:00", "2020-11-21 23:00"), a.Instrument("XRS"))
 print(results)
 
 ###############################################################
 # We can see that we are provided with 4 results, two files for GOES 16
 # and two for GOES 17. Again we can make the query only specifying one
-# GOES satellite number
+# GOES satellite number.
+
 results_16 = Fido.search(a.Time("2020-11-20 00:00", "2020-11-21 23:00"), a.Instrument("XRS"),
                          a.goes.SatelliteNumber(16))
 print(results_16)
@@ -122,6 +121,7 @@ print(results_16)
 ###############################################################
 # Lets now download this data and load into a
 # `~sunpy.timeseries.TimeSeries`.
+
 files = Fido.fetch(results_16)
 # We use the `concatenate=True` keyword argument in TimeSeries, as
 # we have two files and want to create one timeseries from them.

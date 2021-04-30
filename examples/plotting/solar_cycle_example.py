@@ -24,6 +24,7 @@ from sunpy.time import TimeRange
 # consensus of the Solar Cycle 24 Prediction Panel.
 #
 # We will first search for and then download the data.
+
 time_range = TimeRange("2008-06-01 00:00", Time.now())
 result = Fido.search(a.Time(time_range), a.Instrument('noaa-indices'))
 f_noaa_indices = Fido.fetch(result)
@@ -33,6 +34,7 @@ f_noaa_predict = Fido.fetch(result)
 
 ###############################################################################
 #  We then load them into individual `~sunpy.timeseries.TimeSeries` objects.
+
 noaa = ts.TimeSeries(f_noaa_indices, source='noaaindices').truncate(time_range)
 noaa_predict = ts.TimeSeries(f_noaa_predict, source='noaapredictindices')
 
@@ -41,6 +43,7 @@ noaa_predict = ts.TimeSeries(f_noaa_predict, source='noaapredictindices')
 # In this case we use the S.I.D.C. Brussels International Sunspot Number (RI).
 # The predictions provide both a high and low values, which we plot below as
 # ranges.
+
 fig, ax = plt.subplots()
 ax.plot(noaa.index, noaa.quantity('sunspot RI'), label='Sunspot Number')
 ax.plot(noaa_predict.index, noaa_predict.quantity('sunspot'),
@@ -51,4 +54,5 @@ ax.set_ylim(bottom=0)
 ax.set_ylabel('Sunspot Number')
 ax.set_xlabel('Year')
 ax.legend()
+
 plt.show()

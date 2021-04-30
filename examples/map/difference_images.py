@@ -8,8 +8,7 @@ The example uses `sunpy.map.MapSequence` to compute a difference image and then 
 This basic method works for base difference or running difference. Just change whether
 you're subtracting the previous image or the first image in a sequence.
 """
-###########################################################################
-
+# sphinx_gallery_thumbnail_number = 2
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 
@@ -38,7 +37,7 @@ maps = sunpy.map.Map(downloaded_files, sequence=True)
 
 plt.figure()
 ax = plt.subplot(projection=maps[1])
-maps[1].plot()
+maps[1].plot(clip_interval=(0.5, 99.9)*u.percent)
 
 ###########################################################################
 # And now we can do take the actual difference.
@@ -56,13 +55,12 @@ meta = maps[1].meta
 diff_map = sunpy.map.Map(diff, meta)
 
 ###########################################################################
-# Finally, we'll plot it. We'll apply a colormap and renormalize the
+# Finally, we'll plot it. We'll apply a colormap and re-normalize the
 # intensity so that it shows up well.
 
 plt.figure()
 ax_diff = plt.subplot(projection=diff_map)
 diff_map.plot(cmap='Greys_r',
               norm=colors.Normalize(vmin=-50, vmax=50))
-plt.show()
 
-# sphinx_gallery_thumbnail_number = 2
+plt.show()

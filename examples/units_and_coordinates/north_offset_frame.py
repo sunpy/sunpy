@@ -5,7 +5,6 @@ Offsetting the north pole of a coordinate frame
 
 How to use `~sunpy.coordinates.NorthOffsetFrame` to offset the north pole for a coordinate frame.
 """
-
 import matplotlib.pyplot as plt
 
 import astropy.units as u

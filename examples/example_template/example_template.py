@@ -86,4 +86,4 @@ plt.show()
 # thumbnail by adding the following comment to your file.
 # ``#sphinx_gallery_thumbnail_number = X```
 # where ``X`` is the figure number you want (from 1).
-# We suggest putting this at the end.
+# We suggest putting this at the top, after the initial docstring block.

@@ -8,8 +8,6 @@ to save as an image.
 """
 import matplotlib.pyplot as plt
 
-##############################################################################
-# Start by importing the necessary modules.
 import astropy.units as u
 
 import sunpy.map
@@ -17,12 +15,13 @@ from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################
 # Create a `sunpy.map.GenericMap`.
+
 smap = sunpy.map.Map(AIA_171_IMAGE)
 
 ##############################################################################
 # Plot the Map without a frame.
+# We can setup a frameless figure and an axes which spans the whole canvas.
 
-# Setup a frameless figure and an axes which spans the whole canvas.
 figure = plt.figure(frameon=False)
 axes = plt.Axes(figure, [0., 0., 1., 1.])
 

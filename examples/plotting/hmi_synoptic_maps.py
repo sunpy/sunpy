@@ -1,11 +1,10 @@
-# coding: utf-8
 """
 ==============================================
 Loading an HMI daily synoptic image into a Map
 ==============================================
 
 In this example we load the Daily Synoptic Maps produced by the HMI team. This
-data is an interesting demonstration of SunPy's Map class as it is not in the
+data is an interesting demonstration of sunpy's Map class as it is not in the
 more common Helioprojective coordinate system, it is in Heliographic Carrington
 coordinates and in a non-trivial Cylindrical Equal Area projection.
 """
@@ -16,18 +15,21 @@ from astropy.utils.data import download_file
 import sunpy.map
 
 ###############################################################################
-# Let's download the file and read it into a Map
+# Let's download the file and read it into a Map.
+
 filename = download_file(
     'http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Synoptic_Mr.2191.fits', cache=True)
 syn_map = sunpy.map.Map(filename)
 
 ###############################################################################
-# Let's fix the plot settings
+# Let's fix the plot settings.
+
 syn_map.plot_settings['cmap'] = 'hmimag'
 syn_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 
 ###############################################################################
-# Let's plot the results
+# Let's plot the results.
+
 fig = plt.figure(figsize=(12, 5))
 axes = plt.subplot(projection=syn_map)
 im = syn_map.plot()
@@ -57,4 +59,5 @@ cb.set_label("LOS Magnetic Field [Gauss]")
 axes.set_ylim((1, syn_map.data.shape[0] - 1))
 plt.title("{} {}-{}".format(syn_map.meta['content'], syn_map.meta['CAR_ROT'],
                             syn_map.meta['CAR_ROT'] + 1))
+
 plt.show()

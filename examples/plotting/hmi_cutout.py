@@ -37,36 +37,61 @@ mask = ~sunpy.map.coordinate_is_on_solar_disk(hpc_coords)
 magnetogram_big = sunpy.map.Map(magnetogram.data, magnetogram.meta, mask=mask)
 
 ##############################################################################
-# We create the figure in two stages.   From here on, the rest of the comments
-# will be inside the code block.
-
+# We create the figure in two stages.
 # The first stage is plotting the full-disk magnetogram.
+
+# sphinx_gallery_defer_figures
+
 fig = plt.figure(figsize=(7.2, 4.8))
 
-# We create a nice normalization range for the image
+################################################################################
+# We create a nice normalization range for the image.
+
+# sphinx_gallery_defer_figures
+
 norm = matplotlib.colors.SymLogNorm(50, vmin=-7.5e2, vmax=7.5e2)
 
-# Plot the full-disk magnetogram
+################################################################################
+# Plot the full-disk magnetogram.
+
+# sphinx_gallery_defer_figures
+
 ax1 = fig.add_subplot(121, projection=magnetogram_big)
 magnetogram_big.plot(axes=ax1, cmap='RdBu_r', norm=norm, annotate=False,)
 magnetogram_big.draw_grid(axes=ax1, color='k', alpha=0.25, lw=0.5)
 
-# These lines deal with hiding the axis, its ticks and labels
+################################################################################
+# These lines deal with hiding the axis, its ticks and labels.
+
+# sphinx_gallery_defer_figures
+
 for coord in ax1.coords:
     coord.frame.set_linewidth(0)
     coord.set_ticks_visible(False)
     coord.set_ticklabel_visible(False)
 
+################################################################################
 # We draw the rectangle around the region we plan to showcase in the cutout image.
+
+# sphinx_gallery_defer_figures
+
 magnetogram_big.draw_quadrangle(left_corner, top_right=right_corner, color='k', lw=1)
 
+################################################################################
 # The second stage is plotting the zoomed-in magnetogram.
+
+# sphinx_gallery_defer_figures
+
 magnetogram_small = magnetogram.submap(left_corner, top_right=right_corner)
 ax2 = fig.add_subplot(122, projection=magnetogram_small)
 im = magnetogram_small.plot(axes=ax2, norm=norm, cmap='RdBu_r', annotate=False,)
 ax2.grid(alpha=0)
 
+################################################################################
 # Unlike the full-disk image, here we just clean up the axis labels and ticks.
+
+# sphinx_gallery_defer_figures
+
 lon, lat = ax2.coords[0], ax2.coords[1]
 lon.frame.set_linewidth(1)
 lat.frame.set_linewidth(1)
@@ -77,8 +102,12 @@ lat.set_axislabel_position('r')
 lat.set_ticks_position('r')
 lat.set_ticklabel_position('r')
 
+################################################################################
 # Now for the finishing touches, we add two lines that will connect
 # the two images as well as a colorbar.
+
+# sphinx_gallery_defer_figures
+
 xpix, ypix = magnetogram_big.world_to_pixel(right_corner)
 con1 = ConnectionPatch(
     (0, 1), (xpix.value, ypix.value), 'axes fraction', 'data', axesA=ax2, axesB=ax1,
@@ -99,7 +128,9 @@ cax = fig.add_axes([
 ])
 cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 
-# For the colorbar we want it to have three fixed ticks
+################################################################################
+# For the colorbar we want it to have three fixed ticks.
+
 cbar.locator = matplotlib.ticker.FixedLocator([-1e2, 0, 1e2])
 cbar.set_label("LOS Magnetic Field [gauss]", labelpad=-40, rotation=0)
 cbar.update_ticks()
