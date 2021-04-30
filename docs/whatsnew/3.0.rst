@@ -43,14 +43,12 @@ The first new feature is :meth:`sunpy.map.GenericMap.draw_quadrangle` which repl
 
 The next change is to :meth:`sunpy.map.GenericMap.draw_limb`, which now supports drawing the limb as seen by any observer on any image.
 This means that it is possible to visualize the sections of the limb which are visible in one map on another, or to draw the limb as seen from helioprojective map observer on a synoptic map.
-
-.. minigallery:: sunpy.map.GenericMap.draw_limb
+For a demonstration of this new functionality see the first figure in the :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py` example.
 
 The last major change is to :meth:`sunpy.map.GenericMap.plot`, which now has an ``autoalign=True`` keyword argument.
 This option when set to `True` will use :meth:`~matplotlib.axes.Axes.pcolormesh` to transform the image being plotted the correct coordinates of the axes it is being plotted on.
 This allows for plots of two images with different projections to be visualized together correctly.
 It is worth noting that using ``autoalign=True`` is computationally expensive, and when used with interactive plots there is a significant performance penalty every time the plot is modified.
-
 See the :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py` example for details.
 
 .. _whatsnew-3.0-map-eui:
@@ -79,7 +77,7 @@ See the new :ref:`sphx_glr_generated_gallery_map_map_metadata_modification.py` e
 
 .. _whatsnew-3.0-instr:
 
-``sunpy.instr`` Moved to ``sunkit-instruments``
+``sunpy.instr`` moved to ``sunkit-instruments``
 ===============================================
 
 The `sunpy.instr` subpackage has been moved to a separate affiliated package called `sunkit-instruments <https://docs.sunpy.org/projects/sunkit-instruments/>`__.
