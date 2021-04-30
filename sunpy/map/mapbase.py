@@ -193,7 +193,11 @@ class GenericMap(NDData):
         This is then passed into the Map Factory so we can register them.
         """
         super().__init_subclass__(**kwargs)
+        if cls.__doc__ is None:
+            # Set an empty string, to prevent an error adding None to str in the next line
+            cls.__doc__ = ''
         cls.__doc__ += textwrap.indent(_notes_doc, "    ")
+
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
 
