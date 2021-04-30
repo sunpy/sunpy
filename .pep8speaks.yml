@@ -8,6 +8,8 @@ pycodestyle:
     - docs/conf.py
     - sunpy/__init__.py
     - sunpy/extern/
+  ignore:
+    - E501
 
 descending_issues_order: True
 
