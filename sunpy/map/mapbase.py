@@ -2113,7 +2113,7 @@ class GenericMap(NDData):
         return visible, hidden
 
     @u.quantity_input
-    def draw_quadrangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
+    def draw_quadrangle(self, bottom_left, *, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
                         axes=None, top_right=None, **kwargs):
         """
         Draw a quadrangle defined in world coordinates on the plot using Astropy's
@@ -2129,11 +2129,14 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        bottom_left : `~astropy.coordinates.SkyCoord`
-            The bottom-left coordinate of the quadrangle. It can
-            have shape ``(2,)`` to simultaneously define ``top_right``.
-        top_right : `~astropy.coordinates.SkyCoord`
-            The top-right coordinate of the quadrangle.
+        bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
+            The bottom-left coordinate of the rectangle. If a `~astropy.coordinates.SkyCoord` it can
+            have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
+            pixel coordinates it must be given as an `~astropy.units.Quantity`
+            object with units of `~astropy.units.si.pix`.
+        top_right : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.SkyCoord`, optional
+            The top-right coordinate of the quadrangle. If ``top_right`` is
+            specified ``width`` and ``height`` must be omitted.
         width : `astropy.units.Quantity`, optional
             The width of the quadrangle. Required if ``top_right`` is omitted.
         height : `astropy.units.Quantity`
@@ -2158,19 +2161,32 @@ class GenericMap(NDData):
         """
         axes = self._check_axes(axes, allow_non_wcsaxes=False)
 
-        bottom_left, top_right = get_rectangle_coordinates(
-            bottom_left, top_right=top_right, width=width, height=height)
+        if isinstance(bottom_left, astropy.units.quantity.Quantity):
+            pixel_corners = u.Quantity(self._parse_submap_input(bottom_left, top_right, width, height)).T
+            bottom = np.min(pixel_corners[1])
+            top = np.max(pixel_corners[1])
+            left = np.min(pixel_corners[0])
+            right = np.max(pixel_corners[0])
+            width = (right-left)
+            height=(top-bottom)
+            anchor = (bottom, left)*u.pix
+            kwargs.update({"vertex_unit": u.pix})
+        else:
+            bottom_left, top_right = get_rectangle_coordinates(
+                bottom_left, top_right=top_right, width=width, height=height)
 
-        width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-        height = top_right.spherical.lat - bottom_left.spherical.lat
+            width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
+            height = top_right.spherical.lat - bottom_left.spherical.lat
+            transform = axes.get_transform(bottom_left.frame.replicate_without_data())
+            anchor = self._get_lon_lat(bottom_left)
+            kwargs.update({"transform": transform})
 
         kwergs = {
-            "transform": axes.get_transform(bottom_left.frame.replicate_without_data()),
             "edgecolor": "white",
             "fill": False,
         }
         kwergs.update(kwargs)
-        quad = Quadrangle(self._get_lon_lat(bottom_left), width, height, **kwergs)
+        quad = Quadrangle(anchor, width, height, **kwergs)
         axes.add_patch(quad)
         return quad
 
