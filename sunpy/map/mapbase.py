@@ -1909,9 +1909,6 @@ class GenericMap(NDData):
         # create copy of new meta data
         new_meta = self.meta.copy()
 
-        new_nx = new_array.shape[1]
-        new_ny = new_array.shape[0]
-
         scale = [self.scale[i].to_value(self.spatial_units[i] / u.pix) for i in range(2)]
 
         # Update metadata
@@ -1922,13 +1919,8 @@ class GenericMap(NDData):
             new_meta['CD2_1'] *= dimensions[0]
             new_meta['CD1_2'] *= dimensions[1]
             new_meta['CD2_2'] *= dimensions[1]
-        new_meta['crpix1'] = (new_nx + 1) / 2
-        new_meta['crpix2'] = (new_ny + 1) / 2
-        lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.to_value(self.spatial_units[0]) + 0.5 * \
-            (offset[0] * scale[0])
-        new_meta['crval2'] = lat.to_value(self.spatial_units[1]) + 0.5 * \
-            (offset[1] * scale[1])
+        new_meta['crpix1'] = ((self.meta['crpix1'] - 0.5 - offset[0]) / dimensions[0]) + 0.5
+        new_meta['crpix2'] = ((self.meta['crpix2'] - 0.5 - offset[1]) / dimensions[1]) + 0.5
 
         # Create new map instance
         if self.mask is not None:
