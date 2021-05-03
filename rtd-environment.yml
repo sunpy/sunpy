@@ -6,4 +6,4 @@ dependencies:
   - pip
   - python=3.9
   - pip:
-      - git+https://github.com/sphinx-gallery/sphinx-gallery.git
+      - sphinx-gallery
