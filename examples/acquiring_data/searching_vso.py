@@ -41,3 +41,15 @@ result = Fido.search(a.Time('2020/03/04 00:00', '2020/03/04 00:02'),
                      a.Instrument.aia,
                      a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
 print(result)
+
+###############################################################################
+# We can even combine entire queries in this manner.
+# Here we will define two searches for the AIA and HMI data.
+# But unlike other examples, we have to ``&`` the individual queries.
+
+search_aia = (a.Time('2020/03/04 00:00', '2020/03/04 00:01') & a.Instrument.aia)
+search_hmi = (a.Time('2020/03/04 00:00', '2020/03/04 00:01')
+              & a.Instrument.hmi & a.Physobs.los_magnetic_field)
+
+result = Fido.search(search_aia | search_hmi)
+print(result)
