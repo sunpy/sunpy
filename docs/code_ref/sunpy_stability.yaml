@@ -10,9 +10,6 @@ database:
 image:
   status: dev
   comments: While it has not changed recently, it could be subject to major revisions in future.
-instr:
-  status: deprecated
-  comments: Will be removed in sunpy 3.1. Please use `sunkit_instruments`.
 io:
   status: mature
   comments: Should see no major changes.

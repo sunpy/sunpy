@@ -1,0 +1,1 @@
+Removed ``sunpy.instr``, please use `sunkit-instruments <https://docs.sunpy.org/projects/sunkit-instruments/en/stable/>`__.

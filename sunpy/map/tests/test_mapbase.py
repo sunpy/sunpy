@@ -95,11 +95,6 @@ def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
 
 
-def test_size(generic_map):
-    with pytest.warns(SunpyDeprecationWarning, match='Use map.data.size instead'):
-        assert generic_map.size == 36 * u.pix
-
-
 def test_min(generic_map):
     assert generic_map.min() == 1
 
@@ -1158,7 +1153,7 @@ def test_contour_input(simple_map):
     simple_map.meta['bunit'] = 'm'
 
     with pytest.warns(SunpyDeprecationWarning,
-         match='Passing contour levels that are not an astropy Quantity'):
+                      match='Passing contour levels that are not an astropy Quantity'):
         simple_map.draw_contours(1.5)
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
         simple_map.contour(1.5)

@@ -17,7 +17,6 @@ from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.helio import attrs as ha
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
-from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 __all__ = ['HECClient', 'HECResponse']
@@ -165,49 +164,6 @@ class HECClient(BaseClient):
                                                     MAXRECORDS=max_records)
         results = votable_handler(etree.tostring(results))
         return HECResponse(results.to_table(), client=self)
-
-    @deprecated(since="2.1", message="Use Fido.search instead", alternative="Fido.search")
-    def time_query(self, start_time, end_time, table=None, max_records=None):
-        """
-        The simple interface to query the wsdl service.
-        Used to utilize the service's TimeQuery() method, this is a simple
-        interface between the sunpy module library and the web-service's API.
-
-        Parameters
-        ----------
-        start_time : str, `~sunpy.time.parse_time` parsable objects
-            The time where the query window opens
-        end_time : str, `~sunpy.time.parse_time` parsable objects
-            The time where the query window closes
-        table : bytes
-            The table to query from. If the table is unknown, the user will be
-            prompted to pick from a list of tables.
-        max_records: int
-            The maximum number of desired records.
-
-        Returns
-        -------
-        results: `astropy.io.votable.tree.Table`
-            Table containing the results from the query.
-
-        Examples
-        --------
-        >>> from sunpy.net.helio import hec  # doctest: +SKIP
-        >>> hc = hec.HECClient()  # doctest: +SKIP
-        >>> start = '2005/01/03'
-        >>> end = '2005/12/03'
-        >>> temp = hc.time_query(start, end, max_records=10)  # doctest: +SKIP
-        """
-        while table is None:
-            table = self.select_table()
-        start_time = parse_time(start_time)
-        end_time = parse_time(end_time)
-        results = self.hec_client.service.TimeQuery(STARTTIME=start_time.isot,
-                                                    ENDTIME=end_time.isot,
-                                                    FROM=table,
-                                                    MAXRECORDS=max_records)
-        results = votable_handler(etree.tostring(results))
-        return results
 
     def get_table_names(self):
         """

@@ -1,0 +1,1 @@
+Removed ``sunpy.map.GenericMap.draw_rectangle()``, the replacement is `sunpy.map.GenericMap.draw_quadrangle`

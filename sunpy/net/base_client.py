@@ -9,7 +9,6 @@ from collections.abc import Sequence
 from astropy.table import Column, Row, Table
 
 from sunpy.util._table_attribute import QTable, TableAttribute
-from sunpy.util.decorators import deprecated
 from sunpy.util.util import get_width
 
 __all__ = ['QueryResponseColumn', 'BaseQueryResponse', 'QueryResponseTable', 'BaseClient']
@@ -179,26 +178,6 @@ class QueryResponseTable(QTable):
             if isinstance(descr, TableAttribute):
                 setattr(self, attr, kwargs.pop(attr))
 
-    @deprecated("2.1", "The object is a table.")
-    def build_table(self):
-        """
-        Return an `astropy.table.Table` representation of the query response.
-        """
-        return self
-
-    @property
-    @deprecated("2.1", "Slice the table instead.")
-    def blocks(self):
-        """
-        A `collections.abc.Sequence` object which contains the records
-        contained within the Query Response.
-        """
-        return list(self.iterrows())
-
-    @deprecated("2.1", "use path_format_keys instead")
-    def response_block_properties(self):
-        return self.path_format_keys()
-
     def unhide_columns(self):
         """
         Modify this table so that all columns are displayed.
@@ -232,7 +211,8 @@ class QueryResponseTable(QTable):
         new_table = self[[col for col in all_cols if self[col] is not None]]
 
         if remove_empty:
-            empty_cols = [col.info.name for col in self.itercols() if col.info.dtype.kind == 'O' and all(val is None for val in col)]
+            empty_cols = [col.info.name for col in self.itercols()
+                          if col.info.dtype.kind == 'O' and all(val is None for val in col)]
             new_table.remove_columns(empty_cols)
 
         return new_table

@@ -7,9 +7,6 @@ docs/code_ref/database.rst        @sunpy/database
 sunpy/image/                      @sunpy/image
 docs/code_ref/image.rst           @sunpy/image
 
-sunpy/instr/                      @sunpy/instr
-docs/code_ref/instr.rst           @sunpy/instr
-
 sunpy/io/                         @sunpy/io
 docs/code_ref/io.rst              @sunpy/io
 

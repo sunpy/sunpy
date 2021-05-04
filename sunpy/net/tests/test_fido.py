@@ -550,6 +550,3 @@ def test_path_format_keys():
 
     unif = UnifiedResponse(t1, t2)
     assert unif.path_format_keys() == {'_excite_'}
-
-    with pytest.warns(SunpyDeprecationWarning):
-        assert unif.response_block_properties() == {'_excite_'}

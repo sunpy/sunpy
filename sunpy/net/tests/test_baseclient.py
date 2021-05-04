@@ -5,7 +5,6 @@ import pytest
 from sunpy.net import base_client, dataretriever, jsoc, vso
 from sunpy.net.base_client import QueryResponseTable, convert_row_to_table
 from sunpy.net.dataretriever.sources.norh import NoRHClient
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 _REGEX = re.compile(r"Client")
 
@@ -55,13 +54,6 @@ def test_slice(dummy_response):
 
 def test_path_format_keys(dummy_response):
     assert dummy_response.path_format_keys() == {'hello'}
-
-
-def test_deprecated_calls(dummy_response):
-    with pytest.warns(SunpyDeprecationWarning):
-        assert dummy_response.build_table() is dummy_response
-        assert dummy_response.blocks == list(dummy_response.iterrows())
-        assert dummy_response.response_block_properties() == dummy_response.path_format_keys()
 
 
 def test_convert_row_to_table(dummy_response):

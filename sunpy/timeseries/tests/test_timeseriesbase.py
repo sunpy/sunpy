@@ -27,7 +27,6 @@ from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util import SunpyUserWarning
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -48,8 +47,6 @@ rhessi_filepath = os.path.join(filepath,
 noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
 noaa_pre_json_filepath = os.path.join(filepath,
                                       'predicted-solar-cycle-truncated.json')
-noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
-noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 goes_filepath = os.path.join(filepath, 'go1520120601.fits.gz')
 
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
@@ -102,19 +99,6 @@ def noaa_pre_json_test_ts():
     with pytest.warns(ErfaWarning, match=r'.*dubious year'):
         return sunpy.timeseries.TimeSeries(
             noaa_pre_json_filepath, source='NOAAPredictIndices')
-
-
-@pytest.fixture
-def noaa_ind_txt_test_ts():
-    with pytest.warns(SunpyDeprecationWarning):
-        return sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
-
-
-@pytest.fixture
-def noaa_pre_txt_test_ts():
-    with pytest.warns(SunpyDeprecationWarning):
-        return sunpy.timeseries.TimeSeries(
-            noaa_pre_txt_filepath, source='NOAAPredictIndices')
 
 
 @pytest.fixture
@@ -171,8 +155,8 @@ def table_ts():
 
 
 def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                    lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
-                    noaa_pre_json_test_ts, noaa_pre_txt_test_ts, generic_ts, table_ts):
+                    lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts,
+                    noaa_pre_json_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.units, OrderedDict)
     assert isinstance(esp_test_ts.units, OrderedDict)
     assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
@@ -182,15 +166,13 @@ def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, g
     assert isinstance(rhessi_test_ts.units, OrderedDict)
     assert isinstance(noaa_ind_json_test_ts.units, OrderedDict)
     assert isinstance(noaa_pre_json_test_ts.units, OrderedDict)
-    assert isinstance(noaa_pre_txt_test_ts.units, OrderedDict)
-    assert isinstance(noaa_ind_txt_test_ts.units, OrderedDict)
     assert isinstance(generic_ts.units, OrderedDict)
     assert isinstance(table_ts.units, OrderedDict)
 
 
 def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
-                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, generic_ts, table_ts):
+                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts,
+                   noaa_pre_json_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(esp_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
@@ -200,15 +182,13 @@ def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
     assert isinstance(rhessi_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(noaa_ind_json_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(noaa_pre_json_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(noaa_pre_txt_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(noaa_ind_txt_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(generic_ts.meta, TimeSeriesMetaData)
     assert isinstance(table_ts.meta, TimeSeriesMetaData)
 
 
 def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
-                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, generic_ts, table_ts):
+                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts,
+                   noaa_pre_json_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.to_dataframe(), DataFrame)
     assert isinstance(esp_test_ts.to_dataframe(), DataFrame)
     assert isinstance(fermi_gbm_test_ts.to_dataframe(), DataFrame)
@@ -218,8 +198,6 @@ def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
     assert isinstance(rhessi_test_ts.to_dataframe(), DataFrame)
     assert isinstance(noaa_ind_json_test_ts.to_dataframe(), DataFrame)
     assert isinstance(noaa_pre_json_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(noaa_pre_txt_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(noaa_ind_txt_test_ts.to_dataframe(), DataFrame)
     assert isinstance(generic_ts.to_dataframe(), DataFrame)
     assert isinstance(table_ts.to_dataframe(), DataFrame)
 
@@ -810,18 +788,8 @@ def test_noaa_json_ind_peek(noaa_ind_json_test_ts):
 
 
 @figure_test
-def test_noaa_txt_ind_peek(noaa_ind_txt_test_ts):
-    noaa_ind_txt_test_ts.peek()
-
-
-@figure_test
 def test_noaa_json_pre_peek(noaa_pre_json_test_ts):
     noaa_pre_json_test_ts.peek()
-
-
-@figure_test
-def test_noaa_txt_pre_peek(noaa_pre_txt_test_ts):
-    noaa_pre_txt_test_ts.peek()
 
 
 @figure_test
@@ -891,28 +859,12 @@ def test_noaa_ind_json_invalid_peek(noaa_ind_json_test_ts):
         empty_ts.peek()
 
 
-def test_noaa_ind_txt_invalid_peek(noaa_ind_txt_test_ts):
-    a = noaa_ind_txt_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_ind_txt_test_ts.time_range.start - TimeDelta(1*u.day)
-    empty_ts = noaa_ind_txt_test_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError):
-        empty_ts.peek()
-
-
 def test_noaa_pre_json_invalid_peek(noaa_pre_json_test_ts):
     # NOAA pre data contains years long into the future, which ERFA complains about
     with pytest.warns(ErfaWarning, match='dubious year'):
         a = noaa_pre_json_test_ts.time_range.start - TimeDelta(2*u.day)
         b = noaa_pre_json_test_ts.time_range.start - TimeDelta(1*u.day)
         empty_ts = noaa_pre_json_test_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError):
-        empty_ts.peek()
-
-
-def test_noaa_pre_txt_invalid_peek(noaa_pre_txt_test_ts):
-    a = noaa_pre_txt_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_pre_txt_test_ts.time_range.start - TimeDelta(1*u.day)
-    empty_ts = noaa_pre_txt_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 

@@ -12,7 +12,6 @@ Code Reference
    data
    database
    image
-   instr
    io
    map
    net

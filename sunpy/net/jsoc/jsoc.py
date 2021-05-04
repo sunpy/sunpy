@@ -8,7 +8,6 @@ from pathlib import Path
 
 import drms
 import numpy as np
-import pandas as pd
 
 import astropy.table
 import astropy.time
@@ -20,7 +19,6 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util._table_attribute import TableAttribute
-from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.parfive_helpers import Downloader, Results
 
@@ -317,38 +315,6 @@ class JSOCClient(BaseClient):
         return_results.query_args = blocks
         return_results._original_num_rows = len(return_results)
         return return_results
-
-    @deprecated(since="2.1", message="use JSOCClient.search() instead", alternative="JSOCClient.search()")
-    def search_metadata(self, *query, **kwargs):
-        """
-        Get the metadata of all the files obtained in a search query.
-        Builds a jsoc query, similar to query method, and takes similar inputs.
-
-        Complex queries to be easily formed using logical operators such as
-        ``&`` and ``|``, in the same way as the query function.
-
-        Parameters
-        ----------
-        query : a variable number of `~sunpy.net.jsoc.attrs`
-                as parameters, which are chained together using
-                the ``AND`` (``&``) operator.
-
-        Returns
-        -------
-        res : `~pandas.DataFrame` object
-            A collection of metadata of all the files.
-
-        """
-        query = and_(*query)
-        blocks = []
-        res = pd.DataFrame()
-        for block in walker.create(query):
-            iargs = kwargs.copy()
-            iargs.update(block)
-            iargs.update({'meta': True})
-            blocks.append(iargs)
-            res = res.append(self._lookup_records(iargs))
-        return res
 
     def request_data(self, jsoc_response, method='url', **kwargs):
         """
@@ -875,7 +841,7 @@ class JSOCClient(BaseClient):
 
         required = {a.jsoc.Series}
         optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
-                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample,
+                    a.jsoc.Segment, a.jsoc.PrimeKey, a.Sample,
                     a.jsoc.Cutout}
         return cls.check_attr_types_in_query(query, required, optional)
 
