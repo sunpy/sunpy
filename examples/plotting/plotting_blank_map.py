@@ -56,8 +56,6 @@ yc = [0, 100, 400] * u.arcsec
 ################################################################################
 # Place and mark coordinates on the plot.
 
-# sphinx_gallery_defer_figures
-
 coords = SkyCoord(xc, yc, frame=blank_map.coordinate_frame)
 p = ax.plot_coord(coords, 'o')
 # Set title.
