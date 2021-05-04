@@ -200,6 +200,9 @@ then used to modify the plot:
     plt.colorbar()
     plt.show()
 
+It is possible to create the same plot, explicitly not using `~astropy.visualization.wcsaxes`, however, this will not have the features of `~astropy.visualization.wcsaxes` which include correct representation of rotation and plotting in different coordinate systems.
+Please see this example :ref:`sphx_glr_generated_gallery_map_plot_frameless_image.py`.
+
 .. _wcsaxes-plotting:
 
 Plotting Maps with wcsaxes
