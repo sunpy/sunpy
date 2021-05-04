@@ -699,6 +699,25 @@ def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
         int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
 
 
+def test_superpixel_units(generic_map):
+    new_dims = (2, 2) * u.pix
+    super1 = generic_map.superpixel(new_dims)
+    super2 = generic_map.superpixel(new_dims.to(u.kpix))
+    assert super1.meta == super2.meta
+
+    offset = (1, 2) * u.pix
+    super1 = generic_map.superpixel(new_dims, offset=offset)
+    super2 = generic_map.superpixel(new_dims, offset=offset.to(u.kpix))
+    assert super1.meta == super2.meta
+
+
+def test_superpixel_fractional_inputs(generic_map):
+    super1 = generic_map.superpixel((2, 3) * u.pix)
+    super2 = generic_map.superpixel((2.2, 3.2) * u.pix)
+    assert np.all(super1.data == super2.data)
+    assert super1.meta == super2.meta
+
+
 def test_superpixel_err(generic_map):
     with pytest.raises(ValueError, match="Offset is strictly non-negative."):
         generic_map.superpixel((2, 2) * u.pix, offset=(-2, 2) * u.pix)
