@@ -1,1 +1,1 @@
-Allows :meth:`sunpy.map.GenericMap.draw_quadrangle` to accept ``u.pix`` as input which leads to a rectangular plot.
+Allows :meth:`sunpy.map.GenericMap.draw_quadrangle` to accept ``u.pix`` as input to enable plotting boxes in the pixel space of both the native map and other maps when the correct transform is specified.
