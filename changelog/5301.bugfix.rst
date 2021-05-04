@@ -1,0 +1,4 @@
+Fractional inputs to the ``dimensions`` and ``offset`` arguments to
+:meth:`sunpy.map.GenericMap.superpixel` were previously rounded using :func:`int`
+in the superpixel algorithm, but not assigned integer values in the new meatadata.
+This has now been changed so the rounding is correctly reflected in the meatadata.
