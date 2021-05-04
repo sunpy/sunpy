@@ -1,1 +1,0 @@
-Refactored `~sunpy.coordinates.metaframes.RotatedSunFrame` transformations for improved performance.

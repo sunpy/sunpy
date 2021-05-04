@@ -1,1 +1,0 @@
-`sunpy.util.sphinx.changelog` and `sunpy.util.towncrier` have been removed and are now in a standalone package `sphinx-changelog <https://github.com/openastronomy/sphinx-changelog>`__.

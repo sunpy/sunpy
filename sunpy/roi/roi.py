@@ -4,10 +4,12 @@ This module implements a basic region of interest class.
 import textwrap
 
 from sunpy.time import TimeRange, parse_time
+from sunpy.util.decorators import deprecated
 
 __all__ = ['roi']
 
 
+@deprecated(since="3.0", alternative="astropy-regions")
 class roi:
     """
     A generalized Region Of Interest (ROI) class.
@@ -35,8 +37,8 @@ class roi:
     Examples
     --------
     >>> from sunpy.roi import roi
-    >>> result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'], description='UV occult.',source='LYRA LYTAF')
-    >>> result = roi(times='2013-05-12 03:12:00')
+    >>> result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'], description='UV occult.',source='LYRA LYTAF')  # doctest: +SKIP
+    >>> result = roi(times='2013-05-12 03:12:00')  # doctest: +SKIP
     """
 
     def __init__(self, times=None, description=None, source=None):

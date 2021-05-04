@@ -20,7 +20,7 @@ import sunpy.data.sample
 import sunpy.map
 
 ###############################################################################
-# We will start with using SunPy's sample data for this example.
+# We will start with using sunpy's sample data for this example.
 
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
 

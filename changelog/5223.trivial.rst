@@ -1,3 +1,0 @@
-`~sunpy.map.GenericMap` plotting methods now have consistent argument
-checking for the ``axes`` argument, and will raise the same warnings
-or errors for similar ``axes`` input.

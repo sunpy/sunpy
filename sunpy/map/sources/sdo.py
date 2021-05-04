@@ -101,6 +101,11 @@ class HMIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        # To avoid FITS fixed warnings, have to do this before super()
+        for i in [1, 2]:
+            if header.get(f'CRDER{i}', None) == 'nan':
+                # nan is not a valid value in the FITS standard
+                header.pop(f'CRDER{i}')
 
         super().__init__(data, header, **kwargs)
 

@@ -1,1 +1,0 @@
-The ``rsun`` frame attribute of `~sunpy.coordinates.frames.Helioprojective` now converts any input to kilometers.

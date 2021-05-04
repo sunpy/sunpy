@@ -20,7 +20,8 @@ data_shape0 = (10, 20)
 data0 = np.random.rand(*data_shape0)
 
 ###############################################################################
-# Define the axis that will make up the line plot
+# Define the axis that will make up the line plot.
+
 plot_axis0 = 1
 slider_axis0 = 0
 
@@ -37,14 +38,14 @@ slider_axis0 = 0
 # animate through the other dimensions of the cube?  To do this we supply a
 # (10, 21) xdata where each row (i.e. xdata[i, :]) gives the pixel/bin edges
 # along the x-axis for the of the i-th frame of the animation.  Note that this
-# API extends in the same way to higher dimension.  In our 2D case here though,
+# API extends in the same way to higher dimension. In our 2D case here though,
 # we can define our non-constant x-axis values like so:
+
 xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
 
 ###############################################################################
 # Generate animation object with variable x-axis data.
+
 ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata])
 
-###############################################################################
-# Show plot
 plt.show()

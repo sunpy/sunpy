@@ -14,9 +14,10 @@ import sunpy.timeseries
 from sunpy.data.sample import RHESSI_TIMESERIES
 
 ###############################################################################
-# Let's first load a RHESSI TimeSeries from SunPy's sample data.
+# Let's first load a RHESSI TimeSeries from sunpy's sample data.
 # This data contains 9 columns, which are evenly sampled with a time step of 4
 # seconds.
+
 ts = sunpy.timeseries.TimeSeries(RHESSI_TIMESERIES)
 
 ###############################################################################
@@ -30,7 +31,8 @@ x_ray = ts.columns[0]
 freq, spectra = signal.periodogram(ts.quantity(x_ray), fs=0.25)
 
 ###############################################################################
-# Let's plot the results
+# Let's plot the results.
+
 plt.semilogy(freq, spectra)
 plt.title(f'Power Spectrum of {x_ray}')
 plt.ylabel('Power Spectral Density [{:LaTeX}]'.format(ts.units[x_ray] ** 2 / u.Hz))

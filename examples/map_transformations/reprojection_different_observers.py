@@ -63,11 +63,24 @@ out_shape = (512, 512)
 map_aia = map_aia.resample(out_shape * u.pix)
 map_euvi = map_euvi.resample(out_shape * u.pix)
 
+######################################################################
+# Plot the two maps, with the solar limb as seen by each observatory
+# overlaid on both plots.
+
 fig = plt.figure()
+
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
 map_aia.plot(axes=ax1)
+map_aia.draw_limb(axes=ax1, color='white')
+map_euvi.draw_limb(axes=ax1, color='red')
+
 ax2 = fig.add_subplot(1, 2, 2, projection=map_euvi)
 map_euvi.plot(axes=ax2)
+limb_aia = map_aia.draw_limb(axes=ax2, color='white')
+limb_euvi = map_euvi.draw_limb(axes=ax2, color='red')
+
+plt.legend([limb_aia[0], limb_euvi[0]],
+           ['Limb as seen by AIA', 'Limb as seen by EUVI A'])
 
 ######################################################################
 # We now need to construct an output WCS. We build a custom header using
@@ -118,7 +131,7 @@ ax2.coords[1].grid_lines_kwargs['color'] = 'k'
 # =====================
 #
 # The new observer coordinate doesn't have to be associated with an
-# existing Map. SunPy provides a function which can get the location
+# existing Map. sunpy provides a function which can get the location
 # coordinate for any known body. In this example, we use Mars.
 
 mars = get_body_heliographic_stonyhurst('mars', map_aia.date)
@@ -150,7 +163,6 @@ mars_header = sunpy.map.make_fitswcs_header(
 # Once again we need to generate a `~astropy.wcs.WCS` object.
 
 mars_wcs = WCS(mars_header)
-
 output, footprint = reproject_interp(map_aia, mars_wcs, out_shape)
 
 ######################################################################
