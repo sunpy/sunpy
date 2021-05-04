@@ -63,4 +63,5 @@ if len(lats) > 0:
                     color='red',
                     fontweight='bold',
                     )
+
 plt.show()

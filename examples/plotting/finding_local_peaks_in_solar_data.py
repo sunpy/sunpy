@@ -10,7 +10,6 @@ We use the `~skimage.feature.peak_local_max` function in the scikit-image librar
 to find those regions in the map data where the intensity values form a local maxima.
 Then we plot those peaks in the original AIA plot.
 """
-
 import matplotlib.pyplot as plt
 from skimage.feature import peak_local_max
 
@@ -28,11 +27,11 @@ plt.figure()
 aiamap.plot()
 plt.colorbar()
 
-
 ###############################################################################
 # Before we find regions of local maxima, we need to create some variables to
 # store pixel values for the 2D SDO/AIA data we are using.
 # These variables are used for plotting in 3D later on.
+
 X, Y = all_pixel_indices_from_map(aiamap)
 
 #######################################################################################
@@ -40,11 +39,10 @@ X, Y = all_pixel_indices_from_map(aiamap)
 # value equal to ``threshold_rel * max(Intensity)`` which is 20% of the maximum intensity.
 # The next step is to calculate the pixel locations of local maxima
 # positions where peaks are separated by at least ``min_distance = 60 pixels``.
-# This function comes from scikit image and the documenation is found
+# This function comes from scikit image and the documentation is found
 # here `~skimage.feature.peak_local_max`.
 
 coordinates = peak_local_max(aiamap.data, min_distance=60, threshold_rel=0.2)
-
 
 ###############################################################################
 # We now check for the indices at which we get such a local maxima and plot
@@ -60,7 +58,6 @@ ax.set_xlabel('X Coordinates')
 ax.set_ylabel('Y Coordinates')
 ax.set_zlabel('Intensity')
 
-
 ###############################################################################
 # Now we need to turn the pixel coordinates into the world location so
 # they can be easily overlaid on the Map.
@@ -75,4 +72,5 @@ fig = plt.figure()
 ax = plt.subplot(projection=aiamap)
 aiamap.plot()
 ax.plot_coord(hpc_max, 'bx')
+
 plt.show()

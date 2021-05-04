@@ -102,4 +102,5 @@ ax.plot_coord(mars, 's', color='white', fillstyle='none', markersize=12, label='
 # Plot all of the stars
 ax.plot_coord(tbl_crds, 'o', color='white', fillstyle='none')
 plt.legend()
+
 plt.show()

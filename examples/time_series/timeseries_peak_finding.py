@@ -1,16 +1,12 @@
 """
 ==============================
-Find Peaks in SunPy TimeSeries
+Find Peaks in sunpy TimeSeries
 ==============================
 
 This example illustrates how to find minimum or maximum peaks in a TimeSeries.
 Note: Peak finding is a complex problem that has many potential solutions and
 this example is just one method of many.
 """
-
-##############################################################################
-# Start by importing the necessary modules.
-
 import matplotlib.pyplot as plt
 import numpy as np
 

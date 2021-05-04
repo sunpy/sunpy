@@ -131,7 +131,7 @@ ax2.coords[1].grid_lines_kwargs['color'] = 'k'
 # =====================
 #
 # The new observer coordinate doesn't have to be associated with an
-# existing Map. SunPy provides a function which can get the location
+# existing Map. sunpy provides a function which can get the location
 # coordinate for any known body. In this example, we use Mars.
 
 mars = get_body_heliographic_stonyhurst('mars', map_aia.date)
@@ -163,7 +163,6 @@ mars_header = sunpy.map.make_fitswcs_header(
 # Once again we need to generate a `~astropy.wcs.WCS` object.
 
 mars_wcs = WCS(mars_header)
-
 output, footprint = reproject_interp(map_aia, mars_wcs, out_shape)
 
 ######################################################################

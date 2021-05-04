@@ -1,7 +1,0 @@
-The default axes used by :meth:`sunpy.visualisation.animator.BaseFuncAnimator.get_animation`
-is now ``BaseFuncAnimator.axes``, instead of the currently active axes (accessed via.
-:func:`matplotlib.pyplot.gca`). The allows animations to be created on figures
-created directly using `matplotlib.figure.Figure`.
-
-To revert to the previous behaviour of using the current axes,
-give ``axes=plt.gca()`` to ``get_animation()``.

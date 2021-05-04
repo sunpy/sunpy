@@ -1,3 +1,0 @@
-:func:`sunpy.coordinates.get_horizons_coord` can now be given a start time, end time,
-and number of intervals (or interval length) to query a evenly spaced set of
-times. See the documentation string for more information and an example.

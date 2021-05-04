@@ -1,2 +1,0 @@
-Added the ability to dynamically scale `sunpy.visualization.animator` instances.
-By specifying the ``clip_interval`` keyword, it will now clip the minimum and maximum at each slider step to the specified interval.

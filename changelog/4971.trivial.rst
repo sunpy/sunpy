@@ -1,2 +1,0 @@
-Improved performance when moving the slider in
-`sunpy.visualisation.animator.ArrayAnimatorWCS`.
