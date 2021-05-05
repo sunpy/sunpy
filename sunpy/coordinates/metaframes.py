@@ -3,12 +3,10 @@ Coordinate frames that are defined relative to other frames
 """
 
 from astropy import units as u
-from astropy.coordinates import SphericalRepresentation
 from astropy.coordinates.attributes import Attribute, QuantityAttribute
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
 
-from sunpy import log
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
@@ -71,19 +69,13 @@ def _make_rotatedsun_cls(framecls):
     def reference_to_rotatedsun(hgs_coord, rotatedsun_frame):
         int_frame = HeliographicStonyhurst(obstime=rotatedsun_frame.base.obstime)
         int_coord = hgs_coord.make_3d().transform_to(int_frame)  # obstime change handled here
-        oldrepr = int_coord.spherical
 
         # Rotate the coordinate in HGS
-        from sunpy.physics.differential_rotation import diff_rot
-        log.debug(f"Applying {rotatedsun_frame.duration} of solar rotation")
-        newlon = oldrepr.lon - diff_rot(rotatedsun_frame.duration,
-                                        oldrepr.lat,
-                                        rot_type=rotatedsun_frame.rotation_model,
-                                        frame_time='sidereal')
-        newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
+        int_coord = int_coord._apply_diffrot(-rotatedsun_frame.duration,
+                                             rotatedsun_frame.rotation_model)
 
         # Transform from HGS
-        new_coord = int_coord.realize_frame(newrepr).transform_to(rotatedsun_frame.base)
+        new_coord = int_coord.transform_to(rotatedsun_frame.base)
         return rotatedsun_frame.realize_frame(new_coord.data)
 
     @frame_transform_graph.transform(FunctionTransform, _RotatedSunFramecls, HeliographicStonyhurst)
@@ -95,19 +87,12 @@ def _make_rotatedsun_cls(framecls):
             from_coord = from_coord.make_3d()
         int_frame = HeliographicStonyhurst(obstime=rotatedsun_coord.base.obstime)
         int_coord = from_coord.transform_to(int_frame)
-        oldrepr = int_coord.spherical
 
         # Rotate the coordinate in HGS
-        from sunpy.physics.differential_rotation import diff_rot
-        log.debug(f"Applying {rotatedsun_coord.duration} of solar rotation")
-        newlon = oldrepr.lon + diff_rot(rotatedsun_coord.duration,
-                                        oldrepr.lat,
-                                        rot_type=rotatedsun_coord.rotation_model,
-                                        frame_time='sidereal')
-        newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
+        int_coord = int_coord._apply_diffrot(rotatedsun_coord.duration,
+                                             rotatedsun_coord.rotation_model)
 
         # Transform from HGS
-        int_coord = int_frame.realize_frame(newrepr)
         return int_coord.transform_to(hgs_frame)  # obstime change handled here
 
     _rotatedsun_cache[framecls] = _RotatedSunFramecls

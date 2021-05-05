@@ -21,6 +21,7 @@ from astropy.coordinates.representation import (
 )
 from astropy.time import Time
 
+from sunpy import log
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
@@ -282,6 +283,19 @@ class HeliographicStonyhurst(BaseHeliographic):
     (90., 2.54480438, 45.04442252)>
     """
     name = "heliographic_stonyhurst"
+
+    def _apply_diffrot(self, duration, rotation_model):
+        oldrepr = self.spherical
+
+        from sunpy.physics.differential_rotation import diff_rot
+        log.debug(f"Applying {duration} of solar rotation")
+        newlon = oldrepr.lon + diff_rot(duration,
+                                        oldrepr.lat,
+                                        rot_type=rotation_model,
+                                        frame_time='sidereal')
+        newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
+
+        return self.realize_frame(newrepr)
 
 
 @add_common_docstring(**_frame_parameters())
