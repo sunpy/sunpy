@@ -76,8 +76,8 @@ __all__ = ['transform_with_sun_center',
 _ignore_sun_motion = False
 
 
-# Boolean flag for applying solar differential rotation for any obstime change
-_apply_diffrot = False
+# If not None, the name of the differential-rotation model to use for any obstime change
+_autoapply_diffrot = None
 
 
 @contextmanager
@@ -134,26 +134,50 @@ def transform_with_sun_center():
 
         old_ignore_sun_motion = _ignore_sun_motion  # nominally False
 
-        log.debug("Ignore the motion of the center of the Sun for transformations")
+        if not old_ignore_sun_motion:
+            log.debug("Ignore the motion of the center of the Sun for transformations")
         _ignore_sun_motion = True
         yield
     finally:
+        if not old_ignore_sun_motion:
+            log.debug("Stop ignoring the motion of the center of the Sun for transformations")
         _ignore_sun_motion = old_ignore_sun_motion
 
 
 @contextmanager
-def propagate_with_solar_surface():
+def propagate_with_solar_surface(rotation_model='howard'):
+    """
+    Context manager for coordinate transformations to automatically apply solar
+    differential rotation for any change in obstime.
+
+    This context manager also ignores the motion of the center of the Sun (see
+    :func:`~sunpy.coordinates.transformations.transform_with_sun_center`).
+
+    Notes
+    -----
+    Due to the implementation approach, this context manager modifies transformations
+    between only these five coordinate frames:
+    `~sunpy.coordinates.frames.HeliographicStonyhurst`,
+    `~sunpy.coordinates.frames.HeliographicCarrington`,
+    `~sunpy.coordinates.frames.HeliocentricInertial`,
+    `~sunpy.coordinates.frames.Heliocentric`, and
+    `~sunpy.coordinates.frames.Helioprojective`.
+    """
     with transform_with_sun_center():
         try:
-            global _apply_diffrot
+            global _autoapply_diffrot
 
-            old_apply_diffrot = _apply_diffrot  # nominally False
+            old_autoapply_diffrot = _autoapply_diffrot  # nominally False
 
-            log.debug("Apply solar differential rotation for any changes in obstime")
-            _apply_diffrot = True
+            log.debug("Enable automatic solar differential rotation "
+                      f"('{rotation_model}') for any changes in obstime")
+            _autoapply_diffrot = rotation_model
             yield
         finally:
-            _apply_diffrot = old_apply_diffrot
+            if not old_autoapply_diffrot:
+                log.debug("Disable automatic solar differential rotation "
+                          "for any changes in obstime")
+            _autoapply_diffrot = old_autoapply_diffrot
 
 
 # Global counter to keep track of the layer of transformation
@@ -280,11 +304,7 @@ def _transform_obstime(frame, obstime):
     # Transform to the new obstime using the appropriate loopback transformation
     new_frame = frame.replicate(obstime=obstime)
     if frame.obstime is not None:
-        if _apply_diffrot:
-            from .metaframes import RotatedSunFrame  # avoid a circular import
-            return RotatedSunFrame(base=frame, rotated_time=obstime).transform_to(new_frame)
-        else:
-            return frame.transform_to(new_frame)
+        return frame.transform_to(new_frame)
     else:
         return new_frame
 
@@ -680,7 +700,10 @@ def hgs_to_hgs(from_coo, to_frame):
     elif _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
-        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
+        if _autoapply_diffrot:
+            from_coo = from_coo._apply_diffrot((to_frame.obstime - from_coo.obstime).to('day'),
+                                               _autoapply_diffrot)
+        return from_coo.transform_to(HCRS(obstime=to_frame.obstime)).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
