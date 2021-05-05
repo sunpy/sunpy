@@ -1,1 +1,1 @@
-Removed the ability to read txt files from `NOAAIndicesTimeSeries` and `NOAAPredictIndicesTimeSeries` as the data provided by NOAA is now provided as JSON files.
+The deprecated ability to read txt files from `NOAAIndicesTimeSeries` and `NOAAPredictIndicesTimeSeries` has been removed as the data provided by NOAA is now provided as JSON files.

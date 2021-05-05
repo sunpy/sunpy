@@ -2,7 +2,6 @@ import os
 import tempfile
 from unittest import mock
 
-import pandas as pd
 import pytest
 from parfive import Results
 
@@ -15,7 +14,7 @@ import sunpy.data.test
 import sunpy.map
 import sunpy.net.attrs as a
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning
 
 
 @pytest.fixture
@@ -76,18 +75,6 @@ def test_post_pass(client):
     tmpresp = aa._d
     assert tmpresp['protocol'] == 'fits'
     assert tmpresp['method'] == 'url'
-
-
-@pytest.mark.remote_data
-def test_build_table(client):
-    responses = client.search(
-        a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
-        a.jsoc.Series('hmi.M_45s'))
-    table = responses.build_table()
-    assert isinstance(table, astropy.table.Table)
-
-    columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-    assert columns == table._display_table.colnames
 
 
 def test_show(client):
@@ -189,7 +176,8 @@ def test_invalid_query(client):
 def test_lookup_records_errors(client):
     d1 = {'end_time': astropy.time.Time('2020-01-01 01:00:35'),
           'start_time': astropy.time.Time('2020-01-01 00:00:35')}
-    with pytest.raises(ValueError):          # Series must be specified for a JSOC Query
+    # Series must be specified for a JSOC Query
+    with pytest.raises(ValueError):
         client._lookup_records(d1)
 
     d1.update({'series': 'aia.lev1_euv_12s'})
@@ -200,7 +188,8 @@ def test_lookup_records_errors(client):
 
     d1['keys'] = 'T_OBS'
     d1.update({'primekey': {'foo': 'bar'}})
-    with pytest.raises(ValueError):          # Unexpected PrimeKeys were passed.
+    # Unexpected PrimeKeys were passed.
+    with pytest.raises(ValueError):
         client._lookup_records(d1)
 
     del d1['primekey']
@@ -210,8 +199,9 @@ def test_lookup_records_errors(client):
     with pytest.raises(TypeError):
         client._lookup_records(d1)
 
+    # Unexpected Segments were passed.
     d1.update({'segment': 'foo'})
-    with pytest.raises(ValueError):          # Unexpected Segments were passed.
+    with pytest.raises(ValueError):
         client._lookup_records(d1)
 
     del d1['segment']
@@ -294,17 +284,6 @@ def test_make_recordset(client):
     exp = 'hmi.sharp_720s[][2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI@300.0s]'\
           '{continuum,magnetogram}'
     assert client._make_recordset(**d1) == exp
-
-
-@pytest.mark.remote_data
-def test_search_metadata(client):
-    with pytest.raises(SunpyDeprecationWarning):
-        metadata = client.search_metadata(a.Time('2020-01-01T00:00:00', '2020-01-01T00:02:00'),
-                                          a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA))
-        assert isinstance(metadata, pd.DataFrame)
-        assert metadata.shape == (11, 176)
-        for i in metadata.index.values:
-            assert (i.startswith('aia.lev1_euv_12s') and i.endswith('[304]'))
 
 
 @pytest.mark.remote_data

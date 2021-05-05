@@ -11,7 +11,6 @@ from parfive import Results
 from parfive.utils import FailedDownload
 
 import astropy.units as u
-from astropy.table import Table
 
 from sunpy import config
 from sunpy.net import Fido, attr
@@ -26,7 +25,7 @@ from sunpy.net.vso import VSOQueryResponseTable
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.tests.helpers import no_vso, skip_windows
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -194,37 +193,6 @@ def test_unifiedresponse_slicing_reverse():
     assert len(results[::-1]) == len(results[::1])
     assert isinstance(results[0, ::-1], QueryResponseTable)
     assert all(results[0][::-1] == results[0, ::-1])
-
-
-@pytest.mark.remote_data
-def test_tables_single_response():
-    results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra, a.Level.two)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        tables = results.tables
-
-    assert isinstance(tables, list)
-    assert isinstance(tables[0], Table)
-    assert len(tables) == 1
-
-    assert len(tables[0]) == 5
-
-
-@pytest.mark.remote_data
-def test_tables_multiple_response():
-    results = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                          a.Instrument.lyra | (a.Instrument.rhessi & a.Physobs.summary_lightcurve))
-
-    with pytest.warns(SunpyDeprecationWarning):
-        tables = results.tables
-
-    assert isinstance(tables, list)
-    assert all(isinstance(t, Table) for t in tables)
-    assert len(tables) == 2
-
-    assert all(entry == 'LYRA' for entry in tables[0]['Instrument'])
-    assert all(entry == 'RHESSI' for entry in tables[1]['Instrument'])
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)

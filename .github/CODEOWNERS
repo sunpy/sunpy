@@ -19,9 +19,6 @@ docs/code_ref/net.rst             @sunpy/net
 sunpy/physics/                    @sunpy/physics
 docs/code_ref/physics.rst         @sunpy/physics
 
-sunpy/roi/                        @sunpy/roi
-docs/code_ref/roi.rst             @sunpy/roi
-
 sunpy/sun/                        @sunpy/sun
 docs/code_ref/sun.rst             @sunpy/sun
 

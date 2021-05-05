@@ -71,9 +71,10 @@ class QueryResponse(BaseQueryResponse):
     def build_table(self):
         """
         Create a human readable table.
+
         Returns
         -------
-        table : `astropy.table.QTable`
+        `astropy.table.QTable`
         """
         keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']
         record_items = {}

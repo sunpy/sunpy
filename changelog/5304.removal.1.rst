@@ -1,1 +1,1 @@
-``sunpy.roi.chaincode.Chaincode`` has been removed in favour of `sunpy.net.helio.Chaincode`.
+The deprecated ``sunpy.roi.chaincode.Chaincode`` has been removed in favour of `sunpy.net.helio.Chaincode`.

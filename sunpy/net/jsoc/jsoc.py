@@ -45,16 +45,6 @@ class JSOCResponse(QueryResponseTable):
         super().__init__(*args, **kwargs)
         self._original_num_rows = len(self)
 
-    # TODO: remove this method post 3.0
-    def build_table(self):
-        # remove this check post 3.0
-        if self.query_args is not None and any('keys' in i for i in self.query_args):
-            new_table = self.copy()
-            new_table.display_keys = slice(None)
-            return new_table
-
-        return self
-
 
 class JSOCClient(BaseClient):
     """
@@ -665,9 +655,10 @@ class JSOCClient(BaseClient):
                     end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                     sample=sample)
             else:
-                error_message = "Time attribute has been passed both as a Time()"\
-                                " and PrimeKey(). Please provide any one of them"\
-                                " or separate them by OR operator."
+                error_message = ("Time attribute has been passed both as a Time()"
+                                 " and PrimeKey(). Please provide any one of them"
+                                 " or separate them by OR operator."
+                                 )
                 raise ValueError(error_message)
 
         else:
@@ -677,9 +668,9 @@ class JSOCClient(BaseClient):
             # but it is a good idea to keep a check.
             match = set(primekey.keys()) & PKEY_LIST_TIME
             if len(match) > 1:
-                error_message = "Querying of series, having more than 1 Time-type "\
-                                "prime-keys is not yet supported. Alternative is to "\
-                                "use only one of the primekey to query for series data."
+                error_message = ("Querying of series, having more than 1 Time-type "
+                                 "prime-keys is not yet supported. Alternative is to "
+                                 "use only one of the primekey to query for series data.")
                 raise ValueError(error_message)
 
             if match:
@@ -698,9 +689,9 @@ class JSOCClient(BaseClient):
             else:
                 # This is executed when wavelength has been passed both through PrimeKey()
                 # and Wavelength().
-                error_message = "Wavelength attribute has been passed both as a Wavelength()"\
-                                " and PrimeKey(). Please provide any one of them"\
-                                " or separate them by OR operator."
+                error_message = ("Wavelength attribute has been passed both as a Wavelength()"
+                                 " and PrimeKey(). Please provide any one of them"
+                                 " or separate them by OR operator.")
                 raise ValueError(error_message)
 
         else:
@@ -748,64 +739,52 @@ class JSOCClient(BaseClient):
         """
         Do a LookData request to JSOC to workout what results the query returns.
         """
-
         isMeta = iargs.get('meta', False)
+        keywords = iargs.get('keys', '**ALL**')
         c = drms.Client()
-
-        if isMeta:
-            keywords = '**ALL**'
-        else:
-            keywords = iargs.get('keys', '**ALL**')
-        # TODO: keywords should be set only to '**ALL**' post 3.0
-        # All checks done above should be removed.
 
         if 'series' not in iargs:
             error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
 
         if not isinstance(keywords, list) and not isinstance(keywords, str):
-            error_message = "Keywords can only be passed as a list or "\
-                            "comma-separated strings."
+            error_message = "Keywords can only be passed as a list or comma-separated strings."
             raise TypeError(error_message)
 
-        # Raise errors for PrimeKeys
         # Get a set of the PrimeKeys that exist for the given series, and check
         # whether the passed PrimeKeys is a subset of that.
         pkeys = c.pkeys(iargs['series'])
         pkeys_passed = iargs.get('primekey', None)  # pkeys_passes is a dict, with key-value pairs.
         if pkeys_passed is not None:
             if not set(list(pkeys_passed.keys())) <= set(pkeys):
-                error_message = "Unexpected PrimeKeys were passed. The series {series} "\
-                                "supports the following PrimeKeys {pkeys}"
+                error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following PrimeKeys: {pkeys}"
                 raise ValueError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
         # Raise errors for wavelength
         wavelength = iargs.get('wavelength', '')
         if wavelength != '':
             if 'WAVELNTH' not in pkeys:
-                error_message = "The series {series} does not support wavelength attribute."\
-                                "The following primekeys are supported {pkeys}"
+                error_message = f"The series {iargs['series']} does not support wavelength attribute. The following primekeys are supported {pkeys}"
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
         # Raise errors for segments
         # Get a set of the segments that exist for the given series, and check
         # whether the passed segments is a subset of that.
         si = c.info(iargs['series'])
-        segs = list(si.segments.index.values)          # Fetches all valid segment names
+        # Fetches all valid segment names
+        segs = list(si.segments.index.values)
         segs_passed = iargs.get('segment', None)
         if segs_passed is not None:
 
             if not isinstance(segs_passed, list) and not isinstance(segs_passed, str):
-                error_message = "Segments can only be passed as a comma-separated"\
-                                " string or a list of strings."
+                error_message = "Segments can only be passed as a comma-separated string or a list of strings."
                 raise TypeError(error_message)
 
             elif isinstance(segs_passed, str):
                 segs_passed = segs_passed.replace(' ', '').split(',')
 
             if not set(segs_passed) <= set(segs):
-                error_message = "Unexpected Segments were passed. The series {series} "\
-                                "contains the following Segments {segs}"
+                error_message = f"Unexpected Segments were passed. The series {iargs['series']} contains the following Segments {segs}"
                 raise ValueError(error_message.format(series=iargs['series'], segs=segs))
 
             iargs['segment'] = segs_passed
@@ -822,12 +801,6 @@ class JSOCClient(BaseClient):
             key = keywords
 
         r = c.query(ds, key=key, rec_index=isMeta)
-
-        # If the method was called from search_metadata(), return a Pandas Dataframe,
-        # otherwise return astropy.table
-        # TODO: this check should also be removed post 3.0
-        if isMeta:
-            return r
 
         if r is None or r.empty:
             return astropy.table.Table()
