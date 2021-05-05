@@ -2162,14 +2162,8 @@ class GenericMap(NDData):
         axes = self._check_axes(axes, allow_non_wcsaxes=False)
 
         if isinstance(bottom_left, astropy.units.quantity.Quantity):
-            pixel_corners = u.Quantity(self._parse_submap_input(bottom_left, top_right, width, height)).T
-            bottom = np.min(pixel_corners[1])
-            top = np.max(pixel_corners[1])
-            left = np.min(pixel_corners[0])
-            right = np.max(pixel_corners[0])
-            width = (right-left)
-            height = (top-bottom)
-            anchor = (bottom, left)*u.pix
+            anchor, _, top_right, _ = self._parse_submap_quantity_input(bottom_left, top_right, width, height)
+            width, height = top_right - anchor
             kwargs.update({"vertex_unit": u.pix})
         else:
             bottom_left, top_right = get_rectangle_coordinates(
