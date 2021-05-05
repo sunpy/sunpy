@@ -654,6 +654,20 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
 
+@pytest.mark.parametrize('method', ['neighbor', 'nearest', 'linear', 'spline'])
+def test_resample_simple_map(simple_map, method):
+    # Put the reference pixel at the top-right of the bottom-left pixel
+    simple_map.meta['crpix1'] = 1.5
+    simple_map.meta['crpix2'] = 1.5
+    assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
+    # Make the superpixel map
+    new_dims = (9, 6) * u.pix
+    resamp_map = simple_map.resample(new_dims, method=method)
+    # Reference pixel should change, but reference coordinate should not
+    assert list(resamp_map.reference_pixel) == [2.5 * u.pix, 1.5 * u.pix]
+    assert resamp_map.reference_coordinate == simple_map.reference_coordinate
+
+
 def test_superpixel_simple_map(simple_map):
     # Put the reference pixel at the top-right of the bottom-left pixel
     simple_map.meta['crpix1'] = 1.5
