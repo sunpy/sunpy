@@ -25,13 +25,9 @@ if missing_requirements:
     sys.exit(1)
 
 # -- Read the Docs Specific Configuration --------------------------------------
-# This needs to be done before sunpy is imported
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
-    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
-    os.environ['HOME'] = '/home/docs/'
-    os.environ['LANG'] = 'C'
-    os.environ['LC_ALL'] = 'C'
+    # We want to hide the progress from the RTD logs.
     os.environ['HIDE_PARFIVE_PROGESS'] = 'True'
 
 # -- Non stdlib imports --------------------------------------------------------
@@ -224,7 +220,7 @@ sphinx_gallery_conf = {
     # Comes from the theme.
     "default_thumb_file": os.path.join(html_static_path[0], "img", "sunpy_icon_128x128.png"),
     'abort_on_example_error': False,
-    'plot_gallery': 'True',
+    'plot_gallery': True,
     'remove_config_comments': True,
     'doc_module': ('sunpy'),
     'only_warn_on_example_error': True,
