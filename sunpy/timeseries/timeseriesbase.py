@@ -16,6 +16,7 @@ from astropy.table import Column, Table
 from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
@@ -698,4 +699,4 @@ class GenericTimeSeries:
         filepath : `str`
             The path to the file you want to parse.
         """
-        return NotImplemented
+        raise NoMatchError(f'Could not find any timeseries sources to parse {filepath}')
