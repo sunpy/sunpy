@@ -471,11 +471,11 @@ class TestTimeSeries:
 
     def test_invalid_file(self):
         invalid_filepath = os.path.join(filepath, 'annotation_ppt.db')
-        with pytest.raises(TypeError):
+        with pytest.raises(NoMatchError):
             sunpy.timeseries.TimeSeries(invalid_filepath)
         # Now with silence_errors kwarg set
-        with pytest.raises(TypeError):
-            sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
+        ts = sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
+        assert ts == []
 
     def test_validate_units(self):
         valid_units = OrderedDict(
