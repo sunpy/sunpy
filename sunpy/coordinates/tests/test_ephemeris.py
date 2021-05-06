@@ -132,8 +132,8 @@ def test_get_horizons_coord_dict_time():
 
 
 @pytest.mark.remote_data
-class TestUsingDE432s:
-    # This class is for test functions that need the Astropy ephemeris to be set to DE432s
+class TestUsingDE440s:
+    # This class is for test functions that need the Astropy ephemeris to be set to DE440s
 
     # get_horizons_coord() depends on astroquery
     pytest.importorskip("astroquery")
@@ -141,19 +141,20 @@ class TestUsingDE432s:
     @classmethod
     def setup_class(cls):
         cls.old_ephemeris = solar_system_ephemeris.get()
-        solar_system_ephemeris.set('de432s')
+        try:
+            solar_system_ephemeris.set('de440s')
+        except ValueError:
+            pytest.skip("The installed version of Astropy cannot set the ephemeris to DE440s")
 
     @classmethod
     def teardown_class(cls):
         solar_system_ephemeris.set(cls.old_ephemeris)
 
-    @pytest.mark.xfail(reason="JPL HORIZONS is using a newer ephemeris (DE441) than the latest "
-                              "available through Astropy (DE430/DE432s)")
     @given(obstime=times())
     @settings(deadline=5000, max_examples=10)
     def test_consistency_with_horizons(self, obstime):
         # Check that the high-accuracy Astropy ephemeris has been set
-        assert solar_system_ephemeris.get() == 'de432s'
+        assert solar_system_ephemeris.get() == 'de440s'
 
         # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
         e1 = get_earth(obstime)
