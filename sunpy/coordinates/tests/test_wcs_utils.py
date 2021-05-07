@@ -3,8 +3,10 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord
+from astropy.coordinates.earth import EarthLocation
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import Time
 from astropy.wcs import WCS
 
 import sunpy.map
@@ -265,3 +267,45 @@ def test_self_observer():
     assert u.allclose(wcs.wcs.aux.hglt_obs, frame.lon.to_value(u.deg))
     assert u.allclose(wcs.wcs.aux.crln_obs, frame.lon.to_value(u.deg))
     assert u.allclose(wcs.wcs.aux.dsun_obs, frame.radius.to_value(u.m))
+
+
+def test_obsgeo_cartesian():
+
+    obstime = Time("2021-05-21T03:00:00")
+    location = EarthLocation.of_site("DKIST")
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['HPLT', 'HPLN']
+    wcs.wcs.obsgeo = list(location.to_value(u.m).tolist()) + [0, 0, 0]
+    wcs.wcs.dateobs = obstime.isot
+
+    frame = solar_wcs_frame_mapping(wcs)
+
+    assert frame.observer is not None
+
+    assert frame.observer == SkyCoord(location.get_itrs(obstime)).transform_to('heliographic_stonyhurst').frame
+
+
+def test_obsgeo_spherical():
+
+    obstime = Time("2021-05-21T03:00:00")
+    location = EarthLocation.of_site("DKIST").get_itrs(obstime)
+    loc_sph = location.spherical
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['HPLT', 'HPLN']
+    wcs.wcs.obsgeo = [0, 0, 0] + [loc_sph.lon.value, loc_sph.lat.value, loc_sph.distance.value]
+    wcs.wcs.dateobs = obstime.isot
+
+    frame = solar_wcs_frame_mapping(wcs)
+
+    assert frame.observer is not None
+
+    assert frame.observer == SkyCoord(location).transform_to('heliographic_stonyhurst').frame
+
+
+def test_obsgeo_invalid():
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['HPLT', 'HPLN']
+    wcs.wcs.obsgeo = [0, 2, 0, 0, 2, 0]
+
+    with pytest.raises(SunpyUserWarning):
+        solar_wcs_frame_mapping(wcs)

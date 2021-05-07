@@ -1,8 +1,16 @@
 import warnings
 
+import numpy as np
+
 import astropy.units as u
 import astropy.wcs.utils
-from astropy.coordinates import BaseCoordinateFrame
+from astropy.coordinates import (
+    ITRS,
+    BaseCoordinateFrame,
+    CartesianRepresentation,
+    SkyCoord,
+    SphericalRepresentation,
+)
 from astropy.wcs import WCS
 
 from sunpy.util.exceptions import SunpyUserWarning
@@ -73,6 +81,27 @@ def solar_wcs_frame_mapping(wcs):
                              attrs[1] * u.deg,
                              attrs[2] * u.m,
                              **kwargs)
+
+    # Read the observer out of obsgeo for ground based observers
+    if observer is None and wcs.wcs.obsgeo is not None and not np.all(wcs.wcs.obsgeo == 0):
+        data = None
+
+        # If the spherical coords are zero then use the cartesian ones
+        if np.all(wcs.wcs.obsgeo[3:] == 0):
+            data = CartesianRepresentation(*wcs.wcs.obsgeo[:3] * u.m)
+
+        # If the cartesian coords are all zero then use the spherical ones
+        elif np.all(wcs.wcs.obsgeo[:3] == 0):
+            data = SphericalRepresentation(*[comp * unit for comp, unit in zip(wcs.wcs.obsgeo[3:], (u.deg, u.deg, u.m))])
+
+        # Anything else is undefined
+        else:
+            warnings.warn("Can not parse the obsgeo observer information in this header. "
+                          "obsgeo must only be sepecifed in Cartesian or spherical coordinates.",
+                          SunpyUserWarning)
+
+        if data:
+            observer = SkyCoord(data, rsun=rsun, obstime=dateobs, frame=ITRS)
 
     # This custom attribute was always used in sunpy < 2.1; these warnings
     # can be converted into errors in sunpy 3.1
