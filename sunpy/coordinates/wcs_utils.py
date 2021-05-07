@@ -26,6 +26,48 @@ from .frames import (
 __all__ = ['solar_wcs_frame_mapping', 'solar_frame_to_wcs_mapping']
 
 
+def obsgeo_to_frame(obsgeo, obstime):
+    """
+    Convert a wcslib obsgeo struct into an ITRS coordinate frame.
+
+    Parameters
+    ----------
+    obsgeo : np.ndarray
+        A shape ``(6, )`` array representing ``OBSGEO-[XYZ], OBSGEO-[BLH]`` as
+        returned by `astropy.wcs.WCS.wcs.obsgeo`.
+
+    obstime : time-like
+        The time assiociated with the coordinate, will be passed to
+        `astropy.coordinates.ITRS` as the obstime keyword.
+
+    Returns
+    -------
+    BaseCoordinateFrame
+        An `~astropy.coordinates.ITRS` coordinate frame representing the coordinates.
+    """
+    invalid_message = (f"Can not parse the obsgeo location ({obsgeo})"
+                       "obsgeo must only be sepecifed in Cartesian or spherical coordinates.")
+
+    if obsgeo is None or np.all(obsgeo == 0) or np.all(~np.isfinite(obsgeo)):
+        raise ValueError(invalid_message)
+
+    data = None
+
+    # If the spherical coords are zero then use the cartesian ones
+    if np.all(obsgeo[3:] == 0):
+        data = CartesianRepresentation(*obsgeo[:3] * u.m)
+
+    # If the cartesian coords are all zero then use the spherical ones
+    elif np.all(obsgeo[:3] == 0):
+        data = SphericalRepresentation(*[comp * unit for comp, unit in zip(obsgeo[3:], (u.deg, u.deg, u.m))])
+
+    # Anything else is undefined
+    else:
+        raise ValueError(invalid_message)
+
+    return ITRS(data, obstime=obstime)
+
+
 def solar_wcs_frame_mapping(wcs):
     """
     This function registers the coordinates frames to their FITS-WCS coordinate
@@ -87,24 +129,11 @@ def solar_wcs_frame_mapping(wcs):
             wcs.wcs.obsgeo is not None
             and not np.all(wcs.wcs.obsgeo == 0)
             and not np.all(~np.isfinite(wcs.wcs.obsgeo))):
-        data = None
-
-        # If the spherical coords are zero then use the cartesian ones
-        if np.all(wcs.wcs.obsgeo[3:] == 0):
-            data = CartesianRepresentation(*wcs.wcs.obsgeo[:3] * u.m)
-
-        # If the cartesian coords are all zero then use the spherical ones
-        elif np.all(wcs.wcs.obsgeo[:3] == 0):
-            data = SphericalRepresentation(*[comp * unit for comp, unit in zip(wcs.wcs.obsgeo[3:], (u.deg, u.deg, u.m))])
-
-        # Anything else is undefined
-        else:
-            warnings.warn(f"Can not parse the obsgeo observer information in this header. ({wcs.wcs.obsgeo})"
-                          "obsgeo must only be sepecifed in Cartesian or spherical coordinates.",
-                          SunpyUserWarning)
-
-        if data:
-            observer = SkyCoord(data, rsun=rsun, obstime=dateobs, frame=ITRS)
+        try:
+            observer = obsgeo_to_frame(wcs.wcs.obsgeo, dateobs)
+            observer = SkyCoord(observer, rsun=rsun)
+        except ValueError as e:
+            warnings.warn(str(e), SunpyUserWarning)
 
     # This custom attribute was always used in sunpy < 2.1; these warnings
     # can be converted into errors in sunpy 3.1

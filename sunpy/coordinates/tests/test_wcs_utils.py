@@ -269,6 +269,7 @@ def test_self_observer():
     assert u.allclose(wcs.wcs.aux.dsun_obs, frame.radius.to_value(u.m))
 
 
+@pytest.mark.remote_data
 def test_obsgeo_cartesian():
 
     obstime = Time("2021-05-21T03:00:00")
@@ -285,6 +286,7 @@ def test_obsgeo_cartesian():
     assert frame.observer == SkyCoord(location.get_itrs(obstime)).transform_to('heliographic_stonyhurst').frame
 
 
+@pytest.mark.remote_data
 def test_obsgeo_spherical():
 
     obstime = Time("2021-05-21T03:00:00")
