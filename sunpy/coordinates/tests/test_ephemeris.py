@@ -132,7 +132,6 @@ def test_get_horizons_coord_dict_time():
 
 
 @pytest.fixture
-@pytest.mark.remote_data
 def use_DE440s():
     # This class is for test functions that need the Astropy ephemeris to be set to DE432s
     pytest.importorskip("astroquery")
@@ -148,6 +147,7 @@ def use_DE440s():
     solar_system_ephemeris.set(old_ephemeris)
 
 
+@pytest.mark.remote_data
 @given(obstime=times())
 @settings(deadline=5000, max_examples=10, suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_consistency_with_horizons(use_DE440s, obstime):
