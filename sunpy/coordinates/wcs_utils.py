@@ -83,7 +83,10 @@ def solar_wcs_frame_mapping(wcs):
                              **kwargs)
 
     # Read the observer out of obsgeo for ground based observers
-    if observer is None and wcs.wcs.obsgeo is not None and not np.all(wcs.wcs.obsgeo == 0):
+    if observer is None and (
+            wcs.wcs.obsgeo is not None
+            and not np.all(wcs.wcs.obsgeo == 0)
+            and not np.all(~np.isfinite(wcs.wcs.obsgeo))):
         data = None
 
         # If the spherical coords are zero then use the cartesian ones
@@ -96,7 +99,7 @@ def solar_wcs_frame_mapping(wcs):
 
         # Anything else is undefined
         else:
-            warnings.warn("Can not parse the obsgeo observer information in this header. "
+            warnings.warn(f"Can not parse the obsgeo observer information in this header. ({wcs.wcs.obsgeo})"
                           "obsgeo must only be sepecifed in Cartesian or spherical coordinates.",
                           SunpyUserWarning)
 
