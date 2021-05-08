@@ -6,7 +6,6 @@ hiddenimports += collect_submodules('numpy.distutils')
 hiddenimports += collect_submodules('distutils')
 hiddenimports += ['sunpy.data.data_manager.tests.mocks']
 
-
 hiddenimports += collect_submodules('sunpy')
 
 datas += collect_data_files("sunpy")
