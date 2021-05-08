@@ -15,7 +15,7 @@ from sunpy.coordinates.frames import (
     Helioprojective,
 )
 from sunpy.util import SunpyUserWarning
-from ..wcs_utils import _set_wcs_aux_obs_coord, solar_frame_to_wcs_mapping, solar_wcs_frame_mapping
+from sunpy.coordinates.wcs_utils import _set_wcs_aux_obs_coord, solar_frame_to_wcs_mapping, solar_wcs_frame_mapping
 
 
 @pytest.mark.parametrize('ctype, frame', [[['HPLN', 'HPLT'], Helioprojective],

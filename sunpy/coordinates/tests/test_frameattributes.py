@@ -8,8 +8,8 @@ from astropy.time import Time
 
 from sunpy.coordinates import frames, get_earth
 from sunpy.time import parse_time
-from ..frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
-from ..frames import HeliocentricInertial, HeliographicCarrington, HeliographicStonyhurst, Helioprojective
+from sunpy.coordinates.frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
+from sunpy.coordinates.frames import HeliocentricInertial, HeliographicCarrington, HeliographicStonyhurst, Helioprojective
 
 
 @pytest.fixture
