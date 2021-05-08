@@ -1,0 +1,3 @@
+Inputs to the ``dimensions`` and ``offset`` arguments to
+:meth:`sunpy.map.GenericMap.superpixel` in units other than ``u.pix``
+(e.g. ```u.kpix``) are now handled correctly.

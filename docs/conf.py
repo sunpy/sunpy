@@ -1,19 +1,15 @@
 """
 Configuration file for the Sphinx documentation builder.
-
-isort:skip_file
 """
-# flake8: NOQA: E402
-
 # -- stdlib imports ------------------------------------------------------------
 import os
 import sys
 import datetime
+import warnings
 from pkg_resources import get_distribution
 from packaging.version import Version
 
 # -- Check for dependencies ----------------------------------------------------
-
 doc_requires = get_distribution("sunpy").requires(extras=("docs",))
 missing_requirements = []
 for requirement in doc_requires:
@@ -29,7 +25,6 @@ if missing_requirements:
     sys.exit(1)
 
 # -- Read the Docs Specific Configuration --------------------------------------
-
 # This needs to be done before sunpy is imported
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
@@ -40,16 +35,15 @@ if on_rtd:
     os.environ['HIDE_PARFIVE_PROGESS'] = 'True'
 
 # -- Non stdlib imports --------------------------------------------------------
-
 import ruamel.yaml as yaml  # NOQA
 from sphinx_gallery.sorting import ExplicitOrder  # NOQA
 from sphinx_gallery.sorting import ExampleTitleSortKey  # NOQA
 
 import sunpy  # NOQA
 from sunpy import __version__  # NOQA
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA
 
 # -- Project information -------------------------------------------------------
-
 project = 'SunPy'
 author = 'The SunPy Community'
 copyright = '{}, {}'.format(datetime.datetime.now().year, author)
@@ -59,8 +53,16 @@ release = __version__
 sunpy_version = Version(__version__)
 is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 
+# We want to ignore all warnings in a release version.
+if is_release:
+    warnings.simplefilter("ignore")
+warnings.filterwarnings("error", category=SunpyDeprecationWarning)
+warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
+# TODO: Remove this when we remove instr in sunpy 3.1
+warnings.filterwarnings(
+    "ignore", message="sunpy.instr is deprecated and will be removed in sunpy 3.1.", category=SunpyDeprecationWarning
+)
 # -- SunPy Sample Data and Config ----------------------------------------------
-
 # We set the logger to debug so that we can see any sample data download errors
 # in the CI, especially RTD.
 ori_level = sunpy.log.level
@@ -85,7 +87,6 @@ rst_epilog = """
 """
 
 # -- General configuration -----------------------------------------------------
-
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
 suppress_warnings = ['app.add_directive', ]
@@ -147,7 +148,6 @@ napoleon_use_rtype = False
 napoleon_google_docstring = False
 
 # -- Options for intersphinx extension -----------------------------------------
-
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "python": (
@@ -178,7 +178,6 @@ intersphinx_mapping = {
 }
 
 # -- Options for HTML output ---------------------------------------------------
-
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
@@ -202,7 +201,8 @@ graphviz_dot_args = [
 ]
 
 # -- Sphinx Gallery ------------------------------------------------------------
-
+# JSOC email os env
+os.environ["JSOC_EMAIL"] = "jsoc@cadair.com"
 sphinx_gallery_conf = {
     'backreferences_dir': os.path.join('generated', 'modules'),
     'filename_pattern': '^((?!skip_).)*$',
@@ -231,7 +231,6 @@ sphinx_gallery_conf = {
 }
 
 # -- Stability Page ------------------------------------------------------------
-
 with open('./code_ref/sunpy_stability.yaml', 'r') as estability:
     sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
 
@@ -257,12 +256,7 @@ def rstjinja(app, docname, source):
         source[0] = rendered
 
 
-# JSOC email os env
-os.environ["JSOC_EMAIL"] = "jsoc@cadair.com"
-
 # -- Sphinx setup --------------------------------------------------------------
-
-
 def setup(app):
     # Generate the stability page
     app.connect("source-read", rstjinja)

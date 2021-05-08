@@ -1,0 +1,1 @@
+Re-enabled the unit test to check for coordinates consistency with JPL HORIZONS when the matching ephemeris can be specified.

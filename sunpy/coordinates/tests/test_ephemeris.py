@@ -1,6 +1,6 @@
 
 import pytest
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 
 import astropy.units as u
 from astropy.constants import c as speed_of_light
@@ -131,36 +131,35 @@ def test_get_horizons_coord_dict_time():
     assert_quantity_allclose(e.radius, e_ref.radius)
 
 
-@pytest.mark.remote_data
-class TestUsingDE432s:
+@pytest.fixture
+def use_DE440s():
     # This class is for test functions that need the Astropy ephemeris to be set to DE432s
-
-    # get_horizons_coord() depends on astroquery
     pytest.importorskip("astroquery")
 
-    @classmethod
-    def setup_class(cls):
-        cls.old_ephemeris = solar_system_ephemeris.get()
-        solar_system_ephemeris.set('de432s')
+    old_ephemeris = solar_system_ephemeris.get()
+    try:
+        solar_system_ephemeris.set('de440s')
+    except ValueError:
+        pytest.skip("The installed version of Astropy cannot set the ephemeris to DE440s")
 
-    @classmethod
-    def teardown_class(cls):
-        solar_system_ephemeris.set(cls.old_ephemeris)
+    yield
 
-    @pytest.mark.xfail(reason="JPL HORIZONS is using a newer ephemeris (DE441) than the latest "
-                              "available through Astropy (DE430/DE432s)")
-    @given(obstime=times())
-    @settings(deadline=5000, max_examples=10)
-    def test_consistency_with_horizons(self, obstime):
-        # Check that the high-accuracy Astropy ephemeris has been set
-        assert solar_system_ephemeris.get() == 'de432s'
+    solar_system_ephemeris.set(old_ephemeris)
 
-        # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
-        e1 = get_earth(obstime)
-        e2 = get_horizons_coord('Geocenter', obstime)
-        assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=50*u.m)
 
-        # Check whether the location of Mars is the same between Astropy and JPL HORIZONS
-        e1 = get_body_heliographic_stonyhurst('mars', obstime)
-        e2 = get_horizons_coord('Mars barycenter', obstime)
-        assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=500*u.m)
+@pytest.mark.remote_data
+@given(obstime=times())
+@settings(deadline=5000, max_examples=10, suppress_health_check=[HealthCheck.function_scoped_fixture])
+def test_consistency_with_horizons(use_DE440s, obstime):
+    # Check that the high-accuracy Astropy ephemeris has been set
+    assert solar_system_ephemeris.get() == 'de440s'
+
+    # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
+    e1 = get_earth(obstime)
+    e2 = get_horizons_coord('Geocenter', obstime)
+    assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=50*u.m)
+
+    # Check whether the location of Mars is the same between Astropy and JPL HORIZONS
+    e1 = get_body_heliographic_stonyhurst('mars', obstime)
+    e2 = get_horizons_coord('Mars barycenter', obstime)
+    assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=500*u.m)

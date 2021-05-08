@@ -243,7 +243,7 @@ If you do not have time to finish what you started on or ran out of time during 
 
 .. code:: bash
 
-    $ git format-patch master --stdout > my_fix.patch
+    $ git format-patch main --stdout > my_fix.patch
 
 You can rename ``my_fix`` to something more relevant.
 This way, you still get acknowledged for the work you have achieved.
