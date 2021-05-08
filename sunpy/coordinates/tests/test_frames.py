@@ -13,10 +13,15 @@ from astropy.coordinates import (
 )
 from astropy.tests.helper import assert_quantity_allclose
 
+from sunpy import sun
+from sunpy.coordinates.frames import (
+    Heliocentric,
+    HeliographicCarrington,
+    HeliographicStonyhurst,
+    Helioprojective,
+)
 from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyUserWarning
-from ... import sun
-from ..frames import Heliocentric, HeliographicCarrington, HeliographicStonyhurst, Helioprojective
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)

@@ -1,6 +1,6 @@
 import pytest
 
-from .._sample import _download_sample_data, _retry_sample_data
+from sunpy.data._sample import _download_sample_data, _retry_sample_data
 
 
 @pytest.mark.remote_data

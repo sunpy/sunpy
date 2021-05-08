@@ -17,9 +17,9 @@ Instrument('eit').
 import sys
 import warnings
 
+from sunpy.net import _attrs
+from sunpy.net import attr as _attr
 from sunpy.util.exceptions import SunpyDeprecationWarning
-from .. import _attrs
-from .. import attr as _attr
 
 __all__ = ['Extent', 'Field', 'Pixels', 'Filter', 'Quicklook', 'PScale']
 
