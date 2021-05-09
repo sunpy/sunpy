@@ -69,7 +69,7 @@ Bug Fixes
   if it is present. If it isn't present the time scale defaults to 'UTC', which is unchanged
   default behaviour, so this change will only affect maps with a 'TIMESYS' keyword
   that is not set to 'UTC'. (`#4881 <https://github.com/sunpy/sunpy/pull/4881>`__)
-- Fixed the `~.SRSClient` which silently failed to download the SRS files when the tarball for the previous years did not exist.
+- Fixed the `sunpy.net.dataretriever.sources.noaa.SRSClient` which silently failed to download the SRS files when the tarball for the previous years did not exist.
   Client now actually searches for the tarballs and srs files on the ftp archive before returning them as results. (`#4904 <https://github.com/sunpy/sunpy/pull/4904>`__)
 - Fixed a handling bug in :meth:`~sunpy.map.GenericMap.draw_rectangle` when the rectangle is specified in a different coordinate frame than that of the map.
   A couple of other minor bugs in :meth:`~sunpy.map.GenericMap.draw_rectangle` were also fixed. (`#4929 <https://github.com/sunpy/sunpy/pull/4929>`__)
