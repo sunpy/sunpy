@@ -10,7 +10,7 @@ from sunpy.time import parse_time
 @pytest.mark.remote_data
 def test_download_weekly_pointing_file():
     # set a test date
-    date = parse_time('2011-10-01')
+    date = parse_time('2021-01-01')
     afile = fermi.download_weekly_pointing_file(date)
     assert isinstance(afile, str)
     assert afile.endswith('.fits')
