@@ -10,7 +10,6 @@ schedules:
     branches:
       include:
       - master
-      - 2.0
     always: true
 
 resources:
@@ -145,27 +144,3 @@ stages:
             - wheels_cp3[789]-manylinux*x86_64
             - wheels_cp3[789]-macosx*
             - sdist
-
-  - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
-    - stage: CronNotifier
-      condition: succeededOrFailed()
-      dependsOn:
-        - SecondPhaseTests
-        - CronTests
-        - Release
-      jobs:
-      - job: notify
-        pool:
-          vmImage: ubuntu-20.04
-        steps:
-        - bash: |
-            sudo apt-get install httpie xonsh
-            http --version
-        - bash: xonsh ./tools/send_matrix_message.xsh
-          env:
-            ROOMID: '%21JYqfIVJjWANcHnfktY:cadair.com'  # sunpy development room
-            HOMESERVER: 'https://matrix.cadair.com'
-            BRANCH: $(Build.SourceBranchName)
-            ACCESS_TOKEN: $(azurebot_access_token)
-            BUILDID: $(Build.BuildId)
-            STATUS: $(Agent.JobStatus)

@@ -71,7 +71,7 @@ def download_weekly_pointing_file(date):
     weekstr = f"{week:03.0f}"
 
     # construct the full url for the weekly pointing file
-    full_fname = fbasename + weekstr + "_p202_v001.fits"
+    full_fname = fbasename + weekstr + "_p310_v001.fits"
     pointing_file_url = base_url + full_fname
 
     # try to download the file
