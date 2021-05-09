@@ -71,8 +71,8 @@ class RHESSIClient(GenericClient):
 
         Parameters
         ----------
-        time_range : str, TimeRange
-            A TimeRange or time range compatible string
+        time_range : str, `sunpy.time.TimeRange`
+            A `sunpy.time.TimeRange` or time range compatible string
 
         Returns
         -------

@@ -340,7 +340,7 @@ Bug Fixes
   if it is present. If it isn't present the time scale defaults to 'UTC', which is unchanged
   default behaviour, so this change will only affect maps with a 'TIMESYS' keyword
   that is not set to 'UTC'. (`#4881 <https://github.com/sunpy/sunpy/pull/4881>`__)
-- Fixed the `~.SRSClient` which silently failed to download the SRS files when the tarball for the previous years did not exist.
+- Fixed the `sunpy.net.dataretriever.sources.noaa.SRSClient` which silently failed to download the SRS files when the tarball for the previous years did not exist.
   Client now actually searches for the tarballs and srs files on the ftp archive before returning them as results. (`#4904 <https://github.com/sunpy/sunpy/pull/4904>`__)
 - No longer is the WAVEUNIT keyword injected into a data source if it is missing from the file's metadata. (`#4926 <https://github.com/sunpy/sunpy/pull/4926>`__)
 - Map sources no longer overwrite FITS metadata keywords if they are present in
