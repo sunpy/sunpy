@@ -183,7 +183,7 @@ def _detect_filetype(filepath):
 
 def detect_filetype(filepath):
     """
-    Atempts to determine the type of file a given filepath is.
+    Attempts to determine the type of file a given filepath is.
 
     Parameters
     ----------

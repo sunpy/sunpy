@@ -10,7 +10,6 @@ schedules:
     branches:
       include:
       - main
-      - 3.0
     always: true
 
 resources:
