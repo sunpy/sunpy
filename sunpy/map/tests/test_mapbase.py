@@ -21,11 +21,13 @@ from astropy.visualization import wcsaxes
 
 import sunpy
 import sunpy.coordinates
+import sunpy.data.sample
 import sunpy.data.test
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
 from sunpy.map.sources import AIAMap
+from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
@@ -1335,3 +1337,11 @@ def test_rsun_meters_no_warning_for_hgs(heliographic_test_map):
 
     assert_quantity_allclose(heliographic_test_map.rsun_meters,
                              heliographic_test_map.meta['rsun_ref'] << u.m)
+
+
+@figure_test
+def test_rotation_rect_pixelated_data(aia171_test_map):
+    aia_map = sunpy.map.Map(aia171_test_map)
+    rect_map = aia_map.superpixel([2, 1] * u.pix, func=np.mean)
+    rect_rot_map = rect_map.rotate(30 * u.deg)
+    rect_rot_map.peek()
