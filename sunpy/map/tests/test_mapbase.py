@@ -22,11 +22,13 @@ from astropy.visualization import wcsaxes
 
 import sunpy
 import sunpy.coordinates
+import sunpy.data.sample
 import sunpy.data.test
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import sun
 from sunpy.map.sources import AIAMap
+from sunpy.tests.helpers import figure_test 
 from sunpy.time import parse_time
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
@@ -1221,9 +1223,11 @@ def test_meta_modifications(aia171_test_map):
     assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
     assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
 
+
 @figure_test
 def test_rotation_rect_pixelated_data():
-    aia_map = sunpy.map.Map(sample_data.AIA_193_IMAGE)
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
     rect_map = aia_map.superpixel([2, 1] * u.pix, func=np.mean)
     rect_rot_map = rect_map.rotate(30 * u.deg)
     rect_rot_map.peek()
+    
