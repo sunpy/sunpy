@@ -1220,3 +1220,10 @@ def test_meta_modifications(aia171_test_map):
     assert set(aiamap_rot.meta.added_items.keys()) == set(['bunit', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
     assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
     assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
+
+@figure_test
+def test_rotation_rect_pixelated_data():
+    aia_map = sunpy.map.Map(sample_data.AIA_193_IMAGE)
+    rect_map = aia_map.superpixel([2, 1] * u.pix, func=np.mean)
+    rect_rot_map = rect_map.rotate(30 * u.deg)
+    rect_rot_map.peek()

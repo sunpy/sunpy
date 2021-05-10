@@ -255,3 +255,4 @@ def test_contains_coord(aia171_test_map):
     multi_coord = SkyCoord([0, 2000]*u.arcsec, [0, 2000]*u.arcsec,
                            frame=smap.coordinate_frame)
     assert (contains_coordinate(smap, multi_coord) == [True, False]).all()
+
