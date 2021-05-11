@@ -654,6 +654,26 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
 
+def test_superpixel_simple_map(simple_map):
+    # Put the reference pixel at the top-right of the bottom-left pixel
+    simple_map.meta['crpix1'] = 1.5
+    simple_map.meta['crpix2'] = 1.5
+    assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
+    # Make the superpixel map
+    new_dims = (2, 2) * u.pix
+    superpix_map = simple_map.superpixel(new_dims)
+    # Reference pixel should change, but referenc coordinate should not
+    assert list(superpix_map.reference_pixel) == [0 * u.pix, 0 * u.pix]
+    assert superpix_map.reference_coordinate == simple_map.reference_coordinate
+
+    # Check that offset works
+    superpix_map = simple_map.superpixel(new_dims, offset=[1, 2] * u.pix)
+    # Reference pixel should change, but referenc coordinate should not
+    assert u.allclose(list(superpix_map.reference_pixel),
+                      [-0.5 * u.pix, -1 * u.pix])
+    assert superpix_map.reference_coordinate == simple_map.reference_coordinate
+
+
 def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
     dimensions = (2, 2) * u.pix
     superpixel_map_sum = aia171_test_map.superpixel(dimensions)

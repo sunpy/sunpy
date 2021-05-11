@@ -167,7 +167,24 @@ def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
 
 @figure_test
 def test_plot_aia171_superpixel(aia171_test_map):
-    aia171_test_map.superpixel((9, 7) * u.pix, offset=(4, 4) * u.pix).plot()
+    aia171_test_map.superpixel((3, 2) * u.pix, offset=(4, 4) * u.pix).plot()
+
+
+@figure_test
+def test_plot_superpixel(carrington_map):
+    # Test that super-pixelling a map preserves the coordinate system correctly.
+    # The two plots should have identical coordinate grids
+    superpix = carrington_map.superpixel([2, 2] * u.pix)
+
+    plt.figure()
+    ax1 = plt.subplot(121, projection=carrington_map)
+    ax2 = plt.subplot(122, projection=superpix)
+
+    carrington_map.plot(axes=ax1)
+    superpix.plot(axes=ax2)
+
+    for ax in [ax1, ax2]:
+        ax.coords.grid(True, color='tab:red', ls='solid', lw=2, alpha=1)
 
 
 @figure_test
