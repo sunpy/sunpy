@@ -642,16 +642,33 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
         == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
     assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
         == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
-    assert resampled_map.meta['crpix1'] == (resampled_map.data.shape[1] + 1) / 2.
-    assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
-    assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
-    assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
+    # TODO: we should really test the numbers here, not just that the correct
+    # header values have been modified. However, I am lazy and we have figure
+    # tests.
+    assert resampled_map.meta['crpix1'] != generic_map.meta['crpix1']
+    assert resampled_map.meta['crpix2'] != generic_map.meta['crpix2']
+    assert u.allclose(resampled_map.meta['crval1'], generic_map.meta['crval1'])
+    assert u.allclose(resampled_map.meta['crval2'], generic_map.meta['crval2'])
     assert resampled_map.meta['naxis1'] == new_dimensions[0].value
     assert resampled_map.meta['naxis2'] == new_dimensions[1].value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1',
                        'crval2', 'naxis1', 'naxis2'):
             assert resampled_map.meta[key] == generic_map.meta[key]
+
+
+@pytest.mark.parametrize('method', ['neighbor', 'nearest', 'linear', 'spline'])
+def test_resample_simple_map(simple_map, method):
+    # Put the reference pixel at the top-right of the bottom-left pixel
+    simple_map.meta['crpix1'] = 1.5
+    simple_map.meta['crpix2'] = 1.5
+    assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
+    # Make the superpixel map
+    new_dims = (9, 6) * u.pix
+    resamp_map = simple_map.resample(new_dims, method=method)
+    # Reference pixel should change, but reference coordinate should not
+    assert list(resamp_map.reference_pixel) == [2.5 * u.pix, 1.5 * u.pix]
+    assert resamp_map.reference_coordinate == simple_map.reference_coordinate
 
 
 def test_superpixel_simple_map(simple_map):
