@@ -1,2 +1,0 @@
-Added :func:`sunpy.map.contains_coordinate` which provides a quick way to see if a
-world coordinate is contained within the array bounds of a map.

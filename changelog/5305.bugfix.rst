@@ -1,2 +1,0 @@
-Remove runtime use of `astropy.tests.helper.assert_quantity_allclose` which
-introduces a runtime dependancy on `pytest`.

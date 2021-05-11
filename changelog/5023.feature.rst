@@ -1,2 +1,0 @@
-Added colormaps for Solar Orbiter EUI images. These are used automatically
-when an EUI image is loaded.

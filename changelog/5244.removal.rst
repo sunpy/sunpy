@@ -1,4 +1,0 @@
-Using `~sunpy.map.GenericMap` plotting methods on an `~matplotlib.axes.Axes` that is not
-a `~astropy.visualization.wcsaxes.WCSAxes` is deprecated. This previously
-raised a warning, but is now formally deprecated, and will raise an error in
-sunpy 3.1.

@@ -1,1 +1,0 @@
-For the various subclasses of `~sunpy.map.GenericMap` (e.g., `~sunpy.map.sources.AIAMap`), the online documentation now shows all of the inherited attributes and methods.

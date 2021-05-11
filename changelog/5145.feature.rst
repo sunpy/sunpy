@@ -1,2 +1,0 @@
-Added a :meth:`~sunpy.map.MapSequence.save` method to `sunpy.map.MapSequence`
-that saves each map of the sequence.

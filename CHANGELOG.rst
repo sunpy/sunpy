@@ -1,3 +1,196 @@
+3.0.0 (2021-05-11)
+==================
+
+Backwards Incompatible Changes
+------------------------------
+
+- `sunpy.instr` has been depreacted and will be removed in sunpy 3.1 in favour of `sunkit-instruments`.
+  The code that is under `sunpy.instr` is imported via `sunkit-instruments` to ensure backwards comparability. (`#4526 <https://github.com/sunpy/sunpy/pull/4526>`__)
+- `sunpy.util.sphinx.changelog` and `sunpy.util.towncrier` have been removed and are now in a standalone package `sphinx-changelog <https://github.com/openastronomy/sphinx-changelog>`__. (`#5049 <https://github.com/sunpy/sunpy/pull/5049>`__)
+- Several `sunpy.map.GenericMap` attributes have been updated to return `None`
+  when the relevant piece of FITS metadata is missing. These are:
+
+  - `~sunpy.map.GenericMap.exposure_time`, previously defaulted to zero seconds.
+  - `~sunpy.map.GenericMap.measurement`, previously defaulted to zero.
+  - `~sunpy.map.GenericMap.waveunit`, previously defaulted to ``u.one``.
+  - `~sunpy.map.GenericMap.wavelength`, previously defaulted to zero. (`#5126 <https://github.com/sunpy/sunpy/pull/5126>`__)
+- Changed URL for the `sunpy.net.dataretriever.sources.SRSClient` from "ftp://ftp.swpc.noaa.gov/pub/warehouse/" to "ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/".
+  The old URL is unsupported and we expect the files will be the same but we can not say with 100% certainty. (`#5173 <https://github.com/sunpy/sunpy/pull/5173>`__)
+- Changed `sunpy.net.attrs.Source` to `sunpy.net.attrs.Provider` for the `sunpy.net.dataretriever.sources.GONGClient`. (`#5174 <https://github.com/sunpy/sunpy/pull/5174>`__)
+- `~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` no longer automatically convert 2D input to a 3D coordinate during instantiation.
+  Instead, the 2D-to-3D conversion is deferred until the coordinate is transformed to a different frame, or with a call to the method :meth:`~sunpy.coordinates.frames.BaseHeliographic.make_3d`. (`#5211 <https://github.com/sunpy/sunpy/pull/5211>`__)
+- The ``rsun`` frame attribute of `~sunpy.coordinates.frames.Helioprojective` now converts any input to kilometers. (`#5211 <https://github.com/sunpy/sunpy/pull/5211>`__)
+- :meth:`sunpy.map.CompositeMap.plot` now internally calls :meth:`sunpy.map.GenericMap.plot` and :meth:`sunpy.map.GenericMap.draw_contours`, which may affect the plot output of existing user code. (`#5255 <https://github.com/sunpy/sunpy/pull/5255>`__)
+- Removed the ``basic_plot`` keyword argument from :meth:`sunpy.map.CompositeMap.peek` due to its unreliability. (`#5255 <https://github.com/sunpy/sunpy/pull/5255>`__)
+
+
+Deprecations and Removals
+-------------------------
+
+- Deprecated :meth:`sunpy.map.GenericMap.draw_rectangle` in favor of :meth:`~sunpy.map.GenericMap.draw_quadrangle`. (`#5236 <https://github.com/sunpy/sunpy/pull/5236>`__)
+- Using `~sunpy.map.GenericMap` plotting methods on an `~matplotlib.axes.Axes` that is not
+  a `~astropy.visualization.wcsaxes.WCSAxes` is deprecated. This previously
+  raised a warning, but is now formally deprecated, and will raise an error in
+  sunpy 3.1. (`#5244 <https://github.com/sunpy/sunpy/pull/5244>`__)
+- Deprecated `sunpy.roi.chaincode.Chaincode` and created a replacement at `sunpy.net.helio.Chaincode`.
+
+  This replacement has the following changes:
+
+  1. Added support for numpy array as an input (it was broken before).
+  2. Renamed ``BoundingBox`` to ``boundingbox``
+  3. Renamed ``subBoundingBox`` to ``sub_boundingbox``
+  4. Now area and length raise `NotImplementedError` (`#5249 <https://github.com/sunpy/sunpy/pull/5249>`__)
+- Deprecated `sunpy.roi.roi`, as it currently has no obvious use and has never seen any real development work. (`#5249 <https://github.com/sunpy/sunpy/pull/5249>`__)
+
+
+Features
+--------
+
+- :func:`sunpy.coordinates.get_horizons_coord` can now be given a start time, end time,
+  and number of intervals (or interval length) to query a evenly spaced set of
+  times. See the documentation string for more information and an example. (`#4698 <https://github.com/sunpy/sunpy/pull/4698>`__)
+- Added :meth:`sunpy.map.GenericMap.draw_quadrangle` for drawing a quadrangle on a map.
+  A quadrangle has edges that are aligned with lines of constant latitude and longitude, but these can be in a different coordinate system than that of the map. (`#4809 <https://github.com/sunpy/sunpy/pull/4809>`__)
+- Added a ``longitude`` keyword argument to :func:`~sunpy.coordinates.sun.carrington_rotation_time` as an alternate way to specify a fractional Carrington rotation. (`#4879 <https://github.com/sunpy/sunpy/pull/4879>`__)
+- Colorbar in `sunpy.map.GenericMap.peek` now has a unit label. (`#4930 <https://github.com/sunpy/sunpy/pull/4930>`__)
+- The default axes used by :meth:`sunpy.visualisation.animator.BaseFuncAnimator.get_animation`
+  is now ``BaseFuncAnimator.axes``, instead of the currently active axes (accessed via.
+  :func:`matplotlib.pyplot.gca`). The allows animations to be created on figures
+  created directly using `matplotlib.figure.Figure`.
+
+  To revert to the previous behaviour of using the current axes,
+  give ``axes=plt.gca()`` to ``get_animation()``. (`#4968 <https://github.com/sunpy/sunpy/pull/4968>`__)
+- Added colormaps for Solar Orbiter EUI images. These are used automatically
+  when an EUI image is loaded. (`#5023 <https://github.com/sunpy/sunpy/pull/5023>`__)
+- Added the ability to dynamically scale `sunpy.visualization.animator` instances.
+  By specifying the ``clip_interval`` keyword, it will now clip the minimum and maximum at each slider step to the specified interval. (`#5025 <https://github.com/sunpy/sunpy/pull/5025>`__)
+- Added a :meth:`~sunpy.time.TimeRange.contains` method to `sunpy.time.TimeRange`
+  that tests if two time ranges overlap. (`#5093 <https://github.com/sunpy/sunpy/pull/5093>`__)
+- Added the ability to namespace files downloaded using `sunpy.data.data_manager.manager.DataManager` by prepending the file name with module name. (`#5111 <https://github.com/sunpy/sunpy/pull/5111>`__)
+- Added a rigid rotation model to :func:`~sunpy.physics.differential_rotation.diff_rot` via ``rot_type=rigid``, where the rotation rate does not vary with latitude. (`#5132 <https://github.com/sunpy/sunpy/pull/5132>`__)
+- Added a :meth:`~sunpy.map.MapSequence.save` method to `sunpy.map.MapSequence`
+  that saves each map of the sequence. (`#5145 <https://github.com/sunpy/sunpy/pull/5145>`__)
+- The allowable ``level`` inputs to :meth:`sunpy.map.GenericMap.contour` and
+  :meth:`sunpy.map.GenericMap.draw_contours` have been consolidated. Both methods
+  now accept
+  - Scalars, if the map has no units
+  - Quantities, if the map has units
+  - Percentages (`#5154 <https://github.com/sunpy/sunpy/pull/5154>`__)
+- Added support for corrected NOAA SWPC solar region summary data files. (`#5173 <https://github.com/sunpy/sunpy/pull/5173>`__)
+- Updated `sunpy.util.sysinfo.system_info` to return all optional dependencies of sunpy. (`#5175 <https://github.com/sunpy/sunpy/pull/5175>`__)
+- `sunpy.map.Map` now supports the EUI instrument on Solar Orbiter. (`#5210 <https://github.com/sunpy/sunpy/pull/5210>`__)
+- `~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` now have an ``rsun`` frame attribute to specify the radius of the Sun, which defaults to the photospheric radius defined in `sunpy.sun.constants`.
+  This frame attribute is used when converting a 2D coordinate (longitude and latitude, with no specified radial distance) to a 3D coordinate by setting the radial distance to ``rsun`` (i.e., the assumption is that the coordinate is on the surface of the Sun). (`#5211 <https://github.com/sunpy/sunpy/pull/5211>`__)
+- Enhanced :meth:`sunpy.map.GenericMap.draw_limb` so that the solar limb can be plotted on axes that correspond to a different map (e.g., with a different observer).
+  The part of the limb that is not visible to the axes's observer because it is on the far side of the Sun is shown as dotted rather than solid. (`#5237 <https://github.com/sunpy/sunpy/pull/5237>`__)
+- `~sunpy.util.MetaDict` now saves a copy of the metadata on creation, which can
+  be accessed using the `~sunpy.util.MetaDict.original_meta` property. Three
+  new properties have also been added to query any changes that have been made
+  to metadata:
+
+  - `~sunpy.util.MetaDict.added_items`
+  - `~sunpy.util.MetaDict.removed_items`
+  - `~sunpy.util.MetaDict.modified_items`
+
+  As an example, ``my_map.meta.modified_items`` will return a dictionary mapping
+  keys to their original value and current value. (`#5241 <https://github.com/sunpy/sunpy/pull/5241>`__)
+- Added :func:`sunpy.map.contains_coordinate` which provides a quick way to see if a
+  world coordinate is contained within the array bounds of a map. (`#5252 <https://github.com/sunpy/sunpy/pull/5252>`__)
+- :meth:`sunpy.map.CompositeMap.plot` now properly makes use of WCS information to position and orient maps when overlaying them. (`#5255 <https://github.com/sunpy/sunpy/pull/5255>`__)
+- Added an optional keyword argument ``autoalign`` to :meth:`sunpy.map.GenericMap.plot` for plotting a map to axes that correspond to a different WCS.
+  See :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py`. (`#5255 <https://github.com/sunpy/sunpy/pull/5255>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed the drawing methods of `sunpy.map.GenericMap` (e.g., :meth:`~sunpy.map.GenericMap.draw_rectangle`) so that any text labels will appear in the legend. (`#5019 <https://github.com/sunpy/sunpy/pull/5019>`__)
+- Fixed bug in `sunpy.until.scraper.Scraper` which caused URL patterns containing backslashes to be incorrectly parsed on Windows. (`#5022 <https://github.com/sunpy/sunpy/pull/5022>`__)
+- Constructing a `~sunpy.util.MetaDict` is now more lenient, and accepts
+  any class that inherits from `collections.abc.Mapping`. This fixes a
+  regression where headers read with `astropy.io.fits` raised an error when
+  passed to individual `~sunpy.map` sources. (`#5047 <https://github.com/sunpy/sunpy/pull/5047>`__)
+- Added warning to :meth:`sunpy.map.GenericMap.rotate` when specified ``missing`` value is not compatible
+  with the number type of the data array. (`#5051 <https://github.com/sunpy/sunpy/pull/5051>`__)
+- Prevented some colormaps being accidentally modified depending on the order
+  and method through which they were accessed. (`#5054 <https://github.com/sunpy/sunpy/pull/5054>`__)
+- Reverted change for `sunpy.map.GenericMap.draw_limb` that made it use "add_artist" as it was changing the FOV of the plotted image. (`#5069 <https://github.com/sunpy/sunpy/pull/5069>`__)
+- Fixed a bug where some `~sunpy.coordinates.metaframes.RotatedSunFrame` transformations could fail with an ``observer=None`` error. (`#5084 <https://github.com/sunpy/sunpy/pull/5084>`__)
+- Fixed bug where `sunpy.data.data_manager.storage.DataManager` would fail to recover upon deleting the sqlite database file. (`#5089 <https://github.com/sunpy/sunpy/pull/5089>`__)
+- Fixed a bug where coordinate frames were considered different due to an unintended time difference during time handling at the level of numerical precision (i.e., tens of picoseconds).
+  This resulted in the unexpected use of transformation machinery when transforming a coordinate to its own coordinate frame. (`#5127 <https://github.com/sunpy/sunpy/pull/5127>`__)
+- Fixed a bug with failing downloads in 2010 with the `~sunpy.net.dataretriever.sources.SRSClient`. (`#5159 <https://github.com/sunpy/sunpy/pull/5159>`__)
+- If the property `sunpy.map.GenericMap.rsun_obs` needs to calculate the solar angular radius from header information, it now properly uses the ``rsun_ref`` keyword if it is present and does not emit any warning. (`#5172 <https://github.com/sunpy/sunpy/pull/5172>`__)
+- Added a "rsun_obs" keyword to the output of :func:`sunpy.map.make_fitswcs_header` if the coordinate argument has a "rsun" frame attribute. (`#5177 <https://github.com/sunpy/sunpy/pull/5177>`__)
+- Fixed small inaccuracies in the grid plotted by :meth:`~sunpy.map.GenericMap.draw_grid` for maps that specify a radius of the Sun that is different from the constant in `sunpy.sun.constants`. (`#5211 <https://github.com/sunpy/sunpy/pull/5211>`__)
+- Fixed :meth:`sunpy.map.GenericMap.draw_contours` so that the contours from a map can be plotted on axes with a different coordinate system. (`#5239 <https://github.com/sunpy/sunpy/pull/5239>`__)
+- When using the cylindrical representation of `Heliocentric` to work in the Heliocentric Radial coordinate frame, the ``psi`` component now goes from 0 to 360 degrees instead of -180 to 180 degrees. (`#5242 <https://github.com/sunpy/sunpy/pull/5242>`__)
+- Changed `MDIMap` to use the "CONTENT" keyword to identify the measurement, similar to `HMIMap`, and removed the special-case nickname. This fixes the broken title on plots. (`#5257 <https://github.com/sunpy/sunpy/pull/5257>`__)
+- :func:`sunpy.coordinates.solar_frame_to_wcs_mapping` now sets the observer auxiliary
+  information when a `~sunpy.coordinates.HeliographicCarrington` frame with
+  ``observer='self'`` is passed. (`#5264 <https://github.com/sunpy/sunpy/pull/5264>`__)
+- Calling :func:`sunpy.map.make_fitswcs_header` with a
+  `~sunpy.coordinates.HeliographicCarrington` coordinate that with ``observer='self'``
+  set now correctly sets the observer information in the header. (`#5264 <https://github.com/sunpy/sunpy/pull/5264>`__)
+- Inputs to the ``dimensions`` and ``offset`` arguments to
+  :meth:`sunpy.map.GenericMap.superpixel` in units other than ``u.pix``
+  (e.g. ```u.kpix``) are now handled correctly. (`#5301 <https://github.com/sunpy/sunpy/pull/5301>`__)
+- Fractional inputs to the ``dimensions`` and ``offset`` arguments to
+  :meth:`sunpy.map.GenericMap.superpixel` were previously rounded using :func:`int`
+  in the superpixel algorithm, but not assigned integer values in the new meatadata.
+  This has now been changed so the rounding is correctly reflected in the meatadata. (`#5301 <https://github.com/sunpy/sunpy/pull/5301>`__)
+- Remove runtime use of `astropy.tests.helper.assert_quantity_allclose` which
+  introduces a runtime dependancy on `pytest`. (`#5305 <https://github.com/sunpy/sunpy/pull/5305>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_plot_rectangle.py`) for drawing rectangles on maps. (`#4528 <https://github.com/sunpy/sunpy/pull/4528>`__)
+- Added an example (:ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`)
+  of how pixel and SkyCoords work when plotted with `~astropy.visualization.wcsaxes`. (`#4867 <https://github.com/sunpy/sunpy/pull/4867>`__)
+- Added a gallery example  (:ref:`sphx_glr_generated_gallery_plotting_plotting_blank_map.py`) on how to create a blank map and mark locations. (`#5077 <https://github.com/sunpy/sunpy/pull/5077>`__)
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_hmi_cutout.py`)
+  demonstrating how to add a HMI zoomed-in region next to a full disk HMI image. (`#5090 <https://github.com/sunpy/sunpy/pull/5090>`__)
+- Updated the :ref:`sphx_glr_generated_gallery_computer_vision_techniques_mask_disk.py` example to generate the mask using :func:`sunpy.map.coordinate_is_on_solar_disk`. (`#5114 <https://github.com/sunpy/sunpy/pull/5114>`__)
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_map_map_segment.py`)
+  demonstrating how to create a segment of a particular map from transformed coordinates. (`#5121 <https://github.com/sunpy/sunpy/pull/5121>`__)
+- For the various subclasses of `~sunpy.map.GenericMap` (e.g., `~sunpy.map.sources.AIAMap`), the online documentation now shows all of the inherited attributes and methods. (`#5142 <https://github.com/sunpy/sunpy/pull/5142>`__)
+- Added a documentation string to `~sunpy.map.sources.sdo.HMISynopticMap`. (`#5186 <https://github.com/sunpy/sunpy/pull/5186>`__)
+- Added a new gallery example showcasing how to overlay HMI contours on an AIA image. (`#5229 <https://github.com/sunpy/sunpy/pull/5229>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Replaced the old test runner with a new version that adds a dependency check before the test suite is run. (`#4596 <https://github.com/sunpy/sunpy/pull/4596>`__)
+- The testing suite now raises a warning if the `~matplotlib.pyplot` figure stack is not empty prior to running a test, and it closes all open figures after finishing each test. (`#4969 <https://github.com/sunpy/sunpy/pull/4969>`__)
+- Improved performance when moving the slider in
+  `sunpy.visualisation.animator.ArrayAnimatorWCS`. (`#4971 <https://github.com/sunpy/sunpy/pull/4971>`__)
+- Added some basic logging to HEK searches, at the 'debug' logging level. (`#5020 <https://github.com/sunpy/sunpy/pull/5020>`__)
+- Refactored `~sunpy.coordinates.metaframes.RotatedSunFrame` transformations for improved performance. (`#5084 <https://github.com/sunpy/sunpy/pull/5084>`__)
+- Re-ordered keyword-only arguments of :meth:`sunpy.map.GenericMap.draw_rectangle` to match :meth:`sunpy.map.GenericMap.submap`. (`#5091 <https://github.com/sunpy/sunpy/pull/5091>`__)
+- Significantly sped up calls to :func:`~sunpy.time.parse_time` for string
+  arguments. This will have knock on effects, including improved performance of
+  querying the VSO. (`#5108 <https://github.com/sunpy/sunpy/pull/5108>`__)
+- Added tests for `sunpy.visualization.animator.mapsequenceanimator` and :meth:`sunpy.map.MapSequence.plot`. (`#5125 <https://github.com/sunpy/sunpy/pull/5125>`__)
+- The ``CROTA`` keywords are no longer set on `sunpy.map.GenericMap.wcs`, as the
+  ``PC_ij`` keywords are always set and the FITS standard says that these keywords
+  must not co-exist. (`#5166 <https://github.com/sunpy/sunpy/pull/5166>`__)
+- Temporarily disabled the unit test to check for coordinates consistency with JPL HORIZONS due to the inability to choose a matching ephemeris. (`#5203 <https://github.com/sunpy/sunpy/pull/5203>`__)
+- :func:`~sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` now accepts ``obstime`` and ``rsun`` optional arguments.
+  This function is not typically called directly by users. (`#5211 <https://github.com/sunpy/sunpy/pull/5211>`__)
+- `~sunpy.map.GenericMap` plotting methods now have consistent argument
+  checking for the ``axes`` argument, and will raise the same warnings
+  or errors for similar ``axes`` input. (`#5223 <https://github.com/sunpy/sunpy/pull/5223>`__)
+- Calling :meth:`sunpy.map.GenericMap.plot` on a
+  `~astropy.visualization.wcsaxes.WCSAxes` with a different
+  World Coordinate System (WCS) to the map now raises a warning,
+  as the map data axes may not correctly align with the coordinate axes.
+  This happens if an `~matplotlib.axes.Axes` is created with a projection
+  that is a different map to the one being plotted. (`#5244 <https://github.com/sunpy/sunpy/pull/5244>`__)
+
+
 2.1.0 (2020-02-21)
 ==================
 

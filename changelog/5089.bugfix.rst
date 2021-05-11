@@ -1,1 +1,0 @@
-Fixed bug where `sunpy.data.data_manager.storage.DataManager` would fail to recover upon deleting the sqlite database file.

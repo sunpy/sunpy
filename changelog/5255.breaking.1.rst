@@ -1,1 +1,0 @@
-:meth:`sunpy.map.CompositeMap.plot` now internally calls :meth:`sunpy.map.GenericMap.plot` and :meth:`sunpy.map.GenericMap.draw_contours`, which may affect the plot output of existing user code.

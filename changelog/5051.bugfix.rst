@@ -1,2 +1,0 @@
-Added warning to :meth:`sunpy.map.GenericMap.rotate` when specified ``missing`` value is not compatible
-with the number type of the data array.

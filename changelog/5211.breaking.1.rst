@@ -1,2 +1,0 @@
-`~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` no longer automatically convert 2D input to a 3D coordinate during instantiation.
-Instead, the 2D-to-3D conversion is deferred until the coordinate is transformed to a different frame, or with a call to the method :meth:`~sunpy.coordinates.frames.BaseHeliographic.make_3d`.

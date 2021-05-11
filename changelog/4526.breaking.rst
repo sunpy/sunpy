@@ -1,2 +1,0 @@
-`sunpy.instr` has been depreacted and will be removed in sunpy 3.1 in favour of `sunkit-instruments`.
-The code that is under `sunpy.instr` is imported via `sunkit-instruments` to ensure backwards comparability.

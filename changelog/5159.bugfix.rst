@@ -1,1 +1,0 @@
-Fixed a bug with failing downloads in 2010 with the `~sunpy.net.dataretriever.sources.SRSClient`.

@@ -1,1 +1,0 @@
-Fixed a bug where some `~sunpy.coordinates.metaframes.RotatedSunFrame` transformations could fail with an ``observer=None`` error.

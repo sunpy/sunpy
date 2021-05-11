@@ -1,7 +1,0 @@
-Several `sunpy.map.GenericMap` attributes have been updated to return `None`
-when the relevant piece of FITS metadata is missing. These are:
-
-- `~sunpy.map.GenericMap.exposure_time`, previously defaulted to zero seconds.
-- `~sunpy.map.GenericMap.measurement`, previously defaulted to zero.
-- `~sunpy.map.GenericMap.waveunit`, previously defaulted to ``u.one``.
-- `~sunpy.map.GenericMap.wavelength`, previously defaulted to zero.
