@@ -79,19 +79,15 @@ def read_file(filepath, filetype=None, **kwargs):
     -----
     Other keyword arguments are passed to the reader used.
     """
-    if not isinstance(filepath, (str, io.IOBase, pathlib.Path)):
-        raise TypeError("expected str, IO or pathlib.Path object")
-
-    if isinstance(filepath, io.IOBase):
-        _filepath = pathlib.Path(filepath.name)
-    else:
-        _filepath = pathlib.Path(filepath)
+    _filepath = filepath.name if isinstance(filepath, io.IOBase) else filepath
+    _filepath = pathlib.Path(_filepath)
 
     # Use the explicitly passed filetype
-    if filetype is not None:
-        if filetype in chain(*_known_extensions):
-            return _readers[filetype].read(filepath, **kwargs)
-        raise UnrecognizedFileTypeError("The requested filetype is not currently supported by SunPy.")
+    if filetype:
+        if filetype not in chain(*_known_extensions):
+            raise UnrecognizedFileTypeError(
+                "The requested filetype is not currently supported by SunPy.")
+        return _readers[filetype].read(filepath, **kwargs)
 
     # Go through the known extensions
     for extension, readername in _known_extensions.items():

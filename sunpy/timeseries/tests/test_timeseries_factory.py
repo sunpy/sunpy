@@ -469,7 +469,7 @@ class TestTimeSeries:
             sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_invalid_filetype(self):
-        with pytest.warns(SunpyUserWarning), pytest.raises(NoMatchError):
+        with pytest.raises(TypeError, match="file-handler not supported for unreadable files"):
             with open(fermi_gbm_filepath, 'rb') as fd:
                 sunpy.timeseries.TimeSeries(fd, filetype="invalid_extension")
 

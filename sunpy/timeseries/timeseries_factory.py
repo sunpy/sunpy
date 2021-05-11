@@ -95,7 +95,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits')   # doctest: +SKIP
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits', source='lyra')  # doctest: +SKIP
 
-    * File Handlers
+    * File handlers
 
     >>> with open('filename.fits', 'rb') as fd:  # doctest: +SKIP
     ...     my_timeseries = sunpy.timeseries.TimeSeries(fd)   # doctest: +SKIP
@@ -149,10 +149,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         pairs : `list` or `str`
             List of ``(data, header)`` pairs or ``fname`` if the file is not supported or incorrect.
         """
-        filetype = kwargs.pop('filetype', None)
         if 'source' not in kwargs.keys() or not kwargs['source']:
             try:
-                pairs = read_file(fname, filetype=filetype, **kwargs)
+                pairs = read_file(fname, **kwargs)
 
                 new_pairs = []
                 for pair in pairs:
@@ -428,76 +427,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         -----
         Extra keyword arguments are passed through to `sunpy.io.read_file` such as `memmap` for FITS files.
         """
-        (data_header_unit_tuples, data_header_pairs,
-         already_timeseries, filepaths) = self._parse_args(*args, **kwargs)
-
-        new_timeseries = list()
-
-        # The filepaths for unreadable files
-        for filepath in filepaths:
-            try:
-                new_ts = self._check_registered_widgets(filepath=filepath, **kwargs)
-                new_timeseries.append(new_ts)
-            except (NoMatchError, MultipleMatchError, ValidationFunctionError):
-                if not silence_errors:
-                    raise
-            except Exception:
-                raise
-
-        # data_header_pairs is a list of HDUs as read by sunpy.io
-        # For each set of HDus find the matching class and read the
-        # data_header_unit_tuples by calling the _parse_hdus method
-        # of the class.
-        for pairs in data_header_pairs:
-            # Pairs may be x long where x is the number of HDUs in the file.
-            headers = [pair.header for pair in pairs]
-
-            types = []
-            for header in headers:
-                try:
-                    match = self._get_matching_widget(meta=header, **kwargs)
-                    if not match == GenericTimeSeries:
-                        types.append(match)
-                except (MultipleMatchError, NoMatchError):
-                    continue
-
-            if not types:
-                # If no specific classes have been found we can read the data
-                # if we only have one data header pair:
-                if len(pairs) == 1:
-                    already_timeseries.append(GenericTimeSeries(pairs[0]._data,
-                                                                pairs[0].header))
-                else:
-                    raise NoMatchError("Input read by sunpy.io can not find a "
-                                       "matching class for reading multiple HDUs")
-            if len(set(types)) > 1:
-                raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
-
-            cls = types[0]
-
-            data_header_unit_tuples.append(cls._parse_hdus(pairs))
-
-        # Loop over each registered type and check to see if WidgetType
-        # matches the arguments.  If it does, use that type
-        for triple in data_header_unit_tuples:
-            data, header, units = triple
-            # Make a MetaDict from various input types
-            meta = header
-            if isinstance(meta, astropy.io.fits.header.Header):
-                meta = sunpy.io.header.FileHeader(meta)
-            meta = MetaDict(meta)
-
-            try:
-                new_ts = self._check_registered_widgets(data=data, meta=meta,
-                                                        units=units, **kwargs)
-                new_timeseries.append(new_ts)
-            except (NoMatchError, MultipleMatchError, ValidationFunctionError):
-                if not silence_errors:
-                    raise
-            except Exception:
-                raise
-
-        new_timeseries += already_timeseries
+        self.silence_errors = silence_errors
+        new_timeseries = self._parse_args(*args, **kwargs)
 
         # Concatenate the timeseries into one if specified.
         concatenate = kwargs.get('concatenate', False)
@@ -571,8 +502,8 @@ def _apply_result(data_header_pairs, filepaths, result):
         data_header_pairs.append(result)
     else:
         if isinstance(result, io.IOBase):
-            warn("Falling back to using filepath", SunpyUserWarning)
-            result = result.name
+            raise TypeError("file-handler is not supported for unreadable files")
+
         filepaths.append(result)
 
     return data_header_pairs, filepaths

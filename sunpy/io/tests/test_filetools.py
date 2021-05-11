@@ -90,13 +90,20 @@ class TestFiletools:
         assert isinstance(hlist[0], sunpy.io.header.FileHeader)
 
     def test_read_file_exceptions(self):
-        # Test filepath type-check
-        with pytest.raises(TypeError, match="expected str, IO or pathlib.Path object"):
-            sunpy.io.read_file(1)
         # Test invalid filetype
         with pytest.raises(sunpy.io.file_tools.UnrecognizedFileTypeError,
                            match="The requested filetype is not currently supported by SunPy"):
             sunpy.io.read_file(AIA_171_IMAGE, "invalid_extension")
+
+    def test_detect_filetype(self):
+        # Test the detection logic
+        assert sunpy.io.detect_filetype(AIA_171_IMAGE) == "fits"
+
+        sdo_aia_jp2 = os.path.join(sunpy.data.test.rootdir, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
+        assert sunpy.io.detect_filetype(sdo_aia_jp2) == "jp2"
+
+        goes_truncated = os.path.join(sunpy.data.test.rootdir, 'goes_truncated_test_goes15.nc')
+        assert sunpy.io.detect_filetype(goes_truncated) == "hdf5"
 
     @skip_glymur
     def test_read_file_header_jp2(self):

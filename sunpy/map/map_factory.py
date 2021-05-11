@@ -116,7 +116,7 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
 
-    * File Handler
+    * File handlers
 
     >>> with open('file1.fits', 'rb') as fd:  # doctest: +SKIP
     ...     mymap = sunpy.map.Map(fd)  # doctest: +SKIP
@@ -165,9 +165,8 @@ class MapFactory(BasicRegistrationFactory):
         # File gets read here. This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
         log.debug(f'Reading {fname}')
-        filetype = kwargs.pop('filetype', None)
         try:
-            pairs = read_file(fname, filetype, **kwargs)
+            pairs = read_file(fname, **kwargs)
         except Exception as e:
             msg = f"Failed to read {fname}."
             raise IOError(msg) from e
