@@ -642,10 +642,13 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
         == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
     assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
         == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
-    assert resampled_map.meta['crpix1'] == (resampled_map.data.shape[1] + 1) / 2.
-    assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
-    assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
-    assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
+    # TODO: we should really test the numbers here, not just that the correct
+    # header values have been modified. However, I am lazy and we have figure
+    # tests.
+    assert resampled_map.meta['crpix1'] != generic_map.meta['crpix1']
+    assert resampled_map.meta['crpix2'] != generic_map.meta['crpix2']
+    assert u.allclose(resampled_map.meta['crval1'], generic_map.meta['crval1'])
+    assert u.allclose(resampled_map.meta['crval2'], generic_map.meta['crval2'])
     assert resampled_map.meta['naxis1'] == new_dimensions[0].value
     assert resampled_map.meta['naxis2'] == new_dimensions[1].value
     for key in generic_map.meta:
