@@ -469,17 +469,9 @@ class TestTimeSeries:
             sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_invalid_filetype(self):
-        # NOTE: Currently testing using `NotImplemented`, this test will need to be updated
-        # after `sunpy.timeseries.timeseriesbase._parse_file` is implemented.
-
-        with pytest.raises(TypeError), pytest.warns(SunpyUserWarning):
+        with pytest.warns(SunpyUserWarning), pytest.raises(NoMatchError):
             with open(fermi_gbm_filepath, 'rb') as fd:
                 sunpy.timeseries.TimeSeries(fd, filetype="invalid_extension")
-
-        # Now with silence_errors kwarg set
-        with pytest.raises(TypeError), pytest.warns(SunpyUserWarning):
-            with open(fermi_gbm_filepath, 'rb') as fd:
-                sunpy.timeseries.TimeSeries(fd, filetype="invalid_extension", silence_errors=True)
 
     def test_invalid_file(self):
         invalid_filepath = os.path.join(filepath, 'annotation_ppt.db')

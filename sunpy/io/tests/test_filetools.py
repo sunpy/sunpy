@@ -8,7 +8,6 @@ import sunpy
 import sunpy.data.test
 import sunpy.io
 from sunpy.tests.helpers import skip_ana, skip_glymur
-from sunpy.util import SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
 
@@ -78,16 +77,10 @@ class TestFiletools:
         assert isinstance(pair[0][0], np.ndarray)
         assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
 
-        # Test file object
-        with pytest.warns(SunpyUserWarning,
-                          match="Reader does not support file-object, falling back to using filepath"):
+        # Test exception for file object
+        with pytest.raises(TypeError, match="Reader does not support file-handler"):
             with open(sdo_aia_jp2, 'rb') as fd:
                 pair = sunpy.io.read_file(fd)
-                assert isinstance(pair, list)
-                assert len(pair) == 1
-                assert len(pair[0]) == 2
-                assert isinstance(pair[0][0], np.ndarray)
-                assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
 
     def test_read_file_header_fits(self):
         # Test FITS
@@ -151,15 +144,9 @@ class TestFiletools:
         assert isinstance(ana_data[0][1], sunpy.io.header.FileHeader)
 
         # Test file object
-        with pytest.warns(SunpyUserWarning,
-                          match="Reader does not support file-object, falling back to using filepath"):
+        with pytest.raises(TypeError, match="Reader does not support file-handler"):
             with open(ana_test_file, 'rb') as fd:
                 ana_data = sunpy.io.read_file(fd)
-                assert isinstance(ana_data, list)
-                assert len(ana_data) == 1
-                assert len(ana_data[0]) == 2
-                assert isinstance(ana_data[0][0], np.ndarray)
-                assert isinstance(ana_data[0][1], sunpy.io.header.FileHeader)
 
     @skip_ana
     def test_read_file__header_ana(self):

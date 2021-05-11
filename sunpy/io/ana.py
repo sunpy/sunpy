@@ -10,10 +10,8 @@ This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
 import io
 import os
 import collections
-from warnings import warn
 
 from sunpy.io.header import FileHeader
-from sunpy.util.exceptions import SunpyUserWarning
 
 try:
     from sunpy.io import _pyana
@@ -48,8 +46,7 @@ def read(filename, debug=False, **kwargs):
     >>> data = sunpy.io.ana.read(filename)  # doctest: +SKIP
     """
     if isinstance(filename, io.IOBase):
-        warn("Reader does not support file-object, falling back to using filepath", SunpyUserWarning)
-        filename = filename.name
+        raise TypeError("Reader does not support file-handler")
 
     if not os.path.isfile(filename):
         raise OSError("File does not exist!")
