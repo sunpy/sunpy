@@ -59,6 +59,11 @@ release = __version__
 sunpy_version = Version(__version__)
 is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 
+# Fix the version due to a bug on RTD and sunpy
+if on_rtd:
+    release = "2.1.5"
+    is_development = False
+
 # -- SunPy Sample Data and Config ----------------------------------------------
 
 # We set the logger to debug so that we can see any sample data download errors
@@ -255,10 +260,12 @@ def rstjinja(app, docname, source):
         )
         source[0] = rendered
 
+
 # JSOC email os env
 os.environ["JSOC_EMAIL"] = "jsoc@cadair.com"
 
 # -- Sphinx setup --------------------------------------------------------------
+
 
 def setup(app):
     # Generate the stability page

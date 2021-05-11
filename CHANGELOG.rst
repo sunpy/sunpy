@@ -1,5 +1,20 @@
-Sunpy v2.1.4 (2021-04-07)
-=========================
+2.1.5 (2021-05-11)
+==================
+
+Bug Fixes
+---------
+
+- Fixed a bug with the visibility of some grid lines when using :meth:`~sunpy.map.GenericMap.draw_grid`. (`#5222 <https://github.com/sunpy/sunpy/pull/5222>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Temporarily disabled the unit test to check for coordinates consistency with JPL HORIZONS due to the inability to choose a matching ephemeris. (`#5203 <https://github.com/sunpy/sunpy/pull/5203>`__)
+
+
+2.1.4 (2021-04-07)
+==================
 
 Bug Fixes
 ---------
@@ -23,8 +38,8 @@ Trivial/Internal Changes
   must not co-exist. (`#5166 <https://github.com/sunpy/sunpy/pull/5166>`__)
 
 
-Sunpy v2.1.3 (2021-03-27)
-=========================
+2.1.3 (2021-03-27)
+==================
 
 Bug Fixes
 ---------
@@ -61,8 +76,8 @@ Trivial/Internal Changes
   querying the VSO. (`#5108 <https://github.com/sunpy/sunpy/pull/5108>`__)
 
 
-Sunpy v2.1.2 (2021-03-04)
-=========================
+2.1.2 (2021-03-04)
+==================
 
 Bug Fixes
 ---------
@@ -75,8 +90,8 @@ Bug Fixes
   and method through which they were accessed. (`#5054 <https://github.com/sunpy/sunpy/pull/5054>`__)
 
 
-Sunpy v2.1.1 (2021-02-27)
-=========================
+2.1.1 (2021-02-27)
+==================
 
 Features
 --------
@@ -98,8 +113,8 @@ Added/Improved Documentation
 - Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_plot_rectangle.py`) for drawing rectangles on maps. (`#4528 <https://github.com/sunpy/sunpy/pull/4528>`__)
 
 
-sunpy 2.1.0 (2020-02-21)
-========================
+2.1.0 (2020-02-21)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -526,8 +541,8 @@ Trivial/Internal Changes
 - Changed the implementation of a ``hypothesis``-based test so that it does not raise an error with ``hypothesis`` 6.0.0. (`#4852 <https://github.com/sunpy/sunpy/pull/4852>`__)
 
 
-Sunpy v2.0.0 (2020-06-12)
-=========================
+2.0.0 (2020-06-12)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -744,8 +759,8 @@ Trivial/Internal Changes
   closely match the new sunpy package template (`#4188 <https://github.com/sunpy/sunpy/pull/4188>`__)
 
 
-sunpy v1.1.0 (2020-01-10)
-=========================
+1.1.0 (2020-01-10)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -944,8 +959,8 @@ Trivial/Internal Changes
 - Fix tests for `sunpy.data.data_manager` and ensure they are correctly executed with pytest. (`#3550 <https://github.com/sunpy/sunpy/pull/3550>`__)
 
 
-sunpy 1.0.0 (2019-06-01)
-========================
+1.0.0 (2019-06-01)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
