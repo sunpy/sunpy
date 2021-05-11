@@ -1,10 +1,7 @@
 """
 This module provides functions to retrieve system information.
 """
-import io
 import platform
-import textwrap
-from contextlib import redirect_stdout
 
 from pkg_resources import get_distribution
 
@@ -96,10 +93,3 @@ def system_info():
     print("###################")
     for extra_req in extra_reqs:
         print(f'{extra_req}: {sys_prop[extra_req]}')
-
-
-f = io.StringIO()
-with redirect_stdout(f):
-    system_info()
-system_info.__doc__ += textwrap.indent("\n.. code-block:: python\n\n", "    ")
-system_info.__doc__ += textwrap.indent(f.getvalue(), "        ")
