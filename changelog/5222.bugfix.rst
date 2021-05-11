@@ -1,1 +1,0 @@
-Fixed a bug with the visibility of some grid lines when using :meth:`~sunpy.map.GenericMap.draw_grid`.
