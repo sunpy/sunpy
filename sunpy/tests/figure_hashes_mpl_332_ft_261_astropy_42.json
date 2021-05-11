@@ -23,6 +23,7 @@
   "sunpy.map.tests.test_plotting.test_plot_masked_aia171": "2dff076c0eaaf5cf5849ad541b434bfbda00d99491db51eb35d2ab0ee729bbb2",
   "sunpy.map.tests.test_plotting.test_plot_masked_aia171_nowcsaxes": "69e28235fa42379a94f7da6cc39b375f361d1e26dc0f94e6b8c5f05894cc64c7",
   "sunpy.map.tests.test_plotting.test_plot_aia171_superpixel": "0fa642815341e022dbf856b42e919cc25d9311290f68c4850ff65877a40cbe1b",
+  "sunpy.map.tests.test_plotting.test_plot_resample": "fe43b20dfb373599ba4086f02da8c227e6a82d3d5de0d3c924a553532a9548c8",
   "sunpy.map.tests.test_plotting.test_plot_superpixel": "ef0c2aade672c6e3f63645ff8a663c41e22043db5a1541978400cf0f1256dd0c",
   "sunpy.map.tests.test_plotting.test_plot_aia171_superpixel_nowcsaxes": "32c9d9c97ad6f78f5d4c03b492fd56fad54532ab9218bde0925598a9e226f752",
   "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel": "873eeaf7e9ccb43a685971f97e029a5d2ea38d87aee4fd12fe5cebeadb33d6d9",
