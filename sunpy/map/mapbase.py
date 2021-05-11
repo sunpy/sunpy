@@ -1413,11 +1413,8 @@ class GenericMap(NDData):
             new_meta['CD2_1'] *= scale_factor_x
             new_meta['CD1_2'] *= scale_factor_y
             new_meta['CD2_2'] *= scale_factor_y
-        new_meta['crpix1'] = (dimensions[0].value + 1) / 2.
-        new_meta['crpix2'] = (dimensions[1].value + 1) / 2.
-        lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.value
-        new_meta['crval2'] = lat.value
+        new_meta['crpix1'] = (self.meta['crpix1'] - 0.5) / scale_factor_x + 0.5
+        new_meta['crpix2'] = (self.meta['crpix2'] - 0.5) / scale_factor_y + 0.5
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 
