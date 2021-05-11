@@ -1,1 +1,0 @@
-:meth:`sunpy.map.CompositeMap.plot` now properly makes use of WCS information to position and orient maps when overlaying them.

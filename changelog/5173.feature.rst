@@ -1,1 +1,0 @@
-Added support for corrected NOAA SWPC solar region summary data files.

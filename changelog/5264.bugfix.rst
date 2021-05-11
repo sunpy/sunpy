@@ -1,3 +1,0 @@
-Calling :func:`sunpy.map.make_fitswcs_header` with a
-`~sunpy.coordinates.HeliographicCarrington` coordinate that with ``observer='self'``
-set now correctly sets the observer information in the header.

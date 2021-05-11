@@ -1,1 +1,0 @@
-Changed `sunpy.net.attrs.Source` to `sunpy.net.attrs.Provider` for the `sunpy.net.dataretriever.sources.GONGClient`.

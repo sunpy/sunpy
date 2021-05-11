@@ -1,1 +1,0 @@
-Updated `sunpy.util.sysinfo.system_info` to return all optional dependencies of sunpy.

@@ -1,6 +1,0 @@
-The allowable ``level`` inputs to :meth:`sunpy.map.GenericMap.contour` and
-:meth:`sunpy.map.GenericMap.draw_contours` have been consolidated. Both methods
-now accept
-- Scalars, if the map has no units
-- Quantities, if the map has units
-- Percentages

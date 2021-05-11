@@ -1,8 +1,0 @@
-Deprecated `sunpy.roi.chaincode.Chaincode` and created a replacement at `sunpy.net.helio.Chaincode`.
-
-This replacement has the following changes:
-
-1. Added support for numpy array as an input (it was broken before).
-2. Renamed ``BoundingBox`` to ``boundingbox``
-3. Renamed ``subBoundingBox`` to ``sub_boundingbox``
-4. Now area and length raise `NotImplementedError`

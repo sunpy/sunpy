@@ -1,1 +1,0 @@
-Fixed bug in `sunpy.until.scraper.Scraper` which caused URL patterns containing backslashes to be incorrectly parsed on Windows.

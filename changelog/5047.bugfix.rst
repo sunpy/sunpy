@@ -1,4 +1,0 @@
-Constructing a `~sunpy.util.MetaDict` is now more lenient, and accepts
-any class that inherits from `collections.abc.Mapping`. This fixes a
-regression where headers read with `astropy.io.fits` raised an error when
-passed to individual `~sunpy.map` sources.

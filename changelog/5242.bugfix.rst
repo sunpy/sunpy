@@ -1,1 +1,0 @@
-When using the cylindrical representation of `Heliocentric` to work in the Heliocentric Radial coordinate frame, the ``psi`` component now goes from 0 to 360 degrees instead of -180 to 180 degrees.

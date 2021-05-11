@@ -1,2 +1,0 @@
-Prevented some colormaps being accidentally modified depending on the order
-and method through which they were accessed.

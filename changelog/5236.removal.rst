@@ -1,1 +1,0 @@
-Deprecated :meth:`sunpy.map.GenericMap.draw_rectangle` in favor of :meth:`~sunpy.map.GenericMap.draw_quadrangle`.

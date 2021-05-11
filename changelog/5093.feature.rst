@@ -1,2 +1,0 @@
-Added a :meth:`~sunpy.time.TimeRange.contains` method to `sunpy.time.TimeRange`
-that tests if two time ranges overlap.

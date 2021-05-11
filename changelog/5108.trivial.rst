@@ -1,3 +1,0 @@
-Significantly sped up calls to :func:`~sunpy.time.parse_time` for string
-arguments. This will have knock on effects, including improved performance of
-querying the VSO.

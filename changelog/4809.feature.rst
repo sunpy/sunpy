@@ -1,2 +1,0 @@
-Added :meth:`sunpy.map.GenericMap.draw_quadrangle` for drawing a quadrangle on a map.
-A quadrangle has edges that are aligned with lines of constant latitude and longitude, but these can be in a different coordinate system than that of the map.

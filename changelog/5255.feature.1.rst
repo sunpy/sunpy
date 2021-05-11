@@ -1,2 +1,0 @@
-Added an optional keyword argument ``autoalign`` to :meth:`sunpy.map.GenericMap.plot` for plotting a map to axes that correspond to a different WCS.
-See :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py`.
