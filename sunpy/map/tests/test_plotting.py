@@ -171,6 +171,23 @@ def test_plot_aia171_superpixel(aia171_test_map):
 
 
 @figure_test
+def test_plot_resample(carrington_map):
+    # Test that super-pixelling a map preserves the coordinate system correctly.
+    # The two plots should have identical coordinate grids
+    resamp = carrington_map.resample([10, 5] * u.pix)
+
+    plt.figure()
+    ax1 = plt.subplot(121, projection=carrington_map)
+    ax2 = plt.subplot(122, projection=resamp)
+
+    carrington_map.plot(axes=ax1)
+    resamp.plot(axes=ax2)
+
+    for ax in [ax1, ax2]:
+        ax.coords.grid(True, color='tab:red', ls='solid', lw=2, alpha=1)
+
+
+@figure_test
 def test_plot_superpixel(carrington_map):
     # Test that super-pixelling a map preserves the coordinate system correctly.
     # The two plots should have identical coordinate grids
