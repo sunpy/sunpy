@@ -2164,7 +2164,9 @@ class GenericMap(NDData):
         if isinstance(bottom_left, astropy.units.quantity.Quantity):
             anchor, _, top_right, _ = self._parse_submap_quantity_input(bottom_left, top_right, width, height)
             width, height = top_right - anchor
+            transform = axes.get_transform(self.wcs)
             kwargs.update({"vertex_unit": u.pix})
+
         else:
             bottom_left, top_right = get_rectangle_coordinates(
                 bottom_left, top_right=top_right, width=width, height=height)
@@ -2173,9 +2175,10 @@ class GenericMap(NDData):
             height = top_right.spherical.lat - bottom_left.spherical.lat
             transform = axes.get_transform(bottom_left.frame.replicate_without_data())
             anchor = self._get_lon_lat(bottom_left)
-            kwargs.update({"transform": transform})
+            transform = axes.get_transform(bottom_left.frame.replicate_without_data())
 
         kwergs = {
+            "transform": transform,
             "edgecolor": "white",
             "fill": False,
         }
