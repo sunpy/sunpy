@@ -1,7 +1,7 @@
 [build-system]
 requires = [
          "setuptools",
-         "setuptools_scm<6",
+         "setuptools_scm",
          "wheel",
          "oldest-supported-numpy",
          "extension-helpers"
