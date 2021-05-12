@@ -1,5 +1,21 @@
-Sunpy v2.0.10 (2021-04-07)
-==========================
+2.0.11 (2021-05-11)
+===================
+
+Bug Fixes
+---------
+
+- Fixed a bug with the visibility of some grid lines when using :meth:`~sunpy.map.GenericMap.draw_grid`. (`#5222 <https://github.com/sunpy/sunpy/pull/5222>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Temporarily disabled the unit test to check for coordinates consistency with JPL HORIZONS due to the inability to choose a matching ephemeris. (`#5203 <https://github.com/sunpy/sunpy/pull/5203>`__)
+- Re-enabled the unit test to check for coordinates consistency with JPL HORIZONS when the matching ephemeris can be specified. (`#5314 <https://github.com/sunpy/sunpy/pull/5314>`__)
+
+
+2.0.10 (2021-04-07)
+===================
 
 Bug Fixes
 ---------
@@ -15,8 +31,8 @@ Trivial/Internal Changes
   must not co-exist. (`#5166 <https://github.com/sunpy/sunpy/pull/5166>`__)
 
 
-Sunpy v2.0.9 (2021-03-27)
-=========================
+2.0.9 (2021-03-27)
+==================
 
 Bug Fixes
 ---------
@@ -53,8 +69,8 @@ Trivial/Internal Changes
   querying the VSO. (`#5108 <https://github.com/sunpy/sunpy/pull/5108>`__)
 
 
-Sunpy v2.0.8 (2021-03-03)
-=========================
+2.0.8 (2021-03-03)
+==================
 
 Features
 --------
@@ -105,8 +121,8 @@ Trivial/Internal Changes
 - Added Python 3.9 Wheels. (`#4938 <https://github.com/sunpy/sunpy/pull/4938>`__)
 
 
-Sunpy v2.0.7 (2021-01-06)
-=========================
+2.0.7 (2021-01-06)
+==================
 
 Bug Fixes
 ---------
@@ -115,8 +131,8 @@ Bug Fixes
   bug where the first line of data was parsed incorrectly. (`#4805 <https://github.com/sunpy/sunpy/pull/4805>`__)
 
 
-Sunpy v2.0.6 (2020-12-18)
-=========================
+2.0.6 (2020-12-18)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -160,8 +176,8 @@ Added/Improved Documentation
   properties. (`#4717 <https://github.com/sunpy/sunpy/pull/4717>`__)
 
 
-Sunpy 2.0.5 (2020-11-26)
-========================
+2.0.5 (2020-11-26)
+==================
 
 Bug Fixes
 ---------
@@ -172,8 +188,8 @@ Bug Fixes
   Transformations have been sped up by a factor a few. (`#4663 <https://github.com/sunpy/sunpy/pull/4663>`__)
 
 
-Sunpy v2.0.4 (2020-11-14)
-=========================
+2.0.4 (2020-11-14)
+==================
 
 Deprecations and Removals
 -------------------------
@@ -204,8 +220,8 @@ Documentation Fixes
 - Modified :ref:`sphx_glr_generated_gallery_plotting_magnetogram_active_regions.py` to use HMI file from sample data instead of downloading it with Fido. (`#4598 <https://github.com/sunpy/sunpy/pull/4598>`__)
 
 
-Sunpy 2.0.3 (2020-10-02)
-========================
+2.0.3 (2020-10-02)
+==================
 
 Bug Fixes
 ---------
@@ -215,8 +231,8 @@ Bug Fixes
   The previous inaccuracy was a relative error of ~0.001% (0.01 arcseconds) for an observer at 1 AU, but could be as large as ~0.5% for Parker Solar Probe perihelia. (`#4524 <https://github.com/sunpy/sunpy/pull/4524>`__)
 
 
-Sunpy 2.0.2 (2020-09-26)
-========================
+2.0.2 (2020-09-26)
+==================
 
 Bug Fixes
 ---------
@@ -303,8 +319,8 @@ Trivial/Internal Changes
   at the debug level to the sunpy logger. (`#4491 <https://github.com/sunpy/sunpy/pull/4491>`__)
 
 
-Sunpy v2.0.1 (2020-06-13)
-=========================
+2.0.1 (2020-06-13)
+==================
 
 Bug Fixes
 ---------
@@ -314,8 +330,8 @@ Bug Fixes
 - Fix some bugs with Python 3.6 regarding parfive versions. (`#4283 <https://github.com/sunpy/sunpy/pull/4283>`__)
 
 
-Sunpy v2.0.0 (2020-06-12)
-=========================
+2.0.0 (2020-06-12)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -532,8 +548,8 @@ Trivial/Internal Changes
   closely match the new sunpy package template (`#4188 <https://github.com/sunpy/sunpy/pull/4188>`__)
 
 
-sunpy v1.1.0 (2020-01-10)
-=========================
+1.1.0 (2020-01-10)
+==================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -732,8 +748,8 @@ Trivial/Internal Changes
 - Fix tests for `sunpy.data.data_manager` and ensure they are correctly executed with pytest. (`#3550 <https://github.com/sunpy/sunpy/pull/3550>`__)
 
 
-sunpy 1.0.0 (2019-06-01)
-========================
+1.0.0 (2019-06-01)
+==================
 
 Backwards Incompatible Changes
 ------------------------------

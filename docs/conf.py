@@ -58,6 +58,11 @@ copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 release = __version__
 is_development = '.dev' in __version__
 
+# Fix the version due to a bug on RTD and sunpy
+if on_rtd:
+    release = "2.0.11"
+    is_development = False
+
 # -- SunPy Sample Data and Config ----------------------------------------------
 
 # We set the logger to debug so that we can see any sample data download errors
