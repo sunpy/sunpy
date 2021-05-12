@@ -1,1 +1,1 @@
-Allows :meth:`sunpy.map.GenericMap.draw_quadrangle` to accept :ref:`u.pix <astropy:astropy-units>` as input to enable plotting boxes in the pixel space of both the native map and other maps when the correct transform is specified.
+Allows :meth:`sunpy.map.GenericMap.draw_quadrangle` to accept pixel units as input to enable plotting boxes in the pixel space of the map, which can be different from the plot axes.
