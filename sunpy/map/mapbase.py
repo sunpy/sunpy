@@ -2129,12 +2129,12 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
+        bottom_left : `~astropy.coordinates.SkyCoord` or `~astropy.units.Quantity`
             The bottom-left coordinate of the rectangle. If a `~astropy.coordinates.SkyCoord` it can
             have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
-            object with units of `~astropy.units.si.pix`.
-        top_right : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.SkyCoord`, optional
+            object with pixel units (e.g., ``pix``).
+        top_right : `~astropy.coordinates.SkyCoord` or `~astropy.units.Quantity`, optional
             The top-right coordinate of the quadrangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.
         width : `astropy.units.Quantity`, optional
