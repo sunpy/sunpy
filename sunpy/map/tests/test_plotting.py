@@ -168,6 +168,15 @@ def test_quadrangle_aia17_pix_top_right(aia171_test_map):
 
 
 @figure_test
+def test_quadrangle_aia17_pix_top_right_different_axes(aia171_test_map):
+    # Plot the map rotated by 30 degrees
+    aia171_test_map.rotate(30*u.deg).plot()
+    # Plot a rectangle in the pixel space of the original map
+    aia171_test_map.draw_quadrangle(bottom_left=(50, 50)*u.pix,
+                                    top_right=(80, 90)*u.pix, edgecolor='cyan')
+
+
+@figure_test
 def test_plot_masked_aia171(aia171_test_map_with_mask):
     aia171_test_map_with_mask.plot()
 
