@@ -2115,7 +2115,7 @@ class GenericMap(NDData):
                         axes=None, top_right=None, **kwargs):
         """
         Draw a quadrangle defined in world coordinates on the plot using Astropy's
-        `~astropy.visualization.wcsaxes.patches.Quadrangle`.
+        `~astropy.visualization.wcsaxes.Quadrangle`.
 
         This draws a quadrangle that has corners at ``(bottom_left, top_right)``,
         and has sides aligned with the coordinate axes of the frame of ``bottom_left``,
@@ -2142,13 +2142,13 @@ class GenericMap(NDData):
 
         Returns
         -------
-        quad : `~astropy.visualization.wcsaxes.patches.Quadrangle`
+        quad : `~astropy.visualization.wcsaxes.Quadrangle`
             The added patch
 
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
-        `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
+        `~astropy.visualization.wcsaxes.Quadrangle` instance.
 
         Examples
         --------
