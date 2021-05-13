@@ -24,7 +24,6 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
@@ -436,24 +435,6 @@ class VSOClient(BaseClient):
         results += err_results
         results._errors += err_results.errors
         return results
-
-    @deprecated("2.1", "This functionality is deprecated as it is replaced by better search support.")
-    @staticmethod
-    def link(query_response, maps):  # pragma: no cover
-        """ Return list of paths with records associated with them in
-        the meta attribute. """
-        if not maps:
-            return []
-        ret = []
-
-        for record_item in query_response:
-            try:
-                item = _Str(maps[record_item.fileid]['path'])
-            except KeyError:
-                continue
-            item.meta = record_item
-            ret.append(item)
-        return ret
 
     def make_getdatarequest(self, response, methods=None, info=None):
         """ Make datarequest with methods from response. """

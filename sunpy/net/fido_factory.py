@@ -21,7 +21,6 @@ from sunpy import config
 from sunpy.net import attr, vso
 from sunpy.net.base_client import BaseClient, QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
-from sunpy.util.decorators import deprecated
 from sunpy.util.parfive_helpers import Downloader, Results
 from sunpy.util.util import get_width
 
@@ -122,17 +121,6 @@ class UnifiedResponse(Sequence):
 
         return UnifiedResponse(*ret)
 
-    @deprecated("2.1", "The same behaviour can now be obtained by indexing the object directly")
-    def get_response(self, i):  # pragma: no cover
-        """
-        Get the actual response rather than another UnifiedResponse object.
-        """
-        return self._list[i]
-
-    @deprecated("2.1", alternative="path_format_keys")
-    def response_block_properties(self):
-        return self.path_format_keys()
-
     def path_format_keys(self):
         """
         Returns all the names that can be used to format filenames.
@@ -149,36 +137,6 @@ class UnifiedResponse(Sequence):
         for table in self[1:]:
             s = s.intersection(table.path_format_keys())
         return s
-
-    @property
-    @deprecated("2.1", "All objects contained in the sequence are now Table objects")
-    def tables(self):
-        """
-        Returns a list of `astropy.table.Table` for all responses present in a specific
-        `~sunpy.net.fido_factory.UnifiedResponse` object. They can then be used
-        to perform key-based indexing of objects of either type
-        `sunpy.net.dataretriever.client.QueryResponse`, `sunpy.net.vso.QueryResponse` or
-        `sunpy.net.jsoc.JSOCClient`
-
-        Returns
-        -------
-        `list`
-            A list of `astropy.table.Table`, consisting of data either from the
-            `sunpy.net.dataretriever.client.QueryResponse`, `sunpy.net.vso.QueryResponse` or
-            `sunpy.net.jsoc.JSOCClient`.
-        """
-        return list(self)
-
-    @property
-    @deprecated("2.1", "The same behaviour can be obtained by iterating over the object directly")
-    def responses(self):  # pragma: no cover
-        """
-        A generator of all the `sunpy.net.dataretriever.client.QueryResponse`
-        objects contained in the `~sunpy.net.fido_factory.UnifiedResponse`
-        object.
-        """
-        for table in self:
-            yield table
 
     def keys(self):
         """

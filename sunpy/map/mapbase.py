@@ -38,7 +38,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import cached_property_based_on, deprecated
+from sunpy.util.decorators import cached_property_based_on
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -638,14 +638,6 @@ class GenericMap(NDData):
         The `numpy.dtype` of the array of the map.
         """
         return self.data.dtype
-
-    @property
-    @deprecated(since="2.1", message="Use map.data.size instead", alternative="map.data.size")
-    def size(self):
-        """
-        The number of pixels in the array of the map.
-        """
-        return u.Quantity(self.data.size, 'pixel')
 
     @property
     def ndim(self):
@@ -2171,76 +2163,6 @@ class GenericMap(NDData):
         quad = Quadrangle(self._get_lon_lat(bottom_left), width, height, **kwergs)
         axes.add_patch(quad)
         return quad
-
-    @deprecated("3.0", alternative="draw_quadrangle")
-    @u.quantity_input
-    def draw_rectangle(self, bottom_left, *, top_right=None, width: u.deg = None, height: u.deg = None,
-                       axes=None, **kwargs):
-        """
-        Draw a rectangle defined in world coordinates on the plot.
-
-        This draws a rectangle that has corners at ``(bottom_left, top_right)``,
-        and has sides parallel to coordinate axes of the map.
-
-        If ``width`` and ``height`` are specified, they are respectively added to the
-        longitude and latitude of the ``bottom_left`` coordinate to calculate a
-        ``top_right`` coordinate.
-
-        Parameters
-        ----------
-        bottom_left : `~astropy.coordinates.SkyCoord`
-            The bottom-left coordinate of the rectangle. It can
-            have shape ``(2,)`` to simultaneously define ``top_right``.
-        top_right : `~astropy.coordinates.SkyCoord`
-            The top-right coordinate of the rectangle.
-        width : `astropy.units.Quantity`, optional
-            The width of the rectangle. Required if ``top_right`` is omitted.
-        height : `astropy.units.Quantity`
-            The height of the rectangle. Required if ``top_right`` is omitted.
-        axes : `matplotlib.axes.Axes`
-            The axes on which to plot the rectangle, defaults to the current
-            axes.
-
-        Returns
-        -------
-        rect : `list`
-            A list containing the `~matplotlib.patches.Rectangle` object, after
-            it has been added to ``axes``.
-
-        Notes
-        -----
-        Extra keyword arguments to this function are passed through to the
-        `~matplotlib.patches.Rectangle` instance.
-        """
-        axes = self._check_axes(axes, allow_non_wcsaxes=True)
-
-        bottom_left, top_right = get_rectangle_coordinates(bottom_left,
-                                                           top_right=top_right,
-                                                           width=width,
-                                                           height=height)
-
-        bottom_left = bottom_left.transform_to(self.coordinate_frame)
-        top_right = top_right.transform_to(self.coordinate_frame)
-
-        width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-        height = top_right.spherical.lat - bottom_left.spherical.lat
-
-        if wcsaxes_compat.is_wcsaxes(axes):
-            axes_unit = u.deg
-        else:
-            axes_unit = self.spatial_units[0]
-
-        bottom_left = u.Quantity(self._get_lon_lat(bottom_left), unit=axes_unit).value
-
-        width = width.to(axes_unit).value
-        height = height.to(axes_unit).value
-        kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
-                  'edgecolor': 'white',
-                  'fill': False}
-        kwergs.update(kwargs)
-        rect = plt.Rectangle(bottom_left, width, height, **kwergs)
-        axes.add_patch(rect)
-        return [rect]
 
     def _process_levels_arg(self, levels, warn_units=False):
         """

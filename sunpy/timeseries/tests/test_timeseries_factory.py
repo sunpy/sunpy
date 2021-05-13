@@ -19,7 +19,6 @@ import sunpy.timeseries
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -208,26 +207,14 @@ class TestTimeSeries:
         ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_json_filepath, source='NOAAIndices')
         assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
 
-    def test_noaa_ind_txt(self):
-        # Test a NOAAPredictIndices TimeSeries txt
-        with pytest.warns(SunpyDeprecationWarning):
-            ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
-        assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
-
     # The pre- data involves dates long in the future, so ignore an ERFA warning
     # when parsing these dates.
+
     @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
     def test_noaa_pre_json(self):
         # Test a NOAAIndices TimeSeries json
         ts_noaa_pre = sunpy.timeseries.TimeSeries(
             noaa_pre_json_filepath, source='NOAAPredictIndices')
-        assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
-
-    def test_noaa_pre_txt(self):
-        # Test a NOAAIndices TimeSeries txt
-        with pytest.warns(SunpyDeprecationWarning):
-            ts_noaa_pre = sunpy.timeseries.TimeSeries(
-                noaa_pre_txt_filepath, source='NOAAPredictIndices')
         assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
 
 # ==============================================================================

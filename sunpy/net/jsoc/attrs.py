@@ -3,10 +3,8 @@ import astropy.units as u
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
-from sunpy.util.decorators import deprecated
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey',
-           'Cutout']
+__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'PrimeKey', 'Cutout']
 
 
 # Define a custom __dir__ to restrict tab-completion to __all__
@@ -19,13 +17,6 @@ class Series(SimpleAttr):
     The JSOC Series to Download.
 
     This is the list of `Series <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`__.
-    """
-
-
-@deprecated(since="2.1", message="specify desired keywords as arguments to JSOCResponse.show()")
-class Keys(SimpleAttr):
-    """
-    Keys choose which keywords to fetch while making a query request.
     """
 
 

@@ -4,16 +4,12 @@ This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 from pathlib import Path
 from collections import OrderedDict
 
-import numpy as np
 import pandas as pd
-from pandas.io.parsers import read_csv
 
 import astropy.units as u
-from astropy.time import Time
 
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.decorators import deprecated
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -121,54 +117,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         suffix = Path(filepath).suffix
         if suffix == '.json':
             return cls._parse_json_file(filepath)
-        elif suffix == ".txt":
-            return cls._parse_txt_file(filepath)
         else:
-            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.txt' or '.json'")
-
-    @staticmethod
-    @deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
-    def _parse_txt_file(filepath):
-        """
-        Parses an NOAA indices text file.
-
-        Parameters
-        ----------
-        filepath : `str`
-            The path to the file you want to parse.
-        """
-        header = []
-        with open(filepath, 'r') as fp:
-            line = fp.readline()
-            # Read header at top of file
-            while line.startswith((":", "#")):
-                header += line
-                line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth',
-                      'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
-            data = read_csv(fp, delim_whitespace=True, names=fields,
-                            comment='#', dtype={'yyyy': np.str, 'mm': np.str})
-            data = data.dropna(how='any')
-            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
-            timeindex.precision = 9
-            data['time'] = timeindex.isot.astype('datetime64')
-            data = data.set_index('time')
-            data = data.drop('mm', 1)
-            data = data.drop('yyyy', 1)
-
-            # Add the units data
-            units = OrderedDict([('sunspot SWO', u.dimensionless_unscaled),
-                                 ('sunspot RI', u.dimensionless_unscaled),
-                                 ('sunspot ratio', u.dimensionless_unscaled),
-                                 ('sunspot SWO smooth', u.dimensionless_unscaled),
-                                 ('sunspot RI smooth', u.dimensionless_unscaled),
-                                 ('radio flux', u.W/u.m**2),
-                                 ('radio flux smooth', u.W/u.m**2),
-                                 ('geomagnetic ap', u.dimensionless_unscaled),
-                                 ('geomagnetic smooth', u.dimensionless_unscaled)])
-            # TODO: check units
-            # TODO: fix header/meta, it's returning rubbish.
-            return data, MetaDict({'comments': header}), units
+            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.json'")
 
     @staticmethod
     def _parse_json_file(filepath):
@@ -294,10 +244,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         suffix = Path(filepath).suffix
         if suffix == '.json':
             return cls._parse_json_file(filepath)
-        elif suffix == ".txt":
-            return cls._parse_txt_file(filepath)
         else:
-            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.txt' or '.json'")
+            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.json'")
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
@@ -307,48 +255,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
-
-    @staticmethod
-    @deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
-    def _parse_txt_file(filepath):
-        """
-        Parses an NOAA Predict indices text file.
-
-        Parameters
-        ----------
-        filepath : `str`
-            The path to the file you want to parse.
-        """
-        header = ''
-        with open(filepath, 'r') as fp:
-            line = fp.readline()
-            # Read header at top of file
-            while line.startswith((":", "#")):
-                header += line
-                line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high',
-                      'radio flux', 'radio flux low', 'radio flux high')
-            data = read_csv(filepath, delim_whitespace=True, names=fields,
-                            comment='#', skiprows=2, dtype={'yyyy': np.str, 'mm': np.str})
-            data = data.dropna(how='any')
-
-            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
-            timeindex.precision = 9
-            data['time'] = timeindex.isot.astype('datetime64')
-
-            data = data.set_index('time')
-            data = data.drop('mm', 1)
-            data = data.drop('yyyy', 1)
-
-            # Add the units data
-            units = OrderedDict([('sunspot', u.dimensionless_unscaled),
-                                 ('sunspot low', u.dimensionless_unscaled),
-                                 ('sunspot high', u.dimensionless_unscaled),
-                                 ('radio flux', u.W/u.m**2),
-                                 ('radio flux low', u.W/u.m**2),
-                                 ('radio flux high', u.W/u.m**2)])
-            # Todo: check units used.
-            return data, MetaDict({'comments': header}), units
 
     @staticmethod
     def _parse_json_file(filepath):

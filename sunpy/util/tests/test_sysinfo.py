@@ -10,11 +10,11 @@ def test_find_dependencies():
 def test_missing_dependencies_by_extra():
     missing = missing_dependencies_by_extra()
     assert sorted(list(missing.keys())) == sorted(['required', 'all', 'asdf', 'dask', 'database', 'dev', 'docs',
-                                                   'image', 'instr', 'jpeg2000', 'map', 'net', 'tests', 'timeseries',
+                                                   'image', 'jpeg2000', 'map', 'net', 'tests', 'timeseries',
                                                    'visualization'])
     missing = missing_dependencies_by_extra(exclude_extras=("all",))
     assert sorted(list(missing.keys())) == sorted(['required', 'asdf', 'dask', 'database', 'dev', 'docs',
-                                                   'image', 'instr', 'jpeg2000', 'map', 'net', 'tests', 'timeseries',
+                                                   'image', 'jpeg2000', 'map', 'net', 'tests', 'timeseries',
                                                    'visualization'])
 
 

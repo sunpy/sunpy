@@ -1,6 +1,7 @@
 # Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
 # This module was developed under funding provided by
 # Google Summer of Code 2014
+import csv
 import socket
 from datetime import datetime
 from urllib.error import URLError
@@ -8,8 +9,9 @@ from urllib.request import urlopen, urlretrieve
 
 from dateutil.rrule import MONTHLY, rrule
 
+from astropy.time import Time
+
 from sunpy.extern.parse import parse
-from sunpy.extern.sunkit_instruments.rhessi import parse_observing_summary_dbase_file
 from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.time import TimeRange, parse_time
 
@@ -23,6 +25,64 @@ lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                  'navy', 'orange', 'green')
 
 
+def parse_observing_summary_dbase_file(filename):
+    """
+    Parse the RHESSI observing summary database file.
+    This file lists the name of observing summary files
+    for specific time ranges along with other info.
+
+    Parameters
+    ----------
+    filename : `str`
+        The filename of the obssumm dbase file.
+
+    Returns
+    -------
+    `dict`
+        Return a `dict` containing the parsed data in the dbase file.
+
+    References
+    ----------
+    https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing%20Summary%20Data
+    """
+    # An example dbase file can be found at:
+    # https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
+
+    with open(filename) as fd:
+        reader = csv.reader(fd, delimiter=" ", skipinitialspace=True)
+        _ = next(reader)  # skip 'HESSI Filedb File:' row
+        _ = next(reader)  # skip 'Created: ...' row
+        _ = next(reader)  # skip 'Number of Files: ...' row
+        column_names = next(reader)  # ['Filename', 'Orb_st', 'Orb_end',...]
+
+        obssumm_filename = []
+        orbit_start = []
+        orbit_end = []
+        start_time = []
+        end_time = []
+        status_flag = []
+        number_of_packets = []
+
+        for row in reader:
+            obssumm_filename.append(row[0])
+            orbit_start.append(int(row[1]))
+            orbit_end.append(int(row[2]))
+            start_time.append(Time.strptime(row[3], "%d-%b-%y"))  # skip time
+            end_time.append(Time.strptime(row[5], "%d-%b-%y"))  # skip time
+            status_flag.append(int(row[7]))
+            number_of_packets.append(int(row[8]))
+
+        return {
+            column_names[0].lower(): obssumm_filename,
+            column_names[1].lower(): orbit_start,
+            column_names[2].lower(): orbit_end,
+            column_names[3].lower(): start_time,
+            column_names[4].lower(): end_time,
+            column_names[5].lower(): status_flag,
+            column_names[6].lower(): number_of_packets,
+        }
+
+
 def get_base_url():
     """
     Find the first mirror which is online
@@ -33,7 +93,6 @@ def get_base_url():
             return server
         except (URLError, socket.timeout):
             pass
-
     raise OSError(f'Unable to find an online HESSI server from {data_servers}')
 
 
