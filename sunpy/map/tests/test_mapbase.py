@@ -867,6 +867,14 @@ def test_rotate_invalid_order(generic_map):
         generic_map.rotate(order=-1)
 
 
+def test_rotate_dask_array(generic_map):
+    import dask.array
+    dask_map = generic_map._new_instance(
+        dask.array.from_array(generic_map.data), generic_map.meta)
+    dask_map_rot = dask_map.rotate(use_scipy=True)
+    assert isinstance(dask_map_rot.data, dask.array.Array)
+
+
 def test_as_mpl_axes_aia171(aia171_test_map):
     ax = plt.subplot(projection=aia171_test_map)
     assert isinstance(ax, wcsaxes.WCSAxes)
