@@ -5,6 +5,7 @@ import astropy.wcs
 from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates import frames, sun
+from sunpy.sun.constants import radius as _RSUN
 from sunpy.util import MetaDict
 
 __all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta']
@@ -166,7 +167,11 @@ def make_fitswcs_header(data, coordinate,
             dsun_obs = coordinate.radius
         else:
             dsun_obs = coordinate.observer.radius
-        meta_wcs['rsun_obs'] = sun._angular_radius(coordinate.rsun, dsun_obs).to_value(u.arcsec)
+        if getattr(coordinate, 'rsun', None) is not None:
+            rsun = coordinate.rsun
+        else:
+            rsun = _RSUN
+        meta_wcs['rsun_obs'] = sun._angular_radius(rsun, dsun_obs).to_value(u.arcsec)
 
     meta_dict = MetaDict(meta_wcs)
 
