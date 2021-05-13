@@ -25,7 +25,7 @@ __all__ = ['affine_transform']
 
 
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
-                     recenter=False, missing=0.0, use_scipy=False):
+                     recenter=False, missing=0.0, use_scipy=False, **kwargs):
     """
     Rotates, shifts and scales an image.
 
@@ -129,7 +129,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             offset=shift,
             order=order,
             mode='constant',
-            cval=missing
+            cval=missing,
+            **kwargs,
         ).T
     else:
         # Make the rotation matrix 3x3 to include translation of the image

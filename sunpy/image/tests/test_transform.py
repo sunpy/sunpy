@@ -264,10 +264,11 @@ def test_reproducible_matrix_multiplication():
     assert np.sum(mismatches != 0) == 0
 
 
-def test_dask(original, identity):
+@pytest.mark.parametrize('order', [1, 2, 3, 4])
+def test_dask(original, identity, order):
     import dask.array
     original_dask = dask.array.from_array(original)
-    derot = affine_transform(original, rmatrix=identity, use_scipy=True)
+    derot = affine_transform(original, rmatrix=identity, use_scipy=True, prefilter=False)
     derot_dask = affine_transform(original_dask, rmatrix=identity, use_scipy=True)
     assert isinstance(derot_dask, dask.array.Array)
     assert np.all(derot == derot_dask.compute())
