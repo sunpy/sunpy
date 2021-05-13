@@ -2161,7 +2161,7 @@ class GenericMap(NDData):
         """
         axes = self._check_axes(axes, allow_non_wcsaxes=False)
 
-        if isinstance(bottom_left, astropy.units.quantity.Quantity):
+        if isinstance(bottom_left, u.Quantity):
             anchor, _, top_right, _ = self._parse_submap_quantity_input(bottom_left, top_right, width, height)
             width, height = top_right - anchor
             transform = axes.get_transform(self.wcs)
@@ -2173,7 +2173,6 @@ class GenericMap(NDData):
 
             width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
             height = top_right.spherical.lat - bottom_left.spherical.lat
-            transform = axes.get_transform(bottom_left.frame.replicate_without_data())
             anchor = self._get_lon_lat(bottom_left)
             transform = axes.get_transform(bottom_left.frame.replicate_without_data())
 
