@@ -250,3 +250,13 @@ def test_set_wcs_aux():
     observer = observer.transform_to(Heliocentric(observer=observer))
     with pytest.raises(ValueError, match='obs_coord must be in a Stonyhurst or Carrington frame'):
         _set_wcs_aux_obs_coord(wcs, observer)
+
+
+def test_self_observer():
+    frame = HeliographicCarrington(0*u.deg, 0*u.deg, 1*u.au,
+                                   observer="self", obstime='2013-10-28')
+    wcs = solar_frame_to_wcs_mapping(frame)
+    assert wcs.wcs.aux.hgln_obs is None
+    assert u.allclose(wcs.wcs.aux.hglt_obs, frame.lon.to_value(u.deg))
+    assert u.allclose(wcs.wcs.aux.crln_obs, frame.lon.to_value(u.deg))
+    assert u.allclose(wcs.wcs.aux.dsun_obs, frame.radius.to_value(u.m))

@@ -7,6 +7,7 @@ from astropy.wcs import WCS
 
 import sunpy.map
 from sunpy.coordinates import frames, sun
+from sunpy.sun.constants import radius as rsun
 from sunpy.util.metadata import MetaDict
 
 
@@ -91,6 +92,8 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
     assert u.allclose(header['rsun_ref'] * u.m, hpc_test_header.frame.rsun)
     assert u.allclose(header['rsun_obs'] * u.arcsec,
                       sun._angular_radius(header['rsun_ref'] * u.m, header['dsun_obs'] * u.m))
+    assert u.allclose(header['hgln_obs'] * u.deg, hpc_test_header.frame.observer.lon)
+    assert u.allclose(header['hglt_obs'] * u.deg, hpc_test_header.frame.observer.lat)
     assert isinstance(WCS(header), WCS)
 
     # Check no observer info for HGS
@@ -102,7 +105,6 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
     # Check for observer info for HGC
     header = sunpy.map.make_fitswcs_header(map_data, hgc_test_header)
     assert u.allclose(header['dsun_obs'], hgc_test_header.frame.observer.radius.to_value(u.m))
-    assert 'rsun_obs' not in header
     assert isinstance(WCS(header), WCS)
 
     # Check arguments not given as astropy Quantities
@@ -166,3 +168,11 @@ def test_latlon_order():
     assert ('LN' in header['ctype1']) and header['crval1'] == coord.spherical.lon.to_value()
     # check LAT
     assert 'LT' in header['ctype2'] and header['crval2'] == coord.spherical.lat.to_value()
+
+
+def test_carrington_self_observer():
+    coord = SkyCoord(70*u.deg, -30*u.deg, 1*u.au, observer='self',
+                     obstime='2013-10-28 00:00', frame=frames.HeliographicCarrington)
+    header = sunpy.map.make_fitswcs_header(np.zeros((10, 10)), coord)
+    assert header['rsun_obs'] == sun._angular_radius(rsun, coord.radius).to_value(u.arcsec)
+    assert header['dsun_obs'] == coord.radius.to_value(u.m)

@@ -5,6 +5,7 @@ import astropy.wcs
 from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates import frames, sun
+from sunpy.sun.constants import radius as _RSUN
 from sunpy.util import MetaDict
 
 __all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta']
@@ -160,10 +161,14 @@ def make_fitswcs_header(data, coordinate,
          meta_wcs['PC2_1'], meta_wcs['PC2_2']) = (rotation_matrix[0, 0], rotation_matrix[0, 1],
                                                   rotation_matrix[1, 0], rotation_matrix[1, 1])
 
-    if hasattr(coordinate, 'rsun') and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
-        meta_wcs['rsun_obs'] = sun._angular_radius(
-            coordinate.rsun, coordinate.observer.radius
-        ).to_value(u.arcsec)
+    if getattr(coordinate, 'observer', None) is not None:
+        # Have to check for str, as doing == on a SkyCoord and str raises an error
+        if isinstance(coordinate.observer, str) and coordinate.observer == 'self':
+            dsun_obs = coordinate.radius
+        else:
+            dsun_obs = coordinate.observer.radius
+        rsun = getattr(coordinate, 'rsun', _RSUN)
+        meta_wcs['rsun_obs'] = sun._angular_radius(rsun, dsun_obs).to_value(u.arcsec)
 
     meta_dict = MetaDict(meta_wcs)
 
@@ -186,6 +191,7 @@ def _get_wcs_meta(coordinate, projection_code):
             * ctype1, ctype2
             * cunit1, cunit2
             * date_obs
+            * observer auxillary information, if set on `coordinate`
     """
 
     coord_meta = {}

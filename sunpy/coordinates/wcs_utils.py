@@ -143,8 +143,12 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     if hasattr(frame, 'rsun'):
         wcs.wcs.aux.rsun_ref = frame.rsun.to_value(u.m)
 
-    if hasattr(frame, 'observer') and isinstance(frame.observer, BaseCoordinateFrame):
-        _set_wcs_aux_obs_coord(wcs, frame.observer)
+    if hasattr(frame, 'observer') and frame.observer is not None:
+        if isinstance(frame.observer, BaseCoordinateFrame):
+            observer = frame.observer
+        elif frame.observer == 'self':
+            observer = frame
+        _set_wcs_aux_obs_coord(wcs, observer)
 
     if isinstance(frame, SunPyBaseCoordinateFrame):
 
