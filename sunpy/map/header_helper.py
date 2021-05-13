@@ -167,10 +167,7 @@ def make_fitswcs_header(data, coordinate,
             dsun_obs = coordinate.radius
         else:
             dsun_obs = coordinate.observer.radius
-        if getattr(coordinate, 'rsun', None) is not None:
-            rsun = coordinate.rsun
-        else:
-            rsun = _RSUN
+        rsun = getattr(coordinate, 'rsun', _RSUN)
         meta_wcs['rsun_obs'] = sun._angular_radius(rsun, dsun_obs).to_value(u.arcsec)
 
     meta_dict = MetaDict(meta_wcs)
