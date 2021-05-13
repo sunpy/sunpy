@@ -1,0 +1,1 @@
+Fix saving `.GenericMap` to an asdf file with version 2.8.0 of the asdf package.

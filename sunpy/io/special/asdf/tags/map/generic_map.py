@@ -33,9 +33,12 @@ class GenericMapType(SunPyType):
         node['data'] = np.asarray(smap.data)
         node['meta'] = dict(smap.meta)
         node['shift'] = u.Quantity(smap.shifted_value)
-        node['mask'] = smap.mask
-        node['uncertainty'] = smap.uncertainty
-        node['unit'] = smap.unit
+        if smap.mask is not None:
+            node['mask'] = smap.mask
+        if smap.uncertainty is not None:
+            node['uncertainty'] = smap.uncertainty
+        if smap.unit is not None:
+            node['unit'] = smap.unit
 
         # TODO: Save some or all of plot_settings
         # node['plot_settings'] = smap.plot_settings
