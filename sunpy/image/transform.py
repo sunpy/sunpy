@@ -120,12 +120,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     else:
         scipy_affine_transform = scipy.ndimage.interpolation.affine_transform
     if use_scipy:
-        if np.any(np.isnan(image)):
-            warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
-            image = np.nan_to_num(image)
+        if kwargs.pop('check_nans', True):
+            if np.any(np.isnan(image)):
+                warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
         # Transform the image using the scipy affine transform
         rotated_image = scipy_affine_transform(
-            image.T,
+            np.nan_to_num(image).T,
             rmatrix,
             offset=shift,
             order=order,

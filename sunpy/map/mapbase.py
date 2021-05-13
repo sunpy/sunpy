@@ -1416,7 +1416,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, use_scipy=False):
+               recenter=False, missing=0.0, use_scipy=False, **kwargs):
         """
         Returns a new rotated and rescaled map.
 
@@ -1547,10 +1547,13 @@ class GenericMap(NDData):
         # Apply the rotation to the image data
         new_data = affine_transform(new_data.T,
                                     np.asarray(rmatrix),
-                                    order=order, scale=scale,
+                                    order=order,
+                                    scale=scale,
                                     image_center=np.flipud(pixel_center),
-                                    recenter=recenter, missing=missing,
-                                    use_scipy=use_scipy).T
+                                    recenter=recenter,
+                                    missing=missing,
+                                    use_scipy=use_scipy,
+                                    **kwargs).T
 
         if recenter:
             new_reference_pixel = pixel_array_center
