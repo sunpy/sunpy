@@ -1,10 +1,11 @@
-2.0.11 (2021-05-11)
+2.0.11 (2021-05-13)
 ===================
 
 Bug Fixes
 ---------
 
 - Fixed a bug with the visibility of some grid lines when using :meth:`~sunpy.map.GenericMap.draw_grid`. (`#5222 <https://github.com/sunpy/sunpy/pull/5222>`__)
+- Fix saving `.GenericMap` to an asdf file with version 2.8.0 of the asdf package. (`#5342 <https://github.com/sunpy/sunpy/pull/5342>`__)
 
 
 Trivial/Internal Changes
