@@ -308,19 +308,17 @@ class Scraper:
                     continue
                 if http_err.code == 429:
                     # See if the server has told us how long to back off for
-                    retry_after = http_err.hdrs.get('Retry-After', 1)
+                    retry_after = http_err.hdrs.get('Retry-After', 2)
                     try:
                         # Ensure that we can parse the header as an int in sec
                         retry_after = int(retry_after)
-                    except Exception:
-                        retry_after = 1
-
+                    except Exception as e:
+                        log.debug(f"Converting retry_after failed: {e}")
+                        retry_after = 2
                     log.debug(
                         f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying."
                     )
-
                     sleep(retry_after)
-
                     # Put this dir back on the queue
                     directories.insert(0, directory)
                     continue
