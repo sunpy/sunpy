@@ -1,10 +1,17 @@
-2.1.5 (2021-05-11)
+2.1.5 (2021-05-13)
 ==================
 
 Bug Fixes
 ---------
 
 - Fixed a bug with the visibility of some grid lines when using :meth:`~sunpy.map.GenericMap.draw_grid`. (`#5222 <https://github.com/sunpy/sunpy/pull/5222>`__)
+- :func:`sunpy.coordinates.solar_frame_to_wcs_mapping` now sets the observer auxiliary
+  information when a `~sunpy.coordinates.HeliographicCarrington` frame with
+  ``observer='self'`` is passed. (`#5264 <https://github.com/sunpy/sunpy/pull/5264>`__)
+- Calling :func:`sunpy.map.make_fitswcs_header` with a
+  `~sunpy.coordinates.HeliographicCarrington` coordinate that with ``observer='self'``
+  set now correctly sets the observer information in the header. (`#5264 <https://github.com/sunpy/sunpy/pull/5264>`__)
+- Fix saving `.GenericMap` to an asdf file with version 2.8.0 of the asdf package. (`#5342 <https://github.com/sunpy/sunpy/pull/5342>`__)
 
 
 Trivial/Internal Changes
