@@ -160,7 +160,7 @@ Documentation and Testing
 
 * Write usage examples in the docstrings of all classes and functions whenever possible.
   These examples should be short and simple to reproduce–users should be able to copy them verbatim and run them.
-  These examples should, whenever possible, be in the :ref:`doctest <doctests>` format and will be executed as part of the test suite.
+  These examples should, whenever possible, be in the :ref:`doctests` format and will be executed as part of the test suite.
 
 * Unit tests should be provided for as many public methods and functions as possible, and should adhere to the standards set in the :ref:`testing` document.
 
