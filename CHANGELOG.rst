@@ -1,4 +1,4 @@
-3.0.0 (2021-05-11)
+3.0.0 (2021-05-14)
 ==================
 
 Backwards Incompatible Changes
@@ -6,32 +6,29 @@ Backwards Incompatible Changes
 
 - `sunpy.instr` has been depreacted and will be removed in sunpy 3.1 in favour of `sunkit-instruments`.
   The code that is under `sunpy.instr` is imported via `sunkit-instruments` to ensure backwards comparability. (`#4526 <https://github.com/sunpy/sunpy/pull/4526>`__)
-- `sunpy.util.sphinx.changelog` and `sunpy.util.towncrier` have been removed and are now in a standalone package `sphinx-changelog <https://github.com/openastronomy/sphinx-changelog>`__. (`#5049 <https://github.com/sunpy/sunpy/pull/5049>`__)
-- Several `sunpy.map.GenericMap` attributes have been updated to return `None`
-  when the relevant piece of FITS metadata is missing. These are:
+- Several `sunpy.map.GenericMap` attributes have been updated to return `None` when the relevant piece of FITS metadata is missing. These are:
 
   - `~sunpy.map.GenericMap.exposure_time`, previously defaulted to zero seconds.
   - `~sunpy.map.GenericMap.measurement`, previously defaulted to zero.
   - `~sunpy.map.GenericMap.waveunit`, previously defaulted to ``u.one``.
   - `~sunpy.map.GenericMap.wavelength`, previously defaulted to zero. (`#5126 <https://github.com/sunpy/sunpy/pull/5126>`__)
+- `~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` no longer automatically convert 2D input to a 3D coordinate during instantiation.
+  Instead, the 2D-to-3D conversion is deferred until the coordinate is transformed to a different frame, or with a call to the method :meth:`~sunpy.coordinates.frames.BaseHeliographic.make_3d`. (`#5211 <https://github.com/sunpy/sunpy/pull/5211>`__)
 - Changed URL for the `sunpy.net.dataretriever.sources.SRSClient` from "ftp://ftp.swpc.noaa.gov/pub/warehouse/" to "ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/".
   The old URL is unsupported and we expect the files will be the same but we can not say with 100% certainty. (`#5173 <https://github.com/sunpy/sunpy/pull/5173>`__)
 - Changed `sunpy.net.attrs.Source` to `sunpy.net.attrs.Provider` for the `sunpy.net.dataretriever.sources.GONGClient`. (`#5174 <https://github.com/sunpy/sunpy/pull/5174>`__)
-- `~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` no longer automatically convert 2D input to a 3D coordinate during instantiation.
-  Instead, the 2D-to-3D conversion is deferred until the coordinate is transformed to a different frame, or with a call to the method :meth:`~sunpy.coordinates.frames.BaseHeliographic.make_3d`. (`#5211 <https://github.com/sunpy/sunpy/pull/5211>`__)
 - The ``rsun`` frame attribute of `~sunpy.coordinates.frames.Helioprojective` now converts any input to kilometers. (`#5211 <https://github.com/sunpy/sunpy/pull/5211>`__)
 - :meth:`sunpy.map.CompositeMap.plot` now internally calls :meth:`sunpy.map.GenericMap.plot` and :meth:`sunpy.map.GenericMap.draw_contours`, which may affect the plot output of existing user code. (`#5255 <https://github.com/sunpy/sunpy/pull/5255>`__)
 - Removed the ``basic_plot`` keyword argument from :meth:`sunpy.map.CompositeMap.peek` due to its unreliability. (`#5255 <https://github.com/sunpy/sunpy/pull/5255>`__)
+- `sunpy.util.sphinx.changelog` and `sunpy.util.towncrier` have been removed and are now in a standalone package `sphinx-changelog <https://github.com/openastronomy/sphinx-changelog>`__. (`#5049 <https://github.com/sunpy/sunpy/pull/5049>`__)
 
 
 Deprecations and Removals
 -------------------------
 
 - Deprecated :meth:`sunpy.map.GenericMap.draw_rectangle` in favor of :meth:`~sunpy.map.GenericMap.draw_quadrangle`. (`#5236 <https://github.com/sunpy/sunpy/pull/5236>`__)
-- Using `~sunpy.map.GenericMap` plotting methods on an `~matplotlib.axes.Axes` that is not
-  a `~astropy.visualization.wcsaxes.WCSAxes` is deprecated. This previously
-  raised a warning, but is now formally deprecated, and will raise an error in
-  sunpy 3.1. (`#5244 <https://github.com/sunpy/sunpy/pull/5244>`__)
+- Using `~sunpy.map.GenericMap` plotting methods on an `~matplotlib.axes.Axes` that is not a `~astropy.visualization.wcsaxes.WCSAxes` is deprecated.
+  This previously raised a warning, but is now formally deprecated, and will raise an error in sunpy 3.1. (`#5244 <https://github.com/sunpy/sunpy/pull/5244>`__)
 - Deprecated `sunpy.roi.chaincode.Chaincode` and created a replacement at `sunpy.net.helio.Chaincode`.
 
   This replacement has the following changes:
@@ -96,9 +93,9 @@ Features
   keys to their original value and current value. (`#5241 <https://github.com/sunpy/sunpy/pull/5241>`__)
 - Added :func:`sunpy.map.contains_coordinate` which provides a quick way to see if a
   world coordinate is contained within the array bounds of a map. (`#5252 <https://github.com/sunpy/sunpy/pull/5252>`__)
-- :meth:`sunpy.map.CompositeMap.plot` now properly makes use of WCS information to position and orient maps when overlaying them. (`#5255 <https://github.com/sunpy/sunpy/pull/5255>`__)
 - Added an optional keyword argument ``autoalign`` to :meth:`sunpy.map.GenericMap.plot` for plotting a map to axes that correspond to a different WCS.
   See :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py`. (`#5255 <https://github.com/sunpy/sunpy/pull/5255>`__)
+- :meth:`sunpy.map.CompositeMap.plot` now properly makes use of WCS information to position and orient maps when overlaying them. (`#5255 <https://github.com/sunpy/sunpy/pull/5255>`__)
 
 
 Bug Fixes
@@ -132,6 +129,10 @@ Bug Fixes
 - Calling :func:`sunpy.map.make_fitswcs_header` with a
   `~sunpy.coordinates.HeliographicCarrington` coordinate that with ``observer='self'``
   set now correctly sets the observer information in the header. (`#5264 <https://github.com/sunpy/sunpy/pull/5264>`__)
+- :meth:`sunpy.map.GenericMap.superpixel` now keeps the reference coordinate of the
+  WCS projection the same as the input map, and updates the reference pixel accordingly.
+  This fixes inconsistencies in the input and output world coordinate systems when a
+  non-linear projection is used. (`#5295 <https://github.com/sunpy/sunpy/pull/5295>`__)
 - Inputs to the ``dimensions`` and ``offset`` arguments to
   :meth:`sunpy.map.GenericMap.superpixel` in units other than ``u.pix``
   (e.g. ```u.kpix``) are now handled correctly. (`#5301 <https://github.com/sunpy/sunpy/pull/5301>`__)
@@ -141,6 +142,11 @@ Bug Fixes
   This has now been changed so the rounding is correctly reflected in the meatadata. (`#5301 <https://github.com/sunpy/sunpy/pull/5301>`__)
 - Remove runtime use of `astropy.tests.helper.assert_quantity_allclose` which
   introduces a runtime dependancy on `pytest`. (`#5305 <https://github.com/sunpy/sunpy/pull/5305>`__)
+- :meth:`sunpy.map.GenericMap.resample` now keeps the reference coordinate of the
+  WCS projection the same as the input map, and updates the reference pixel accordingly.
+  This fixes inconsistencies in the input and output world coordinate systems when a
+  non-linear projection is used. (`#5309 <https://github.com/sunpy/sunpy/pull/5309>`__)
+- Fix saving `.GenericMap` to an asdf file with version 2.8.0 of the asdf package. (`#5342 <https://github.com/sunpy/sunpy/pull/5342>`__)
 
 
 Added/Improved Documentation
@@ -189,6 +195,7 @@ Trivial/Internal Changes
   as the map data axes may not correctly align with the coordinate axes.
   This happens if an `~matplotlib.axes.Axes` is created with a projection
   that is a different map to the one being plotted. (`#5244 <https://github.com/sunpy/sunpy/pull/5244>`__)
+- Re-enabled the unit test to check for coordinates consistency with JPL HORIZONS when the matching ephemeris can be specified. (`#5314 <https://github.com/sunpy/sunpy/pull/5314>`__)
 
 
 2.1.0 (2020-02-21)
