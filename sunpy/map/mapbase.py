@@ -1968,7 +1968,7 @@ class GenericMap(NDData):
         -----
         Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
         """
-        axes = self._check_axes(axes, allow_non_wcsaxes=False)
+        axes = self._check_axes(axes)
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
                                                            annotate=annotate,
@@ -2146,7 +2146,7 @@ class GenericMap(NDData):
         --------
         .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
         """
-        axes = self._check_axes(axes, allow_non_wcsaxes=False)
+        axes = self._check_axes(axes)
 
         bottom_left, top_right = get_rectangle_coordinates(
             bottom_left, top_right=top_right, width=width, height=height)
@@ -2225,7 +2225,7 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.axes.Axes.contour` function.
         """
-        axes = self._check_axes(axes, allow_non_wcsaxes=True)
+        axes = self._check_axes(axes)
 
         levels = self._process_levels_arg(levels, warn_units=True)
         kwargs = {}
@@ -2357,7 +2357,7 @@ class GenericMap(NDData):
         if autoalign is True:
             autoalign = 'pcolormesh'
 
-        axes = self._check_axes(axes, allow_non_wcsaxes=True, warn_different_wcs=autoalign is False)
+        axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
 
         # Normal plot
         plot_settings = copy.deepcopy(self.plot_settings)
@@ -2503,20 +2503,16 @@ class GenericMap(NDData):
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
 
-    def _check_axes(self, axes, allow_non_wcsaxes=False, warn_different_wcs=False):
+    def _check_axes(self, axes, warn_different_wcs=False):
         """
         - If axes is None, get the current Axes object.
-        - Error if not a WCSAxes (can be turned off).
+        - Error if not a WCSAxes.
         - Return axes.
 
         Parameters
         ----------
         axes : matplotlib.axes.Axes
             Axes to validate.
-        allow_non_wcsaxes : bool
-            If `True`, allow ``axes`` to not be a `WCSAxes`, and warn. Otherwise
-            raise an error. Support for this is deprecated, and this keyword can be removed in
-            sunpy 3.1.
         warn_different_wcs : bool
             If `True`, warn if the Axes WCS is different from the Map WCS. This is only used for
             `.plot()`, and can be removed once support is added for plotting a map on a different
@@ -2526,21 +2522,9 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         if not wcsaxes_compat.is_wcsaxes(axes):
-            # not WCSAxes
-            if allow_non_wcsaxes:
-                if not np.array_equal(self.rotation_matrix, np.identity(2)):
-                    warnings.warn("The axes of this map are not aligned to the pixel grid. "
-                                  "Plot axes may be incorrect.",
-                                  SunpyUserWarning)
-                warnings.warn("WCSAxes not being used as the axes object for this plot. "
-                              "Support for this is deprecated, and will be removed in sunpy 3.1. "
-                              "To fix this pass set the `projection` keyword "
-                              "to this map when creating the axes.",
-                              SunpyDeprecationWarning)
-            else:
-                raise TypeError("The axes need to be an instance of WCSAxes. "
-                                "To fix this pass set the `projection` keyword "
-                                "to this map when creating the axes.")
+            raise TypeError("The axes need to be an instance of WCSAxes. "
+                            "To fix this pass set the `projection` keyword "
+                            "to this map when creating the axes.")
         elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
             warnings.warn('The map world coordinate system (WCS) is different from the axes WCS. '
                           'The map data axes may not correctly align with the coordinate axes. '
