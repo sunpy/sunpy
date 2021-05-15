@@ -5,11 +5,7 @@ Installation
 Requirements
 ============
 
-These are the minimum versions of packages needed to install sunpy:
-
-- python 3.7
-- astropy 4.0.3
-- parfive 1.1
+sunpy enforces a minimum Python version that you will have to use and currently that is Python 3.7 or higher.
 
 Installing Scientific Python and sunpy
 ======================================
@@ -21,11 +17,10 @@ If you do not currently have a working scientific Python distribution this guide
 
 To install the Miniconda Python distribution follow the instructions at
 `here <https://docs.conda.io/en/latest/miniconda.html>`__.
-Although Miniconda makes it simple to switch between Python versions, we recommend that new users install
-the latest Python 3.x version of Miniconda as SunPy only supports Python 3.7+.
+Although Miniconda makes it simple to switch between Python versions, we recommend that new users install the latest Python 3.x version of Miniconda.
 
 The reason we choose Miniconda over Anaconda, is mainly due to the size as Anaconda comes with a full install of packages you probably do not need and this way you have more direct control over what has been installed into your Python virtual environment.
-Furthermore, you bypass the need for the conda resolver to sort out your root environment which should make "conda" faster to use.
+Furthermore, you bypass the need for the conda resolver to sort out your root environment which should make conda faster to use.
 
 Installing sunpy using Miniconda
 --------------------------------
@@ -52,8 +47,43 @@ You can update to the latest version by running::
 
     conda update sunpy
 
+Testing sunpy
+=============
+
+sunpy provides a method to run the basic test suite that will check that the install has worked correctly.
+
+To do so, use the :func:`sunpy.self_test`::
+
+    import sunpy
+    sunpy.self_test()
+
+You will see something like the following in your terminal::
+
+    Starting sunpy self test...
+    Checking for packages needed to run sunpy:
+    All required and optional sunpy dependencies are installed.
+    Starting the sunpy test suite:
+    ...
+
+The tests will run and will report any fails which you can report at the `sunpy issue tracker <https://github.com/sunpy/sunpy/issues>`__ and we will strive to help.
+
+It is possible to run this command and in a situation where not all packages are installed in order to run the test suite, you will see::
+
+    Starting sunpy self test...
+    Checking for packages needed to run sunpy:
+    The following packages are not installed for the sunpy[database] requirement:
+    * sqlalchemy
+    ...
+    You do not have all the required dependencies installed to run the sunpy test suite.
+    If you want to run the sunpy tests install the 'tests' extra with `pip install sunpy[all,tests]`
+
+This should not appear under a conda install of sunpy but can under a pip install of sunpy.
+This does not mean sunpy is broken, you will need to install the extra packages to ensure a "complete" installation of sunpy.
+
 Installing sunpy on top of an existing scientific Python environment
 --------------------------------------------------------------------
+
+This section assumes you already have everything setup whether that be Conda or a Python virtual environment and that the commands are exceucted within these.
 
 Conda
 ^^^^^
