@@ -2164,24 +2164,14 @@ class GenericMap(NDData):
         axes.add_patch(quad)
         return quad
 
-    def _process_levels_arg(self, levels, warn_units=False):
+    def _process_levels_arg(self, levels):
         """
         Accept a percentage or dimensionless or map unit input for contours.
-
-        ``warn_units`` allows legacy option of passing levels that aren't Quantities.
-        This can be removed in sunpy 3.1.
         """
         levels = np.atleast_1d(levels)
         if not hasattr(levels, 'unit'):
             if self.unit is None:
                 # No map units, so allow non-quantity through
-                return levels
-            elif warn_units:
-                # Deprecated in 3.0
-                warnings.warn('Passing contour levels that are not an astropy Quantity is deprecated. '
-                              f'Pass levels in units convertible to the map units ({self.unit}) '
-                              'or as a perncentage Quantity to remove this warning.',
-                              SunpyDeprecationWarning)
                 return levels
             else:
                 raise TypeError("The levels argument has no unit attribute, "
@@ -2227,7 +2217,7 @@ class GenericMap(NDData):
         """
         axes = self._check_axes(axes, allow_non_wcsaxes=True)
 
-        levels = self._process_levels_arg(levels, warn_units=True)
+        levels = self._process_levels_arg(levels)
         kwargs = {}
         if wcsaxes_compat.is_wcsaxes(axes):
             kwargs['transform'] = axes.get_transform(self.wcs)
