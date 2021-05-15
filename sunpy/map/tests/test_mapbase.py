@@ -1152,8 +1152,7 @@ def test_contour_units(simple_map):
 def test_contour_input(simple_map):
     simple_map.meta['bunit'] = 'm'
 
-    with pytest.warns(SunpyDeprecationWarning,
-                      match='Passing contour levels that are not an astropy Quantity'):
+    with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
         simple_map.draw_contours(1.5)
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
         simple_map.contour(1.5)
