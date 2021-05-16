@@ -107,7 +107,32 @@ def make_fitswcs_header(data, coordinate,
     >>> my_header = sunpy.map.make_fitswcs_header(data, my_coord)
     >>> my_map = sunpy.map.Map(data, my_header)
     """
+    coordinate = _validate_coordinate(coordinate)
 
+    if hasattr(data, "shape"):
+        shape = data.shape
+    else:
+        shape = data
+
+    meta_wcs = _get_wcs_meta(coordinate, projection_code)
+
+    meta_wcs = _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure)
+    meta_wcs = _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape)
+    meta_wcs = _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix)
+
+    if getattr(coordinate, 'observer', None) is not None:
+        # Have to check for str, as doing == on a SkyCoord and str raises an error
+        if isinstance(coordinate.observer, str) and coordinate.observer == 'self':
+            dsun_obs = coordinate.radius
+        else:
+            dsun_obs = coordinate.observer.radius
+        meta_wcs['rsun_obs'] = sun._angular_radius(coordinate.rsun, dsun_obs).to_value(u.arcsec)
+
+    meta_dict = MetaDict(meta_wcs)
+    return meta_dict
+
+
+def _validate_coordinate(coordinate):
     if not isinstance(coordinate, (SkyCoord, frames.BaseCoordinateFrame)):
         raise ValueError("coordinate needs to be a coordinate frame or an SkyCoord instance.")
 
@@ -119,32 +144,10 @@ def make_fitswcs_header(data, coordinate,
 
     if isinstance(coordinate, frames.Heliocentric):
         raise ValueError("This function does not currently support heliocentric coordinates.")
+    return coordinate
 
-    if hasattr(data, "shape"):
-        shape = data.shape
-    else:
-        shape = data
 
-    meta_wcs = _get_wcs_meta(coordinate, projection_code)
-
-    meta_instrument = _get_instrument_meta(instrument, telescope, observatory, wavelength, exposure)
-    meta_wcs.update(meta_instrument)
-
-    if reference_pixel is None:
-        reference_pixel = u.Quantity([(shape[1] - 1)/2.*u.pixel, (shape[0] - 1)/2.*u.pixel])
-    if scale is None:
-        scale = [1., 1.] * (u.arcsec/u.pixel)
-
-    meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lon.to_value(meta_wcs['cunit1']),
-                                              coordinate.spherical.lat.to_value(meta_wcs['cunit2']))
-
-    # Add 1 to go from input 0-based indexing to FITS 1-based indexing
-    meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel) + 1,
-                                              reference_pixel[1].to_value(u.pixel) + 1)
-
-    meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0].to_value(meta_wcs['cunit1']/u.pixel),
-                                              scale[1].to_value(meta_wcs['cunit2']/u.pixel))
-
+def _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix):
     if rotation_angle is not None and rotation_matrix is not None:
         raise ValueError("Can not specify both rotation angle and rotation matrix.")
 
@@ -159,18 +162,26 @@ def make_fitswcs_header(data, coordinate,
         (meta_wcs['PC1_1'], meta_wcs['PC1_2'],
          meta_wcs['PC2_1'], meta_wcs['PC2_2']) = (rotation_matrix[0, 0], rotation_matrix[0, 1],
                                                   rotation_matrix[1, 0], rotation_matrix[1, 1])
+    return meta_wcs
 
-    if getattr(coordinate, 'observer', None) is not None:
-        # Have to check for str, as doing == on a SkyCoord and str raises an error
-        if isinstance(coordinate.observer, str) and coordinate.observer == 'self':
-            dsun_obs = coordinate.radius
-        else:
-            dsun_obs = coordinate.observer.radius
-        meta_wcs['rsun_obs'] = sun._angular_radius(coordinate.rsun, dsun_obs).to_value(u.arcsec)
 
-    meta_dict = MetaDict(meta_wcs)
+def _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape):
+    if reference_pixel is None:
+        reference_pixel = u.Quantity([(shape[1] - 1)/2.*u.pixel,
+                                      (shape[0] - 1)/2.*u.pixel])
+    if scale is None:
+        scale = [1., 1.] * (u.arcsec/u.pixel)
 
-    return meta_dict
+    meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lon.to_value(meta_wcs['cunit1']),
+                                              coordinate.spherical.lat.to_value(meta_wcs['cunit2']))
+
+    # Add 1 to go from input 0-based indexing to FITS 1-based indexing
+    meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel) + 1,
+                                              reference_pixel[1].to_value(u.pixel) + 1)
+
+    meta_wcs['cdelt1'] = scale[0].to_value(meta_wcs['cunit1']/u.pixel)
+    meta_wcs['cdelt2'] = scale[1].to_value(meta_wcs['cunit2']/u.pixel)
+    return meta_wcs
 
 
 def _get_wcs_meta(coordinate, projection_code):
@@ -238,25 +249,23 @@ def get_observer_meta(observer, rsun: (u.Mm, None)):
     return coord_meta
 
 
-def _get_instrument_meta(instrument, telescope, observatory, wavelength, exposure):
+def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure):
     """
     Function to correctly name keywords from keyword arguments
     """
-    coord = {}
-
     if instrument is not None:
-        coord['instrume'] = str(instrument)
+        meta_wcs['instrume'] = str(instrument)
     if telescope is not None:
-        coord['telescop'] = str(telescope)
+        meta_wcs['telescop'] = str(telescope)
     if observatory is not None:
-        coord['obsrvtry'] = str(observatory)
+        meta_wcs['obsrvtry'] = str(observatory)
     if wavelength is not None:
-        coord['wavelnth'] = wavelength.to_value()
-        coord['waveunit'] = wavelength.unit.to_string("fits")
+        meta_wcs['wavelnth'] = wavelength.to_value()
+        meta_wcs['waveunit'] = wavelength.unit.to_string("fits")
     if exposure is not None:
-        coord['exptime'] = exposure.to_value(u.s)
+        meta_wcs['exptime'] = exposure.to_value(u.s)
 
-    return coord
+    return meta_wcs
 
 
 _map_meta_keywords = {
