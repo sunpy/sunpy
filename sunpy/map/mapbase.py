@@ -39,7 +39,7 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import cached_property_based_on
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
@@ -1245,19 +1245,7 @@ class GenericMap(NDData):
 
 # #### Data conversion routines #### #
 
-    @staticmethod
-    def _check_origin(origin):
-        """
-        Check origin is valid, and raise a deprecation warning if it's not None.
-        """
-        if origin is not None:
-            warnings.warn('The origin argument is deprecated. If using origin=1, '
-                          'manually subtract 1 from your pixels do not pass a value for origin.',
-                          SunpyDeprecationWarning)
-        if origin not in [None, 0, 1]:
-            raise ValueError('origin must be 0 or 1.')
-
-    def world_to_pixel(self, coordinate, origin=None):
+    def world_to_pixel(self, coordinate):
         """
         Convert a world (data) coordinate to a pixel coordinate.
 
@@ -1265,13 +1253,6 @@ class GenericMap(NDData):
         ----------
         coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
             The coordinate object to convert to pixel coordinates.
-
-        origin : int
-            Deprecated.
-
-            Origin of the top-left corner. i.e. count from 0 or 1.
-            Normally, origin should be 0 when passing numpy indices, or 1 if
-            passing values from FITS header or map attributes.
 
         Returns
         -------
@@ -1281,16 +1262,11 @@ class GenericMap(NDData):
         y : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE2 axis.
         """
-        self._check_origin(origin)
         x, y = self.wcs.world_to_pixel(coordinate)
-        if origin == 1:
-            x += 1
-            y += 1
-
         return PixelPair(x * u.pixel, y * u.pixel)
 
     @u.quantity_input
-    def pixel_to_world(self, x: u.pixel, y: u.pixel, origin=None):
+    def pixel_to_world(self, x: u.pixel, y: u.pixel):
         """
         Convert a pixel coordinate to a data (world) coordinate.
 
@@ -1302,23 +1278,11 @@ class GenericMap(NDData):
         y : `~astropy.units.Quantity`
             Pixel coordinate of the CTYPE2 axis. (Normally solar-y).
 
-        origin : int
-            Deprecated.
-
-            Origin of the top-left corner. i.e. count from 0 or 1.
-            Normally, origin should be 0 when passing numpy indices, or 1 if
-            passing values from FITS header or map attributes.
-
         Returns
         -------
         coord : `astropy.coordinates.SkyCoord`
             A coordinate object representing the output coordinate.
         """
-        self._check_origin(origin)
-        if origin == 1:
-            x = x - 1 * u.pixel
-            y = y - 1 * u.pixel
-
         return self.wcs.pixel_to_world(x, y)
 
 # #### I/O routines #### #

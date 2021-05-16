@@ -28,7 +28,7 @@ import sunpy.sun
 from sunpy.coordinates import sun
 from sunpy.map.sources import AIAMap
 from sunpy.time import parse_time
-from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 
@@ -333,12 +333,10 @@ def test_world_to_pixel_error(generic_map):
         generic_map.world_to_pixel(1)
 
 
-@pytest.mark.parametrize('origin', [0, 1])
-def test_world_pixel_roundtrip(simple_map, origin):
+def test_world_pixel_roundtrip(simple_map):
     pix = 1 * u.pix, 1 * u.pix
-    with pytest.warns(SunpyDeprecationWarning, match='The origin argument is deprecated'):
-        coord = simple_map.pixel_to_world(*pix, origin=origin)
-        pix_roundtrip = simple_map.world_to_pixel(coord, origin=origin)
+    coord = simple_map.pixel_to_world(*pix)
+    pix_roundtrip = simple_map.world_to_pixel(coord)
 
     assert u.allclose(pix_roundtrip.x, pix[0], atol=1e-10 * u.pix)
     assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
