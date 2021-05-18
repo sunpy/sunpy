@@ -173,6 +173,11 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
 
     rsun = QuantityAttribute(default=_RSUN, unit=u.km)
 
+    @property
+    def _is_2d(self):
+        return (self._data is not None and self._data.norm().unit is u.one
+                and u.allclose(self._data.norm(), 1*u.one))
+
     def make_3d(self):
         """
         Returns a fully 3D coordinate based on this coordinate.
@@ -191,9 +196,7 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
         frame : `~sunpy.coordinates.frames.BaseHeliographic`
             The fully 3D coordinate
         """
-        # Check if the coordinate is 2D
-        if (self._data is not None and self._data.norm().unit is u.one
-                and u.allclose(self._data.norm(), 1*u.one)):
+        if self._is_2d:
             return self.realize_frame(self._data * self.rsun)
 
         # The coordinate is already 3D
@@ -324,6 +327,12 @@ class HeliographicCarrington(BaseHeliographic):
     _wrap_angle = 360*u.deg
 
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not isinstance(self.observer, BaseCoordinateFrame) and self.observer == 'self' and self._is_2d:
+            raise ValueError("Full 3D coordinate (including radius) must be specified "
+                             "when observer='self'.")
 
 
 @add_common_docstring(**_frame_parameters())
