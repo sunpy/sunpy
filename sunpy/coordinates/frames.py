@@ -155,6 +155,11 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         else:
             return super().__str__()
 
+    @property
+    def _is_2d(self):
+        return (self._data is not None and self._data.norm().unit is u.one
+                and u.allclose(self._data.norm(), 1*u.one))
+
 
 class BaseHeliographic(SunPyBaseCoordinateFrame):
     """
@@ -172,11 +177,6 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
     }
 
     rsun = QuantityAttribute(default=_RSUN, unit=u.km)
-
-    @property
-    def _is_2d(self):
-        return (self._data is not None and self._data.norm().unit is u.one
-                and u.allclose(self._data.norm(), 1*u.one))
 
     def make_3d(self):
         """
@@ -493,8 +493,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             now with a third coordinate.
         """
         # Skip if we already are 3D
-        distance = self.spherical.distance
-        if not (distance.unit is u.one and u.allclose(distance, 1*u.one)):
+        if not self._is_2d:
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):
