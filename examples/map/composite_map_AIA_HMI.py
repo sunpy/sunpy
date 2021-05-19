@@ -30,7 +30,6 @@ aia_smap = aia_map.submap(SkyCoord(*bottom_left, frame=aia_map.coordinate_frame)
 hmi_smap = hmi_map.submap(SkyCoord(*bottom_left, frame=hmi_map.coordinate_frame),
                           top_right=SkyCoord(*top_right, frame=hmi_map.coordinate_frame))
 
-
 ##############################################################################
 # Let's create a `~sunpy.map.CompositeMap` which includes both maps.
 

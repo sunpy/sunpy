@@ -1852,11 +1852,13 @@ class GenericMap(NDData):
         dimensions : tuple
             One superpixel in the new map is equal to (dimension[0],
             dimension[1]) pixels of the original map.
-            Note: the first argument corresponds to the 'x' axis and the second
-            argument corresponds to the 'y' axis.
+            The first argument corresponds to the 'x' axis and the second
+            argument corresponds to the 'y' axis. If non-integer values are provided,
+            they are rounded using :func:`int`.
         offset : tuple
             Offset from (0,0) in original map pixels used to calculate where
             the data used to make the resulting superpixel map starts.
+            If non-integer value are provided, they are rounded using :func:`int`.
         func :
             Function applied to the original data.
             The function 'func' must take a numpy array as its first argument,
@@ -1885,16 +1887,21 @@ class GenericMap(NDData):
         if (offset.value[0] < 0) or (offset.value[1] < 0):
             raise ValueError("Offset is strictly non-negative.")
 
+        # These are rounded by int() in reshape_image_to_4d_superpixel,
+        # so round here too for use in constructing metadata later.
+        dimensions = [int(dim) for dim in dimensions.to_value(u.pix)]
+        offset = [int(off) for off in offset.to_value(u.pix)]
+
         # Make a copy of the original data, perform reshaping, and apply the
         # function.
         if self.mask is not None:
-            reshaped = reshape_image_to_4d_superpixel(np.ma.array(self.data.copy(), mask=self.mask),
-                                                      [dimensions.value[1], dimensions.value[0]],
-                                                      [offset.value[1], offset.value[0]])
+            data = np.ma.array(self.data.copy(), mask=self.mask)
         else:
-            reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
-                                                      [dimensions.value[1], dimensions.value[0]],
-                                                      [offset.value[1], offset.value[0]])
+            data = self.data.copy()
+
+        reshaped = reshape_image_to_4d_superpixel(data,
+                                                  [dimensions[1], dimensions[0]],
+                                                  [offset[1], offset[0]])
         new_array = func(func(reshaped, axis=3), axis=1)
 
         # Update image scale and number of pixels
@@ -1905,21 +1912,23 @@ class GenericMap(NDData):
         new_nx = new_array.shape[1]
         new_ny = new_array.shape[0]
 
+        scale = [self.scale[i].to_value(self.spatial_units[i] / u.pix) for i in range(2)]
+
         # Update metadata
-        new_meta['cdelt1'] = (dimensions[0] * self.scale[0]).value
-        new_meta['cdelt2'] = (dimensions[1] * self.scale[1]).value
+        new_meta['cdelt1'] = dimensions[0] * scale[0]
+        new_meta['cdelt2'] = dimensions[1] * scale[1]
         if 'CD1_1' in new_meta:
-            new_meta['CD1_1'] *= dimensions[0].value
-            new_meta['CD2_1'] *= dimensions[0].value
-            new_meta['CD1_2'] *= dimensions[1].value
-            new_meta['CD2_2'] *= dimensions[1].value
-        new_meta['crpix1'] = (new_nx + 1) / 2.
-        new_meta['crpix2'] = (new_ny + 1) / 2.
+            new_meta['CD1_1'] *= dimensions[0]
+            new_meta['CD2_1'] *= dimensions[0]
+            new_meta['CD1_2'] *= dimensions[1]
+            new_meta['CD2_2'] *= dimensions[1]
+        new_meta['crpix1'] = (new_nx + 1) / 2
+        new_meta['crpix2'] = (new_ny + 1) / 2
         lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5 * \
-            (offset[0]*self.scale[0]).to(self.spatial_units[0]).value
-        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5 * \
-            (offset[1]*self.scale[1]).to(self.spatial_units[1]).value
+        new_meta['crval1'] = lon.to_value(self.spatial_units[0]) + 0.5 * \
+            (offset[0] * scale[0])
+        new_meta['crval2'] = lat.to_value(self.spatial_units[1]) + 0.5 * \
+            (offset[1] * scale[1])
 
         # Create new map instance
         if self.mask is not None:

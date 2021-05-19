@@ -22,7 +22,6 @@ from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 # Import erfa via astropy to make sure we are using the same ERFA library as Astropy
 from astropy.coordinates.sky_coordinate import erfa
-from astropy.tests.helper import quantity_allclose
 from astropy.time import Time
 
 from sunpy import log
@@ -132,7 +131,7 @@ def carrington_rotation_time(crot, longitude: u.deg = None):
     """
     crot = crot << u.one
     if longitude is not None:
-        if not quantity_allclose(crot%1, 0):
+        if not u.allclose(crot%1, 0):
             raise ValueError("Carrington rotation number(s) must be integral if `longitude` is provided.")
         if (longitude <= 0*u.deg).any() or (longitude > 360*u.deg).any():
             raise ValueError("Carrington longitude(s) must be > 0 degrees and <= 360 degrees.")

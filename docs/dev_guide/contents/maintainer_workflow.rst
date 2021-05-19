@@ -30,7 +30,7 @@ It's good to have your upstream remote have a scary name, to remind you that it'
     $ git remote add upstream-rw git@github.com:sunpy/sunpy.git
     $ git fetch upstream-rw
 
-Let's say you have some changes that need to go into trunk (``upstream-rw/master``).
+Let's say you have some changes that need to go into trunk (``upstream-rw/main``).
 
 The changes are in some branch that you are currently on.
 For example, you are looking at someone's changes like this::
@@ -102,8 +102,8 @@ Pull requests **must** be rebased (but not necessarily squashed to a single comm
 
 Pull requests **may** be rebased (either manually or with the rebase and merge button) if:
 
-* There are conflicts with master
-* There are merge commits from upstream/master in the PR commit history (merge commits from PRs to the user's fork are fine)
+* There are conflicts with main
+* There are merge commits from upstream/main in the PR commit history (merge commits from PRs to the user's fork are fine)
 
 Asking contributors who are new to the project or inexperienced with using git is **discouraged**, as is maintainers rebasing these PRs before merge time, as this requires resetting of local git checkouts.
 
@@ -117,7 +117,7 @@ If there are only a few commits, consider rebasing to upstream::
     $ git fetch upstream-rw
 
     # Rebase
-    $ git rebase upstream-rw/master
+    $ git rebase upstream-rw/main
 
 A long series of commits
 ------------------------
@@ -125,7 +125,7 @@ A long series of commits
 If there are a longer series of related commits, consider a merge instead::
 
     $ git fetch upstream-rw
-    $ git merge --no-ff upstream-rw/master
+    $ git merge --no-ff upstream-rw/main
 
 Note the ``--no-ff`` above.
 This forces git to make a merge commit, rather than doing a fast-forward, so that these set of commits branch off trunk then rejoin the main history with a merge, rather than appearing to have been made directly on top of trunk.
@@ -136,10 +136,10 @@ Check the history
 Now, in either case, you should check that the history is sensible and you have the right commits::
 
     $ git log --oneline --graph
-    $ git log -p upstream-rw/master..
+    $ git log -p upstream-rw/main..
 
 The first line above just shows the history in a compact way, with a text representation of the history graph.
-The second line shows the log of commits excluding those that can be reached from trunk (``upstream-rw/master``), and including those that can be reached from current HEAD (implied with the ``..`` at the end).
+The second line shows the log of commits excluding those that can be reached from trunk (``upstream-rw/main``), and including those that can be reached from current HEAD (implied with the ``..`` at the end).
 So, it shows the commits unique to this branch compared to trunk.
 The ``-p`` option shows the diff for these commits in patch form.
 
@@ -162,7 +162,7 @@ Current milestone guidelines:
 
 Current labelling guidelines:
 
-* Issues that require fixing in master, but that also are confirmed to apply to supported stable version lines should be marked with a "Affects Release" label.
+* Issues that require fixing in main, but that also are confirmed to apply to supported stable version lines should be marked with a "Affects Release" label.
 * All open issues should have a "Priority <level>", "Effort <level>" and "Package <level>", if you are unsure at what level, pick higher ones just to be safe.
   If an issue is more of a question or discussion, you can omit these labels.
 * If an issue looks to be straightforward, you should add the "Good first issue" and "Hacktoberfest" label.
@@ -187,7 +187,7 @@ This is built and embedded into our documentation.
 Towncrier will automatically reflow your text, so it will work best if you stick to a single paragraph, but multiple sentences and links are OK and encouraged.
 You can install towncrier and then run ``towncrier --draft`` if you want to get a preview of how your change will look in the final release notes.
 
-`Instructions on how to write a changelog. <https://github.com/sunpy/sunpy/blob/master/changelog/README.rst>`__.
+`Instructions on how to write a changelog. <https://github.com/sunpy/sunpy/blob/main/changelog/README.rst>`__.
 
 .. _towncrier: https://pypi.org/project/towncrier/
 

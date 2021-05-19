@@ -450,9 +450,7 @@ def test_add_entry_from_hek_qr(database):
         hek.attrs.EventType('FL'))
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
-    # This number loves to change, so we are just going to test that it's added
-    # *something*
-    assert len(database) > 1
+    assert len(database) == 90
 
 
 @pytest.mark.remote_data
