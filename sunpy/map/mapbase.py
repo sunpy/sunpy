@@ -2138,12 +2138,12 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
+        bottom_left : `~astropy.coordinates.SkyCoord` or `~astropy.units.Quantity`
             The bottom-left coordinate of the rectangle. If a `~astropy.coordinates.SkyCoord` it can
             have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
-            object with units of `~astropy.units.si.pix`.
-        top_right : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.SkyCoord`, optional
+            object with pixel units (e.g., ``pix``).
+        top_right : `~astropy.coordinates.SkyCoord` or `~astropy.units.Quantity`, optional
             The top-right coordinate of the quadrangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.
         width : `astropy.units.Quantity`, optional
@@ -2170,21 +2170,23 @@ class GenericMap(NDData):
         """
         axes = self._check_axes(axes, allow_non_wcsaxes=False)
 
-        if isinstance(bottom_left, astropy.units.quantity.Quantity):
+        if isinstance(bottom_left, u.Quantity):
             anchor, _, top_right, _ = self._parse_submap_quantity_input(bottom_left, top_right, width, height)
             width, height = top_right - anchor
+            transform = axes.get_transform(self.wcs)
             kwargs.update({"vertex_unit": u.pix})
+
         else:
             bottom_left, top_right = get_rectangle_coordinates(
                 bottom_left, top_right=top_right, width=width, height=height)
 
             width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
             height = top_right.spherical.lat - bottom_left.spherical.lat
-            transform = axes.get_transform(bottom_left.frame.replicate_without_data())
             anchor = self._get_lon_lat(bottom_left)
-            kwargs.update({"transform": transform})
+            transform = axes.get_transform(bottom_left.frame.replicate_without_data())
 
         kwergs = {
+            "transform": transform,
             "edgecolor": "white",
             "fill": False,
         }
