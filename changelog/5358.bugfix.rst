@@ -1,0 +1,3 @@
+Constructing a coordinate in the ``'heliographic_carrington'`` frame with ``observer='self'``
+but without specifying ``radius`` now raises an error upon creation. This is because a full
+3D coordinate is needed to fully define the observer.
