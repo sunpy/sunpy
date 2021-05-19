@@ -422,3 +422,9 @@ def test_skycoord_hpc(args, kwargs):
         hgs = sc.transform_to("heliographic_stonyhurst")
 
     assert isinstance(hgs.frame, HeliographicStonyhurst)
+
+
+def test_hgc_incomplete_observer():
+    with pytest.raises(ValueError, match=r'Full 3D coordinate \(including radius\) must be specified'):
+        SkyCoord(0*u.deg, 0*u.deg, frame="heliographic_carrington",
+                 observer='self', obstime="2011-01-01T00:00:00")
