@@ -317,7 +317,8 @@ def test_frame_mapping_obsgeo_spherical(dkist_location, caplog):
 def test_obsgeo_cartesian(dkist_location):
     obstime = Time("2021-05-21T03:00:00")
     wcs = WCS(naxis=2)
-    wcs.wcs.obsgeo = dkist_location.to_value(u.m).tolist() + [0, 0, 0]
+    # tolist() returns a tuple.
+    wcs.wcs.obsgeo = list(dkist_location.to_value(u.m).tolist()) + [0, 0, 0]
     wcs.wcs.dateobs = obstime.isot
 
     frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)
