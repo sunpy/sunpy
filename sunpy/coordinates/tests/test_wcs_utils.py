@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import ITRS, BaseCoordinateFrame
+from astropy.coordinates import ITRS, BaseCoordinateFrame, SkyCoord
 from astropy.coordinates.earth import EarthLocation
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
@@ -275,7 +275,8 @@ def dkist_location():
     return EarthLocation(*(-5466045.25695494, -2404388.73741278, 2242133.88769004) * u.m)
 
 
-def test_obsgeo_cartesian(dkist_location):
+@pytest.mark.remote_data
+def test_obsgeo_frame_mapping_cartesian(dkist_location, caplog):
 
     obstime = Time("2021-05-21T03:00:00")
     wcs = WCS(naxis=2)
@@ -289,8 +290,11 @@ def test_obsgeo_cartesian(dkist_location):
 
     assert frame.observer == SkyCoord(dkist_location.get_itrs(obstime)).transform_to('heliographic_stonyhurst').frame
 
+    assert not caplog.records
 
-def test_obsgeo_spherical(dkist_location):
+
+@pytest.mark.remote_data
+def test_frame_mapping_obsgeo_spherical(dkist_location, caplog):
 
     obstime = Time("2021-05-21T03:00:00")
     location = dkist_location.get_itrs(obstime)
@@ -305,6 +309,8 @@ def test_obsgeo_spherical(dkist_location):
     assert frame.observer is not None
 
     assert frame.observer == SkyCoord(location).transform_to('heliographic_stonyhurst').frame
+
+    assert not caplog.records
 
 
 # TODO: Remove all these tests after Astropy 5.0 when we can just import obsgeo_to_frame.
