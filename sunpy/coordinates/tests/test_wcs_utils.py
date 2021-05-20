@@ -270,12 +270,44 @@ def test_self_observer():
     assert u.allclose(wcs.wcs.aux.dsun_obs, frame.radius.to_value(u.m))
 
 
-# TODO: Remove all these tests after Astropy 5.0 when we can just import obsgeo_to_frame.
 @pytest.fixture
 def dkist_location():
     return EarthLocation(*(-5466045.25695494, -2404388.73741278, 2242133.88769004) * u.m)
 
 
+def test_obsgeo_cartesian(dkist_location):
+
+    obstime = Time("2021-05-21T03:00:00")
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['HPLT', 'HPLN']
+    wcs.wcs.obsgeo = list(dkist_location.to_value(u.m).tolist()) + [0, 0, 0]
+    wcs.wcs.dateobs = obstime.isot
+
+    frame = solar_wcs_frame_mapping(wcs)
+
+    assert frame.observer is not None
+
+    assert frame.observer == SkyCoord(dkist_location.get_itrs(obstime)).transform_to('heliographic_stonyhurst').frame
+
+
+def test_obsgeo_spherical(dkist_location):
+
+    obstime = Time("2021-05-21T03:00:00")
+    location = dkist_location.get_itrs(obstime)
+    loc_sph = location.spherical
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['HPLT', 'HPLN']
+    wcs.wcs.obsgeo = [0, 0, 0] + [loc_sph.lon.value, loc_sph.lat.value, loc_sph.distance.value]
+    wcs.wcs.dateobs = obstime.isot
+
+    frame = solar_wcs_frame_mapping(wcs)
+
+    assert frame.observer is not None
+
+    assert frame.observer == SkyCoord(location).transform_to('heliographic_stonyhurst').frame
+
+
+# TODO: Remove all these tests after Astropy 5.0 when we can just import obsgeo_to_frame.
 def test_obsgeo_cartesian(dkist_location):
     obstime = Time("2021-05-21T03:00:00")
     wcs = WCS(naxis=2)
