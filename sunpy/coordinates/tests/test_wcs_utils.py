@@ -301,7 +301,7 @@ def test_frame_mapping_obsgeo_spherical(dkist_location, caplog):
     loc_sph = location.spherical
     wcs = WCS(naxis=2)
     wcs.wcs.ctype = ['HPLT', 'HPLN']
-    wcs.wcs.obsgeo = [0, 0, 0] + [loc_sph.lon.value, loc_sph.lat.value, loc_sph.distance.value]
+    wcs.wcs.obsgeo = [0, 0, 0] + [loc_sph.lon.to_value(u.deg), loc_sph.lat.to_value(u.deg), loc_sph.distance.to_value(u.m)]
     wcs.wcs.dateobs = obstime.isot
 
     frame = solar_wcs_frame_mapping(wcs)
@@ -317,7 +317,7 @@ def test_frame_mapping_obsgeo_spherical(dkist_location, caplog):
 def test_obsgeo_cartesian(dkist_location):
     obstime = Time("2021-05-21T03:00:00")
     wcs = WCS(naxis=2)
-    wcs.wcs.obsgeo = list(dkist_location.to_value(u.m).tolist()) + [0, 0, 0]
+    wcs.wcs.obsgeo = dkist_location.to_value(u.m).tolist() + [0, 0, 0]
     wcs.wcs.dateobs = obstime.isot
 
     frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)
@@ -334,7 +334,7 @@ def test_obsgeo_spherical(dkist_location):
     loc_sph = dkist_location.spherical
 
     wcs = WCS(naxis=2)
-    wcs.wcs.obsgeo = [0, 0, 0] + [loc_sph.lon.value, loc_sph.lat.value, loc_sph.distance.value]
+    wcs.wcs.obsgeo = [0, 0, 0] + [loc_sph.lon.to_value(u.deg), loc_sph.lat.to_value(u.deg), loc_sph.distance.to_value(u.m)]
     wcs.wcs.dateobs = obstime.isot
 
     frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)
@@ -345,7 +345,7 @@ def test_obsgeo_spherical(dkist_location):
     assert u.allclose(frame.z, dkist_location.z)
 
 
-def test_obsgeo_infinite(dkist_location):
+def test_obsgeo_nonfinite(dkist_location):
     obstime = Time("2021-05-21T03:00:00")
     dkist_location = dkist_location.get_itrs(obstime)
     loc_sph = dkist_location.spherical
