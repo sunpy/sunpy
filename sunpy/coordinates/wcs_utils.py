@@ -13,6 +13,7 @@ from astropy.coordinates import (
 )
 from astropy.wcs import WCS
 
+from sunpy import log
 from sunpy.util.exceptions import SunpyUserWarning
 from .frames import (
     BaseCoordinateFrame,
@@ -142,15 +143,17 @@ def solar_wcs_frame_mapping(wcs):
                              **kwargs)
 
     # Read the observer out of obsgeo for ground based observers
-    if observer is None and (
-            wcs.wcs.obsgeo is not None
-            and not np.all(wcs.wcs.obsgeo == 0)
-            and not np.all(~np.isfinite(wcs.wcs.obsgeo))):
+    if observer is None:
         try:
             observer = obsgeo_to_frame(wcs.wcs.obsgeo, dateobs)
             observer = SkyCoord(observer, rsun=rsun)
         except ValueError as e:
-            warnings.warn(str(e), SunpyUserWarning)
+            # The helper function assumes you know the obsgeo coords you are
+            # parsing are good, we are not sure, so catch the error.
+
+            # This approach could lead to an invalid observer (i.e. one of the
+            # coords being NaN), but only if the WCS has been constructed like that.
+            log.debug(f"Could not parse obsgeo coordinates from WCS:\n{e}")
 
     # This custom attribute was always used in sunpy < 2.1; these warnings
     # can be converted into errors in sunpy 3.1
