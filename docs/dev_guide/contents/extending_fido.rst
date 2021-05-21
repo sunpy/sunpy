@@ -20,7 +20,7 @@ The main place this is done is when constructing a `~.UnifiedResponse` object, w
 Writing a new "scraper" client
 ==============================
 
-A "scraper" Fido client (also sometimes referred to as a "data retriever" client) is a Fido client which uses the URL `~sunpy.util.scraper.Scraper` to find files on remote servers.
+A "scraper" Fido client (also sometimes referred to as a "data retriever" client) is a Fido client which uses the URL `~sunpy.net.scraper.Scraper` to find files on remote servers.
 If the data provider you want to integrate does not provide a tree of files with predictable URLs then a "full" client is more likely to provide the functionality you need.
 
 A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` and requires a minimum of these three components:
@@ -78,7 +78,7 @@ This is done addressed with the two following methods:
 A good example of the use of these two methods is the `sunpy.net.dataretriever.sources.norh.NoRHClient` in sunpy.
 
 It may also be possible that the ``baseurl`` property needs to be customised based on attrs other than Time.
-Since `~sunpy.util.scraper.Scraper` doesn't currently support generating directories that have non-time variables, the :meth:`~sunpy.net.dataretriever.client.GenericClient.search` needs to be customised.
+Since `~sunpy.net.scraper.Scraper` doesn't currently support generating directories that have non-time variables, the :meth:`~sunpy.net.dataretriever.client.GenericClient.search` needs to be customised.
 The search method should in this case, generate a ``baseurl`` dependant on the values of these attrs, and then call ``super().search`` or Scraper for each ``baseurl`` generated.
 For an example of a complex modification of the ``search()`` method see the implementation of `.SUVIClient.search`.
 

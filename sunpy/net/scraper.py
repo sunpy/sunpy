@@ -4,6 +4,7 @@ This module provides a web scraper.
 import os
 import re
 import calendar
+import warnings
 from time import sleep
 from ftplib import FTP
 from datetime import datetime
@@ -20,7 +21,6 @@ from astropy.time import Time, TimeDelta
 from sunpy import log
 from sunpy.extern.parse import parse
 from sunpy.time import TimeRange
-from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['Scraper']
@@ -35,7 +35,6 @@ TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
                     '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
 
 
-@deprecated(since="3.1", alternative="sunpy.net.Scraper")
 class Scraper:
     """
     A Scraper to scrap web data archives based on dates.
@@ -62,12 +61,12 @@ class Scraper:
     Examples
     --------
     >>> # Downloading data from SolarMonitor.org
-    >>> from sunpy.net.scraper import Scraper  # doctest: +SKIP
+    >>> from sunpy.net import Scraper
     >>> solmon_pattern = ('http://solarmonitor.org/data/'
     ...                   '%Y/%m/%d/fits/{instrument}/'
-    ...                   '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')  # doctest: +SKIP
-    >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)  # doctest: +SKIP
-    >>> print(solmon.pattern)  # doctest: +SKIP
+    ...                   '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
+    >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)
+    >>> print(solmon.pattern)
     http://solarmonitor.org/data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz
     >>> print(solmon.now)  # doctest: +SKIP
     http://solarmonitor.org/data/2017/11/20/fits/swap/swap_00174_fd_20171120_193933.fts.gz
@@ -82,7 +81,8 @@ class Scraper:
         if regex:
             self.pattern = pattern
             if kwargs:
-                warn_user('regexp being used, the extra arguments passed are being ignored')
+                warnings.warn('regexp being used, the extra arguments passed are being ignored',
+                              SunpyUserWarning)
         else:
             self.pattern = pattern.format(**kwargs)
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
@@ -257,14 +257,14 @@ class Scraper:
 
         Examples
         --------
-        >>> from sunpy.net.scraper import Scraper  # doctest: +SKIP
+        >>> from sunpy.net import Scraper
         >>> solmon_pattern = ('http://solarmonitor.org/data/'
         ...                   '%Y/%m/%d/fits/{instrument}/'
-        ...                   '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')  # doctest: +SKIP
-        >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)  # doctest: +SKIP
-        >>> from sunpy.time import TimeRange   # doctest: +SKIP
-        >>> timerange = TimeRange('2015-01-01','2015-01-01T16:00:00')   # doctest: +SKIP
-        >>> print(solmon.filelist(timerange))  # doctest: +SKIP
+        ...                   '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
+        >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)
+        >>> from sunpy.time import TimeRange
+        >>> timerange = TimeRange('2015-01-01','2015-01-01T16:00:00')
+        >>> print(solmon.filelist(timerange))  # doctest: +REMOTE_DATA
         ['http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_025423.fts.gz',
          'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_061145.fts.gz',
          'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_093037.fts.gz',

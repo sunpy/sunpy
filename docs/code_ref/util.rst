@@ -11,8 +11,6 @@ SunPy util
 
 .. automodapi:: sunpy.util.xml
 
-.. automodapi:: sunpy.util.scraper
-
 .. automodapi:: sunpy.util.sphinx
 
 .. automodapi:: sunpy.util.sphinx.generate
