@@ -4,6 +4,7 @@ This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 from pathlib import Path
 from collections import OrderedDict
 
+import numpy as np
 import pandas as pd
 
 import astropy.units as u
@@ -141,6 +142,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
                   'f10.7': 'radio flux',
                   'smoothed_f10.7': 'radio flux smooth'}
         data = data.rename(columns=rename)
+        # -1 is used as a fill value, replace with NaN
+        data = data.replace(-1, np.nan)
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)
@@ -276,6 +279,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
                   'high_f10.7': 'radio flux high',
                   'low_f10.7': 'radio flux low'}
         data = data.rename(columns=rename)
+        # -1 is used as a fill value, replace with NaN
+        data = data.replace(-1, np.nan)
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)
