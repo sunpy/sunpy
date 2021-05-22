@@ -10,11 +10,12 @@ import requests
 
 def pytest_generate_tests(metafunc):
     funcarglist = [None]
-    if isfile(metafunc.config.getini("intercept_dump_file")):
-        with open(metafunc.config.getini("intercept_dump_file")) as fd:
-            funcarglist = json.load(fd)
-            funcarglist = funcarglist.get(metafunc.function.__name__.replace("test_", ''), [None]) or [None]
-    metafunc.parametrize("url", funcarglist, indirect=True)
+    if hasattr(metafunc.config.option, "intercept_remote"):
+        if isfile(metafunc.config.getini("intercept_dump_file")):
+            with open(metafunc.config.getini("intercept_dump_file")) as fd:
+                funcarglist = json.load(fd)
+                funcarglist = funcarglist.get(metafunc.function.__name__.replace("test_", ''), [None]) or [None]
+        metafunc.parametrize("url", funcarglist, indirect=True)
 
 
 @pytest.fixture
@@ -27,13 +28,13 @@ def url(request):
 @pytest.fixture(scope="function")
 def skip_conditions(request):
     if not hasattr(request.config.option, "intercept_remote"):
-        pytest.skip("pytest-intercept-remote plugin not loaded")
+        pytest.skip("pytest-intercept-remote plugin not available")
 
     if request.config.option.intercept_remote:
         pytest.skip("rerun without --intercept-remote option")
 
     if not isfile(request.config.getini("intercept_dump_file")):
-        pytest.skip("intercept_dump_file not found")
+        pytest.skip("intercept_dump not available")
 
 
 @pytest.mark.remote_data
