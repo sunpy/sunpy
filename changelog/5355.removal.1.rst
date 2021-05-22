@@ -1,0 +1,4 @@
+The following search attributes in `sunpy.net.vso.attrs` have been removed:
+``['Time', 'Instrument', 'Wavelength', 'Source', 'Provider',
+'Level', 'Sample', 'Detector', 'Resolution', 'Physobs']``.
+Use the equivalent attribute from `sunpy.net.attrs` instead.

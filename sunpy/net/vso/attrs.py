@@ -14,12 +14,9 @@ quick example think about how the system should handle Instrument('aia') &
 Instrument('eit').
 """
 
-import sys
-import warnings
 
 from sunpy.net import _attrs
 from sunpy.net import attr as _attr
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 __all__ = ['Extent', 'Field', 'Pixels', 'Filter', 'Quicklook', 'PScale']
 
@@ -227,31 +224,3 @@ _walker.add_converter(_attrs.Wavelength)(
         ('wave', 'waveunit'): x.unit.name,
     })
 )
-
-
-# Deprecate old classes
-_deprecation_template = "``sunpy.net.vso.attrs.{name}`` is deprecated, please use `sunpy.net.attrs.{name}`"
-
-
-class _DeprecatedAttr:
-    def __init__(self, *args, **kwargs):
-        name = type(self).__name__
-        warnings.warn(_deprecation_template.format(name=name),
-                      SunpyDeprecationWarning)
-        super().__init__(*args, **kwargs)
-
-
-_deprecated_names = ['Time', 'Instrument', 'Wavelength', 'Source', 'Provider',
-                     'Level', 'Sample', 'Detector', 'Resolution', 'Physobs']
-
-for _name in _deprecated_names:
-    # Dynamically construct a class which inherits the class with the
-    # deprecation warning in the __init__ first and the class it's deprecating
-    # second.
-    _new_attr = getattr(_attrs, _name)
-    _doc = f"{_deprecation_template.format(name=_name)}\n{_new_attr.__doc__}"
-    _cls = type(_name, (_DeprecatedAttr, _new_attr), {'__doc__': _doc})
-    # Add the new class to the modules namespace
-    setattr(sys.modules[__name__], _name, _cls)
-
-__all__ += _deprecated_names

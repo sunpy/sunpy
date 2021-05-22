@@ -24,7 +24,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
@@ -201,14 +201,7 @@ class VSOClient(BaseClient):
             :meth:`VSOClient.search`.
         """
         if response_format is None:
-            response_format = "legacy"
-            warnings.warn("The default response format from the VSO client will "
-                          "be changing to 'table' in version 3.1. "
-                          "To remove this warning set response_format='legacy' "
-                          "to maintain the old behaviour or response_format='table'"
-                          " to use the new behaviour.",
-                          SunpyDeprecationWarning,
-                          stacklevel=2)
+            response_format = "table"
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
         VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
