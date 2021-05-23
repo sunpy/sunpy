@@ -50,22 +50,22 @@ build-backend = 'setuptools.build_meta'
 
     [[tool.towncrier.type]]
         directory = "breaking"
-        name = "Backwards Incompatible Changes"
+        name = "Breaking Changes"
         showcontent = true
 
     [[tool.towncrier.type]]
-        directory = "api"
-        name = "API Changes"
-        showcontent = true
+      directory = "deprecation"
+      name = "Deprecations"
+      showcontent = true
 
     [[tool.towncrier.type]]
       directory = "removal"
-      name = "Deprecations and Removals"
+      name = "Removals"
       showcontent = true
 
     [[tool.towncrier.type]]
       directory = "feature"
-      name = "Features"
+      name = "New Features"
       showcontent = true
 
     [[tool.towncrier.type]]
@@ -75,15 +75,10 @@ build-backend = 'setuptools.build_meta'
 
     [[tool.towncrier.type]]
       directory = "doc"
-      name = "Added/Improved Documentation"
-      showcontent = true
-
-    [[tool.towncrier.type]]
-      directory = "docfix"
-      name = "Documentation Fixes"
+      name = "Documentation"
       showcontent = true
 
     [[tool.towncrier.type]]
       directory = "trivial"
-      name = "Trivial/Internal Changes"
+      name = "Internal Changes"
       showcontent = true

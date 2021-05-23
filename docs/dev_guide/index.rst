@@ -26,7 +26,6 @@ This goes over the basics and has links to useful tutorials on git.
    contents/tests
    contents/pr_review_procedure
    contents/api
-   contents/deprecation
    contents/dependencies
    contents/units_quantities
    contents/new_objects
