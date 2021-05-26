@@ -22,14 +22,15 @@ def LCClient():
 
 
 def create_url(date, wavelength):
-    date = date.isoformat()
+    year = date.strftime("%Y")
+    month = date.strftime("%m")
+    day = date.strftime("%d")
     if wavelength == 34 * u.GHz:
         freq = 'tcz'
     elif wavelength == 17 * u.GHz:
         freq = 'tca'
-    date = date.split('T')[0].split('-')
-    value_ = date[0][-2:] + date[1] + date[2]
-    base = f"ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/{date[0]}/{date[1]}/{freq}{value_}"
+    value_ = year[-2:] + month + day
+    base = f"ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/{year}/{month}/{freq}{value_}"
     return (base)
 
 
@@ -154,7 +155,7 @@ def test_client_repr(LCClient):
     assert output[:50] == 'sunpy.net.dataretriever.sources.norh.NoRHClient\n\nP'
 
 
-def test_show(LCClient):
+def test_show():
     mock_qr = mock_query_object(a.Time('2016/1/1', '2016/1/1 23:59:59'))
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Wavelength', 'Instrument')
