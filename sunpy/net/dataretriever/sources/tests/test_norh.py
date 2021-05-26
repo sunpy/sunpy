@@ -1,3 +1,6 @@
+from datetime import timedelta
+from unittest import mock
+
 import pytest
 from hypothesis import given, settings
 
@@ -18,7 +21,45 @@ def LCClient():
     return norh.NoRHClient()
 
 
-@pytest.mark.remote_data
+def create_url(date, wavelength):
+    date = date.isoformat()
+    if wavelength == 34 * u.GHz:
+        freq = 'tcz'
+    elif wavelength == 17 * u.GHz:
+        freq = 'tca'
+    date = date.split('T')[0].split('-')
+    value_ = date[0][-2:] + date[1] + date[2]
+    base = f"ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/{date[0]}/{date[1]}/{freq}{value_}"
+    return (base)
+
+
+def mock_query_object(timerange):
+    """
+    Creating a Query Response object and prefilling it with some information
+    """
+    # Creating a Query Response Object
+    start = timerange.start
+    end = timerange.end
+    wave = 17*u.GHz
+    delta = end-start
+    resp = []
+    for i in range(delta.datetime.days + 1):
+        start_time = start.datetime + timedelta(days=i)
+        end_time = start_time + timedelta(days=1) - timedelta(milliseconds=1)
+        obj = {
+            'Start Time': parse_time(start_time),
+            'End Time': parse_time(end_time),
+            'Instrument': 'NORH',
+            'Source': 'NAOJ',
+            'Provider': 'NRO',
+            'Wavelength': wave,
+            'url': create_url(start_time, wave)
+        }
+        resp.append(obj)
+    results = QueryResponse(resp, client=norh.NoRHClient())
+    return results
+
+
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (a.Time('2012/4/21', '2012/4/21'),
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421',
@@ -34,11 +75,12 @@ def LCClient():
      )
 ])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
-    qresponse = LCClient.search(timerange, a.Wavelength(17*u.GHz))
-    urls = [i['url'] for i in qresponse]
-    assert isinstance(urls, list)
-    assert urls[0] == url_start
-    assert urls[-1] == url_end
+    with mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient.search',
+                    return_value=mock_query_object(timerange)):
+        qresponse = LCClient.search(timerange, a.Wavelength(17*u.GHz))
+        assert isinstance(qresponse, QueryResponse)
+        urls = [i['url'] for i in qresponse]
+        assert urls[0] == url_start
 
 
 @given(time_attr())
@@ -72,25 +114,32 @@ def test_query(time, wave):
         assert qr1[-1]['End Time'] <= time.end + TimeDelta(1*u.day)
 
 
-@pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument,wave", [
     (a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(17*u.GHz)),
     (a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(34*u.GHz))])
 def test_get(LCClient, time, instrument, wave):
-    qr1 = LCClient.search(time, instrument, wave)
-    download_list = LCClient.fetch(qr1)
-    assert len(download_list) == len(qr1)
+    with mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient.search',
+                    return_value=mock_query_object(time)):
+        qr1 = LCClient.search(time, instrument, wave)
+        with mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient.fetch',
+                        return_value=mock_query_object(time)):
+            download_list = LCClient.fetch(qr1)
+            assert len(download_list) == len(qr1)
 
 
-@pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument, wave",
     [(a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(17*u.GHz) | a.Wavelength(34*u.GHz))])
-def test_fido(time, instrument, wave):
-    qr = Fido.search(time, instrument, wave)
-    assert isinstance(qr, UnifiedResponse)
-    response = Fido.fetch(qr)
-    assert len(response) == len(qr[0]) + len(qr[1])
+def test_fido(tmp_path, time, instrument, wave):
+    with mock.patch('sunpy.net.Fido.search',
+                    return_value=UnifiedResponse(mock_query_object(time))):
+        path = tmp_path / "sub"
+        qr = Fido.search(time, instrument, wave)
+        assert isinstance(qr, UnifiedResponse)
+        with mock.patch('sunpy.net.Fido.fetch',
+                        return_value=UnifiedResponse(mock_query_object(time))):
+            response = Fido.fetch(qr, path=path)
+            assert len(response) == len(qr)
 
 
 def test_attr_reg():
@@ -105,29 +154,8 @@ def test_client_repr(LCClient):
     assert output[:50] == 'sunpy.net.dataretriever.sources.norh.NoRHClient\n\nP'
 
 
-def mock_query_object(LCClient):
-    """
-    Creating a Query Response object and prefilling it with some information
-    """
-    # Creating a Query Response Object
-    start = '2016/1/1'
-    end = '2016/1/1 23:59:59'
-    wave = 17*u.GHz
-    obj = {
-        'Start Time': parse_time(start),
-        'End Time': parse_time(end),
-        'Instrument': 'NORH',
-        'Source': 'NAOJ',
-        'Provider': 'NRO',
-        'Wavelength': wave,
-        'url': 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/01/tca160101'
-    }
-    results = QueryResponse([obj], client=LCClient)
-    return results
-
-
 def test_show(LCClient):
-    mock_qr = mock_query_object(LCClient)
+    mock_qr = mock_query_object(a.Time('2016/1/1', '2016/1/1 23:59:59'))
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Wavelength', 'Instrument')
     allcols = {'Start Time', 'End Time', 'Instrument', 'Source',
