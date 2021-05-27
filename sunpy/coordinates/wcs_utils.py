@@ -1,10 +1,19 @@
 import warnings
 
+import numpy as np
+
 import astropy.units as u
 import astropy.wcs.utils
-from astropy.coordinates import BaseCoordinateFrame
+from astropy.coordinates import (
+    ITRS,
+    BaseCoordinateFrame,
+    CartesianRepresentation,
+    SkyCoord,
+    SphericalRepresentation,
+)
 from astropy.wcs import WCS
 
+from sunpy import log
 from sunpy.util.exceptions import SunpyUserWarning
 from .frames import (
     BaseCoordinateFrame,
@@ -16,6 +25,65 @@ from .frames import (
 )
 
 __all__ = ['solar_wcs_frame_mapping', 'solar_frame_to_wcs_mapping']
+
+try:
+    # TODO: Remove vendored version after Astropy 5.0
+    from astropy.wcs.utils import obsgeo_to_frame
+except ImportError:
+    def obsgeo_to_frame(obsgeo, obstime):
+        """
+        Convert a WCS obsgeo property into an `~builtin_frames.ITRS` coordinate frame.
+
+        Parameters
+        ----------
+        obsgeo : array-like
+            A shape ``(6, )`` array representing ``OBSGEO-[XYZ], OBSGEO-[BLH]`` as
+            returned by ``WCS.wcs.obsgeo``.
+
+        obstime : time-like
+            The time assiociated with the coordinate, will be passed to
+            `~.builtin_frames.ITRS` as the obstime keyword.
+
+        Returns
+        -------
+        `~.builtin_frames.ITRS`
+            An `~.builtin_frames.ITRS` coordinate frame
+            representing the coordinates.
+
+        Notes
+        -----
+
+        The obsgeo array as accessed on a `.WCS` object is a length 6 numpy array
+        where the first three elements are the coordinate in a cartesian
+        representation and the second 3 are the coordinate in a spherical
+        representation.
+
+        This function priorities reading the cartesian coordinates, and will only
+        read the spherical coordinates if the cartesian coordinates are either all
+        zero or any of the cartesian coordinates are non-finite.
+
+        In the case where both the spherical and cartesian coordinates have some
+        non-finite values the spherical coordinates will be returned with the
+        non-finite values included.
+
+        """
+        if (obsgeo is None
+            or len(obsgeo) != 6
+            or np.all(np.array(obsgeo) == 0)
+            or np.all(~np.isfinite(obsgeo))
+        ):  # NOQA
+            raise ValueError(f"Can not parse the 'obsgeo' location ({obsgeo}). "
+                             "obsgeo should be a length 6 non-zero, finite numpy array")
+
+        # If the cartesian coords are zero or have NaNs in them use the spherical ones
+        if np.all(obsgeo[:3] == 0) or np.any(~np.isfinite(obsgeo[:3])):
+            data = SphericalRepresentation(*(obsgeo[3:] * (u.deg, u.deg, u.m)))
+
+        # Otherwise we assume the cartesian ones are valid
+        else:
+            data = CartesianRepresentation(*obsgeo[:3] * u.m)
+
+        return ITRS(data, obstime=obstime)
 
 
 def solar_wcs_frame_mapping(wcs):
@@ -73,6 +141,19 @@ def solar_wcs_frame_mapping(wcs):
                              attrs[1] * u.deg,
                              attrs[2] * u.m,
                              **kwargs)
+
+    # Read the observer out of obsgeo for ground based observers
+    if observer is None:
+        try:
+            observer = obsgeo_to_frame(wcs.wcs.obsgeo, dateobs)
+            observer = SkyCoord(observer, rsun=rsun)
+        except ValueError as e:
+            # The helper function assumes you know the obsgeo coords you are
+            # parsing are good, we are not sure, so catch the error.
+
+            # This approach could lead to an invalid observer (i.e. one of the
+            # coords being NaN), but only if the WCS has been constructed like that.
+            log.debug(f"Could not parse obsgeo coordinates from WCS:\n{e}")
 
     # This custom attribute was always used in sunpy < 2.1; these warnings
     # can be converted into errors in sunpy 3.1

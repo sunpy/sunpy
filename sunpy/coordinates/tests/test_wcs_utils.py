@@ -3,8 +3,10 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame
+from astropy.coordinates import ITRS, BaseCoordinateFrame, SkyCoord
+from astropy.coordinates.earth import EarthLocation
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import Time
 from astropy.wcs import WCS
 
 import sunpy.map
@@ -16,6 +18,7 @@ from sunpy.coordinates.frames import (
 )
 from sunpy.coordinates.wcs_utils import (
     _set_wcs_aux_obs_coord,
+    obsgeo_to_frame,
     solar_frame_to_wcs_mapping,
     solar_wcs_frame_mapping,
 )
@@ -265,3 +268,104 @@ def test_self_observer():
     assert u.allclose(wcs.wcs.aux.hglt_obs, frame.lon.to_value(u.deg))
     assert u.allclose(wcs.wcs.aux.crln_obs, frame.lon.to_value(u.deg))
     assert u.allclose(wcs.wcs.aux.dsun_obs, frame.radius.to_value(u.m))
+
+
+@pytest.fixture
+def dkist_location():
+    return EarthLocation(*(-5466045.25695494, -2404388.73741278, 2242133.88769004) * u.m)
+
+
+@pytest.mark.remote_data
+def test_obsgeo_frame_mapping_cartesian(dkist_location, caplog):
+
+    obstime = Time("2021-05-21T03:00:00")
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['HPLT', 'HPLN']
+    wcs.wcs.obsgeo = list(dkist_location.to_value(u.m).tolist()) + [0, 0, 0]
+    wcs.wcs.dateobs = obstime.isot
+
+    frame = solar_wcs_frame_mapping(wcs)
+
+    assert frame.observer is not None
+
+    assert frame.observer == SkyCoord(dkist_location.get_itrs(obstime)).transform_to('heliographic_stonyhurst').frame
+
+    assert not caplog.records
+
+
+@pytest.mark.remote_data
+def test_frame_mapping_obsgeo_spherical(dkist_location, caplog):
+
+    obstime = Time("2021-05-21T03:00:00")
+    location = dkist_location.get_itrs(obstime)
+    loc_sph = location.spherical
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['HPLT', 'HPLN']
+    wcs.wcs.obsgeo = [0, 0, 0] + [loc_sph.lon.to_value(u.deg), loc_sph.lat.to_value(u.deg), loc_sph.distance.to_value(u.m)]
+    wcs.wcs.dateobs = obstime.isot
+
+    frame = solar_wcs_frame_mapping(wcs)
+
+    assert frame.observer is not None
+
+    assert frame.observer == SkyCoord(location).transform_to('heliographic_stonyhurst').frame
+
+    assert not caplog.records
+
+
+# TODO: Remove all these tests after Astropy 5.0 when we can just import obsgeo_to_frame.
+def test_obsgeo_cartesian(dkist_location):
+    obstime = Time("2021-05-21T03:00:00")
+    wcs = WCS(naxis=2)
+    # tolist() returns a tuple.
+    wcs.wcs.obsgeo = list(dkist_location.to_value(u.m).tolist()) + [0, 0, 0]
+    wcs.wcs.dateobs = obstime.isot
+
+    frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)
+
+    assert isinstance(frame, ITRS)
+    assert frame.x == dkist_location.x
+    assert frame.y == dkist_location.y
+    assert frame.z == dkist_location.z
+
+
+def test_obsgeo_spherical(dkist_location):
+    obstime = Time("2021-05-21T03:00:00")
+    dkist_location = dkist_location.get_itrs(obstime)
+    loc_sph = dkist_location.spherical
+
+    wcs = WCS(naxis=2)
+    wcs.wcs.obsgeo = [0, 0, 0] + [loc_sph.lon.to_value(u.deg), loc_sph.lat.to_value(u.deg), loc_sph.distance.to_value(u.m)]
+    wcs.wcs.dateobs = obstime.isot
+
+    frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)
+
+    assert isinstance(frame, ITRS)
+    assert u.allclose(frame.x, dkist_location.x)
+    assert u.allclose(frame.y, dkist_location.y)
+    assert u.allclose(frame.z, dkist_location.z)
+
+
+def test_obsgeo_nonfinite(dkist_location):
+    obstime = Time("2021-05-21T03:00:00")
+    dkist_location = dkist_location.get_itrs(obstime)
+    loc_sph = dkist_location.spherical
+
+    wcs = WCS(naxis=2)
+    wcs.wcs.obsgeo = [1, 1, np.nan] + [loc_sph.lon.value, loc_sph.lat.value, loc_sph.distance.value]
+    wcs.wcs.dateobs = obstime.isot
+    wcs.wcs.set()
+
+    frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)
+
+    assert isinstance(frame, ITRS)
+    assert u.allclose(frame.x, dkist_location.x)
+    assert u.allclose(frame.y, dkist_location.y)
+    assert u.allclose(frame.z, dkist_location.z)
+
+
+@pytest.mark.parametrize("obsgeo", ([np.nan] * 6, None, [0] * 6, [54] * 5))
+def test_obsgeo_invalid(obsgeo):
+
+    with pytest.raises(ValueError):
+        obsgeo_to_frame(obsgeo, None)
