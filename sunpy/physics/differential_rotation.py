@@ -1,4 +1,3 @@
-import warnings
 from copy import deepcopy
 
 import numpy as np
@@ -21,6 +20,7 @@ from sunpy.map.header_helper import get_observer_meta
 from sunpy.sun.constants import sidereal_rotation_rate
 from sunpy.time import parse_time
 from sunpy.util import expand_list
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
@@ -200,7 +200,7 @@ def _get_new_observer(initial_obstime, observer, time):
     if observer is not None:
         new_observer = observer
     elif time is not None:
-        warnings.warn("Using 'time' assumes an Earth-based observer.")
+        warn_user("Using 'time' assumes an Earth-based observer.")
         if isinstance(time, TimeDelta) or isinstance(time, u.Quantity):
             new_observer_time = initial_obstime + time
         else:
@@ -447,6 +447,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     See :func:`~sunpy.coordinates.transform_with_sun_center`.
     """
     # Suppress NaN warnings in coordinate transforms
+    import warnings  # isort:skip
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
 

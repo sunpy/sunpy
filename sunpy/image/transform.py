@@ -2,12 +2,11 @@
 Functions for geometrical image transformation and warping.
 """
 import numbers
-import warnings
 
 import numpy as np
 import scipy.ndimage.interpolation
 
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['affine_transform']
 
@@ -103,7 +102,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             use_scipy = True
     if use_scipy:
         if np.any(np.isnan(image)):
-            warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
+            warn_user("Setting NaNs to 0 for SciPy rotation.")
         # Transform the image using the scipy affine transform
         rotated_image = scipy.ndimage.interpolation.affine_transform(
             np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
@@ -117,14 +116,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         tform = skimage.transform.AffineTransform(skmatrix)
 
         if issubclass(image.dtype.type, numbers.Integral):
-            warnings.warn("Integer input data has been cast to float64.",
-                          SunpyUserWarning)
+            warn_user("Integer input data has been cast to float64.")
             adjusted_image = image.astype(np.float64)
         else:
             adjusted_image = image.copy()
         if np.any(np.isnan(adjusted_image)) and order >= 4:
-            warnings.warn("Setting NaNs to 0 for higher-order scikit-image rotation.",
-                          SunpyUserWarning)
+            warn_user("Setting NaNs to 0 for higher-order scikit-image rotation.")
             adjusted_image = np.nan_to_num(adjusted_image)
 
         # Scale image to range [0, 1] if it is valid (not made up entirely of NaNs)

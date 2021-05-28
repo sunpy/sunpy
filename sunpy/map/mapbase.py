@@ -5,7 +5,6 @@ import copy
 import html
 import numbers
 import textwrap
-import warnings
 import webbrowser
 from io import BytesIO
 from base64 import b64encode
@@ -39,7 +38,7 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import cached_property_based_on
-from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning, warn_meta, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
@@ -213,8 +212,8 @@ class GenericMap(NDData):
             new_2d_slice.extend([slice(None), slice(None)])
             data = data[tuple(new_2d_slice)]
             # Warn the user that the data has been truncated
-            warnings.warn("This file contains more than 2 dimensions. "
-                          "Data will be truncated to the first two dimensions.", SunpyUserWarning)
+            warn_user("This file contains more than 2 dimensions. "
+                      "Data will be truncated to the first two dimensions.")
 
         super().__init__(data, meta=MetaDict(header), **kwargs)
 
@@ -513,6 +512,7 @@ class GenericMap(NDData):
         """
         The `~astropy.wcs.WCS` property of the map.
         """
+        import warnings  # isort:skip
         # Construct the WCS based on the FITS header, but don't "do_set" which
         # analyses the FITS header for correctness.
         with warnings.catch_warnings():
@@ -521,8 +521,8 @@ class GenericMap(NDData):
             try:
                 w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
             except Exception as e:
-                warnings.warn("Unable to treat `.meta` as a FITS header, assuming a simple WCS. "
-                              f"The exception raised was:\n{e}")
+                warn_user("Unable to treat `.meta` as a FITS header, assuming a simple WCS. "
+                          f"The exception raised was:\n{e}")
                 w2 = astropy.wcs.WCS(naxis=2)
 
         # If the FITS header is > 2D pick the first 2 and move on.
@@ -592,8 +592,7 @@ class GenericMap(NDData):
         try:
             return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
         except ValueError as e:
-            warnings.warn(f'Could not determine coordinate frame from map metadata.\n{e}',
-                          SunpyUserWarning)
+            warn_user(f'Could not determine coordinate frame from map metadata.\n{e}')
             return None
 
     @property
@@ -685,12 +684,11 @@ class GenericMap(NDData):
 
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
-            warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                          'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
-                          'the FITS unit standards.',
-                          SunpyMetadataWarning)
+            warn_meta(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                      f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                      'with sunpy.map.Map.\n'
+                      'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                      'the FITS unit standards.')
             unit = None
         return unit
 
@@ -744,18 +742,17 @@ class GenericMap(NDData):
             timesys = 'TAI'
             timesys_meta = self.meta.get('timesys', '').upper()
             if timesys_meta != 'TAI':
-                warnings.warn('Found "TAI" in time string, ignoring TIMESYS keyword '
-                              f'which is set to "{timesys_meta}".', SunpyUserWarning)
+                warn_meta('Found "TAI" in time string, ignoring TIMESYS keyword '
+                          f'which is set to "{timesys_meta}".')
         else:
             # UTC is the FITS standard default
             timesys = self.meta.get('timesys', 'UTC')
 
         if time is None:
             if self._default_time is None:
-                warnings.warn("Missing metadata for observation time, "
-                              "setting observation time to current time. "
-                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.",
-                              SunpyUserWarning)
+                warn_meta("Missing metadata for observation time, "
+                          "setting observation time to current time. "
+                          "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
                 self._default_time = parse_time('now')
             time = self._default_time
 
@@ -943,9 +940,8 @@ class GenericMap(NDData):
 
         if rsun_arcseconds is None:
             if 'rsun_ref' not in self.meta:
-                warnings.warn("Missing metadata for solar angular radius: assuming the standard "
-                              "radius of the photosphere as seen from the observer distance.",
-                              SunpyUserWarning)
+                warn_meta("Missing metadata for solar angular radius: assuming the standard "
+                          "radius of the photosphere as seen from the observer distance.")
             rsun = sun._angular_radius(self.rsun_meters, self.dsun)
         else:
             rsun = rsun_arcseconds * u.arcsec
@@ -960,14 +956,12 @@ class GenericMap(NDData):
         """
         ctype1 = self.meta.get('ctype1', None)
         if ctype1 is None:
-            warnings.warn("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN",
-                          SunpyUserWarning)
+            warn_meta("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN")
             ctype1 = 'HPLN-TAN'
 
         ctype2 = self.meta.get('ctype2', None)
         if ctype2 is None:
-            warnings.warn("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN",
-                          SunpyUserWarning)
+            warn_meta("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -1026,7 +1020,7 @@ class GenericMap(NDData):
         warning_message = "".join(
             [f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
-        warnings.warn(warning_message, SunpyMetadataWarning, stacklevel=3)
+        warn_meta(warning_message, stacklevel=3)
 
         return get_earth(self.date)
 
@@ -1235,13 +1229,12 @@ class GenericMap(NDData):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
-                warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
+                warn_meta(f"Unknown value for {meta_property.upper()}.")
 
         if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
                 self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
-            warnings.warn("SunPy Map does not support three dimensional data "
-                          "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
-                          SunpyUserWarning)
+            warn_user("sunpy Map does not support three dimensional data "
+                      "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.")
 
 # #### Data conversion routines #### #
 
@@ -1480,10 +1473,8 @@ class GenericMap(NDData):
         pad_y = int(np.max((diff[0], 0)))
 
         if issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
-            warnings.warn(
-                "The specified `missing` value is not an integer, but the data "
-                "array is of integer type, so the output may be strange.",
-                SunpyUserWarning)
+            warn_user("The specified `missing` value is not an integer, but the data "
+                      "array is of integer type, so the output may be strange.")
 
         new_data = np.pad(self.data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
@@ -2379,9 +2370,8 @@ class GenericMap(NDData):
 
             # pcolormesh does not do interpolation
             if imshow_args.get('interpolation', None) not in [None, 'none', 'nearest']:
-                warnings.warn("The interpolation keyword argument is ignored when using autoalign "
-                              "functionality.",
-                              SunpyUserWarning)
+                warn_user("The interpolation keyword argument is ignored when using autoalign "
+                          "functionality.")
 
             # Remove imshow keyword arguments that are not accepted by pcolormesh
             for item in ['aspect', 'extent', 'interpolation', 'origin']:
@@ -2480,11 +2470,10 @@ class GenericMap(NDData):
                             "To fix this pass set the `projection` keyword "
                             "to this map when creating the axes.")
         elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
-            warnings.warn('The map world coordinate system (WCS) is different from the axes WCS. '
-                          'The map data axes may not correctly align with the coordinate axes. '
-                          'To automatically transform the data to the coordinate axes, specify '
-                          '`autoalign=True`.',
-                          SunpyUserWarning)
+            warn_user('The map world coordinate system (WCS) is different from the axes WCS. '
+                      'The map data axes may not correctly align with the coordinate axes. '
+                      'To automatically transform the data to the coordinate axes, specify '
+                      '`autoalign=True`.')
 
         return axes
 

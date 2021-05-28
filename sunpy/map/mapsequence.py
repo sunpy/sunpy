@@ -2,7 +2,6 @@
 
 import html
 import textwrap
-import warnings
 import webbrowser
 from copy import deepcopy
 from tempfile import NamedTemporaryFile
@@ -14,7 +13,8 @@ import numpy.ma as ma
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.util import SunpyUserWarning, expand_list
+from sunpy.util import expand_list
+from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
 from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
@@ -99,8 +99,8 @@ class MapSequence:
 
         # Output a warning about rendering time if there are more than 9 Maps
         if nmaps > 9:
-            warnings.warn(f"Rendering the summary for a MapSequence of {nmaps} Maps "
-                          "may take a while.", SunpyUserWarning)
+            warn_user(f"Rendering the summary for a MapSequence of {nmaps} Maps "
+                      "may take a while.")
 
         # Assemble the individual HTML repr from each Map, all hidden initally
         repr_list = [f"<div style='display: none' index={i}>{m._repr_html_()}</div>"
