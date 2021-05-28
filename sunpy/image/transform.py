@@ -97,8 +97,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         try:
             import skimage.transform
         except ImportError:
-            warnings.warn("scikit-image could not be imported. Image rotation will use scipy",
-                          ImportWarning)
+            warn_user("scikit-image could not be imported. Image rotation will use scipy.")
             use_scipy = True
     if use_scipy:
         if np.any(np.isnan(image)):

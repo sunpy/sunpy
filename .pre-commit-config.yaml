@@ -95,4 +95,5 @@ repos:
     rev: v1.2
     hooks:
       - id: prohibit-string
-        args: [--prohibit-string, "from warnings import warn,warnings.warn,from astropy import units as u"]
+        args: [--prohibit-string, "from warnings import warn,warnings.warn"]
+        exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py"
