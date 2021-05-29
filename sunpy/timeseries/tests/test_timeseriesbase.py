@@ -906,6 +906,18 @@ def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().to_dataframe().equals(generic_ts.to_dataframe().sort_index())
 
 
+def test_ts_reindex(generic_ts):
+    dates = generic_ts.time_range.start + TimeDelta(np.arange(60)*u.minute)
+    new_index = dates.isot.astype('datetime64')
+    # Test for pandas.DatetimeIndex as index
+    generic_ts_reindexed_1 = generic_ts.reindex(new_index, method="nearest")
+    df_selected = generic_ts.to_dataframe().loc[new_index]
+    assert generic_ts_reindexed_1.to_dataframe().equals(df_selected) is True
+    # Test for sunpy.timeseries.TimeSeries as index
+    generic_ts_reindexed_2 = generic_ts.reindex(generic_ts_reindexed_1, method="nearest")
+    assert generic_ts_reindexed_2.to_dataframe().equals(generic_ts_reindexed_1.to_dataframe()) is True
+
+
 # TODO:
 # _validate_units
 # _validate_meta

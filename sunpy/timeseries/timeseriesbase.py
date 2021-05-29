@@ -445,6 +445,33 @@ class GenericTimeSeries:
         object._sanitize_units()
         return object
 
+    def reindex(self, index, **kwargs):
+        """
+        Returns a new time series with the chosen index.
+
+        Parameters
+        ----------
+        index : `~sunpy.timeseries.TimeSeries` or `~pandas.DatetimeIndex`
+            Another `~sunpy.timeseries.TimeSeries` or a valid index column.
+
+        Returns
+        -------
+        `~sunpy.timeseries.TimeSeries`
+            A `~sunpy.timeseries.TimeSeries` with new index.
+
+        Notes
+        -----
+        This method is a wrapper around `~pandas.DataFrame.reindex`
+        """
+        if isinstance(index, GenericTimeSeries):
+            index = index.index
+        object = GenericTimeSeries(self._data.reindex(index, **kwargs),
+                                   meta=TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                   units=copy.copy(self.units))
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
+
 # #### Plotting Methods #### #
 
     def plot(self, axes=None, **plot_args):
