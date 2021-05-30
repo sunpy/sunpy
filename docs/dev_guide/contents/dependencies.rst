@@ -12,10 +12,8 @@ sunpy has a short list of core dependencies (Python, numpy, astropy, parfive) an
 The minimum version of these packages that we enforce follows this policy.
 
 * Python: Released in the prior 42 months from the anticipated release date.
-* Astropy: Released in the prior 12 months from the anticipated release date.
+* astropy: Released in the prior 12 months from the anticipated release date.
 * Everything else: Released in the prior 24 months from the anticipated release date.
-
-There are two caveats here: parfive and drms as they are packages we control and might need to bump (especially drms as it's so closely coupled to JSOC).
 
 Sponsored affiliated packages will support the sunpy LTS version at the time of their release.
 
