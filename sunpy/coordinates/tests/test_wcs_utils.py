@@ -22,7 +22,6 @@ from sunpy.coordinates.wcs_utils import (
     solar_frame_to_wcs_mapping,
     solar_wcs_frame_mapping,
 )
-from sunpy.util import SunpyUserWarning
 
 
 @pytest.mark.parametrize('ctype, frame', [[['HPLN', 'HPLT'], Helioprojective],
@@ -230,19 +229,23 @@ def test_non_sunpy_frame_to_wcs():
     assert solar_frame_to_wcs_mapping(frame) is None
 
 
-def test_attribute_warnings():
-    # Check that warnings are raised if we try to convert a WCS with .rsun
+def test_attribute_errors():
+    # Check that errors are raised if we try to convert a WCS with .rsun
     # or .heliographic_observer attributes
     wcs = WCS(naxis=2)
     wcs.rsun = None
-    with pytest.warns(SunpyUserWarning,
-                      match='Support for the .rsun attribute on a WCS is deprecated'):
+    with pytest.raises(ValueError, match='The .rsun attribute'):
         solar_wcs_frame_mapping(wcs)
 
     wcs = WCS(naxis=2)
     wcs.heliographic_observer = None
-    with pytest.warns(SunpyUserWarning,
-                      match='upport for the .heliographic_observer attribute on a WCS is deprecated'):
+    with pytest.raises(ValueError, match='The .heliographic_observer attribute'):
+        solar_wcs_frame_mapping(wcs)
+
+    wcs = WCS(naxis=2)
+    wcs.heliographic_observer = None
+    wcs.rsun = None
+    with pytest.raises(ValueError, match='The .rsun and .heliographic_observer attribute'):
         solar_wcs_frame_mapping(wcs)
 
 

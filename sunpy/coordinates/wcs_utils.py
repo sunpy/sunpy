@@ -12,7 +12,6 @@ from astropy.coordinates import (
 from astropy.wcs import WCS
 
 from sunpy import log
-from sunpy.util.exceptions import warn_user
 from .frames import (
     BaseCoordinateFrame,
     Heliocentric,
@@ -112,16 +111,12 @@ def solar_wcs_frame_mapping(wcs):
     if rsun is not None:
         rsun *= u.m
 
-    # This custom attribute was always used in sunpy < 2.1; these warnings
-    # can be converted into errors in sunpy 3.1
-    if hasattr(wcs, 'rsun'):
-        warn_user('Support for the .rsun attribute on a WCS is deprecated. '
-                  'Set observer keywords in the FITS header, or directly set the wcs.wcs.aux '
-                  'values instead.')
-        if rsun is None:
-            rsun = wcs.rsun
-        else:
-            warn_user('rsun information present in WCS auxillary information, ignoring .rsun')
+    # TODO: remove these errors in sunpy 4.1
+    bad_attrs = [f'.{attr}' for attr in ['rsun', 'heliographic_observer']
+                 if hasattr(wcs, attr)]
+    if len(bad_attrs):
+        raise ValueError(f"The {' and '.join(bad_attrs)} attribute(s) on a WCS "
+                         "are no longer supported.")
 
     observer = None
     for frame, attr_names in required_attrs.items():
@@ -150,18 +145,6 @@ def solar_wcs_frame_mapping(wcs):
             # This approach could lead to an invalid observer (i.e. one of the
             # coords being NaN), but only if the WCS has been constructed like that.
             log.debug(f"Could not parse obsgeo coordinates from WCS:\n{e}")
-
-    # This custom attribute was always used in sunpy < 2.1; these warnings
-    # can be converted into errors in sunpy 3.1
-    if hasattr(wcs, 'heliographic_observer'):
-        warn_user('Support for the .heliographic_observer attribute on a WCS is deprecated. '
-                  'Set observer keywords in the FITS header, or directly set the wcs.wcs.aux '
-                  'values instead.')
-        if observer is None:
-            observer = wcs.heliographic_observer
-        else:
-            warn_user('Observer information present in WCS auxillary information, ignoring '
-                      '.heliographic_observer')
 
     # Collect all of the possible frame attributes, although some may be removed later
     frame_args = {'obstime': dateobs}
