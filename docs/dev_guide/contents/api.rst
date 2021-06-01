@@ -5,20 +5,20 @@ sunpy's Public API
 ******************
 
 Convention in the Python ecosystem is to add an underscore to the start of a function to denote if a function or method is "private" e.g., `~sunpy.coordinates.sun._angular_radius`.
-If it is considered to be private, there are no guarantee that the API will change with a warning and so external use of these functions or methods are strongly discouraged.
+If it is considered to be private, there is no guarantee that the API or behavior will change with a warning, so external use of these functions or methods are strongly discouraged.
 
 sunpy follows this convention but with one extra caveat.
 Within each python file, we have a ``__all__`` that defines what is imported into the namespace if you do e.g., ``from sunpy.coordinates.sun import *``.
-This is the "public" API of that module or part of sunpy as well.
-These functions are listed within our API documentation: :ref:`reference`.
+This is the "public" API of that module.
+These functions are the ones listed within our API documentation: :ref:`reference`.
 If you do ``import sunpy.coordinates.sun``, you can still access the "private" functions.
 
-This means that all of this code will follow the deprecation policy detailed below with the exception of `sunpy.util` which is considered for internal sunpy use only.
+This means that all of the public API will follow the deprecation policy detailed below with the exception of `sunpy.util` which is considered to be for internal sunpy use only.
 
 Deprecation Policy and Breaking Changes
 =======================================
 
-All public API within the SunPy project (sunpy and its affiliated packages) will enforce strict standards when it comes to either changing, updating or breaking the API.
+All public API within the SunPy project (the sunpy package and stable affiliated packages) will enforce strict standards when it comes to either changing, updating or breaking the API.
 
 .. _deprecation:
 
@@ -38,9 +38,9 @@ The deprecation warning has to be in one LTS release before the deprecated code 
 So in the above example, the warning will be in sunpy 3.1 but it can not be removed until sunpy 4.1 after the 4.0 LTS release.
 
 There should be a "deprecation" changelog entry to accompany the deprecation warning.
-When the code is actually removed, a "removal" changelog will be added.
+When the code is actually removed, a "removal" changelog should be added.
 
-The same applies if you want to change the default of an argument or keyword for a function or method.
+The same applies if you want to change the default value of a keyword argument for a function or method, e.g.:
 
 .. code-block:: python
 
