@@ -1,0 +1,1 @@
+Added :meth:`sunpy.timeseries.GenericTimeSeries.resample` in `sunpy.timeseries.GenericTimeSeries` as a wrapper for `~pandas.DataFrame.resample`.

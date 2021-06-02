@@ -906,6 +906,12 @@ def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().to_dataframe().equals(generic_ts.to_dataframe().sort_index())
 
 
+def test_ts_resample(generic_ts):
+    resampled_df = generic_ts.to_dataframe().resample("1H").pad()
+    resampled_ts = generic_ts.resample("1H")
+    assert resampled_ts.to_dataframe().equals(resampled_df)
+
+
 # TODO:
 # _validate_units
 # _validate_meta

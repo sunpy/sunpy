@@ -445,6 +445,33 @@ class GenericTimeSeries:
         object._sanitize_units()
         return object
 
+    def resample(self, rule, **kwargs):
+        """
+        Returns a resampled time series.
+
+        Parameters
+        ----------
+        rule : `~pandas.tseries.offsets.DateOffset`, `~pandas.Timedelta` or `str`
+            The offset string or object representing target conversion.
+
+        Returns
+        -------
+        `~sunpy.timeseries.TimeSeries`
+            A resampled `~sunpy.timeseries.TimeSeries`.
+
+        Notes
+        -----
+        This method is a wrapper around `~pandas.DataFrame.resample`; all additional
+        keyword arguments are passed to this method.
+        """
+
+        object = GenericTimeSeries(self._data.resample(rule, **kwargs).pad(),
+                                   meta=TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                   units=copy.copy(self.units))
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
+
 # #### Plotting Methods #### #
 
     def plot(self, axes=None, **plot_args):
