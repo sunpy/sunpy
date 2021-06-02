@@ -912,10 +912,10 @@ def test_ts_reindex(generic_ts):
     # Test for pandas.DatetimeIndex as index
     generic_ts_reindexed_1 = generic_ts.reindex(new_index, method="nearest")
     df_selected = generic_ts.to_dataframe().loc[new_index]
-    assert generic_ts_reindexed_1.to_dataframe().equals(df_selected) is True
+    assert generic_ts_reindexed_1.to_dataframe().equals(df_selected)
     # Test for sunpy.timeseries.TimeSeries as index
     generic_ts_reindexed_2 = generic_ts.reindex(generic_ts_reindexed_1, method="nearest")
-    assert generic_ts_reindexed_2.to_dataframe().equals(generic_ts_reindexed_1.to_dataframe()) is True
+    assert generic_ts_reindexed_2.to_dataframe().equals(generic_ts_reindexed_1.to_dataframe())
 
 
 # TODO:

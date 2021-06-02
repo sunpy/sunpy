@@ -447,7 +447,11 @@ class GenericTimeSeries:
 
     def reindex(self, index, **kwargs):
         """
-        Returns a new time series with the chosen index.
+        Returns a new time series with a new index.
+
+        By default values on the new time series are filled using a
+        nearest valid observation method. See `~pandas.DataFrame.reindex`
+        for the different re-indexing options available.
 
         Parameters
         ----------
@@ -461,7 +465,8 @@ class GenericTimeSeries:
 
         Notes
         -----
-        This method is a wrapper around `~pandas.DataFrame.reindex`
+        This method is a wrapper around `pandas.DataFrame.reindex`; all additional
+        keyword arguments are passed to this method.
         """
         if isinstance(index, GenericTimeSeries):
             index = index.index
