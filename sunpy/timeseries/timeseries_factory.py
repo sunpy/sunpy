@@ -162,16 +162,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         Currently only validates by class.
         """
-        if isinstance(meta, astropy.io.fits.header.Header):
-            return True
-        elif isinstance(meta, sunpy.io.header.FileHeader):
-            return True
-        elif isinstance(meta, dict):
-            return True
-        elif isinstance(meta, sunpy.timeseries.TimeSeriesMetaData):
-            return True
-        else:
-            return False
+        return isinstance(meta, (astropy.io.fits.header.Header,
+                                 sunpy.io.header.FileHeader,
+                                 dict,
+                                 sunpy.timeseries.TimeSeriesMetaData))
 
     @staticmethod
     def _validate_units(units):
@@ -183,19 +177,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         `sunpy.util.metadict.MetaDict`) with only `astropy.units` for
         values.
         """
-        result = True
-
-        # It must be a dictionary
-        if not isinstance(units, dict) or isinstance(units, MetaDict):
-            return False
-
-        for key in units:
-            if not isinstance(units[key], u.UnitBase):
-                # If this is not a unit then this can't be a valid units dict.
-                return False
-
-        # Passed all the tests
-        return result
+        # Must be a dict and all items must be a unit
+        return (isinstance(units, dict)
+                and not isinstance(units, MetaDict)
+                and all(isinstance(units[key], u.UnitBase) for key in units))
 
     @staticmethod
     def _from_table(t):
