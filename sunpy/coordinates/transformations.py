@@ -635,7 +635,7 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
 
     # Invert the transformation to get the HGS->HCRS transformation
     reverse_matrix = matrix_transpose(forward_matrix)
-    reverse_offset = -forward_offset
+    reverse_offset = (-forward_offset).transform(reverse_matrix)
 
     return hcrsframe.realize_frame(hgscoord.cartesian.transform(reverse_matrix) + reverse_offset)
 
