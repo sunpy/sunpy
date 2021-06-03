@@ -1,0 +1,2 @@
+Fixed a bug with handling the motion of the Sun when transforming between coordinate frames with a change in ``obstime``.
+This bug did not affect any results if the context manager :func:`~sunpy.coordinates.transform_with_sun_center` had been used.
