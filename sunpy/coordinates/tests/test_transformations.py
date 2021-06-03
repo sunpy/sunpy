@@ -186,6 +186,17 @@ def test_hcrs_hgs_different_obstime():
     assert quantity_allclose(sunpy_coord.cartesian.xyz, astropy_coord.cartesian.xyz)
 
 
+def test_hcrs_hgs_reversibility():
+    # Test whether the HCRS->HGS transformation is reversed by the HGS->HCRS transformation
+    time1 = Time('2001-01-01')
+    time2 = Time('2001-02-01')
+
+    coord = HCRS(1*u.km, 2*u.km, 3*u.km, representation_type='cartesian', obstime=time1)
+    new_coord = coord.transform_to(HeliographicStonyhurst(obstime=time2)).transform_to(coord)
+
+    assert quantity_allclose(coord.cartesian.xyz, new_coord.cartesian.xyz)
+
+
 def test_hgs_hgc_roundtrip():
     obstime = "2011-01-01"
 

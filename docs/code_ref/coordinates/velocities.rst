@@ -98,9 +98,9 @@ For example, if we take the same coordinate created earlier for Earth, and trans
     >>> from sunpy.coordinates import HeliographicStonyhurst
     >>> earth.transform_to(HeliographicStonyhurst(obstime=earth.obstime + 1*u.day))
     <SkyCoord (HeliographicStonyhurst: obstime=2021-01-02T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
-        (-1.01325847, -3.02987313, 0.98326043)
+        (-1.01416251, -3.02979409, 0.98326928)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
-        (-1.15705401e-05, -0.00487486, -0.01698849)>
+        (-1.19375277e-05, -0.00487485, -0.01743006)>
 
 Note that the location of the Earth in the new frame is ~-1 degree in longitude, as opposed to zero degrees.
 That is, this coordinate represents the location of Earth on 2021 January 1 using axes that are defined using the location of Earth on 2021 January 2.
