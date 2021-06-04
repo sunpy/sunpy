@@ -28,7 +28,7 @@ from sunpy.util.exceptions import NoMapsInFileError, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
-from sunpy.util.io import parse_path, possibly_a_path
+from sunpy.util.io import is_url, parse_path, possibly_a_path
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
@@ -230,7 +230,7 @@ class MapFactory(BasicRegistrationFactory):
                 header = args.pop(i)
                 args.insert(i, (data, header))
                 nargs -= 1
-            elif isinstance(arg, str) and _is_url(arg):
+            elif isinstance(arg, str) and is_url(arg):
                 # Repalce URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
             elif possibly_a_path(arg):
@@ -383,14 +383,6 @@ class MapFactory(BasicRegistrationFactory):
         WidgetType = candidate_widget_types[0]
 
         return WidgetType(data, meta, **kwargs)
-
-
-def _is_url(arg):
-    try:
-        urlopen(arg)
-    except Exception:
-        return False
-    return True
 
 
 class InvalidMapInput(ValueError):

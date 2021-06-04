@@ -1,6 +1,7 @@
 import glob
 import os
 import pathlib
+import urllib.request
 
 
 def parse_path(path, f, **kwargs):
@@ -68,3 +69,11 @@ def possibly_a_path(obj):
         return True
     except Exception:
         return False
+
+
+def is_url(obj):
+    try:
+        urllib.request.urlopen(obj)
+    except Exception:
+        return False
+    return True

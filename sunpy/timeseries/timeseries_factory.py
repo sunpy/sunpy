@@ -32,7 +32,7 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
-from sunpy.util.io import parse_path, possibly_a_path
+from sunpy.util.io import is_url, parse_path, possibly_a_path
 
 __all__ = ['TimeSeries', 'TimeSeriesFactory', 'NoTimeSeriesFound',
            'InvalidTimeSeriesInput', 'InvalidTimeSeriesType']
@@ -320,8 +320,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 already_timeseries.append(arg)
 
             # A URL
-            elif (isinstance(arg, str) and
-                  _is_url(arg)):
+            elif isinstance(arg, str) and is_url(arg):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
                 results = parse_path(path, self._read_file)
@@ -505,14 +504,6 @@ def _apply_result(data_header_pairs, filepaths, result):
         filepaths.append(result)
 
     return data_header_pairs, filepaths
-
-
-def _is_url(arg):
-    try:
-        urlopen(arg)
-    except Exception:
-        return False
-    return True
 
 
 class InvalidTimeSeriesInput(ValueError):
