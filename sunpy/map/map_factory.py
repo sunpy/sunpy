@@ -28,6 +28,7 @@ from sunpy.util.exceptions import NoMapsInFileError, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
+from sunpy.util.io import parse_path
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
@@ -289,21 +290,7 @@ class MapFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, arg, **kwargs):
-        path = arg.expanduser()
-        if _is_file(path):
-            return self._read_file(path, **kwargs)
-        elif _is_dir(path):
-            pairs = []
-            for afile in sorted(path.glob('*')):
-                pairs += self._read_file(afile, **kwargs)
-            return pairs
-        elif glob.glob(os.path.expanduser(arg)):
-            pairs = []
-            for afile in sorted(glob.glob(os.path.expanduser(arg))):
-                pairs += self._read_file(afile, **kwargs)
-            return pairs
-        else:
-            raise ValueError(f'Did not find any files at {arg}')
+        return parse_path(arg, self._read_file, **kwargs)
 
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
@@ -414,24 +401,6 @@ def _possibly_a_path(arg):
     try:
         pathlib.Path(arg)
         return True
-    except Exception:
-        return False
-
-
-# In python<3.8 paths with un-representable chars (ie. '*' on windows)
-# raise an error, so make our own version that returns False instead of
-# erroring. These can be removed when we support python >= 3.8
-# https://docs.python.org/3/library/pathlib.html#methods
-def _is_file(path):
-    try:
-        return path.is_file()
-    except Exception:
-        return False
-
-
-def _is_dir(path):
-    try:
-        return path.is_dir()
     except Exception:
         return False
 
