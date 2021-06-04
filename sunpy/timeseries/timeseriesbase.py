@@ -445,7 +445,7 @@ class GenericTimeSeries:
         object._sanitize_units()
         return object
 
-    def reindex(self, index, **kwargs):
+    def reindex(self, index, method="nearest", **kwargs):
         """
         Returns a new time series with a new index.
 
@@ -457,6 +457,9 @@ class GenericTimeSeries:
         ----------
         index : `~sunpy.timeseries.TimeSeries` or `~pandas.DatetimeIndex`
             Another `~sunpy.timeseries.TimeSeries` or a valid index column.
+        method : `str`, optional
+            Method to use for filling holes in reindexed time series.
+            Defaults to "nearest".
 
         Returns
         -------
@@ -470,7 +473,7 @@ class GenericTimeSeries:
         """
         if isinstance(index, GenericTimeSeries):
             index = index.index
-        object = GenericTimeSeries(self._data.reindex(index, **kwargs),
+        object = GenericTimeSeries(self._data.reindex(index, method=method, **kwargs),
                                    meta=TimeSeriesMetaData(copy.copy(self.meta.metadata)),
                                    units=copy.copy(self.units))
         object._sanitize_metadata()
