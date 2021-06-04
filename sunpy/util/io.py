@@ -33,6 +33,7 @@ def parse_path(path, f, **kwargs):
     elif glob.glob(str(path)):
         read_files = []
         for afile in sorted(glob.glob(str(path))):
+            afile = pathlib.Path(afile)
             read_files += f(afile, **kwargs)
         return read_files
     else:

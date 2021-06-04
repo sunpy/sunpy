@@ -2,6 +2,7 @@
 This module provies the `~sunpy.timeseries.TimeSeriesFactory` class.
 """
 import os
+import pathlib
 import copy
 import glob
 from collections import OrderedDict
@@ -31,6 +32,7 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
+from sunpy.util.io import parse_path, possibly_a_path
 
 __all__ = ['TimeSeries', 'TimeSeriesFactory', 'NoTimeSeriesFound',
            'InvalidTimeSeriesInput', 'InvalidTimeSeriesType']
@@ -149,11 +151,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                         data = filedata
                         meta = MetaDict(filemeta)
                         new_pairs.append(HDPair(data, meta))
-                return True, new_pairs
+                return [new_pairs]
             except UnrecognizedFileTypeError:
-                return False, fname
+                return [fname]
         else:
-            return False, fname
+            return [fname]
 
     @staticmethod
     def _validate_meta(meta):
@@ -303,41 +305,15 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 data_header_unit_tuples.append((data, meta, units))
 
             # Filepath
-            elif (isinstance(arg, str) and
-                  os.path.isfile(os.path.expanduser(arg))):
-
-                path = os.path.expanduser(arg)
-                result = self._read_file(path, **kwargs)
-                data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
-
-            # pathlib.Path
-            elif (isinstance(arg, os.PathLike)):
-                result = self._read_file(arg.expanduser())
-                data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
-
-            # Directory
-            elif (isinstance(arg, str) and
-                  os.path.isdir(os.path.expanduser(arg))):
-
-                path = os.path.expanduser(arg)
-                files = [os.path.join(path, elem) for elem in os.listdir(path)]
-                for afile in files:
-                    # returns a boolean telling us if it were read and either a
-                    # tuple or the original filepath for reading by a source
-                    result = self._read_file(afile, **kwargs)
-                    data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths,
-                                                                 result)
-
-            # Glob
-            elif isinstance(arg, str) and '*' in arg:
-
-                files = glob.glob(os.path.expanduser(arg))
-                for afile in files:
-                    # returns a boolean telling us if it were read and either a
-                    # tuple or the original filepath for reading by a source
-                    result = self._read_file(afile, **kwargs)
-                    data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths,
-                                                                 result)
+            elif possibly_a_path(arg):
+                # Repalce path strings with Path objects
+                arg = pathlib.Path(arg)
+                results = parse_path(arg, self._read_file)
+                for r in results:
+                    if isinstance(r, pathlib.Path):
+                        filepaths.append(r)
+                    else:
+                        data_header_pairs.append(r)
 
             # Already a TimeSeries
             elif isinstance(arg, GenericTimeSeries):
@@ -348,8 +324,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                   _is_url(arg)):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
-                result = self._read_file(path, **kwargs)
-                data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
+                results = parse_path(path, self._read_file)
+                for r in results:
+                    if isinstance(r, pathlib.Path):
+                        filepaths.append(r)
+                    else:
+                        data_header_pairs.append(r)
 
             else:
                 raise NoMatchError("File not found or invalid input")
