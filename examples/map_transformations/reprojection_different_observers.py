@@ -89,7 +89,7 @@ plt.legend([limb_aia[0], limb_euvi[0]],
 
 out_header = sunpy.map.make_fitswcs_header(
     out_shape,
-    map_aia.reference_coordinate,
+    map_aia.reference_coordinate.replicate(rsun=map_euvi.reference_coordinate.rsun),
     scale=u.Quantity(map_aia.scale),
     instrument="EUVI",
     observatory="AIA Observer",
@@ -123,8 +123,8 @@ ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
 outmap.plot(axes=ax2, title='EUVI image as seen from SDO')
 
 # Set the HPC grid color to black as the background is white
-ax2.coords[0].grid_lines_kwargs['color'] = 'k'
-ax2.coords[1].grid_lines_kwargs['color'] = 'k'
+ax2.coords[0].grid_lines_kwargs['edgecolor'] = 'k'
+ax2.coords[1].grid_lines_kwargs['edgecolor'] = 'k'
 
 ######################################################################
 # AIA as Seen from Mars
@@ -145,6 +145,7 @@ mars_ref_coord = SkyCoord(map_aia.reference_coordinate.Tx,
                           map_aia.reference_coordinate.Ty,
                           obstime=map_aia.reference_coordinate.obstime,
                           observer=mars,
+                          rsun=map_aia.reference_coordinate.rsun,
                           frame="helioprojective")
 
 ######################################################################
