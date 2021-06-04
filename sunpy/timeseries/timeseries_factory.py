@@ -156,11 +156,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             return False, fname
 
     @staticmethod
-    def _validate_meta(meta):
+    def _is_metadata(meta):
         """
-        Validate a meta argument for use as metadata.
-
-        Currently only validates by class.
+        Return `True` if ``meta`` is an object that could store metadata.
         """
         return isinstance(meta, (astropy.io.fits.header.Header,
                                  sunpy.io.header.FileHeader,
@@ -168,14 +166,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                                  sunpy.timeseries.TimeSeriesMetaData))
 
     @staticmethod
-    def _validate_units(units):
+    def _is_units(units):
         """
-        Validates the astropy unit-information associated with a
-        `~sunpy.timeseries.TimeSeries`.
+        Return `True` if ``units`` is an object that could store units.
 
-        Should be a dictionary of some form (but not
-        `sunpy.util.metadict.MetaDict`) with only `astropy.units` for
-        values.
+        Should be a dictionary of some form (but not `sunpy.util.metadict.MetaDict`)
+        with only `astropy.units` for values.
         """
         # Must be a dict and all items must be a unit
         return (isinstance(units, dict)
@@ -283,21 +279,20 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 for _ in range(2):
                     if (len(args) > i+1):
                         # If that next argument isn't data but is metaddata or units:
-                        if not isinstance(args[i+1], (np.ndarray, Table, pd.DataFrame)):
-                            if self._validate_units(args[i+1]):
-                                units.update(args[i+1])
-                                i += 1  # an extra increment to account for the units
-                            elif self._validate_meta(args[i+1]):
-                                # if we have an astropy.io FITS header then convert
-                                # to preserve multi-line comments
-                                if isinstance(args[i+1], astropy.io.fits.header.Header):
-                                    args[i+1] = MetaDict(sunpy.io.header.FileHeader(args[i+1]))
-                                if isinstance(args[i+1], sunpy.timeseries.TimeSeriesMetaData):
-                                    for j in args[i+1].metas:
-                                        meta.update(j)
-                                else:
-                                    meta.update(args[i+1])
-                                i += 1  # an extra increment to account for the meta
+                        if self._is_units(args[i+1]):
+                            units.update(args[i+1])
+                            i += 1  # an extra increment to account for the units
+                        elif self._is_metadata(args[i+1]):
+                            # if we have an astropy.io FITS header then convert
+                            # to preserve multi-line comments
+                            if isinstance(args[i+1], astropy.io.fits.header.Header):
+                                args[i+1] = MetaDict(sunpy.io.header.FileHeader(args[i+1]))
+                            if isinstance(args[i+1], sunpy.timeseries.TimeSeriesMetaData):
+                                for j in args[i+1].metas:
+                                    meta.update(j)
+                            else:
+                                meta.update(args[i+1])
+                            i += 1  # an extra increment to account for the meta
 
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
