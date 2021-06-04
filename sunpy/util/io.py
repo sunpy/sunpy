@@ -1,5 +1,6 @@
 import glob
 import os
+import pathlib
 
 
 def parse_path(path, f, **kwargs):
@@ -52,5 +53,17 @@ def is_file(path):
 def is_dir(path):
     try:
         return path.is_dir()
+    except Exception:
+        return False
+
+
+def possibly_a_path(obj):
+    """
+    Check if ``obj`` can be coerced into a pathlib.Path object.
+    Does *not* check if the path exists.
+    """
+    try:
+        pathlib.Path(obj)
+        return True
     except Exception:
         return False
