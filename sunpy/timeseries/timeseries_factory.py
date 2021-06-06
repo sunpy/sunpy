@@ -302,6 +302,17 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
 
+            # URL
+            elif isinstance(arg, str) and is_url(arg):
+                url = arg
+                path = download_file(url, get_and_create_download_dir())
+                results = parse_path(pathlib.Path(path), self._read_file)
+                for r in results:
+                    if isinstance(r, pathlib.Path):
+                        filepaths.append(r)
+                    else:
+                        data_header_pairs.append(r)
+
             # Filepath
             elif possibly_a_path(arg):
                 # Repalce path strings with Path objects
@@ -316,17 +327,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             # Already a TimeSeries
             elif isinstance(arg, GenericTimeSeries):
                 already_timeseries.append(arg)
-
-            # A URL
-            elif isinstance(arg, str) and is_url(arg):
-                url = arg
-                path = download_file(url, get_and_create_download_dir())
-                results = parse_path(path, self._read_file)
-                for r in results:
-                    if isinstance(r, pathlib.Path):
-                        filepaths.append(r)
-                    else:
-                        data_header_pairs.append(r)
 
             else:
                 raise NoMatchError("File not found or invalid input")
