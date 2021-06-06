@@ -1,9 +1,8 @@
 import os
-import glob
 import pathlib
 import warnings
 from collections import OrderedDict
-from urllib.request import Request, urlopen
+from urllib.request import Request
 
 import numpy as np
 
@@ -26,9 +25,9 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.exceptions import NoMapsInFileError, SunpyUserWarning
 from sunpy.util.functools import seconddispatch
+from sunpy.util.io import is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
-from sunpy.util.io import is_url, parse_path, possibly_a_path
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:

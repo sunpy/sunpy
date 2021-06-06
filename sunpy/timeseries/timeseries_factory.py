@@ -2,11 +2,9 @@
 This module provies the `~sunpy.timeseries.TimeSeriesFactory` class.
 """
 import os
-import pathlib
 import copy
-import glob
+import pathlib
 from collections import OrderedDict
-from urllib.request import urlopen
 
 import numpy as np
 import pandas as pd
@@ -30,9 +28,9 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
+from sunpy.util.io import is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
-from sunpy.util.io import is_url, parse_path, possibly_a_path
 
 __all__ = ['TimeSeries', 'TimeSeriesFactory', 'NoTimeSeriesFound',
            'InvalidTimeSeriesInput', 'InvalidTimeSeriesType']

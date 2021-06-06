@@ -1,5 +1,5 @@
-import glob
 import os
+import glob
 import pathlib
 import urllib.request
 
