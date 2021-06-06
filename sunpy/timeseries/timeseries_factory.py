@@ -220,6 +220,68 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         df = pd.DataFrame(data=data, index=index)
         return df, MetaDict(table.meta), units
 
+    def _parse_meta(self, meta):
+        """
+        Parse different metadata objects into a MetaDict.
+        """
+        if isinstance(meta, astropy.io.fits.header.Header):
+            meta = MetaDict(sunpy.io.header.FileHeader(meta))
+        if isinstance(meta, sunpy.timeseries.TimeSeriesMetaData):
+            new_meta = MetaDict()
+            for m in meta.metas:
+                new_meta.update(m)
+            meta = new_meta
+        return meta
+
+    def _sanitise_args(self, args):
+        """
+        Sanitise a list of args so that a single argument corresponds to either:
+
+        - A (data, header, units) tuple
+        - A path-like string (e.g. a filename, directory, glob etc.)
+        - A URL
+        - A GenericTimeSeries object
+        """
+        # Account for nested lists of items. Simply outputs a single list of
+        # items, nested lists are expanded to element level.
+        args = expand_list(args)
+
+        # Sanitise the input so that each 'type' of input corresponds to a different
+        # class, so single dispatch can be used later
+        i = 0
+        while i < len(args):
+            arg = args[i]
+            if isinstance(arg, (np.ndarray, Table, pd.DataFrame)):
+                # The next item is data
+                data = args[i]
+                meta = MetaDict()
+                units = OrderedDict()
+                if isinstance(data, Table):
+                    # We have an Astropy Table:
+                    data, new_meta, new_units = self._from_table(data)
+                    units.update(new_units)
+                    meta.update(new_meta)
+                elif isinstance(data, np.ndarray):
+                    # We have a numpy ndarray. We assume the first column is a dt index
+                    data = pd.DataFrame(data=data[:, 1:], index=Time(data[:, 0]))
+
+                # The next two could be metadata or units
+                for _ in range(2):
+                    j = i+1
+                    if j < len(args):
+                        arg = args[j]
+                        if self._is_units(arg):
+                            units.update(arg)
+                            args.pop(j)
+                        elif self._is_metadata(arg):
+                            meta.update(self._parse_meta(arg))
+                            args.pop(j)
+
+                args[i] = (data, meta, units)
+            i += 1
+
+        return args
+
     def _parse_args(self, *args, **kwargs):
         """
         Parses an `args` list for data-header pairs. `args` can contain any mixture of the following
@@ -250,52 +312,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         already_timeseries = list()
         filepaths = list()
 
-        # Account for nested lists of items. Simply outputs a single list of
-        # items, nested lists are expanded to element level.
-        args = expand_list(args)
-
-        # For each of the arguments, handle each of the cases
-        i = 0
-        while i < len(args):
-            arg = args[i]
-
+        args = self._sanitise_args(args)
+        for arg in args:
             # Data-header pair in a tuple
-            if (isinstance(arg, (np.ndarray, Table, pd.DataFrame))):
-                # and self._validate_meta(args[i+1])):
-                # Assume a Pandas Dataframe is given
-                data = arg
-                units = OrderedDict()
-                meta = MetaDict()
-
-                # Convert the data argument into a Pandas DataFrame if needed.
-                if isinstance(data, Table):
-                    # We have an Astropy Table:
-                    data, meta, units = self._from_table(data)
-                elif isinstance(data, np.ndarray):
-                    # We have a numpy ndarray. We assume the first column is a dt index
-                    data = pd.DataFrame(data=data[:, 1:], index=Time(data[:, 0]))
-
-                # If there are 1 or 2 more arguments:
-                for _ in range(2):
-                    if (len(args) > i+1):
-                        # If that next argument isn't data but is metaddata or units:
-                        if self._is_units(args[i+1]):
-                            units.update(args[i+1])
-                            i += 1  # an extra increment to account for the units
-                        elif self._is_metadata(args[i+1]):
-                            # if we have an astropy.io FITS header then convert
-                            # to preserve multi-line comments
-                            if isinstance(args[i+1], astropy.io.fits.header.Header):
-                                args[i+1] = MetaDict(sunpy.io.header.FileHeader(args[i+1]))
-                            if isinstance(args[i+1], sunpy.timeseries.TimeSeriesMetaData):
-                                for j in args[i+1].metas:
-                                    meta.update(j)
-                            else:
-                                meta.update(args[i+1])
-                            i += 1  # an extra increment to account for the meta
-
-                # Add a 3-tuple for this TimeSeries.
-                data_header_unit_tuples.append((data, meta, units))
+            if isinstance(arg, tuple):
+                data_header_unit_tuples.append(arg)
 
             # Filepath
             elif (isinstance(arg, str) and
@@ -348,7 +369,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             else:
                 raise NoMatchError("File not found or invalid input")
-            i += 1
 
         # TODO:
         # In the end, if there are already TimeSeries it should be put in the
