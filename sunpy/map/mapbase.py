@@ -730,16 +730,11 @@ class GenericMap(NDData):
     def nickname(self, n):
         self._nickname = n
 
-    @property
-    def date(self):
+    def _parse_date_string(self, time):
         """
-        Image observation time.
-
-        This is taken from the 'DATE-OBS' FITS keyword.
+        Parse a FITS date string and return a `~astropy.time.Time`.
         """
-        time = self.meta.get('date-obs', None)
-        # Get the time scale
-        if time is not None and 'TAI' in time:
+        if 'TAI' in time:
             # SDO specifies the 'TAI' scale in their time string, which is parsed
             # by parse_time(). If a different timescale is also present, warn the
             # user that it will be ignored.
@@ -752,15 +747,38 @@ class GenericMap(NDData):
             # UTC is the FITS standard default
             timesys = self.meta.get('timesys', 'UTC')
 
-        if time is None:
-            if self._default_time is None:
-                warn_metadata("Missing metadata for observation time, "
-                              "setting observation time to current time. "
-                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
-                self._default_time = parse_time('now')
-            time = self._default_time
-
         return parse_time(time, scale=timesys.lower())
+
+    @property
+    def date(self):
+        """
+        Image observation start time.
+
+        This is taken from the 'DATE-BEG' FITS keyword, and if not present the 'DATE-OBS' keyword.
+        """
+        if 'date-beg' in self.meta and 'date-obs' in self.meta:
+            log.info('Ignoring DATE-OBS keyword in favour of DATE-BEG')
+        date_str = self.meta.get('date-beg', self.meta.get('date-obs', None))
+        if date_str is None:
+            if self._default_time is None:
+                warn_metadata("Missing metadata for observation start time, "
+                              "setting observation start time to current time. "
+                              "Set the 'DATE-BEG' FITS keyword to prevent this "
+                              "warning.",)
+                self._default_time = parse_time('now')
+            return self._default_time
+        return self._parse_date_string(date_str)
+
+    @property
+    def date_end(self):
+        """
+        Image observation end time.
+
+        This is taken from the 'DATE-END' FITS keyword, and if not present defaults to `None`.
+        """
+        date_str = self.meta.get('date-end', None)
+        if date_str is not None:
+            return self._parse_date_string(date_str)
 
     @property
     def detector(self):

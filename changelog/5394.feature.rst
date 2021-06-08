@@ -1,0 +1,2 @@
+Added `sunpy.map.GenericMap.date_end` that returns the end date/time of the
+observation (if present in the map metadata).

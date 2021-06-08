@@ -136,7 +136,17 @@ def test_nickname_set(generic_map):
 
 
 def test_date(generic_map):
-    assert isinstance(generic_map.date, Time)
+    generic_map.meta['date-obs'] = parse_time('2020-01-01').isot
+    generic_map.meta['date-beg'] = parse_time('2021-02-02').isot
+    assert generic_map.date == parse_time('2021-02-02')
+
+    generic_map.meta.pop('date-beg')
+    assert generic_map.date == parse_time('2020-01-01')
+
+
+def test_date_end(generic_map):
+    generic_map.meta['date-end'] = parse_time('2021-02-02').isot
+    assert generic_map.date_end == parse_time('2021-02-02')
 
 
 def test_date_scale(generic_map):

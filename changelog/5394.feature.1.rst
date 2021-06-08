@@ -1,0 +1,2 @@
+`sunpy.map.GenericMap.date` now reads from the 'DATE-BEG' FITS keyword if
+present, and if not falls back on the 'DATE-OBS' keyword.
