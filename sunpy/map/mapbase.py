@@ -38,7 +38,7 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import cached_property_based_on
-from sunpy.util.exceptions import SunpyUserWarning, warn_meta, warn_user
+from sunpy.util.exceptions import SunpyUserWarning, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
@@ -684,11 +684,11 @@ class GenericMap(NDData):
 
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
-            warn_meta(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                      f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                      'with sunpy.map.Map.\n'
-                      'See https://fits.gsfc.nasa.gov/fits_standard.html for'
-                      'the FITS unit standards.')
+            warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                          'with sunpy.map.Map.\n'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'the FITS unit standards.')
             unit = None
         return unit
 
@@ -742,17 +742,17 @@ class GenericMap(NDData):
             timesys = 'TAI'
             timesys_meta = self.meta.get('timesys', '').upper()
             if timesys_meta != 'TAI':
-                warn_meta('Found "TAI" in time string, ignoring TIMESYS keyword '
-                          f'which is set to "{timesys_meta}".')
+                warn_metadata('Found "TAI" in time string, ignoring TIMESYS keyword '
+                              f'which is set to "{timesys_meta}".')
         else:
             # UTC is the FITS standard default
             timesys = self.meta.get('timesys', 'UTC')
 
         if time is None:
             if self._default_time is None:
-                warn_meta("Missing metadata for observation time, "
-                          "setting observation time to current time. "
-                          "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
+                warn_metadata("Missing metadata for observation time, "
+                              "setting observation time to current time. "
+                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
                 self._default_time = parse_time('now')
             time = self._default_time
 
@@ -940,8 +940,8 @@ class GenericMap(NDData):
 
         if rsun_arcseconds is None:
             if 'rsun_ref' not in self.meta:
-                warn_meta("Missing metadata for solar angular radius: assuming the standard "
-                          "radius of the photosphere as seen from the observer distance.")
+                warn_metadata("Missing metadata for solar angular radius: assuming the standard "
+                              "radius of the photosphere as seen from the observer distance.")
             rsun = sun._angular_radius(self.rsun_meters, self.dsun)
         else:
             rsun = rsun_arcseconds * u.arcsec
@@ -956,12 +956,12 @@ class GenericMap(NDData):
         """
         ctype1 = self.meta.get('ctype1', None)
         if ctype1 is None:
-            warn_meta("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN")
+            warn_metadata("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN")
             ctype1 = 'HPLN-TAN'
 
         ctype2 = self.meta.get('ctype2', None)
         if ctype2 is None:
-            warn_meta("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
+            warn_metadata("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -1020,7 +1020,7 @@ class GenericMap(NDData):
         warning_message = "".join(
             [f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
-        warn_meta(warning_message, stacklevel=3)
+        warn_metadata(warning_message, stacklevel=3)
 
         return get_earth(self.date)
 
@@ -1229,7 +1229,7 @@ class GenericMap(NDData):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
-                warn_meta(f"Unknown value for {meta_property.upper()}.")
+                warn_metadata(f"Unknown value for {meta_property.upper()}.")
 
         if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
                 self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):

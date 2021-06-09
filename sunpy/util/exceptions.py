@@ -11,7 +11,7 @@ from astropy.utils.exceptions import AstropyWarning
 __all__ = ["NoMapsInFileError",
            "SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
            "SunpyPendingDeprecationWarning", "SunpyMetadataWarning",
-           "warn_user", "warn_deprecated", "warn_meta"]
+           "warn_user", "warn_deprecated", "warn_metadata"]
 
 
 class NoMapsInFileError(Exception):
@@ -59,7 +59,7 @@ class SunpyPendingDeprecationWarning(PendingDeprecationWarning, SunpyWarning):
     """
 
 
-def warn_meta(msg, stacklevel=1):
+def warn_metadata(msg, stacklevel=1):
     """
     Raise a `SunpyMetadataWarning`.
 
