@@ -447,7 +447,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     See :func:`~sunpy.coordinates.transform_with_sun_center`.
     """
     # Suppress NaN warnings in coordinate transforms
-    import warnings  # isort:skip
+    import warnings
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
 

@@ -512,7 +512,8 @@ class GenericMap(NDData):
         """
         The `~astropy.wcs.WCS` property of the map.
         """
-        import warnings  # isort:skip
+        import warnings
+
         # Construct the WCS based on the FITS header, but don't "do_set" which
         # analyses the FITS header for correctness.
         with warnings.catch_warnings():
