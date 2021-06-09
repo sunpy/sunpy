@@ -1,0 +1,2 @@
+Fixed a bug where the ``rsun`` frame attribute could be unintentionally reset to the default value during transformation.
+This bug primarily affected the transformation of a `~sunpy.coordinates.frames.Helioprojective` coordinate to a `~sunpy.coordinates.frame.HeliographicStonyhurst` frame.
