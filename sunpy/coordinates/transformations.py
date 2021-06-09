@@ -444,8 +444,8 @@ def hcc_to_hgs(helioccoord, heliogframe):
     newrepr = helioccoord.cartesian.transform(total_matrix)
     int_coord = HeliographicStonyhurst(newrepr, obstime=hcc_observer_at_hcc_obstime.obstime)
 
-    # Loopback transform HGS if there is a change in obstime
-    return _transform_obstime(int_coord, heliogframe.obstime)
+    # Loopback transform HGS as needed
+    return int_coord.transform_to(heliogframe)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
