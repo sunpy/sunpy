@@ -186,9 +186,7 @@ Any other standard output, warnings, and errors should follow these rules:
 * For errors/exceptions, one should always use ``raise`` with one of the built-in exception classes, or a custom exception class.
   The nondescript ``Exception`` class should be avoided as much as possible, in favor of more specific exceptions (`IOError`, `ValueError`, etc.).
 
-* For warnings, one should always use ``warnings.warn(message, warning_class)``.
-  These get redirected to ``log.warning()`` by default, but one can still use the standard warning-catching mechanism and custom warning classes.
-  The warning class should be either class:`~sunpy.util.SunpyUserWarning` or inherit from it.
+* For warnings, one should always use the functions in `sunpy.util.exceptions` and *not* `warnings.warn`. This ensures we are always raising a sunpy specific warning type.
 
 Including C Code
 ================

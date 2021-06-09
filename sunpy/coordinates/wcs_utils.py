@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 
 import astropy.units as u
@@ -14,7 +12,7 @@ from astropy.coordinates import (
 from astropy.wcs import WCS
 
 from sunpy import log
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from .frames import (
     BaseCoordinateFrame,
     Heliocentric,
@@ -117,15 +115,13 @@ def solar_wcs_frame_mapping(wcs):
     # This custom attribute was always used in sunpy < 2.1; these warnings
     # can be converted into errors in sunpy 3.1
     if hasattr(wcs, 'rsun'):
-        warnings.warn('Support for the .rsun attribute on a WCS is deprecated. '
-                      'Set observer keywords in the FITS header, or directly set the wcs.wcs.aux '
-                      'values instead.',
-                      SunpyUserWarning)
+        warn_user('Support for the .rsun attribute on a WCS is deprecated. '
+                  'Set observer keywords in the FITS header, or directly set the wcs.wcs.aux '
+                  'values instead.')
         if rsun is None:
             rsun = wcs.rsun
         else:
-            warnings.warn('rsun information present in WCS auxillary information, ignoring '
-                          '.rsun', SunpyUserWarning)
+            warn_user('rsun information present in WCS auxillary information, ignoring .rsun')
 
     observer = None
     for frame, attr_names in required_attrs.items():
@@ -158,15 +154,14 @@ def solar_wcs_frame_mapping(wcs):
     # This custom attribute was always used in sunpy < 2.1; these warnings
     # can be converted into errors in sunpy 3.1
     if hasattr(wcs, 'heliographic_observer'):
-        warnings.warn('Support for the .heliographic_observer attribute on a WCS is deprecated. '
-                      'Set observer keywords in the FITS header, or directly set the wcs.wcs.aux '
-                      'values instead.',
-                      SunpyUserWarning)
+        warn_user('Support for the .heliographic_observer attribute on a WCS is deprecated. '
+                  'Set observer keywords in the FITS header, or directly set the wcs.wcs.aux '
+                  'values instead.')
         if observer is None:
             observer = wcs.heliographic_observer
         else:
-            warnings.warn('Observer information present in WCS auxillary information, ignoring '
-                          '.heliographic_observer', SunpyUserWarning)
+            warn_user('Observer information present in WCS auxillary information, ignoring '
+                      '.heliographic_observer')
 
     # Truncate the ctype to the first four letters
     ctypes = {c[:4] for c in wcs.wcs.ctype}

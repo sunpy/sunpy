@@ -3,7 +3,6 @@ Access the Helio Event Catalogue
 """
 import io
 import os
-from warnings import warn
 
 from lxml import etree
 from requests import Session
@@ -17,7 +16,7 @@ from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.helio import attrs as ha
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.exceptions import warn_deprecated
 
 __all__ = ['HECClient', 'HECResponse']
 
@@ -149,7 +148,7 @@ class HECClient(BaseClient):
         table = qrdict.get('table_name', None)
         if table:
             if isinstance(table, bytes):
-                warn('type `bytes` for table_name is deprecated, use `str` instead.', SunpyDeprecationWarning)
+                warn_deprecated('type `bytes` for table_name is deprecated, use `str` instead.')
             table = str.encode(table)
         start_time = qrdict['Time'].start
         end_time = qrdict['Time'].end

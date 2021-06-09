@@ -171,7 +171,7 @@ def test_rsun_meters(generic_map):
 
 
 def test_rsun_obs_without_rsun_ref(generic_map):
-    with pytest.warns(SunpyUserWarning,
+    with pytest.warns(SunpyMetadataWarning,
                       match='assuming the standard radius of the photosphere '
                             'as seen from the observer distance'):
         assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
@@ -189,12 +189,12 @@ def test_coordinate_system(generic_map):
 
 def test_default_coordinate_system(generic_map):
     generic_map.meta.pop('ctype1')
-    with pytest.warns(SunpyUserWarning, match='Missing CTYPE1 from metadata'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata'):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
     generic_map.meta.pop('ctype2')
     generic_map.meta['ctype1'] = 'HPLN-TAN'
-    with pytest.warns(SunpyUserWarning, match='Missing CTYPE2 from metadata'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE2 from metadata'):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
@@ -873,7 +873,7 @@ def test_as_mpl_axes_aia171(aia171_test_map):
 
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
-    with pytest.warns(SunpyUserWarning) as w:
+    with pytest.warns(SunpyMetadataWarning) as w:
         bad_header = {
             'CRVAL1': 0,
             'CRVAL2': 0,

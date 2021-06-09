@@ -3,7 +3,6 @@ import copy
 import json
 import time
 import urllib
-import warnings
 from pathlib import Path
 
 import drms
@@ -19,7 +18,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util._table_attribute import TableAttribute
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.parfive_helpers import Downloader, Results
 
 __all__ = ['JSOCClient', 'JSOCResponse']
@@ -424,10 +423,9 @@ class JSOCClient(BaseClient):
                                  'Then pass those new results back into Fido.fetch')
 
         if len(jsoc_response) != jsoc_response._original_num_rows:
-            warnings.warn("Downloading of sliced JSOC results is not supported. "
-                          "All the files present in the original response will "
-                          "be downloaded when passed to fetch().",
-                          SunpyUserWarning)
+            warn_user("Downloading of sliced JSOC results is not supported. "
+                      "All the files present in the original response will "
+                      "be downloaded when passed to fetch().")
 
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
@@ -542,9 +540,8 @@ class JSOCClient(BaseClient):
             downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=max_conn)
 
         if downloader.max_conn * kwargs['max_splits'] > 10:
-            warnings.warn(("JSOC does not support more than 10 parallel connections. " +
-                           f"Changing the number of parallel connections to {2 * self.default_max_conn}."),
-                          SunpyUserWarning)
+            warn_user("JSOC does not support more than 10 parallel connections. " +
+                      f"Changing the number of parallel connections to {2 * self.default_max_conn}.")
             kwargs['max_splits'] = 2
             downloader.max_conn = self.default_max_conn
 

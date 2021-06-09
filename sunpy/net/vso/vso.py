@@ -9,7 +9,6 @@ import json
 import socket
 import inspect
 import datetime
-import warnings
 import itertools
 from pathlib import Path
 from functools import partial
@@ -24,7 +23,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
@@ -58,8 +57,7 @@ def check_connection(url):
     try:
         return urlopen(url).getcode() == 200
     except (socket.error, socket.timeout, HTTPError, URLError) as e:
-        warnings.warn(f"Connection to {url} failed with error {e}. Retrying with different url and port.",
-                      SunpyUserWarning)
+        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return None
 
 
@@ -214,7 +212,7 @@ class VSOClient(BaseClient):
                 )
                 for resp in query_response:
                     if resp["error"]:
-                        warnings.warn(resp["error"], SunpyUserWarning)
+                        warn_user(resp["error"])
                 responses.append(
                     VSOQueryResponse(query_response)
                 )
