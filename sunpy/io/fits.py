@@ -213,7 +213,7 @@ def header_to_fits(header):
         # Drop any keys which are too long to save into FITS
         if len(k) > 8:
             warn_metadata(f"The meta key {k} is too long, dropping from the FITS header "
-                      "(maximum allowed key length is 8 characters).")
+                          "(maximum allowed key length is 8 characters).")
             continue
 
         if isinstance(v, float) and math.isnan(v):
