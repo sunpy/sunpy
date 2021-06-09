@@ -163,20 +163,29 @@ def solar_wcs_frame_mapping(wcs):
             warn_user('Observer information present in WCS auxillary information, ignoring '
                       '.heliographic_observer')
 
+    # Collect all of the possible frame attributes, although some may be removed later
+    frame_args = {'obstime': dateobs}
+    if observer is not None:
+        frame_args['observer'] = observer
+    if rsun is not None:
+        frame_args['rsun'] = rsun
+
     # Truncate the ctype to the first four letters
     ctypes = {c[:4] for c in wcs.wcs.ctype}
 
     if {'HPLN', 'HPLT'} <= ctypes:
-        return Helioprojective(obstime=dateobs, observer=observer, rsun=rsun)
+        return Helioprojective(**frame_args)
 
     if {'HGLN', 'HGLT'} <= ctypes:
-        return HeliographicStonyhurst(obstime=dateobs)
+        frame_args.pop('observer', None)
+        return HeliographicStonyhurst(**frame_args)
 
     if {'CRLN', 'CRLT'} <= ctypes:
-        return HeliographicCarrington(obstime=dateobs, observer=observer)
+        return HeliographicCarrington(**frame_args)
 
     if {'SOLX', 'SOLY'} <= ctypes:
-        return Heliocentric(obstime=dateobs, observer=observer)
+        frame_args.pop('rsun', None)
+        return Heliocentric(**frame_args)
 
 
 def _set_wcs_aux_obs_coord(wcs, obs_frame):
