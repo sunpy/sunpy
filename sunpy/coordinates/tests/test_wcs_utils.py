@@ -114,7 +114,7 @@ def test_wcs_aux():
 
 
 def test_hpc_frame_to_wcs():
-    frame = Helioprojective(observer="earth", obstime='2013-10-28')
+    frame = Helioprojective(observer="earth", obstime='2013-10-28', rsun=690*u.Mm)
     result_wcs = solar_frame_to_wcs_mapping(frame)
 
     assert isinstance(result_wcs, WCS)
@@ -122,9 +122,9 @@ def test_hpc_frame_to_wcs():
     assert result_wcs.wcs.ctype[0] == 'HPLN-TAN'
     assert result_wcs.wcs.cunit[0] == 'arcsec'
     assert result_wcs.wcs.dateobs == '2013-10-28T00:00:00.000'
+    assert result_wcs.wcs.aux.rsun_ref == frame.rsun.to_value(u.m)
 
     new_frame = solar_wcs_frame_mapping(result_wcs)
-    assert isinstance(new_frame.observer, HeliographicStonyhurst)
     assert new_frame.rsun == frame.rsun
 
     # Test a frame with no obstime and no observer
@@ -143,7 +143,7 @@ def test_hpc_frame_to_wcs():
 
 
 def test_hgs_frame_to_wcs():
-    frame = HeliographicStonyhurst(obstime='2013-10-28')
+    frame = HeliographicStonyhurst(obstime='2013-10-28', rsun=690*u.Mm)
     result_wcs = solar_frame_to_wcs_mapping(frame)
 
     assert isinstance(result_wcs, WCS)
@@ -151,6 +151,10 @@ def test_hgs_frame_to_wcs():
     assert result_wcs.wcs.ctype[0] == 'HGLN-TAN'
     assert result_wcs.wcs.cunit[0] == 'deg'
     assert result_wcs.wcs.dateobs == '2013-10-28T00:00:00.000'
+    assert result_wcs.wcs.aux.rsun_ref == frame.rsun.to_value(u.m)
+
+    new_frame = solar_wcs_frame_mapping(result_wcs)
+    assert new_frame.rsun == frame.rsun
 
     # Test a frame with no obstime
     frame = HeliographicStonyhurst()
@@ -164,7 +168,7 @@ def test_hgs_frame_to_wcs():
 
 
 def test_hgc_frame_to_wcs():
-    frame = HeliographicCarrington(obstime='2013-10-28')
+    frame = HeliographicCarrington(obstime='2013-10-28', rsun=690*u.Mm)
     result_wcs = solar_frame_to_wcs_mapping(frame)
 
     assert isinstance(result_wcs, WCS)
@@ -172,6 +176,10 @@ def test_hgc_frame_to_wcs():
     assert result_wcs.wcs.ctype[0] == 'CRLN-TAN'
     assert result_wcs.wcs.cunit[0] == 'deg'
     assert result_wcs.wcs.dateobs == '2013-10-28T00:00:00.000'
+    assert result_wcs.wcs.aux.rsun_ref == frame.rsun.to_value(u.m)
+
+    new_frame = solar_wcs_frame_mapping(result_wcs)
+    assert new_frame.rsun == frame.rsun
 
     # Test a frame with no obstime
     frame = HeliographicCarrington()
