@@ -49,7 +49,8 @@ new_observer = SkyCoord(70*u.deg, 20*u.deg, 1*u.AU, obstime=aia_map.date,
 out_shape = aia_map.data.shape
 
 out_ref_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime=new_observer.obstime,
-                         frame='helioprojective', observer=new_observer)
+                         frame='helioprojective', observer=new_observer,
+                         rsun=aia_map.coordinate_frame.rsun)
 out_header = sunpy.map.make_fitswcs_header(
     out_shape,
     out_ref_coord,
