@@ -2189,11 +2189,19 @@ class GenericMap(NDData):
         axes = self._check_axes(axes)
 
         levels = self._process_levels_arg(levels)
-        kwargs = {}
-        if wcsaxes_compat.is_wcsaxes(axes):
-            kwargs['transform'] = axes.get_transform(self.wcs)
-        kwargs.update(contour_args)
-        cs = axes.contour(self.data, levels, **kwargs)
+
+        # Pixel indices
+        x, y = np.meshgrid(*map(np.arange, np.flipud(self.data.shape)))
+
+        # Transform the indices if plotting to a different WCS
+        # We do this instead of using the `transform` keyword argument so that Matplotlib does not
+        # get confused about the bounds of the contours
+        if wcsaxes_compat.is_wcsaxes(axes) and self.wcs is not axes.wcs:
+            transform = axes.get_transform(self.wcs) - axes.transData  # pixel->pixel transform
+            x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
+            x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
+
+        cs = axes.contour(x, y, self.data, levels, **contour_args)
         return cs
 
     @peek_show
