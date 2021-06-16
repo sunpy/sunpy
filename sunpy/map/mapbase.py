@@ -2193,6 +2193,9 @@ class GenericMap(NDData):
         # Pixel indices
         x, y = np.meshgrid(*map(np.arange, np.flipud(self.data.shape)))
 
+        # Prepare a local variable in case we need to mask values
+        data = self.data
+
         # Transform the indices if plotting to a different WCS
         # We do this instead of using the `transform` keyword argument so that Matplotlib does not
         # get confused about the bounds of the contours
@@ -2201,7 +2204,13 @@ class GenericMap(NDData):
             x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
             x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
 
-        cs = axes.contour(x, y, self.data, levels, **contour_args)
+            # Mask out the data array anywhere the coordinate arrays are not finite
+            not_finite = ~np.logical_and(np.isfinite(x), np.isfinite(y))
+            if np.any(not_finite):
+                data = copy.deepcopy(data)
+                data[not_finite] = np.nan
+
+        cs = axes.contour(x, y, data, levels, **contour_args)
         return cs
 
     @peek_show
