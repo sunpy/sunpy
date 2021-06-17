@@ -77,6 +77,12 @@ class SXTMap(GenericMap):
             s = 'white-light'
         return s
 
+    @property
+    def wavelength(self):
+        """
+        Returns `None`, as SXT is a broadband imager.
+        """
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an SXT image"""
