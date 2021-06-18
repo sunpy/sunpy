@@ -11,6 +11,8 @@ pycodestyle:
   ignore:
     - E226
     - E501
+    - W503
+    - W504
 
 descending_issues_order: True
 
