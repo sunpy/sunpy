@@ -95,6 +95,11 @@ rst_epilog = """
 # -- General configuration -----------------------------------------------------
 # sphinxext-opengraph
 ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
+ogp_use_first_image = True
+ogp_description_length = 160
+ogp_custom_meta_tags = [
+    '<meta property="og:ignore_canonical" content="true" />',
+]
 
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
