@@ -450,10 +450,10 @@ class TestTimeSeries:
 
     def test_invalid_filepath(self):
         invalid_filepath = os.path.join(filepath, 'invalid_filepath_here')
-        with pytest.raises(NoMatchError):
+        with pytest.raises(ValueError, match='Did not find any files'):
             sunpy.timeseries.TimeSeries(invalid_filepath)
         # Now with silence_errors kwarg set
-        with pytest.raises(NoMatchError):
+        with pytest.raises(ValueError, match='Did not find any files'):
             sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_invalid_file(self):

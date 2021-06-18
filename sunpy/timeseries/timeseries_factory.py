@@ -3,9 +3,8 @@ This module provies the `~sunpy.timeseries.TimeSeriesFactory` class.
 """
 import os
 import copy
-import glob
+import pathlib
 from collections import OrderedDict
-from urllib.request import urlopen
 
 import numpy as np
 import pandas as pd
@@ -29,6 +28,7 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
+from sunpy.util.io import is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
 
@@ -149,11 +149,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                         data = filedata
                         meta = MetaDict(filemeta)
                         new_pairs.append(HDPair(data, meta))
-                return True, new_pairs
+                return [new_pairs]
             except UnrecognizedFileTypeError:
-                return False, fname
+                return [fname]
         else:
-            return False, fname
+            return [fname]
 
     @staticmethod
     def _is_metadata(meta):
@@ -318,54 +318,31 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             if isinstance(arg, tuple):
                 data_header_unit_tuples.append(arg)
 
+            # URL
+            elif isinstance(arg, str) and is_url(arg):
+                url = arg
+                path = download_file(url, get_and_create_download_dir())
+                results = parse_path(pathlib.Path(path), self._read_file)
+                for r in results:
+                    if isinstance(r, pathlib.Path):
+                        filepaths.append(r)
+                    else:
+                        data_header_pairs.append(r)
+
             # Filepath
-            elif (isinstance(arg, str) and
-                  os.path.isfile(os.path.expanduser(arg))):
-
-                path = os.path.expanduser(arg)
-                result = self._read_file(path, **kwargs)
-                data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
-
-            # pathlib.Path
-            elif (isinstance(arg, os.PathLike)):
-                result = self._read_file(arg.expanduser())
-                data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
-
-            # Directory
-            elif (isinstance(arg, str) and
-                  os.path.isdir(os.path.expanduser(arg))):
-
-                path = os.path.expanduser(arg)
-                files = [os.path.join(path, elem) for elem in os.listdir(path)]
-                for afile in files:
-                    # returns a boolean telling us if it were read and either a
-                    # tuple or the original filepath for reading by a source
-                    result = self._read_file(afile, **kwargs)
-                    data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths,
-                                                                 result)
-
-            # Glob
-            elif isinstance(arg, str) and '*' in arg:
-
-                files = glob.glob(os.path.expanduser(arg))
-                for afile in files:
-                    # returns a boolean telling us if it were read and either a
-                    # tuple or the original filepath for reading by a source
-                    result = self._read_file(afile, **kwargs)
-                    data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths,
-                                                                 result)
+            elif possibly_a_path(arg):
+                # Repalce path strings with Path objects
+                arg = pathlib.Path(arg)
+                results = parse_path(arg, self._read_file)
+                for r in results:
+                    if isinstance(r, pathlib.Path):
+                        filepaths.append(r)
+                    else:
+                        data_header_pairs.append(r)
 
             # Already a TimeSeries
             elif isinstance(arg, GenericTimeSeries):
                 already_timeseries.append(arg)
-
-            # A URL
-            elif (isinstance(arg, str) and
-                  _is_url(arg)):
-                url = arg
-                path = download_file(url, get_and_create_download_dir())
-                result = self._read_file(path, **kwargs)
-                data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
 
             else:
                 raise NoMatchError("File not found or invalid input")
@@ -540,14 +517,6 @@ def _apply_result(data_header_pairs, filepaths, result):
         filepaths.append(result)
 
     return data_header_pairs, filepaths
-
-
-def _is_url(arg):
-    try:
-        urlopen(arg)
-    except Exception:
-        return False
-    return True
 
 
 class InvalidTimeSeriesInput(ValueError):
