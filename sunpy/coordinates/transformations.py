@@ -104,7 +104,7 @@ def transform_with_sun_center():
         (0., 0., 0.)>
     >>> sun_center.transform_to(end_frame)  # transformations do not normally follow Sun center
     <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
-        (-156.66825767, 5.96399877, 0.00027959)>
+        (23.33174233, -5.96399877, 0.00027959)>
     >>> with transform_with_sun_center():
     ...     sun_center.transform_to(end_frame)  # now following Sun center
     <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
@@ -589,7 +589,7 @@ def _affine_params_hcrs_to_hgs(hcrs_time, hgs_time):
     # If the HCRS observation time is different, calculate the translation in origin
     if not _ignore_sun_motion and np.any(hcrs_time != hgs_time):
         sun_pos_old_icrs = get_body_barycentric('sun', hcrs_time)
-        offset_icrf = sun_pos_icrs - sun_pos_old_icrs
+        offset_icrf = sun_pos_old_icrs - sun_pos_icrs
     else:
         offset_icrf = sun_pos_icrs * 0  # preserves obstime shape
 
@@ -639,7 +639,7 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
 
     # Invert the transformation to get the HGS->HCRS transformation
     reverse_matrix = matrix_transpose(forward_matrix)
-    reverse_offset = -forward_offset
+    reverse_offset = (-forward_offset).transform(reverse_matrix)
 
     return hcrsframe.realize_frame(hgscoord.cartesian.transform(reverse_matrix) + reverse_offset)
 

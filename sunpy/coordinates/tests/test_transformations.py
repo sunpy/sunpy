@@ -4,6 +4,7 @@ import pytest
 import astropy.units as u
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
+    HCRS,
     ICRS,
     Angle,
     CartesianDifferential,
@@ -168,6 +169,32 @@ def test_hgs_hcrs():
     assert quantity_allclose(earth_hme.lon, Angle('308d13m30.51s') - 180*u.deg, atol=5*u.arcsec)
     assert quantity_allclose(earth_hme.lat, -Angle('-0.27s'), atol=10*u.arcsec)
     assert quantity_allclose(earth_hme.distance, 0.9848139*u.AU, atol=5e-7*u.AU)
+
+
+def test_hcrs_hgs_different_obstime():
+    # Test whether the HCRS->HGS transformation handles a change in obstime the same way as forcing
+    # a HCRS loopback in Astropy
+    time1 = Time('2001-01-01')
+    time2 = Time('2001-02-01')
+
+    coord = HCRS(1*u.km, 2*u.km, 3*u.km, representation_type='cartesian', obstime=time1)
+    out_frame = HeliographicStonyhurst(obstime=time2)
+
+    sunpy_coord = coord.transform_to(out_frame)
+    astropy_coord = coord.transform_to(HCRS(obstime=time2)).transform_to(out_frame)
+
+    assert quantity_allclose(sunpy_coord.cartesian.xyz, astropy_coord.cartesian.xyz)
+
+
+def test_hcrs_hgs_reversibility():
+    # Test whether the HCRS->HGS transformation is reversed by the HGS->HCRS transformation
+    time1 = Time('2001-01-01')
+    time2 = Time('2001-02-01')
+
+    coord = HCRS(1*u.km, 2*u.km, 3*u.km, representation_type='cartesian', obstime=time1)
+    new_coord = coord.transform_to(HeliographicStonyhurst(obstime=time2)).transform_to(coord)
+
+    assert quantity_allclose(coord.cartesian.xyz, new_coord.cartesian.xyz)
 
 
 def test_hgs_hgc_roundtrip():
@@ -344,12 +371,12 @@ def test_hgc_hgc():
                                                                             obstime=obstime))
     new = old.transform_to(HeliographicCarrington(observer='earth', obstime=obstime + 1*u.day))
 
-    assert_quantity_allclose(new.lon, 75.815607 * u.deg, atol=1e-7*u.deg)  # solar rotation
+    assert_quantity_allclose(new.lon, 75.815592 * u.deg, atol=1e-7*u.deg)  # solar rotation
     # These are not equal to the old values, because the coordinates stay fixed
     # in inertial space, whilst the frame (fixed to the center of the Sun)
     # moves slightly.
-    assert_quantity_allclose(new.lat, 9.999963 * u.deg, atol=1e-7*u.deg)
-    assert_quantity_allclose(new.radius, 1.000009 * u.AU, atol=1e-7*u.AU)
+    assert_quantity_allclose(new.lat, 10.000037 * u.deg, atol=1e-7*u.deg)
+    assert_quantity_allclose(new.radius, 0.999991 * u.AU, atol=1e-7*u.AU)
 
 
 def test_hgc_hgc_different_observers():
