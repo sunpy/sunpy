@@ -3,6 +3,7 @@ Map is a generic Map class from which all other Map classes inherit from.
 """
 import copy
 import html
+import inspect
 import numbers
 import textwrap
 import webbrowser
@@ -215,7 +216,9 @@ class GenericMap(NDData):
             warn_user("This file contains more than 2 dimensions. "
                       "Data will be truncated to the first two dimensions.")
 
-        super().__init__(data, meta=MetaDict(header), **kwargs)
+        params = list(inspect.signature(NDData).parameters)
+        nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
+        super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
 
         # Correct possibly missing meta keywords
         self._fix_date()

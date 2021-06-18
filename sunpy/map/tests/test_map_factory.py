@@ -60,6 +60,11 @@ class TestMap:
         sequence = sunpy.map.Map(a_list_of_many, sequence=True)
         assert isinstance(sequence, sunpy.map.MapSequence)
 
+    def test_mapsequence_sortby(self):
+        # Test making a MapSequence with sortby kwarg
+        sequence = sunpy.map.Map(a_list_of_many, sequence=True, sortby=None)
+        assert isinstance(sequence, sunpy.map.MapSequence)
+
     def test_composite(self):
         # Test making a CompositeMap
         comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE, composite=True)
