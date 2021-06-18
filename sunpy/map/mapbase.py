@@ -2110,7 +2110,7 @@ class GenericMap(NDData):
         if isinstance(bottom_left, u.Quantity):
             anchor, _, top_right, _ = self._parse_submap_quantity_input(bottom_left, top_right, width, height)
             width, height = top_right - anchor
-            transform = axes.get_transform(self.wcs)
+            transform = axes.get_transform(self.wcs if self.wcs is not axes.wcs else 'pixel')
             kwargs.update({"vertex_unit": u.pix})
 
         else:
