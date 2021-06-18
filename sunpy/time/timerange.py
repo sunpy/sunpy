@@ -347,12 +347,6 @@ class TimeRange:
                     0.2 minutes or
                     12.0 seconds]
         """
-        # TODO: After astropy 3.1 remove this check
-        if isinstance(window, timedelta):
-            window = TimeDelta(window, format="datetime")
-        if isinstance(cadence, timedelta):
-            cadence = TimeDelta(cadence, format="datetime")
-
         if not isinstance(window, TimeDelta):
             window = TimeDelta(window)
         if not isinstance(cadence, TimeDelta):

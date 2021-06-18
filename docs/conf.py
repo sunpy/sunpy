@@ -58,10 +58,7 @@ if is_release:
     warnings.simplefilter("ignore")
 warnings.filterwarnings("error", category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
-# TODO: Remove this when we remove instr in sunpy 3.1
-warnings.filterwarnings(
-    "ignore", message="sunpy.instr is deprecated and will be removed in sunpy 3.1.", category=SunpyDeprecationWarning
-)
+
 # -- SunPy Sample Data and Config ----------------------------------------------
 # We set the logger to debug so that we can see any sample data download errors
 # in the CI, especially RTD.

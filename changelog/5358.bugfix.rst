@@ -1,0 +1,2 @@
+Constructing a 2D coordinate in the `~sunpy.coordinates.frames.HeliographicCarrington` frame with ``observer='self'`` now raises an error upon creation.
+When specifying ``observer='self'``, the ``radius`` coordinate component serves as the Sun-observer distance that is necessary to fully define the Carrington heliographic coordinates.

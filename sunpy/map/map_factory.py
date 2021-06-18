@@ -1,7 +1,6 @@
 import os
 import glob
 import pathlib
-import warnings
 from collections import OrderedDict
 from urllib.request import Request, urlopen
 
@@ -24,7 +23,7 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
-from sunpy.util.exceptions import NoMapsInFileError, SunpyUserWarning
+from sunpy.util.exceptions import NoMapsInFileError, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
@@ -246,8 +245,7 @@ class MapFactory(BasicRegistrationFactory):
             except NoMapsInFileError as e:
                 if not silence_errors:
                     raise
-                warnings.warn(
-                    f"One of the arguments failed to parse with error: {e}", SunpyUserWarning)
+                warn_user(f"One of the arguments failed to parse with error: {e}")
 
         return data_header_pairs
 
@@ -350,8 +348,7 @@ class MapFactory(BasicRegistrationFactory):
                     ValidationFunctionError, MapMetaValidationError) as e:
                 if not silence_errors:
                     raise
-                warnings.warn(
-                    f"One of the data, header pairs failed to validate with: {e}", SunpyUserWarning)
+                warn_user(f"One of the data, header pairs failed to validate with: {e}")
 
         if not len(new_maps):
             raise RuntimeError('No maps loaded')

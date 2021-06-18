@@ -13,7 +13,7 @@ from sunpy.coordinates import sun
 from sunpy.map import Map
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.sun import constants
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "euvi_20090615_000900_n4euA_s.fts"))
@@ -53,7 +53,7 @@ def test_rsun_missing():
     euvi_no_rsun = Map(fitspath)
     euvi_no_rsun.meta['rsun'] = None
     r = euvi_no_rsun.observer_coordinate.radius
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for solar angular radius'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for solar angular radius'):
         assert euvi_no_rsun.rsun_obs == sun._angular_radius(constants.radius, r)
 
 

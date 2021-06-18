@@ -3,13 +3,12 @@ This module provides SunPy's configuration file functionality.
 """
 import os
 import shutil
-import warnings
 import configparser
 from pathlib import Path
 
 import sunpy
 from sunpy.extern.appdirs import AppDirs
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['load_config', 'copy_default_config', 'print_config', 'CONFIG_DIR']
 
@@ -172,12 +171,12 @@ def copy_default_config(overwrite=False):
         if overwrite:
             message = "User config file already exists. " \
                       "This will be overwritten with a backup written in the same location."
-            warnings.warn(message, SunpyUserWarning)
+            warn_user(message)
             os.rename(str(user_config_file), str(user_config_file) + ".bak")
             shutil.copyfile(config_file, user_config_file)
         else:
             message = "User config file already exists. " \
                       "To overwrite it use `copy_default_config(overwrite=True)`"
-            warnings.warn(message, SunpyUserWarning)
+            warn_user(message)
     else:
         shutil.copyfile(config_file, user_config_file)

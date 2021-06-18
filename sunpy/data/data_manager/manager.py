@@ -1,10 +1,9 @@
 import pathlib
-import warnings
 import functools
 from contextlib import contextmanager
 from urllib.parse import urlparse
 
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.util import hash_file
 
 __all__ = ['DataManager']
@@ -97,8 +96,8 @@ class DataManager:
                         # This is to handle the case when the local file
                         # appears to be tampered/corrupted
                         if hash_file(details['file_path']) != details['file_hash']:
-                            warnings.warn("Hashes do not match, the file will be redownloaded (could be be tampered/corrupted)",
-                                          SunpyUserWarning)
+                            warn_user("Hashes do not match, the file will be redownloaded "
+                                      "(could be be tampered/corrupted)")
                             file_path = self._cache.download(urls, self._namespace, redownload=True)
                             # Recheck the hash again, if this fails, we will exit.
                             if hash_file(file_path) != details['file_hash']:

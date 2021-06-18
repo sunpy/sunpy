@@ -3,12 +3,10 @@ import copy
 import json
 import time
 import urllib
-import warnings
 from pathlib import Path
 
 import drms
 import numpy as np
-import pandas as pd
 
 import astropy.table
 import astropy.time
@@ -20,8 +18,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util._table_attribute import TableAttribute
-from sunpy.util.decorators import deprecated
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.parfive_helpers import Downloader, Results
 
 __all__ = ['JSOCClient', 'JSOCResponse']
@@ -46,16 +43,6 @@ class JSOCResponse(QueryResponseTable):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._original_num_rows = len(self)
-
-    # TODO: remove this method post 3.0
-    def build_table(self):
-        # remove this check post 3.0
-        if self.query_args is not None and any('keys' in i for i in self.query_args):
-            new_table = self.copy()
-            new_table.display_keys = slice(None)
-            return new_table
-
-        return self
 
 
 class JSOCClient(BaseClient):
@@ -318,38 +305,6 @@ class JSOCClient(BaseClient):
         return_results._original_num_rows = len(return_results)
         return return_results
 
-    @deprecated(since="2.1", message="use JSOCClient.search() instead", alternative="JSOCClient.search()")
-    def search_metadata(self, *query, **kwargs):
-        """
-        Get the metadata of all the files obtained in a search query.
-        Builds a jsoc query, similar to query method, and takes similar inputs.
-
-        Complex queries to be easily formed using logical operators such as
-        ``&`` and ``|``, in the same way as the query function.
-
-        Parameters
-        ----------
-        query : a variable number of `~sunpy.net.jsoc.attrs`
-                as parameters, which are chained together using
-                the ``AND`` (``&``) operator.
-
-        Returns
-        -------
-        res : `~pandas.DataFrame` object
-            A collection of metadata of all the files.
-
-        """
-        query = and_(*query)
-        blocks = []
-        res = pd.DataFrame()
-        for block in walker.create(query):
-            iargs = kwargs.copy()
-            iargs.update(block)
-            iargs.update({'meta': True})
-            blocks.append(iargs)
-            res = res.append(self._lookup_records(iargs))
-        return res
-
     def request_data(self, jsoc_response, method='url', **kwargs):
         """
         Request that JSOC stages the data for download. This method will not
@@ -468,10 +423,9 @@ class JSOCClient(BaseClient):
                                  'Then pass those new results back into Fido.fetch')
 
         if len(jsoc_response) != jsoc_response._original_num_rows:
-            warnings.warn("Downloading of sliced JSOC results is not supported. "
-                          "All the files present in the original response will "
-                          "be downloaded when passed to fetch().",
-                          SunpyUserWarning)
+            warn_user("Downloading of sliced JSOC results is not supported. "
+                      "All the files present in the original response will "
+                      "be downloaded when passed to fetch().")
 
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
@@ -586,9 +540,8 @@ class JSOCClient(BaseClient):
             downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=max_conn)
 
         if downloader.max_conn * kwargs['max_splits'] > 10:
-            warnings.warn(("JSOC does not support more than 10 parallel connections. " +
-                           f"Changing the number of parallel connections to {2 * self.default_max_conn}."),
-                          SunpyUserWarning)
+            warn_user("JSOC does not support more than 10 parallel connections. " +
+                      f"Changing the number of parallel connections to {2 * self.default_max_conn}.")
             kwargs['max_splits'] = 2
             downloader.max_conn = self.default_max_conn
 
@@ -699,9 +652,10 @@ class JSOCClient(BaseClient):
                     end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                     sample=sample)
             else:
-                error_message = "Time attribute has been passed both as a Time()"\
-                                " and PrimeKey(). Please provide any one of them"\
-                                " or separate them by OR operator."
+                error_message = ("Time attribute has been passed both as a Time()"
+                                 " and PrimeKey(). Please provide any one of them"
+                                 " or separate them by OR operator."
+                                 )
                 raise ValueError(error_message)
 
         else:
@@ -711,9 +665,9 @@ class JSOCClient(BaseClient):
             # but it is a good idea to keep a check.
             match = set(primekey.keys()) & PKEY_LIST_TIME
             if len(match) > 1:
-                error_message = "Querying of series, having more than 1 Time-type "\
-                                "prime-keys is not yet supported. Alternative is to "\
-                                "use only one of the primekey to query for series data."
+                error_message = ("Querying of series, having more than 1 Time-type "
+                                 "prime-keys is not yet supported. Alternative is to "
+                                 "use only one of the primekey to query for series data.")
                 raise ValueError(error_message)
 
             if match:
@@ -732,9 +686,9 @@ class JSOCClient(BaseClient):
             else:
                 # This is executed when wavelength has been passed both through PrimeKey()
                 # and Wavelength().
-                error_message = "Wavelength attribute has been passed both as a Wavelength()"\
-                                " and PrimeKey(). Please provide any one of them"\
-                                " or separate them by OR operator."
+                error_message = ("Wavelength attribute has been passed both as a Wavelength()"
+                                 " and PrimeKey(). Please provide any one of them"
+                                 " or separate them by OR operator.")
                 raise ValueError(error_message)
 
         else:
@@ -782,64 +736,52 @@ class JSOCClient(BaseClient):
         """
         Do a LookData request to JSOC to workout what results the query returns.
         """
-
         isMeta = iargs.get('meta', False)
+        keywords = iargs.get('keys', '**ALL**')
         c = drms.Client()
-
-        if isMeta:
-            keywords = '**ALL**'
-        else:
-            keywords = iargs.get('keys', '**ALL**')
-        # TODO: keywords should be set only to '**ALL**' post 3.0
-        # All checks done above should be removed.
 
         if 'series' not in iargs:
             error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
 
         if not isinstance(keywords, list) and not isinstance(keywords, str):
-            error_message = "Keywords can only be passed as a list or "\
-                            "comma-separated strings."
+            error_message = "Keywords can only be passed as a list or comma-separated strings."
             raise TypeError(error_message)
 
-        # Raise errors for PrimeKeys
         # Get a set of the PrimeKeys that exist for the given series, and check
         # whether the passed PrimeKeys is a subset of that.
         pkeys = c.pkeys(iargs['series'])
         pkeys_passed = iargs.get('primekey', None)  # pkeys_passes is a dict, with key-value pairs.
         if pkeys_passed is not None:
             if not set(list(pkeys_passed.keys())) <= set(pkeys):
-                error_message = "Unexpected PrimeKeys were passed. The series {series} "\
-                                "supports the following PrimeKeys {pkeys}"
+                error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following PrimeKeys: {pkeys}"
                 raise ValueError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
         # Raise errors for wavelength
         wavelength = iargs.get('wavelength', '')
         if wavelength != '':
             if 'WAVELNTH' not in pkeys:
-                error_message = "The series {series} does not support wavelength attribute."\
-                                "The following primekeys are supported {pkeys}"
+                error_message = f"The series {iargs['series']} does not support wavelength attribute. The following primekeys are supported {pkeys}"
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
         # Raise errors for segments
         # Get a set of the segments that exist for the given series, and check
         # whether the passed segments is a subset of that.
         si = c.info(iargs['series'])
-        segs = list(si.segments.index.values)          # Fetches all valid segment names
+        # Fetches all valid segment names
+        segs = list(si.segments.index.values)
         segs_passed = iargs.get('segment', None)
         if segs_passed is not None:
 
             if not isinstance(segs_passed, list) and not isinstance(segs_passed, str):
-                error_message = "Segments can only be passed as a comma-separated"\
-                                " string or a list of strings."
+                error_message = "Segments can only be passed as a comma-separated string or a list of strings."
                 raise TypeError(error_message)
 
             elif isinstance(segs_passed, str):
                 segs_passed = segs_passed.replace(' ', '').split(',')
 
             if not set(segs_passed) <= set(segs):
-                error_message = "Unexpected Segments were passed. The series {series} "\
-                                "contains the following Segments {segs}"
+                error_message = f"Unexpected Segments were passed. The series {iargs['series']} contains the following Segments {segs}"
                 raise ValueError(error_message.format(series=iargs['series'], segs=segs))
 
             iargs['segment'] = segs_passed
@@ -857,12 +799,6 @@ class JSOCClient(BaseClient):
 
         r = c.query(ds, key=key, rec_index=isMeta)
 
-        # If the method was called from search_metadata(), return a Pandas Dataframe,
-        # otherwise return astropy.table
-        # TODO: this check should also be removed post 3.0
-        if isMeta:
-            return r
-
         if r is None or r.empty:
             return astropy.table.Table()
         else:
@@ -875,7 +811,7 @@ class JSOCClient(BaseClient):
 
         required = {a.jsoc.Series}
         optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
-                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample,
+                    a.jsoc.Segment, a.jsoc.PrimeKey, a.Sample,
                     a.jsoc.Cutout}
         return cls.check_attr_types_in_query(query, required, optional)
 

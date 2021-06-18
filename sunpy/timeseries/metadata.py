@@ -2,14 +2,13 @@
 This module provies metadata support for `~sunpy.timeseries.TimeSeries`.
 """
 import copy
-import warnings
 import itertools
 from collections.abc import Iterable
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 
 __all__ = ["TimeSeriesMetaData"]
@@ -114,9 +113,9 @@ class TimeSeriesMetaData:
                     self.metadata.append((timerange, colnames, MetaDict()))
                 else:
                     self.metadata.append((timerange, [], MetaDict()))
-                    warnings.warn("No time range given for metadata. "
-                                  "This will mean the metadata can't be linked "
-                                  "to columns in data.", SunpyUserWarning)
+                    warn_user("No time range given for metadata. "
+                              "This will mean the metadata can't be linked "
+                              "to columns in data.")
             else:
                 raise ValueError("You cannot create a TimeSeriesMetaData "
                                  "object without specifying a TimeRange")
@@ -573,8 +572,7 @@ class TimeSeriesMetaData:
                 col_overlap = list(set(self.metadata[i][1]) & set(self.metadata[j][1]))
                 # If we have an overlap then show a warning
                 if col_overlap:
-                    warnings.warn(
-                        f'Metadata entries {i} and {j} contain interleaved data.', SunpyUserWarning)
+                    warn_user(f'Metadata entries {i} and {j} contain interleaved data.')
 
         # TODO: Check all entries are in tr.start time order.
         return True

@@ -5,7 +5,6 @@ import copy
 import html
 import numbers
 import textwrap
-import warnings
 import webbrowser
 from io import BytesIO
 from base64 import b64encode
@@ -38,8 +37,8 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import cached_property_based_on, deprecated
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning, SunpyUserWarning
+from sunpy.util.decorators import cached_property_based_on
+from sunpy.util.exceptions import SunpyUserWarning, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
@@ -213,8 +212,8 @@ class GenericMap(NDData):
             new_2d_slice.extend([slice(None), slice(None)])
             data = data[tuple(new_2d_slice)]
             # Warn the user that the data has been truncated
-            warnings.warn("This file contains more than 2 dimensions. "
-                          "Data will be truncated to the first two dimensions.", SunpyUserWarning)
+            warn_user("This file contains more than 2 dimensions. "
+                      "Data will be truncated to the first two dimensions.")
 
         super().__init__(data, meta=MetaDict(header), **kwargs)
 
@@ -513,6 +512,8 @@ class GenericMap(NDData):
         """
         The `~astropy.wcs.WCS` property of the map.
         """
+        import warnings
+
         # Construct the WCS based on the FITS header, but don't "do_set" which
         # analyses the FITS header for correctness.
         with warnings.catch_warnings():
@@ -521,8 +522,8 @@ class GenericMap(NDData):
             try:
                 w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
             except Exception as e:
-                warnings.warn("Unable to treat `.meta` as a FITS header, assuming a simple WCS. "
-                              f"The exception raised was:\n{e}")
+                warn_user("Unable to treat `.meta` as a FITS header, assuming a simple WCS. "
+                          f"The exception raised was:\n{e}")
                 w2 = astropy.wcs.WCS(naxis=2)
 
         # If the FITS header is > 2D pick the first 2 and move on.
@@ -592,8 +593,7 @@ class GenericMap(NDData):
         try:
             return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
         except ValueError as e:
-            warnings.warn(f'Could not determine coordinate frame from map metadata.\n{e}',
-                          SunpyUserWarning)
+            warn_user(f'Could not determine coordinate frame from map metadata.\n{e}')
             return None
 
     @property
@@ -638,14 +638,6 @@ class GenericMap(NDData):
         The `numpy.dtype` of the array of the map.
         """
         return self.data.dtype
-
-    @property
-    @deprecated(since="2.1", message="Use map.data.size instead", alternative="map.data.size")
-    def size(self):
-        """
-        The number of pixels in the array of the map.
-        """
-        return u.Quantity(self.data.size, 'pixel')
 
     @property
     def ndim(self):
@@ -693,12 +685,11 @@ class GenericMap(NDData):
 
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
-            warnings.warn(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+            warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                           f'See {_META_FIX_URL} for how to fix metadata before loading it '
                           'with sunpy.map.Map.\n'
                           'See https://fits.gsfc.nasa.gov/fits_standard.html for'
-                          'the FITS unit standards.',
-                          SunpyMetadataWarning)
+                          'the FITS unit standards.')
             unit = None
         return unit
 
@@ -752,18 +743,17 @@ class GenericMap(NDData):
             timesys = 'TAI'
             timesys_meta = self.meta.get('timesys', '').upper()
             if timesys_meta != 'TAI':
-                warnings.warn('Found "TAI" in time string, ignoring TIMESYS keyword '
-                              f'which is set to "{timesys_meta}".', SunpyUserWarning)
+                warn_metadata('Found "TAI" in time string, ignoring TIMESYS keyword '
+                              f'which is set to "{timesys_meta}".')
         else:
             # UTC is the FITS standard default
             timesys = self.meta.get('timesys', 'UTC')
 
         if time is None:
             if self._default_time is None:
-                warnings.warn("Missing metadata for observation time, "
+                warn_metadata("Missing metadata for observation time, "
                               "setting observation time to current time. "
-                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.",
-                              SunpyUserWarning)
+                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
                 self._default_time = parse_time('now')
             time = self._default_time
 
@@ -951,9 +941,8 @@ class GenericMap(NDData):
 
         if rsun_arcseconds is None:
             if 'rsun_ref' not in self.meta:
-                warnings.warn("Missing metadata for solar angular radius: assuming the standard "
-                              "radius of the photosphere as seen from the observer distance.",
-                              SunpyUserWarning)
+                warn_metadata("Missing metadata for solar angular radius: assuming the standard "
+                              "radius of the photosphere as seen from the observer distance.")
             rsun = sun._angular_radius(self.rsun_meters, self.dsun)
         else:
             rsun = rsun_arcseconds * u.arcsec
@@ -968,14 +957,12 @@ class GenericMap(NDData):
         """
         ctype1 = self.meta.get('ctype1', None)
         if ctype1 is None:
-            warnings.warn("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN",
-                          SunpyUserWarning)
+            warn_metadata("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN")
             ctype1 = 'HPLN-TAN'
 
         ctype2 = self.meta.get('ctype2', None)
         if ctype2 is None:
-            warnings.warn("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN",
-                          SunpyUserWarning)
+            warn_metadata("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -1034,7 +1021,7 @@ class GenericMap(NDData):
         warning_message = "".join(
             [f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
-        warnings.warn(warning_message, SunpyMetadataWarning, stacklevel=3)
+        warn_metadata(warning_message, stacklevel=3)
 
         return get_earth(self.date)
 
@@ -1243,29 +1230,16 @@ class GenericMap(NDData):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
-                warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
+                warn_metadata(f"Unknown value for {meta_property.upper()}.")
 
         if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
                 self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
-            warnings.warn("SunPy Map does not support three dimensional data "
-                          "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
-                          SunpyUserWarning)
+            warn_user("sunpy Map does not support three dimensional data "
+                      "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.")
 
 # #### Data conversion routines #### #
 
-    @staticmethod
-    def _check_origin(origin):
-        """
-        Check origin is valid, and raise a deprecation warning if it's not None.
-        """
-        if origin is not None:
-            warnings.warn('The origin argument is deprecated. If using origin=1, '
-                          'manually subtract 1 from your pixels do not pass a value for origin.',
-                          SunpyDeprecationWarning)
-        if origin not in [None, 0, 1]:
-            raise ValueError('origin must be 0 or 1.')
-
-    def world_to_pixel(self, coordinate, origin=None):
+    def world_to_pixel(self, coordinate):
         """
         Convert a world (data) coordinate to a pixel coordinate.
 
@@ -1273,13 +1247,6 @@ class GenericMap(NDData):
         ----------
         coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
             The coordinate object to convert to pixel coordinates.
-
-        origin : int
-            Deprecated.
-
-            Origin of the top-left corner. i.e. count from 0 or 1.
-            Normally, origin should be 0 when passing numpy indices, or 1 if
-            passing values from FITS header or map attributes.
 
         Returns
         -------
@@ -1289,16 +1256,11 @@ class GenericMap(NDData):
         y : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE2 axis.
         """
-        self._check_origin(origin)
         x, y = self.wcs.world_to_pixel(coordinate)
-        if origin == 1:
-            x += 1
-            y += 1
-
         return PixelPair(x * u.pixel, y * u.pixel)
 
     @u.quantity_input
-    def pixel_to_world(self, x: u.pixel, y: u.pixel, origin=None):
+    def pixel_to_world(self, x: u.pixel, y: u.pixel):
         """
         Convert a pixel coordinate to a data (world) coordinate.
 
@@ -1310,23 +1272,11 @@ class GenericMap(NDData):
         y : `~astropy.units.Quantity`
             Pixel coordinate of the CTYPE2 axis. (Normally solar-y).
 
-        origin : int
-            Deprecated.
-
-            Origin of the top-left corner. i.e. count from 0 or 1.
-            Normally, origin should be 0 when passing numpy indices, or 1 if
-            passing values from FITS header or map attributes.
-
         Returns
         -------
         coord : `astropy.coordinates.SkyCoord`
             A coordinate object representing the output coordinate.
         """
-        self._check_origin(origin)
-        if origin == 1:
-            x = x - 1 * u.pixel
-            y = y - 1 * u.pixel
-
         return self.wcs.pixel_to_world(x, y)
 
 # #### I/O routines #### #
@@ -1413,11 +1363,8 @@ class GenericMap(NDData):
             new_meta['CD2_1'] *= scale_factor_x
             new_meta['CD1_2'] *= scale_factor_y
             new_meta['CD2_2'] *= scale_factor_y
-        new_meta['crpix1'] = (dimensions[0].value + 1) / 2.
-        new_meta['crpix2'] = (dimensions[1].value + 1) / 2.
-        lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.value
-        new_meta['crval2'] = lat.value
+        new_meta['crpix1'] = (self.meta['crpix1'] - 0.5) / scale_factor_x + 0.5
+        new_meta['crpix2'] = (self.meta['crpix2'] - 0.5) / scale_factor_y + 0.5
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 
@@ -1527,10 +1474,8 @@ class GenericMap(NDData):
         pad_y = int(np.max((diff[0], 0)))
 
         if issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
-            warnings.warn(
-                "The specified `missing` value is not an integer, but the data "
-                "array is of integer type, so the output may be strange.",
-                SunpyUserWarning)
+            warn_user("The specified `missing` value is not an integer, but the data "
+                      "array is of integer type, so the output may be strange.")
 
         new_data = np.pad(self.data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
@@ -1909,9 +1854,6 @@ class GenericMap(NDData):
         # create copy of new meta data
         new_meta = self.meta.copy()
 
-        new_nx = new_array.shape[1]
-        new_ny = new_array.shape[0]
-
         scale = [self.scale[i].to_value(self.spatial_units[i] / u.pix) for i in range(2)]
 
         # Update metadata
@@ -1922,13 +1864,8 @@ class GenericMap(NDData):
             new_meta['CD2_1'] *= dimensions[0]
             new_meta['CD1_2'] *= dimensions[1]
             new_meta['CD2_2'] *= dimensions[1]
-        new_meta['crpix1'] = (new_nx + 1) / 2
-        new_meta['crpix2'] = (new_ny + 1) / 2
-        lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.to_value(self.spatial_units[0]) + 0.5 * \
-            (offset[0] * scale[0])
-        new_meta['crval2'] = lat.to_value(self.spatial_units[1]) + 0.5 * \
-            (offset[1] * scale[1])
+        new_meta['crpix1'] = ((self.meta['crpix1'] - 0.5 - offset[0]) / dimensions[0]) + 0.5
+        new_meta['crpix2'] = ((self.meta['crpix2'] - 0.5 - offset[1]) / dimensions[1]) + 0.5
 
         # Create new map instance
         if self.mask is not None:
@@ -1987,7 +1924,7 @@ class GenericMap(NDData):
         -----
         Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
         """
-        axes = self._check_axes(axes, allow_non_wcsaxes=False)
+        axes = self._check_axes(axes)
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
                                                            annotate=annotate,
@@ -2126,7 +2063,7 @@ class GenericMap(NDData):
                         axes=None, top_right=None, **kwargs):
         """
         Draw a quadrangle defined in world coordinates on the plot using Astropy's
-        `~astropy.visualization.wcsaxes.patches.Quadrangle`.
+        `~astropy.visualization.wcsaxes.Quadrangle`.
 
         This draws a quadrangle that has corners at ``(bottom_left, top_right)``,
         and has sides aligned with the coordinate axes of the frame of ``bottom_left``,
@@ -2156,19 +2093,19 @@ class GenericMap(NDData):
 
         Returns
         -------
-        quad : `~astropy.visualization.wcsaxes.patches.Quadrangle`
+        quad : `~astropy.visualization.wcsaxes.Quadrangle`
             The added patch
 
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
-        `~astropy.visualization.wcsaxes.patches.Quadrangle` instance.
+        `~astropy.visualization.wcsaxes.Quadrangle` instance.
 
         Examples
         --------
         .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
         """
-        axes = self._check_axes(axes, allow_non_wcsaxes=False)
+        axes = self._check_axes(axes)
 
         if isinstance(bottom_left, u.Quantity):
             anchor, _, top_right, _ = self._parse_submap_quantity_input(bottom_left, top_right, width, height)
@@ -2195,94 +2132,14 @@ class GenericMap(NDData):
         axes.add_patch(quad)
         return quad
 
-    @deprecated("3.0", alternative="draw_quadrangle")
-    @u.quantity_input
-    def draw_rectangle(self, bottom_left, *, top_right=None, width: u.deg = None, height: u.deg = None,
-                       axes=None, **kwargs):
-        """
-        Draw a rectangle defined in world coordinates on the plot.
-
-        This draws a rectangle that has corners at ``(bottom_left, top_right)``,
-        and has sides parallel to coordinate axes of the map.
-
-        If ``width`` and ``height`` are specified, they are respectively added to the
-        longitude and latitude of the ``bottom_left`` coordinate to calculate a
-        ``top_right`` coordinate.
-
-        Parameters
-        ----------
-        bottom_left : `~astropy.coordinates.SkyCoord`
-            The bottom-left coordinate of the rectangle. It can
-            have shape ``(2,)`` to simultaneously define ``top_right``.
-        top_right : `~astropy.coordinates.SkyCoord`
-            The top-right coordinate of the rectangle.
-        width : `astropy.units.Quantity`, optional
-            The width of the rectangle. Required if ``top_right`` is omitted.
-        height : `astropy.units.Quantity`
-            The height of the rectangle. Required if ``top_right`` is omitted.
-        axes : `matplotlib.axes.Axes`
-            The axes on which to plot the rectangle, defaults to the current
-            axes.
-
-        Returns
-        -------
-        rect : `list`
-            A list containing the `~matplotlib.patches.Rectangle` object, after
-            it has been added to ``axes``.
-
-        Notes
-        -----
-        Extra keyword arguments to this function are passed through to the
-        `~matplotlib.patches.Rectangle` instance.
-        """
-        axes = self._check_axes(axes, allow_non_wcsaxes=True)
-
-        bottom_left, top_right = get_rectangle_coordinates(bottom_left,
-                                                           top_right=top_right,
-                                                           width=width,
-                                                           height=height)
-
-        bottom_left = bottom_left.transform_to(self.coordinate_frame)
-        top_right = top_right.transform_to(self.coordinate_frame)
-
-        width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-        height = top_right.spherical.lat - bottom_left.spherical.lat
-
-        if wcsaxes_compat.is_wcsaxes(axes):
-            axes_unit = u.deg
-        else:
-            axes_unit = self.spatial_units[0]
-
-        bottom_left = u.Quantity(self._get_lon_lat(bottom_left), unit=axes_unit).value
-
-        width = width.to(axes_unit).value
-        height = height.to(axes_unit).value
-        kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
-                  'edgecolor': 'white',
-                  'fill': False}
-        kwergs.update(kwargs)
-        rect = plt.Rectangle(bottom_left, width, height, **kwergs)
-        axes.add_patch(rect)
-        return [rect]
-
-    def _process_levels_arg(self, levels, warn_units=False):
+    def _process_levels_arg(self, levels):
         """
         Accept a percentage or dimensionless or map unit input for contours.
-
-        ``warn_units`` allows legacy option of passing levels that aren't Quantities.
-        This can be removed in sunpy 3.1.
         """
         levels = np.atleast_1d(levels)
         if not hasattr(levels, 'unit'):
             if self.unit is None:
                 # No map units, so allow non-quantity through
-                return levels
-            elif warn_units:
-                # Deprecated in 3.0
-                warnings.warn('Passing contour levels that are not an astropy Quantity is deprecated. '
-                              f'Pass levels in units convertible to the map units ({self.unit}) '
-                              'or as a perncentage Quantity to remove this warning.',
-                              SunpyDeprecationWarning)
                 return levels
             else:
                 raise TypeError("The levels argument has no unit attribute, "
@@ -2326,9 +2183,9 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.axes.Axes.contour` function.
         """
-        axes = self._check_axes(axes, allow_non_wcsaxes=True)
+        axes = self._check_axes(axes)
 
-        levels = self._process_levels_arg(levels, warn_units=True)
+        levels = self._process_levels_arg(levels)
         kwargs = {}
         if wcsaxes_compat.is_wcsaxes(axes):
             kwargs['transform'] = axes.get_transform(self.wcs)
@@ -2458,7 +2315,7 @@ class GenericMap(NDData):
         if autoalign is True:
             autoalign = 'pcolormesh'
 
-        axes = self._check_axes(axes, allow_non_wcsaxes=True, warn_different_wcs=autoalign is False)
+        axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
 
         # Normal plot
         plot_settings = copy.deepcopy(self.plot_settings)
@@ -2526,9 +2383,8 @@ class GenericMap(NDData):
 
             # pcolormesh does not do interpolation
             if imshow_args.get('interpolation', None) not in [None, 'none', 'nearest']:
-                warnings.warn("The interpolation keyword argument is ignored when using autoalign "
-                              "functionality.",
-                              SunpyUserWarning)
+                warn_user("The interpolation keyword argument is ignored when using autoalign "
+                          "functionality.")
 
             # Remove imshow keyword arguments that are not accepted by pcolormesh
             for item in ['aspect', 'extent', 'interpolation', 'origin']:
@@ -2604,20 +2460,16 @@ class GenericMap(NDData):
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
 
-    def _check_axes(self, axes, allow_non_wcsaxes=False, warn_different_wcs=False):
+    def _check_axes(self, axes, warn_different_wcs=False):
         """
         - If axes is None, get the current Axes object.
-        - Error if not a WCSAxes (can be turned off).
+        - Error if not a WCSAxes.
         - Return axes.
 
         Parameters
         ----------
         axes : matplotlib.axes.Axes
             Axes to validate.
-        allow_non_wcsaxes : bool
-            If `True`, allow ``axes`` to not be a `WCSAxes`, and warn. Otherwise
-            raise an error. Support for this is deprecated, and this keyword can be removed in
-            sunpy 3.1.
         warn_different_wcs : bool
             If `True`, warn if the Axes WCS is different from the Map WCS. This is only used for
             `.plot()`, and can be removed once support is added for plotting a map on a different
@@ -2627,27 +2479,14 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         if not wcsaxes_compat.is_wcsaxes(axes):
-            # not WCSAxes
-            if allow_non_wcsaxes:
-                if not np.array_equal(self.rotation_matrix, np.identity(2)):
-                    warnings.warn("The axes of this map are not aligned to the pixel grid. "
-                                  "Plot axes may be incorrect.",
-                                  SunpyUserWarning)
-                warnings.warn("WCSAxes not being used as the axes object for this plot. "
-                              "Support for this is deprecated, and will be removed in sunpy 3.1. "
-                              "To fix this pass set the `projection` keyword "
-                              "to this map when creating the axes.",
-                              SunpyDeprecationWarning)
-            else:
-                raise TypeError("The axes need to be an instance of WCSAxes. "
-                                "To fix this pass set the `projection` keyword "
-                                "to this map when creating the axes.")
+            raise TypeError("The axes need to be an instance of WCSAxes. "
+                            "To fix this pass set the `projection` keyword "
+                            "to this map when creating the axes.")
         elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
-            warnings.warn('The map world coordinate system (WCS) is different from the axes WCS. '
-                          'The map data axes may not correctly align with the coordinate axes. '
-                          'To automatically transform the data to the coordinate axes, specify '
-                          '`autoalign=True`.',
-                          SunpyUserWarning)
+            warn_user('The map world coordinate system (WCS) is different from the axes WCS. '
+                      'The map data axes may not correctly align with the coordinate axes. '
+                      'To automatically transform the data to the coordinate axes, specify '
+                      '`autoalign=True`.')
 
         return axes
 

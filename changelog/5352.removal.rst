@@ -1,0 +1,2 @@
+Support for passing non-unit levels to :meth:`sunpy.map.GenericMap.draw_contours`
+when map data has units set has been removed, and with now raise an error.

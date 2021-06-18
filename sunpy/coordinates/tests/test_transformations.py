@@ -940,3 +940,18 @@ def test_transform_with_sun_center_reset():
     assert_quantity_allclose(result3.lon, result1.lon)
     assert_quantity_allclose(result3.lat, result1.lat)
     assert_quantity_allclose(result3.distance, result1.distance)
+
+
+def test_rsun_preservation():
+    # Check that rsun is preserved when transforming between any two frames with that attribute
+    args_in = {'obstime': '2001-01-01', 'rsun': 690*u.Mm}
+    args_out = {'obstime': '2001-02-01', 'rsun': 700*u.Mm}
+
+    coords_in = [Helioprojective(0*u.deg, 0*u.deg, 1*u.AU, observer='earth', **args_in),
+                 HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, **args_in),
+                 HeliographicCarrington(0*u.deg, 0*u.deg, 1*u.AU, observer='earth', **args_in)]
+
+    for coord in coords_in:
+        for frame in coords_in:
+            out_coord = coord.transform_to(frame.replicate(**args_out))
+            assert_quantity_allclose(out_coord.rsun, args_out['rsun'])

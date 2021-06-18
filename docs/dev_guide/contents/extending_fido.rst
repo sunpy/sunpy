@@ -33,7 +33,7 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
   The extraction uses the :func:`~sunpy.extern.parse.parse` format.
 
 
-For a simple example of a scraper client, we can look at the implementation of `~.EVEClient` in sunpy.
+For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
 A version without docstrings is reproduced below:
 
 .. code-block:: python
@@ -75,7 +75,7 @@ This is done addressed with the two following methods:
 * :meth:`~sunpy.net.dataretriever.client.GenericClient.pre_search_hook` which will convert the passed attrs to their representation in the URL.
 * :meth:`~sunpy.net.dataretriever.client.GenericClient.post_search_hook` which converts the retrieved metadata from a URL to the form in which they are desired to be represented in the response table.
 
-A good example of the use of these two methods is the `.NoRHClient` in sunpy.
+A good example of the use of these two methods is the `sunpy.net.dataretriever.sources.norh.NoRHClient` in sunpy.
 
 It may also be possible that the ``baseurl`` property needs to be customised based on attrs other than Time.
 Since `~sunpy.util.scraper.Scraper` doesn't currently support generating directories that have non-time variables, the :meth:`~sunpy.net.dataretriever.client.GenericClient.search` needs to be customised.
