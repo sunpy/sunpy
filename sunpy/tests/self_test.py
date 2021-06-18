@@ -52,8 +52,9 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
         print("All required and optional sunpy dependencies are installed.")
     if test_missing:
         print("You do not have all the required dependencies installed to run the sunpy test suite.")
-        print(
-            "If you want to run the sunpy tests install the 'tests' extra with `pip install sunpy[all,tests]`")
+        print(list(test_missing.keys()))
+        print("If are using conda, you will want to run `conda install <package name>`")
+        print("Otherwise you will want run `pip install sunpy[all,tests]`")
         return
     import pytest
     print("Starting the sunpy test suite:")
