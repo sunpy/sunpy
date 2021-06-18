@@ -59,7 +59,7 @@ def read_file(filepath, filetype=None, **kwargs):
 
     Parameters
     ----------
-    filepath : `str`
+    filepath : path-like
         The file to be read.
     filetype : `str`, optional
         Supported reader or extension to manually specify the filetype.
@@ -77,6 +77,7 @@ def read_file(filepath, filetype=None, **kwargs):
     -----
     Other keyword arguments are passed to the reader used.
     """
+    filepath = str(pathlib.Path(filepath))
     # Use the explicitly passed filetype
     if filetype is not None:
         return _readers[filetype].read(filepath, **kwargs)

@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import pytest
 
@@ -24,7 +22,7 @@ def test_map(request):
 
 @pytest.fixture
 def hmi_test_map():
-    (data, header), = sunpy.io.read_file(os.path.join(testpath, 'resampled_hmi.fits'))
+    (data, header), = sunpy.io.read_file(testpath / 'resampled_hmi.fits')
 
     # Get rid of the blank keyword to prevent some astropy fits fixing warnings
     header.pop('BLANK')
@@ -35,7 +33,7 @@ def hmi_test_map():
 
 @pytest.fixture
 def aia171_test_map():
-    (data, header), = sunpy.io.read_file(os.path.join(testpath, 'aia_171_level1.fits'))
+    (data, header), = sunpy.io.read_file(testpath / 'aia_171_level1.fits')
 
     # Get rid of the blank keyword to prevent some astropy fits fixing warnings
     header.pop('BLANK')
@@ -49,7 +47,7 @@ def aia171_roll_map(aia171_test_map):
 
 @pytest.fixture
 def heliographic_test_map():
-    (data, header), = sunpy.io.read_file(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+    (data, header), = sunpy.io.read_file(testpath / 'heliographic_phase_map.fits.gz')
 
     # Fix unit strings to prevent some astropy fits fixing warnings
     header['CUNIT1'] = 'deg'
@@ -141,6 +139,5 @@ def eit_test_map():
     """
     Load SunPy's test EIT image.
     """
-    testpath = sunpy.data.test.rootdir
-    eit_file = os.path.join(testpath, "EIT", "efz20040301.020010_s.fits")
+    eit_file = testpath / "EIT" / "efz20040301.020010_s.fits"
     return sunpy.map.Map(eit_file)
