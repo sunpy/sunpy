@@ -4,7 +4,6 @@ This module provides a web scraper.
 import os
 import re
 import calendar
-import warnings
 from time import sleep
 from ftplib import FTP
 from datetime import datetime
@@ -21,7 +20,7 @@ from astropy.time import Time, TimeDelta
 from sunpy import log
 from sunpy.extern.parse import parse
 from sunpy.time import TimeRange
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['Scraper']
 
@@ -81,8 +80,7 @@ class Scraper:
         if regex:
             self.pattern = pattern
             if kwargs:
-                warnings.warn('regexp being used, the extra arguments passed are being ignored',
-                              SunpyUserWarning)
+                warn_user('regexp being used, the extra arguments passed are being ignored')
         else:
             self.pattern = pattern.format(**kwargs)
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
