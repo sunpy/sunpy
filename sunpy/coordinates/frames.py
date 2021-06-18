@@ -479,6 +479,25 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     rsun = QuantityAttribute(default=_RSUN, unit=u.km)
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
+    @property
+    def angular_radius(self):
+        """
+        Angular radius of the Sun as seen by the observer.
+
+        The ``rsun`` frame attribute is the radius of the Sun in length units.
+        The tangent vector from the observer to the edge of the Sun forms a
+        right-angle triangle with the radius of the Sun as the far side and the
+        Sun-observer distance as the hypotenuse. Thus, the sine of the angular
+        radius of the Sun is ratio of these two distances.
+        """
+        from sunpy.coordinates.sun import _angular_radius  # avoiding a circular import
+
+        if not isinstance(self.observer, HeliographicStonyhurst):
+            if self.observer is None:
+                raise ValueError("The observer must be defined, not `None`.")
+            raise ValueError("The observer must be fully defined by specifying `obstime`.")
+        return _angular_radius(self.rsun, self.observer.radius)
+
     def make_3d(self):
         """
         This method calculates the third coordinate of the Helioprojective
