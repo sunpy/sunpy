@@ -444,6 +444,41 @@ class GenericTimeSeries:
         object._sanitize_units()
         return object
 
+    def reindex(self, index, method="nearest", **kwargs):
+        """
+        Returns a new time series with a new index.
+
+        By default values on the new time series are filled using a
+        nearest valid observation method. See `~pandas.DataFrame.reindex`
+        for the different re-indexing options available.
+
+        Parameters
+        ----------
+        index : `~sunpy.timeseries.TimeSeries` or `~pandas.DatetimeIndex`
+            Another `~sunpy.timeseries.TimeSeries` or a valid index column.
+        method : `str`, optional
+            Method to use for filling holes in reindexed time series.
+            Defaults to "nearest".
+
+        Returns
+        -------
+        `~sunpy.timeseries.TimeSeries`
+            A `~sunpy.timeseries.TimeSeries` with new index.
+
+        Notes
+        -----
+        This method is a wrapper around `pandas.DataFrame.reindex`; all additional
+        keyword arguments are passed to this method.
+        """
+        if isinstance(index, GenericTimeSeries):
+            index = index.index
+        object = GenericTimeSeries(self._data.reindex(index, method=method, **kwargs),
+                                   meta=TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                   units=copy.copy(self.units))
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
+
 # #### Plotting Methods #### #
 
     def plot(self, axes=None, **plot_args):
