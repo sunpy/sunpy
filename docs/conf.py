@@ -84,6 +84,9 @@ rst_epilog = """
 """
 
 # -- General configuration -----------------------------------------------------
+# sphinxext-opengraph
+ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
+
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
 suppress_warnings = ['app.add_directive', ]
