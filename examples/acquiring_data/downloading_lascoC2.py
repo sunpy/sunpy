@@ -8,7 +8,6 @@ How to download SOHO/LASCO C2 data with Fido and make a plot.
 import matplotlib.pyplot as plt
 
 import sunpy.map
-from sunpy.io.file_tools import read_file
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
@@ -23,7 +22,6 @@ result = Fido.search(timerange, instrument, detector)
 
 ###############################################################################
 # Let's inspect the result.
-
 print(result)
 
 ###############################################################################
@@ -35,21 +33,9 @@ downloaded_files = Fido.fetch(result)
 print(downloaded_files)
 
 ###############################################################################
-# The downloaded file lacks the correct meta. We want to open the file and
-# access both the data and the header information.
+# We can then load a downloaded file into a sunpy map and plot it.
 
-data, header = read_file(downloaded_files[0])[0]
-
-# Add the missing meta information to the header
-header['CUNIT1'] = 'arcsec'
-header['CUNIT2'] = 'arcsec'
-
-###############################################################################
-# With this fix we can load it into a map and plot the results.
-# Please note that there is no plot displayed below as this example is skipped
-# due to timeouts that can occur when you try to download LASCO C3 data.
-
-lascomap = sunpy.map.Map(data, header)
+lascomap = sunpy.map.Map(downloaded_files[0])
 fig = plt.figure()
 lascomap.plot()
 

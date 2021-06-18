@@ -1,0 +1,3 @@
+Simplified the "Downloading LASCO C2" gallery example by removing
+redundant modifications to the metadata before it is loaded by
+`~sunpy.map.Map`.
