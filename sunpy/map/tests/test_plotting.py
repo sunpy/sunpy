@@ -1,7 +1,6 @@
 """
 Test Generic Map
 """
-import os
 import copy
 
 import matplotlib.colors as mcolor
@@ -28,12 +27,12 @@ pytestmark = pytest.mark.filterwarnings('ignore:Missing metadata')
 
 @pytest.fixture
 def aia171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+    return sunpy.map.Map(testpath / 'aia_171_level1.fits')
 
 
 @pytest.fixture
 def heliographic_test_map():
-    m = sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+    m = sunpy.map.Map(testpath / 'heliographic_phase_map.fits.gz')
     return fix_map_wcs(m)
 
 
