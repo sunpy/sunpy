@@ -467,34 +467,34 @@ class TestTimeSeries:
     def test_validate_units(self):
         valid_units = OrderedDict(
             [('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))])
-        assert sunpy.timeseries.TimeSeries._validate_units(valid_units)
+        assert sunpy.timeseries.TimeSeries._is_units(valid_units)
         # Test for not having only units for values
         invalid_units_1 = OrderedDict(
             [('Watt Per Meter Squared', 'string'), ('Meter Cubed', u.Unit("m3"))])
-        assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_1)
+        assert not sunpy.timeseries.TimeSeries._is_units(invalid_units_1)
         # Test for being a MetaDict object
         invalid_units_2 = MetaDict(OrderedDict(
             [('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))]))
-        assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_2)
+        assert not sunpy.timeseries.TimeSeries._is_units(invalid_units_2)
 
     def test_validate_meta_basic(self):
         valid_meta_1 = MetaDict({'key': 'value'})
-        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_1)
+        assert sunpy.timeseries.TimeSeries._is_metadata(valid_meta_1)
         valid_meta_2 = OrderedDict({'key': 'value'})
-        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_2)
+        assert sunpy.timeseries.TimeSeries._is_metadata(valid_meta_2)
         time_range = sunpy.time.TimeRange('2020-01-01 12:00', '2020-01-02 12:00')
         valid_meta_3 = sunpy.timeseries.TimeSeriesMetaData(time_range)
-        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_3)
+        assert sunpy.timeseries.TimeSeries._is_metadata(valid_meta_3)
         invalid_meta = []
-        assert not sunpy.timeseries.TimeSeries._validate_meta(invalid_meta)
+        assert not sunpy.timeseries.TimeSeries._is_metadata(invalid_meta)
 
     def test_validate_meta_astropy_header(self):
         # Manually open a goes file for the sunpy.io.header.FileHeader test
         hdus = sunpy.io.read_file(goes_filepath)
         header = hdus[0].header
-        assert sunpy.timeseries.TimeSeries._validate_meta(header)
+        assert sunpy.timeseries.TimeSeries._is_metadata(header)
         # Manually open a goes file for the astropy.io.fits.header.Header test
         hdulist = fits.open(goes_filepath)
         header = hdulist[0].header
         hdulist.close()
-        assert sunpy.timeseries.TimeSeries._validate_meta(header)
+        assert sunpy.timeseries.TimeSeries._is_metadata(header)
