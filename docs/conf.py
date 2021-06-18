@@ -101,6 +101,11 @@ suppress_warnings = ['app.add_directive', ]
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'matplotlib.sphinxext.plot_directive',
+    'sphinx_automodapi.automodapi',
+    'sphinx_automodapi.smart_resolver',
+    'sphinx_changelog',
+    'sphinx_gallery.gen_gallery',
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.doctest',
@@ -110,13 +115,9 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    'matplotlib.sphinxext.plot_directive',
-    'sphinx_automodapi.automodapi',
-    'sphinx_automodapi.smart_resolver',
-    'sphinx_gallery.gen_gallery',
-    'sphinx_changelog',
     'sunpy.util.sphinx.doctest',
     'sunpy.util.sphinx.generate',
+    "sphinxext.opengraph",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
