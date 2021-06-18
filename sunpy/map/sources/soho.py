@@ -104,19 +104,14 @@ class LASCOMap(GenericMap):
         # Fill in some missing or broken info
         # Test if change has already been applied
         if 'T' not in self.meta['date-obs']:
-            datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
-                                                                self.meta.get('date_obs')
-                                                                ),
-                                             time=self.meta.get('time-obs',
-                                                                self.meta.get('time_obs')
-                                                                )
-                                             )
+            datestr = "{date}T{time}".format(
+                date=self.meta.get('date-obs', self.meta.get('date_obs')),
+                time=self.meta.get('time-obs', self.meta.get('time_obs')))
             self.meta['date-obs'] = parse_time(datestr).isot
 
         # If non-standard Keyword is present, correct it too, for compatibility.
         if 'date_obs' in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
-        self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = 'soholasco{det!s}'.format(det=self.detector[1])
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
@@ -131,6 +126,11 @@ class LASCOMap(GenericMap):
             self.meta.pop('crota')
             self.meta.pop('crota1')
             self.meta['crota2'] = 0
+
+    @property
+    def nickname(self):
+        filter = self.meta.get('filter', '')
+        return f'{self.instrument}-{self.detector} {filter}'
 
     @property
     def measurement(self):
