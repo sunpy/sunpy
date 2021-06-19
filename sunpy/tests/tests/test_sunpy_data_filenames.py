@@ -1,5 +1,6 @@
 # This test lives here because we have to exclude sunpy/data from pytest.
 import os
+from pathlib import Path
 
 import sunpy.data.test
 
@@ -17,4 +18,4 @@ def test_test_data_filenames(monkeypatch):
     output = sunpy.data.test.test_data_filenames()
     assert isinstance(output, list)
     # Only the test file and not the py/pyc files should be in the return.
-    assert output == [os.path.join('test', 'data', '', 'test_file')]
+    assert output == [Path('test') / 'data' / 'test_file']
