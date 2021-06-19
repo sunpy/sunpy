@@ -167,7 +167,7 @@ def testURL_patternMillisecondsZeroPadded():
 
 
 def testFilesRange_sameDirectory_local():
-    s = Scraper('/'.join(['file:/', rootdir,
+    s = Scraper('/'.join(['file:/', str(rootdir),
                           'EIT', 'efz%Y%m%d.%H%M%S_s.fits']))
     startdate = parse_time((2004, 3, 1, 4, 0))
     enddate = parse_time((2004, 3, 1, 6, 30))

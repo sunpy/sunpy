@@ -1,7 +1,6 @@
 """
 Test Generic Map
 """
-import os
 import re
 import tempfile
 from unittest import mock
@@ -38,13 +37,13 @@ testpath = sunpy.data.test.rootdir
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        data = fits.open(os.path.join(testpath, 'aia_171_level1.fits'))[0].data
+        data = fits.open(testpath / 'aia_171_level1.fits')[0].data
     np.testing.assert_allclose(aia171_test_map.data, data)
 
 
 def test_header_fits_io():
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        with fits.open(os.path.join(testpath, 'aia_171_level1.fits')) as hdu:
+        with fits.open(testpath / 'aia_171_level1.fits') as hdu:
             AIAMap(hdu[0].data, hdu[0].header)
 
 
@@ -317,7 +316,7 @@ def test_rotation_matrix_cd_cdelt_square():
 
 
 def test_swap_cd():
-    amap = sunpy.map.Map(os.path.join(testpath, 'swap_lv1_20140606_000113.fits'))
+    amap = sunpy.map.Map(testpath / 'swap_lv1_20140606_000113.fits')
     np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
 
 

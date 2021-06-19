@@ -11,8 +11,6 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.tests.helpers import figure_test
 
-testpath = sunpy.data.test.rootdir
-
 # Ignore missing metadata warnings
 pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer'),
               pytest.mark.filterwarnings(r'ignore:Unable to treat `\.meta` as a FITS header')]
