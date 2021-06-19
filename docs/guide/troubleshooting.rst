@@ -78,7 +78,7 @@ To locate your :file:`.sunpy/` directory, use :func:`sunpy.print_config`::
 
 We use `appdirs <https://github.com/ActiveState/appdirs>`__ to work out the location depending on your operating system.
 
-If you would like to use a different configuration directory, you can do so by specifying the location in your  :envvar:`SUNPY_CONFIGDIR` environment variable.
+If you would like to use a different configuration directory, you can do so by specifying the location in your ``SUNPY_CONFIGDIR`` environment variable.
 
 .. _reporting-problems:
 

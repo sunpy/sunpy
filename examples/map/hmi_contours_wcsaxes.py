@@ -89,7 +89,7 @@ bounds = ax.axis()
 # but this is a wrapper around `~matplotlib.pyplot.contour`. We set the
 # colormap, line width and transparency of the lines to improve the final
 # appearance, but the key argument is the ``transform=`` keyword.
-# This keyword tells `~astropy.visualisation.wcsaxes` how to transform the
+# This keyword tells `~astropy.visualization.wcsaxes` how to transform the
 # pixel positions of the contours in the HMI image to the pixel positions in
 # the AIA image. By specifying the ``.wcs`` attribute of the Map we tell
 # wcsaxes how to transform the contour coordinates into the coordinate frame of

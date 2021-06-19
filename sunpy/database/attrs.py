@@ -53,7 +53,7 @@ class _BooleanAttr:
     def __hash__(self):
         return super().__hash__()
 
-    def collides(self, other):  # pragma: no cover
+    def collides(self, other):
         return False
 
     def __repr__(self):
@@ -80,7 +80,7 @@ class Tag(Attr):
         tag.inverted = True
         return tag
 
-    def collides(self, other):  # pragma: no cover
+    def collides(self, other):
         return False
 
     def __repr__(self):
@@ -98,7 +98,7 @@ class Path(Attr):
     def __invert__(self):
         return self.__class__(self.value, True)
 
-    def collides(self, other):  # pragma: no cover
+    def collides(self, other):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
@@ -122,7 +122,7 @@ class DownloadTime(Range):
         download_time.inverted = True
         return download_time
 
-    def collides(self, other):  # pragma: no cover
+    def collides(self, other):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
@@ -141,7 +141,7 @@ class FitsHeaderEntry(Attr):
     def __invert__(self):
         return self.__class__(self.key, self.value, True)
 
-    def collides(self, other):  # pragma: no cover
+    def collides(self, other):
         return False
 
     def __repr__(self):

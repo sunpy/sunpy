@@ -1,2 +1,2 @@
-The ``origin`` argument to :meth:`sunpy.GenericMap.world_to_pixel` and
-:meth:`sunpy.GenericMap.pixel_to_world` has been removed.
+The ``origin`` argument to :meth:`sunpy.map.GenericMap.world_to_pixel` and
+:meth:`sunpy.map.GenericMap.pixel_to_world` has been removed.

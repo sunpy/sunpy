@@ -41,7 +41,7 @@ class EntryNotFoundError(Exception):
     def __init__(self, entry_id):
         self.entry_id = entry_id
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return 'an entry with the ID {:d} does not exist'.format(
             self.entry_id)
 
@@ -55,7 +55,7 @@ class EntryAlreadyAddedError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return (
             'the entry {!r} was already added '
             'to the database'.format(self.database_entry))
@@ -71,7 +71,7 @@ class EntryAlreadyStarredError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return (
             'the entry {!r} is already marked '
             'as starred'.format(self.database_entry))
@@ -86,7 +86,7 @@ class EntryAlreadyUnstarredError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return (
             'the entry {!r} is already not marked '
             'as starred'.format(self.database_entry))
@@ -101,7 +101,7 @@ class NoSuchTagError(Exception):
     def __init__(self, tag_name):
         self.tag_name = tag_name
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return 'the tag {!r} is not saved in the database'.format(
             self.tag_name)
 
@@ -116,7 +116,7 @@ class TagAlreadyAssignedError(Exception):
         self.database_entry = database_entry
         self.tag_name = tag_name
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         errmsg = 'the database entry {0!r} has already assigned the tag {1!r}'
         return errmsg.format(self.database_entry, self.tag_name)
 
@@ -212,7 +212,7 @@ class Database:
         :class:`sunpy.database.caching.LRUCache` and
         :class:`sunpy.database.caching.LFUCache`.
         The default value is :class:`sunpy.database.caching.LRUCache`.
-    cache_size : int
+    cache_size : `int`
         The maximum number of database entries, default is no limit.
     default_waveunit : `str` or `~astropy.units.Quantity`, optional
         The wavelength unit that will be used if an entry is added to the
@@ -233,15 +233,12 @@ class Database:
         A SQLAlchemy session object. This may be used for advanced queries and
         advanced manipulations and should only be used by people who are
         experienced with SQLAlchemy.
-
-    cache_size: int
+    cache_size : `int`
         The maximum number of database entries. This attribute is read-only. To
         change this value, use the method
         :meth:`sunpy.database.Database.set_cache_size`.
-
     tags : list of sunpy.database.Tag objects
         A list of all saved tags in database. This attribute is read-only.
-
     default_waveunit : str
         See "Parameters" section.
 
@@ -1068,7 +1065,7 @@ class Database:
         --------
         :meth:`sunpy.database.commands.CommandManager.clear_histories`
         """
-        self._command_manager.clear_histories()  # pragma: no cover
+        self._command_manager.clear_histories()
 
     def undo(self, n=1):
         """undo the last n commands.
@@ -1078,7 +1075,7 @@ class Database:
         :meth:`sunpy.database.commands.CommandManager.undo`
 
         """
-        self._command_manager.undo(n)  # pragma: no cover
+        self._command_manager.undo(n)
 
     def redo(self, n=1):
         """redo the last n commands.
@@ -1088,7 +1085,7 @@ class Database:
         :meth:`sunpy.database.commands.CommandManager.redo`
 
         """
-        self._command_manager.redo(n)  # pragma: no cover
+        self._command_manager.redo(n)
 
     def display_entries(self, columns=None, sort=False):
         print(_create_display_table(self, columns, sort))

@@ -479,7 +479,7 @@ from decimal import Decimal
 from functools import partial
 import logging
 
-__all__ = 'parse search findall with_pattern'.split()
+__all__ = ['parse', 'search', 'findall', 'with_pattern']
 
 log = logging.getLogger(__name__)
 

@@ -308,10 +308,8 @@ class CompositeMap:
         ----------
         index: int
             Index to determine which map to use to draw grid.
-
         axes: `~matplotlib.axes.Axes` or None
             Axes to plot limb on or None to use current axes.
-
         grid_spacing : `float`
             Spacing (in degrees) for longitude and latitude grid.
 

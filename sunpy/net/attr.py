@@ -528,7 +528,7 @@ class AttrWalker:
 
     The ``AttrWalker`` can walk a complex tree of attrs and represent that tree
     in a way that is useful to the client using the attrs. For the VSO client
-    it generates a ``VSO:QueryResponseBlock`` object, for the database module
+    it generates a ``VSOQueryResponseTable`` object, for the database module
     it performs database queries and returns results from the database.
 
     The walker has three core operations that can be applied to the tree, all

@@ -80,7 +80,7 @@ See the new :ref:`sphx_glr_generated_gallery_map_map_metadata_modification.py` e
 ``sunpy.instr`` moved to ``sunkit-instruments``
 ===============================================
 
-The `sunpy.instr` subpackage has been moved to a separate affiliated package called `sunkit-instruments <https://docs.sunpy.org/projects/sunkit-instruments/>`__.
+The ``sunpy.instr`` subpackage has been moved to a separate affiliated package called `sunkit-instruments <https://docs.sunpy.org/projects/sunkit-instruments/>`__.
 This has been done to make the core package align with the goal that instrument specific analysis and processing code should live in affiliated packages.
 
 .. _whatsnew-3.0-python:

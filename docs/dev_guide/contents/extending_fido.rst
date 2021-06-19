@@ -25,16 +25,16 @@ If the data provider you want to integrate does not provide a tree of files with
 
 A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` and requires a minimum of these three components:
 
-* A class method :meth:`~sunpy.net.dataretriever.client.GenericClient.register_values`; this registers the "attrs" that are supported by the client.
+* A class method :meth:`~sunpy.net.base_client.BaseClient.register_values`; this registers the "attrs" that are supported by the client.
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
   Each ``tuple`` contains the attr value and its description.
 * A class attribute ``baseurl``; this is a regular expression which is used to match the URLs supported by the client.
 * A class attribute ``pattern``; this is a template used to extract the metadata from URLs matched by ``baseurl``.
-  The extraction uses the :func:`~sunpy.extern.parse.parse` format.
+  The extraction uses the `~sunpy.extern.parse.parse` format.
 
 
 For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
-A version without docstrings is reproduced below:
+A version without documentation strings is reproduced below:
 
 .. code-block:: python
 
@@ -62,7 +62,7 @@ The supported time keys are: 'year', 'month', 'day', 'hour', 'minute', 'second',
 
 The attrs returned in the ``register_values()`` method are used to match your client to a search, as well as adding their values to the attr.
 This means that after this client has been imported, running ``print(a.Provider)`` will show that the ``EVEClient`` has registered a provider value of ``LASP``.
-In addition to this, a sanitized, lower cased version of the value will be available for tab completing, e.g. `a.Provider.lasp` or `a.Level.zero`.
+In addition to this, a sanitized, lower cased version of the value will be available for tab completing, e.g. ``a.Provider.lasp`` or ``a.Level.zero``.
 
 
 More Complex Clients
@@ -95,7 +95,7 @@ For example, ``%y%m%d%H%M%S`` is a twelve digit variable (with 2 digits for each
 Note that ``\`` is used to escape the special character ``.``.
 
 ``pattern`` becomes ``'{}/{year:4d}/{month:2d}{day:2d}/satname_{SatelliteNumber:2d}_{Level:1d}_{:6d}{hour:2d}{minute:2d}{second:2d}_{:2d}.fits'``.
-Note the sole purpose of ``pattern`` is to extract the information from matched URL, using :func:`~sunpy.extern.parse.parse`.
+Note the sole purpose of ``pattern`` is to extract the information from matched URL, using `~sunpy.extern.parse.parse`.
 So the desired key names for returned dictionary should be written in the ``pattern`` within ``{}``, and they should match with the ``attr.__name__``.
 
 ``register_values()`` can be written as:
@@ -202,7 +202,7 @@ The first step is to setup the walker and define a creator method which will ret
 
 .. code-block:: python
 
-    import sunpy.net.atrrs as a
+    import sunpy.net.attrs as a
     from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr
 
     walker = AttrWalker()
@@ -350,7 +350,7 @@ The parameters for such a method should be::
 
 The parameters here are:
 
-* ``query_results`` which is an instance of `~.QueryResponseTable` or `~.QueryResponseRow`, these are the results the user wants to download.
+* ``query_results`` which is an instance of `~.QueryResponseTable` or `~sunpy.net.base_client.QueryResponseRow`, these are the results the user wants to download.
 * ``path=`` This is the path that the user wants the file to be downloaded to, this can be a template string (i.e. expects to have ``.format()`` called on it).
 * ``downloader=`` This is a `parfive.Downloader` object which should be mutated by the ``fetch()`` method.
 * ``**kwargs`` It is very important that ``fetch()`` methods accept extra keyword arguments that they don't use, as the user might be passing them to other clients via ``Fido``.
@@ -359,8 +359,8 @@ The parameters here are:
 Processing the ``query_results`` Argument
 #########################################
 
-The ``query_results`` argument can be of two types `~.QueryResponseTable` or `~.QueryResponseRow`, as the user can slice the results table down to a single row and then pass that to ``Fido.fetch()``.
-If you do not wish to handle a single row any differently to a table, you can place the `.convert_row_to_table` decorator on your ``fetch()`` method which will convert the argument to a length one table when it is a single row object.
+The ``query_results`` argument can be of two types `~.QueryResponseTable` or `~sunpy.net.base_client.QueryResponseRow`, as the user can slice the results table down to a single row and then pass that to ``Fido.fetch()``.
+If you do not wish to handle a single row any differently to a table, you can place the `~sunpy.net.base_client.convert_row_to_table` decorator on your ``fetch()`` method which will convert the argument to a length one table when it is a single row object.
 
 The primary function of the ``fetch()`` method is for you to convert this results object into a set of URLs for Fido to download.
 This logic will be specific to your client.
@@ -371,9 +371,9 @@ Formatting the ``path=`` Argument
 
 The path argument may contain format sections which are processed column names from the response table.
 In addition to these it may contain the ``{file}`` format segment which is a placeholder for the filename.
-Each row of the results table has a `~.QueryResponseRow.response_block_map` property which is a dictionary of valid format keys to values for that row.
+Each row of the results table has a `~sunpy.net.base_client.QueryResponseRow.response_block_map` property which is a dictionary of valid format keys to values for that row.
 
-In addition to the `~.QueryResponseRow.response_block_map` your fetch method also needs to be able to generate a filename for the file.
+In addition to the `~sunpy.net.base_client.QueryResponseRow.response_block_map` your fetch method also needs to be able to generate a filename for the file.
 The simplest (but unlikely) scenario is that you know the filename for each file you are going to download before you do so, in this situation you would be able to generate the full filepath for each row of the response as follows::
 
   for row in query_results:

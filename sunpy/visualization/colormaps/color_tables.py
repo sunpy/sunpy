@@ -1,6 +1,6 @@
 """
 This module provides dictionaries for generating
-`~matplotlib.colors.LinearSegmentedColormaps`, and a dictionary of these
+`~matplotlib.colors.LinearSegmentedColormap`, and a dictionary of these
 dictionaries.
 """
 import pathlib

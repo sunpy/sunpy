@@ -51,9 +51,9 @@ ax.plot(xx*u.arcsec.to(u.deg), yy*u.arcsec.to(u.deg),
 
 ###############################################################################
 # Here we will plot a point in pixel coordinates (i.e. array index).
-# Let's define a pixel coordinate in the middle of the image, `pixel_coord`.
+# Let's define a pixel coordinate in the middle of the image, ``pixel_coord``.
 # As this coordinate is in pixel space (rather than a world coordinates like arcsec)
-# we do not need to use the `transform` keyword.
+# we do not need to use the ``transform`` keyword.
 
 # sphinx_gallery_defer_figures
 

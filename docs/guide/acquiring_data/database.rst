@@ -89,7 +89,7 @@ size                   The size of the data in kilobytes (-1 if unknown).
 wavemin                The value of the measured wave length.
 wavemax                This is the same value as ``wavemin``. The value is
                        stored twice, because each
-                       ``suds.sudsobject.QueryResponseBlock`` which is
+                       `sunpy.net.dataretriever.client.QueryResponse` which is
                        used by the vso package contains both these values.
 path                   A local file path where the according FITS file is
                        saved.

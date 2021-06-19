@@ -114,15 +114,15 @@ In particular:
 
 .. _whatsnew-2.0-standards:
 
-Standardization of `~sunpy.map.GenericMap.submap` and `~sunpy.map.GenericMap.draw_rectangle`
-============================================================================================
+Standardization of `~sunpy.map.GenericMap.submap` and ``~sunpy.map.GenericMap.draw_rectangle``
+==============================================================================================
 
-Both `~sunpy.map.GenericMap.submap` and `~sunpy.map.GenericMap.draw_rectangle` allow specification of "rectangles" in world (spherical) coordinates.
+Both `~sunpy.map.GenericMap.submap` and ``~sunpy.map.GenericMap.draw_rectangle`` allow specification of "rectangles" in world (spherical) coordinates.
 In versions prior to 2.0 you passed the coordinates of the rectangle to ``draw_rectangle`` as a bottom left coordinate, and a height and width, but for submap you passed it as a bottom left and a top right.
 In 2.0 the way you call both methods has changed, to accept a bottom left and then either width and height or a top right coordinate.
 As part of this change, the ``top_right``, ``width``, and ``height`` arguments **must** always be keyword arguments, i.e. ``width=10*u.arcsec``
 
-This change allows you to give the same rectangle specification to `~sunpy.map.GenericMap.submap` as to `~sunpy.map.GenericMap.draw_rectangle`.
+This change allows you to give the same rectangle specification to `~sunpy.map.GenericMap.submap` as to ``~sunpy.map.GenericMap.draw_rectangle``.
 Which is especially useful when you wish to plot a cropped area of a map, along with it's context in the parent map::
 
     >>> import astropy.units as u

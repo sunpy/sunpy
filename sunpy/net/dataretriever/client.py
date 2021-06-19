@@ -58,18 +58,12 @@ class GenericClient(BaseClient):
     They help to translate the attrs for scraper before and after the search respectively.
     """
     baseurl = None
-    """
-    A regex string that can match all urls supported by the client.
-    """
+    # A regex string that can match all urls supported by the client.
+    # A string which is used to extract the desired metadata from urls correctly,
+    # using ``sunpy.extern.parse.parse``.
     pattern = None
-    """
-    A string which is used to extract the desired metadata from urls correctly,
-    using ``sunpy.extern.parse.parse``.
-    """
+    # Set of required 'attrs' for client to handle the query.
     required = {a.Time, a.Instrument}
-    """
-    Set of required 'attrs' for client to handle the query.
-    """
 
     @classmethod
     def _get_match_dict(cls, *args, **kwargs):
@@ -100,7 +94,7 @@ class GenericClient(BaseClient):
             # since complex attrs like Range can't be compared with string matching.
             if issubclass(i, SimpleAttr):
                 matchdict[attrname] = []
-                for val, desc in regattrs_dict[i]:
+                for val, _ in regattrs_dict[i]:
                     matchdict[attrname].append(val)
         for elem in args:
             if isinstance(elem, a.Time):

@@ -1,7 +1,7 @@
 Removed various deprecated methods on our Fido clients and responses:
 
-1. ``UnifiedResponse.build_table``, ``UnifiedResponse.tables``, ``UnifiedResponse.responses``, ``UnifiedResponse.get_response`` and ``UnifiedResponse.blocks`` as `UnifiedResponse` is now an `astropy.table.Table` that is sliceable.
-2. ``UnifiedResponse.response_block_properties`` as `UnifiedResponse.path_format_keys` was added as a better replacement.
+1. ``UnifiedResponse.build_table``, ``UnifiedResponse.tables``, ``UnifiedResponse.responses``, ``UnifiedResponse.get_response`` and ``UnifiedResponse.blocks`` as ``UnifiedResponse`` is now an `astropy.table.Table` that is sliceable.
+2. ``UnifiedResponse.response_block_properties`` as ``UnifiedResponse.path_format_keys`` was added as a better replacement.
 3. ``HECClient.time_query`` as you can now use ``Fido.search`` directly.
 4. ``sunpy.net.jsoc.attrs.Keys`` was not used for querying JSOC.
 5. ``sunpy.net.jsoc.JSOCClient.search_metadata`` as the functionality this provided was merged into `sunpy.net.jsoc.JSOCClient.search`.

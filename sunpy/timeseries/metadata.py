@@ -30,7 +30,7 @@ class TimeSeriesMetaData:
 
     Parameters
     ----------
-    meta : `dict`, `MetaDict`, `tuple`, `list`
+    meta : `dict`, `~sunpy.util.MetaDict`, `tuple`, `list`
         The metadata giving details about the time series data/instrument.
         Defaults to `None`.
     timerange : `~sunpy.time.TimeRange`

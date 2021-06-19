@@ -1,8 +1,8 @@
 """
-This module provides routines for the coalignment of images and
-`~sunpy.map.mapsequences`.
+This module provides routines for the co-alignment of images and
+`~sunpy.map.mapsequence.MapSequence`.
 
-Currently this module provides image coalignment by template matching.
+Currently this module provides image co-alignment by template matching.
 Which is partially inspired by the SSWIDL routine
 `tr_get_disp.pro <http://www.heliodocs.com/php/xdoc_print.php?file=$SSW/trace/idl/util/tr_get_disp.pro>`__.
 

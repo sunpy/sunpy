@@ -64,7 +64,7 @@ class WaveunitNotFoundError(Exception):
     def __init__(self, obj):
         self.obj = obj
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return f'the wavelength unit cannot be found in {self.obj}' + \
                ' and default_waveunit not specified when opening the database'
 
@@ -78,7 +78,7 @@ class WaveunitNotConvertibleError(Exception):
     def __init__(self, waveunit):
         self.waveunit = waveunit
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return (
             'the waveunit {!r} cannot be converted to an '
             'astropy.units.Unit instance'.format(self.waveunit))
@@ -101,7 +101,7 @@ class JSONDump(Base):
     def __str__(self):
         return self.dump
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self):
         return f'<{self.__class__.__name__}(dump {self.dump!r})>'
 
 
@@ -129,7 +129,7 @@ class FitsHeaderEntry(Base):
     def __ne__(self, other):
         return not (self == other)
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self):
         return '<{}(id {}, key {!r}, value {!r})>'.format(
             self.__class__.__name__, self.id, self.key, self.value)
 
@@ -162,7 +162,7 @@ class FitsKeyComment(Base):
     def __ne__(self, other):
         return not (self == other)
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self):
         return '<{}(id {}, key {!r}, value {!r})>'.format(
             self.__class__.__name__, self.id, self.key, self.value)
 
@@ -187,21 +187,19 @@ class Tag(Base):
     def __str__(self):
         return self.name
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self):
         return f'<{self.__class__.__name__}(name {self.name!r})>'
 
 
 class DatabaseEntry(DatabaseEntryType, Base):
     """
-    DatabaseEntry()
-
-    The class :class:`DatabaseEntry` represents the main table of the database
+    This represents the main table of the database
     and each instance represents one record that *can* be saved in the
     database.
 
     Parameters
     ----------
-    id : int
+    id : `int`
         A unique ID number. By default it is None, but automatically set to the
         maximum number plus one when this entry is added to the database.
     source : str
@@ -228,9 +226,9 @@ class DatabaseEntry(DatabaseEntryType, Base):
         The value of the measured wave length.
     wavemax : float
         This is the same value as ``wavemin``. The value is stored twice,
-        because each ``suds.sudsobject.QueryResponseBlock`` which is used by
+        because each `sunpy.net.dataretriever.client.QueryResponse` which is used by
         the vso package contains both these values.
-    hdu_index : int
+    hdu_index : `int`
         This value provides a list of all available HDUs and in what
         files they are located.
     path : str
@@ -246,7 +244,6 @@ class DatabaseEntry(DatabaseEntryType, Base):
     tags : list
         A list of ``Tag`` instances. Use `sunpy.database.Database.tag` to
         add a new tag or multiple tags to a specific entry.
-
     """
     __tablename__ = 'data'
 
@@ -278,13 +275,13 @@ class DatabaseEntry(DatabaseEntryType, Base):
 
         Parameters
         ----------
-        qr_block : suds.sudsobject.QueryResponseBlock
+        qr_block : `sunpy.net.dataretriever.client.QueryResponse`
             A query result block is usually not created directly; instead,
-            one gets instances of ``suds.sudsobject.QueryResponseBlock`` by
+            one gets instances of `sunpy.net.dataretriever.client.QueryResponse` by
             iterating over a VSO query result.
         default_waveunit : str, optional
             The wavelength unit that is used if it cannot be found in the
-            `qr_block`.
+            ``qr_block``.
 
         Examples
         --------
@@ -366,16 +363,16 @@ class DatabaseEntry(DatabaseEntryType, Base):
 
         Parameters
         ----------
-        sr_block : `sunpy.net.dataretriever.client.QueryResponseBlock`
+        sr_block : `sunpy.net.dataretriever.client.QueryResponse`
             A query result block is usually not created directly; instead,
             one gets instances of
-            ``sunpy.net.dataretriever.client.QueryResponseBlock`` by iterating
+            ``sunpy.net.dataretriever.client.QueryResponse`` by iterating
             over each element of a Fido search result.
         default_waveunit : `str`, optional
             The wavelength unit that is used if it cannot be found in the
             `sr_block`.
         """
-        # All attributes of DatabaseEntry that are not in QueryResponseBlock
+        # All attributes of DatabaseEntry that are not in QueryResponse
         # are set as None for now.
         source = sr_block.get('Source')
         provider = sr_block.get('Provider')
@@ -469,10 +466,10 @@ class DatabaseEntry(DatabaseEntryType, Base):
     def __hash__(self):
         return super().__hash__()
 
-    def __ne__(self, other):  # pragma: no cover
+    def __ne__(self, other):
         return not (self == other)
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self):
         attrs = [
             'id', 'source', 'provider', 'physobs', 'fileid',
             'observation_time_start', 'observation_time_end', 'instrument',
@@ -498,10 +495,9 @@ def entries_from_query_result(qr, default_waveunit=None):
     ----------
     qr : `sunpy.net.vso.VSOQueryResponseTable`
         The query response from which to build the database entries.
-
     default_waveunit : `str`, optional
         The wavelength unit that is used if it cannot be found in the
-        `qr_block`.
+        ``qr_block``.
 
     Examples
     --------
@@ -612,11 +608,8 @@ def entries_from_file(file, default_waveunit=None,
         Either a path pointing to a FITS file or a an opened file-like object.
         If an opened file object, its mode must be one of the following rb,
         rb+, or ab+.
-
     default_waveunit : str, optional
-        The wavelength unit that is used for a header if it cannot be
-        found.
-
+        The wavelength unit that is used for a header if it cannot be found.
     time_string_parse_format : str, optional
         Fallback timestamp format which will be passed to
         `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
@@ -726,23 +719,18 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     ----------
     fitsdir : str
         The directory where to look for FITS files.
-
     recursive : bool, optional
         If True, the given directory will be searched recursively. Otherwise,
         only the given directory and no subdirectories are searched. The
         default is `False`, i.e. the given directory is not searched
         recursively.
-
     pattern : str, optional
         The pattern can be used to filter the list of filenames before the
         files are attempted to be read. The default is to collect all files.
         This value is passed to the function :func:`fnmatch.filter`, see its
         documentation for more information on the supported syntax.
-
     default_waveunit : str, optional
-        See
-        :meth:`sunpy.database.tables.DatabaseEntry.add_fits_header_entries_from_file`.
-
+        The wavelength unit that is used for a header if it cannot be found.
     time_string_parse_format : str, optional
         Fallback timestamp format which will be passed to
         `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
@@ -848,19 +836,17 @@ def _create_display_table(database_entries, columns=None, sort=False):
 
 
 def display_entries(database_entries, columns=None, sort=False):
-    """Print a table to display the database entries.
+    """
+    Print a table to display the database entries.
 
     Parameters
     ----------
-    database_entries : iterable of :class:`DatabaseEntry` instances
+    database_entries : iterable of `DatabaseEntry` instances
         The database entries will be the rows in the resulting table.
-
-    columns : iterable of str
+    columns : iterable of `str`
         The columns that will be displayed in the resulting table. Possible
         values for the strings are all attributes of :class:`DatabaseEntry`.
-
-    sort : bool (optional)
+    sort : bool, optional
         If True, sorts the entries before displaying them.
-
     """
     return _create_display_table(database_entries, columns, sort).__str__()

@@ -75,7 +75,7 @@ All SunPy Maps are derived from `sunpy.map.GenericMap`, all the methods and attr
 
 Instrument Map Classes
 ======================
-Defined in `sunpy.map.sources` are a set of `~sunpy.map.GenericMap` subclasses
+Defined in ``sunpy.map.sources`` are a set of `~sunpy.map.GenericMap` subclasses
 which convert the specific metadata and other differences in each instruments
 data to the standard `~sunpy.map.GenericMap` interface.
 These 'sources' also define things like the colormap and default
@@ -92,7 +92,7 @@ Writing a new Instrument Map Class
 ==================================
 
 Any subclass of `~sunpy.map.GenericMap` which defines a method named
-`~sunpy.map.GenericMap.is_datasource_for` will automatically be registered with
+``is_datasource_for`` will automatically be registered with
 the `~sunpy.map.Map` factory. The ``is_datasource_for`` method describes the form of the
 data and metadata for which the `~sunpy.map.GenericMap` subclass is valid. For
 example it might check the value of the ``INSTRUMENT`` key in the metadata

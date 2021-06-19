@@ -117,7 +117,7 @@ The key highlights you will want to be aware of are:
   These objects are subclasses of `astropy.table.Table` and can therefore be filtered and inspected as tabular objects, and the modified tables can be passed to ``Fido.fetch()``.
 
 * The keys available to be used when formatting the ``path=`` argument to ``Fido.fetch()`` have changed. This is to standardise them over the results from more clients and make them easier to use.
-  You can use the `~.UnifiedResponse.path_format_keys` method to see all the possible keys for a particular search.
+  You can use the ``~.UnifiedResponse.path_format_keys`` method to see all the possible keys for a particular search.
 
 * The search results object returned from ``Fido.search`` now correctly counts all results in its `~sunpy.net.fido_factory.UnifiedResponse.file_num` property.
 

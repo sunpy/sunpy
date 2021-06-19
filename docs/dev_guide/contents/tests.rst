@@ -235,7 +235,7 @@ Generally we do not run the tests on our sample data, so only do this if you hav
 Figure unit tests
 -----------------
 
-You can write SunPy unit tests that test the generation of matplotlib figures by adding the decorator `sunpy.tests.helpers.figure_test`.
+You can write SunPy unit tests that test the generation of matplotlib figures by adding the decorator ``sunpy.tests.helpers.figure_test``.
 Here is a simple example::
 
     import matplotlib.pyplot as plt

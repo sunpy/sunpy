@@ -185,7 +185,7 @@ Notable Breaking Changes or Removed functionality
 
 - Importing `sunpy.timeseries` no longer automatically imports
   Matplotlib. (`#3376 <https://github.com/sunpy/sunpy/pull/3376>`__)
-- `sunpy.timeseries.sources.NOAAIndicesTimeSeries.peek` now checks that the `type` argument is a
+- `sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries.peek` now checks that the `type` argument is a
   valid string, and raises a `ValueError` if it isn't. (`#3378 <https://github.com/sunpy/sunpy/pull/3378>`__)
 - Observer-based coordinate frames (`~sunpy.coordinates.frames.Heliocentric` and `~sunpy.coordinates.frames.Helioprojective`) no longer assume a default observer (Earth) if no observer is specified.  These frames can now be used with no observer specified, but most transformations cannot be performed for such frames.  This removal of a default observer only affects `sunpy.coordinates`, and has no impact on the default observer in `sunpy.map`. (`#3388 <https://github.com/sunpy/sunpy/pull/3388>`__)
 - The colormap stored in SunPy's Map subclasses (ie. ``map.plot_settings['cmap']``)

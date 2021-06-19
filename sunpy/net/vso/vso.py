@@ -163,7 +163,7 @@ class VSOClient(BaseClient):
 
         Parameters
         ----------
-        response_format: {"legacy", "table"}
+        response_format: ``{"legacy", "table"}``, optional
             The response format from the search, this can be either
             ``"legacy"`` to return a list-like object of the zeep responses, or
             ``"table"`` to return the responses in a subclass of
@@ -194,7 +194,7 @@ class VSOClient(BaseClient):
 
         Returns
         -------
-        out : `QueryResult`
+        out : `~sunpy.net.vso.table_response.VSOQueryResponseTable`
             Matched items. Return value is of same type as the one of
             :meth:`VSOClient.search`.
         """
@@ -319,7 +319,6 @@ class VSOClient(BaseClient):
         ----------
         query_response : sunpy.net.vso.VSOQueryResponseTable
             QueryResponse containing the items to be downloaded.
-
         path : str
             Specify where the
         data is to be downloaded. Can refer to arbitrary
@@ -327,8 +326,7 @@ class VSOClient(BaseClient):
             string formatting, moreover the file-name of the file downloaded can
             be referred to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
-
-        methods : {list of str}
+        methods : `list` of `str`
             Download methods, defaults to URL-FILE_Rice then URL-FILE.
             Methods are a concatenation of one PREFIX followed by any number of
             SUFFIXES i.e. ``PREFIX-SUFFIX_SUFFIX2_SUFFIX3``.
@@ -336,7 +334,6 @@ class VSOClient(BaseClient):
             `PREFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
             and `SUFFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
             are listed on the VSO site.
-
         site : str
             There are a number of caching mirrors for SDO and other
             instruments, some available ones are listed below.
@@ -356,17 +353,14 @@ class VSOClient(BaseClient):
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
             have been downloaded. If `False`, no progress bars will be shown at all.
-
         overwrite : `bool` or `str`, optional
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
             and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
-
         downloader : `parfive.Downloader`, optional
             The download manager to use.
-
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
            any effect if ``downloader`` is not `None`.

@@ -42,7 +42,8 @@ from sphinx_gallery.sorting import ExampleTitleSortKey  # NOQA
 import sunpy  # NOQA
 from sunpy import __version__  # NOQA
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA
-
+from matplotlib import MatplotlibDeprecationWarning  # NOQA
+from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
 # -- Project information -------------------------------------------------------
 project = 'SunPy'
 author = 'The SunPy Community'
@@ -58,6 +59,8 @@ if is_release:
     warnings.simplefilter("ignore")
 warnings.filterwarnings("error", category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
+warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
+warnings.filterwarnings("error", category=AstropyDeprecationWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 # We set the logger to debug so that we can see any sample data download errors
@@ -73,15 +76,6 @@ linkcheck_ignore = [r"https://doi.org/\d+",
                     r"https://github.com/\d+",
                     r"https://docs.sunpy.org/\d+"]
 linkcheck_anchors = False
-
-# This is added to the end of RST files - a good place to put substitutions to
-# be used globally.
-rst_epilog = """
-.. SunPy
-.. _SunPy: https://sunpy.org
-.. _`SunPy mailing list`: https://groups.google.com/group/sunpy
-.. _`SunPy dev mailing list`: https://groups.google.com/group/sunpy-dev
-"""
 
 # -- General configuration -----------------------------------------------------
 # sphinxext-opengraph
@@ -155,28 +149,15 @@ napoleon_google_docstring = False
 
 # Enable nitpicky mode, which forces links to be non-broken
 nitpicky = True
-nitpick_ignore = [
-    # Prevents shpinx nitpicky mode picking up on optional
-    # (see https://github.com/sphinx-doc/sphinx/issues/6861)
-    ('py:class', 'optional'),
-    # See https://github.com/numpy/numpy/issues/10039
-    ('py:obj', 'numpy.datetime64'),
-    # There's no specific file or function classes to link to
-    ('py:class', 'file object'),
-    ('py:class', 'function'),
-    ('py:obj', 'function'),
-    ('py:class', 'any type'),
-    ('py:class', "Unit('pix')"),
-    ('py:class', "Unit('deg')"),
-    ('py:class', "Unit('arcsec')"),
-    ('py:class', "Unit('%')"),
-    ('py:class', "Unit('s')"),
-    ('py:class', "Unit('Angstrom')"),
-    ('py:class', "Unit('arcsec / pix')"),
-    ('py:class', "Unit('W / m2')"),
-    ('py:class', 'array-like'),
-    ('py:obj', 'parfive'),
-]
+# This is not used. See docs/nitpick-exceptions file for the actual listing.
+nitpick_ignore = []
+for line in open('nitpick-exceptions'):
+    if line.strip() == "" or line.startswith("#"):
+        continue
+    dtype, target = line.split(None, 1)
+    target = target.strip()
+    nitpick_ignore.append((dtype, target))
+
 
 # -- Options for intersphinx extension -----------------------------------------
 # Example configuration for intersphinx: refer to the Python standard library.
@@ -197,16 +178,17 @@ intersphinx_mapping = {
         "https://matplotlib.org/",
         (None, "http://www.astropy.org/astropy-data/intersphinx/matplotlib.inv"),
     ),
+    "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
     "astropy": ("https://docs.astropy.org/en/stable/", None),
-    "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
-    "skimage": ("https://scikit-image.org/docs/stable/", None),
+    "astroquery": ("https://astroquery.readthedocs.io/en/latest/", None),
     "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
-    "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
-    "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
-    "zeep": ("https://docs.python-zeep.org/en/stable/", None)
+    "skimage": ("https://scikit-image.org/docs/stable/", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
+    "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
+    "zeep": ("https://docs.python-zeep.org/en/stable/", None),
 }
 
 # -- Options for HTML output ---------------------------------------------------

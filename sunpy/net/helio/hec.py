@@ -174,7 +174,7 @@ class HECClient(BaseClient):
         Returns
         -------
         tables.array: `numpy.ma.core.MaskedArray`
-            A VOtable table of available tables names
+            A VOtable table of available tables names.
 
         Examples
         --------

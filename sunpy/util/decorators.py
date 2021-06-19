@@ -32,14 +32,11 @@ def deprecated(since, message='', name='', alternative='', pending=False,
     """
     Used to mark a function or class as deprecated.
 
-    To mark an attribute as deprecated, use `deprecated_attribute`.
-
     Parameters
     ------------
     since : str
         The release at which this API became deprecated.  This is
         required.
-
     message : str, optional
         Override the default deprecation message.  The format
         specifier ``func`` may be used for the name of the function,
@@ -47,7 +44,6 @@ def deprecated(since, message='', name='', alternative='', pending=False,
         to insert the name of an alternative to the deprecated
         function. ``obj_type`` may be used to insert a friendly name
         for the type of object being deprecated.
-
     name : str, optional
         The name of the deprecated function or class; if not provided
         the name is automatically determined from the passed in
@@ -63,16 +59,13 @@ def deprecated(since, message='', name='', alternative='', pending=False,
         An alternative function or class name that the user may use in
         place of the deprecated object.  The deprecation warning will
         tell the user about this alternative if provided.
-
     pending : bool, optional
         If True, uses a SunpyPendingDeprecationWarning instead of a
         ``warning_type``.
-
     obj_type : str, optional
         The type of this object, if the automatically determined one
         needs to be overridden.
-
-    warning_type : `~exceptions.Warning`
+    warning_type : `Warning`
         Warning to be issued.
         Default is `~sunpy.util.exceptions.SunpyDeprecationWarning`.
     """
