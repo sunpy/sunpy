@@ -238,8 +238,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Sanitise a list of args so that a single argument corresponds to either:
 
         - A (data, header, units) tuple
-        - A path-like string (e.g. a filename, directory, glob etc.)
-        - A URL
+        - A path-like string (e.g. a filename, directory, glob etc.).
         - A GenericTimeSeries object
         """
         # Account for nested lists of items. Simply outputs a single list of
@@ -252,6 +251,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         while i < len(args):
             arg = args[i]
             if isinstance(arg, (np.ndarray, Table, pd.DataFrame)):
+                # Extract data and metadata
                 # The next item is data
                 data = args[i]
                 meta = MetaDict()
@@ -278,6 +278,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                             args.pop(j)
 
                 args[i] = (data, meta, units)
+
+            elif isinstance(arg, str) and is_url(arg):
+                # Download any URLs
+                path = download_file(arg, get_and_create_download_dir())
+                args[i] = pathlib.Path(path)
             i += 1
 
         return args
@@ -317,18 +322,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             # Data-header pair in a tuple
             if isinstance(arg, tuple):
                 data_header_unit_tuples.append(arg)
-
-            # URL
-            elif isinstance(arg, str) and is_url(arg):
-                url = arg
-                path = download_file(url, get_and_create_download_dir())
-                results = parse_path(pathlib.Path(path), self._read_file)
-                for r in results:
-                    if isinstance(r, pathlib.Path):
-                        filepaths.append(r)
-                    else:
-                        data_header_pairs.append(r)
-
             # Filepath
             elif possibly_a_path(arg):
                 # Repalce path strings with Path objects
