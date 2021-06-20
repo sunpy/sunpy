@@ -25,9 +25,9 @@ COORDINATES = [{'text': 'N10W05', 'latitude': 10, 'longitude': 5},
 LOCATION = Column(data=[x['text'] for x in COORDINATES], name='Location')
 LONGLAT = Table()
 LONGLAT.add_column(MaskedColumn(data=[x['longitude'] for x in COORDINATES], name='Longitude',
-                                unit=u.deg, mask=True))
+                                unit=u.deg, mask=True, fill_value=-99999))
 LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name='Latitude',
-                                unit=u.deg))
+                                unit=u.deg, fill_value=-99999))
 
 
 @pytest.mark.filterwarnings('ignore:dropping mask in Quantity column')

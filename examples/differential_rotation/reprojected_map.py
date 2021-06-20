@@ -37,7 +37,7 @@ in_time = aiamap.date
 # to the location of AIA in the original observation).
 
 out_time = in_time + 5*u.day
-out_frame = Helioprojective(observer='earth', obstime=out_time)
+out_frame = Helioprojective(observer='earth', obstime=out_time, rsun=aiamap.coordinate_frame.rsun)
 
 ##############################################################################
 # For the reprojection, the definition of the target frame can be

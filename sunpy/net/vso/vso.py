@@ -9,7 +9,6 @@ import json
 import socket
 import inspect
 import datetime
-import warnings
 import itertools
 from pathlib import Path
 from functools import partial
@@ -24,8 +23,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.util.decorators import deprecated
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
@@ -59,8 +57,7 @@ def check_connection(url):
     try:
         return urlopen(url).getcode() == 200
     except (socket.error, socket.timeout, HTTPError, URLError) as e:
-        warnings.warn(f"Connection to {url} failed with error {e}. Retrying with different url and port.",
-                      SunpyUserWarning)
+        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return None
 
 
@@ -202,14 +199,7 @@ class VSOClient(BaseClient):
             :meth:`VSOClient.search`.
         """
         if response_format is None:
-            response_format = "legacy"
-            warnings.warn("The default response format from the VSO client will "
-                          "be changing to 'table' in version 3.1. "
-                          "To remove this warning set response_format='legacy' "
-                          "to maintain the old behaviour or response_format='table'"
-                          " to use the new behaviour.",
-                          SunpyDeprecationWarning,
-                          stacklevel=2)
+            response_format = "table"
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
         VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
@@ -222,7 +212,7 @@ class VSOClient(BaseClient):
                 )
                 for resp in query_response:
                     if resp["error"]:
-                        warnings.warn(resp["error"], SunpyUserWarning)
+                        warn_user(resp["error"])
                 responses.append(
                     VSOQueryResponse(query_response)
                 )
@@ -436,24 +426,6 @@ class VSOClient(BaseClient):
         results += err_results
         results._errors += err_results.errors
         return results
-
-    @deprecated("2.1", "This functionality is deprecated as it is replaced by better search support.")
-    @staticmethod
-    def link(query_response, maps):  # pragma: no cover
-        """ Return list of paths with records associated with them in
-        the meta attribute. """
-        if not maps:
-            return []
-        ret = []
-
-        for record_item in query_response:
-            try:
-                item = _Str(maps[record_item.fileid]['path'])
-            except KeyError:
-                continue
-            item.meta = record_item
-            ret.append(item)
-        return ret
 
     def make_getdatarequest(self, response, methods=None, info=None):
         """ Make datarequest with methods from response. """

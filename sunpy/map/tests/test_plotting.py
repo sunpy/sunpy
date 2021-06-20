@@ -1,7 +1,6 @@
 """
 Test Generic Map
 """
-import os
 import copy
 
 import matplotlib.colors as mcolor
@@ -20,7 +19,7 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.tests.helpers import figure_test, fix_map_wcs
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
 pytestmark = pytest.mark.filterwarnings('ignore:Missing metadata')
@@ -28,12 +27,12 @@ pytestmark = pytest.mark.filterwarnings('ignore:Missing metadata')
 
 @pytest.fixture
 def aia171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+    return sunpy.map.Map(testpath / 'aia_171_level1.fits')
 
 
 @pytest.fixture
 def heliographic_test_map():
-    m = sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+    m = sunpy.map.Map(testpath / 'heliographic_phase_map.fits.gz')
     return fix_map_wcs(m)
 
 
@@ -105,13 +104,6 @@ def test_peek_grid_limb_aia171(aia171_test_map):
 
 
 @figure_test
-def test_plot_aia171_nowcsaxes(aia171_test_map):
-    ax = plt.gca()
-    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
-        aia171_test_map.plot(axes=ax)
-
-
-@figure_test
 def test_rectangle_aia171_width_height(aia171_test_map):
     aia171_test_map.plot()
     bottom_left = SkyCoord(
@@ -159,37 +151,48 @@ def test_plot_masked_aia171(aia171_test_map_with_mask):
 
 
 @figure_test
-def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
-    ax = plt.gca()
-    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
-        aia171_test_map_with_mask.plot(axes=ax)
-
-
-@figure_test
 def test_plot_aia171_superpixel(aia171_test_map):
-    aia171_test_map.superpixel((9, 7) * u.pix, offset=(4, 4) * u.pix).plot()
+    aia171_test_map.superpixel((3, 2) * u.pix, offset=(4, 4) * u.pix).plot()
 
 
 @figure_test
-def test_plot_aia171_superpixel_nowcsaxes(aia171_test_map):
-    ax = plt.gca()
-    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
-        aia171_test_map.superpixel(
-            (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
+def test_plot_resample(carrington_map):
+    # Test that super-pixelling a map preserves the coordinate system correctly.
+    # The two plots should have identical coordinate grids
+    resamp = carrington_map.resample([10, 5] * u.pix)
+
+    plt.figure()
+    ax1 = plt.subplot(121, projection=carrington_map)
+    ax2 = plt.subplot(122, projection=resamp)
+
+    carrington_map.plot(axes=ax1)
+    resamp.plot(axes=ax2)
+
+    for ax in [ax1, ax2]:
+        ax.coords.grid(True, color='tab:red', ls='solid', lw=2, alpha=1)
+
+
+@figure_test
+def test_plot_superpixel(carrington_map):
+    # Test that super-pixelling a map preserves the coordinate system correctly.
+    # The two plots should have identical coordinate grids
+    superpix = carrington_map.superpixel([2, 2] * u.pix)
+
+    plt.figure()
+    ax1 = plt.subplot(121, projection=carrington_map)
+    ax2 = plt.subplot(122, projection=superpix)
+
+    carrington_map.plot(axes=ax1)
+    superpix.plot(axes=ax2)
+
+    for ax in [ax1, ax2]:
+        ax.coords.grid(True, color='tab:red', ls='solid', lw=2, alpha=1)
 
 
 @figure_test
 def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
     aia171_test_map_with_mask.superpixel(
         (9, 7) * u.pix, offset=(4, 4) * u.pix).plot()
-
-
-@figure_test
-def test_plot_masked_aia171_superpixel_nowcsaxes(aia171_test_map_with_mask):
-    ax = plt.gca()
-    with pytest.warns(SunpyDeprecationWarning, match='WCSAxes not being used as the axes'):
-        aia171_test_map_with_mask.superpixel(
-            (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
 
 
 @figure_test

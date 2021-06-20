@@ -3,7 +3,6 @@ This module provies `sunpy.timeseries.GenericTimeSeries` which all other
 `sunpy.timeseries.TimeSeries` classes inherit from.
 """
 import copy
-import warnings
 from collections import OrderedDict
 from collections.abc import Iterable
 
@@ -17,7 +16,7 @@ from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -126,8 +125,8 @@ class GenericTimeSeries:
         """
         A `pandas.DataFrame` representing one or more fields as a function of time.
         """
-        warnings.warn("Using .data to access the dataframe is discouraged; "
-                      "use .to_dataframe() instead.", SunpyUserWarning)
+        warn_user("Using .data to access the dataframe is discouraged; "
+                  "use .to_dataframe() instead.")
         return self._data
 
     @data.setter
@@ -445,6 +444,41 @@ class GenericTimeSeries:
         object._sanitize_units()
         return object
 
+    def reindex(self, index, method="nearest", **kwargs):
+        """
+        Returns a new time series with a new index.
+
+        By default values on the new time series are filled using a
+        nearest valid observation method. See `~pandas.DataFrame.reindex`
+        for the different re-indexing options available.
+
+        Parameters
+        ----------
+        index : `~sunpy.timeseries.TimeSeries` or `~pandas.DatetimeIndex`
+            Another `~sunpy.timeseries.TimeSeries` or a valid index column.
+        method : `str`, optional
+            Method to use for filling holes in reindexed time series.
+            Defaults to "nearest".
+
+        Returns
+        -------
+        `~sunpy.timeseries.TimeSeries`
+            A `~sunpy.timeseries.TimeSeries` with new index.
+
+        Notes
+        -----
+        This method is a wrapper around `pandas.DataFrame.reindex`; all additional
+        keyword arguments are passed to this method.
+        """
+        if isinstance(index, GenericTimeSeries):
+            index = index.index
+        object = GenericTimeSeries(self._data.reindex(index, method=method, **kwargs),
+                                   meta=TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                   units=copy.copy(self.units))
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
+
 # #### Plotting Methods #### #
 
     def plot(self, axes=None, **plot_args):
@@ -528,7 +562,7 @@ class GenericTimeSeries:
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
 
-                warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
+                warn_user(f"Unknown value for {meta_property.upper()}.")
 
     def _validate_units(self, units, **kwargs):
         """
@@ -545,7 +579,7 @@ class GenericTimeSeries:
             if not isinstance(units[key], astropy.units.UnitBase):
                 # If this is not a unit then this can't be a valid units dict.
                 result = False
-                warnings.warn(f"Invalid unit given for {key}.", SunpyUserWarning)
+                warn_user(f"Invalid unit given for {key}.")
 
         return result
 
@@ -563,7 +597,7 @@ class GenericTimeSeries:
         for column in set(self._data.columns.tolist()) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
-            warnings.warn(f"Unknown units for {column}.", SunpyUserWarning)
+            warn_user(f"Unknown units for {column}.")
 
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()

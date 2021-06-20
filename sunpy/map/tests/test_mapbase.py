@@ -1,7 +1,6 @@
 """
 Test Generic Map
 """
-import os
 import re
 import tempfile
 from unittest import mock
@@ -28,7 +27,7 @@ import sunpy.sun
 from sunpy.coordinates import sun
 from sunpy.map.sources import AIAMap
 from sunpy.time import parse_time
-from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 
@@ -38,13 +37,13 @@ testpath = sunpy.data.test.rootdir
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        data = fits.open(os.path.join(testpath, 'aia_171_level1.fits'))[0].data
+        data = fits.open(testpath / 'aia_171_level1.fits')[0].data
     np.testing.assert_allclose(aia171_test_map.data, data)
 
 
 def test_header_fits_io():
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        with fits.open(os.path.join(testpath, 'aia_171_level1.fits')) as hdu:
+        with fits.open(testpath / 'aia_171_level1.fits') as hdu:
             AIAMap(hdu[0].data, hdu[0].header)
 
 
@@ -93,11 +92,6 @@ def test_header_immutability(aia171_test_map):
 
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
-
-
-def test_size(generic_map):
-    with pytest.warns(SunpyDeprecationWarning, match='Use map.data.size instead'):
-        assert generic_map.size == 36 * u.pix
 
 
 def test_min(generic_map):
@@ -176,7 +170,7 @@ def test_rsun_meters(generic_map):
 
 
 def test_rsun_obs_without_rsun_ref(generic_map):
-    with pytest.warns(SunpyUserWarning,
+    with pytest.warns(SunpyMetadataWarning,
                       match='assuming the standard radius of the photosphere '
                             'as seen from the observer distance'):
         assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
@@ -194,12 +188,12 @@ def test_coordinate_system(generic_map):
 
 def test_default_coordinate_system(generic_map):
     generic_map.meta.pop('ctype1')
-    with pytest.warns(SunpyUserWarning, match='Missing CTYPE1 from metadata'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata'):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
     generic_map.meta.pop('ctype2')
     generic_map.meta['ctype1'] = 'HPLN-TAN'
-    with pytest.warns(SunpyUserWarning, match='Missing CTYPE2 from metadata'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE2 from metadata'):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
@@ -322,7 +316,7 @@ def test_rotation_matrix_cd_cdelt_square():
 
 
 def test_swap_cd():
-    amap = sunpy.map.Map(os.path.join(testpath, 'swap_lv1_20140606_000113.fits'))
+    amap = sunpy.map.Map(testpath / 'swap_lv1_20140606_000113.fits')
     np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
 
 
@@ -338,12 +332,10 @@ def test_world_to_pixel_error(generic_map):
         generic_map.world_to_pixel(1)
 
 
-@pytest.mark.parametrize('origin', [0, 1])
-def test_world_pixel_roundtrip(simple_map, origin):
+def test_world_pixel_roundtrip(simple_map):
     pix = 1 * u.pix, 1 * u.pix
-    with pytest.warns(SunpyDeprecationWarning, match='The origin argument is deprecated'):
-        coord = simple_map.pixel_to_world(*pix, origin=origin)
-        pix_roundtrip = simple_map.world_to_pixel(coord, origin=origin)
+    coord = simple_map.pixel_to_world(*pix)
+    pix_roundtrip = simple_map.world_to_pixel(coord)
 
     assert u.allclose(pix_roundtrip.x, pix[0], atol=1e-10 * u.pix)
     assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
@@ -642,16 +634,53 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
         == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
     assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
         == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
-    assert resampled_map.meta['crpix1'] == (resampled_map.data.shape[1] + 1) / 2.
-    assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
-    assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
-    assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
+    # TODO: we should really test the numbers here, not just that the correct
+    # header values have been modified. However, I am lazy and we have figure
+    # tests.
+    assert resampled_map.meta['crpix1'] != generic_map.meta['crpix1']
+    assert resampled_map.meta['crpix2'] != generic_map.meta['crpix2']
+    assert u.allclose(resampled_map.meta['crval1'], generic_map.meta['crval1'])
+    assert u.allclose(resampled_map.meta['crval2'], generic_map.meta['crval2'])
     assert resampled_map.meta['naxis1'] == new_dimensions[0].value
     assert resampled_map.meta['naxis2'] == new_dimensions[1].value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1',
                        'crval2', 'naxis1', 'naxis2'):
             assert resampled_map.meta[key] == generic_map.meta[key]
+
+
+@pytest.mark.parametrize('method', ['neighbor', 'nearest', 'linear', 'spline'])
+def test_resample_simple_map(simple_map, method):
+    # Put the reference pixel at the top-right of the bottom-left pixel
+    simple_map.meta['crpix1'] = 1.5
+    simple_map.meta['crpix2'] = 1.5
+    assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
+    # Make the superpixel map
+    new_dims = (9, 6) * u.pix
+    resamp_map = simple_map.resample(new_dims, method=method)
+    # Reference pixel should change, but reference coordinate should not
+    assert list(resamp_map.reference_pixel) == [2.5 * u.pix, 1.5 * u.pix]
+    assert resamp_map.reference_coordinate == simple_map.reference_coordinate
+
+
+def test_superpixel_simple_map(simple_map):
+    # Put the reference pixel at the top-right of the bottom-left pixel
+    simple_map.meta['crpix1'] = 1.5
+    simple_map.meta['crpix2'] = 1.5
+    assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
+    # Make the superpixel map
+    new_dims = (2, 2) * u.pix
+    superpix_map = simple_map.superpixel(new_dims)
+    # Reference pixel should change, but referenc coordinate should not
+    assert list(superpix_map.reference_pixel) == [0 * u.pix, 0 * u.pix]
+    assert superpix_map.reference_coordinate == simple_map.reference_coordinate
+
+    # Check that offset works
+    superpix_map = simple_map.superpixel(new_dims, offset=[1, 2] * u.pix)
+    # Reference pixel should change, but referenc coordinate should not
+    assert u.allclose(list(superpix_map.reference_pixel),
+                      [-0.5 * u.pix, -1 * u.pix])
+    assert superpix_map.reference_coordinate == simple_map.reference_coordinate
 
 
 def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
@@ -843,7 +872,7 @@ def test_as_mpl_axes_aia171(aia171_test_map):
 
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
-    with pytest.warns(SunpyUserWarning) as w:
+    with pytest.warns(SunpyMetadataWarning) as w:
         bad_header = {
             'CRVAL1': 0,
             'CRVAL2': 0,
@@ -1120,8 +1149,7 @@ def test_contour_units(simple_map):
 def test_contour_input(simple_map):
     simple_map.meta['bunit'] = 'm'
 
-    with pytest.warns(SunpyDeprecationWarning,
-         match='Passing contour levels that are not an astropy Quantity'):
+    with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
         simple_map.draw_contours(1.5)
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
         simple_map.contour(1.5)

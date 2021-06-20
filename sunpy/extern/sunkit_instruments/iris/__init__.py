@@ -1,1 +1,0 @@
-from .iris import *  # NOQA

@@ -131,7 +131,7 @@ def carrington_rotation_time(crot, longitude: u.deg = None):
     """
     crot = crot << u.one
     if longitude is not None:
-        if not u.allclose(crot%1, 0):
+        if not u.allclose(crot % 1, 0):
             raise ValueError("Carrington rotation number(s) must be integral if `longitude` is provided.")
         if (longitude <= 0*u.deg).any() or (longitude > 360*u.deg).any():
             raise ValueError("Carrington longitude(s) must be > 0 degrees and <= 360 degrees.")

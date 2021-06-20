@@ -4,7 +4,6 @@ This module provides a web scraper.
 import os
 import re
 import calendar
-import warnings
 from time import sleep
 from ftplib import FTP
 from datetime import datetime
@@ -21,7 +20,7 @@ from astropy.time import Time, TimeDelta
 from sunpy import log
 from sunpy.extern.parse import parse
 from sunpy.time import TimeRange
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['Scraper']
 
@@ -81,8 +80,7 @@ class Scraper:
         if regex:
             self.pattern = pattern
             if kwargs:
-                warnings.warn('regexp being used, the extra arguments passed are being ignored',
-                              SunpyUserWarning)
+                warn_user('regexp being used, the extra arguments passed are being ignored')
         else:
             self.pattern = pattern.format(**kwargs)
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
@@ -308,19 +306,17 @@ class Scraper:
                     continue
                 if http_err.code == 429:
                     # See if the server has told us how long to back off for
-                    retry_after = http_err.hdrs.get('Retry-After', 1)
+                    retry_after = http_err.hdrs.get('Retry-After', 2)
                     try:
                         # Ensure that we can parse the header as an int in sec
                         retry_after = int(retry_after)
-                    except Exception:
-                        retry_after = 1
-
+                    except Exception as e:
+                        log.debug(f"Converting retry_after failed: {e}")
+                        retry_after = 2
                     log.debug(
                         f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying."
                     )
-
                     sleep(retry_after)
-
                     # Put this dir back on the queue
                     directories.insert(0, directory)
                     continue

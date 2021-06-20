@@ -155,6 +155,11 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         else:
             return super().__str__()
 
+    @property
+    def _is_2d(self):
+        return (self._data is not None and self._data.norm().unit is u.one
+                and u.allclose(self._data.norm(), 1*u.one))
+
 
 class BaseHeliographic(SunPyBaseCoordinateFrame):
     """
@@ -191,9 +196,7 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
         frame : `~sunpy.coordinates.frames.BaseHeliographic`
             The fully 3D coordinate
         """
-        # Check if the coordinate is 2D
-        if (self._data is not None and self._data.norm().unit is u.one
-                and u.allclose(self._data.norm(), 1*u.one)):
+        if self._is_2d:
             return self.realize_frame(self._data * self.rsun)
 
         # The coordinate is already 3D
@@ -324,6 +327,12 @@ class HeliographicCarrington(BaseHeliographic):
     _wrap_angle = 360*u.deg
 
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not isinstance(self.observer, BaseCoordinateFrame) and self.observer == 'self' and self._is_2d:
+            raise ValueError("Full 3D coordinate (including radius) must be specified "
+                             "when observer='self'.")
 
 
 @add_common_docstring(**_frame_parameters())
@@ -470,6 +479,25 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     rsun = QuantityAttribute(default=_RSUN, unit=u.km)
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
+    @property
+    def angular_radius(self):
+        """
+        Angular radius of the Sun as seen by the observer.
+
+        The ``rsun`` frame attribute is the radius of the Sun in length units.
+        The tangent vector from the observer to the edge of the Sun forms a
+        right-angle triangle with the radius of the Sun as the far side and the
+        Sun-observer distance as the hypotenuse. Thus, the sine of the angular
+        radius of the Sun is ratio of these two distances.
+        """
+        from sunpy.coordinates.sun import _angular_radius  # avoiding a circular import
+
+        if not isinstance(self.observer, HeliographicStonyhurst):
+            if self.observer is None:
+                raise ValueError("The observer must be defined, not `None`.")
+            raise ValueError("The observer must be fully defined by specifying `obstime`.")
+        return _angular_radius(self.rsun, self.observer.radius)
+
     def make_3d(self):
         """
         This method calculates the third coordinate of the Helioprojective
@@ -484,8 +512,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             now with a third coordinate.
         """
         # Skip if we already are 3D
-        distance = self.spherical.distance
-        if not (distance.unit is u.one and u.allclose(distance, 1*u.one)):
+        if not self._is_2d:
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):

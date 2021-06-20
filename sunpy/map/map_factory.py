@@ -1,9 +1,7 @@
 import os
-import glob
 import pathlib
-import warnings
 from collections import OrderedDict
-from urllib.request import Request, urlopen
+from urllib.request import Request
 
 import numpy as np
 
@@ -24,8 +22,9 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
-from sunpy.util.exceptions import NoMapsInFileError, SunpyUserWarning
+from sunpy.util.exceptions import NoMapsInFileError, warn_user
 from sunpy.util.functools import seconddispatch
+from sunpy.util.io import is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
 
@@ -229,10 +228,10 @@ class MapFactory(BasicRegistrationFactory):
                 header = args.pop(i)
                 args.insert(i, (data, header))
                 nargs -= 1
-            elif isinstance(arg, str) and _is_url(arg):
+            elif isinstance(arg, str) and is_url(arg):
                 # Repalce URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
-            elif _possibly_a_path(arg):
+            elif possibly_a_path(arg):
                 # Repalce path strings with Path objects
                 args[i] = pathlib.Path(arg)
             i += 1
@@ -246,8 +245,7 @@ class MapFactory(BasicRegistrationFactory):
             except NoMapsInFileError as e:
                 if not silence_errors:
                     raise
-                warnings.warn(
-                    f"One of the arguments failed to parse with error: {e}", SunpyUserWarning)
+                warn_user(f"One of the arguments failed to parse with error: {e}")
 
         return data_header_pairs
 
@@ -289,21 +287,7 @@ class MapFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, arg, **kwargs):
-        path = arg.expanduser()
-        if _is_file(path):
-            return self._read_file(path, **kwargs)
-        elif _is_dir(path):
-            pairs = []
-            for afile in sorted(path.glob('*')):
-                pairs += self._read_file(afile, **kwargs)
-            return pairs
-        elif glob.glob(os.path.expanduser(arg)):
-            pairs = []
-            for afile in sorted(glob.glob(os.path.expanduser(arg))):
-                pairs += self._read_file(afile, **kwargs)
-            return pairs
-        else:
-            raise ValueError(f'Did not find any files at {arg}')
+        return parse_path(arg, self._read_file, **kwargs)
 
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
@@ -350,8 +334,7 @@ class MapFactory(BasicRegistrationFactory):
                     ValidationFunctionError, MapMetaValidationError) as e:
                 if not silence_errors:
                     raise
-                warnings.warn(
-                    f"One of the data, header pairs failed to validate with: {e}", SunpyUserWarning)
+                warn_user(f"One of the data, header pairs failed to validate with: {e}")
 
         if not len(new_maps):
             raise RuntimeError('No maps loaded')
@@ -396,44 +379,6 @@ class MapFactory(BasicRegistrationFactory):
         WidgetType = candidate_widget_types[0]
 
         return WidgetType(data, meta, **kwargs)
-
-
-def _is_url(arg):
-    try:
-        urlopen(arg)
-    except Exception:
-        return False
-    return True
-
-
-def _possibly_a_path(arg):
-    """
-    Check if arg can be coerced into a Path object.
-    Does *not* check if the path exists.
-    """
-    try:
-        pathlib.Path(arg)
-        return True
-    except Exception:
-        return False
-
-
-# In python<3.8 paths with un-representable chars (ie. '*' on windows)
-# raise an error, so make our own version that returns False instead of
-# erroring. These can be removed when we support python >= 3.8
-# https://docs.python.org/3/library/pathlib.html#methods
-def _is_file(path):
-    try:
-        return path.is_file()
-    except Exception:
-        return False
-
-
-def _is_dir(path):
-    try:
-        return path.is_dir()
-    except Exception:
-        return False
 
 
 class InvalidMapInput(ValueError):

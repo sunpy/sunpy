@@ -19,7 +19,6 @@ import sunpy.timeseries
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -208,26 +207,14 @@ class TestTimeSeries:
         ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_json_filepath, source='NOAAIndices')
         assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
 
-    def test_noaa_ind_txt(self):
-        # Test a NOAAPredictIndices TimeSeries txt
-        with pytest.warns(SunpyDeprecationWarning):
-            ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
-        assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
-
     # The pre- data involves dates long in the future, so ignore an ERFA warning
     # when parsing these dates.
+
     @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
     def test_noaa_pre_json(self):
         # Test a NOAAIndices TimeSeries json
         ts_noaa_pre = sunpy.timeseries.TimeSeries(
             noaa_pre_json_filepath, source='NOAAPredictIndices')
-        assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
-
-    def test_noaa_pre_txt(self):
-        # Test a NOAAIndices TimeSeries txt
-        with pytest.warns(SunpyDeprecationWarning):
-            ts_noaa_pre = sunpy.timeseries.TimeSeries(
-                noaa_pre_txt_filepath, source='NOAAPredictIndices')
         assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
 
 # ==============================================================================
@@ -463,10 +450,10 @@ class TestTimeSeries:
 
     def test_invalid_filepath(self):
         invalid_filepath = os.path.join(filepath, 'invalid_filepath_here')
-        with pytest.raises(NoMatchError):
+        with pytest.raises(ValueError, match='Did not find any files'):
             sunpy.timeseries.TimeSeries(invalid_filepath)
         # Now with silence_errors kwarg set
-        with pytest.raises(NoMatchError):
+        with pytest.raises(ValueError, match='Did not find any files'):
             sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_invalid_file(self):
@@ -480,34 +467,34 @@ class TestTimeSeries:
     def test_validate_units(self):
         valid_units = OrderedDict(
             [('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))])
-        assert sunpy.timeseries.TimeSeries._validate_units(valid_units)
+        assert sunpy.timeseries.TimeSeries._is_units(valid_units)
         # Test for not having only units for values
         invalid_units_1 = OrderedDict(
             [('Watt Per Meter Squared', 'string'), ('Meter Cubed', u.Unit("m3"))])
-        assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_1)
+        assert not sunpy.timeseries.TimeSeries._is_units(invalid_units_1)
         # Test for being a MetaDict object
         invalid_units_2 = MetaDict(OrderedDict(
             [('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))]))
-        assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_2)
+        assert not sunpy.timeseries.TimeSeries._is_units(invalid_units_2)
 
     def test_validate_meta_basic(self):
         valid_meta_1 = MetaDict({'key': 'value'})
-        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_1)
+        assert sunpy.timeseries.TimeSeries._is_metadata(valid_meta_1)
         valid_meta_2 = OrderedDict({'key': 'value'})
-        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_2)
+        assert sunpy.timeseries.TimeSeries._is_metadata(valid_meta_2)
         time_range = sunpy.time.TimeRange('2020-01-01 12:00', '2020-01-02 12:00')
         valid_meta_3 = sunpy.timeseries.TimeSeriesMetaData(time_range)
-        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_3)
+        assert sunpy.timeseries.TimeSeries._is_metadata(valid_meta_3)
         invalid_meta = []
-        assert not sunpy.timeseries.TimeSeries._validate_meta(invalid_meta)
+        assert not sunpy.timeseries.TimeSeries._is_metadata(invalid_meta)
 
     def test_validate_meta_astropy_header(self):
         # Manually open a goes file for the sunpy.io.header.FileHeader test
         hdus = sunpy.io.read_file(goes_filepath)
         header = hdus[0].header
-        assert sunpy.timeseries.TimeSeries._validate_meta(header)
+        assert sunpy.timeseries.TimeSeries._is_metadata(header)
         # Manually open a goes file for the astropy.io.fits.header.Header test
         hdulist = fits.open(goes_filepath)
         header = hdulist[0].header
         hdulist.close()
-        assert sunpy.timeseries.TimeSeries._validate_meta(header)
+        assert sunpy.timeseries.TimeSeries._is_metadata(header)

@@ -58,10 +58,7 @@ if is_release:
     warnings.simplefilter("ignore")
 warnings.filterwarnings("error", category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
-# TODO: Remove this when we remove instr in sunpy 3.1
-warnings.filterwarnings(
-    "ignore", message="sunpy.instr is deprecated and will be removed in sunpy 3.1.", category=SunpyDeprecationWarning
-)
+
 # -- SunPy Sample Data and Config ----------------------------------------------
 # We set the logger to debug so that we can see any sample data download errors
 # in the CI, especially RTD.
@@ -87,6 +84,14 @@ rst_epilog = """
 """
 
 # -- General configuration -----------------------------------------------------
+# sphinxext-opengraph
+ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
+ogp_use_first_image = True
+ogp_description_length = 160
+ogp_custom_meta_tags = [
+    '<meta property="og:ignore_canonical" content="true" />',
+]
+
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
 suppress_warnings = ['app.add_directive', ]
@@ -95,6 +100,11 @@ suppress_warnings = ['app.add_directive', ]
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'matplotlib.sphinxext.plot_directive',
+    'sphinx_automodapi.automodapi',
+    'sphinx_automodapi.smart_resolver',
+    'sphinx_changelog',
+    'sphinx_gallery.gen_gallery',
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.doctest',
@@ -104,13 +114,9 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    'matplotlib.sphinxext.plot_directive',
-    'sphinx_automodapi.automodapi',
-    'sphinx_automodapi.smart_resolver',
-    'sphinx_gallery.gen_gallery',
-    'sphinx_changelog',
     'sunpy.util.sphinx.doctest',
     'sunpy.util.sphinx.generate',
+    "sphinxext.opengraph",
 ]
 
 # Add any paths that contain templates here, relative to this directory.

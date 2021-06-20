@@ -12,12 +12,10 @@ Code Reference
    data
    database
    image
-   instr
    io
    map
    net
    physics
-   roi
    sun
    time
    timeseries

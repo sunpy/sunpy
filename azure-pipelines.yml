@@ -149,8 +149,8 @@ stages:
             - sdist
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
-    - stage: CronNotifier
-      condition: succeededOrFailed()
+    - stage: CronNotifier_OK
+      condition: succeeded()
       dependsOn:
         - SecondPhaseTests
         - CronTests
@@ -170,4 +170,28 @@ stages:
             BRANCH: $(Build.SourceBranchName)
             ACCESS_TOKEN: $(azurebot_access_token)
             BUILDID: $(Build.BuildId)
-            STATUS: $(Agent.JobStatus)
+            STATUS: Succeeded
+
+  - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
+    - stage: CronNotifier_Fail
+      condition: failed()
+      dependsOn:
+        - SecondPhaseTests
+        - CronTests
+        - Release
+      jobs:
+      - job: notify
+        pool:
+          vmImage: ubuntu-20.04
+        steps:
+        - bash: |
+            sudo apt-get install httpie xonsh
+            http --version
+        - bash: xonsh ./tools/send_matrix_message.xsh
+          env:
+            ROOMID: '%21JYqfIVJjWANcHnfktY:cadair.com'  # sunpy development room
+            HOMESERVER: 'https://matrix.cadair.com'
+            BRANCH: $(Build.SourceBranchName)
+            ACCESS_TOKEN: $(azurebot_access_token)
+            BUILDID: $(Build.BuildId)
+            STATUS: Failed

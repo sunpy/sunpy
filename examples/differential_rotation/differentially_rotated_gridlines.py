@@ -24,6 +24,8 @@ from sunpy.data.sample import AIA_171_IMAGE
 # differential rotation) in white and the differentially rotated lines in
 # blue.
 
+# sphinx_gallery_defer_figures
+
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 fig = plt.figure()
 ax = plt.subplot(projection=aiamap)

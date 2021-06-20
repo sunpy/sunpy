@@ -1,10 +1,9 @@
-import warnings
 
 import pytest
 
 import sunpy
 from sunpy.tests.self_test import _self_test_args
-from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, warn_deprecated
 
 
 def test_main_nonexisting_module():
@@ -59,4 +58,4 @@ def test_main_figure_only(monkeypatch):
 def test_warnings():
     # Ensure that our warning trickery dosen't stop pytest.warns working
     with pytest.warns(SunpyDeprecationWarning):
-        warnings.warn("Hello", SunpyDeprecationWarning)
+        warn_deprecated("Hello")

@@ -16,7 +16,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.data.test
 import sunpy.map
-from sunpy.util.exceptions import NoMapsInFileError, SunpyUserWarning
+from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
 
 filepath = pathlib.Path(sunpy.data.test.rootdir)
 a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]
@@ -58,6 +58,11 @@ class TestMap:
     def test_mapsequence(self):
         # Test making a MapSequence
         sequence = sunpy.map.Map(a_list_of_many, sequence=True)
+        assert isinstance(sequence, sunpy.map.MapSequence)
+
+    def test_mapsequence_sortby(self):
+        # Test making a MapSequence with sortby kwarg
+        sequence = sunpy.map.Map(a_list_of_many, sequence=True, sortby=None)
         assert isinstance(sequence, sunpy.map.MapSequence)
 
     def test_composite(self):
@@ -156,7 +161,7 @@ class TestMap:
         header = {'cdelt1': 10, 'cdelt2': 10,
                   'telescop': 'sunpy',
                   'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-        with pytest.warns(SunpyUserWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+        with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
             pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
@@ -167,7 +172,7 @@ class TestMap:
                   'detector': 1,
                   'instrume': 50,
                   'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-        with pytest.warns(SunpyUserWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+        with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
             pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
@@ -230,7 +235,7 @@ class TestMap:
         # Test save out
         eitmap = sunpy.map.Map(a_fname)
         afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-        with pytest.warns(SunpyUserWarning, match='The meta key  is not valid ascii'):
+        with pytest.warns(SunpyMetadataWarning, match='The meta key  is not valid ascii'):
             eitmap.save(afilename, filetype='fits', overwrite=True)
         backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)

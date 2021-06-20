@@ -1,14 +1,13 @@
 import os
 from pathlib import Path
 from datetime import datetime
-from warnings import warn
 from urllib.request import urlopen
 
 import astropy.units as u
 from astropy.time import TimeDelta
 
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.net import get_filename
 from sunpy.util.util import hash_file
 
@@ -165,7 +164,7 @@ class Cache:
             try:
                 return download(url)
             except Exception as e:
-                warn(f"{e}", SunpyUserWarning)
+                warn_user(f"{e}")
                 errors.append(f"{e}")
         else:
             raise RuntimeError(errors)

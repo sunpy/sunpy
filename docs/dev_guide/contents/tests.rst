@@ -279,6 +279,9 @@ If you want to check what the images look like, you can do::
 
 The images output from the tests will be stored in a folder called baseline so you can double check the test works as you expected.
 
+
+.. _doctests:
+
 Writing doctests
 ----------------
 

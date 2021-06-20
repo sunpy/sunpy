@@ -37,13 +37,11 @@ class Time(_attrs.Time):
 
     def __init__(self, *args, **kwargs):
         # Do this here to not clutter the namespace
-        from warnings import warn
-
-        from sunpy.util.exceptions import SunpyDeprecationWarning
+        from sunpy.util.exceptions import SunpyDeprecationWarning, _warn
 
         name = type(self).__name__
-        warn(f"`sunpy.net.hek.attrs.{name}` is deprecated, please use `sunpy.net.attrs.{name}`",
-             SunpyDeprecationWarning)
+        _warn(f"`sunpy.net.hek.attrs.{name}` is deprecated, please use `sunpy.net.attrs.{name}`",
+              SunpyDeprecationWarning)
         super().__init__(*args, **kwargs)
 
 
