@@ -1,0 +1,1 @@
+:meth:`sunpy.timeseries.sources.NOAAIndicesTimeSeries.peek` accepts ``plot_type`` as an argument instead of ``type``.

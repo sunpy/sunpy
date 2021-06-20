@@ -496,7 +496,7 @@ class GenericTimeSeries:
 
         Returns
         -------
-        axes : `~matplotlib.axes.Axes`
+        `~matplotlib.axes.Axes`
             The plot axes.
         """
         import matplotlib.pyplot as plt

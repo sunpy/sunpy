@@ -6,6 +6,7 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 
 import astropy.units as u
 
@@ -56,10 +57,62 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaaindices'
 
-    @peek_show
-    def peek(self, type='sunspot SWO', **kwargs):
+    def plot(self, axes=None, plot_type='sunspot SWO', **kwargs):
         """
-        Plots NOAA Indices as a function of time. An example is shown below.
+        Plots NOAA Indices as a function of time from a pandas dataframe.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries.
+        plot_type : {'sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'geo'}, optional
+            The type of plot required. Defaults to "sunspot SWO".
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
+
+        Returns
+        -------
+        `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        self._validate_data_for_plotting()
+        dataframe = self.to_dataframe()
+        if axes is None:
+            axes = plt.gca()
+        if plot_type == 'sunspot SWO':
+            dataframe['sunspot SWO'].plot(**kwargs)
+            dataframe['sunspot SWO smooth'].plot(**kwargs)
+            axes.set_ylabel('Sunspot Number')
+        elif plot_type == 'sunspot RI':
+            dataframe['sunspot RI'].plot(**kwargs)
+            dataframe['sunspot RI smooth'].plot(**kwargs)
+            axes.set_ylabel('Sunspot Number')
+        elif plot_type == 'sunspot compare':
+            dataframe['sunspot RI'].plot(**kwargs)
+            dataframe['sunspot SWO'].plot(**kwargs)
+            axes.set_ylabel('Sunspot Number')
+        elif plot_type == 'radio':
+            dataframe['radio flux'].plot(**kwargs)
+            dataframe['radio flux smooth'].plot(**kwargs)
+            axes.set_ylabel('Radio Flux [sfu]')
+        elif plot_type == 'geo':
+            dataframe['geomagnetic ap'].plot(**kwargs)
+            dataframe['geomagnetic ap smooth'].plot(**kwargs)
+            axes.set_ylabel('Geomagnetic AP Index')
+        else:
+            raise ValueError(f'Got unknown plot type "{type}"')
+        axes.set_ylim(0)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend()
+        return axes
+
+    @peek_show
+    def peek(self, title="Solar Cycle Progression", plot_type='sunspot SWO', **kwargs):
+        """
+        Displays the NOAA Indices as a function of time by calling
+        `~sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries.plot`.
 
         .. plot::
 
@@ -70,46 +123,17 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
-        type : {'sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'geo'}, optional
+        title : `str`, optional
+            The title of the plot. Defaults to "Solar Cycle Progression".
+        plot_type : {'sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'geo'}, optional
             The type of plot required. Defaults to "sunspot SWO".
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
         """
-        # Check we have a timeseries valid for plotting
-        self._validate_data_for_plotting()
-
-        dataframe = self.to_dataframe()
-        if type == 'sunspot SWO':
-            axes = dataframe['sunspot SWO'].plot(**kwargs)
-            dataframe['sunspot SWO smooth'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
-        elif type == 'sunspot RI':
-            axes = dataframe['sunspot RI'].plot(**kwargs)
-            dataframe['sunspot RI smooth'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
-        elif type == 'sunspot compare':
-            axes = dataframe['sunspot RI'].plot(**kwargs)
-            dataframe['sunspot SWO'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
-        elif type == 'radio':
-            axes = dataframe['radio flux'].plot(**kwargs)
-            dataframe['radio flux smooth'].plot(**kwargs)
-            axes.set_ylabel('Radio Flux [sfu]')
-        elif type == 'geo':
-            axes = dataframe['geomagnetic ap'].plot(**kwargs)
-            dataframe['geomagnetic ap smooth'].plot(**kwargs)
-            axes.set_ylabel('Geomagnetic AP Index')
-        else:
-            raise ValueError(f'Got unknown plot type "{type}"')
-
-        axes.set_ylim(0)
-        axes.set_title('Solar Cycle Progression')
-
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
-        axes.legend()
-
+        axes = self.plot(plot_type=plot_type, **kwargs)
+        axes.set_title(title)
+        axes = plt.gca()
         fig = axes.get_figure()
         return fig
 
@@ -205,11 +229,42 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaapredictindices'
 
-    @peek_show
-    def peek(self, **plot_args):
+    def plot(self, axes=None, **plot_args):
         """
-        Plots predicted NOAA Indices as a function of time. An example is shown
-        below.
+        Plots predicted NOAA Indices as a function of time from a pandas dataframe.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
+
+        Returns
+        -------
+        `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        self._validate_data_for_plotting()
+        dataframe = self.to_dataframe()
+        if axes is None:
+            axes = plt.gca()
+        dataframe['sunspot'].plot(color='b', **plot_args)
+        dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
+        dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
+        axes.set_ylim(0)
+        axes.set_ylabel('Sunspot Number')
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend()
+        return axes
+
+    @peek_show
+    def peek(self, title="Solar Cycle Sunspot Number Prediction", **plot_args):
+        """
+        Displays the predicted NOAA Indices as a function of time by calling
+        `~sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries.plot`.
 
         .. plot::
 
@@ -220,26 +275,15 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
+        title : `str`, optional
+            The title of the plot. Defaults to "Solar Cycle Sunspot Number Prediction".
         **plot_args : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
         """
-        # Check we have a timeseries valid for plotting
-        self._validate_data_for_plotting()
-        dataframe = self.to_dataframe()
-        axes = dataframe['sunspot'].plot(color='b', **plot_args)
-        dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
-        dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
-
-        axes.set_ylim(0)
-        axes.set_title('Solar Cycle Sunspot Number Prediction')
-        axes.set_ylabel('Sunspot Number')
-
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
-        axes.legend()
-
-        fig = axes.get_figure()
+        axes = self.plot(**plot_args)
+        axes.set_title(title)
+        fig = plt.gcf()
         return fig
 
     @classmethod

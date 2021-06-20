@@ -59,10 +59,40 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'gbmsummary'
 
-    @peek_show
-    def peek(self, **kwargs):
+    def plot(self, axes=None, **kwargs):
         """
-        Plots the GBM lightcurve TimeSeries. An example can be seen below:
+        Plots the GBM timeseries with data from its pandas dataframe.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries. Defaults to current axes.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
+
+        Returns
+        -------
+        `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        self._validate_data_for_plotting()
+        if axes is None:
+            axes = plt.gca()
+        data_lab = self.to_dataframe().columns.values
+        for d in data_lab:
+            axes.plot(self.to_dataframe().index, self.to_dataframe()[d], label=d, **kwargs)
+        axes.set_yscale("log")
+        axes.set_xlabel('Start time: ' + self.to_dataframe().index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
+        axes.set_ylabel('Counts/s/keV')
+        axes.legend()
+        return axes
+
+    @peek_show
+    def peek(self, title=None, **kwargs):
+        """
+        Displays the GBM timeseries by calling
+        `~sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries.plot`.
 
         .. plot::
 
@@ -73,28 +103,18 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
+        title : `str`, optional
+            The title of the plot.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
         """
-        # Check we have a timeseries valid for plotting
-        self._validate_data_for_plotting()
-
+        if title is None:
+            title = 'Fermi GBM Summary data ' + str(self.meta.get('DETNAM').values())
         fig, ax = plt.subplots()
-        data_lab = self.to_dataframe().columns.values
-
-        for d in data_lab:
-            ax.plot(self.to_dataframe().index, self.to_dataframe()[d], label=d, **kwargs)
-
-        ax.set_yscale("log")
-        ax.set_title('Fermi GBM Summary data ' + str(self.meta.get(
-            'DETNAM').values()))
-        ax.set_xlabel('Start time: ' + self.to_dataframe().index[0].strftime(
-            '%Y-%m-%d %H:%M:%S UT'))
-        ax.set_ylabel('Counts/s/keV')
-        ax.legend()
+        axes = self.plot(axes=ax, **kwargs)
+        axes.set_title(title)
         fig.autofmt_xdate()
-
         return fig
 
     @classmethod
