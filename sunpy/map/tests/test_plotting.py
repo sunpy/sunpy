@@ -135,6 +135,13 @@ def test_quadrangle_aia17_width_height(aia171_test_map):
 
 
 @figure_test
+def test_quadrangle_aia17_pix_width_height(aia171_test_map):
+    aia171_test_map.plot()
+    aia171_test_map.draw_quadrangle(bottom_left=(50, 50)*u.pix, width=30*u.pix,
+                                    height=50*u.pix, edgecolor="cyan")
+
+
+@figure_test
 def test_quadrangle_aia17_top_right(aia171_test_map):
     aia171_test_map.plot()
     bottom_left = SkyCoord(
@@ -143,6 +150,29 @@ def test_quadrangle_aia17_top_right(aia171_test_map):
         65 * u.deg, 50 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
     aia171_test_map.draw_quadrangle(bottom_left, top_right=top_right, label='Quadrangle')
     plt.legend()  # Check that the 'Quadrangle' label shows up in the legend
+
+
+@figure_test
+def test_quadrangle_aia17_pix_top_right(aia171_test_map):
+    aia171_test_map.plot()
+    aia171_test_map.draw_quadrangle(bottom_left=(50, 50)*u.pix,
+                                    top_right=(80, 90)*u.pix, edgecolor='cyan')
+
+
+@figure_test
+def test_quadrangle_aia17_pix_top_right_different_axes(aia171_test_map):
+    # Plot the map rotated by 30 degrees
+    aia171_test_map.rotate(30*u.deg).plot()
+    # Plot a rectangle in the pixel space of the original map
+    aia171_test_map.draw_quadrangle(bottom_left=(50, 50)*u.pix,
+                                    top_right=(80, 90)*u.pix, edgecolor='cyan')
+
+
+@figure_test
+def test_quadrangle_aia17_pix_top_right_different_axes(aia171_test_map):
+    aia171_test_map.rotate(30*u.deg).plot()
+    aia171_test_map.draw_quadrangle(bottom_left=(50, 50)*u.pix,
+                                    top_right=(80, 90)*u.pix, edgecolor='cyan')
 
 
 @figure_test
