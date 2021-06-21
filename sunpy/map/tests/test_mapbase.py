@@ -183,14 +183,12 @@ def test_rsun_meters(generic_map):
 
 
 def test_rsun_obs_without_rsun_ref(generic_map):
-    with pytest.warns(SunpyMetadataWarning,
-                      match='assuming the standard radius of the photosphere '
-                            'as seen from the observer distance'):
-        assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
+    assert_quantity_allclose(generic_map.rsun_obs,
+                             sun.angular_radius(generic_map.date))
 
 
 def test_rsun_obs_with_rsun_ref(generic_map):
-    generic_map.meta['rsun_ref'] = sunpy.sun.constants.radius
+    generic_map.meta['rsun_ref'] = sunpy.sun.constants.radius.to_value(u.m)
     # The following should not raise a warning because we can calculate it exactly
     assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
 

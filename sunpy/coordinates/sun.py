@@ -70,6 +70,11 @@ def _angular_radius(sol_radius, distance):
     return Angle(solar_semidiameter_rad.to(u.arcsec))
 
 
+@u.quantity_input
+def _radius_from_angular_radius(angular_radius: u.arcsec, distance: u.m):
+    return np.sin(angular_radius) * distance
+
+
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def sky_position(t='now', equinox_of_date=True):
     """
