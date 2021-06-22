@@ -905,6 +905,67 @@ def test_ts_shape(generic_ts):
 def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().to_dataframe().equals(generic_ts.to_dataframe().sort_index())
 
+# =============================================================================
+# Test Source Plot axes
+# =============================================================================
+
+
+def test_fermi_gbm_plot(fermi_gbm_test_ts):
+    fermi_gbm_test_ts.to_dataframe().columns
+    ax = fermi_gbm_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), fermi_gbm_test_ts.to_array().T[i])
+
+
+def test_goes_plot(goes_test_ts):
+    ax = goes_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), goes_test_ts.to_array().T[i])
+
+
+def test_rhessi_plot(rhessi_test_ts):
+    ax = rhessi_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), rhessi_test_ts.to_array().T[i])
+
+
+def test_norh_plot(norh_test_ts):
+    ax = norh_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), norh_test_ts.to_array().T[i])
+
+
+def test_noaa_json_ind_plot(noaa_ind_json_test_ts):
+    ax = noaa_ind_json_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), noaa_ind_json_test_ts._data[[
+                                      'sunspot SWO', 'sunspot SWO smooth']].to_numpy().T[i])
+
+
+def test_noaa_json_pre_plot(noaa_pre_json_test_ts):
+    ax = noaa_pre_json_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), noaa_pre_json_test_ts._data[[
+                                      'sunspot', 'sunspot high', 'sunspot low']].to_numpy().T[i])
+
+
+def test_eve_plot(eve_test_ts):
+    ax = eve_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), eve_test_ts.to_array().T[i])
+
+
+def test_esp_plot(esp_test_ts):
+    axes = esp_test_ts.plot()
+    for i, ax in enumerate(axes):
+        np.testing.assert_array_equal(ax.lines[0].get_ydata(), esp_test_ts.to_array().T[i])
+
+
+def test_lyra_plot(lyra_test_ts):
+    axes = lyra_test_ts.plot()
+    for i, ax in enumerate(axes):
+        np.testing.assert_array_equal(ax.lines[0].get_ydata(), lyra_test_ts.to_array().T[i])
+
 
 def test_ts_reindex(generic_ts):
     dates = generic_ts.time_range.start + TimeDelta(np.arange(60)*u.minute)

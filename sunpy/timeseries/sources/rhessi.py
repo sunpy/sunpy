@@ -136,10 +136,55 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'rhessi'
 
+    def plot(self, axes=None, **kwargs):
+        """
+        Plots RHESSI Count Rate light curve from a pandas dataframe.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries. Defaults to current axes.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
+
+        Returns
+        -------
+        `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        self._validate_data_for_plotting()
+        if axes is None:
+            axes = plt.gca()
+        # These are a matplotlib version of the default RHESSI color cycle
+        default_colors = ('black', 'tab:pink', 'tab:green', 'tab:cyan',
+                          'tab:olive', 'tab:red', 'tab:blue', 'tab:orange',
+                          'tab:brown')
+        colors = kwargs.pop('colors', default_colors)
+
+        for color, (item, frame) in zip(itertools.cycle(colors),
+                                        self.to_dataframe().items()):
+
+            axes.plot(self.to_dataframe().index, frame.values,
+                      color=color, label=item, **kwargs)
+
+        axes.set_yscale("log")
+        axes.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
+        axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(False, 'major')
+        axes.legend()
+        # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
+        formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
+        axes.xaxis.set_major_formatter(formatter)
+        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M:%S')
+        return axes
+
     @peek_show
     def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
         """
-        Plots RHESSI Count Rate light curve. An example is shown below:
+        Displays the RHESSI Count Rate light curve by calling
+        `~sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries.plot`.
 
         .. plot::
 
@@ -151,44 +196,15 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         Parameters
         ----------
         title : `str`
-            The title of the plot.
+            The title of the plot. Defaults to "RHESSI Observing Summary Count Rate".
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
         """
-        # Check we have a timeseries valid for plotting
-        self._validate_data_for_plotting()
-
-        # These are a matplotlib version of the default RHESSI color cycle
-        default_colors = ('black', 'tab:pink', 'tab:green', 'tab:cyan',
-                          'tab:olive', 'tab:red', 'tab:blue', 'tab:orange',
-                          'tab:brown')
-        colors = kwargs.pop('colors', default_colors)
-
         fig, ax = plt.subplots()
-
-        for color, (item, frame) in zip(itertools.cycle(colors),
-                                        self.to_dataframe().items()):
-            ax.plot(self.to_dataframe().index, frame.values,
-                    color=color, label=item, **kwargs)
-
-        ax.set_yscale("log")
-        ax.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
-
-        ax.set_title(title)
-        ax.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
-
-        ax.yaxis.grid(True, 'major')
-        ax.xaxis.grid(False, 'major')
-        ax.legend()
-
-        # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M:%S')
-        ax.xaxis.set_major_formatter(formatter)
-
-        ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M:%S')
+        axes = self.plot(axes=ax, **kwargs)
+        axes.set_title(title)
         fig.autofmt_xdate()
-
         return fig
 
     @classmethod

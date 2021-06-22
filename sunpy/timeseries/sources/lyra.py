@@ -4,6 +4,8 @@ This module provies Proba-2 `~sunpy.timeseries.TimeSeries` source.
 import sys
 from collections import OrderedDict
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas
 
 import astropy.units as u
@@ -54,10 +56,51 @@ class LYRATimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'lyra'
 
-    @peek_show
-    def peek(self, names=3, **kwargs):
+    def plot(self, axes=None, names=3, **kwargs):
         """
-        Plots the LYRA data. An example is shown below:
+        Plots the LYRA data from a pandas dataframe.
+
+        Parameters
+        ----------
+        axes : array of `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries.
+        names : `int`, optional
+            The number of columns to plot. Defaults to 3.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot` functions.
+
+        Returns
+        -------
+        array of `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        self._validate_data_for_plotting()
+        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
+                     ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
+        colors = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan')
+        predefined_axes = False
+        if isinstance(axes, np.ndarray):
+            predefined_axes = True
+        elif axes is None:
+            axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
+        for i, name in enumerate(self.to_dataframe().columns):
+            if predefined_axes:
+                axes[i].plot(self._data[self._data.columns[i]], color=colors[i%len(colors)], label=self._data.columns[i])
+                axes[i].legend(loc="upper right")
+                plt.xticks(rotation=30)
+            if names < 3:
+                name = lyranames[names][i]
+            else:
+                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
+            axes[i].locator_params(axis='y', nbins=6)
+            axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
+        axes[-1].set_xlabel("Time")
+        return axes
+
+    @peek_show
+    def peek(self, title=None, names=3, **kwargs):
+        """
+        Displays the LYRA data by calling `~sunpy.timeseries.sources.lyra.LYRATimeSeries.plot`.
 
         .. plot::
 
@@ -68,35 +111,20 @@ class LYRATimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
+        title : `str`, optional
+            The title of the plot.
         names : `int`, optional
             The number of columns to plot. Defaults to 3.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to
             :meth:`pandas.DataFrame.plot`.
         """
-        # Check we have a timeseries valid for plotting
-        self._validate_data_for_plotting()
-
-        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
-                     ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
-
-        axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
-
-        for i, name in enumerate(self.to_dataframe().columns):
-            if names < 3:
-                name = lyranames[names][i]
-            else:
-                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
-
-        axes[0].set_title("LYRA ({0:{1}})".format(self.to_dataframe().index[0], TIME_FORMAT))
-        axes[-1].set_xlabel("Time")
-        for ax in axes:
-            ax.locator_params(axis='y', nbins=6)
-
+        axes = self.plot(names=names, **kwargs)
+        if title is None:
+            title = "LYRA ({0:{1}})".format(self.to_dataframe().index[0], TIME_FORMAT)
+        axes[0].set_title(title)
         fig = axes[-1].get_figure()
         fig.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
-
         fig = axes[0].get_figure()
         fig.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
         return fig

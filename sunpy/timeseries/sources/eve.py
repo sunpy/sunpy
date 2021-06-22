@@ -57,32 +57,56 @@ class ESPTimeSeries(GenericTimeSeries):
 
     _source = 'esp'
 
-    @peek_show
-    def peek(self, title='EVE/ESP Level1', **kwargs):
+    def plot(self, axes=None, **kwargs):
         """
+        Plots the EVE ESP Level 1 timeseries data.
+
+        Parameters
+        ----------
+        axes : numpy.ndarray of `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `pandas.DataFrame.plot`.
+
+        Returns
+        -------
+        array of `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        self._validate_data_for_plotting()
+        names = ("Flux \n 0.1-7nm", "Flux \n 18nm", "Flux \n 26nm", "Flux \n 30nm", "Flux \n 36nm")
+        colors = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan')
+        predefined_axes = False
+        if isinstance(axes, np.ndarray):
+            predefined_axes = True
+        elif axes is None:
+            axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
+        for i, ax in enumerate(axes):
+            if predefined_axes:
+                ax.plot(self._data[self._data.columns[i]], color=colors[i%len(colors)], label=self._data.columns[i])
+                plt.xticks(rotation=30)
+            ax.set_ylabel(names[i])
+            ax.legend(loc="upper right")
+        axes[-1].set_xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
+        axes[-1].set_xlabel("Time (UT) " + str(self.to_dataframe().index[0])[0:11])
+        axes[-1].xaxis.set_major_formatter(dates.DateFormatter("%H:%M"))
+        return axes
+
+    @peek_show
+    def peek(self, title="EVE/ESP Level 1", **kwargs):
+        """
+        Displays the EVE ESP Level 1 timeseries data by calling
+        `~sunpy.timeseries.sources.eve.ESPTimeSeries.plot`.
+
         Parameters
         ----------
         title : `str`, optional
-            Plot title.
+            The title of the plot. Defaults to "EVE/ESP Level 1".
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `pandas.DataFrame.plot`.
         """
-
-        self._validate_data_for_plotting()
-
-        names = ('Flux \n 0.1-7nm', 'Flux \n 18nm', 'Flux \n 26nm', 'Flux \n 30nm', 'Flux \n 36nm')
-
-        axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
-
-        axes[-1].set_xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
-
+        axes = self.plot(**kwargs)
         axes[0].set_title(title)
-        for i, ax in enumerate(axes):
-            ax.set_ylabel(names[i])
-            ax.legend(loc='upper right')
-        axes[-1].set_xlabel('Time (UT) ' + str(self.to_dataframe().index[0])[0:11])
-        axes[-1].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
-
         fig = axes[0].get_figure()
         fig.tight_layout()
         fig.subplots_adjust(hspace=0.05)
@@ -175,15 +199,14 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     @peek_show
     def peek(self, column=None, **kwargs):
         """
-        Plots the time series in a new figure. An example is shown below:
+        Plots the time series in a new figure.
 
-        ..
-            .. plot::
+        .. plot::
 
-                import sunpy.timeseries
-                from sunpy.data.sample import EVE_TIMESERIES
-                eve = sunpy.timeseries.TimeSeries(EVE_TIMESERIES, source='eve')
-                eve.peek(subplots=True)
+            import sunpy.timeseries
+            from sunpy.data.sample import EVE_TIMESERIES
+            eve = sunpy.timeseries.TimeSeries(EVE_TIMESERIES, source='eve')
+            eve.peek(subplots=True, figsize=(22,11))
 
         Parameters
         ----------
@@ -196,7 +219,6 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 
-        fig = plt.figure()
         # Choose title if none was specified
         if "title" not in kwargs and column is None:
             if len(self.to_dataframe().columns) > 1:
@@ -209,13 +231,17 @@ class EVESpWxTimeSeries(GenericTimeSeries):
                     kwargs['title'] = 'EVE Averages'
 
         if column is None:
-            self.plot(**kwargs)
+            axes = self.to_dataframe().plot(sharex=True, **kwargs)
         else:
             data = self.to_dataframe()[column]
             if "title" not in kwargs:
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
-            data.plot(**kwargs)
+            axes = data.plot(**kwargs)
 
+        if "subplots" in kwargs:
+            fig = axes[0].get_figure()
+        else:
+            fig = axes.get_figure()
         return fig
 
     @classmethod

@@ -64,11 +64,61 @@ class XRSTimeSeries(GenericTimeSeries):
     if h5netcdf.__version__ >= LooseVersion("0.10"):
         _netcdf_read_kw['decode_vlen_strings'] = True
 
+    def plot(self, axes=None, **kwargs):
+        """
+        Plots the GOES XRS light curve from a pandas dataframe.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries. Defaults to current axes.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
+
+        Returns
+        -------
+        `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        if not axes:
+            axes = plt.gca()
+        self._validate_data_for_plotting()
+        dates = matplotlib.dates.date2num(parse_time(self.to_dataframe().index).datetime)
+        axes.plot_date(
+            dates, self.to_dataframe()["xrsa"], "-", label=r"0.5--4.0 $\AA$", color="blue", lw=2, **kwargs
+        )
+        axes.plot_date(
+            dates, self.to_dataframe()["xrsb"], "-", label=r"1.0--8.0 $\AA$", color="red", lw=2, **kwargs
+        )
+
+        axes.set_yscale("log")
+        axes.set_ylim(1e-9, 1e-2)
+        axes.set_ylabel("Watts m$^{-2}$")
+        axes.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
+
+        ax2 = axes.twinx()
+        ax2.set_yscale("log")
+        ax2.set_ylim(1e-9, 1e-2)
+        labels = ["A", "B", "C", "M", "X"]
+        centers = np.logspace(-7.5, -3.5, len(labels))
+        ax2.yaxis.set_minor_locator(mticker.FixedLocator(centers))
+        ax2.set_yticklabels(labels, minor=True)
+        ax2.set_yticklabels([])
+        axes.yaxis.grid(True, "major")
+        axes.xaxis.grid(False, "major")
+        axes.legend()
+
+        # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
+        formatter = matplotlib.dates.DateFormatter("%H:%M")
+        axes.xaxis.set_major_formatter(formatter)
+        axes.fmt_xdata = matplotlib.dates.DateFormatter("%H:%M")
+        return axes
+
     @peek_show
     def peek(self, title="GOES Xray Flux", **kwargs):
         """
-        Plots GOES XRS light curve is the usual manner. An example is shown
-        below:
+        Displays the GOES XRS light curve by calling `~sunpy.timeseries.sources.goes.XRSTimeSeries.plot`.
 
         .. plot::
 
@@ -79,50 +129,16 @@ class XRSTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
-        title : `str`. optional
+        title : `str`, optional
             The title of the plot. Defaults to "GOES Xray Flux".
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
         """
-        # Check we have a timeseries valid for plotting
-        self._validate_data_for_plotting()
-
         fig, ax = plt.subplots()
-
-        dates = matplotlib.dates.date2num(parse_time(self.to_dataframe().index).datetime)
-
-        ax.plot_date(dates, self.to_dataframe()['xrsa'], '-',
-                     label=r'0.5--4.0 $\AA$', color='blue', lw=2, **kwargs)
-        ax.plot_date(dates, self.to_dataframe()['xrsb'], '-',
-                     label=r'1.0--8.0 $\AA$', color='red', lw=2, **kwargs)
-
-        ax.set_yscale("log")
-        ax.set_ylim(1e-9, 1e-2)
-        ax.set_title(title)
-        ax.set_ylabel('Watts m$^{-2}$')
-        ax.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
-
-        ax2 = ax.twinx()
-        ax2.set_yscale("log")
-        ax2.set_ylim(1e-9, 1e-2)
-        labels = ['A', 'B', 'C', 'M', 'X']
-        centers = np.logspace(-7.5, -3.5, len(labels))
-        ax2.yaxis.set_minor_locator(mticker.FixedLocator(centers))
-        ax2.set_yticklabels(labels, minor=True)
-        ax2.set_yticklabels([])
-
-        ax.yaxis.grid(True, 'major')
-        ax.xaxis.grid(False, 'major')
-        ax.legend()
-
-        # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M')
-        ax.xaxis.set_major_formatter(formatter)
-
-        ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
+        axes = self.plot(axes=ax, **kwargs)
+        axes.set_title(title)
         fig.autofmt_xdate()
-
         return fig
 
     @classmethod
