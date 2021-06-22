@@ -918,6 +918,22 @@ class GenericMap(NDData):
 
         return new_map
 
+    def _rsun_meters(self, dsun):
+        """
+        This property exists to avoid circular logic in constructing the
+        observer coordinate, by allowing a custom 'dsun' to be specified,
+        instead of one extracted from the `.observer_coordinate` property.
+        """
+        rsun = self.meta.get('rsun_ref', None)
+        if rsun is not None:
+            return rsun * u.m
+        elif self._rsun_obs_no_default is not None:
+            return sun._radius_from_angular_radius(self.rsun_obs, dsun)
+        else:
+            log.info("Missing metadata for solar radius: assuming "
+                     "the standard radius of the photosphere.")
+            return constants.radius
+
     @property
     def rsun_meters(self):
         """
@@ -929,15 +945,7 @@ class GenericMap(NDData):
         If neither peices of metadata are present defaults to the standard
         photospheric radius.
         """
-        rsun = self.meta.get('rsun_ref', None)
-        if rsun is not None:
-            return rsun * u.m
-        elif self._rsun_obs_no_default is not None:
-            return sun._radius_from_angular_radius(self.rsun_obs, self.dsun)
-        else:
-            log.info("Missing metadata for solar radius: assuming "
-                     "the standard radius of the photosphere.")
-            return constants.radius
+        return self._rsun_meters(self.dsun)
 
     @property
     def _rsun_obs_no_default(self):
@@ -1025,14 +1033,20 @@ class GenericMap(NDData):
         for keys, kwargs in self._supported_observer_coordinates:
             meta_list = [k in self.meta for k in keys]
             if all(meta_list):
-                sc = SkyCoord(obstime=self.date, rsun=self.rsun_meters, **kwargs)
-
+                sc = SkyCoord(obstime=self.date, **kwargs)
                 # If the observer location is supplied in Carrington coordinates,
                 # the coordinate's `observer` attribute should be set to "self"
                 if isinstance(sc.frame, HeliographicCarrington):
                     sc.frame._observer = "self"
 
-                return sc.heliographic_stonyhurst
+                sc = sc.heliographic_stonyhurst
+                # We set rsun after constructing the coordinate, as we need
+                # the observer-Sun distance (sc.radius) to calculate this, which
+                # may not be provided directly in metadata (if e.g. the
+                # observer coordinate is specified in a cartesian
+                # representation)
+                return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))
+
             elif any(meta_list) and not set(keys).isdisjoint(self.meta.keys()):
                 if not isinstance(kwargs['frame'], str):
                     kwargs['frame'] = kwargs['frame'].name
