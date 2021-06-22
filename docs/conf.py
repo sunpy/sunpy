@@ -53,6 +53,11 @@ release = __version__
 sunpy_version = Version(__version__)
 is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 
+# Fix the version due to a bug on RTD and sunpy
+if on_rtd:
+    release = "3.0.1"
+    is_release = True
+
 # We want to ignore all warnings in a release version.
 if is_release:
     warnings.simplefilter("ignore")
@@ -62,11 +67,6 @@ warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
 warnings.filterwarnings(
     "ignore", message="sunpy.instr is deprecated and will be removed in sunpy 3.1.", category=SunpyDeprecationWarning
 )
-
-# Fix the version due to a bug on RTD and sunpy
-if on_rtd:
-    release = "3.0.0"
-    is_development = False
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 # We set the logger to debug so that we can see any sample data download errors
