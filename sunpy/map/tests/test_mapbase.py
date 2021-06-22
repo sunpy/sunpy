@@ -83,6 +83,19 @@ def test_wcs_cache(aia171_test_map):
     assert new_wcs.wcs.crpix[0] == new_crpix
 
 
+def test_obs_coord_cache(aia171_test_map):
+    coord1 = aia171_test_map.observer_coordinate
+    coord2 = aia171_test_map.observer_coordinate
+    assert coord1 is coord2
+
+    # Change metadata, and check that the coordinate changes
+    aia171_test_map.meta['haex_obs'] += 10
+    new_coord = aia171_test_map.observer_coordinate
+    assert new_coord.lon != coord2.lon
+    assert new_coord.lat != coord2.lat
+    assert new_coord.radius != coord2.radius
+
+
 def test_header_immutability(aia171_test_map):
     # Check that accessing the wcs of a map doesn't modify the meta data
     assert 'KEYCOMMENTS' in aia171_test_map.meta

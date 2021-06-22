@@ -1000,6 +1000,7 @@ class GenericMap(NDData):
             self.meta.pop(key)
 
     @property
+    @cached_property_based_on('_meta_hash')
     def observer_coordinate(self):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
