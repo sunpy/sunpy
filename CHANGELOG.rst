@@ -61,7 +61,7 @@ Features
   when an EUI image is loaded. (`#5023 <https://github.com/sunpy/sunpy/pull/5023>`__)
 - Added the ability to dynamically scale `sunpy.visualization.animator` instances.
   By specifying the ``clip_interval`` keyword, it will now clip the minimum and maximum at each slider step to the specified interval. (`#5025 <https://github.com/sunpy/sunpy/pull/5025>`__)
-- Added a :meth:``~sunpy.time.timerange.TimeRange.__contains__`` method to `sunpy.time.TimeRange`
+- Added a ``~sunpy.time.timerange.TimeRange.__contains__`` method to `sunpy.time.TimeRange`
   that tests if two time ranges overlap. (`#5093 <https://github.com/sunpy/sunpy/pull/5093>`__)
 - Added the ability to namespace files downloaded using `sunpy.data.data_manager.manager.DataManager` by prepending the file name with module name. (`#5111 <https://github.com/sunpy/sunpy/pull/5111>`__)
 - Added a rigid rotation model to :func:`~sunpy.physics.differential_rotation.diff_rot` via ``rot_type=rigid``, where the rotation rate does not vary with latitude. (`#5132 <https://github.com/sunpy/sunpy/pull/5132>`__)
@@ -101,7 +101,7 @@ Features
 Bug Fixes
 ---------
 
-- Fixed the drawing methods of `sunpy.map.GenericMap` (e.g., :meth:``~sunpy.map.GenericMap.draw_rectangle``) so that any text labels will appear in the legend. (`#5019 <https://github.com/sunpy/sunpy/pull/5019>`__)
+- Fixed the drawing methods of `sunpy.map.GenericMap` (e.g., `~sunpy.map.GenericMap.draw_rectangle``) so that any text labels will appear in the legend. (`#5019 <https://github.com/sunpy/sunpy/pull/5019>`__)
 - Fixed bug in ``sunpy.until.scraper.Scraper`` which caused URL patterns containing backslashes to be incorrectly parsed on Windows. (`#5022 <https://github.com/sunpy/sunpy/pull/5022>`__)
 - Constructing a `~sunpy.util.MetaDict` is now more lenient, and accepts
   any class that inherits from `collections.abc.Mapping`. This fixes a
@@ -175,7 +175,7 @@ Trivial/Internal Changes
   ``sunpy.visualisation.animator.ArrayAnimatorWCS``. (`#4971 <https://github.com/sunpy/sunpy/pull/4971>`__)
 - Added some basic logging to HEK searches, at the 'debug' logging level. (`#5020 <https://github.com/sunpy/sunpy/pull/5020>`__)
 - Refactored `~sunpy.coordinates.metaframes.RotatedSunFrame` transformations for improved performance. (`#5084 <https://github.com/sunpy/sunpy/pull/5084>`__)
-- Re-ordered keyword-only arguments of :meth:``sunpy.map.GenericMap.draw_rectangle`` to match :meth:`sunpy.map.GenericMap.submap`. (`#5091 <https://github.com/sunpy/sunpy/pull/5091>`__)
+- Re-ordered keyword-only arguments of ``sunpy.map.GenericMap.draw_rectangle`` to match :meth:`sunpy.map.GenericMap.submap`. (`#5091 <https://github.com/sunpy/sunpy/pull/5091>`__)
 - Significantly sped up calls to :func:`~sunpy.time.parse_time` for string
   arguments. This will have knock on effects, including improved performance of
   querying the VSO. (`#5108 <https://github.com/sunpy/sunpy/pull/5108>`__)
@@ -223,7 +223,7 @@ Backwards Incompatible Changes
   (i.e. ``m.method(keyword_arg=value)``).
 
   - :meth:`~sunpy.map.GenericMap.submap`: ``width``, ``height``.
-  - :meth:``~sunpy.map.GenericMap.draw_rectangle``: ``width``, ``height``, ``axes``, ``top_right``.
+  - ``~sunpy.map.GenericMap.draw_rectangle``: ``width``, ``height``, ``axes``, ``top_right``.
     (`#4616 <https://github.com/sunpy/sunpy/pull/4616>`__)
 - The sunpy specific attributes ``.heliographic_observer`` and ``.rsun``
   are no longer set on the `~astropy.wcs.WCS` returned by `sunpy.map.GenericMap.wcs`. (`#4620 <https://github.com/sunpy/sunpy/pull/4620>`__)
