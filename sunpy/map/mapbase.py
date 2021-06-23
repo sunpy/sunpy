@@ -2325,10 +2325,7 @@ class GenericMap(NDData):
             x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
 
             # Mask out the data array anywhere the coordinate arrays are not finite
-            not_finite = ~np.logical_and(np.isfinite(x), np.isfinite(y))
-            if np.any(not_finite):
-                data = copy.deepcopy(data)
-                data[not_finite] = np.nan
+            data = np.ma.array(data, mask=~np.logical_and(np.isfinite(x), np.isfinite(y)))
 
         cs = axes.contour(x, y, data, levels, **contour_args)
         return cs
