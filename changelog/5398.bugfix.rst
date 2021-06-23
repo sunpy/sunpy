@@ -1,0 +1,1 @@
+Fixed a bug where calling :meth:`sunpy.map.GenericMap.draw_contours` on a different WCS could result in an unnecessary expansion of the plot limits.
