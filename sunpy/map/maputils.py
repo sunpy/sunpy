@@ -34,7 +34,8 @@ def all_pixel_indices_from_map(smap):
         A `numpy.array` with the all the pixel indices built from the
         dimensions of the map.
     """
-    return np.meshgrid(*[np.arange(v.value) for v in smap.dimensions]) * u.pix
+    y, x = np.indices(smap.data.shape)
+    return [x, y] * u.pix
 
 
 def all_coordinates_from_map(smap):
@@ -60,11 +61,9 @@ def all_corner_coords_from_map(smap):
     """
     Returns the coordinates of the pixel corners in a map.
     """
-    nx, ny = smap.data.shape
-    xpix = np.arange(0, nx + 1, 1) - 0.5
-    ypix = np.arange(0, ny + 1, 1) - 0.5
-    xpix, ypix = np.meshgrid(xpix, ypix, indexing='ij') * u.pix
-    return smap.pixel_to_world(xpix, ypix)
+    ny, nx = smap.data.shape
+    y, x = np.indices((ny + 1, nx + 1))
+    return smap.pixel_to_world((x - 0.5) * u.pix, (y - 0.5) * u.pix)
 
 
 def map_edges(smap):
