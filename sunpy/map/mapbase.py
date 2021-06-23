@@ -2191,7 +2191,7 @@ class GenericMap(NDData):
         levels = self._process_levels_arg(levels)
 
         # Pixel indices
-        x, y = np.meshgrid(*map(np.arange, np.flipud(self.data.shape)))
+        y, x = np.indices(self.data.shape)
 
         # Prepare a local variable in case we need to mask values
         data = self.data
