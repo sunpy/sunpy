@@ -11,8 +11,8 @@ from astropy.time import Time
 from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
+from sunpy.net.scraper import Scraper, get_timerange_from_exdict
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.scraper import Scraper, get_timerange_from_exdict
 
 TIME_FORMAT = config.get("general", "time_format")
 

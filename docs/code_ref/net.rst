@@ -93,3 +93,5 @@ for `sunpy.net.Fido`.
 .. automodapi:: sunpy.net.attr
 
 .. automodapi:: sunpy.net.dataretriever.client
+
+.. automodapi:: sunpy.net.scraper
