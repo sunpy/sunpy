@@ -97,6 +97,8 @@ stages:
           - linux: py38-conda
             libraries: {}
 
+          - linux: pyinstaller
+
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
     - stage: CronTests
