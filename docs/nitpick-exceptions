@@ -1,0 +1,95 @@
+# Prevents sphinx nitpicky mode picking up on optional
+# (see https://github.com/sphinx-doc/sphinx/issues/6861)
+# Even if it was "fixed", still broken
+py:class optional
+# See https://github.com/numpy/numpy/issues/10039
+py:obj numpy.datetime64
+# There's no specific file or function classes to link to
+py:class (Unit('deg'), Unit('pix'))
+py:class (Unit('Mm'), None)
+py:class any type
+py:class array-like
+py:class file object
+py:class function
+py:class path-like
+py:class str-like
+py:class time-like
+py:class Unit('%')
+py:class Unit('Angstrom')
+py:class Unit('arcsec / pix')
+py:class Unit('arcsec')
+py:class Unit('deg')
+py:class Unit('pix')
+py:class Unit('s')
+py:class Unit('W / m2')
+py:obj function
+py:obj iterable
+py:obj parfive
+py:mod parfive
+
+# This comes from Map.wcs
+py:class prop
+
+# These come from astropy.coordinates.baseframe.represent_as
+py:class data
+py:class keyword only
+py:class string
+py:class subclass of BaseRepresentation
+
+# These come from astropy QTable
+py:class list of lists
+py:class numpy ndarray
+py:class numpy ndarray
+py:class Table
+py:class table-like object
+
+# numpy inherited docstrings
+py:obj a
+py:obj a.size == 1
+py:obj args
+py:obj dtype
+py:obj n
+py:obj ndarray
+
+# other classes and functions that cannot be linked to
+py:class astropy.table.column.BaseColumn
+py:class docutils.parsers.rst.Directive
+py:class numpy.core.records.recarray
+py:class numpy.ma.core.MaskedArray
+py:class numpy.ma.mvoid
+py:class numpy.void
+py:class pandas.DataFrame
+py:class sqlalchemy.orm.decl_api.Base
+py:class xmlrpc.client.Error
+py:class xmlrpc.client.Fault
+py:class xmlrpclib.Error
+py:class xmlrpclib.Fault
+py:obj aiohttp.ClientResponse
+py:obj astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap.grid
+py:obj data
+py:obj distutils.version.LooseVersion
+py:obj numpy.ma.core.MaskedArray
+py:obj pkg_resources.parse_version
+py:obj sunpy.extern.parse.parse
+
+# Pending on python docs links issue #11975
+py:class classmethod
+py:class list
+py:meth list.pop
+py:obj Artist
+py:obj AttributeError
+py:obj BboxBase
+py:obj int
+py:obj list.append
+py:obj list.append
+py:obj list.count
+py:obj list.extend
+py:obj list.index
+py:obj list.insert
+py:obj list.remove
+py:obj NotImplementedError
+py:obj NotImplementedError
+py:obj RendererBase
+py:obj RuntimeError
+py:obj text
+py:obj Text

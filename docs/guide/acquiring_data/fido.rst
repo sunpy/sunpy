@@ -200,7 +200,7 @@ This joins queries together just as the logical ``OR`` operator would::
 Working with Search Results
 ***************************
 
-:meth:`Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search` can make multiple queries to multiple clients in one search.
+:meth:`Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>` can make multiple queries to multiple clients in one search.
 This means that the results of a call to search can contain many sets of records, called responses, from many clients.
 The results of a search are represented in a `~sunpy.net.fido_factory.UnifiedResponse` object, which provides access to all the response tables and allows some operations to be performed on all the results at once.
 `~sunpy.net.fido_factory.UnifiedResponse` acts both like a two dimensional array, where the first dimension is the response index and the second index is the row index, and a dictionary where you can index the responses by the name of the client.

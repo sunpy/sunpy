@@ -1,4 +1,4 @@
-Support for plotting or contouring `~sunpy.map.GenericMap`s on axes that are not
+Support for plotting or contouring `~sunpy.map.GenericMap` on axes that are not
 `~astropy.visualization.wcsaxes.WCSAxes` has been removed. To create a
 ``WCSAxes``, use the ``projection`` argument when the axes is created, e.g.
 ``fig.add_subplot(111, projection=my_map)``.

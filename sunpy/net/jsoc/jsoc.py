@@ -314,8 +314,7 @@ class JSOCClient(BaseClient):
         ----------
         jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             The results of a query
-
-        method : {'url', 'url-tar', 'url-quick'}
+        method : {``"url"``, ``"url-tar"``, ``"url-quick"``}
             Method for requesting JSOC data, can be 'url-tar', 'url' (the default) and 'url-quick'
             If 'url-tar' it will request JSOC to provide single .tar file which contains all data
             If 'url' it will request JSOC to provide all data as separate .fits files
@@ -326,10 +325,8 @@ class JSOCClient(BaseClient):
         -------
         requests : `~drms.client.ExportRequest` object or
                    a list of  `~drms.client.ExportRequest` objects
-
             Request Id can be accessed by requests.id
             Request status can be accessed by requests.status
-
         """
 
         requests = []
@@ -376,44 +373,36 @@ class JSOCClient(BaseClient):
             that no slicing operations performed on the results object will
             affect the number of files downloaded.
 
-
         Parameters
         ----------
         jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             A response object
-
         path : `str`
             Path to save data to, defaults to SunPy download dir
-
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
             have been downloaded. If `False`, no progress bar will be shown.
-
         overwrite : `bool` or `str`, optional
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
             and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
-
         max_conn : `int`
             Maximum number of download connections.
-
         downloader : `parfive.Downloader`, optional
             The download manager to use.
-
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
            any effect if ``downloader`` is not `None`.
-
         sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
             of the request.
 
         Returns
         -------
-        results : a `~sunpy.net.download.Results` instance
-            A Results object
+        results : a `parfive.Results` instance
+            A `parfive.Results` object.
 
        """
         for resp in jsoc_response.query_args:
@@ -460,33 +449,27 @@ class JSOCClient(BaseClient):
         requests : `~drms.client.ExportRequest`, `str`, `list`
             `~drms.client.ExportRequest` objects or `str` request IDs or lists
             returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
-
         path : `str`
             Path to save data to, defaults to SunPy download dir.
-
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
             have been downloaded. If `False`, no progress bar will be shown.
-
         overwrite : `bool` or `str`, optional
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
             and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
-
         downloader : `parfive.Downloader`, optional
             The download manager to use.
-
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
+           any effect if ``downloader`` is not `None`.
 
         Returns
         -------
-        res: `~sunpy.net.download.Results`
-            A `~sunpy.net.download.Results` instance or `None` if no URLs to download
-
+        res: `parfive.Results`
+            A `parfive.Results` instance or `None` if no URLs to download
         """
         c = drms.Client()
 

@@ -189,7 +189,7 @@ class GenericMap(NDData):
         So for each subclass, it will call this block of code on import.
         This replicates some metaclass magic without the need to be aware of metaclasses.
         Here we use this to register each subclass in a dict that has the
-        `is_datasource_for` attribute.
+        ``is_datasource_for`` attribute.
         This is then passed into the Map Factory so we can register them.
         """
         super().__init_subclass__(**kwargs)
@@ -1580,7 +1580,7 @@ class GenericMap(NDData):
             The bottom-left coordinate of the rectangle. If a `~astropy.coordinates.SkyCoord` it can
             have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
-            object with units of `~astropy.units.si.pix`.
+            object with units of pixels.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
             The top-right coordinate of the rectangle. If ``top_right`` is
             specified ``width`` and ``height`` must be omitted.
@@ -1802,11 +1802,11 @@ class GenericMap(NDData):
             dimension[1]) pixels of the original map.
             The first argument corresponds to the 'x' axis and the second
             argument corresponds to the 'y' axis. If non-integer values are provided,
-            they are rounded using :func:`int`.
+            they are rounded using `int`.
         offset : tuple
             Offset from (0,0) in original map pixels used to calculate where
             the data used to make the resulting superpixel map starts.
-            If non-integer value are provided, they are rounded using :func:`int`.
+            If non-integer value are provided, they are rounded using `int`.
         func :
             Function applied to the original data.
             The function 'func' must take a numpy array as its first argument,
@@ -2097,7 +2097,7 @@ class GenericMap(NDData):
         Returns
         -------
         quad : `~astropy.visualization.wcsaxes.Quadrangle`
-            The added patch
+            The added patch.
 
         Notes
         -----
@@ -2278,27 +2278,22 @@ class GenericMap(NDData):
         annotate : `bool`, optional
             If `True`, the data is plotted at its natural scale; with
             title and axis labels.
-
         axes: `~matplotlib.axes.Axes` or None
             If provided the image will be plotted on the given axes. Else the
             current Matplotlib axes will be used.
-
         title : `str`, `bool`, optional
             The plot title. If `True`, uses the default title for this map.
-
         clip_interval : two-element `~astropy.units.Quantity`, optional
             If provided, the data will be clipped to the percentile interval bounded by the two
             numbers.
-
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle).  If `'pcolormesh'`, this
+            axes (e.g., a difference in rotation angle).  If ``pcolormesh``, this
             method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
             default :meth:`~matplotlib.axes.Axes.imshow`.  Specifying `True` is
-            equivalent to specifying `'pcolormesh'`.
-
-        **imshow_kwargs  : `dict`
+            equivalent to specifying ``pcolormesh``.
+        **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
         Examples
@@ -2306,7 +2301,6 @@ class GenericMap(NDData):
         >>> # Simple Plot with color bar
         >>> aia.plot()   # doctest: +SKIP
         >>> plt.colorbar()   # doctest: +SKIP
-
         >>> # Add a limb line and grid
         >>> aia.plot()   # doctest: +SKIP
         >>> aia.draw_limb()   # doctest: +SKIP

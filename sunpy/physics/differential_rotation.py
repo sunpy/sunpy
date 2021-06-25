@@ -124,7 +124,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
     if rot_type not in ['howard', 'allen', 'snodgrass', 'rigid']:
         raise ValueError("rot_type must equal one of "
-                         "{{ {} }}".format(" | ".join(rot_params.keys())))
+                         "{{ {} }}".format(" , ".join(rot_params.keys())))
 
     A, B, C = rot_params[rot_type]
 

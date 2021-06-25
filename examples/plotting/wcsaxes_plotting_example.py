@@ -30,7 +30,7 @@ my_map.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
 
 ###############################################################################
 # Now we will plot a line on the map by using coordinates in arcseconds.
-# The array below `xx` and `yy` are the x and y coordinates that define a
+# The array below ``xx`` and ``yy`` are the x and y coordinates that define a
 # line from the Sun center (at 0, 0) to the point (500, 500) in arcsecs.
 # When plotting a map a WCSAxes is created.
 # For plotting with WCSAxes, pixel coordinates are expected as a default, however,
@@ -51,9 +51,9 @@ ax.plot(xx*u.arcsec.to(u.deg), yy*u.arcsec.to(u.deg),
 
 ###############################################################################
 # Here we will plot a point in pixel coordinates (i.e. array index).
-# Let's define a pixel coordinate in the middle of the image, `pixel_coord`.
+# Let's define a pixel coordinate in the middle of the image, ``pixel_coord``.
 # As this coordinate is in pixel space (rather than a world coordinates like arcsec)
-# we do not need to use the `transform` keyword.
+# we do not need to use the ``transform`` keyword.
 
 # sphinx_gallery_defer_figures
 

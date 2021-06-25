@@ -144,8 +144,8 @@ class HEKClient(BaseClient):
 
 class HEKRow(Row):
     """
-    Handles the response from the HEK.  Each HEKRow object is a subclass
-    of `astropy.table.Table.row`.  The column-row key-value pairs correspond to the
+    Handles the response from the HEK. Each HEKRow object is a subclass
+    of `~astropy.table.Row`. The column-row key-value pairs correspond to the
     HEK feature/event properties and their values, for that record from the
     HEK.  Each HEKRow object also has extra properties that relate HEK
     concepts to VSO concepts.

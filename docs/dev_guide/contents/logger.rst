@@ -25,7 +25,7 @@ Messages can be issued directly to it with the following levels and in the follo
               things are working as expected.")
 
     log.warning("An indication that something unexpected happened, or indicative of
-                 some problem in the near future (e.g. ‘disk space low’).
+                 some problem in the near future (e.g. disk space low).
 
                  The software is still working as expected.")
     log.error("Due to a more serious problem, the software has not been able to
@@ -51,21 +51,28 @@ that fully describe the issue and end with a period.
 
 Issuing Warnings
 ================
+
 SunPy warnings are provided by the `sunpy.util` module. The primary warning which
 should be used is `sunpy.util.exceptions.SunpyUserWarning`. For deprecation use `sunpy.util.exceptions.SunpyDeprecationWarning` or
 `sunpy.util.exceptions.SunpyPendingDeprecationWarning`.
 
-These warning classes must be used to interact correctly with the logging system.
+These three warning types have corresponding functions to raise them::
+
+    >>> from sunpy.util.exceptions import warn_user
+    >>> from sunpy.util.exceptions import warn_deprecated
+    >>> from sunpy.util.exceptions import warn_metadata
+
+These warning functions must be used to interact correctly with the logging system.
 A warning can be issued in the following way::
 
-    >>> import warnings
-    >>> from sunpy.util import SunpyUserWarning
-    >>> warnings.warn("You have been warned about something you did not do correctly.", SunpyUserWarning)  # doctest: +IGNORE_WARNINGS
+    >>> from sunpy.util.exceptions import warn_user
+    >>> warn_user("You have been warned about something you did not do correctly.")  # doctest: +IGNORE_WARNINGS
 
-See the section above for a discussion about the distinction between ``log.warn()`` and :meth:`warnings.warn`.
+See the section above for a discussion about the distinction between ``log.warn()`` and raising a warning.
 
 Raising Exceptions
 ==================
+
 Raising errors causes the program to halt. Likely the primary error that a sunpy developer will
 want to use is
 

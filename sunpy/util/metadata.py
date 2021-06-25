@@ -19,11 +19,11 @@ class MetaDict(OrderedDict):
     insensitive indexing.
 
     If the key 'keycomments' exists, its value must be a dictionary mapping
-    keys in the `MetaDict` to their comments. The casing of keys in the
+    keys in the :class:`MetaDict` to their comments. The casing of keys in the
     keycomments dictionary is not significant. If a key is removed from the
-    `MetaDict`, it will also be removed from the keycomments dictionary.
+    :class:`MetaDict`, it will also be removed from the keycomments dictionary.
     Additionally, any extraneous keycomments will be removed when the
-    `MetaDict` is instantiated.
+    :class:`MetaDict` is instantiated.
 
     Parameters
     ----------
@@ -101,9 +101,11 @@ class MetaDict(OrderedDict):
                 self[k] != self.original_meta[k]}
 
     def copy(self):
+        """
+        Shallow copies this instance.
+        """
         copied = super().copy()
-        # By default the above line will overwrite original_meta,
-        # so manually re-instate it
+        # By default the above line will overwrite original_meta, so manually re-instate it
         copied._original_meta = self.original_meta
         return copied
 

@@ -23,7 +23,6 @@ is an interface to multiple sources including all the sources implemented in
 .. automodapi:: sunpy.net.fido_factory
    :headings: ^"
 
-
 VSO
 ---
 
@@ -32,7 +31,6 @@ VSO
 
 .. automodapi:: sunpy.net.vso.attrs
    :headings: ^"
-
 
 Dataretriever
 -------------
@@ -52,7 +50,6 @@ JSOC
 .. automodapi:: sunpy.net.jsoc.attrs
    :headings: ^"
 
-
 HEK
 ---
 
@@ -64,7 +61,6 @@ HEK
 
 .. automodapi:: sunpy.net.hek2vso
    :headings: ^"
-
 
 HELIO
 -----
@@ -81,7 +77,6 @@ Helioviewer
 .. automodapi:: sunpy.net.helioviewer
    :headings: ^"
 
-
 Internal Classes and Functions
 ==============================
 
@@ -90,8 +85,8 @@ for `sunpy.net.Fido`.
 
 .. automodapi:: sunpy.net.base_client
 
-.. automodapi:: sunpy.net.attr
-
 .. automodapi:: sunpy.net.dataretriever.client
+
+.. automodapi:: sunpy.net.attr
 
 .. automodapi:: sunpy.net.scraper

@@ -505,7 +505,7 @@ Here is an example of this put to use on an AIA image.
     import sunpy.data.sample
 
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    cmap = smap.cmap
+    cmap = smap.cmap.copy()
     cmap.set_over('blue')
     cmap.set_under('green')
 

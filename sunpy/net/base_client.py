@@ -11,7 +11,9 @@ from astropy.table import Column, Row, Table
 from sunpy.util._table_attribute import QTable, TableAttribute
 from sunpy.util.util import get_width
 
-__all__ = ['QueryResponseColumn', 'BaseQueryResponse', 'QueryResponseTable', 'BaseClient']
+__all__ = ['QueryResponseColumn', 'BaseQueryResponse',
+           'QueryResponseRow', 'QueryResponseTable', 'BaseClient',
+           'convert_row_to_table']
 
 
 class BaseQueryResponse(Sequence):
@@ -295,7 +297,7 @@ BaseQueryResponse.register(QueryResponseTable)
 
 def convert_row_to_table(func):
     """
-    A wrapper to convert any `.QueryResponseRow` objects to `.QueryResponseTable` objects.
+    A wrapper to convert any `~.QueryResponseRow` objects to `~.QueryResponseTable` objects.
     """
     @wraps(func)
     def wrapper(self, query_results, **kwargs):

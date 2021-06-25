@@ -28,7 +28,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 # `~matplotlib.axes.Axes.set_xlim` and `~matplotlib.axes.Axes.set_ylim` functionality.
 # The axes that Matplotlib uses is in pixel coordinates (e.g. of image data array)
 # rather than world coordinates (e.g. in arcsecs) so we need to define our limits that
-# are passed to `set_xlim()`, `set_lim()` to pixel coordinates.
+# are passed to `~matplotlib.axes.Axes.set_xlim`, `~matplotlib.axes.Axes.set_ylim` to pixel coordinates.
 # We can define our limits we want to use in world coordinates and then work out what pixel
 # coordinates these correspond to.
 # Lets choose x-limits and y-limits in arcsecs that we are interested in.

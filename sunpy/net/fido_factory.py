@@ -4,9 +4,8 @@ This module provides the `Fido
 `sunpy.net.fido_factory.UnifiedDownloaderFactory` it also provides the
 `~sunpy.net.fido_factory.UnifiedResponse` class which
 `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>` returns and the
-`~sunpy.net.fido_factory.DownloadResponse` class that is returned by
+`parfive.Results` class that is returned by
 `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
-
 """
 import os
 from pathlib import Path
@@ -29,7 +28,7 @@ __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
 
 class UnifiedResponse(Sequence):
     """
-    The object used to store results from `~sunpy.net.UnifiedDownloaderFactory.search`.
+    The object used to store results from `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`.
 
     The `~sunpy.net.Fido` object returns results from multiple different
     clients. So it is always possible to sub-select these results, you can
@@ -329,7 +328,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             Container returned by query method, or multiple.
         path : `str`
             The directory to retrieve the files into. Can refer to any fields
-            in `UnifiedResponse.response_block_properties` via string formatting,
+            in `~sunpy.net.base_client.BaseQueryResponse.response_block_properties` via string formatting,
             moreover the file-name of the file downloaded can be referred to as file,
             e.g. "{source}/{instrument}/{time.start}/{file}".
         max_conn : `int`, optional

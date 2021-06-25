@@ -4,7 +4,7 @@ Creating a visualization with ArrayAnimatorWCS
 ==============================================
 
 This example shows how to create a simple visualization using
-`~sunpy.visualisation.animator.ArrayAnimatorWCS`.
+`~sunpy.visualization.animator.ArrayAnimatorWCS`.
 """
 import matplotlib.pyplot as plt
 
@@ -20,7 +20,7 @@ from sunpy.visualization.animator import ArrayAnimatorWCS
 # To showcase how to visualize a sequence of 2D images using
 # `~sunpy.visualization.animator.ArrayAnimatorWCS`, we will use images from
 # our sample data. The problem with this is that they are not part of
-# a continuous dataset. To overcome this we wil do two things.
+# a continuous dataset. To overcome this we will do two things.
 # Create a stacked array of the images and create a `~astropy.wcs.WCS` header.
 # The easiest method  for the array is to create a `~sunpy.map.MapSequence`.
 
@@ -65,7 +65,7 @@ plt.show()
 
 ###############################################################################
 # You might notice that the animation could do with having the axes look
-# neater. `~sunpy.visualization.ArrayAnimatorWCS` provides a way of setting
+# neater. `~sunpy.visualization.animator.ArrayAnimatorWCS` provides a way of setting
 # some display properties of the `~astropy.visualization.wcsaxes.WCSAxes`
 # object on every frame of the animation via use of the ``coord_params`` dict.
 # They keys of the ``coord_params`` dict are either the first half of the

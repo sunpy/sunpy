@@ -191,7 +191,7 @@ def _get_wcs_meta(coordinate, projection_code):
 
     Parameters
     ----------
-    coordinate : ~`astropy.coordinates.BaseFrame`
+    coordinate : `~astropy.coordinates.BaseCoordinateFrame`
 
     Returns
     -------
@@ -221,7 +221,7 @@ def get_observer_meta(observer, rsun: (u.Mm, None)):
 
     Parameters
     ----------
-    coordinate : ~`astropy.coordinates.BaseFrame`
+    coordinate : `~astropy.coordinates.BaseCoordinateFrame`
         The coordinate of the observer, must be transformable to Heliographic
         Stonyhurst.
     rsun : `astropy.units.Quantity`
