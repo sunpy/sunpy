@@ -244,7 +244,7 @@ In the case of `~sunpy.coordinates.frames.HeliographicCarrington`, one can speci
 It is possible to convert from a `~sunpy.coordinates.frames.Helioprojective`
 frame with one observer location to another
 `~sunpy.coordinates.frames.Helioprojective` frame with a different observer
-location, by converting through `~sunpy.coordinates.frames.BaseHeliographic`, this
+location, by converting through `~sunpy.coordinates.frames.HeliographicStonyhurst`, this
 does involve making an assumption of the radius of the Sun to calculate the
 position on the solar sphere. The conversion can be performed as follows::
 

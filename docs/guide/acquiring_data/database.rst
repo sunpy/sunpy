@@ -676,7 +676,7 @@ method accepts any number of ORed query attributes (using \|) and
 combines them using AND. It returns a list of matched database entries.
 The special thing about querying databases is that all attributes support
 the unary operator ``~`` to negate specific attributes. Example: the query
-``~Instrument.eit`` returns all entries that have *not* been observed
+``Instrument.eit`` returns all entries that have *not* been observed
 with the EIT.
 
 7.1 Using VSO attributes

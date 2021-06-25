@@ -1,2 +1,1 @@
-Added ``plot`` method to all `~sunpy.timeseries.Timeseries` sources and the ``peek`` method calls this instead.
-This ensures that ``plot`` and ``peek`` will output figures that look the same.
+Ensured that ``plot`` and ``peek`` will output the same figures for all `sunpy.timeseries.TimeSeries` sources.

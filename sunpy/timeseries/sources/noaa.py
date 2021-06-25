@@ -65,8 +65,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         ----------
         axes : `matplotlib.axes.Axes`, optional
             The axes on which to plot the TimeSeries.
-        plot_type : ``{'sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'geo'}``, optional
-            The type of plot required. Defaults to "sunspot SWO".
+        plot_type : {``"sunspot SWO"``, ``"sunspot RI"``, ``"sunspot compare"``, ``"radio"``, ``"geo"``}, optional
+            The type of plot required. Defaults to ``"sunspot SWO"``.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -125,8 +125,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         ----------
         title : `str`, optional
             The title of the plot. Defaults to "Solar Cycle Progression".
-        plot_type : {'sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'geo'}, optional
-            The type of plot required. Defaults to "sunspot SWO".
+        plot_type : {``"sunspot SWO"``, ``"sunspot RI"``, ``"sunspot compare"``, ``"radio"``, ``"geo"``}, optional
+            The type of plot required. Defaults to ``"sunspot SWO"``.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.

@@ -163,7 +163,7 @@ class VSOClient(BaseClient):
 
         Parameters
         ----------
-        response_format: ``{"legacy", "table"}``, optional
+        response_format: {``"legacy"``, ``"table"``}, optional
             The response format from the search, this can be either
             ``"legacy"`` to return a list-like object of the zeep responses, or
             ``"table"`` to return the responses in a subclass of

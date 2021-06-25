@@ -26,7 +26,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
         Original input array.
     dimensions : `tuple`
         Dimensions that new `numpy.ndarray` should have.
-    method : ``{'neighbor' | 'nearest' | 'linear' | 'spline'}``, optional
+    method : {``"neighbor"``, ``"nearest"``, ``"linear"``, ``"spline"``}, optional
         Method to use for resampling interpolation.
             * neighbor - Closest value from original data
             * nearest and linear - Uses "n x 1D" interpolations calculated by
