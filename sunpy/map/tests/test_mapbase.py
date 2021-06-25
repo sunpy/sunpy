@@ -161,6 +161,18 @@ def test_date_aia(aia171_test_map):
     assert aia171_test_map.date == parse_time('2011-02-15T00:00:00.34')
 
 
+def test_exposure(generic_map):
+    generic_map.meta['xposure'] = 1
+    generic_map.meta['exptime'] = 2
+    assert generic_map.exposure_time == 1 * u.s
+
+    generic_map.meta.pop('xposure')
+    assert generic_map.exposure_time == 2 * u.s
+
+    generic_map.meta.pop('exptime')
+    assert generic_map.exposure_time is None
+
+
 def test_detector(generic_map):
     assert generic_map.detector == 'bar'
 

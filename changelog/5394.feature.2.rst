@@ -1,0 +1,3 @@
+The `sunpy.map.GenericMap.exposure_time` property now defaults to using the
+'XPOSURE' FITS keyword if present, falling back on the 'EXPTIME' keyword
+otherwise.

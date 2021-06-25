@@ -804,9 +804,13 @@ class GenericMap(NDData):
         """
         Exposure time of the image in seconds.
 
-        This is taken from the 'EXPTIME' FITS keyword.
+        This is taken from the 'XPOSURE' FITS keyword if present, otherwise
+        the 'EXPTIME' FITS keyword if present, and returns `None` if neither
+        are present.
         """
-        if 'exptime' in self.meta:
+        if 'xposure' in self.meta:
+            return self.meta['xposure'] * self.timeunit
+        elif 'exptime' in self.meta:
             return self.meta['exptime'] * self.timeunit
 
     @property

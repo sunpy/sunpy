@@ -44,10 +44,6 @@ class EUIMap(GenericMap):
             return int(self.meta.get('level')[1:])
 
     @property
-    def exposure_time(self):
-        return self.meta.get('xposure', 0.0) * self.timeunit
-
-    @property
     def _supported_observer_coordinates(self):
         return [(('hcix_obs', 'hciy_obs', 'hciz_obs'),
                  {'x': self.meta.get('hcix_obs'),
