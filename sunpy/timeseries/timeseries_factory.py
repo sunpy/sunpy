@@ -5,6 +5,7 @@ import os
 import copy
 import pathlib
 from collections import OrderedDict
+from urllib.request import Request
 
 import numpy as np
 import pandas as pd
@@ -28,6 +29,7 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
+from sunpy.util.functools import seconddispatch
 from sunpy.util.io import is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
@@ -132,11 +134,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         Returns
         -------
-        parsed : `bool`
-            `True` if file has been read.
         pairs : `list` or `str`
-            List of ``(data, header)`` pairs if ``parsed`` is `True`,  ``fname`` if ``parsed`` is `False`.
-            `False` if the file is not supported or incorrect.
+            List of ``(data, header)`` pairs or ``fname`` if the file is not supported or incorrect.
         """
         if 'source' not in kwargs.keys() or not kwargs['source']:
             try:
@@ -237,9 +236,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         Sanitise a list of args so that a single argument corresponds to either:
 
-        - A (data, header, units) tuple
-        - A path-like string (e.g. a filename, directory, glob etc.).
-        - A GenericTimeSeries object
+        - (data, header, units) tuple.
+        - path-like `pathlib.Path` (e.g. a filename, directory, glob etc.).
+        - `urllib.request.Request`.
+        - `GenericTimeSeries`.
         """
         # Account for nested lists of items. Simply outputs a single list of
         # items, nested lists are expanded to element level.
@@ -280,9 +280,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 args[i] = (data, meta, units)
 
             elif isinstance(arg, str) and is_url(arg):
-                # Download any URLs
-                path = download_file(arg, get_and_create_download_dir())
-                args[i] = pathlib.Path(path)
+                args[i] = Request(arg)
+            elif possibly_a_path(arg):
+                args[i] = pathlib.Path(arg)
             i += 1
 
         return args
@@ -312,38 +312,88 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                          'directory1',
                          '*.fits')
         """
-        data_header_unit_tuples = list()
-        data_header_pairs = list()
-        already_timeseries = list()
-        filepaths = list()
-
         args = self._sanitise_args(args)
+        all_ts = []
         for arg in args:
-            # Data-header pair in a tuple
-            if isinstance(arg, tuple):
-                data_header_unit_tuples.append(arg)
-            # Filepath
-            elif possibly_a_path(arg):
-                # Repalce path strings with Path objects
-                arg = pathlib.Path(arg)
-                results = parse_path(arg, self._read_file)
-                for r in results:
-                    if isinstance(r, pathlib.Path):
-                        filepaths.append(r)
-                    else:
-                        data_header_pairs.append(r)
+            try:
+                all_ts += self._parse_arg(arg, **kwargs)
+            except (NoMatchError, MultipleMatchError, ValidationFunctionError):
+                if self.silence_errors:
+                    continue
+                else:
+                    raise
+            except Exception:
+                raise
 
-            # Already a TimeSeries
-            elif isinstance(arg, GenericTimeSeries):
-                already_timeseries.append(arg)
+        return all_ts
 
+    @seconddispatch
+    def _parse_arg(self, arg, **kwargs):
+        """
+        Parse a single arg and return a list of timeseries.
+        """
+        raise NoMatchError("File not found or invalid input")
+
+    @_parse_arg.register(GenericTimeSeries)
+    def _parse_ts(self, ts, **kwargs):
+        return [ts]
+
+    @_parse_arg.register(Request)
+    def _parse_url(self, request, **kwargs):
+        path = download_file(request.full_url, get_and_create_download_dir())
+        return self._parse_path(path, **kwargs)
+
+    @_parse_arg.register(pathlib.Path)
+    def _parse_path(self, path, **kwargs):
+        results = parse_path(path, self._read_file)
+        all_ts = []
+
+        # r can be either a path or a data, header pair
+        for r in results:
+            if isinstance(r, pathlib.Path):
+                all_ts += [self._check_registered_widgets(filepath=r, **kwargs)]
             else:
-                raise NoMatchError("File not found or invalid input")
+                pairs = r
+                # Pairs may be x long where x is the number of HDUs in the file.
+                headers = [pair.header for pair in pairs]
 
-        # TODO:
-        # In the end, if there are already TimeSeries it should be put in the
-        # same order as the input, currently they are not.
-        return data_header_unit_tuples, data_header_pairs, already_timeseries, filepaths
+                types = []
+                for header in headers:
+                    try:
+                        match = self._get_matching_widget(meta=header, **kwargs)
+                        if not match == GenericTimeSeries:
+                            types.append(match)
+                    except (MultipleMatchError, NoMatchError):
+                        continue
+
+                if not types:
+                    # If no specific classes have been found we can read the data
+                    # if we only have one data header pair:
+                    if len(pairs) == 1:
+                        all_ts += [GenericTimeSeries(pairs[0]._data, pairs[0].header)]
+                        continue
+                    else:
+                        raise NoMatchError("Input read by sunpy.io can not find a "
+                                           "matching class for reading multiple HDUs")
+                if len(set(types)) > 1:
+                    raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
+
+                cls = types[0]
+
+                data_header_unit_tuple = cls._parse_hdus(pairs)
+                all_ts += self._parse_arg(data_header_unit_tuple)
+
+        return all_ts
+
+    @_parse_arg.register(tuple)
+    def _parse_tuple(self, tup, **kwargs):
+        data, header, units = tup
+        # Make a MetaDict from various input types
+        meta = header
+        if isinstance(meta, astropy.io.fits.header.Header):
+            meta = sunpy.io.header.FileHeader(meta)
+        meta = MetaDict(meta)
+        return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
 
     def __call__(self, *args, silence_errors=False, **kwargs):
         """
@@ -365,76 +415,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         -----
         Extra keyword arguments are passed through to `sunpy.io.read_file` such as `memmap` for FITS files.
         """
-        (data_header_unit_tuples, data_header_pairs,
-         already_timeseries, filepaths) = self._parse_args(*args, **kwargs)
-
-        new_timeseries = list()
-
-        # The filepaths for unreadable files
-        for filepath in filepaths:
-            try:
-                new_ts = self._check_registered_widgets(filepath=filepath, **kwargs)
-                new_timeseries.append(new_ts)
-            except (NoMatchError, MultipleMatchError, ValidationFunctionError):
-                if not silence_errors:
-                    raise
-            except Exception:
-                raise
-
-        # data_header_pairs is a list of HDUs as read by sunpy.io
-        # For each set of HDus find the matching class and read the
-        # data_header_unit_tuples by calling the _parse_hdus method
-        # of the class.
-        for pairs in data_header_pairs:
-            # Pairs may be x long where x is the number of HDUs in the file.
-            headers = [pair.header for pair in pairs]
-
-            types = []
-            for header in headers:
-                try:
-                    match = self._get_matching_widget(meta=header, **kwargs)
-                    if not match == GenericTimeSeries:
-                        types.append(match)
-                except (MultipleMatchError, NoMatchError):
-                    continue
-
-            if not types:
-                # If no specific classes have been found we can read the data
-                # if we only have one data header pair:
-                if len(pairs) == 1:
-                    already_timeseries.append(GenericTimeSeries(pairs[0]._data,
-                                                                pairs[0].header))
-                else:
-                    raise NoMatchError("Input read by sunpy.io can not find a "
-                                       "matching class for reading multiple HDUs")
-            if len(set(types)) > 1:
-                raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
-
-            cls = types[0]
-
-            data_header_unit_tuples.append(cls._parse_hdus(pairs))
-
-        # Loop over each registered type and check to see if WidgetType
-        # matches the arguments.  If it does, use that type
-        for triple in data_header_unit_tuples:
-            data, header, units = triple
-            # Make a MetaDict from various input types
-            meta = header
-            if isinstance(meta, astropy.io.fits.header.Header):
-                meta = sunpy.io.header.FileHeader(meta)
-            meta = MetaDict(meta)
-
-            try:
-                new_ts = self._check_registered_widgets(data=data, meta=meta,
-                                                        units=units, **kwargs)
-                new_timeseries.append(new_ts)
-            except (NoMatchError, MultipleMatchError, ValidationFunctionError):
-                if not silence_errors:
-                    raise
-            except Exception:
-                raise
-
-        new_timeseries += already_timeseries
+        self.silence_errors = silence_errors
+        new_timeseries = self._parse_args(*args, **kwargs)
 
         # Concatenate the timeseries into one if specified.
         concatenate = kwargs.get('concatenate', False)
