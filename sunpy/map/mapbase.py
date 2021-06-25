@@ -32,7 +32,7 @@ import sunpy.io as io
 import sunpy.visualization.colormaps
 from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, Helioprojective, get_earth, sun
-from sunpy.coordinates.utils import get_rectangle_coordinates
+from sunpy.coordinates.utils import get_limb_coordinates, get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
@@ -2100,14 +2100,9 @@ class GenericMap(NDData):
 
         # Otherwise, we use Polygon to be able to distort the limb
 
-        # Create the limb coordinate array using Heliocentric Radial
-        limb_radial_distance = self.observer_coordinate.radius * np.cos(self.rsun_obs)
-        limb_hcr_rho = limb_radial_distance * np.sin(self.rsun_obs)
-        limb_hcr_z = self.observer_coordinate.radius - limb_radial_distance * np.cos(self.rsun_obs)
-        limb_hcr_psi = np.linspace(0, 2*np.pi, resolution+1)[:-1] << u.rad
-        limb = SkyCoord(limb_hcr_rho, limb_hcr_psi, limb_hcr_z, representation_type='cylindrical',
-                        frame='heliocentric', observer=self.observer_coordinate, obstime=self.date)
-
+        # Get the limb coordinates
+        limb = get_limb_coordinates(self.observer_coordinate, self.rsun_meters,
+                                    resolution=resolution)
         # Transform the limb to the axes frame and get the 2D vertices
         axes_frame = axes._transform_pixel2world.frame_out
         limb_in_axes = limb.transform_to(axes_frame)
