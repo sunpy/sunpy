@@ -24,7 +24,6 @@ if getattr(sys, 'frozen', False):
         'test_find_dependencies',
         'test_missing_dependencies_by_extra',
         'test_hgc_100',
-        'test_missing_dependencies_by_extra',
         'test_basic',
         'test_data_manager',
         'test_file_tampered',
