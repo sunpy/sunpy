@@ -16,7 +16,6 @@ from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.time import Time
 from astropy.visualization import wcsaxes
 
 import sunpy
