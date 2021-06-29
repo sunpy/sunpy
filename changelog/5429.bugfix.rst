@@ -1,0 +1,2 @@
+Do not trigger a pytest import in the asdf plugin for saving sunpy coordinate
+frames.
