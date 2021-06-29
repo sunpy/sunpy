@@ -1,8 +1,8 @@
 import os
 import glob
 
+import astropy.units as u
 from astropy.io.misc.asdf.tags.coordinates.frames import BaseCoordType
-from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates import frames
 from ...types import SunPyType
@@ -56,7 +56,7 @@ class SunPyCoordType(BaseCoordType, SunPyType):
         if new.has_data:
             assert new.data.components == old.data.components
             for comp in new.data.components:
-                assert_quantity_allclose(getattr(new.data, comp), getattr(old.data, comp))
+                assert u.allclose(getattr(new.data, comp), getattr(old.data, comp))
 
 
 # HeliographicStonyhurst has multiple schema versions
