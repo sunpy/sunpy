@@ -1,0 +1,1 @@
+Implement automatic fallback to helioviewer mirrors if API is non-functional.

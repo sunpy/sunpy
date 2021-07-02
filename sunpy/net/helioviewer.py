@@ -6,28 +6,56 @@ import codecs
 import urllib
 from pathlib import Path
 from collections import OrderedDict
+from urllib.parse import urljoin
+from urllib.request import urlopen
 
 from astropy.utils.decorators import lazyproperty
 
 import sunpy
 import sunpy.util.parfive_helpers as parfive
+from sunpy import log
 from sunpy.time import parse_time
 from sunpy.util.util import partial_key_match
 from sunpy.util.xml import xml_to_dict
 
 __all__ = ['HelioviewerClient']
 
+HELIOVIEWER_API_URLS = [
+    "https://helioviewer-api.ias.u-psud.fr/",
+    "https://api.helioviewer.org/",
+]
+
+
+def check_connection(url):
+    try:
+        resp = urlopen(urljoin(url, "/v2/getDataSources/"))
+        assert resp.getcode() == 200
+        assert isinstance(json.loads(resp.read()), dict)
+        return url
+    except Exception as e:
+        log.debug(f"Unable to connect to {url}:\n {e}")
+        log.info(f"Connection to {url} failed. Retrying with different url.")
+    return None
+
 
 class HelioviewerClient:
     """Helioviewer.org Client"""
 
-    def __init__(self, url="https://api.helioviewer.org/"):
+    def __init__(self, url=None):
         """
         Parameters
         ----------
         url : `str`
             Default URL points to the Helioviewer API.
         """
+        if url is None:
+            for url in HELIOVIEWER_API_URLS:
+                if check_connection(url):
+                    break
+
+        if url is None:
+            raise ValueError("No online helioviewer API can be found.")
+
         self._api = url
 
     @lazyproperty
