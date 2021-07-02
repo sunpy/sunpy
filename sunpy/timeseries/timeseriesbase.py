@@ -254,7 +254,7 @@ class GenericTimeSeries:
         """
         if colname not in self.columns:
             raise ValueError(f'Given column name ({colname}) not in list of columns {self.columns}')
-        data = self._data.drop(colname, 'columns')
+        data = self._data.drop(colname, axis='columns')
         units = self.units.copy()
         units.pop(colname)
         return self.__class__(data, self.meta, units)
