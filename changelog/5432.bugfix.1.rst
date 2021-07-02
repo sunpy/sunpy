@@ -1,0 +1,4 @@
+:meth:`sunpy.map.GenericMap.plot` now correctly sets axis labels based on the
+coordinate system of the axes, and not the coordinate system of the map
+being plotted. This was previously only an issue if using ``autoalign=True``
+when the Map coordinate system was different to the axes coordinate system.
