@@ -36,8 +36,7 @@ class TimeSeriesMetaData:
     timerange : `~sunpy.time.TimeRange`
         A `~sunpy.time.TimeRange` representing the timespan of the data. Defaults to `None`.
     colnames : `list`
-        A mapping from column names in ``data`` to the physical units of that column.
-        Defaults to `None`.
+        Column names. Defaults to `None`.
 
     Attributes
     ----------
