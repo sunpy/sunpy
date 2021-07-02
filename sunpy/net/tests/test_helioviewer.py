@@ -58,6 +58,10 @@ def test_keyvalue_all(client):
 @pytest.mark.remote_data
 def test_get_closest_image(client):
     """Tests getClosestImage API method"""
+
+    if client._api != "https://api.helioviewer.org":
+        pytest.skip("Only works with helioviewer.org")
+
     image_meta = client.get_closest_image('1994/01/01', observatory='SOHO',
                                           instrument='EIT', measurement='304')
     assert isinstance(image_meta, dict)
@@ -86,6 +90,9 @@ def test_get_jp2_header(client):
     """
     Tests getJP2Header API method
     """
+    if client._api != "https://api.helioviewer.org":
+        pytest.skip("Only works with helioviewer.org")
+
     header1 = client.get_jp2_header('1994/01/01', observatory='SOHO',
                                     instrument='EIT', measurement='304')
     header2 = client.get_jp2_header('1994/01/01', jp2_id=1795504)
