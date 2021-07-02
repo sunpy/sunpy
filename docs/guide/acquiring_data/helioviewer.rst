@@ -55,63 +55,7 @@ Let us begin by retrieving the available list of sources that Helioviewer suppor
     ('SDO', 'AIA', None, '4500'): 17
     ('SDO', 'HMI', None, 'continuum'): 18
     ('SDO', 'HMI', None, 'magnetogram'): 19
-    ('STEREO_A', 'SECCHI', 'EUVI', '171'): 20
-    ('STEREO_A', 'SECCHI', 'EUVI', '195'): 21
-    ('STEREO_A', 'SECCHI', 'EUVI', '284'): 22
-    ('STEREO_A', 'SECCHI', 'EUVI', '304'): 23
-    ('STEREO_B', 'SECCHI', 'EUVI', '171'): 24
-    ('STEREO_B', 'SECCHI', 'EUVI', '195'): 25
-    ('STEREO_B', 'SECCHI', 'EUVI', '284'): 26
-    ('STEREO_B', 'SECCHI', 'EUVI', '304'): 27
-    ('STEREO_A', 'SECCHI', 'COR1', 'white-light'): 28
-    ('STEREO_A', 'SECCHI', 'COR2', 'white-light'): 29
-    ('STEREO_B', 'SECCHI', 'COR1', 'white-light'): 30
-    ('STEREO_B', 'SECCHI', 'COR2', 'white-light'): 31
-    ('PROBA2', 'SWAP', None, '174'): 32
-    ('Yohkoh', 'SXT', None, 'AlMgMn'): 33
-    ('Yohkoh', 'SXT', None, 'thin-Al'): 34
-    ('Yohkoh', 'SXT', None, 'white-light'): 35
-    ('Hinode', 'XRT', 'Al_med', 'Al_thick'): 39
-    ('Hinode', 'XRT', 'Al_med', 'Be_thick'): 40
-    ('Hinode', 'XRT', 'Al_med', 'Open'): 42
-    ('Hinode', 'XRT', 'Al_med', 'Ti_poly'): 43
-    ('Hinode', 'XRT', 'Al_poly', 'Al_mesh'): 44
-    ('Hinode', 'XRT', 'Al_poly', 'Al_thick'): 45
-    ('Hinode', 'XRT', 'Al_poly', 'Be_thick'): 46
-    ('Hinode', 'XRT', 'Al_poly', 'Open'): 48
-    ('Hinode', 'XRT', 'Al_poly', 'Ti_poly'): 49
-    ('Hinode', 'XRT', 'Be_med', 'Open'): 54
-    ('Hinode', 'XRT', 'Be_thin', 'Open'): 60
-    ('Hinode', 'XRT', 'C_poly', 'Al_mesh'): 62
-    ('Hinode', 'XRT', 'C_poly', 'Al_thick'): 63
-    ('Hinode', 'XRT', 'C_poly', 'Open'): 66
-    ('Hinode', 'XRT', 'C_poly', 'Ti_poly'): 67
-    ('Hinode', 'XRT', 'Open', 'Al_mesh'): 69
-    ('Hinode', 'XRT', 'Open', 'Al_thick'): 70
-    ('Hinode', 'XRT', 'Open', 'Be_thick'): 71
-    ('Hinode', 'XRT', 'Open', 'Ti_poly'): 74
-    ('TRACE', None, None, '171'): 75
-    ('TRACE', None, None, '195'): 76
-    ('TRACE', None, None, '284'): 77
-    ('TRACE', None, None, '1216'): 78
-    ('TRACE', None, None, '1550'): 79
-    ('TRACE', None, None, '1600'): 80
-    ('TRACE', None, None, '1700'): 81
-    ('TRACE', None, None, 'white-light'): 82
-    ('MLSO', 'COSMO', 'KCor', '735'): 83
-    ('Hinode', 'XRT', 'Any', 'Any'): 10001
-    ('Hinode', 'XRT', 'Any', 'Al_mesh'): 10002
-    ('Hinode', 'XRT', 'Any', 'Al_thick'): 10003
-    ('Hinode', 'XRT', 'Any', 'Be_thick'): 10004
-    ('Hinode', 'XRT', 'Any', 'Gband'): 10005
-    ('Hinode', 'XRT', 'Any', 'Open'): 10006
-    ('Hinode', 'XRT', 'Any', 'Ti_poly'): 10007
-    ('Hinode', 'XRT', 'Al_med', 'Any'): 10008
-    ('Hinode', 'XRT', 'Al_poly', 'Any'): 10009
-    ('Hinode', 'XRT', 'Be_med', 'Any'): 10010
-    ('Hinode', 'XRT', 'Be_thin', 'Any'): 10011
-    ('Hinode', 'XRT', 'C_poly', 'Any'): 10012
-    ('Hinode', 'XRT', 'Open', 'Any'): 10013
+    ...
 
 Every JPEG 2000 file provided by the Helioviewer Project has been processed to generate an image that
 can be used for browsing purposes.
