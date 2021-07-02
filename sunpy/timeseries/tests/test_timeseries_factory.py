@@ -41,6 +41,7 @@ noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated
 noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
+psp_filepath = os.path.join(filepath, 'psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
 
 # =============================================================================
 # Multi file Tests
@@ -98,6 +99,23 @@ class TestTimeSeries:
         ts_from_pathlib = sunpy.timeseries.TimeSeries(Path(filepath).joinpath("gbm.fits"),
                                                       source="GBMSummary")
         assert isinstance(ts_from_pathlib, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
+
+    def test_read_cdf(self):
+        ts_psp = sunpy.timeseries.TimeSeries(psp_filepath)
+        assert len(ts_psp) == 2
+
+        ts = ts_psp[0]
+        assert ts.columns == ['psp_fld_l2_mag_RTN_1min_0',
+                              'psp_fld_l2_mag_RTN_1min_1',
+                              'psp_fld_l2_mag_RTN_1min_2']
+        assert ts.quantity('psp_fld_l2_mag_RTN_1min_0').unit == u.nT
+        assert len(ts.quantity('psp_fld_l2_mag_RTN_1min_0')) == 118
+
+        ts = ts_psp[1]
+        assert ts.columns == ['psp_fld_l2_quality_flags']
+        assert ts.quantity('psp_fld_l2_quality_flags').unit == u.dimensionless_unscaled
+        assert len(ts.quantity('psp_fld_l2_quality_flags')) == 1440
+
 # =============================================================================
 # Individual Implicit Source Tests
 # =============================================================================
