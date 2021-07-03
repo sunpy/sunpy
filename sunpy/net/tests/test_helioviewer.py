@@ -12,6 +12,8 @@ import sunpy.map
 from sunpy.net.helioviewer import HelioviewerClient
 from sunpy.tests.helpers import figure_test, skip_glymur
 
+pytest.skip("Skipping since the website is broken", allow_module_level=True)
+
 
 @pytest.fixture(scope="function")
 @pytest.mark.remote_data
