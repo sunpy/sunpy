@@ -1,3 +1,5 @@
+.. doctest-skip-all
+
 ***********************************
 Querying Helioviewer.org with SunPy
 ***********************************
