@@ -20,11 +20,8 @@ Bug Fixes
 Added/Improved Documentation
 ----------------------------
 
-- Simplified the "Downloading LASCO C2" gallery example by removing
-  redundant modifications to the metadata before it is loaded by
-  `~sunpy.map.Map`. (`#5402 <https://github.com/sunpy/sunpy/pull/5402>`__)
-  - Tided up the HMI synoptic map example by removing redundant code and
-    correcting some of the comments. (`#5413 <https://github.com/sunpy/sunpy/pull/5413>`__)
+- Simplified the "Downloading LASCO C2" gallery example by removing redundant modifications to the metadata before it is loaded by `~sunpy.map.Map`. (`#5402 <https://github.com/sunpy/sunpy/pull/5402>`__)
+- Tided up the HMI synoptic map example by removing redundant code and correcting some of the comments. (`#5413 <https://github.com/sunpy/sunpy/pull/5413>`__)
 
 3.0.0 (2021-05-14)
 ==================
