@@ -1,27 +1,28 @@
-3.0.1 (2021-07-03)3.0.1 (2021-07-03)
+3.0.1 (2021-07-03)
 ==================
 
 Bug Fixes
 ---------
 
+- Fixed a bug where `~sunpy.map.GenericMap` used to break with keyword arguments. (`#5392 <https://github.com/sunpy/sunpy/pull/5392>`__)
+- Fixed a bug where calling :meth:`sunpy.map.GenericMap.draw_contours` on a different WCS could result in an unnecessary expansion of the plot limits. (`#5398 <https://github.com/sunpy/sunpy/pull/5398>`__)
+- Fixed incorrect return values from :func:`~sunpy.map.all_corner_coords_from_map` if a rectangular map was provided. (`#5419 <https://github.com/sunpy/sunpy/pull/5419>`__)
+- Do not trigger a pytest import in the asdf plugin for saving sunpy coordinate frames. (`#5429 <https://github.com/sunpy/sunpy/pull/5429>`__)
 - Constructing a 2D coordinate in the `~sunpy.coordinates.frames.HeliographicCarrington` frame with ``observer='self'`` now raises an error upon creation.
   When specifying ``observer='self'``, the ``radius`` coordinate component serves as the Sun-observer distance that is necessary to fully define the Carrington heliographic coordinates. (`#5358 <https://github.com/sunpy/sunpy/pull/5358>`__)
 - Fixed two bugs with handling the motion of the Sun when transforming between coordinate frames with a change in ``obstime``.
   These bugs did not affect any results if the context manager :func:`~sunpy.coordinates.transform_with_sun_center` had been used. (`#5381 <https://github.com/sunpy/sunpy/pull/5381>`__)
 - Fixed a bug where the ``rsun`` frame attribute could be unintentionally reset to the default value during transformation.
-  This bug primarily affected the transformation of a `~sunpy.coordinates.frames.Helioprojective` coordinate to a `~sunpy.coordinates.frame.HeliographicStonyhurst` frame. (`#5395 <https://github.com/sunpy/sunpy/pull/5395>`__)
+  This bug primarily affected the transformation of a `~sunpy.coordinates.frames.Helioprojective` coordinate to a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame. (`#5395 <https://github.com/sunpy/sunpy/pull/5395>`__)
 - Fixed a bug where creating a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame or a `~sunpy.coordinates.frames.HeliographicCarrington` frame from WCS information failed to make use of any specified ``rsun_ref`` value. (`#5395 <https://github.com/sunpy/sunpy/pull/5395>`__)
-- `~sunpy.map.sources.SXTMap` now always returns `None` for the ``wavelength``
-  attribute. Previously this raised an error. (`#5401 <https://github.com/sunpy/sunpy/pull/5401>`__)
+- `~sunpy.map.sources.SXTMap` now always returns `None` for the ``wavelength`` attribute. Previously this raised an error. (`#5401 <https://github.com/sunpy/sunpy/pull/5401>`__)
 
 
 Added/Improved Documentation
 ----------------------------
 
-- Simplified the "Downloading LASCO C2" gallery example by removing
-  redundant modifications to the metadata before it is loaded by
-  `~sunpy.map.Map`. (`#5402 <https://github.com/sunpy/sunpy/pull/5402>`__)
-
+- Simplified the "Downloading LASCO C2" gallery example by removing redundant modifications to the metadata before it is loaded by `~sunpy.map.Map`. (`#5402 <https://github.com/sunpy/sunpy/pull/5402>`__)
+- Tided up the HMI synoptic map example by removing redundant code and correcting some of the comments. (`#5413 <https://github.com/sunpy/sunpy/pull/5413>`__)
 
 3.0.0 (2021-05-14)
 ==================
