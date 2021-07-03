@@ -4,6 +4,11 @@
 Bug Fixes
 ---------
 
+- Fixed a bug where `~sunpy.map.GenericMap` used to break with keyword arguments. (`#5392 <https://github.com/sunpy/sunpy/pull/5392>`__)
+- Fixed a bug where calling :meth:`sunpy.map.GenericMap.draw_contours` on a different WCS could result in an unnecessary expansion of the plot limits. (`#5398 <https://github.com/sunpy/sunpy/pull/5398>`__)
+- Fixed incorrect return values from :func:`~sunpy.map.maputils.all_corner_coords_from_map` if a rectangular map was provided. (`#5419 <https://github.com/sunpy/sunpy/pull/5419>`__)
+- Do not trigger a pytest import in the asdf plugin for saving sunpy coordinate
+  frames. (`#5429 <https://github.com/sunpy/sunpy/pull/5429>`__)
 - Constructing a 2D coordinate in the `~sunpy.coordinates.frames.HeliographicCarrington` frame with ``observer='self'`` now raises an error upon creation.
   When specifying ``observer='self'``, the ``radius`` coordinate component serves as the Sun-observer distance that is necessary to fully define the Carrington heliographic coordinates. (`#5358 <https://github.com/sunpy/sunpy/pull/5358>`__)
 - Fixed two bugs with handling the motion of the Sun when transforming between coordinate frames with a change in ``obstime``.
@@ -21,7 +26,8 @@ Added/Improved Documentation
 - Simplified the "Downloading LASCO C2" gallery example by removing
   redundant modifications to the metadata before it is loaded by
   `~sunpy.map.Map`. (`#5402 <https://github.com/sunpy/sunpy/pull/5402>`__)
-
+  - Tided up the HMI synoptic map example by removing redundant code and
+    correcting some of the comments. (`#5413 <https://github.com/sunpy/sunpy/pull/5413>`__)
 
 3.0.0 (2021-05-14)
 ==================

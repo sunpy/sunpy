@@ -1,1 +1,0 @@
-Fixed a bug where `~sunpy.map.GenericMap` used to break with keyword arguments.

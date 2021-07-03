@@ -1,2 +1,0 @@
-Tided up the HMI synoptic map example by removing redundant code and
-correcting some of the comments.
