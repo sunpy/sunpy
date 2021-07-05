@@ -66,6 +66,11 @@ class BaseFuncAnimator:
         A list of labels to draw in the slider, must be the same length as
         ``slider_functions``.
 
+    Attributes
+    ----------
+    fig : `matplotlib.figure.Figure`
+    axes : `matplotlib.axes.Axes`
+
     Notes
     -----
     Extra keywords are passed to `matplotlib.pyplot.imshow`.
