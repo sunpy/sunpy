@@ -1,1 +1,0 @@
-Fixed incorrect return values from :func:`~sunpy.map.all_corner_coords_from_map` if a rectangular map was provided.

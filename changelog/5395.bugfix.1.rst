@@ -1,1 +1,0 @@
-Fixed a bug where creating a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame or a `~sunpy.coordinates.frames.HeliographicCarrington` frame from WCS information failed to make use of any specified ``rsun_ref`` value.
