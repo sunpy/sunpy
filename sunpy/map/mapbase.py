@@ -546,6 +546,7 @@ class GenericMap(NDData):
         # array with sequence error.
         w2.wcs.cdelt = u.Quantity(self.scale)
         w2.wcs.crval = u.Quantity([self._reference_longitude, self._reference_latitude])
+        w2.wcs.lonpole = 180. if w2.wcs.crval[1] < w2.wcs.theta0 else 0.
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
