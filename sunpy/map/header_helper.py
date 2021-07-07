@@ -138,6 +138,12 @@ def make_fitswcs_header(data, coordinate,
     meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lon.to_value(meta_wcs['cunit1']),
                                               coordinate.spherical.lat.to_value(meta_wcs['cunit2']))
 
+    # When the native latitude of the fiducial point is 0 degrees, which is typical for cylindrical
+    # projections, the correct value of `lonpole` depends on whether the world latitude of the
+    # fiducial point is greater than or less than its native latitude.
+    meta_wcs['LONPOLE'] = 180. if meta_wcs['crval2'] < meta_wcs['theta0'] else 0.
+    del meta_wcs['theta0']  # remove the native latitude of the fiducial point
+
     # Add 1 to go from input 0-based indexing to FITS 1-based indexing
     meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel) + 1,
                                               reference_pixel[1].to_value(u.pixel) + 1)
@@ -199,6 +205,7 @@ def _get_wcs_meta(coordinate, projection_code):
     cunit1, cunit2 = skycoord_wcs.wcs.cunit
     coord_meta = dict(skycoord_wcs.to_header())
     coord_meta['cunit1'], coord_meta['cunit2'] = cunit1.to_string("fits"), cunit2.to_string("fits")
+    coord_meta['theta0'] = skycoord_wcs.wcs.theta0  # add the native latitude of the fiducial point
 
     return coord_meta
 
