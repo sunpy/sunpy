@@ -967,18 +967,6 @@ def test_lyra_plot(lyra_test_ts):
         np.testing.assert_array_equal(ax.lines[0].get_ydata(), lyra_test_ts.to_array().T[i])
 
 
-def test_ts_reindex(generic_ts):
-    dates = generic_ts.time_range.start + TimeDelta(np.arange(60)*u.minute)
-    new_index = dates.isot.astype('datetime64')
-    # Test for pandas.DatetimeIndex as index
-    generic_ts_reindexed_1 = generic_ts.reindex(new_index, method="nearest")
-    df_selected = generic_ts.to_dataframe().loc[new_index]
-    assert generic_ts_reindexed_1.to_dataframe().equals(df_selected)
-    # Test for sunpy.timeseries.TimeSeries as index
-    generic_ts_reindexed_2 = generic_ts.reindex(generic_ts_reindexed_1, method="nearest")
-    assert generic_ts_reindexed_2.to_dataframe().equals(generic_ts_reindexed_1.to_dataframe())
-
-
 # TODO:
 # _validate_units
 # _validate_meta
