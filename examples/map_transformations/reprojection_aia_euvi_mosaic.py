@@ -95,8 +95,8 @@ header = sunpy.map.make_fitswcs_header(shape_out,
                                        SkyCoord(0, 0, unit=u.deg,
                                                 frame="heliographic_stonyhurst",
                                                 obstime=maps[0].date),
-                                       scale=[180 / shape_out[0],
-                                              360 / shape_out[1]] * u.deg / u.pix,
+                                       scale=[360 / shape_out[1],
+                                              180 / shape_out[0]] * u.deg / u.pix,
                                        wavelength=int(maps[0].meta['wavelnth']) * u.AA,
                                        projection_code="CAR")
 out_wcs = WCS(header)
