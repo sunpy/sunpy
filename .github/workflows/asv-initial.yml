@@ -7,7 +7,7 @@ on:
 
 jobs:
   asv-run:
-    if: github.repository == "sunpy/sunpy"
+    if: ${{ github.repository }} == "sunpy/sunpy"
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout sunpy repo
