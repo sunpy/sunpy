@@ -984,10 +984,11 @@ def test_missing_metadata_warnings():
         header['cunit2'] = 'arcsec'
         header['ctype1'] = 'HPLN-TAN'
         header['ctype2'] = 'HPLT-TAN'
+        header['date-obs'] = parse_time('2020-01-01').isot
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
-    # There should be 2 warnings for missing metadata (obstime and observer location)
-    assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 2
+    # There should be 1 warning for missing metadata (observer location)
+    assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 1
 
 
 def test_fits_header(aia171_test_map):

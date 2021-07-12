@@ -551,7 +551,8 @@ class GenericMap(NDData):
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isot
+        if self.date is not None:
+            w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
@@ -753,12 +754,7 @@ class GenericMap(NDData):
             timesys = self.meta.get('timesys', 'UTC')
 
         if time is None:
-            if self._default_time is None:
-                warn_metadata("Missing metadata for observation time, "
-                              "setting observation time to current time. "
-                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
-                self._default_time = parse_time('now')
-            time = self._default_time
+            return
 
         return parse_time(time, scale=timesys.lower())
 
