@@ -237,6 +237,7 @@ october_M1_flares.csv
 .pyinstaller/run_sunpy_tests
 .pyinstaller/sunpy_tests
 .pyinstaller/run_sunpy_tests.spec
+sunpy_tests/
 
 ### Vagrant: https://www.toptal.com/developers/gitignore/api/vagrant
 # General
