@@ -25,6 +25,7 @@ __all__ = [
 # Mapping of time format codes to regular expressions.
 REGEX = {
     '%Y': r'(?P<year>\d{4})',
+    '%y': r'(?P<year>\d{2})',
     '%j': r'(?P<dayofyear>\d{3})',
     '%m': r'(?P<month>\d{1,2})',
     '%d': r'(?P<day>\d{1,2})',
@@ -62,6 +63,7 @@ TIME_FORMAT_LIST = [
     "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC / VSO)
     "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI
     "%Y/%m/%dT%H:%M",  # Example 2007/05/04T21:08
+    "%d/%m/%yT%H:%M:%S"  # Example 29/05/78T10:16:51
 ]
 
 _ONE_DAY_TIMEDELTA = TimeDelta(1 * u.day)
