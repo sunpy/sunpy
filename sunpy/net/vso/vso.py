@@ -321,8 +321,7 @@ class VSOClient(BaseClient):
             QueryResponse containing the items to be downloaded.
 
         path : str
-            Specify where the
-        data is to be downloaded. Can refer to arbitrary
+            Specify where the data is to be downloaded. Can refer to arbitrary
             fields of the QueryResponseItem (instrument, source, time, ...) via
             string formatting, moreover the file-name of the file downloaded can
             be referred to as file, e.g.
