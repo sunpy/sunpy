@@ -61,7 +61,7 @@ Testing
 =======
 
 A pytest fixture is provided for ease of mocking network requests when using cache.
-The following example demonstates the usage of the fixture.::
+The following example demonstrates the usage of the fixture.::
 
     @pytest.fixture()
     def local_cache(sunpy_cache):

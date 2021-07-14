@@ -1138,7 +1138,7 @@ class GenericMap(NDData):
         This method converts the deprecated CROTA FITS kwargs to the new
         PC rotation matrix.
 
-        This method can be overriden if an instruments header does not use this
+        This method can be overridden if an instruments header does not use this
         conversion.
         """
         lam = self.scale[0] / self.scale[1]

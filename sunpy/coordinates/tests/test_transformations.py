@@ -934,7 +934,7 @@ def test_transform_with_sun_center():
 
 
 def test_transform_with_sun_center_reset():
-    # This test sequence ensures that the context manager resets propoerly
+    # This test sequence ensures that the context manager resets properly
 
     sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU,
                           frame=HeliographicStonyhurst(obstime="2001-01-01"))

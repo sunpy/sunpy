@@ -50,7 +50,7 @@ unit systems::
   >>> length.cgs
   <Quantity 1000. cm>
 
-Probably most usefully, `~astropy.units.Quantity` objects will propogate units
+Probably most usefully, `~astropy.units.Quantity` objects will propagate units
 through arithmetic operations when appropriate::
 
   >>> distance_start = 10 * u.mm
