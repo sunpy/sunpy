@@ -963,7 +963,7 @@ def test_more_than_two_dimensions():
     """Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
     loaded.  We need to load a >2-dim dataset with a TELESCOP header"""
 
-    # Data crudely represnts 4 stokes, 4 wavelengths with Y,X of 3 and 5.
+    # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.
     bad_data = np.random.rand(4, 4, 3, 5)
     hdr = fits.Header()
     hdr['TELESCOP'] = 'XXX'

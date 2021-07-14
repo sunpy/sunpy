@@ -606,7 +606,7 @@ class Database:
         db_entries = walker.create(and_(*query), self.session)
 
         # If any of the DatabaseEntry-s lack the sorting attribute, the
-        # sorting key should fall back to 'id', orherwise it fails with
+        # sorting key should fall back to 'id', otherwise it fails with
         # TypeError on py3
         if any([getattr(entry, sortby) is None for entry in db_entries]):
             sortby = 'id'
