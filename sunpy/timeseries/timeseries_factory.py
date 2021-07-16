@@ -341,7 +341,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     @_parse_arg.register(Request)
     def _parse_url(self, request, **kwargs):
         path = download_file(request.full_url, get_and_create_download_dir())
-        return self._parse_path(path, **kwargs)
+        return self._parse_path(pathlib.Path(path), **kwargs)
 
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, path, **kwargs):
