@@ -242,7 +242,9 @@ def test_is_datasource_for(eui_fsi_map):
 
 
 def test_observer_coordinate(eui_fsi_map):
-    assert isinstance(eui_fsi_map.observer_coordinate, SkyCoord)
+    obs_coord = eui_fsi_map.observer_coordinate
+    assert isinstance(obs_coord, SkyCoord)
+    assert obs_coord.obstime.isot == eui_fsi_map.meta['date-avg']
 
 
 def test_observatory(eui_fsi_map):
