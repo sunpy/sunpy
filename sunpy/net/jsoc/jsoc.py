@@ -13,7 +13,7 @@ import astropy.time
 import astropy.units as u
 from astropy.utils.misc import isiterable
 
-from sunpy import config
+from sunpy import config, log
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 from sunpy.net.jsoc.attrs import walker
@@ -780,6 +780,8 @@ class JSOCClient(BaseClient):
         else:
             key = keywords
 
+        log.debug(f'Running following query: {ds}')
+        log.debug(f'Requesting following keywords: {key}')
         r = c.query(ds, key=key, rec_index=isMeta)
 
         if r is None or r.empty:
