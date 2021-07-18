@@ -40,7 +40,8 @@ aia_map.plot(ax)
 shape_out = [720, 1440]
 frame_out = SkyCoord(0, 0, unit=u.deg,
                      frame="heliographic_stonyhurst",
-                     obstime=aia_map.date)
+                     obstime=aia_map.date,
+                     rsun=aia_map.coordinate_frame.rsun)
 header = sunpy.map.make_fitswcs_header(shape_out,
                                        frame_out,
                                        scale=[360 / shape_out[1],
@@ -65,8 +66,6 @@ outmap.plot_settings = aia_map.plot_settings
 fig = plt.figure()
 ax = plt.subplot(projection=outmap)
 outmap.plot(ax)
-
-ax.set_xlim(0, shape_out[1])
-ax.set_ylim(0, shape_out[0])
+outmap.draw_limb(color='blue')
 
 plt.show()
