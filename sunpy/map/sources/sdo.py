@@ -168,6 +168,9 @@ class HMISynopticMap(HMIMap):
             log.debug('Setting "DATE-OBS" keyword from "T_OBS"')
             self.meta['date-obs'] = self.meta['t_obs']
 
+        self.plot_settings['cmap'] = 'hmimag'
+        self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """
