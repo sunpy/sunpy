@@ -171,6 +171,15 @@ class HMISynopticMap(HMIMap):
         self.plot_settings['cmap'] = 'hmimag'
         self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
 
+    @property
+    def unit(self):
+        unit_str = self.meta.get('bunit', None)
+        if unit_str == 'Mx/cm^2':
+            # Maxwells aren't in the IAU unit sytle manual, so replace with Gauss
+            return u.Unit('G')
+        else:
+            return super().unit
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """
