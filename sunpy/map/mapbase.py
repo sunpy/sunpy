@@ -21,6 +21,7 @@ from matplotlib.figure import Figure
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
+from astropy.io.fits import Header
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
@@ -2589,6 +2590,73 @@ class GenericMap(NDData):
                       '`autoalign=True`.')
 
         return axes
+
+    def reproject_to(self, output_projection, algorithm='interp', **reproject_args):
+        """
+        Reproject the map to a different WCS
+
+        .. note::
+            This method requires the optional package `reproject` to be installed.
+
+        Parameters
+        ----------
+        output_projection : `dict` or `~astropy.wcs.WCS`
+            The destination FITS WCS header or WCS instance
+        algorithm : str
+            One of the supported `reproject` algorithms (see below)
+
+        Returns
+        -------
+        outmap : `~sunpy.map.GenericMap`
+            The reprojected map
+
+        Notes
+        -----
+        The supported `reproject` algorithms are:
+
+        * 'interp' for :func:`~reproject.reproject_interp`
+        * 'adaptive' for :func:`~reproject.reproject_adaptive`
+        * 'exact' for :func:`~reproject.reproject_exact`
+
+        See the respective documentation for these functions for additional keyword
+        arguments that are allowed.
+
+        If the output projection is specified by a `~astropy.wcs.WCS` instance, the
+        `shape_out` keyword argument must also be specified for the dimensions of the
+        output map.  The ordering of these dimensions is in NumPy order (i.e.,
+        secondary axis and then primary axis).
+
+        .. minigallery:: sunpy.map.GenericMap.reproject_to
+        """
+        try:
+            import reproject
+        except ImportError:
+            raise ImportError("This method requires the optional package `reproject`.")
+
+        if not isinstance(output_projection, astropy.wcs.WCS):
+            output_projection = Header(output_projection)
+
+        # Select the desired reprojection algorithm
+        functions = {'interp': reproject.reproject_interp,
+                     'adaptive': reproject.reproject_adaptive,
+                     'exact': reproject.reproject_exact}
+        if algorithm not in functions:
+            raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
+        func = functions[algorithm]
+
+        # Block the `return_footpoint` keyword argument from being passed on
+        if 'return_footprint' in reproject_args:
+            log.warn("The `return_footprint` keyword is not supported by this method.")
+            del reproject_args['return_footprint']
+
+        # Reproject the array
+        output_array = func(self, output_projection, return_footprint=False, **reproject_args)
+
+        # Create and return a new GenericMap
+        if isinstance(output_projection, astropy.wcs.WCS):
+            output_projection = output_projection.to_header()
+        outmap = GenericMap(output_array, output_projection, plot_settings=self.plot_settings)
+        return outmap
 
 
 GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
