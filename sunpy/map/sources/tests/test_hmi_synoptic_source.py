@@ -123,7 +123,7 @@ def test_measurement(hmi_synoptic):
 
 
 def test_unit(hmi_synoptic):
-    # Check that the deafult unit of Mx/cm**2 is correctly replaced with a
+    # Check that the default unit of Mx/cm**2 is correctly replaced with a
     # FITS standard unit
     assert hmi_synoptic.unit == u.G
     hmi_synoptic.meta['bunit'] = 'm'
