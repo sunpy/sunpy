@@ -3,6 +3,7 @@ from textwrap import dedent
 import numpy as np
 import pytest
 
+import astropy.units as u
 from astropy.io import fits
 
 from sunpy.map import Map
@@ -119,3 +120,11 @@ def test_observatory(hmi_synoptic):
 def test_measurement(hmi_synoptic):
     """Tests the measurement property of the HMISynopticMap object."""
     assert hmi_synoptic.measurement == "carrington"
+
+
+def test_unit(hmi_synoptic):
+    # Check that the deafult unit of Mx/cm**2 is correctly replaced with a
+    # FITS standard unit
+    assert hmi_synoptic.unit == u.G
+    hmi_synoptic.meta['bunit'] = 'm'
+    assert hmi_synoptic.unit == u.m
