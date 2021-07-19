@@ -14,7 +14,6 @@ Documentation :any:`index <genindex>` and :any:`Module <modindex>` index.
   :maxdepth: 2
 
   guide/index
-  known_issues
   code_ref/index
   generated/gallery/index
   dev_guide/index
