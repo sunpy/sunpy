@@ -745,7 +745,7 @@ class GenericMap(NDData):
             # user that it will be ignored.
             timesys = 'TAI'
             timesys_meta = self.meta.get('timesys', '').upper()
-            if timesys_meta != 'TAI':
+            if timesys_meta not in ('', 'TAI'):
                 warn_metadata('Found "TAI" in time string, ignoring TIMESYS keyword '
                               f'which is set to "{timesys_meta}".')
         else:
