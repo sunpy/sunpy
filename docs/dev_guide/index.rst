@@ -25,6 +25,8 @@ This goes over the basics and has links to useful tutorials on git.
    contents/example_gallery
    contents/tests
    contents/pr_review_procedure
+   contents/api
+   contents/dependencies
    contents/units_quantities
    contents/new_objects
    contents/extending_fido
