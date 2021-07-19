@@ -18,7 +18,6 @@ for an alternate approach to image alignment, where the images are aligned
 as they are plotted, with no modified map created.
 """
 import matplotlib.pyplot as plt
-from reproject import reproject_interp
 
 import astropy.units as u
 
@@ -52,13 +51,10 @@ map_hmi.plot(axes=ax2)
 # two WCSes with the same observer, which makes it well suited to aligning
 # data.
 
-output, footprint = reproject_interp(map_hmi, map_aia.wcs, map_aia.data.shape)
+out_hmi = map_hmi.reproject_to(map_aia.wcs, shape_out=map_aia.data.shape)
 
 ######################################################################
-# Construct an output map and use the same HMI plot settings.
-
-out_hmi = sunpy.map.Map(output, map_aia.wcs)
-out_hmi.plot_settings = map_hmi.plot_settings
+# Plot the images side by side.
 
 fig = plt.figure(figsize=(12, 5))
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)

@@ -13,7 +13,6 @@ context manager to apply differential rotation during coordinate
 transformations.
 """
 import matplotlib.pyplot as plt
-from reproject import reproject_interp
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -58,14 +57,7 @@ out_wcs = WCS(header)
 # rotation of the solar surface rather than as inertial points in space.
 
 with propagate_with_solar_surface():
-    arr, _ = reproject_interp(aiamap, out_wcs, out_shape)
-
-##############################################################################
-# Finally, we create the output map and preserve the original map's plot
-# settings.
-
-out_warp = sunpy.map.Map(arr, header)
-out_warp.plot_settings = aiamap.plot_settings
+    out_warp = aiamap.reproject_to(out_wcs, shape_out=out_shape)
 
 ##############################################################################
 # Let's plot the differentially rotated Map next to the original Map.
