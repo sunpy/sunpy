@@ -51,7 +51,7 @@ map_hmi.plot(axes=ax2)
 # two WCSes with the same observer, which makes it well suited to aligning
 # data.
 
-out_hmi = map_hmi.reproject_to(map_aia.wcs, shape_out=map_aia.data.shape)
+out_hmi = map_hmi.reproject_to(map_aia.wcs)
 
 ######################################################################
 # Plot the images side by side.

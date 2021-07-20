@@ -21,7 +21,6 @@ from matplotlib.figure import Figure
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
-from astropy.io.fits import Header
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
@@ -2621,11 +2620,6 @@ class GenericMap(NDData):
         See the respective documentation for these functions for additional keyword
         arguments that are allowed.
 
-        If the output projection is specified by a `~astropy.wcs.WCS` instance, the
-        `shape_out` keyword argument must also be specified for the dimensions of the
-        output map.  The ordering of these dimensions is in NumPy order (i.e.,
-        secondary axis and then primary axis).
-
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         try:
@@ -2634,7 +2628,7 @@ class GenericMap(NDData):
             raise ImportError("This method requires the optional package `reproject`.")
 
         if not isinstance(output_projection, astropy.wcs.WCS):
-            output_projection = Header(output_projection)
+            output_projection = astropy.wcs.WCS(output_projection)
 
         # Select the desired reprojection algorithm
         functions = {'interp': reproject.reproject_interp,
@@ -2645,17 +2639,20 @@ class GenericMap(NDData):
         func = functions[algorithm]
 
         # Block the `return_footpoint` keyword argument from being passed on
-        if 'return_footprint' in reproject_args:
-            log.warn("The `return_footprint` keyword is not supported by this method.")
-            del reproject_args['return_footprint']
+        if reproject_args.get('return_footprint', False):
+            log.warn("This method does not return the footprint, so `return_footprint` is ignored.")
+        reproject_args['return_footprint'] = False
+
+        # reproject does not automatically grab the array shape from the WCS instance
+        if output_projection.array_shape is not None:
+            reproject_args.setdefault('shape_out', output_projection.array_shape)
 
         # Reproject the array
-        output_array = func(self, output_projection, return_footprint=False, **reproject_args)
+        output_array = func(self, output_projection, **reproject_args)
 
         # Create and return a new GenericMap
-        if isinstance(output_projection, astropy.wcs.WCS):
-            output_projection = output_projection.to_header()
-        outmap = GenericMap(output_array, output_projection, plot_settings=self.plot_settings)
+        outmap = GenericMap(output_array, output_projection.to_header(),
+                            plot_settings=self.plot_settings)
         return outmap
 
 

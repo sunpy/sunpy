@@ -43,9 +43,8 @@ out_frame = Helioprojective(observer='earth', obstime=out_time,
 # output time), one can use the WCS object from that ``Map`` object (e.g.,
 # ``mymap.wcs``) instead of constructing a custom WCS.
 
-out_shape = aiamap.data.shape
 out_center = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=out_frame)
-header = sunpy.map.make_fitswcs_header(out_shape,
+header = sunpy.map.make_fitswcs_header(aiamap.data.shape,
                                        out_center,
                                        scale=u.Quantity(aiamap.scale))
 out_wcs = WCS(header)
@@ -57,7 +56,7 @@ out_wcs = WCS(header)
 # rotation of the solar surface rather than as inertial points in space.
 
 with propagate_with_solar_surface():
-    out_warp = aiamap.reproject_to(out_wcs, shape_out=out_shape)
+    out_warp = aiamap.reproject_to(out_wcs)
 
 ##############################################################################
 # Let's plot the differentially rotated Map next to the original Map.
