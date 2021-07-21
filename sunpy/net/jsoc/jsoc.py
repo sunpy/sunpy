@@ -780,8 +780,8 @@ class JSOCClient(BaseClient):
         else:
             key = keywords
 
-        log.debug(f'Running following query: {ds}')
-        log.debug(f'Requesting following keywords: {key}')
+        log.debug(f"Running following query: {ds}")
+        log.debug(f"Requesting following keywords: {key}")
         r = c.query(ds, key=key, rec_index=isMeta)
 
         if r is None or r.empty:
