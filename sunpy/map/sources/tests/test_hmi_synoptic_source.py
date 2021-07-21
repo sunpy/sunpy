@@ -122,6 +122,11 @@ def test_measurement(hmi_synoptic):
     assert hmi_synoptic.measurement == "carrington"
 
 
+def test_date(hmi_synoptic):
+    """Check that accessing the date doesn't raise a warning."""
+    hmi_synoptic.date
+
+
 def test_unit(hmi_synoptic):
     # Check that the default unit of Mx/cm**2 is correctly replaced with a
     # FITS standard unit

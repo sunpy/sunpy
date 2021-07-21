@@ -1,0 +1,4 @@
+When "TAI" is in the date string, `sunpy.map.GenericMap.date`
+now only raises a warning if the TIMESYS keyword is present
+and different to "TAI". Previously a warning was raised all the
+time when "TAI" was in the date string.
