@@ -141,8 +141,7 @@ mars = get_body_heliographic_stonyhurst('mars', map_aia.date)
 # coordinate, which is similar to the one for AIA, except now with
 # the observer at Mars.
 
-mars_ref_coord = SkyCoord(map_aia.reference_coordinate.Tx,
-                          map_aia.reference_coordinate.Ty,
+mars_ref_coord = SkyCoord(0*u.arcsec, 0*u.arcsec,
                           obstime=map_aia.reference_coordinate.obstime,
                           observer=mars,
                           rsun=map_aia.reference_coordinate.rsun,
