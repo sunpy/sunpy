@@ -918,38 +918,62 @@ class GenericMap(NDData):
 
         return new_map
 
+    def _rsun_meters(self, dsun):
+        """
+        This property exists to avoid circular logic in constructing the
+        observer coordinate, by allowing a custom 'dsun' to be specified,
+        instead of one extracted from the `.observer_coordinate` property.
+        """
+        rsun = self.meta.get('rsun_ref', None)
+        if rsun is not None:
+            return rsun * u.m
+        elif self._rsun_obs_no_default is not None:
+            return sun._radius_from_angular_radius(self.rsun_obs, dsun)
+        else:
+            log.info("Missing metadata for solar radius: assuming "
+                     "the standard radius of the photosphere.")
+            return constants.radius
+
     @property
     def rsun_meters(self):
-        """Radius of the sun in meters."""
-        return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
+        """
+        Assumed radius of observed emmision from the Sun center.
+
+        This is taken from the RSUN_REF FTIS keyword, if present.
+        If not, and angular radius metadata is present it is calculated from
+        `~sunpy.map.GenericMap.rsun_obs` and `~sunpy.map.GenericMap.dsun`.
+        If neither peices of metadata are present defaults to the standard
+        photospheric radius.
+        """
+        return self._rsun_meters(self.dsun)
+
+    @property
+    def _rsun_obs_no_default(self):
+        """
+        Get the angular radius value from FITS keywords without defaulting.
+        Exists to avoid circular logic in `rsun_meters()` above.
+        """
+        return self.meta.get('rsun_obs',
+                             self.meta.get('solar_r',
+                                           self.meta.get('radius',
+                                                         None)))
 
     @property
     def rsun_obs(self):
         """
-        Angular radius of the Sun.
+        Angular radius of the observation from Sun center.
 
-        Notes
-        -----
-        This value is taken the ``'rsun_obs'``, ``'solar_r'``, or ``radius``
-        FITS keywords. If none of these keys are present, the angular radius
-        will be calculated from the radius of the Sun (taken from the
-        ``rsun_ref`` FITS keyword) and the observer distance.  If the
-        ``rsun_ref`` key is not present, the standard radius of the photosphere
-        will be assumed.
+        This value is taken (in order of preference) from the 'RSUN_OBS',
+        'SOLAR_R', or 'RADIUS' FITS keywords. If none of these keys are present,
+        the angular radius is calculated from
+        `~sunpy.map.GenericMap.rsun_meters` and `~sunpy.map.GenericMap.dsun`.
         """
-        rsun_arcseconds = self.meta.get('rsun_obs',
-                                        self.meta.get('solar_r',
-                                                      self.meta.get('radius',
-                                                                    None)))
+        rsun_arcseconds = self._rsun_obs_no_default
 
-        if rsun_arcseconds is None:
-            if 'rsun_ref' not in self.meta:
-                warn_metadata("Missing metadata for solar angular radius: assuming the standard "
-                              "radius of the photosphere as seen from the observer distance.")
-            rsun = sun._angular_radius(self.rsun_meters, self.dsun)
+        if rsun_arcseconds is not None:
+            return rsun_arcseconds * u.arcsec
         else:
-            rsun = rsun_arcseconds * u.arcsec
-        return rsun
+            return sun._angular_radius(self.rsun_meters, self.dsun)
 
     @property
     def coordinate_system(self):
@@ -1000,6 +1024,7 @@ class GenericMap(NDData):
             self.meta.pop(key)
 
     @property
+    @cached_property_based_on('_meta_hash')
     def observer_coordinate(self):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
@@ -1008,14 +1033,20 @@ class GenericMap(NDData):
         for keys, kwargs in self._supported_observer_coordinates:
             meta_list = [k in self.meta for k in keys]
             if all(meta_list):
-                sc = SkyCoord(obstime=self.date, rsun=self.rsun_meters, **kwargs)
-
+                sc = SkyCoord(obstime=self.date, **kwargs)
                 # If the observer location is supplied in Carrington coordinates,
                 # the coordinate's `observer` attribute should be set to "self"
                 if isinstance(sc.frame, HeliographicCarrington):
                     sc.frame._observer = "self"
 
-                return sc.heliographic_stonyhurst
+                sc = sc.heliographic_stonyhurst
+                # We set rsun after constructing the coordinate, as we need
+                # the observer-Sun distance (sc.radius) to calculate this, which
+                # may not be provided directly in metadata (if e.g. the
+                # observer coordinate is specified in a cartesian
+                # representation)
+                return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))
+
             elif any(meta_list) and not set(keys).isdisjoint(self.meta.keys()):
                 if not isinstance(kwargs['frame'], str):
                     kwargs['frame'] = kwargs['frame'].name

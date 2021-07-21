@@ -83,6 +83,19 @@ def test_wcs_cache(aia171_test_map):
     assert new_wcs.wcs.crpix[0] == new_crpix
 
 
+def test_obs_coord_cache(aia171_test_map):
+    coord1 = aia171_test_map.observer_coordinate
+    coord2 = aia171_test_map.observer_coordinate
+    assert coord1 is coord2
+
+    # Change metadata, and check that the coordinate changes
+    aia171_test_map.meta['haex_obs'] += 10
+    new_coord = aia171_test_map.observer_coordinate
+    assert new_coord.lon != coord2.lon
+    assert new_coord.lat != coord2.lat
+    assert new_coord.radius != coord2.radius
+
+
 def test_header_immutability(aia171_test_map):
     # Check that accessing the wcs of a map doesn't modify the meta data
     assert 'KEYCOMMENTS' in aia171_test_map.meta
@@ -170,14 +183,12 @@ def test_rsun_meters(generic_map):
 
 
 def test_rsun_obs_without_rsun_ref(generic_map):
-    with pytest.warns(SunpyMetadataWarning,
-                      match='assuming the standard radius of the photosphere '
-                            'as seen from the observer distance'):
-        assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
+    assert_quantity_allclose(generic_map.rsun_obs,
+                             sun.angular_radius(generic_map.date))
 
 
 def test_rsun_obs_with_rsun_ref(generic_map):
-    generic_map.meta['rsun_ref'] = sunpy.sun.constants.radius
+    generic_map.meta['rsun_ref'] = sunpy.sun.constants.radius.to_value(u.m)
     # The following should not raise a warning because we can calculate it exactly
     assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
 
