@@ -7,6 +7,8 @@
   "sunpy.map.tests.test_mapsequence.test_norm_animator": "17d50a2992e9b66ede4984376a70cd0aa67dd1434a9a3bc04e23e4e4213cf7a4",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot": "e4622b1aea9e0aaf076eddf93dbdc06daf5b3472d78aae31ed89a77499d58e0f",
   "sunpy.map.tests.test_plotting.test_plot_aia171": "e4622b1aea9e0aaf076eddf93dbdc06daf5b3472d78aae31ed89a77499d58e0f",
+  "sunpy.map.tests.test_plotting.test_plot_to_empty_figure": "e4622b1aea9e0aaf076eddf93dbdc06daf5b3472d78aae31ed89a77499d58e0f",
+  "sunpy.map.tests.test_plotting.test_plot_to_figure_and_axes": "4c97b8671c8b1982c8c7f1251640d0afbcc81c258b1e95cc881107d5e7bfab2b",
   "sunpy.map.tests.test_plotting.test_plot_rotated_aia171": "33d6a3b7b0cc4bc08ef60622795a1777a738dde3e4f161798bb1994c25f23e63",
   "sunpy.map.tests.test_plotting.test_plot_aia171_clip": "c70b809374fe1c3811c30a7df6274b65383f4d46c00edf5550afdb9e29f5367b",
   "sunpy.map.tests.test_plotting.test_peek_aia171": "61a969437ec026fea50a0b0ab158b183c0cb5b0d954634bb97eb2dde4c075758",

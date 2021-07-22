@@ -52,6 +52,32 @@ def test_plot_aia171(aia171_test_map):
 
 
 @figure_test
+def test_plot_to_empty_figure(aia171_test_map):
+    fig = Figure()
+    aia171_test_map.plot(figure=fig)
+    return fig
+
+
+@figure_test
+def test_plot_to_figure_and_axes(aia171_test_map, hmi_test_map):
+    fig = Figure()
+    ax1 = fig.add_subplot(1, 2, 1, projection=aia171_test_map)
+    ax2 = fig.add_subplot(1, 2, 2, projection=hmi_test_map)
+    aia171_test_map.plot(figure=fig, axes=ax1)
+    hmi_test_map.plot(figure=fig, axes=ax2)
+    return fig
+
+
+def test_plot_to_mismatched_figure_and_axes(aia171_test_map):
+    fig1 = Figure()
+    ax1 = fig1.add_subplot(projection=aia171_test_map)
+    fig2 = Figure()
+    ax2 = fig2.add_subplot(projection=aia171_test_map)
+    with pytest.raises(ValueError):
+        aia171_test_map.plot(figure=fig1, axes=ax2)
+
+
+@figure_test
 def test_plot_rotated_aia171(aia171_test_map):
     # Check that plotting a rotated map and a rectangle works as expected
 

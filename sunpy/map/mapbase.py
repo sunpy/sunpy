@@ -2299,7 +2299,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def plot(self, annotate=True, axes=None, title=True, autoalign=False,
-             clip_interval: u.percent = None, **imshow_kwargs):
+             clip_interval: u.percent = None, figure=None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
         to :meth:`~matplotlib.axes.Axes.imshow` using nearest neighbor interpolation.
@@ -2309,9 +2309,15 @@ class GenericMap(NDData):
         annotate : `bool`, optional
             If `True`, the data is plotted at its natural scale; with
             title and axis labels.
-        axes: `~matplotlib.axes.Axes` or None
-            If provided the image will be plotted on the given axes. Else the
-            current Matplotlib axes will be used.
+        axes : `~matplotlib.axes.Axes` or `None`
+            The target axes onto which to plot the image.  If `None`, the axes will be
+            the singular axes of the target figure (see ``figure`` argument), which are
+            created if necessary.  If `None` and the target figure contains multiple
+            axes, the current `matplotlib.pyplot` axes are used.
+        figure : `~matplotlib.figure.Figure` or `None`
+            The target figure onto which to plot the image.  This argument is
+            unnecessary if ``axes`` is specified.  If `None` and ``axes`` is `None`, the
+            current `matplotlib.pyplot` figure is used.
         title : `str`, `bool`, optional
             The plot title. If `True`, uses the default title for this map.
         clip_interval : two-element `~astropy.units.Quantity`, optional
@@ -2357,7 +2363,12 @@ class GenericMap(NDData):
         if autoalign is True:
             autoalign = 'pcolormesh'
 
-        axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
+        # Protection for when a user specifies axes that are not in the specified figure
+        if figure is not None and axes is not None \
+           and len(figure.get_axes()) > 0 and axes not in figure.get_axes():
+            raise ValueError("The specified axes are not in the specified figure.")
+
+        axes = self._check_axes(axes, figure=figure, warn_different_wcs=autoalign is False)
 
         # Normal plot
         plot_settings = copy.deepcopy(self.plot_settings)
@@ -2502,7 +2513,7 @@ class GenericMap(NDData):
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
 
-    def _check_axes(self, axes, warn_different_wcs=False):
+    def _check_axes(self, axes, figure=None, warn_different_wcs=False):
         """
         - If axes is None, get the current Axes object.
         - Error if not a WCSAxes.
@@ -2518,7 +2529,7 @@ class GenericMap(NDData):
             WCSAxes.
         """
         if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
+            axes = wcsaxes_compat.gca_wcs(self.wcs, fig=figure)
 
         if not wcsaxes_compat.is_wcsaxes(axes):
             raise TypeError("The axes need to be an instance of WCSAxes. "

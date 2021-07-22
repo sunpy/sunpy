@@ -55,9 +55,12 @@ def gca_wcs(wcs, fig=None, slices=None):
     if not fig:
         fig = plt.gcf()
 
-    if not len(fig.get_axes()):
-        ax = plt.axes(projection=wcs, slices=slices)
-    else:
+    naxes = len(fig.get_axes())
+    if naxes == 0:  # Create axes if the figure has none
+        ax = fig.add_subplot(projection=wcs, slices=slices)
+    elif naxes == 1:  # If there exactly one axes, use that
+        ax = fig.get_axes()[0]
+    else:  # Otherwise, use pyplot to determine which axes to use
         ax = plt.gca()
 
     return ax

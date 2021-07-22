@@ -1,0 +1,2 @@
+It is now possible to explicitly specify the target `~matplotlib.figure.Figure` instance when using :meth:`sunpy.map.GenericMap.plot`, via the ``figure`` keyword argument.
+This is useful when not using the `matplotlib.pyplot` workflow, because there may not be a notion of a "current" figure, and saves having to manually create the `~matplotlib.axes.Axes` in common use cases.
