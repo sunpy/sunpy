@@ -248,3 +248,8 @@ sunpy_tests/
 
 ### Vagrant Patch ###
 *.box
+
+# asv stuff
+asv_results/*
+asv_env/*
+html/*
