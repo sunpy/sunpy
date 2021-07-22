@@ -94,22 +94,31 @@ def solar_wcs_frame_mapping(wcs):
     if rsun is not None:
         frame_args['rsun'] = rsun
 
+    frame_class = _frame_class_from_ctypes(wcs.wcs.ctype)
+
+    if frame_class:
+        if frame_class == HeliographicStonyhurst:
+            frame_args.pop('observer', None)
+        if frame_class == Heliocentric:
+            frame_args.pop('rsun', None)
+
+        return frame_class(**frame_args)
+
+
+def _frame_class_from_ctypes(ctypes):
     # Truncate the ctype to the first four letters
-    ctypes = {c[:4] for c in wcs.wcs.ctype}
+    ctypes = {c[:4] for c in ctypes}
 
-    if {'HPLN', 'HPLT'} <= ctypes:
-        return Helioprojective(**frame_args)
+    mapping = {
+        Helioprojective: {'HPLN', 'HPLT'},
+        HeliographicStonyhurst: {'HGLN', 'HGLT'},
+        HeliographicCarrington: {'CRLN', 'CRLT'},
+        Heliocentric: {'SOLX', 'SOLY'},
+    }
 
-    if {'HGLN', 'HGLT'} <= ctypes:
-        frame_args.pop('observer', None)
-        return HeliographicStonyhurst(**frame_args)
-
-    if {'CRLN', 'CRLT'} <= ctypes:
-        return HeliographicCarrington(**frame_args)
-
-    if {'SOLX', 'SOLY'} <= ctypes:
-        frame_args.pop('rsun', None)
-        return Heliocentric(**frame_args)
+    for frame_class, ctype_pair in mapping.items():
+        if ctype_pair <= ctypes:
+            return frame_class
 
 
 def _set_wcs_aux_obs_coord(wcs, obs_frame):
