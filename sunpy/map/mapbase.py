@@ -730,16 +730,13 @@ class GenericMap(NDData):
     def nickname(self, n):
         self._nickname = n
 
-    @property
-    def date(self):
-        """
-        Image observation time.
+    def _get_date(self, key):
+        time = self.meta.get(key, None)
+        if time is None:
+            return
 
-        This is taken from the 'DATE-OBS' FITS keyword.
-        """
-        time = self.meta.get('date-obs', None)
         # Get the time scale
-        if time is not None and 'TAI' in time:
+        if 'TAI' in time:
             # SDO specifies the 'TAI' scale in their time string, which is parsed
             # by parse_time(). If a different timescale is also present, warn the
             # user that it will be ignored.
@@ -752,15 +749,76 @@ class GenericMap(NDData):
             # UTC is the FITS standard default
             timesys = self.meta.get('timesys', 'UTC')
 
+        return parse_time(time, scale=timesys.lower())
+
+    @property
+    def date_start(self):
+        """
+        Time of the beginning of the image acquisition.
+
+        Taken from the DATE-BEG FITS keyword.
+        """
+        return self._get_date('date-beg')
+
+    @property
+    def date_end(self):
+        """
+        Time of the end of the image acquisition.
+
+        Taken from the DATE-END FITS keyword.
+        """
+        return self._get_date('date-end')
+
+    @property
+    def date_average(self):
+        """
+        Average time of the image acquisition.
+
+        Taken from the DATE-AVG FITS keyword if present, otherwise halfway
+        between `date_start` and `date_end` if both peices of metadata are
+        present.
+        """
+        avg = self._get_date('date-avg')
+        if avg is None:
+            start, end = self.date_start, self.date_end
+            if start is not None and end is not None:
+                avg = start + (end - start) / 2
+
+        return avg
+
+    @property
+    def date(self):
+        """
+        Image observation time.
+
+        For different combinations of map metadata this can return either
+        the start time, end time, or a time between these. It is recommended
+        to use `~sunpy.map.GenericMap.date_average`,
+        `~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
+        instead if you need one of these specific times.
+
+        Taken from, in order of preference:
+
+        1. The DATE-OBS FITS keyword
+        2. `~sunpy.map.GenericMap.date_average`
+        3. `~sunpy.map.GenericMap.date_start`
+        4. `~sunpy.map.GenericMap.date_end`
+        5. The current time
+        """
+        time = self._get_date('date-obs')
+        time = time or self.date_average
+        time = time or self.date_start
+        time = time or self.date_end
+
         if time is None:
             if self._default_time is None:
                 warn_metadata("Missing metadata for observation time, "
                               "setting observation time to current time. "
-                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
+                              "Set the 'DATE-AVG' FITS keyword to prevent this warning.")
                 self._default_time = parse_time('now')
             time = self._default_time
 
-        return parse_time(time, scale=timesys.lower())
+        return time
 
     @property
     def detector(self):
