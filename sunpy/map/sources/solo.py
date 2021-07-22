@@ -8,6 +8,7 @@ from astropy.visualization import ImageNormalize, LinearStretch
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.time import parse_time
 
 __all__ = ['EUIMap']
 
@@ -46,6 +47,12 @@ class EUIMap(GenericMap):
     @property
     def exposure_time(self):
         return self.meta.get('xposure', 0.0) * self.timeunit
+
+    @property
+    def date(self):
+        t = self.meta.get('date-avg')
+        timesys = self.meta.get('timesys')
+        return parse_time(t, scale=timesys.lower())
 
     @property
     def _supported_observer_coordinates(self):
