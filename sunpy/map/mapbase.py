@@ -915,7 +915,7 @@ class GenericMap(NDData):
 
         return new_map
 
-    def _rsun_meters(self, dsun):
+    def _rsun_meters(self, dsun=None):
         """
         This property exists to avoid circular logic in constructing the
         observer coordinate, by allowing a custom 'dsun' to be specified,
@@ -925,6 +925,8 @@ class GenericMap(NDData):
         if rsun is not None:
             return rsun * u.m
         elif self._rsun_obs_no_default is not None:
+            if dsun is None:
+                dsun = self.dsun
             return sun._radius_from_angular_radius(self.rsun_obs, dsun)
         else:
             log.info("Missing metadata for solar radius: assuming "
@@ -934,15 +936,15 @@ class GenericMap(NDData):
     @property
     def rsun_meters(self):
         """
-        Assumed radius of observed emmision from the Sun center.
+        Assumed radius of observed emission from the Sun center.
 
-        This is taken from the RSUN_REF FTIS keyword, if present.
-        If not, and angular radius metadata is present it is calculated from
+        This is taken from the RSUN_REF FITS keyword, if present.
+        If not, and angular radius metadata is present, it is calculated from
         `~sunpy.map.GenericMap.rsun_obs` and `~sunpy.map.GenericMap.dsun`.
-        If neither peices of metadata are present defaults to the standard
+        If neither pieces of metadata are present, defaults to the standard
         photospheric radius.
         """
-        return self._rsun_meters(self.dsun)
+        return self._rsun_meters()
 
     @property
     def _rsun_obs_no_default(self):

@@ -1261,7 +1261,6 @@ def test_meta_modifications(aia171_test_map):
     assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
 
 
-
 def test_no_wcs_observer_info(heliographic_test_map):
     # Check that HeliographicCarrington WCS has observer info set
     assert isinstance(heliographic_test_map.coordinate_frame, HeliographicCarrington)
@@ -1283,3 +1282,22 @@ def test_no_wcs_observer_info(heliographic_test_map):
     assert wcs_aux.hgln_obs is None
     assert wcs_aux.hglt_obs is None
     assert wcs_aux.dsun_obs is None
+
+
+def test_rsun_meters_no_warning_for_hgs(heliographic_test_map):
+    # Make sure that Stonyhurst heliographic maps do not emit a warning about assuming an
+    # Earth-based observer when returning the physical radius of the Sun, because such an
+    # assumption is not necessary
+
+    # Convert the heliographic test map to Stonyhurst heliographic coordinates
+    heliographic_test_map.meta.pop('HGLN_OBS')
+    heliographic_test_map.meta.pop('HGLT_OBS')
+    heliographic_test_map.meta.pop('DSUN_OBS')
+    heliographic_test_map.meta['CTYPE1'] = 'HGLN-CAR'
+    heliographic_test_map.meta['CTYPE2'] = 'HGLT-CAR'
+
+    # Add a custom physical radius for the Sun
+    heliographic_test_map.meta['rsun_ref'] = 1.1 * sunpy.sun.constants.radius.to_value(u.m)
+
+    assert_quantity_allclose(heliographic_test_map.rsun_meters,
+                             heliographic_test_map.meta['rsun_ref'] << u.m)
