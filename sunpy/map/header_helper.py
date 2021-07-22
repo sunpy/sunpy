@@ -166,6 +166,10 @@ def _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix):
 
 
 def _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape):
+    meta_wcs['naxis'] = 2
+    meta_wcs['naxis1'] = shape[1]
+    meta_wcs['naxis2'] = shape[0]
+
     if reference_pixel is None:
         reference_pixel = u.Quantity([(shape[1] - 1)/2.*u.pixel,
                                       (shape[0] - 1)/2.*u.pixel])

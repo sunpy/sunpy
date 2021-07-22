@@ -82,6 +82,8 @@ def test_rotation_matrix(map_data, hpc_coord):
 def test_hpc_header(hpc_header, hpc_coord):
     assert isinstance(hpc_header, MetaDict)
 
+    assert hpc_header['naxis1'] == 10
+    assert hpc_header['naxis2'] == 20
     assert hpc_header['crval1'] == 0
     assert hpc_header['crpix1'] == 5.5
     assert hpc_header['ctype1'] == 'HPLN-TAN'
@@ -105,6 +107,8 @@ def test_hpc_header(hpc_header, hpc_coord):
 def test_hgc_header(hgc_header, hgc_coord):
     assert isinstance(hgc_header, MetaDict)
 
+    assert hgc_header['naxis1'] == 10
+    assert hgc_header['naxis2'] == 20
     assert hgc_header['crval1'] == 70
     assert hgc_header['crpix1'] == 5.5
     assert hgc_header['ctype1'] == "CRLN-CAR"
@@ -130,6 +134,8 @@ def test_hgc_header(hgc_header, hgc_coord):
 def test_hgs_header(hgs_header, hgs_coord):
     assert isinstance(hgs_header, MetaDict)
 
+    assert hgs_header['naxis1'] == 10
+    assert hgs_header['naxis2'] == 20
     assert hgs_header['crval1'] == -50
     assert hgs_header['crpix1'] == 5.5
     assert hgs_header['ctype1'] == "HGLN-CAR"
