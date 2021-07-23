@@ -153,7 +153,7 @@ def solar_wcs_frame_mapping(wcs):
     if rsun is not None:
         frame_args['rsun'] = rsun
 
-    frame_class = _frame_class_from_ctypes(wcs.wcs.ctype)
+    frame_class = _sunpy_frame_class_from_ctypes(wcs.wcs.ctype)
 
     if frame_class:
         if frame_class == HeliographicStonyhurst:
@@ -164,7 +164,7 @@ def solar_wcs_frame_mapping(wcs):
         return frame_class(**frame_args)
 
 
-def _frame_class_from_ctypes(ctypes):
+def _sunpy_frame_class_from_ctypes(ctypes):
     # Truncate the ctype to the first four letters
     ctypes = {c[:4] for c in ctypes}
 

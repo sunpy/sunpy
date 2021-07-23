@@ -564,9 +564,9 @@ class GenericMap(NDData):
         if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
             w2.wcs.ctype[1] = 'HPLT-TAN'
 
-        # Set observer coordinate information if appropriate
-        frame_class = sunpy.coordinates.wcs_utils._frame_class_from_ctypes(w2.wcs.ctype)
-        if hasattr(frame_class, 'observer'):
+        # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
+        sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
+        if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
             # Clear all the aux information that was set earlier. This is to avoid
             # issues with maps that store multiple observer coordinate keywords.
             # Note that we have to create a new WCS as it's not possible to modify
