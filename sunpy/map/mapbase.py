@@ -2590,7 +2590,7 @@ class GenericMap(NDData):
 
         return axes
 
-    def reproject_to(self, output_projection, algorithm='interp', **reproject_args):
+    def reproject_to(self, target_wcs, algorithm='interp', **reproject_args):
         """
         Reproject the map to a different WCS
 
@@ -2599,7 +2599,7 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        output_projection : `dict` or `~astropy.wcs.WCS`
+        target_wcs : `dict` or `~astropy.wcs.WCS`
             The destination FITS WCS header or WCS instance
         algorithm : str
             One of the supported `reproject` algorithms (see below)
@@ -2611,6 +2611,9 @@ class GenericMap(NDData):
 
         Notes
         -----
+        The reprojected map does not preserve any metadata beyond the WCS-associated
+        metadata.
+
         The supported `reproject` algorithms are:
 
         * 'interp' for :func:`~reproject.reproject_interp`
@@ -2627,8 +2630,8 @@ class GenericMap(NDData):
         except ImportError:
             raise ImportError("This method requires the optional package `reproject`.")
 
-        if not isinstance(output_projection, astropy.wcs.WCS):
-            output_projection = astropy.wcs.WCS(output_projection)
+        if not isinstance(target_wcs, astropy.wcs.WCS):
+            target_wcs = astropy.wcs.WCS(target_wcs)
 
         # Select the desired reprojection algorithm
         functions = {'interp': reproject.reproject_interp,
@@ -2644,14 +2647,14 @@ class GenericMap(NDData):
         reproject_args['return_footprint'] = False
 
         # reproject does not automatically grab the array shape from the WCS instance
-        if output_projection.array_shape is not None:
-            reproject_args.setdefault('shape_out', output_projection.array_shape)
+        if target_wcs.array_shape is not None:
+            reproject_args.setdefault('shape_out', target_wcs.array_shape)
 
         # Reproject the array
-        output_array = func(self, output_projection, **reproject_args)
+        output_array = func(self, target_wcs, **reproject_args)
 
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, output_projection.to_header(),
+        outmap = GenericMap(output_array, target_wcs.to_header(),
                             plot_settings=self.plot_settings)
         return outmap
 
