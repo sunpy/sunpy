@@ -235,8 +235,6 @@ class MapFactory(BasicRegistrationFactory):
                 header = args.pop(i)
                 args.insert(i, (data, header))
                 nargs -= 1
-            elif isinstance(arg, io.IOBase):
-                pass
             elif isinstance(arg, str) and is_url(arg):
                 # Repalce URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
