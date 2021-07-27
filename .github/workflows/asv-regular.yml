@@ -1,6 +1,8 @@
 name: asv-benchmarks-daily
 
 on:
+  # Alllow manual runs through the web UI
+  workflow_dispatch:
   schedule:
 #            ┌───────── minute (0 - 59)
 #            │ ┌───────── hour (0 - 23)
@@ -40,8 +42,9 @@ jobs:
       - name: Add machine info for ASV
         run : asv machine --machine GH-Actions --os ubuntu-20.04 --arch x64 --cpu "2-core unknown" --ram 7GB
 
-      - name: Run benchmarks for commits since v2.1
-        run : taskset -c 0 asv run --skip-existing-successful v2.1dev..
+      - name: Run benchmarks for commits since v1.1
+        # On main the release of v1.1 is the 2.0dev tag
+        run : taskset -c 0 asv run --skip-existing-successful v2.0.dev..
 
       - name: Install SSH Client 🔑
         uses: webfactory/ssh-agent@v0.4.1
