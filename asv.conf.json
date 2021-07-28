@@ -1,8 +1,8 @@
 {
     "version": 1,
     "project": "sunpy-benchmarks",
-    "project_url": "http://sunpy.org/",
-    "repo": "https://github.com/sunpy/sunpy",
+    "project_url": "https://sunpy.org/",
+    "repo": "./",
     "branches": [
         "main"
     ],
