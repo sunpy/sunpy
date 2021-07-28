@@ -1,0 +1,1 @@
+Fixed the unintended insertion of (assumed) observer location information when accessing the property `sunpy.map.GenericMap.wcs` for Stonyhurst heliographic maps.

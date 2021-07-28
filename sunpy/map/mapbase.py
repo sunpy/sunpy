@@ -31,7 +31,7 @@ import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
 from sunpy import config, log
-from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, Helioprojective, get_earth, sun
+from sunpy.coordinates import HeliographicCarrington, Helioprojective, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
@@ -564,24 +564,21 @@ class GenericMap(NDData):
         if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
             w2.wcs.ctype[1] = 'HPLT-TAN'
 
-        # Set observer coordinate information
-        #
-        # Clear all the aux information that was set earlier. This is to avoid
-        # issues with maps that store multiple observer coordinate keywords.
-        # Note that we have to create a new WCS as it's not possible to modify
-        # wcs.wcs.aux in place.
-        header = w2.to_header()
-        for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
-            header.pop(kw, None)
-        w2 = astropy.wcs.WCS(header)
+        # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
+        sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
+        if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
+            # Clear all the aux information that was set earlier. This is to avoid
+            # issues with maps that store multiple observer coordinate keywords.
+            # Note that we have to create a new WCS as it's not possible to modify
+            # wcs.wcs.aux in place.
+            header = w2.to_header()
+            for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
+                header.pop(kw, None)
+            w2 = astropy.wcs.WCS(header)
 
-        # Get observer coord, and transform if needed
-        obs_coord = self.observer_coordinate
-        if not isinstance(obs_coord.frame, (HeliographicStonyhurst, HeliographicCarrington)):
-            obs_coord = obs_coord.transform_to(HeliographicStonyhurst(obstime=self.date,
-                                                                      rsun=self.rsun_meters))
-
-        sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
+            # Get observer coord, and set the aux information
+            obs_coord = self.observer_coordinate
+            sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
         # Validate the WCS here.
         w2.wcs.set()
@@ -976,7 +973,7 @@ class GenericMap(NDData):
 
         return new_map
 
-    def _rsun_meters(self, dsun):
+    def _rsun_meters(self, dsun=None):
         """
         This property exists to avoid circular logic in constructing the
         observer coordinate, by allowing a custom 'dsun' to be specified,
@@ -986,6 +983,8 @@ class GenericMap(NDData):
         if rsun is not None:
             return rsun * u.m
         elif self._rsun_obs_no_default is not None:
+            if dsun is None:
+                dsun = self.dsun
             return sun._radius_from_angular_radius(self.rsun_obs, dsun)
         else:
             log.info("Missing metadata for solar radius: assuming "
@@ -995,15 +994,15 @@ class GenericMap(NDData):
     @property
     def rsun_meters(self):
         """
-        Assumed radius of observed emmision from the Sun center.
+        Assumed radius of observed emission from the Sun center.
 
-        This is taken from the RSUN_REF FTIS keyword, if present.
-        If not, and angular radius metadata is present it is calculated from
+        This is taken from the RSUN_REF FITS keyword, if present.
+        If not, and angular radius metadata is present, it is calculated from
         `~sunpy.map.GenericMap.rsun_obs` and `~sunpy.map.GenericMap.dsun`.
-        If neither peices of metadata are present defaults to the standard
+        If neither pieces of metadata are present, defaults to the standard
         photospheric radius.
         """
-        return self._rsun_meters(self.dsun)
+        return self._rsun_meters()
 
     @property
     def _rsun_obs_no_default(self):
