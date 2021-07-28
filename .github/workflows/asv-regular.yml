@@ -9,7 +9,7 @@ on:
 #            │ │ ┌───────── day of the month (1 - 31)
 #            │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
 #            │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
-    - cron: '0 3 * * 0' # Every day at 3am UTC
+    - cron: '37 7 * * *' # Every day at 3am UTC
 
 jobs:
   asv-run:
