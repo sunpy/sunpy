@@ -16,7 +16,6 @@ from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.time import Time
 from astropy.visualization import wcsaxes
 
 import sunpy
@@ -148,8 +147,37 @@ def test_nickname_set(generic_map):
     assert generic_map.nickname == 'hi'
 
 
-def test_date(generic_map):
-    assert isinstance(generic_map.date, Time)
+date_dict = {'DATE-AVG': parse_time('2020-01-01'),
+             'DATE-OBS': parse_time('2020-02-01'),
+             'DATE-BEG': parse_time('2020-03-01'),
+             'DATE-END': parse_time('2020-03-03')}
+date_begend = date_dict['DATE-BEG'] + (date_dict['DATE-END'] - date_dict['DATE-BEG']) / 2
+
+
+@pytest.mark.parametrize('keys, expected_date',
+                         ([['DATE-AVG', 'DATE-OBS', 'DATE-BEG', 'DATE-END'], date_dict['DATE-OBS']],
+                          [['DATE-AVG', 'DATE-BEG', 'DATE-END'], date_dict['DATE-AVG']],
+                          [['DATE-BEG', 'DATE-END'], date_begend],
+                          [['DATE-BEG'], date_dict['DATE-BEG']],
+                          [['DATE-END'], date_dict['DATE-END']],
+                          [[], 'now']
+                          ))
+def test_date(generic_map, keys, expected_date):
+    # Remove pre-existing date keys
+    for key in date_dict:
+        generic_map.meta.pop(key, None)
+    # Add new date keys
+    for key in keys:
+        generic_map.meta[key] = date_dict[key].isot
+    # Check date is the correct value
+    if expected_date == 'now':
+        expected_date = parse_time('now')
+        # Check equal to within a tolerance as parse_time('now') is run
+        # at slightly different times in .date and the line above
+        with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observation time'):
+            assert generic_map.date - expected_date < 1*u.s
+    else:
+        assert generic_map.date == expected_date
 
 
 def test_date_scale(generic_map):
