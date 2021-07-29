@@ -5,11 +5,11 @@ on:
   workflow_dispatch:
   schedule:
 #            ┌───────── minute (0 - 59)
-#            │ ┌───────── hour (0 - 23)
-#            │ │ ┌───────── day of the month (1 - 31)
-#            │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
-#            │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
-    - cron: '0 3 * * 0' # Every day at 3am UTC
+#            │  ┌───────── hour (0 - 23)
+#            │  │ ┌───────── day of the month (1 - 31)
+#            │  │ │ ┌───────── month (1 - 12 or JAN-DEC)
+#            │  │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
+    - cron: '37 7 * * *' # Every day at 3am UTC
 
 jobs:
   asv-run:
@@ -20,39 +20,32 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: '0'
-
       - name: Checkout sunpy-benchmarks repo
         uses: actions/checkout@v2
         with:
           repository: sunpy/sunpy-benchmarks
           ref : main
           path: asv_results
-
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: '3.9'
           architecture: 'x64'
-
       - name: Install dependencies
         run : |
           python -m pip install --upgrade pip
           pip install asv virtualenv
-
       - name: Add machine info for ASV
         run : asv machine --machine GH-Actions --os ubuntu-20.04 --arch x64 --cpu "2-core unknown" --ram 7GB
-
       - name: Run benchmarks for commits since v1.1
         # On main the release of v1.1 is the 2.0dev tag
         run : taskset -c 0 asv run --skip-existing-successful v2.0.dev..
-
       - name: Install SSH Client 🔑
-        uses: webfactory/ssh-agent@v0.4.1
+        uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.ASV_CI_KEY }}
-
       - name: Push results
-        uses: JamesIves/github-pages-deploy-action@3.6.2
+        uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           BRANCH: main
           FOLDER: asv_results/results
