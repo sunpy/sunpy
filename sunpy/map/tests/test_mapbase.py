@@ -57,6 +57,8 @@ def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
     assert isinstance(wcs, astropy.wcs.WCS)
 
+    assert wcs.array_shape == aia171_test_map.data.shape
+
     assert all(wcs.wcs.crpix - 1 ==
                [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
     assert u.allclose(wcs.wcs.cdelt * (u.Unit(wcs.wcs.cunit[0])/u.pix),

@@ -574,6 +574,9 @@ class GenericMap(NDData):
             obs_coord = self.observer_coordinate
             sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
+        # Set the shape of the data array
+        w2.array_shape = self.data.shape
+
         # Validate the WCS here.
         w2.wcs.set()
         return w2
