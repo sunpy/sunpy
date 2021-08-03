@@ -6,6 +6,8 @@ import astropy.units as u
 
 from sunpy.timeseries import GenericTimeSeries
 
+__all__ = ['read_cdf']
+
 
 def read_cdf(fname):
     """
@@ -73,11 +75,6 @@ def read_cdf(fname):
                 df[var_key] = data
                 units[var_key] = unit
 
-        # TODO: extract some sort of metadata from the CDF file
         all_ts.append(GenericTimeSeries(data=df, units=units, meta=meta))
 
     return all_ts
-
-
-if __name__ == '__main__':
-    read_cdf('/Users/dstansby/Downloads/psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')

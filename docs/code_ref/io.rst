@@ -10,6 +10,23 @@ for files that are commonly used in solar physics.
    When reading FITS files, it is strongly recommended that `astropy.io.fits` be used over the tools in `sunpy.io`.
    The sunpy FITS reader is designed to meet the needs of map, and does not represent the structure of the FITS file well.
 
+
+Unified File Readers
+====================
+
+.. automodapi:: sunpy.io
+
+.. automodapi:: sunpy.io.header
+
+.. _iofits:
+.. automodapi:: sunpy.io.fits
+
+.. _iojp2:
+.. automodapi:: sunpy.io.jp2
+
+.. _ioana:
+.. automodapi:: sunpy.io.ana
+
 Special File Readers
 ====================
 
@@ -27,7 +44,7 @@ It can be used to store known Python objects in a portable, well defined file
 format. It is primarily useful for storing complex Astropy and SunPy objects in
 a way that can be loaded back into the same form as they were saved.
 
-SunPy currently implements support for saving `Map <sunpy.map.GenericMap>` and
+sunpy currently implements support for saving `Map <sunpy.map.GenericMap>` and
 `coordinate frame <sunpy.coordinates.frames>` objects into asdf files. As asdf
 tightly integrates into Python, saving a map to an asdf file will save the
 metadata, data, mask and the shift. The mask and shift are not currently saved
@@ -75,18 +92,12 @@ file
             -128.03072  , -128.03072  ]], dtype=float32)
    >>> input_asdf.close()  # doctest: +REMOTE_DATA
 
-Unified File Readers
-====================
+CDF (common data format)
+------------------------
 
-.. automodapi:: sunpy.io
+CDF files are commonly used to store timeseries data observed by instruments
+taking in-situ measurements of plasmas throughout the heliosphere.
+sunpy provides support for reading in CDF files that conform to the
+`Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`_.
 
-.. automodapi:: sunpy.io.header
-
-.. _iofits:
-.. automodapi:: sunpy.io.fits
-
-.. _iojp2:
-.. automodapi:: sunpy.io.jp2
-
-.. _ioana:
-.. automodapi:: sunpy.io.ana
+.. automodapi:: sunpy.io.cdf
