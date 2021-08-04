@@ -51,9 +51,10 @@ jobs:
           folder: asv_results/results
           repository-name: sunpy/sunpy-benchmarks
           target-folder: results
-          ssh-key: ${{ secrets.ASV_CI_KEY }}
-          COMMIT_MESSAGE: |
-            Push new results from the GitHub Actions
+          ssh-key: true
+          clean: false
+          commit-message: |
+            Push new results from GitHub Actions
             repository: ${{ github.repository }}
             workflow: ${{ github.workflow }}
             triggered by: ${{ github.sha }}
