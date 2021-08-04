@@ -5,6 +5,8 @@ import numpy as np
 import scipy.interpolate
 import scipy.ndimage
 
+from sunpy.util.exceptions import warn_deprecated
+
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 
 
@@ -28,7 +30,6 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
         Dimensions that new `numpy.ndarray` should have.
     method : {``"neighbor"``, ``"nearest"``, ``"linear"``, ``"spline"``}, optional
         Method to use for resampling interpolation.
-            * neighbor - Closest value from original data
             * nearest and linear - Uses "n x 1D" interpolations calculated by
               `scipy.interpolate.interp1d`.
             * spline - Uses `scipy.ndimage.map_coordinates`
@@ -66,6 +67,8 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
     # Resample data
     if method == 'neighbor':
+        warn_deprecated('Using "neighbor" as a method for resampling is deprecated. '
+                        'Use "nearest" instead.')
         data = _resample_neighbor(orig, dimensions, offset, m1)
     elif method in ['nearest', 'linear']:
         data = _resample_nearest_linear(orig, dimensions, method,
@@ -117,6 +120,7 @@ def _resample_neighbor(orig, dimensions, offset, m1):
     """
     Resample Map using closest-value interpolation.
     """
+    # This can be deleted once the deprecation above in resample is expired
     dimlist = []
     dimensions = np.asarray(dimensions, dtype=int)
 
