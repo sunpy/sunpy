@@ -90,7 +90,7 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     dimensions : `tuple`
         Dimensions of resampled data.
     method : `str`
-        Interpolation method passed to `~scipy.interpolate.interp1d`
+        Interpolation method passed to `~scipy.interpolate.interpn`
     offset : `float`
         Either 0 or 0.5, depending on whether interpolation is at the edge or
         centers of bins.
@@ -104,25 +104,11 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     scale = (orig.shape - m1) / (dimensions - m1)
     new_coords = [(np.arange(dimensions[i], dtype=float) + offset) * scale[i] for i in
                   range(len(dimensions))]
-
-    # first interpolation - for ndims = any
-    mint = scipy.interpolate.interp1d(old_coords[-1], orig, bounds_error=False,
-                                      fill_value='extrapolate', kind=method)
-
-    new_data = mint(new_coords[-1])
-
-    trorder = [orig.ndim - 1] + list(range(orig.ndim - 1))
-    for i in range(orig.ndim - 2, -1, -1):
-        new_data = new_data.transpose(trorder)
-        mint = scipy.interpolate.interp1d(old_coords[i], new_data,
-                                          bounds_error=False,
-                                          fill_value='extrapolate',
-                                          kind=method)
-        new_data = mint(new_coords[i])
-
-    if orig.ndim > 1:
-        # need one more transpose to return to original dimensions
-        new_data = new_data.transpose(trorder)
+    new_coords = np.stack(np.meshgrid(*new_coords, indexing='ij'), axis=-1)
+    # fill_value = None extrapolates outside the domain
+    new_data = scipy.interpolate.interpn(old_coords, orig, new_coords,
+                                         method=method, bounds_error=False,
+                                         fill_value=None)
 
     return new_data
 
