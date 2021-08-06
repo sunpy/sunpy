@@ -1,5 +1,5 @@
 """
-This module provies "UTime" support.
+This module provides "UTime" support.
 """
 from astropy.time.formats import TimeFromEpoch, erfa
 
