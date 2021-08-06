@@ -1,0 +1,4 @@
+Add ``sunpy.time.TimeTAICDS`` to support parsing the TAI time format originally used in the CDS
+timing software.
+This provides equivalent functionality to the ``anytim2tai`` routine in SSW, with some differences
+in the number of leap seconds prior to 1972-01-01 00:00:00.
