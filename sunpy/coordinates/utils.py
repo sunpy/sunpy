@@ -440,7 +440,7 @@ def solar_angle_equivalency(observer):
 
 
 @u.quantity_input
-def get_limb_coordinates(observer, rsun=constants.radius, resolution=1000):
+def get_limb_coordinates(observer, rsun: u.m = constants.radius, resolution=1000):
     """
     Get coordinates for the solar limb as viewed by a specified observer.
 
