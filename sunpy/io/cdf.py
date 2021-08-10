@@ -26,8 +26,7 @@ def read_cdf(fname):
 
     References
     ----------
-    .. [1] Space Physics Guidelines for CDF
-           https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html
+    Space Physics Guidelines for CDF https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html
     """
     cdf = cdflib.CDF(str(fname))
 
