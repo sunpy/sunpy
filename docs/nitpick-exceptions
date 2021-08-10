@@ -33,6 +33,7 @@ py:class prop
 # These come from astropy.coordinates.baseframe.represent_as
 py:class data
 py:class keyword only
+py:class keyword-only
 py:class string
 py:class subclass of BaseRepresentation
 
