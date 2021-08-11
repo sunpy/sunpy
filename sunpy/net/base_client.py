@@ -164,6 +164,8 @@ class QueryResponseColumn(Column):
 
 
 class QueryResponseTable(QTable):
+    __doc__ = QTable.__doc__
+
     Row = QueryResponseRow
     Column = QueryResponseColumn
 
