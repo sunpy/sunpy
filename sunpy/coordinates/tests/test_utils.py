@@ -8,7 +8,13 @@ from astropy.tests.helper import assert_quantity_allclose
 import sunpy.data.test as test
 import sunpy.map as smap
 from sunpy.coordinates import frames, get_earth, sun
-from sunpy.coordinates.utils import GreatArc, get_rectangle_coordinates, solar_angle_equivalency
+from sunpy.coordinates.utils import (
+    GreatArc,
+    get_limb_coordinates,
+    get_rectangle_coordinates,
+    solar_angle_equivalency,
+)
+from sunpy.sun import constants
 
 
 @pytest.fixture
@@ -345,3 +351,26 @@ def test_solar_angle_equivalency_outputs():
 
     assert_quantity_allclose(distance_in_km, 717.25668*u.km)
     assert_quantity_allclose(distance_back_to_arcsec, distance_in_arcsec)
+
+
+def test_limb_coords():
+    observer = SkyCoord(0*u.deg, 0*u.deg, 1*u.au,
+                        obstime='2021-01-01',
+                        frame='heliographic_stonyhurst')
+
+    limb_coords = get_limb_coordinates(observer)
+    assert isinstance(limb_coords, SkyCoord)
+    assert limb_coords.obstime == observer.obstime
+    assert u.allclose(limb_coords.heliographic_stonyhurst.radius,
+                      constants.radius)
+
+    resolution = 2000
+    limb_coords = get_limb_coordinates(observer, resolution=resolution)
+    assert len(limb_coords) == resolution
+
+    rsun = 1.1 * constants.radius
+    limb_coords = get_limb_coordinates(observer, rsun=rsun)
+    assert u.allclose(limb_coords.heliographic_stonyhurst.radius, rsun)
+
+    with pytest.raises(ValueError, match='Observer distance must be greater than rsun'):
+        get_limb_coordinates(observer, 1.1 * u.au)
