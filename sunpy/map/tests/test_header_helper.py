@@ -18,7 +18,7 @@ def map_data():
 
 @pytest.fixture
 def hpc_coord():
-    return SkyCoord(0*u.arcsec, 0*u.arcsec, observer='earth', rsun=7.1e8*u.m,
+    return SkyCoord(0*u.arcsec, 100*u.arcsec, observer='earth', rsun=7.1e8*u.m,
                     obstime='2013-10-28 00:00', frame=frames.Helioprojective)
 
 
@@ -85,7 +85,7 @@ def test_hpc_header(hpc_header, hpc_coord):
     assert hpc_header['crval1'] == 0
     assert hpc_header['crpix1'] == 5.5
     assert hpc_header['ctype1'] == 'HPLN-TAN'
-    assert hpc_header['crval2'] == 0
+    assert hpc_header['crval2'] == 100.
     assert hpc_header['crpix2'] == 10.5
     assert hpc_header['ctype2'] == 'HPLT-TAN'
 

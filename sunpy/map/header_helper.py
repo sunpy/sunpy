@@ -178,7 +178,10 @@ def _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape):
     # When the native latitude of the fiducial point is 0 degrees, which is typical for cylindrical
     # projections, the correct value of `lonpole` depends on whether the world latitude of the
     # fiducial point is greater than or less than its native latitude.
-    meta_wcs['LONPOLE'] = 180. if meta_wcs['crval2'] < meta_wcs['theta0'] else 0.
+    if coordinate.spherical.lat.to_value(u.deg) < meta_wcs['theta0']:
+        meta_wcs['LONPOLE'] = 180.
+    else:
+        meta_wcs['LONPOLE'] = 0.
     del meta_wcs['theta0']  # remove the native latitude of the fiducial point
 
     # Add 1 to go from input 0-based indexing to FITS 1-based indexing
