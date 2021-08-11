@@ -37,8 +37,5 @@ def test_tai_utc_offset():
     Time('2018-09-17T19:46:25', format='isot', scale='tai'),
 ])
 def test_roundtrip(time):
-    """
-    Test roundtripping of
-    """
     time_from_cds_tai = Time(time.tai_cds, scale='tai', format='tai_cds')
     assert time_from_cds_tai == time
