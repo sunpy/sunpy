@@ -39,6 +39,7 @@ py:class subclass of BaseRepresentation
 
 # These come from astropy QTable
 py:class list of lists
+py:class list of list
 py:class numpy ndarray
 py:class numpy ndarray
 py:class Table
