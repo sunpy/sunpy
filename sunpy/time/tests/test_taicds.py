@@ -1,7 +1,7 @@
 import pytest
-from erfa.core import ErfaWarning
 
 from astropy.time import Time
+from astropy.time.formats import erfa
 
 # This registers the TimeTAICDS format with astropy
 from sunpy.time import TimeTAICDS  # NOQA
@@ -16,7 +16,7 @@ def test_time_t0():
     """
     t = Time('1958-01-01 00:00:00', format='iso', scale='tai')
     assert t.tai.tai_cds == 0.0
-    with pytest.warns(ErfaWarning, match='dubious year'):
+    with pytest.warns(erfa.ErfaWarning, match='dubious year'):
         assert t.utc.tai_cds == 0.0
 
 
