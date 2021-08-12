@@ -1274,12 +1274,6 @@ def test_print_map(generic_map):
     assert out_str in out_repr
 
 
-def test_fix_bitpix(aia171_test_map):
-    original = aia171_test_map.meta.pop('bitpix')
-    aia171_test_map._fix_bitpix()
-    assert aia171_test_map.meta['bitpix'] == original
-
-
 def test_parse_submap_quantity_inputs(aia171_test_map):
     bottom_left = (0, 0)*u.arcsec
     top_right = (200, 200)*u.arcsec
@@ -1333,14 +1327,14 @@ def test_meta_modifications(aia171_test_map):
     aiamap.meta['cdelt1'] = 20
 
     assert aiamap.meta.original_meta != aiamap.meta
-    assert aiamap.meta.added_items == {'bunit': 'ct'}
+    assert aiamap.meta.added_items == {}
     assert aiamap.meta.removed_items == {}
     assert aiamap.meta.modified_items == {'cdelt1': ModifiedItem(old_cdelt1, 20)}
 
     # Check that rotate doesn't modify the original metadata
     aiamap_rot = aiamap.rotate(30 * u.deg)
     assert aiamap_rot.meta.original_meta == aiamap.meta.original_meta
-    assert set(aiamap_rot.meta.added_items.keys()) == set(['bunit', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
+    assert set(aiamap_rot.meta.added_items.keys()) == set(['pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
     assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
     assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
 

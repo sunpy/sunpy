@@ -214,11 +214,6 @@ class GenericMap(NDData):
         nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
         super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
 
-        # Correct possibly missing meta keywords
-        self._fix_date()
-        self._fix_naxis()
-        self._fix_unit()
-
         # Setup some attributes
         self._nickname = None
         # These are palceholders for default attributes, which are only set
@@ -548,16 +543,6 @@ class GenericMap(NDData):
         w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
 
-        # Astropy WCS does not understand the SOHO default of "solar-x" and
-        # "solar-y" ctypes.  This overrides the default assignment and
-        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
-        # 449, 791.
-        if w2.wcs.ctype[0].lower() in ("solar-x", "solar_x"):
-            w2.wcs.ctype[0] = 'HPLN-TAN'
-
-        if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
-            w2.wcs.ctype[1] = 'HPLT-TAN'
-
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
@@ -618,7 +603,6 @@ class GenericMap(NDData):
         axes. See https://wcsaxes.readthedocs.io for more information.
         """
         # This code is reused from Astropy
-
         return WCSAxes, {'wcs': self.wcs}
 
     # Some numpy extraction
@@ -691,6 +675,11 @@ class GenericMap(NDData):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
+        replacements = {'Gauss': 'G',
+                        'DN': 'ct',
+                        'DN/s': 'ct/s'}
+        if unit_str in replacements:
+            unit_str = replacements[unit_str]
 
         return self._parse_fits_unit(unit_str)
 
@@ -792,6 +781,13 @@ class GenericMap(NDData):
         return avg
 
     @property
+    def _date_obs(self):
+        time = self._get_date('date-obs')
+        if is_time(self.meta.get('date_obs', None)):
+            time = time or self._get_date('date_obs')
+        return time
+
+    @property
     def date(self):
         """
         Image observation time.
@@ -810,7 +806,7 @@ class GenericMap(NDData):
         4. `~sunpy.map.GenericMap.date_end`
         5. The current time
         """
-        time = self._get_date('date-obs')
+        time = self._date_obs
         time = time or self.date_average
         time = time or self.date_start
         time = time or self.date_end
@@ -847,7 +843,7 @@ class GenericMap(NDData):
     @property
     def exposure_time(self):
         """
-        Exposure time of the image in seconds.
+        Exposure time of the image.
 
         This is taken from the 'EXPTIME' FITS keyword.
         """
@@ -968,10 +964,8 @@ class GenericMap(NDData):
         new_meta = self.meta.copy()
 
         # Update crvals
-        new_meta['crval1'] = ((self.meta['crval1'] *
-                               self.spatial_units[0] + axis1).to(self.spatial_units[0])).value
-        new_meta['crval2'] = ((self.meta['crval2'] *
-                               self.spatial_units[1] + axis2).to(self.spatial_units[1])).value
+        new_meta['crval1'] = ((self._reference_longitude + axis1).to(self.spatial_units[0])).value
+        new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
         new_map = self._new_instance(self.data, new_meta, self.plot_settings)
@@ -1055,6 +1049,16 @@ class GenericMap(NDData):
         ctype2 = self.meta.get('ctype2', None)
         if ctype2 is None:
             warn_metadata("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
+            ctype2 = 'HPLT-TAN'
+
+        # Astropy WCS does not understand the SOHO default of "solar-x" and
+        # "solar-y" ctypes.  This overrides the default assignment and
+        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # 449, 791.
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+
+        if ctype2.lower() in ("solar-y", "solar_y"):
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -1192,10 +1196,10 @@ class GenericMap(NDData):
         The pixel returned uses zero-based indexing, so will be 1 pixel less
         than the FITS CRPIX values.
         """
-        return PixelPair((self.meta.get('crpix1',
-                                        (self.meta.get('naxis1') + 1) / 2.) - 1) * u.pixel,
-                         (self.meta.get('crpix2',
-                                        (self.meta.get('naxis2') + 1) / 2.) - 1) * u.pixel)
+        naxis1 = self.meta.get('naxis1', self.data.shape[1])
+        naxis2 = self.meta.get('naxis2', self.data.shape[0])
+        return PixelPair((self.meta.get('crpix1', (naxis1 + 1) / 2.) - 1) * u.pixel,
+                         (self.meta.get('crpix2', (naxis2 + 1) / 2.) - 1) * u.pixel)
 
     @property
     def scale(self):
@@ -1212,8 +1216,9 @@ class GenericMap(NDData):
         """
         Image coordinate units along the x and y axes (i.e. cunit1, cunit2).
         """
-        return SpatialPair(u.Unit(self.meta.get('cunit1')),
-                           u.Unit(self.meta.get('cunit2')))
+        units = self.meta.get('cunit1', None), self.meta.get('cunit2', None)
+        units = [None if unit is None else u.Unit(unit.lower()) for unit in units]
+        return SpatialPair(units[0], units[1])
 
     @property
     def rotation_matrix(self):
@@ -1274,50 +1279,6 @@ class GenericMap(NDData):
         return sunpy.io.fits.header_to_fits(self.meta)
 
 # #### Miscellaneous #### #
-
-    def _fix_date(self):
-        # Check commonly used but non-standard FITS keyword for observation
-        # time and correct the keyword if we can. Keep updating old one for
-        # backwards compatibility.
-        if is_time(self.meta.get('date_obs', None)):
-            self.meta['date-obs'] = self.meta['date_obs']
-
-    def _fix_naxis(self):
-        # If naxis is not specified, get it from the array shape
-        if 'naxis1' not in self.meta:
-            self.meta['naxis1'] = self.data.shape[1]
-        if 'naxis2' not in self.meta:
-            self.meta['naxis2'] = self.data.shape[0]
-        if 'naxis' not in self.meta:
-            self.meta['naxis'] = self.ndim
-
-    def _fix_bitpix(self):
-        # Bit-depth
-        #
-        #   8    Character or unsigned binary integer
-        #  16    16-bit twos-complement binary integer
-        #  32    32-bit twos-complement binary integer
-        # -32    IEEE single precision floating point
-        # -64    IEEE double precision floating point
-        #
-        if 'bitpix' not in self.meta:
-            float_fac = -1 if self.dtype.kind == "f" else 1
-            self.meta['bitpix'] = float_fac * 8 * self.dtype.itemsize
-
-    def _fix_unit(self):
-        """
-        Fix some common unit strings that aren't technically FITS standard
-        compliant, but obvious enough that we can covert them into something
-        that's standards compliant.
-        """
-        unit = self.meta.get('bunit', None)
-        replacements = {'Gauss': 'G',
-                        'DN': 'ct',
-                        'DN/s': 'ct/s'}
-        if unit in replacements:
-            log.debug(f'Changing BUNIT from "{unit}" to "{replacements[unit]}"')
-            self.meta['bunit'] = replacements[unit]
-
     def _get_cmap_name(self):
         """Build the default color map name."""
         cmap_string = (self.observatory + self.detector +
@@ -1326,22 +1287,18 @@ class GenericMap(NDData):
 
     def _validate_meta(self):
         """
-        Validates the meta-information associated with a Map.
+        Validates some meta-information associated with a Map.
 
         This method includes very basic validation checks which apply to
-        all of the kinds of files that SunPy can read. Datasource-specific
+        all of the kinds of files that sunpy can read. Datasource-specific
         validation should be handled in the relevant file in the
         sunpy.map.sources package.
-
-        Allows for default unit assignment for:
-            CUNIT1, CUNIT2, WAVEUNIT
-
         """
         msg = ('Image coordinate units for axis {} not present in metadata.')
         err_message = []
-        for i in [1, 2]:
-            if self.meta.get(f'cunit{i}') is None:
-                err_message.append(msg.format(i, i))
+        for i in [0, 1]:
+            if self.spatial_units[i] is None:
+                err_message.append(msg.format(i+1, i+1))
 
         if err_message:
             err_message.append(
@@ -1485,8 +1442,8 @@ class GenericMap(NDData):
             new_meta['CD2_1'] *= scale_factor_x
             new_meta['CD1_2'] *= scale_factor_y
             new_meta['CD2_2'] *= scale_factor_y
-        new_meta['crpix1'] = (self.meta['crpix1'] - 0.5) / scale_factor_x + 0.5
-        new_meta['crpix2'] = (self.meta['crpix2'] - 0.5) / scale_factor_y + 0.5
+        new_meta['crpix1'] = (self.reference_pixel.x.to_value(u.pix) + 0.5) / scale_factor_x + 0.5
+        new_meta['crpix2'] = (self.reference_pixel.y.to_value(u.pix) + 0.5) / scale_factor_y + 0.5
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 
@@ -1979,8 +1936,10 @@ class GenericMap(NDData):
             new_meta['CD2_1'] *= dimensions[0]
             new_meta['CD1_2'] *= dimensions[1]
             new_meta['CD2_2'] *= dimensions[1]
-        new_meta['crpix1'] = ((self.meta['crpix1'] - 0.5 - offset[0]) / dimensions[0]) + 0.5
-        new_meta['crpix2'] = ((self.meta['crpix2'] - 0.5 - offset[1]) / dimensions[1]) + 0.5
+        new_meta['crpix1'] = ((self.reference_pixel.x.to_value(u.pix) +
+                               0.5 - offset[0]) / dimensions[0]) + 0.5
+        new_meta['crpix2'] = ((self.reference_pixel.y.to_value(u.pix) +
+                               0.5 - offset[1]) / dimensions[1]) + 0.5
 
         # Create new map instance
         if self.mask is not None:
