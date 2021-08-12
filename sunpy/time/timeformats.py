@@ -56,8 +56,9 @@ class TimeUnixTai58(TimeFromEpoch):
     >>> t.unix_tai_58
     0.0
     >>> t2 = Time('2015-10-25T05:24:08', format='isot', scale='tai')
+    >>> t2.unix_tai_58
+    1824441848.0
     >>> t3 = Time(t2.unix_tai_58, format='unix_tai_58', scale='tai')
-    >>> t3
     >>> t3.isot
     '2015-10-25T05:24:08.000'
 
