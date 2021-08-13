@@ -42,7 +42,7 @@ class TimeUnixTai58(TimeFromEpoch):
     .. note:: For dates on and after 1972-01-01 00:00:00 UTC, this format is
               equivalent to that returned by the ``anytim2tai`` routine in SSW.
               For dates between 1958-01-01 00:00:00 UTC and 1971-12-31 23:59:59 UTC,
-              `anytim2tai` returns a constant difference of 9 s difference between
+              ``anytim2tai`` returns a constant difference of 9 s difference between
               UTC and TAI (i.e. the number of leap seconds added since 1958-01-01 00:00:00)
               while `~astropy.time.Time` returns a 0 s  on 1958-01-01 00:00:00 (when
               UT and TAI were synchronized) and increases approximately linearly to a
