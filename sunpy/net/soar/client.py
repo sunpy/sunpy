@@ -2,6 +2,7 @@ import requests
 
 import astropy.table
 
+from sunpy import log
 import sunpy.net.attrs as a
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
@@ -55,6 +56,7 @@ class SOARClient(BaseClient):
         request_str = '&'.join(request_str)
 
         url = base_url + request_str
+        log.debug(f'Getting request from URL: {url}')
         # Get request info
         r = requests.get(url)
         r.raise_for_status()
@@ -82,12 +84,13 @@ class SOARClient(BaseClient):
 
     def fetch(self, query_results, *, path, downloader, **kwargs):
         base_url = ('http://soar.esac.esa.int/soar-sl-tap/data?'
-                    f'retrieval_type=PRODUCT&product_type=SCIENCE&'
+                    f'retrieval_type=LAST_PRODUCT&product_type=SCIENCE&'
                     'data_item_id=')
 
         for row in query_results:
             url = base_url + row['Data item ID']
             filepath = str(path).format(file=row['Filename'])
+            log.debug(f'Queing URL: {url}')
             downloader.enqueue_file(url, filename=filepath)
 
     @classmethod
