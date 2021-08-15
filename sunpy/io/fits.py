@@ -188,15 +188,15 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     else:  # HDU already initialised
         hdu = hdu_type
 
-        # Set the HDU's data
-        if hdu.data is not None:
-            raise ValueError('`hdu_type` must not contain data')
-        hdu.data = data
-
         # Merge `header` into HDU's header
         # Values in `header` take priority, including cards such as
         # 'SIMPLE' and 'BITPIX'.
         hdu.header.extend(fits_header, strip=False, update=True)
+
+        # Set the HDU's data
+        if hdu.data is not None:
+            raise ValueError('`hdu_type` must not contain data')
+        hdu.data = data
 
     if not isinstance(hdu, fits.PrimaryHDU):
         hdul = fits.HDUList([fits.PrimaryHDU(), hdu])
