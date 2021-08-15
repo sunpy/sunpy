@@ -64,5 +64,12 @@ to use `~sunpy.map.GenericMap.date_average`,
 `~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
 instead if you need one of these specific times.
 
+New WISPR map source
+====================
+A new map source for the WISPR instrument on Parker Solar Probe has been added.
+This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
+information for the `~sunpy.map.GenericMap.processing_level` and
+`~sunpy.map.GenericMap.exposure_time`.
+
 Contributors to this Release
 ============================
