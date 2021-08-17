@@ -1,6 +1,7 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
+import re
 import copy
 import html
 import inspect
@@ -39,7 +40,7 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import cached_property_based_on
-from sunpy.util.exceptions import SunpyUserWarning, warn_metadata, warn_user
+from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
@@ -504,30 +505,7 @@ class GenericMap(NDData):
         """
         The `~astropy.wcs.WCS` property of the map.
         """
-        import warnings
-
-        # Construct the WCS based on the FITS header, but don't "do_set" which
-        # analyses the FITS header for correctness.
-        with warnings.catch_warnings():
-            # Ignore warnings we may raise when constructing the fits header about dropped keys.
-            warnings.simplefilter("ignore", SunpyUserWarning)
-            try:
-                w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
-            except Exception as e:
-                warn_user("Unable to treat `.meta` as a FITS header, assuming a simple WCS. "
-                          f"The exception raised was:\n{e}")
-                w2 = astropy.wcs.WCS(naxis=2)
-
-        # If the FITS header is > 2D pick the first 2 and move on.
-        # This will require the FITS header to be valid.
-        if w2.naxis > 2:
-            # We have to change this or else the WCS doesn't parse properly, even
-            # though we don't care about the third dimension. This applies to both
-            # EIT and IRIS data, it is here to reduce the chances of silly errors.
-            if self.meta.get('cdelt3', None) == 0:
-                w2.wcs.cdelt[2] = 1e-10
-
-            w2 = w2.sub([1, 2])
+        w2 = astropy.wcs.WCS(naxis=2)
 
         # Add one to go from zero-based to one-based indexing
         w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
@@ -537,6 +515,7 @@ class GenericMap(NDData):
         w2.wcs.crval = u.Quantity([self._reference_longitude, self._reference_latitude])
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
+        w2.wcs.set_pv(self._pv_values)
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
@@ -1270,6 +1249,20 @@ class GenericMap(NDData):
         lam = self.scale[0] / self.scale[1]
         p = np.deg2rad(self.meta.get('CROTA2', self.meta.get(crota_key, 0)))
         return self._pc_matrix(lam, p)
+
+    @property
+    def _pv_values(self):
+        """
+        Return any PV values in the metadata.
+        """
+        pattern = re.compile('pv[0-9]_[0-9]a', re.IGNORECASE)
+        pv_keys = [k for k in self.meta.keys() if pattern.match(k)]
+
+        pv_values = []
+        for k in pv_keys:
+            i, m = int(k[2]), int(k[4])
+            pv_values.append((i, m, self.meta[k]))
+        return pv_values
 
     @property
     def fits_header(self):
