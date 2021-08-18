@@ -58,7 +58,7 @@ class TimeTaiSeconds(TimeFromEpoch):
     >>> t2 = Time('2015-10-25T05:24:08', format='isot', scale='tai')
     >>> t2.tai_seconds
     1824441848.0
-    >>> t3 = Time(t2.unix_tai_58, format='tai_seconds', scale='tai')
+    >>> t3 = Time(t2.tai_seconds, format='tai_seconds', scale='tai')
     >>> t3.isot
     '2015-10-25T05:24:08.000'
 
