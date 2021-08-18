@@ -8,11 +8,13 @@ import glob
 
 import pytest
 
+import astropy.units as u
 from astropy.utils.exceptions import AstropyUserWarning
 
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.hinode import XRTMap
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 
 @pytest.fixture
@@ -55,3 +57,9 @@ def test_wheel_measurements(xrt):
             ["Al_med", "Al_poly", "Be_med", "Be_thin", "C_poly", "Open"])
     assert (xrt.filter_wheel2_measurements ==
             ["Open", "Al_mesh", "Al_thick", "Be_thick", "Gband", "Ti_poly"])
+
+
+def test_wcs(xrt):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        xrt.pixel_to_world(0*u.pix, 0*u.pix)
