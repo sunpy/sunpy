@@ -3,6 +3,7 @@
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
 
+from sunpy import log
 from sunpy.map import GenericMap
 
 __all__ = ['XRTMap', 'SOTMap']
@@ -44,6 +45,10 @@ class XRTMap(GenericMap):
     def __init__(self, data, header, **kwargs):
 
         super().__init__(data, header, **kwargs)
+
+        if self.meta.get('timesys', '') == 'UTC (TBR)':
+            log.debug('Modifying TIMESYS keyword from "UTC (TBR)" to "UTC"')
+            self.meta['timesys'] = 'UTC'
 
         # converting data array to masked array
         # self.data = ma.masked_where(self.data > SATURATION_LIMIT, self.data)
