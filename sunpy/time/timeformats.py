@@ -3,7 +3,7 @@ This module provides time formats specific to solar physics
 """
 from astropy.time.formats import TimeFromEpoch, erfa
 
-__all__ = ['TimeUTime', 'TimeUnixTai58']
+__all__ = ['TimeUTime', 'TimeTaiSeconds']
 
 
 class TimeUTime(TimeFromEpoch):
@@ -32,7 +32,7 @@ class TimeUTime(TimeFromEpoch):
     epoch_format = 'iso'  # Format for epoch_val class attribute
 
 
-class TimeUnixTai58(TimeFromEpoch):
+class TimeTaiSeconds(TimeFromEpoch):
     """
     Seconds from 1958-01-01 00:00:00, including leap seconds.
 
@@ -53,12 +53,12 @@ class TimeUnixTai58(TimeFromEpoch):
     --------
     >>> from astropy.time import Time
     >>> t = Time('1958-01-01T00:00:00', format='isot', scale='tai')
-    >>> t.unix_tai_58
+    >>> t.tai_seconds
     0.0
     >>> t2 = Time('2015-10-25T05:24:08', format='isot', scale='tai')
-    >>> t2.unix_tai_58
+    >>> t2.tai_seconds
     1824441848.0
-    >>> t3 = Time(t2.unix_tai_58, format='unix_tai_58', scale='tai')
+    >>> t3 = Time(t2.unix_tai_58, format='tai_seconds', scale='tai')
     >>> t3.isot
     '2015-10-25T05:24:08.000'
 
@@ -67,7 +67,7 @@ class TimeUnixTai58(TimeFromEpoch):
     * `CDS Time Conversion Software README <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/time/aaareadme.txt>`_
     * `anytim2tai routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/time/anytim2tai.pro>`_
     """
-    name = 'unix_tai_58'
+    name = 'tai_seconds'
     unit = 1.0 / erfa.DAYSEC  # in days (1 day == 86400 seconds)
     epoch_val = '1958-01-01 00:00:00'
     epoch_val2 = None

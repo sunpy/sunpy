@@ -3,8 +3,8 @@ import pytest
 from astropy.time import Time, TimeUnixTai
 from astropy.time.formats import erfa
 
-# This registers the TimeTAICDS format with astropy
-from sunpy.time import TimeUnixTai58  # NOQA
+# This registers the TimeTaiSeconds format with astropy
+from sunpy.time import *  # NOQA
 
 
 def test_time_t0():
@@ -13,9 +13,9 @@ def test_time_t0():
     will be zero in both TAI and UTC
     """
     t = Time('1958-01-01 00:00:00', format='iso', scale='tai')
-    assert t.tai.unix_tai_58 == 0.0
+    assert t.tai.tai_seconds == 0.0
     with pytest.warns(erfa.ErfaWarning, match='dubious year'):
-        assert t.utc.unix_tai_58 == 0.0
+        assert t.utc.tai_seconds == 0.0
 
 
 def test_tai_utc_offset():
@@ -25,7 +25,7 @@ def test_tai_utc_offset():
     """
     t1 = Time('1972-01-01 00:00:00', scale='tai', format='iso')
     t2 = Time('1972-01-01 00:00:00', scale='utc', format='iso')
-    assert t2.unix_tai_58 - t1.unix_tai_58 == 10.0
+    assert t2.tai_seconds - t1.tai_seconds == 10.0
 
 
 @pytest.mark.parametrize('time', [
@@ -35,7 +35,7 @@ def test_tai_utc_offset():
     Time('2018-09-17T19:46:25', format='isot', scale='tai'),
 ])
 def test_roundtrip(time):
-    time_from_tai_seconds = Time(time.unix_tai_58, scale='tai', format='unix_tai_58')
+    time_from_tai_seconds = Time(time.tai_seconds, scale='tai', format='tai_seconds')
     assert time_from_tai_seconds == time
 
 
@@ -46,5 +46,5 @@ def test_roundtrip(time):
     Time('2018-09-17T19:46:25', format='isot', scale='tai'),
 ])
 def test_unix_tai_consistency(time):
-    diff_unix_tai = Time(TimeUnixTai.epoch_val, scale='tai', format=TimeUnixTai.epoch_format,).unix_tai_58
-    assert time.unix_tai + diff_unix_tai == time.unix_tai_58
+    diff_unix_tai = Time(TimeUnixTai.epoch_val, scale='tai', format=TimeUnixTai.epoch_format,).tai_seconds
+    assert time.unix_tai + diff_unix_tai == time.tai_seconds
