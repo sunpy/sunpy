@@ -2,9 +2,12 @@ import os
 
 import pytest
 
+import astropy.units as u
+
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.trace import TRACEMap
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 path = sunpy.data.test.rootdir
 fitspath = os.path.join(path, "tsi20010130_025823_a2.fits")
@@ -42,3 +45,9 @@ def test_observatory(createTRACE):
 def test_norm_clip(createTRACE):
     # Tests that the default normalizer has clipping disabled
     assert not createTRACE.plot_settings['norm'].clip
+
+
+def test_wcs(createTRACE):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        createTRACE.pixel_to_world(0*u.pix, 0*u.pix)

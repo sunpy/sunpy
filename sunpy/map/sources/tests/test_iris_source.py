@@ -8,10 +8,12 @@ import glob
 
 import pytest
 
+import astropy.units as u
+
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.iris import SJIMap
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
 
 
 @pytest.fixture
@@ -39,3 +41,9 @@ def test_is_datasource_for(irismap):
 def test_observatory(irismap):
     """Tests the observatory property of SJIMap."""
     assert irismap.observatory == "IRIS"
+
+
+def test_wcs(irismap):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        irismap.pixel_to_world(0*u.pix, 0*u.pix)

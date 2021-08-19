@@ -9,10 +9,13 @@ import glob
 import numpy as np
 import pytest
 
+import astropy.units as u
+
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.soho import LASCOMap
 from sunpy.tests.helpers import skip_glymur
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 path = sunpy.data.test.rootdir
 
@@ -67,3 +70,9 @@ def test_helioviewer_rotation(lasco, lasco_helioviewer):
     np.testing.assert_allclose(lasco.rotation_matrix,
                                [[0.999966, -0.008296], [0.008296, 0.999966]], rtol=1e-6)
     np.testing.assert_array_equal(lasco_helioviewer.rotation_matrix, [[1., 0.], [0., 1.]])
+
+
+def test_wcs(lasco_map):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        lasco_map.pixel_to_world(0*u.pix, 0*u.pix)

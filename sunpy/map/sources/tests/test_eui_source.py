@@ -270,3 +270,8 @@ def test_unit(eui_fsi_map):
 def test_norm_clip(eui_fsi_map):
     # Tests that the default normalizer has clipping disabled
     assert not eui_fsi_map.plot_settings['norm'].clip
+
+
+def test_wcs(eui_fsi_map):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    eui_fsi_map.pixel_to_world(0*u.pix, 0*u.pix)
