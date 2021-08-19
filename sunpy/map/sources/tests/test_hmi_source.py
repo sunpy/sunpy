@@ -6,6 +6,8 @@ This particular test file pertains to HMIMap.
 import os
 import glob
 
+import astropy.units as u
+
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.sdo import HMIMap
@@ -38,3 +40,8 @@ def test_observatory():
 def test_measurement():
     """Tests the measurement property of the HMIMap object."""
     assert hmi.measurement == "continuum"
+
+
+def test_wcs():
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    hmi.pixel_to_world(0*u.pix, 0*u.pix)

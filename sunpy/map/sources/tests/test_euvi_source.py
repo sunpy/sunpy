@@ -6,6 +6,8 @@ This particular test file pertains to EUVIMap.
 import os
 import glob
 
+import astropy.units as u
+
 import sunpy.data.test
 from sunpy.coordinates import sun
 from sunpy.map import Map
@@ -56,3 +58,8 @@ def test_rsun_missing():
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
     assert not euvi.plot_settings['norm'].clip
+
+
+def test_wcs():
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    euvi.pixel_to_world(0*u.pix, 0*u.pix)

@@ -6,6 +6,8 @@ This particular test file pertains to CORMap.
 import os
 import glob
 
+import astropy.units as u
+
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.stereo import CORMap
@@ -42,3 +44,8 @@ def test_observatory():
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
     assert not cor.plot_settings['norm'].clip
+
+
+def test_wcs():
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    cor.pixel_to_world(0*u.pix, 0*u.pix)
