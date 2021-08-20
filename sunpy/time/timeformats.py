@@ -8,11 +8,20 @@ __all__ = ['TimeUTime', 'TimeTaiSeconds']
 
 class TimeUTime(TimeFromEpoch):
     """
-    Seconds from 1979-01-01 00:00:00 UTC.
+    UT seconds from 1979-01-01 00:00:00 UTC, ignoring leap seconds.
 
-    This is equivalent to `~astropy.time.TimeUnix`, except that the epoch
-    is 9 years later. This format is included for historical reasons as some
-    people in solar physics prefer using this epoch.
+    Notes
+    -----
+    This format is very similar to the default output format of the the ``anytim``
+    routine in SSW.  However, there are discrepancies of up to a second on days with
+    a leap second.
+
+    This format is equivalent to `~astropy.time.TimeUnix`, except that the epoch is
+    9 years later.
+
+    References
+    ----------
+    * `anytim routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/utplot/anytim.pro>`_
 
     Examples
     --------
@@ -34,20 +43,29 @@ class TimeUTime(TimeFromEpoch):
 
 class TimeTaiSeconds(TimeFromEpoch):
     """
-    Seconds from 1958-01-01 00:00:00, including leap seconds.
+    SI seconds from 1958-01-01 00:00:00, which includes UTC leap seconds.
 
-    This is equivalent to `~astropy.time.TimeUnixTai`, except that the
-    epoch is 12 years earlier.
+    1958-01-01 00:00:00 is the defined time when International Atomic Time (TAI)
+    and Universal Time (UT) are synchronized.  A TAI second has the same length as
+    an SI second, but prior to 1972-01-01, a UT second -- then defined to be 1/86400
+    of an Earth day -- grew to be longer than than an SI second.  1972-01-01
+    00:00:00 UTC is equal to 1972-01-01 00:00:10 TAI.  After 1972-01-01, Coordinated
+    Universal Time (UTC) is defined with seconds that are the same length as SI
+    seconds, but now leap seconds are occasionally added to UTC so that it stays
+    synchronized with Earth days.
 
-    .. note:: For dates on and after 1972-01-01 00:00:00 UTC, this format is
-              equivalent to that returned by the ``anytim2tai`` routine in SSW.
-              For dates between 1958-01-01 00:00:00 UTC and 1971-12-31 23:59:59 UTC,
-              ``anytim2tai`` returns a constant difference of 9 s difference between
-              UTC and TAI (i.e. the number of leap seconds added since 1958-01-01 00:00:00)
-              while `~astropy.time.Time` returns a 0 s  on 1958-01-01 00:00:00 (when
-              UT and TAI were synchronized) and increases approximately linearly to a
-              differnce of 10 s on 1972-01-01 00:00:00. See the "Known Issues" page
-              for a more detailed discussion of this discrepancy.
+    Notes
+    -----
+    This format is equivalent to the output of the SSW ``anytim2tai`` routine, and
+    related routines, for times after 1972-01-01.  Be aware that the SSW routines
+    are not written to provide valid results for times before 1972-01-01.
+
+    This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch
+    is 12 years earlier.
+
+    References
+    ----------
+    * `anytim2tai routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/time/anytim2tai.pro>`_
 
     Examples
     --------
@@ -58,14 +76,9 @@ class TimeTaiSeconds(TimeFromEpoch):
     >>> t2 = Time('2015-10-25T05:24:08', format='isot', scale='tai')
     >>> t2.tai_seconds
     1824441848.0
-    >>> t3 = Time(t2.tai_seconds, format='tai_seconds', scale='tai')
+    >>> t3 = Time(t2.tai_seconds, format='tai_seconds')  # scale is automatically TAI
     >>> t3.isot
     '2015-10-25T05:24:08.000'
-
-    References
-    ----------
-    * `CDS Time Conversion Software README <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/time/aaareadme.txt>`_
-    * `anytim2tai routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/time/anytim2tai.pro>`_
     """
     name = 'tai_seconds'
     unit = 1.0 / erfa.DAYSEC  # in days (1 day == 86400 seconds)
