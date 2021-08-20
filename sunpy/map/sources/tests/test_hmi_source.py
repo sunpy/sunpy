@@ -1,47 +1,45 @@
-"""Test cases for SDO Map subclasses.
-This particular test file pertains to HMIMap.
-@Author: Pritish C. (VaticanCameos)
 """
-
-import os
-import glob
+Test cases for SDO HMIMap subclass.
+"""
+import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
+from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.sdo import HMIMap
 
-path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "resampled_hmi.fits"))
-hmi = Map(fitspath)
-
-# HMI Tests
+__author__ = 'Pritish C. (VaticanCameos)'
 
 
-def test_fitstoHMI():
+@pytest.fixture
+def hmi_map():
+    return Map(get_test_filepath('resampled_hmi.fits'))
+
+
+def test_fitstoHMI(hmi_map):
     """Tests the creation of HMIMap using FITS."""
-    assert isinstance(hmi, HMIMap)
+    assert isinstance(hmi_map, HMIMap)
 
 
-def test_is_datasource_for():
+def test_is_datasource_for(hmi_map):
     """Test the is_datasource_for method of HMIMap.
     Note that header data to be provided as an argument
     can be a MetaDict object, which in this case is
     hmi.meta."""
-    assert hmi.is_datasource_for(hmi.data, hmi.meta)
+    assert hmi_map.is_datasource_for(hmi_map.data, hmi_map.meta)
 
 
-def test_observatory():
+def test_observatory(hmi_map):
     """Tests the observatory property of the HMIMap object."""
-    assert hmi.observatory == "SDO"
+    assert hmi_map.observatory == "SDO"
 
 
-def test_measurement():
+def test_measurement(hmi_map):
     """Tests the measurement property of the HMIMap object."""
-    assert hmi.measurement == "continuum"
+    assert hmi_map.measurement == "continuum"
 
 
-def test_wcs():
+def test_wcs(hmi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    hmi.pixel_to_world(0*u.pix, 0*u.pix)
+    hmi_map.pixel_to_world(0*u.pix, 0*u.pix)
