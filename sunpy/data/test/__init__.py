@@ -15,7 +15,14 @@ from astropy.utils.data import get_pkg_data_filename
 import sunpy
 import sunpy.map
 
-__all__ = ['rootdir', 'file_list', 'get_test_filepath', 'test_data_filenames', 'get_dummy_map_from_header', 'convert_image_to_header_only']
+__all__ = [
+    'rootdir',
+    'file_list',
+    'get_test_filepath',
+    'test_data_filenames',
+    'get_dummy_map_from_header',
+    'write_header_file_from_image_file',
+]
 
 rootdir = Path(os.path.dirname(sunpy.__file__)) / "data" / "test"
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
@@ -40,6 +47,9 @@ def get_test_filepath(filename, **kwargs):
     This is a wrapper around `astropy.utils.data.get_pkg_data_filename` which
     sets the ``package`` kwarg to be 'sunpy.data.test`.
     """
+    if isinstance(filename, Path):
+        # NOTE: get_pkg_data_filename does not accept Path objects
+        filename = filename.as_posix()
     return get_pkg_data_filename(filename, package="sunpy.data.test", **kwargs)
 
 
@@ -58,7 +68,7 @@ def test_data_filenames():
     excludes = ['*.pyc', '*'+os.path.sep+'__*__', '*.py']
     excludes = r'|'.join([fnmatch.translate(x) for x in excludes]) or r'$.'
 
-    for root, dirs, files in os.walk(rootdir):
+    for root, _, files in os.walk(rootdir):
         files = [Path(root) / f for f in files]
         files = [f for f in files if not re.match(excludes, str(f))]
         test_data_filenames_list.extend(files)
@@ -74,8 +84,7 @@ def get_dummy_map_from_header(filename):
     as specified by the header.
     """
     filepath = get_test_filepath(filename)
-    with open(filepath, 'r') as f:
-        header = astropy.io.fits.Header.fromstring(f.read())
+    header = astropy.io.fits.Header.fromtextfile(filepath)
     data = np.random.rand(header['naxis1'], header['naxis2'])
     # NOTE: by reading straight from the data header pair, we are skipping
     # the fixes that are applied in sunpy.io.fits, e.g. the waveunit fix
@@ -84,7 +93,7 @@ def get_dummy_map_from_header(filename):
     return sunpy.map.Map(data, header)
 
 
-def convert_image_to_header_only(image_path, header_path, **kwargs):
+def write_header_file_from_image_file(image_path, header_path, hdu=0, **kwargs):
     """
     Convert a FITS file containing an image and a header
     to a plaintext file containing only the string representation
@@ -99,13 +108,16 @@ def convert_image_to_header_only(image_path, header_path, **kwargs):
         Path to original image data FITS file
     header_path : path-like
         Path to header-only test data plaintext file
+    hdu : `int`, optional
+        HDU index of the header to write the header for
+
+    Additional Parameters
+    ---------------------
+    Keyword arguments accepted by `~astropy.io.fits.Header.totextfile`
 
     See Also
     --------
     get_dummy_map_from_header
     """
-    hdu = kwargs.get('hdu', 0)
     with astropy.io.fits.open(image_path) as hdul:
-        header = hdul[hdu].header
-    with open(header_path, 'w') as f:
-        f.write(header.tostring())
+        hdul[hdu].header.totextfile(header_path, **kwargs)
