@@ -21,29 +21,27 @@ from astropy.visualization import wcsaxes
 
 import sunpy
 import sunpy.coordinates
-import sunpy.data.test
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import AIAMap
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 
-testpath = sunpy.data.test.rootdir
-
 
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        data = fits.open(testpath / 'aia_171_level1.fits')[0].data
+        data = fits.open(get_test_filepath('aia_171_level1.fits'))[0].data
     np.testing.assert_allclose(aia171_test_map.data, data)
 
 
 def test_header_fits_io():
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        with fits.open(testpath / 'aia_171_level1.fits') as hdu:
+        with fits.open(get_test_filepath('aia_171_level1.fits')) as hdu:
             AIAMap(hdu[0].data, hdu[0].header)
 
 
@@ -356,7 +354,7 @@ def test_rotation_matrix_cd_cdelt_square():
 
 
 def test_swap_cd():
-    amap = sunpy.map.Map(testpath / 'swap_lv1_20140606_000113.fits')
+    amap = get_dummy_map_from_header(get_test_filepath('swap_lv1_20140606_000113.header'))
     np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
 
 
