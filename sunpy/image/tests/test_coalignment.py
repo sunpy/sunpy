@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
@@ -7,7 +5,7 @@ from scipy.ndimage import shift as sp_shift
 
 import astropy.units as u
 
-import sunpy.data.test
+from sunpy.data.test import get_test_filepath
 from sunpy.image.coalignment import (
     _default_fmap_function,
     _lower_clip,
@@ -37,8 +35,7 @@ def aia171_test_clipping():
 
 @pytest.fixture
 def aia171_test_map():
-    testpath = sunpy.data.test.rootdir
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+    return Map(get_test_filepath('aia_171_level1.fits'))
 
 
 @pytest.fixture
