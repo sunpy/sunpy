@@ -1,24 +1,22 @@
-import os
 
 import numpy as np
 import pytest
 
 from astropy.visualization.wcsaxes import WCSAxes
 
-import sunpy.data.test
 import sunpy.map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.tests.helpers import figure_test
 from sunpy.visualization.animator import MapSequenceAnimator
-
-testpath = sunpy.data.test.rootdir
 
 
 @pytest.fixture
 def test_map_sequence():
     return sunpy.map.Map(
-        os.path.join(
-            testpath, 'aia_171_level1.fits'), os.path.join(
-            testpath, 'mdi.fd_Ic.20101015_230100_TAI.data.fits'), sequence=True)
+        get_test_filepath('aia_171_level1.fits'),
+        get_dummy_map_from_header(get_test_filepath('mdi.fd_Ic.20101015_230100_TAI.data.header')),
+        sequence=True,
+    )
 
 
 def test_construct_map_sequence_animator(test_map_sequence):
