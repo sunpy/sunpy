@@ -35,7 +35,7 @@ from astropy.io import fits
 from sunpy.io.header import FileHeader
 from sunpy.util.exceptions import warn_metadata, warn_user
 
-__all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit']
+__all__ = ['header_to_fits', 'read', 'get_header', 'extract_comments', 'write', 'extract_waveunit']
 
 HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 
@@ -119,34 +119,41 @@ def get_header(afile):
     try:
         headers = []
         for hdu in hdulist:
-            try:
-                comment = "".join(hdu.header['COMMENT']).strip()
-            except KeyError:
-                comment = ""
-            try:
-                history = "".join(hdu.header['HISTORY']).strip()
-            except KeyError:
-                history = ""
-
-            header = FileHeader(hdu.header)
-            header['COMMENT'] = comment
-            header['HISTORY'] = history
-
-            # Strip out KEYCOMMENTS to a dict, the hard way
-            keydict = {}
-            for card in hdu.header.cards:
-                if card.comment != '':
-                    keydict.update({card.keyword: card.comment})
-            header['KEYCOMMENTS'] = keydict
-            waveunit = extract_waveunit(header)
-            if waveunit is not None:
-                header['WAVEUNIT'] = waveunit
-
-            headers.append(header)
+            headers.append(extract_comments(hdu.header))
     finally:
         if close:
             hdulist.close()
     return headers
+
+
+def extract_comments(input_header):
+    """
+    Extract ``COMMENT``, ``HISTORY``, and ``KEYCOMMENTS``
+    from header cards
+    """
+    try:
+        comment = "".join(input_header['COMMENT']).strip()
+    except KeyError:
+        comment = ""
+    try:
+        history = "".join(input_header['HISTORY']).strip()
+    except KeyError:
+        history = ""
+
+    header = FileHeader(input_header)
+    header['COMMENT'] = comment
+    header['HISTORY'] = history
+
+    # Strip out KEYCOMMENTS to a dict, the hard way
+    keydict = {}
+    for card in input_header.cards:
+        if card.comment != '':
+            keydict.update({card.keyword: card.comment})
+    header['KEYCOMMENTS'] = keydict
+    waveunit = extract_waveunit(header)
+    if waveunit is not None:
+        header['WAVEUNIT'] = waveunit
+    return header
 
 
 def write(fname, data, header, hdu_type=None, **kwargs):
