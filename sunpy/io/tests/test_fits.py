@@ -8,7 +8,7 @@ import astropy.io.fits as fits
 import sunpy.io.fits
 from sunpy.data.test import get_test_filepath, test_data_filenames
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
-from sunpy.io.fits import extract_comments, extract_waveunit, get_header, header_to_fits
+from sunpy.io.fits import extract_waveunit, format_comments_and_history, get_header, header_to_fits
 from sunpy.util import MetaDict, SunpyMetadataWarning
 
 RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
@@ -46,7 +46,7 @@ def read_hdus(fname, hdus, length):
 )
 def test_extract_waveunit(fname, waveunit):
     if Path(fname).suffix == '.header':
-        header = extract_comments(fits.Header.fromtextfile(fname))
+        header = format_comments_and_history(fits.Header.fromtextfile(fname))
     else:
         header = get_header(fname)[0]
     waveunit = extract_waveunit(header)

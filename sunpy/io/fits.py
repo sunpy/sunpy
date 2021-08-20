@@ -35,7 +35,7 @@ from astropy.io import fits
 from sunpy.io.header import FileHeader
 from sunpy.util.exceptions import warn_metadata, warn_user
 
-__all__ = ['header_to_fits', 'read', 'get_header', 'extract_comments', 'write', 'extract_waveunit']
+__all__ = ['header_to_fits', 'read', 'get_header', 'format_comments_and_history', 'write', 'extract_waveunit']
 
 HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 
@@ -119,17 +119,26 @@ def get_header(afile):
     try:
         headers = []
         for hdu in hdulist:
-            headers.append(extract_comments(hdu.header))
+            headers.append(format_comments_and_history(hdu.header))
     finally:
         if close:
             hdulist.close()
     return headers
 
 
-def extract_comments(input_header):
+def format_comments_and_history(input_header):
     """
-    Extract ``COMMENT``, ``HISTORY``, and ``KEYCOMMENTS``
-    from header cards
+    Combine ``COMMENT`` and ``HISTORY`` cards into single
+    entries. Extract ``KEYCOMMENTS`` into a single entry
+    and put ``WAVEUNIT`` into its own entry.
+
+    Parameters
+    ----------
+    input_header : `~astropy.io.fits.Header`
+
+    Returns
+    -------
+    header : `~astropy.io.fits.header.FileHeader`
     """
     try:
         comment = "".join(input_header['COMMENT']).strip()
