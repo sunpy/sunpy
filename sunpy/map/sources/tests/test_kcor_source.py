@@ -1,29 +1,20 @@
 """
 Test cases for KCor Map subclass.
 """
-
-import os
-import glob
-
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-from sunpy.map import Map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.mlso import KCorMap
-
-path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "20181209_180305_kcor_l1.5_rebinned.fits"))
 
 
 @pytest.fixture()
 def kcor():
     """Creates an KCorMap from a FITS file."""
-    return Map(fitspath)
+    return get_dummy_map_from_header(get_test_filepath("20181209_180305_kcor_l1.5_rebinned.header"))
 
 
-# KCor Tests
 def test_kcormap_creation(kcor):
     """Tests the creation of KCorMap using FITS."""
     assert isinstance(kcor, KCorMap)

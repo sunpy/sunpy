@@ -1,28 +1,20 @@
-"""Test cases for HINODE Map subclasses.
-This particular test file pertains to XRTMap.
-@Author: Pritish C. (VaticanCameos)
 """
-
-import os
-import glob
-
+Test cases for HINODE XRTMap subclass.
+"""
 import pytest
 
 import astropy.units as u
-from astropy.utils.exceptions import AstropyUserWarning
 
-import sunpy.data.test
-from sunpy.map import Map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.hinode import XRTMap
 from sunpy.util.exceptions import SunpyMetadataWarning
+
+__author__ = 'Pritish C. (VaticanCameos)'
 
 
 @pytest.fixture
 def xrt():
-    path = sunpy.data.test.rootdir
-    fitspath = glob.glob(os.path.join(path, "HinodeXRT.fits"))
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        return Map(fitspath)
+    return get_dummy_map_from_header(get_test_filepath("HinodeXRT.header"))
 
 
 # XRT Tests

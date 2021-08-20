@@ -1,29 +1,21 @@
 """
 Test cases for SUVI Map subclass.
 """
-
-import os
-import glob
-
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-from sunpy.map import Map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.suvi import SUVIMap
 
 
 @pytest.fixture()
 def suvi():
     """Creates an SUVIMap from a FITS file."""
-    path = sunpy.data.test.rootdir
-    fitspath = glob.glob(
-        os.path.join(path, "dr_suvi-l2-ci195_g16_s20190403T093200Z_e20190403T093600Z_v1-0-0_rebinned.fits"))
-    return Map(fitspath)
+    path = get_test_filepath("dr_suvi-l2-ci195_g16_s20190403T093200Z_e20190403T093600Z_v1-0-0_rebinned.header")
+    return get_dummy_map_from_header(path)
 
 
-# SUVI Tests
 def test_suvimap_creation(suvi):
     """Tests the creation of SUVIMap using FITS."""
     assert isinstance(suvi, SUVIMap)
