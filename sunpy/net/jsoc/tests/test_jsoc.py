@@ -10,7 +10,6 @@ import astropy.time
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-import sunpy.data.test
 import sunpy.map
 import sunpy.net.attrs as a
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
@@ -422,15 +421,14 @@ def test_jsoc_attrs(client):
 
 @pytest.mark.flaky(reruns_delay=30)
 @pytest.mark.remote_data
-def test_jsoc_cutout_attrs(client):
-    m_ref = sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits'))
+def test_jsoc_cutout_attrs(client, aia171_test_map):
     cutout = a.jsoc.Cutout(
-        SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=m_ref.coordinate_frame),
-        top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=m_ref.coordinate_frame),
+        SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=aia171_test_map.coordinate_frame),
+        top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=aia171_test_map.coordinate_frame),
         tracking=True
     )
     q = client.search(
-        a.Time(m_ref.date, m_ref.date + 1 * u.min),
+        a.Time(aia171_test_map.date, aia171_test_map.date + 1 * u.min),
         a.Wavelength(171*u.angstrom),
         a.jsoc.Series.aia_lev1_euv_12s,
         a.jsoc.Notify('jsoc@cadair.com'),  # Put your email here

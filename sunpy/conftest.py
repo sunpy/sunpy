@@ -8,6 +8,8 @@ import pytest
 import astropy
 import astropy.config.paths
 
+from sunpy.data.test import get_test_filepath
+from sunpy.map import Map
 from sunpy.util import SunpyUserWarning
 
 # Force MPL to use non-gui backends for testing.
@@ -158,3 +160,8 @@ def pytest_runtest_teardown(item):
         console_logger.info(f"Removing {len(plt.get_fignums())} pyplot figure(s) "
                             f"left open by {item.name}")
         plt.close('all')
+
+
+@pytest.fixture(scope="session")
+def aia171_test_map():
+    return Map(get_test_filepath('aia_171_level1.fits'))

@@ -1,4 +1,3 @@
-import os
 
 import numpy as np
 import pytest
@@ -8,7 +7,6 @@ from astropy.coordinates import Longitude, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
 
-import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
@@ -50,14 +48,6 @@ from sunpy.physics.differential_rotation import (
 # of an arcsecond.  I suspect that the reason for the small differences is
 # because the sunpy's ephemeris and coordinate transformation infrastructure
 # was largely based on that in SSWIDL.
-
-
-testpath = sunpy.data.test.rootdir
-
-
-@pytest.fixture
-def aia171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
 
 @pytest.fixture

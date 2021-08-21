@@ -5,7 +5,6 @@ from scipy.ndimage.interpolation import shift as sp_shift
 
 import astropy.units as u
 
-from sunpy.data.test import get_test_filepath
 from sunpy.image.coalignment import (
     _default_fmap_function,
     _lower_clip,
@@ -28,11 +27,6 @@ from sunpy.util import SunpyUserWarning
 @pytest.fixture
 def aia171_test_clipping():
     return np.asarray([0.2, -0.3, -1.0001])
-
-
-@pytest.fixture
-def aia171_test_map():
-    return Map(get_test_filepath('aia_171_level1.fits'))
 
 
 @pytest.fixture
