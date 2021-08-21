@@ -1,5 +1,4 @@
 import os
-import glob
 import datetime
 from pathlib import Path
 from collections import OrderedDict
@@ -13,9 +12,9 @@ from astropy.io import fits
 from astropy.table import Table
 from astropy.time import TimeDelta
 
-import sunpy.data.test
 import sunpy.io
 import sunpy.timeseries
+from sunpy.data.test import get_test_filepath, rootdir, test_data_filenames
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -25,23 +24,20 @@ from sunpy.util.metadata import MetaDict
 # TimeSeries Factory Tests
 # =============================================================================
 
-filepath = sunpy.data.test.rootdir
-esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
-eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
-eve_many_filepath = glob.glob(os.path.join(filepath, "eve", "*"))
-fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
-goes_filepath = os.path.join(filepath, 'go1520110607.fits')
-goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
-lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
-new_goes15_filepath = os.path.join(filepath, 'goes_truncated_test_goes15.nc')
-new_goes16_filepath = os.path.join(filepath, 'goes_truncated_test_goes16.nc')
-noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
-noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
-noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated.json')
-noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
-norh_filepath = os.path.join(filepath, 'tca110810_truncated')
-rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
-psp_filepath = os.path.join(filepath, 'psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
+esp_filepath = get_test_filepath('eve_l1_esp_2011046_00_truncated.fits')
+eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
+eve_many_filepath = [f for f in test_data_filenames()
+                     if f.parents[0].relative_to(f.parents[1]).name == 'eve']
+fermi_gbm_filepath = get_test_filepath('gbm.fits')
+goes_filepath = get_test_filepath('go1520110607.fits')
+goes_filepath_com = get_test_filepath('go1520120601.fits.gz')
+lyra_filepath = get_test_filepath('lyra_20150101-000000_lev3_std_truncated.fits.gz')
+new_goes15_filepath = get_test_filepath('goes_truncated_test_goes15.nc')
+new_goes16_filepath = get_test_filepath('goes_truncated_test_goes16.nc')
+noaa_ind_json_filepath = get_test_filepath('observed-solar-cycle-indices-truncated.json')
+noaa_pre_json_filepath = get_test_filepath('predicted-solar-cycle-truncated.json')
+norh_filepath = get_test_filepath('tca110810_truncated')
+rhessi_filepath = get_test_filepath('hsi_obssumm_20120601_018_truncated.fits.gz')
 
 # =============================================================================
 # Multi file Tests
@@ -56,7 +52,7 @@ class TestTimeSeries:
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
         ts_from_folder = sunpy.timeseries.TimeSeries(
-            os.path.join(filepath, "eve"), source='EVE', concatenate=True)
+            eve_many_filepath[0].parent, source='EVE', concatenate=True)
         assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
@@ -70,7 +66,7 @@ class TestTimeSeries:
         ts_from_list = sunpy.timeseries.TimeSeries(eve_many_filepath, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         ts_from_folder = sunpy.timeseries.TimeSeries(
-            os.path.join(filepath, "eve"), source='EVE', concatenate=True)
+            eve_many_filepath[0].parent, source='EVE', concatenate=True)
         assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
@@ -90,13 +86,13 @@ class TestTimeSeries:
     def test_factory_generate_from_glob(self):
         # Test making a TimeSeries from a glob
         ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(
-            filepath, "eve", "*"), source='EVE', concatenate=True)
+            rootdir, "eve", "*"), source='EVE', concatenate=True)
         assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
     @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_generate_from_pathlib(self):
         # Test making a TimeSeries from a : pathlib.PosixPath
-        ts_from_pathlib = sunpy.timeseries.TimeSeries(Path(filepath).joinpath("gbm.fits"),
+        ts_from_pathlib = sunpy.timeseries.TimeSeries(Path(fermi_gbm_filepath),
                                                       source="GBMSummary")
         assert isinstance(ts_from_pathlib, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
@@ -467,7 +463,7 @@ class TestTimeSeries:
             sunpy.timeseries.TimeSeries(data, meta)
 
     def test_invalid_filepath(self):
-        invalid_filepath = os.path.join(filepath, 'invalid_filepath_here')
+        invalid_filepath = os.path.join(rootdir, 'invalid_filepath_here')
         with pytest.raises(ValueError, match='Did not find any files'):
             sunpy.timeseries.TimeSeries(invalid_filepath)
         # Now with silence_errors kwarg set
@@ -475,7 +471,7 @@ class TestTimeSeries:
             sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_invalid_file(self):
-        invalid_filepath = os.path.join(filepath, 'annotation_ppt.db')
+        invalid_filepath = os.path.join(rootdir, 'annotation_ppt.db')
         with pytest.raises(NoMatchError):
             sunpy.timeseries.TimeSeries(invalid_filepath)
         # Now with silence_errors kwarg set

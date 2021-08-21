@@ -1,6 +1,4 @@
-import os
 import copy
-import glob
 import datetime
 from collections import OrderedDict
 
@@ -21,8 +19,8 @@ except ModuleNotFoundError:
     from astropy._erfa.core import ErfaWarning
 
 import sunpy
-import sunpy.data.test
 import sunpy.timeseries
+from sunpy.data.test import get_test_filepath, test_data_filenames
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
@@ -33,23 +31,16 @@ from sunpy.util.metadata import MetaDict
 # TimeSeries Tests
 # =============================================================================
 
-filepath = sunpy.data.test.rootdir
-
-eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
-esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
-fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
-norh_filepath = os.path.join(filepath, 'tca110810_truncated')
-goes_filepath = os.path.join(filepath, 'goes.fits')
-lyra_filepath = os.path.join(filepath,
-                             'lyra_20150101-000000_lev3_std_truncated.fits.gz')
-rhessi_filepath = os.path.join(filepath,
-                               'hsi_obssumm_20120601_018_truncated.fits.gz')
-noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
-noaa_pre_json_filepath = os.path.join(filepath,
-                                      'predicted-solar-cycle-truncated.json')
-goes_filepath = os.path.join(filepath, 'go1520120601.fits.gz')
-
-a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
+eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
+esp_filepath = get_test_filepath('eve_l1_esp_2011046_00_truncated.fits')
+fermi_gbm_filepath = get_test_filepath('gbm.fits')
+norh_filepath = get_test_filepath('tca110810_truncated')
+lyra_filepath = get_test_filepath('lyra_20150101-000000_lev3_std_truncated.fits.gz')
+rhessi_filepath = get_test_filepath('hsi_obssumm_20120601_018_truncated.fits.gz')
+noaa_ind_json_filepath = get_test_filepath('observed-solar-cycle-indices-truncated.json')
+noaa_pre_json_filepath = get_test_filepath('predicted-solar-cycle-truncated.json')
+goes_filepath = get_test_filepath('go1520120601.fits.gz')
+a_list_of_many = [f for f in test_data_filenames() if f.parents[0].relative_to(f.parents[1]).name == 'eve']
 
 
 @pytest.fixture
