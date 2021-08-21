@@ -1,13 +1,12 @@
-import os
 import datetime
 
 import numpy as np
 import pytest
 
-from sunpy.data.test import rootdir
+from sunpy.data.test import get_test_filepath
 from sunpy.io.special import genx
 
-TESTING = genx.read_genx(os.path.join(rootdir, 'generated_sample.genx'))
+TESTING = genx.read_genx(get_test_filepath('generated_sample.genx'))
 
 
 def test_skeleton():

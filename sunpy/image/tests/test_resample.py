@@ -1,20 +1,11 @@
-import os
 
 import numpy as np
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-import sunpy.map
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.util.exceptions import SunpyDeprecationWarning
-
-
-@pytest.fixture
-def aia171_test_map():
-    testpath = sunpy.data.test.rootdir
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
 
 @pytest.fixture
