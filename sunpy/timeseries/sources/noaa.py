@@ -77,32 +77,34 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             The plot axes.
         """
         self._validate_data_for_plotting()
-        dataframe = self.to_dataframe()
         if axes is None:
             axes = plt.gca()
+
         if plot_type == 'sunspot SWO':
-            dataframe['sunspot SWO'].plot(**kwargs)
-            dataframe['sunspot SWO smooth'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
+            to_plot = ['sunspot SWO', 'sunspot SWO smooth']
+            ylabel = 'Sunspot Number'
         elif plot_type == 'sunspot RI':
-            dataframe['sunspot RI'].plot(**kwargs)
-            dataframe['sunspot RI smooth'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
+            to_plot = ['sunspot RI', 'sunspot RI smooth']
+            ylabel = 'Sunspot Number'
         elif plot_type == 'sunspot compare':
-            dataframe['sunspot RI'].plot(**kwargs)
-            dataframe['sunspot SWO'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
+            to_plot = ['sunspot RI', 'sunspot SWO']
+            ylabel = 'Sunspot Number'
         elif plot_type == 'radio':
-            dataframe['radio flux'].plot(**kwargs)
-            dataframe['radio flux smooth'].plot(**kwargs)
-            axes.set_ylabel('Radio Flux [sfu]')
+            to_plot = ['radio flux', 'radio flux smooth']
+            ylabel = 'Radio Flux [sfu]'
         elif plot_type == 'geo':
-            dataframe['geomagnetic ap'].plot(**kwargs)
-            dataframe['geomagnetic ap smooth'].plot(**kwargs)
-            axes.set_ylabel('Geomagnetic AP Index')
+            to_plot = ['geomagnetic ap', 'geomagnetic ap smooth']
+            ylabel = 'Geomagnetic AP Index'
         else:
             raise ValueError(f'Got unknown plot type "{type}"')
+
+        to_plot = self.to_dataframe()[to_plot]
+        to_plot.plot(ax=axes, **kwargs)
+
+        axes.set_xlim(min(to_plot.dropna(how='all').index),
+                      max(to_plot.dropna(how='all').index))
         axes.set_ylim(0)
+        axes.set_ylabel(ylabel)
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
@@ -133,9 +135,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         """
         axes = self.plot(plot_type=plot_type, **kwargs)
         axes.set_title(title)
-        axes = plt.gca()
-        fig = axes.get_figure()
-        return fig
+        return axes.get_figure()
 
     @classmethod
     def _parse_file(cls, filepath):
