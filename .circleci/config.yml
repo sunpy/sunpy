@@ -98,7 +98,7 @@ workflows:
             parameters:
               jobname:
                 - "py38-figure"
-                - "py37-figure-devdeps"
+                - "py39-figure-devdeps"
 
       - deploy-reference-images:
           name: baseline-<< matrix.jobname >>
@@ -106,10 +106,10 @@ workflows:
             parameters:
               jobname:
                 - "py38-figure"
-                - "py37-figure-devdeps"
+                - "py39-figure-devdeps"
           requires:
             - "py38-figure"
-            - "py37-figure-devdeps"
+            - "py39-figure-devdeps"
           filters:
             branches:
               only:
