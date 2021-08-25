@@ -1,4 +1,3 @@
-from inspect import trace
 import pytest
 
 import astropy.units as u
