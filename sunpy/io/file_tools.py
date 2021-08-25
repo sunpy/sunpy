@@ -207,6 +207,9 @@ def detect_filetype(filepath):
         # first 8 bytes of netcdf4/hdf5 to determine filetype as have same sequence
         fp.seek(0)
         first_8bytes = fp.read(8)
+        # first 4 bytes of CDF
+        fp.seek(0)
+        cdf_magic_number = fp.read(4).hex()
 
     # FITS
     # Check the extensions to see if it is a gzipped FITS file
@@ -238,6 +241,9 @@ def detect_filetype(filepath):
     # netcdf4 and hdf5 files
     if first_8bytes == b'\x89HDF\r\n\x1a\n':
         return 'hdf5'
+
+    if cdf_magic_number in ['cdf30001', 'cdf26002', '0000ffff']:
+        return 'cdf'
 
     # Raise an error if an unsupported filetype is encountered
     raise UnrecognizedFileTypeError("The requested filetype is not currently "

@@ -17,7 +17,7 @@ from astropy.table import Table
 from astropy.time import Time
 
 import sunpy
-from sunpy.io.file_tools import UnrecognizedFileTypeError, read_file
+from sunpy.io.file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
 from sunpy.io.fits import HDPair
 from sunpy.io.header import FileHeader
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
@@ -138,6 +138,15 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             List of ``(data, header)`` pairs or ``fname`` if the file is not supported or incorrect.
         """
         if 'source' not in kwargs.keys() or not kwargs['source']:
+            try:
+                if detect_filetype(fname) == 'cdf':
+                    # Put import here to ensure there is no import dependency
+                    # on cdflib for TimeSeries
+                    from sunpy.io.cdf import read_cdf
+                    return read_cdf(os.fspath(fname), **kwargs)
+            except UnrecognizedFileTypeError:
+                pass
+
             try:
                 pairs = read_file(os.fspath(fname), **kwargs)
 
@@ -348,9 +357,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         results = parse_path(path, self._read_file)
         all_ts = []
 
-        # r can be either a path or a data, header pair
+        # r can be either a TimeSeries, path, or a data, header pair
         for r in results:
-            if isinstance(r, pathlib.Path):
+            if isinstance(r, GenericTimeSeries):
+                all_ts += [r]
+            elif isinstance(r, pathlib.Path):
                 all_ts += [self._check_registered_widgets(filepath=r, **kwargs)]
             else:
                 pairs = r
