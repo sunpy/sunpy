@@ -38,6 +38,7 @@ noaa_ind_json_filepath = get_test_filepath('observed-solar-cycle-indices-truncat
 noaa_pre_json_filepath = get_test_filepath('predicted-solar-cycle-truncated.json')
 norh_filepath = get_test_filepath('tca110810_truncated')
 rhessi_filepath = get_test_filepath('hsi_obssumm_20120601_018_truncated.fits.gz')
+psp_filepath = get_test_filepath('psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
 
 # =============================================================================
 # Multi file Tests
