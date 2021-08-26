@@ -17,8 +17,7 @@ from astropy import units
 from astropy.utils.exceptions import AstropyUserWarning
 
 import sunpy
-import sunpy.data.test
-from sunpy.data.test.waveunit import waveunitdir
+from sunpy.data.test import get_test_filepath
 from sunpy.database import (
     Database,
     EntryAlreadyAddedError,
@@ -40,16 +39,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as net_attrs
 from sunpy.net import hek, vso
 
-testpath = sunpy.data.test.rootdir
-RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
-
-
-"""
-The 'hsi_image_20101016_191218.fits' file lies in the sunpy/data/test.
-RHESSI_IMAGE  = sunpy/data/test/hsi_image_20101016_191218.fits
-
-So, the tests in the database depends on the test under sunpy/data.
-"""
+RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
 
 
 @pytest.fixture
@@ -620,10 +610,9 @@ def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_se
     assert len(database) == 2*35
 
 
-def test_add_fom_path(database):
+def test_add_fom_path(database, waveunit_fits_directory):
     assert len(database) == 0
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        database.add_from_dir(waveunitdir)
+    database.add_from_dir(waveunit_fits_directory)
     assert len(database) == 4
     database.undo()
     assert len(database) == 0
@@ -631,20 +620,17 @@ def test_add_fom_path(database):
     assert len(database) == 4
 
 
-def test_add_fom_path_duplicates(database):
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        database.add_from_dir(waveunitdir)
+def test_add_fom_path_duplicates(database, waveunit_fits_directory):
+    database.add_from_dir(waveunit_fits_directory)
     assert len(database) == 4
     with pytest.raises(EntryAlreadyAddedError), pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        database.add_from_dir(waveunitdir)
+        database.add_from_dir(waveunit_fits_directory)
 
 
-def test_add_fom_path_ignore_duplicates(database):
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        database.add_from_dir(waveunitdir)
+def test_add_fom_path_ignore_duplicates(database, waveunit_fits_directory):
+    database.add_from_dir(waveunit_fits_directory)
     assert len(database) == 4
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        database.add_from_dir(waveunitdir, ignore_already_added=True)
+    database.add_from_dir(waveunit_fits_directory, ignore_already_added=True)
     assert len(database) == 8
 
 
