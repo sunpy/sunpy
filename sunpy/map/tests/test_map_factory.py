@@ -35,7 +35,6 @@ valid_map_inputs = [
     (amap.data, amap.meta),
     ((amap.data, amap.meta), ),
 ]
-valid_map_inputs = []
 
 
 @pytest.mark.parametrize('args1', valid_map_inputs)
@@ -54,14 +53,14 @@ def test_two_map_inputs(args1, args2):
 
 
 class TestMap:
-    def test_mapsequence(self):
+    def test_mapsequence(self, eit_fits_directory):
         # Test making a MapSequence
-        sequence = sunpy.map.Map(a_list_of_many, sequence=True)
+        sequence = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')), sequence=True)
         assert isinstance(sequence, sunpy.map.MapSequence)
 
-    def test_mapsequence_sortby(self):
+    def test_mapsequence_sortby(self, eit_fits_directory):
         # Test making a MapSequence with sortby kwarg
-        sequence = sunpy.map.Map(a_list_of_many, sequence=True, sortby=None)
+        sequence = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')), sequence=True, sortby=None)
         assert isinstance(sequence, sunpy.map.MapSequence)
 
     def test_composite(self):
@@ -72,7 +71,7 @@ class TestMap:
     # Want to check that patterns work, so ignore this warning that comes from
     # the AIA test data
     @pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
-    def test_patterns(self):
+    def test_patterns(self, eit_fits_directory):
         # Test different Map pattern matching
 
         # File name
@@ -80,12 +79,11 @@ class TestMap:
         assert isinstance(aiamap, sunpy.map.GenericMap)
 
         # Directory
-        directory = pathlib.Path(rootdir, "EIT")
-        maps = sunpy.map.Map(os.fspath(directory))
+        maps = sunpy.map.Map(os.fspath(eit_fits_directory))
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Test that returned maps are sorted
-        files_sorted = sorted(list(directory.glob('*')))
+        files_sorted = sorted(list(eit_fits_directory.glob('*')))
         maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
 
@@ -93,12 +91,12 @@ class TestMap:
         path = pathlib.Path(AIA_171_IMAGE)
         aiamap = sunpy.map.Map(path)
         assert isinstance(aiamap, sunpy.map.GenericMap)
-        maps = sunpy.map.Map(directory)
+        maps = sunpy.map.Map(eit_fits_directory)
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
         # Glob
-        pattern = os.path.join(rootdir, "EIT", "*")
+        pattern = os.path.join(eit_fits_directory, "*")
         maps = sunpy.map.Map(pattern)
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
@@ -107,13 +105,13 @@ class TestMap:
         maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
         # Single character wildcard (?)
-        pattern = os.path.join(rootdir, "EIT", "efz20040301.0?0010_s.fits")
+        pattern = os.path.join(eit_fits_directory, "efz20040301.0?0010_s.fits")
         maps = sunpy.map.Map(pattern)
         assert isinstance(maps, list)
         assert len(maps) == 7
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Character ranges
-        pattern = os.path.join(rootdir, "EIT", "efz20040301.0[2-6]0010_s.fits")
+        pattern = os.path.join(eit_fits_directory, "efz20040301.0[2-6]0010_s.fits")
         maps = sunpy.map.Map(pattern)
         assert isinstance(maps, list)
         assert len(maps) == 4
@@ -124,7 +122,7 @@ class TestMap:
         assert isinstance(amap, sunpy.map.GenericMap)
 
         # A list of filenames
-        maps = sunpy.map.Map(a_list_of_many)
+        maps = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')))
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
@@ -178,7 +176,7 @@ class TestMap:
     def test_errors(self, tmpdir):
         # If directory doesn't exist, make sure it's listed in the error msg
         nonexist_dir = 'nonexist'
-        directory = pathlib.Path(rootdir, nonexist_dir)
+        directory = pathlib.Path(tmpdir, nonexist_dir)
         with pytest.raises(ValueError, match=nonexist_dir):
             sunpy.map.Map(os.fspath(directory))
 
@@ -204,7 +202,7 @@ class TestMap:
         data = np.arange(0, 100).reshape(10, 10)
         header = {}
         with pytest.raises(error, match=match):
-            pair_map = sunpy.map.Map(data, header, silence_errors=silence)
+            _ = sunpy.map.Map(data, header, silence_errors=silence)
 
     # requires dask array to run properly
     def test_dask_array(self):
