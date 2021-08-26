@@ -1,14 +1,17 @@
 import os
 import logging
+import pathlib
 import tempfile
 import importlib
 
+import numpy as np
 import pytest
 
 import astropy
 import astropy.config.paths
+import astropy.io.fits
 
-from sunpy.data.test import get_test_filepath
+from sunpy.data.test import get_test_filepath, test_data_filenames
 from sunpy.map import Map
 from sunpy.util import SunpyUserWarning
 
@@ -165,3 +168,35 @@ def pytest_runtest_teardown(item):
 @pytest.fixture(scope="session")
 def aia171_test_map():
     return Map(get_test_filepath('aia_171_level1.fits'))
+
+
+@pytest.fixture(scope="session")
+def eit_fits_directory(tmpdir_factory):
+    # Create a temporary directory of dummy EIT FITS files
+    # from the header data. This directory is then used to
+    # test directory and glob patterns for the map factory
+    eit_dir = tmpdir_factory.mktemp('EIT')
+    eit_header_files = [f for f in test_data_filenames()
+                        if f.parents[0].relative_to(f.parents[1]).name == 'EIT']
+    for f in eit_header_files:
+        header = astropy.io.fits.Header.fromtextfile(f)
+        data = np.random.rand(header['naxis1'], header['naxis2'])
+        hdu = astropy.io.fits.PrimaryHDU(data=data, header=header)
+        hdu.writeto(os.fspath(eit_dir.join(f.with_suffix('.fits').name)))
+    return pathlib.Path(eit_dir)
+
+
+@pytest.fixture(scope="session")
+def waveunit_fits_directory(tmpdir_factory):
+    # Create a temporary directory of dummy FITS files
+    # from the header data. This directory is then used to
+    # test directory patterns for database
+    waveunit_dir = tmpdir_factory.mktemp('waveunit')
+    header_files = [f for f in test_data_filenames()
+                    if f.parents[0].relative_to(f.parents[1]).name == 'waveunit']
+    for f in header_files:
+        header = astropy.io.fits.Header.fromtextfile(f)
+        data = np.random.rand(header['naxis1'], header['naxis2'])
+        hdu = astropy.io.fits.PrimaryHDU(data=data, header=header)
+        hdu.writeto(os.fspath(waveunit_dir.join(f.with_suffix('.fits').name)))
+    return pathlib.Path(waveunit_dir)
