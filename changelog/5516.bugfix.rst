@@ -1,0 +1,1 @@
+Enable user to optionally define slider labels for `~sunpy.visualization.animator.wcs.ArrayAnimatorWCS`.  Previously an error was raised if users tried to set these values.
