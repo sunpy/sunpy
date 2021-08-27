@@ -161,9 +161,11 @@ def write(fname, data, header, hdu_type=None, **kwargs):
         n-dimensional data array.
     header : `dict`
         A header dictionary.
-    hdu_type: `None` or `~astropy.io.fits.CompImageHDU`
-        `None` will return a normal FITS files.
-        `~astropy.io.fits.CompImageHDU` will rice compress the FITS file.
+    hdu_type : type or `~astropy.io.fits.CompImageHDU`, optional
+        By default, a normal FITS file is written.
+        `~astropy.io.fits.CompImageHDU` will Rice compress the FITS file.
+        If a type is given, a new HDU of this type will be created.
+        If a HDU instance is given, its data and header will be updated.
     kwargs :
         Additional keyword arguments are given to
         `~astropy.io.fits.HDUList.writeto`.
