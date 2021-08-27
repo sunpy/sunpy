@@ -83,6 +83,41 @@ def test_simple_write_compressed(tmpdir):
         assert isinstance(hdul[1], fits.CompImageHDU)
 
 
+def test_simple_write_compressed_difftypeinst(tmpdir):
+    # `hdu_type=fits.CompImageHDU` and `hdu_type=fits.CompImageHDU()`
+    # should produce identical FITS files
+    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    outfile_type = str(tmpdir / "test_type.fits")
+    outfile_inst = str(tmpdir / "test_inst.fits")
+    sunpy.io.fits.write(outfile_type, data, header, hdu_type=fits.CompImageHDU)
+    sunpy.io.fits.write(outfile_inst, data, header, hdu_type=fits.CompImageHDU())
+    assert fits.FITSDiff(outfile_type, outfile_inst, ignore_comments=['PCOUNT']).identical
+
+
+def test_simple_write_compressed_instance(tmpdir):
+    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    outfile = tmpdir / "test.fits"
+
+    # HDU instance must not contain data
+    hdu = fits.CompImageHDU(data)
+    with pytest.raises(ValueError, match='must not contain data'):
+        sunpy.io.fits.write(str(outfile), data, header, hdu_type=hdu)
+
+    # Ensure HDU instance is used correctly
+    hdu = fits.CompImageHDU()
+    hdu.header['HELLO'] = 'world'  # should be in the written file
+    hdu.header['TELESCOP'] = 'other'  # should be replaced with 'SDO/AIA'
+    hdu.header['NAXIS'] = 5  # should be replaced with 2
+    sunpy.io.fits.write(str(outfile), data, header, hdu_type=hdu)
+    assert outfile.exists()
+    with fits.open(str(outfile)) as hdul:
+        assert len(hdul) == 2
+        assert isinstance(hdul[1], fits.CompImageHDU)
+        assert hdul[1].header['HELLO'] == 'world'
+        assert hdul[1].header['TELESCOP'] == 'SDO/AIA'
+        assert hdul[1].header['NAXIS'] == 2
+
+
 def test_write_with_metadict_header_astropy(tmpdir):
     with fits.open(AIA_171_IMAGE) as fits_file:
         data, header = fits_file[0].data, fits_file[0].header
