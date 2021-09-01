@@ -1,6 +1,6 @@
 import pytest
 
-from astropy.time import Time, TimeUnixTai
+from astropy.time import Time
 from astropy.time.formats import erfa
 
 # This registers the TimeTaiSeconds format with astropy
@@ -37,14 +37,3 @@ def test_tai_utc_offset():
 def test_roundtrip(time):
     time_from_tai_seconds = Time(time.tai_seconds, scale='tai', format='tai_seconds')
     assert time_from_tai_seconds == time
-
-
-@pytest.mark.parametrize('time', [
-    Time('1958-01-01T00:00:00', format='isot', scale='tai'),
-    Time('1972-01-01T00:00:00', format='isot', scale='tai'),
-    Time('2015-10-25T05:24:08', format='isot', scale='tai'),
-    Time('2018-09-17T19:46:25', format='isot', scale='tai'),
-])
-def test_unix_tai_consistency(time):
-    diff_unix_tai = Time(TimeUnixTai.epoch_val, scale='tai', format=TimeUnixTai.epoch_format,).tai_seconds
-    assert time.unix_tai + diff_unix_tai == time.tai_seconds
