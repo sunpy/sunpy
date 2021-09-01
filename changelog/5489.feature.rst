@@ -1,4 +1,2 @@
-Add ``sunpy.time.UnixTai58`` to support parsing the TAI time format of number of leap seconds
-since 1958-01-01 00:00:00.
-This provides equivalent functionality to the ``anytim2tai`` routine in SSW, with some differences
-in the number of leap seconds prior to 1972-01-01 00:00:00.
+Registered the time format ``tai_seconds`` for `astropy.time.Time` (via `~sunpy.time.TimeTaiSeconds`) to support parsing the numerical time format of TAI seconds since 1958-01-01 00:00:00.
+This format includes UTC leap seconds, and enables equivalent functionality to the ``anytim2tai`` routine in SSW.
