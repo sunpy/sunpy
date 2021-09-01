@@ -66,18 +66,17 @@ instead if you need one of these specific times.
 
 Addition of new time format `~sunpy.time.formats.TimeTaiSeconds`
 ----------------------------------------------------------------
-The `~sunpy.time.formats.TimeTaiSeconds` format is the number of seconds
-since 1958-01-01 00:00:00, including leap seconds. This is equivalent to
-`~astropy.time.TimeUnixTai`, except that the epoch is 12 years earlier.
+The `~sunpy.time.formats.TimeTaiSeconds` format is the number of
+SI seconds from 1958-01-01 00:00:00, which includes UTC leap seconds.
+1958-01-01 00:00:00 is the defined time when International Atomic Time (TAI)
+and Universal Time (UT) are synchronized.
 
-For dates on and after 1972-01-01 00:00:00 UTC, this format is
-equivalent to that returned by the ``anytim2tai`` routine in SSW.
-For dates between 1958-01-01 00:00:00 UTC and 1971-12-31 23:59:59 UTC,
-``anytim2tai`` returns a constant difference of 9 s difference between
-UTC and TAI (i.e. the number of leap seconds added since 1958-01-01 00:00:00)
-while `~astropy.time.Time` returns a 0 s on 1958-01-01 00:00:00 (when
-UT and TAI were synchronized) and increases approximately linearly to a
-differnce of 10 s on 1972-01-01 00:00:00.
+This format is equivalent to the output of the SSW ``anytim2tai`` routine, and
+related routines, for times after 1972-01-01.  Be aware that the SSW routines
+are not written to provide valid results for times before 1972-01-01.
+
+This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch
+is 12 years earlier.
 
 Contributors to this Release
 ============================
