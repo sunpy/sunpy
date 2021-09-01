@@ -12,8 +12,8 @@ import astropy.time
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
-# This is not called but imported to register it
-from sunpy.time.timeformats import TimeUTime  # NOQA
+# This is not called but imported to register time formats
+from sunpy.time.timeformats import *  # NOQA
 from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
