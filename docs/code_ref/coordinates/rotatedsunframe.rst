@@ -4,9 +4,28 @@ Differential rotation using coordinate frames
 *********************************************
 
 Normally, coordinates refer to a point in inertial space (relative to the barycenter of the solar system).
-Transforming to a different observation time does not move the point at all, but rather only updates the coordinate representation as needed for the origin and axis orientations at the new observation time.
-However, the Sun both moves translationally in inertial space and rotates about its axis over time.
-Thus, a coordinate that points to a solar feature (e.g., the center of the Sun or an active region on its surface) will not continue to point to the same solar feature at other observation times.
+Transforming to a different observation time does not move the point itself, but if the coordinate frame origin and/or axis change with time, the coordinate representation is updated to account for this change.
+In solar physics an example of a frame that changes with time is the heliographic Stonyhurst (HGS) frame. Its origin moves with the center of the Sun, and its x-axis to follow the Sun-Earth line.
+A coordinate in a HGS frame of reference transformed to a HGS frame defined a day later will have a different longitude::
+
+  >>> from astropy.coordinates import ICRS, SkyCoord
+  >>> import astropy.units as u
+  >>> from sunpy.coordinates import HeliographicStonyhurst
+
+  >>> hgs_coord = SkyCoord(0*u.deg, 0*u.deg, radius=1*u.au, frame='heliographic_stonyhurst', obstime="2001-01-01")
+  >>> new_frame = HeliographicStonyhurst(obstime="2001-01-02")
+  >>> new_hgs_coord = hgs_coord.transform_to(new_frame)
+  >>> hgs_coord.lon, new_hgs_coord.lon
+  (<Longitude 0. deg>, <Longitude -1.01372559 deg>)
+
+but when transformed to an inertial frame of reference we can see that these two coordinates refer to the same point in space::
+
+  >>> hgs_coord.transform_to('icrs')
+  <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, AU)
+       (101.79107615, 26.05004621, 0.99601156)>
+  >>> new_hgs_coord.transform_to('icrs')
+  <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, AU)
+        (101.79107615, 26.05004621, 0.99601156)>
 
 To evolve a coordinate in time such that it accounts for the rotational motion of the Sun, one can use the `~sunpy.coordinates.metaframes.RotatedSunFrame` "metaframe" class as described below.
 This machinery will take into account the latitude-dependent rotation rate of the solar surface, also known as differential rotation.
@@ -16,10 +35,10 @@ In addition, one may want to account for the translational motion of the Sun as 
 
 Basics of the RotatedSunFrame class
 ===================================
-In a nutshell, the `~sunpy.coordinates.metaframes.RotatedSunFrame` class allows one to specify coordinates in a coordinate frame prior to an amount of solar (differential) rotation being applied.
+The `~sunpy.coordinates.metaframes.RotatedSunFrame` class allows one to specify coordinates in a coordinate frame prior to an amount of solar (differential) rotation being applied.
 That is, the coordinate will point to a location in inertial space at some time, but will use a coordinate system at a *different* time to refer to that point, while accounting for the differential rotation between those two times.
 
-Technical note: `~sunpy.coordinates.metaframes.RotatedSunFrame` is not itself a coordinate frame, but is instead a "metaframe".
+`~sunpy.coordinates.metaframes.RotatedSunFrame` is not itself a coordinate frame, but is instead a "metaframe".
 A new frame class is created on the fly corresponding to each base coordinate frame class.
 This tutorial will refer to these new classes as ``RotatedSun*`` frames.
 
@@ -35,15 +54,22 @@ Note that the ``RotatedSun*`` frame that is created in this example is appropria
   >>> from sunpy.coordinates import RotatedSunFrame
   >>> import sunpy.coordinates.frames as f
 
-  >>> rs_hgs = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime="2001-01-01"), duration=1*u.day)
+  >>> base_frame = f.HeliographicStonyhurst(obstime="2001-01-01")
+  >>> rs_hgs = RotatedSunFrame(base=base_frame, duration=1*u.day)
   >>> rs_hgs
   <RotatedSunHeliographicStonyhurst Frame (base=<HeliographicStonyhurst Frame (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km)>, duration=1.0 d, rotation_model=howard)>
 
 Once a ``RotatedSun*`` frame is created, it can be used in the same manner as other frames.  Here, we create a `~astropy.coordinates.SkyCoord` using the ``RotatedSun*`` frame::
 
-  >>> SkyCoord(0*u.deg, 0*u.deg, frame=rs_hgs)
+  >>> rotated_coord = SkyCoord(0*u.deg, 0*u.deg, frame=rs_hgs)
+  >>> rotated_coord
   <SkyCoord (RotatedSunHeliographicStonyhurst: base=<HeliographicStonyhurst Frame (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km)>, duration=1.0 d, rotation_model=howard): (lon, lat) in deg
-      (0., 0.)>
+        (0., 0.)>
+
+Transforming this into the original heliographic Stonyhurst frame, we can see that the longitude is equal to the original zero degrees, plus an extra offset to account for one day of differential rotation::
+
+  >>> rotated_coord.transform_to(base_frame).lon
+  <Longitude 14.32632838 deg>
 
 Instead of explicitly specifying the duration of solar rotation, one can use the keyword argument ``rotated_time``.
 The duration will be automatically calculated from the difference between ``rotated_time`` and the ``obstime`` value of the base coordinate frame.
@@ -61,13 +87,6 @@ A ``RotatedSun*`` frame containing coordinate data can be supplied to ``SkyCoord
   >>> SkyCoord(rs_hgc)
   <SkyCoord (RotatedSunHeliographicCarrington: base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard): (lon, lat) in deg
       (10., 20.)>
-
-It is important to understand that the ``RotatedSun*`` coordinate *already* has differential rotation applied.
-If one converts the ``RotatedSun*`` coordinate to a "real" coordinate frame, even the base coordinate frame used in the ``RotatedSun*`` frame, one sees that the longitude for the coordinate is different from the initial representation (in this case, ~45 degrees instead of 10 degrees)::
-
-  >>> rs_hgc.transform_to(rs_hgc.base)
-  <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
-      (45.13354448, 20., 695700.)>
 
 The above examples used the default differential-rotation model, but any of the models available through :func:`sunpy.physics.differential_rotation.diff_rot` are selectable.
 For example, instead of the default ("howard"), one can specify "allen" using the keyword argument ``rotation_model``.
