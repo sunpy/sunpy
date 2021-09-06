@@ -64,9 +64,9 @@ to use `~sunpy.map.GenericMap.date_average`,
 `~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
 instead if you need one of these specific times.
 
-Addition of new time format `~sunpy.time.formats.TimeTaiSeconds`
-----------------------------------------------------------------
-The new `~sunpy.time.formats.TimeTaiSeconds` format is the number of
+Addition of new time format `~sunpy.time.TimeTaiSeconds`
+--------------------------------------------------------
+The new `~sunpy.time.TimeTaiSeconds` format is the number of
 SI seconds from 1958-01-01 00:00:00, which includes UTC leap seconds.
 1958-01-01 00:00:00 is the defined time when International Atomic Time (TAI)
 and Universal Time (UT) are synchronized.
