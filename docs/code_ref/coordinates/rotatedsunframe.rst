@@ -5,10 +5,11 @@ Differential rotation using coordinate frames
 
 Normally, coordinates refer to a point in inertial space (relative to the barycenter of the solar system).
 Transforming to a different observation time does not move the point itself, but if the coordinate frame origin and/or axis change with time, the coordinate representation is updated to account for this change.
-In solar physics an example of a frame that changes with time is the heliographic Stonyhurst (HGS) frame. Its origin moves with the center of the Sun, and its x-axis to follow the Sun-Earth line.
+In solar physics an example of a frame that changes with time is the `~sunpy.coordinates.frames.HeliographicStonyhurst` (HGS) frame.
+Its origin moves with the center of the Sun, and its orientation rotates such that the longitude component of Earth is zero at any given time.
 A coordinate in a HGS frame of reference transformed to a HGS frame defined a day later will have a different longitude::
 
-  >>> from astropy.coordinates import ICRS, SkyCoord
+  >>> from astropy.coordinates import SkyCoord
   >>> import astropy.units as u
   >>> from sunpy.coordinates import HeliographicStonyhurst
 
@@ -22,10 +23,10 @@ but when transformed to an inertial frame of reference we can see that these two
 
   >>> hgs_coord.transform_to('icrs')
   <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, AU)
-       (101.79107615, 26.05004621, 0.99601156)>
+      (101.79107615, 26.05004621, 0.99601156)>
   >>> new_hgs_coord.transform_to('icrs')
   <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, AU)
-        (101.79107615, 26.05004621, 0.99601156)>
+      (101.79107615, 26.05004621, 0.99601156)>
 
 To evolve a coordinate in time such that it accounts for the rotational motion of the Sun, one can use the `~sunpy.coordinates.metaframes.RotatedSunFrame` "metaframe" class as described below.
 This machinery will take into account the latitude-dependent rotation rate of the solar surface, also known as differential rotation.
