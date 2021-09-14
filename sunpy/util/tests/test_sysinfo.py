@@ -21,4 +21,4 @@ def test_missing_dependencies_by_extra():
 def test_system_info(capsys):
     system_info()
     captured = capsys.readouterr()
-    assert "\nSunPy Installation Information\n" in captured.out
+    assert "\nsunpy Installation Information\n" in captured.out

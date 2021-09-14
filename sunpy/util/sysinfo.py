@@ -63,11 +63,11 @@ def system_info():
     extra_prop = {"System": platform.system(),
                   "Arch": f"{platform.architecture()[0]}, ({platform.processor()})",
                   "Python": platform.python_version(),
-                  "SunPy": get_distribution("sunpy").version}
+                  "sunpy": get_distribution("sunpy").version}
     sys_prop = {**installed_packages, **missing_packages, **extra_prop}
 
     print("==============================")
-    print("SunPy Installation Information")
+    print("sunpy Installation Information")
     print("==============================")
     print()
     print("General")
@@ -81,15 +81,16 @@ def system_info():
         print(f"OS: Windows {platform.release()} {platform.version()}")
     else:
         print("Unknown OS")
-    for sys_info in ['Arch', 'SunPy']:
-        print('{} : {}'.format(sys_info, sys_prop[sys_info]))
+    for sys_info in ['Arch', 'sunpy']:
+        print(f'{sys_info}: {sys_prop[sys_info]}')
+    print(f'Installation path: {get_distribution("sunpy").location}')
     print()
-    print("Required Dependices")
-    print("###################")
+    print("Required Dependencies")
+    print("#####################")
     for req in base_reqs:
-        print('{}: {}'.format(req, sys_prop[req]))
+        print(f'{req}: {sys_prop[req]}')
     print()
-    print("Optional Dependices")
-    print("###################")
+    print("Optional Dependencies")
+    print("#####################")
     for extra_req in extra_reqs:
         print(f'{extra_req}: {sys_prop[extra_req]}')
