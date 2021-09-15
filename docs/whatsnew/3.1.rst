@@ -33,6 +33,7 @@ Increase in required package versions
 We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 3.1:
 
 - astropy >= 4.2
+- numpy >= 1.17.0
 
 .. _whatsnew-3.1-contributors:
 
