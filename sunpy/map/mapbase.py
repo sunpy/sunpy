@@ -2590,7 +2590,7 @@ class GenericMap(NDData):
 
         return axes
 
-    def reproject_to(self, target_wcs, algorithm='interp', **reproject_args):
+    def reproject_to(self, target_wcs, algorithm='interpolation', **reproject_args):
         """
         Reproject the map to a different WCS
 
@@ -2616,7 +2616,7 @@ class GenericMap(NDData):
 
         The supported `reproject` algorithms are:
 
-        * 'interp' for :func:`~reproject.reproject_interp`
+        * 'interpolation' for :func:`~reproject.reproject_interp`
         * 'adaptive' for :func:`~reproject.reproject_adaptive`
         * 'exact' for :func:`~reproject.reproject_exact`
 
@@ -2634,7 +2634,7 @@ class GenericMap(NDData):
             target_wcs = astropy.wcs.WCS(target_wcs)
 
         # Select the desired reprojection algorithm
-        functions = {'interp': reproject.reproject_interp,
+        functions = {'interpolation': reproject.reproject_interp,
                      'adaptive': reproject.reproject_adaptive,
                      'exact': reproject.reproject_exact}
         if algorithm not in functions:

@@ -59,6 +59,11 @@ def test_reproject_to_hpc(aia171_test_map, hpc_header):
 
 
 @figure_test
+def test_reproject_to_hpc_interpolation(aia171_test_map, hpc_header):
+    aia171_test_map.reproject_to(hpc_header, algorithm='interpolation').plot()
+
+
+@figure_test
 def test_reproject_to_hpc_exact(aia171_test_map, hpc_header):
     aia171_test_map.reproject_to(hpc_header, algorithm='exact').plot()
 
