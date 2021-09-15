@@ -24,7 +24,7 @@ from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
-from astropy.visualization.wcsaxes import WCSAxes
+from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
@@ -43,12 +43,6 @@ from sunpy.util.exceptions import SunpyUserWarning, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
-
-# Quadrangle is not present in Astropy<4.2, so we fall back to a vendored version
-try:
-    from astropy.visualization.wcsaxes import Quadrangle
-except ImportError:
-    from sunpy.visualization._quadrangle import Quadrangle
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
