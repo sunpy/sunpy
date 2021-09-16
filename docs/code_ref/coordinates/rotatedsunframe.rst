@@ -32,6 +32,10 @@ To evolve a coordinate in time such that it accounts for the rotational motion o
 This machinery will take into account the latitude-dependent rotation rate of the solar surface, also known as differential rotation.
 Multiple models for differential rotation are supported (see :func:`~sunpy.physics.differential_rotation.diff_rot` for details).
 
+.. note::
+   `~sunpy.coordinates.metaframes.RotatedSunFrame` is a powerful metaframe, but can be tricky to use correctly.
+   We recommend users to first check if the simpler :func:`~sunpy.coordinates.propagate_with_solar_surface` context manager is sufficient.
+
 In addition, one may want to account for the translational motion of the Sun as well, and that can be achieved by also using the context manager :func:`~sunpy.coordinates.transform_with_sun_center` for desired coordinate transformations.
 
 Basics of the RotatedSunFrame class
