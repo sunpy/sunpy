@@ -373,8 +373,11 @@ class CompositeMap:
 
         Notes
         -----
-        If a line-width Matplotlib argument (``linewidth``, ``linewidths``, or ``lw``)
-        is provided, it will apply only to those maps that are plotted as contours.
+        Matplotlib arguments for setting the line width (``linewidths``), line style
+        (``linestyles``) or line color (``colors``) will apply only to those maps
+        that are plotted as contours. Similar arguments (i.e., ``linewidth``,
+        ``lw``, ``color``, ``c``, ``linestyle`` and ``ls``) will also be ignored
+        for maps plotted as images.
 
         If a transformation is required to overlay the maps with the correct
         alignment, the plot limits may need to be manually set because
@@ -406,8 +409,11 @@ class CompositeMap:
             # The request to show a map layer rendered as a contour is indicated by a
             # non False levels property.
             if m.levels is False:
-                # Check if any linewidth argument is provided, if so, then delete it from params.
-                for item in ['linewidth', 'linewidths', 'lw']:
+                # Check if any linewidth, color, or linestyle arguments are provided,
+                # if so, then delete them from params.
+                for item in ['linewidth', 'linewidths', 'lw',
+                             'color', 'colors', 'c',
+                             'linestyle', 'linestyles', 'ls']:
                     if item in matplot_args:
                         del params[item]
 

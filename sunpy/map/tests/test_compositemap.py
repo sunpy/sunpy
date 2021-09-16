@@ -51,6 +51,27 @@ def test_plot_composite_map_linewidths(composite_test_map):
     composite_test_map.plot(linewidths=0.5)
 
 
+@figure_test
+def test_plot_composite_map_linestyles(composite_test_map):
+    composite_test_map.set_levels(1, np.arange(-75, 76, 25) << u.percent)
+    composite_test_map.plot(linestyles='--')
+
+
+@figure_test
+def test_plot_composite_map_colors(composite_test_map):
+    composite_test_map.set_levels(1, np.arange(-75, 76, 25) << u.percent)
+    composite_test_map.plot(colors='red')
+
+
+def test_plot_composite_map_mplkwargs(composite_test_map):
+    composite_test_map.set_levels(1, np.arange(-75, 76, 25) << u.percent)
+    for k, v in [('linewidth', 0.5), ('lw', 0.5), ('color', 'red'),
+                 ('c', 'red'), ('linestyle', '--'), ('ls', '--')]:
+        with pytest.warns(UserWarning, match=f"The following kwargs were not "
+                                             f"used by contour: '{k}'"):
+            composite_test_map.plot(**{k: v})
+
+
 def test_remove_composite_map(composite_test_map):
     composite_test_map.remove_map(0)
     with pytest.raises(IndexError):
