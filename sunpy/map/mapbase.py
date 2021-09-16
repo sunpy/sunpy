@@ -2590,24 +2590,35 @@ class GenericMap(NDData):
 
         return axes
 
-    def reproject_to(self, target_wcs, algorithm='interpolation', **reproject_args):
+    def reproject_to(self, target_wcs, algorithm='interpolation', return_footprint=False,
+                     **reproject_args):
         """
         Reproject the map to a different WCS
 
         .. note::
             This method requires the optional package `reproject` to be installed.
 
+        Additional keyword arguments are passed through to the reprojection function.
+
         Parameters
         ----------
         target_wcs : `dict` or `~astropy.wcs.WCS`
             The destination FITS WCS header or WCS instance
-        algorithm : str
+        algorithm : `str`
             One of the supported `reproject` algorithms (see below)
+        return_footprint : `bool`
+            If ``True``, the footprint is returned in addition to the new map.
+            Defaults to ``False``.
 
         Returns
         -------
         outmap : `~sunpy.map.GenericMap`
             The reprojected map
+        footprint : `~numpy.ndarray`
+             Footprint of the input arary in the output array.  Values of 0 indicate no
+             coverage or valid values in the input image, while values of 1 indicate
+             valid values.  Intermediate values indicate partial coverage.
+             Only returned if ``return_footprint`` is ``True``.
 
         Notes
         -----
@@ -2627,8 +2638,8 @@ class GenericMap(NDData):
         """
         try:
             import reproject
-        except ImportError:
-            raise ImportError("This method requires the optional package `reproject`.")
+        except ImportError as exc:
+            raise ImportError("This method requires the optional package `reproject`.") from exc
 
         if not isinstance(target_wcs, astropy.wcs.WCS):
             target_wcs = astropy.wcs.WCS(target_wcs)
@@ -2641,21 +2652,21 @@ class GenericMap(NDData):
             raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
         func = functions[algorithm]
 
-        # Block the `return_footpoint` keyword argument from being passed on
-        if reproject_args.get('return_footprint', False):
-            log.warn("This method does not return the footprint, so `return_footprint` is ignored.")
-        reproject_args['return_footprint'] = False
-
         # reproject does not automatically grab the array shape from the WCS instance
         if target_wcs.array_shape is not None:
             reproject_args.setdefault('shape_out', target_wcs.array_shape)
 
         # Reproject the array
-        output_array = func(self, target_wcs, **reproject_args)
+        output_array = func(self, target_wcs, return_footprint=return_footprint, **reproject_args)
+        if return_footprint:
+            output_array, footprint = output_array
 
         # Create and return a new GenericMap
         outmap = GenericMap(output_array, target_wcs.to_header(),
                             plot_settings=self.plot_settings)
+
+        if return_footprint:
+            return outmap, footprint
         return outmap
 
 

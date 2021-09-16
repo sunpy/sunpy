@@ -1,6 +1,7 @@
 """
 Test the `GenericMap.reproject_to()` method
 """
+import numpy as np
 import pytest
 
 import astropy.units as u
@@ -71,6 +72,17 @@ def test_reproject_to_hpc_exact(aia171_test_map, hpc_header):
 @figure_test
 def test_reproject_to_hpc_adaptive(aia171_test_map, hpc_header):
     aia171_test_map.reproject_to(hpc_header, algorithm='adaptive').plot()
+
+
+def test_return_footprint(aia171_test_map, hpc_header):
+    pytest.importorskip("reproject")
+    return_without_footprint = aia171_test_map.reproject_to(hpc_header)
+    assert isinstance(return_without_footprint, sunpy.map.GenericMap)
+
+    return_with_footprint = aia171_test_map.reproject_to(hpc_header, return_footprint=True)
+    assert len(return_with_footprint) == 2
+    assert isinstance(return_with_footprint[0], sunpy.map.GenericMap)
+    assert isinstance(return_with_footprint[1], np.ndarray)
 
 
 def test_invalid_inputs(aia171_test_map, hpc_header):
