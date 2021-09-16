@@ -8,6 +8,9 @@ How to apply differential rotation to a Map.
 .. note::
    This example requires `reproject` 0.6 or later to be installed.
 
+The example uses the :func:`~sunpy.coordinates.propagate_with_solar_surface`
+context manager to apply differential rotation during coordinate
+transformations.
 """
 import matplotlib.pyplot as plt
 from reproject import reproject_interp

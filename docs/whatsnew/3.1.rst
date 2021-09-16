@@ -13,6 +13,7 @@ The SunPy project is pleased to announce the 3.1 release of the sunpy package.
 On this page, you can read about some of the big changes in this release:
 
 * :ref:`whatsnew-3.1-python`
+* :ref:`whatsnew-3.1-diffrot-context`
 
 SunPy 3.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
@@ -80,6 +81,18 @@ are not written to provide valid results for times before 1972-01-01.
 
 This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch
 is 12 years earlier.
+
+.. _whatsnew-3.1-diffrot-context:
+
+Propagating solar-surface coordinates in time
+=============================================
+
+There is now an easy-to-use context manager (:func:`~sunpy.coordinates.propagate_with_solar_surface`) to enable coordinate transformations to take solar rotation into account.
+Normally, a coordinate refers to a point in inertial space, so transforming it to a different observation time does not move the point at all.
+Under this context manager, a coordinate will be treated as if it were referring to a point on the solar surface.
+Coordinate transformations with a change in observation time will automatically rotate the point in heliographic longitude for the time difference, with the amount of rotation depending on the specified differential-rotation model.
+
+.. minigallery:: sunpy.coordinates.propagate_with_solar_surface
 
 Contributors to this Release
 ============================

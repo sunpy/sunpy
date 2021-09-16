@@ -135,7 +135,7 @@ def transform_with_sun_center():
         old_ignore_sun_motion = _ignore_sun_motion  # nominally False
 
         if not old_ignore_sun_motion:
-            log.debug("Ignore the motion of the center of the Sun for transformations")
+            log.debug("Ignoring the motion of the center of the Sun for transformations")
         _ignore_sun_motion = True
         yield
     finally:
@@ -215,13 +215,13 @@ def propagate_with_solar_surface(rotation_model='howard'):
 
             old_autoapply_diffrot = _autoapply_diffrot  # nominally False
 
-            log.debug("Enable automatic solar differential rotation "
+            log.debug("Enabling automatic solar differential rotation "
                       f"('{rotation_model}') for any changes in obstime")
             _autoapply_diffrot = rotation_model
             yield
         finally:
             if not old_autoapply_diffrot:
-                log.debug("Disable automatic solar differential rotation "
+                log.debug("Disabling automatic solar differential rotation "
                           "for any changes in obstime")
             _autoapply_diffrot = old_autoapply_diffrot
 
