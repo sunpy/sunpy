@@ -161,11 +161,11 @@ def write(fname, data, header, hdu_type=None, **kwargs):
         n-dimensional data array.
     header : `dict`
         A header dictionary.
-    hdu_type : type or `~astropy.io.fits.CompImageHDU`, optional
-        By default, a normal FITS file is written.
-        `~astropy.io.fits.CompImageHDU` will Rice compress the FITS file.
+    hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
+        By default, a FITS file is written with the map in its primary HDU.
         If a type is given, a new HDU of this type will be created.
-        If a HDU instance is given, its data and header will be updated.
+        If a HDU instance is given, its data and header will be updated from the map.
+        Then that HDU instance will be written to the file.
     kwargs :
         Additional keyword arguments are given to
         `~astropy.io.fits.HDUList.writeto`.
@@ -185,10 +185,8 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     if not hdu_type:
         hdu_type = fits.PrimaryHDU
 
-    if isinstance(hdu_type, type):
-        hdu = hdu_type(data=data, header=fits_header)
-    else:  # HDU already initialised
-        hdu = hdu_type
+    if isinstance(hdu_type, (fits.PrimaryHDU, fits.hdu.base.ExtensionHDU)):
+        hdu = hdu_type  # HDU already initialised
 
         # Merge `header` into HDU's header
         # Values in `header` take priority, including cards such as
@@ -199,6 +197,8 @@ def write(fname, data, header, hdu_type=None, **kwargs):
         if hdu.data is not None:
             raise ValueError('`hdu_type` must not contain data')
         hdu.data = data
+    else:
+        hdu = hdu_type(data=data, header=fits_header)
 
     if not isinstance(hdu, fits.PrimaryHDU):
         hdul = fits.HDUList([fits.PrimaryHDU(), hdu])
