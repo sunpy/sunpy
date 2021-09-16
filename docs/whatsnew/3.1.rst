@@ -13,6 +13,7 @@ The SunPy project is pleased to announce the 3.1 release of the sunpy package.
 On this page, you can read about some of the big changes in this release:
 
 * :ref:`whatsnew-3.1-python`
+* :ref:`whatsnew-3.1-map-datetime`
 * :ref:`whatsnew-3.1-diffrot-context`
 
 SunPy 3.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
@@ -36,7 +37,7 @@ We have bumped the minimum version of several packages we depend on; these are t
 - astropy >= 4.2
 - numpy >= 1.17.0
 
-.. _whatsnew-3.1-contributors:
+.. _whatsnew-3.1-map-datetime:
 
 Changes to map date/time handling
 =================================
@@ -93,6 +94,8 @@ Under this context manager, a coordinate will be treated as if it were referring
 Coordinate transformations with a change in observation time will automatically rotate the point in heliographic longitude for the time difference, with the amount of rotation depending on the specified differential-rotation model.
 
 .. minigallery:: sunpy.coordinates.propagate_with_solar_surface
+
+.. _whatsnew-3.1-contributors:
 
 Contributors to this Release
 ============================
