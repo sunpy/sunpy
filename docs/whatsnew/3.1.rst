@@ -15,6 +15,7 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-3.1-python`
 * :ref:`whatsnew-3.1-map-datetime`
 * :ref:`whatsnew-3.1-diffrot-context`
+* :ref:`whatsnew-3.1-reproject-to`
 
 SunPy 3.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
@@ -101,6 +102,17 @@ Under this context manager, a coordinate will be treated as if it were referring
 Coordinate transformations with a change in observation time will automatically rotate the point in heliographic longitude for the time difference, with the amount of rotation depending on the specified differential-rotation model.
 
 .. minigallery:: sunpy.coordinates.propagate_with_solar_surface
+
+.. _whatsnew-3.1-reproject-to:
+
+Convenient reprojection of maps
+===============================
+
+`~sunpy.map.Map` objects now have the :meth:`~sunpy.map.GenericMap.reproject_to` method to easily reproject the map to a new WCS.
+The returned map will be of type `~sunpy.map.GenericMap`, with no metadata preserved from the original map, so copy over any desired metadata from the original map.
+This method requires the optional package `reproject` to be installed.
+
+.. minigallery:: sunpy.map.GenericMap.reproject_to
 
 .. _whatsnew-3.1-contributors:
 
