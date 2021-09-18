@@ -22,8 +22,8 @@ from sunpy.sun.constants import sidereal_rotation_rate
 
 ##############################################################################
 # First, we use an AIA observation primarily as a pretty background.  We also
-# define a coordinate rectangle with zero width in the longitude direction to
-# represent the meridian.
+# define the meridian using a two-element coordinate array of the south pole
+# and the north pole at zero longitude.
 
 aiamap = sunpy.map.Map(AIA_335_IMAGE)
 meridian = SkyCoord(0*u.deg, [-90, 90]*u.deg, frame=HeliographicStonyhurst,
@@ -54,8 +54,13 @@ for model in ['howard', 'snodgrass', 'allen', 'rigid']:
                                                        rotation_model=model))
 
 ##############################################################################
-# Plot all four differential-rotated meridians over the original plot.  Note
-# that the "rigid" model appears as the meridian again as expected for a
+# Plot all four differential-rotated meridians over the original plot.  To
+# plot each meridian, we use :meth:`~sunpy.map.GenericMap.draw_quadrangle` to
+# follow a line of constant longitude in the original frame.  (If one were to
+# instead use :meth:`astropy.visualization.wcsaxes.WCSAxes.plot_coord`,
+# ``meridian`` would need to include points at intermediate latitudes between
+# the two poles to render as desired.)
+# Note that the "rigid" model appears as the meridian again as expected for a
 # rotation of exactly one sidereal period.
 
 aiamap.plot(clip_interval=(0.5, 99.9)*u.percent)
