@@ -1,4 +1,4 @@
-SunPy visualization
+sunpy visualization
 *******************
 
 `sunpy.visualization` contains plotting helpers and functions.

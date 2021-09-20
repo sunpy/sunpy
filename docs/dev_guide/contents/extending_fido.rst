@@ -191,7 +191,7 @@ An Example of ``AttrWalker``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In this example we will write a parser for some simple queries which uses `~sunpy.net.attr.AttrWalker` to convert the query to a `dict` of URL query parameters for a HTTP GET request.
-Let's imagine we have a web service which you can do a HTTP GET request to ``https://sfsi.sunpy.org/search`` for some imaginary data from an instrument called SFSI (SunPy Fake Solar Instrument).
+Let's imagine we have a web service which you can do a HTTP GET request to ``https://sfsi.sunpy.org/search`` for some imaginary data from an instrument called SFSI (Sunpy Fake Solar Instrument).
 This GET request takes three query parameters ``startTime``, ``endTime`` and ``level``, so a request might look something like: ``https://sfsi.sunpy.org/search?startTime=2020-01-02T00:00:00&endTime=2020-01-02T00:00:00&level=1``.
 Which would search for level one data between 2020-01-01 and 2020-01-02.
 
@@ -243,7 +243,7 @@ Obviously, most clients would want to support more attrs than these two, and thi
 Adding "Attrs" to Registry
 ##########################
 
-Registering of "attrs" ensures discoverability of search attributes supported by the corresponding SunPy Client.
+Registering of "attrs" ensures discoverability of search attributes supported by the corresponding sunpy Client.
 For adding them to the Registry, we need to define a ``classmethod`` :meth:`~sunpy.net.base_client.BaseClient.register_values` that returns a dictionary of registered values.
 This dictionary should have `~sunpy.net.attr.Attr` classes as keys and a list of tuples corresponding to that key representing the possible values the key "attr" can take.
 Each tuple comprises of two elements.

@@ -1,8 +1,8 @@
 *******************
-Data Types in SunPy
+Data Types in sunpy
 *******************
 
-In this section of the guide we introduce the parts of SunPy used to load and
+In this section of the guide we introduce the parts of sunpy used to load and
 represent solar data.
 
 .. toctree::

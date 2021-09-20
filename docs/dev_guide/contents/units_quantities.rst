@@ -8,7 +8,7 @@ Use of quantities and units
 
 Much code perform calculations using physical quantities.
 SunPy uses astropy's `quantities and units <https://docs.astropy.org/en/stable/units/index.html>`_ implementation to store, express and convert physical quantities.
-New classes and functions should adhere to SunPy's `quantity and unit usage guidelines
+New classes and functions should adhere to the SunPy project's `quantity and unit usage guidelines
 <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`_.
 
 This document sets out SunPy's reasons and requirements for the usage of quantities and units.

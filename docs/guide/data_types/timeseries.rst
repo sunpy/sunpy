@@ -52,7 +52,7 @@ csv) and formats, and so it is not always possible to detect the source. For
 this reason, it is good practice to explicitly state the source for the file.
 sunpy ships with a number of known instrumental sources.  If you would like
 sunpy to include another instrumental source please follow the
-`SunPy contribution guide <https://sunpy.org/contribute>`__.
+`sunpy contribution guide <https://sunpy.org/contribute>`__.
 The `~sunpy.timeseries.TimeSeries` factory has the ability to make a list of
 TimeSeries objects using a list of filepaths, a folder or a glob, for example: ::
 

@@ -1,8 +1,8 @@
 ***********************************
-Querying Helioviewer.org with SunPy
+Querying Helioviewer.org with sunpy
 ***********************************
 
-SunPy can be used to make several basic requests using the The `Helioviewer.org API <https://api.helioviewer.org/docs/v2/>`_ including generating a PNG screenshot and downloading a `JPEG 2000 <https://wiki.helioviewer.org/wiki/JPEG_2000>`_ image.
+sunpy can be used to make several basic requests using the The `Helioviewer.org API <https://api.helioviewer.org/docs/v2/>`_ including generating a PNG screenshot and downloading a `JPEG 2000 <https://wiki.helioviewer.org/wiki/JPEG_2000>`_ image.
 
 As you can get JPEG 2000 images, you will need two other pieces of software in order to open them in Python.
 The first is OpenJPEG which is an open source library for reading and writing JPEG2000 files.
@@ -84,7 +84,7 @@ Since this is a JPEG 2000 image, to plot this image you can either call Glymur d
    >>> import glymur # doctest: +SKIP
    >>> im = glymur.Jp2k(file)[:]  # doctest: +SKIP
 
-The better method is to load the image into a SunPy Map object::
+The better method is to load the image into a sunpy Map object::
 
    >>> from sunpy.map import Map
    >>> aia = Map(file)  # doctest: +SKIP
@@ -92,7 +92,7 @@ The better method is to load the image into a SunPy Map object::
 
 .. image:: helioviewer-1.png
 
-The SunPy Map selects a color table based on the JPEG 2000 image meta data for plotting.
+The sunpy Map selects a color table based on the JPEG 2000 image meta data for plotting.
 This will be the color table that is used by the Helioviewer Project to display JPEG 2000 images in their own clients.
 
 In this example we will query Helioviewer for the relevant JPEG 2000 file closest to the input time, for a SDO/HMI continuum image and crop to focus on an active region::

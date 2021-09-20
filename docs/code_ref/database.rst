@@ -1,7 +1,7 @@
-SunPy database
+sunpy database
 **************
 
-The database submodule can be used to provide a local cache of the files and
+``sunpy.database`` can be used to provide a local cache of the files and
 records retrieved from various remote services. For an introduction to the
 database see :ref:`database_guide`.
 

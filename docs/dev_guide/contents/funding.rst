@@ -6,7 +6,7 @@
 Submodule and funding
 *********************
 
-Here we list whatever parts of SunPy have been funded by external sources such as Grants or Google Summer of Code (GSoC) and the like.
+Here we list whatever parts of the SunPy project have been funded by external sources such as grants or Google Summer of Code (GSoC) and the like.
 
 Database
 ========

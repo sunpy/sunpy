@@ -1,7 +1,7 @@
-SunPy physics
+sunpy physics
 *************
 
-The physics submodule contains routines to calculate various physical parameters
+``sunpy.physics`` contains routines to calculate various physical parameters
 and models for the Sun.
 
 .. automodapi:: sunpy.physics

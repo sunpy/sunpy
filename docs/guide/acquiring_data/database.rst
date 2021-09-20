@@ -431,7 +431,7 @@ for more information.
 
 4. Removing entries
 *******************
-`Database.remove()` can be used to remove database entries from the SunPy
+`Database.remove()` can be used to remove database entries from the sunpy
 database. It takes a ``tables.DatabaseEntry`` object as argument.
 
 For example, imagine we want to only have database entries which have an
