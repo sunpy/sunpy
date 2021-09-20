@@ -388,11 +388,15 @@ class CompositeMap:
 
         Notes
         -----
-        Matplotlib arguments for setting the line width (``linewidths``), line style
-        (``linestyles``) or line color (``colors``) will apply only to those maps
-        that are plotted as contours. Similar arguments (i.e., ``linewidth``,
-        ``lw``, ``color``, ``c``, ``linestyle`` and ``ls``) will also be ignored
-        for maps plotted as images.
+        Images are plotted using either `~matplotlib.axes.Axes.imshow` or
+        `~matplotlib.axes.Axes.pcolormesh`, and contours are plotted using
+        `~matplotlib.axes.Axes.contour`.
+        The Matplotlib arguments accepted by the plotting method are passed to it.
+        If any Matplotlib arguments are not used by any plotting method,
+        a ``TypeError`` will be raised.
+        For the full list of arguments accepted by each plotting method see
+        ``ACCEPTED_IMSHOW_KWARGS``, ``ACCEPTED_PCOLORMESH_KWARGS``
+        and ``ACCEPTED_CONTOUR_KWARGS``.
 
         If a transformation is required to overlay the maps with the correct
         alignment, the plot limits may need to be manually set because
@@ -410,6 +414,9 @@ class CompositeMap:
                                                    self._maps[0].spatial_units[1]))
             axes.set_title(title)
 
+        # Checklist to determine unused keywords in `matplot_args`
+        unused_kwargs = set(matplot_args.keys())
+
         # Define a list of plotted objects
         ret = []
         # Plot layers of composite map
@@ -424,25 +431,38 @@ class CompositeMap:
             # The request to show a map layer rendered as a contour is indicated by a
             # non False levels property.
             if m.levels is False:
-                # Check if any linewidth, color, or linestyle arguments are provided,
-                # if so, then delete them from params.
-                for item in ['linewidth', 'linewidths', 'lw',
-                             'color', 'colors', 'c',
-                             'linestyle', 'linestyles', 'ls']:
-                    if item in matplot_args:
-                        del params[item]
-
                 # We tell GenericMap.plot() that we need to autoalign the map
                 if wcsaxes_compat.is_wcsaxes(axes):
                     params['autoalign'] = True
 
+                # Filter `matplot_args`
+                if params.get('autoalign', None) in (True, 'pcolormesh'):
+                    accepted_kwargs = ACCEPTED_PCOLORMESH_KWARGS
+                else:
+                    accepted_kwargs = ACCEPTED_IMSHOW_KWARGS
+                for item in matplot_args.keys():
+                    if item not in accepted_kwargs:
+                        del params[item]
+                    else:  # mark as used
+                        unused_kwargs -= {item}
+
                 params['annotate'] = False
                 ret.append(m.plot(**params))
             else:
+                # Filter `matplot_args`
+                for item in matplot_args.keys():
+                    if item not in ACCEPTED_CONTOUR_KWARGS:
+                        del params[item]
+                    else:  # mark as used
+                        unused_kwargs -= {item}
+
                 ret.append(m.draw_contours(m.levels, **params))
 
                 # Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
+
+        if len(unused_kwargs) > 0:
+            raise TypeError(f'plot() got unexpected keyword arguments {unused_kwargs}')
 
         # Adjust axes extents to include all data
         axes.axis('image')
