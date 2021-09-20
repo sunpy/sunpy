@@ -3,17 +3,34 @@
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 import matplotlib.pyplot as plt
+from matplotlib.image import AxesImage, _ImageBase
+from matplotlib.contour import ContourSet, QuadContourSet
+from matplotlib.collections import QuadMesh, Collection
 
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.util import expand_list
+from sunpy.util import expand_list, get_keywords, get_set_methods
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 __all__ = ['CompositeMap']
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
+
+# Valid keyword arguments for each plotting method
+VALID_IMSHOW_KWARGS = ACCEPTED_IMSHOW_KWARGS = get_keywords(
+    [GenericMap.plot, plt.Axes.imshow, AxesImage.__init__, _ImageBase.__init__]
+) | get_set_methods(AxesImage)
+
+VALID_PCOLORMESH_KWARGS = get_keywords(
+    [GenericMap.plot, plt.Axes.pcolormesh, QuadMesh.__init__, Collection.__init__]
+) | get_set_methods(QuadMesh)
+ACCEPTED_PCOLORMESH_KWARGS = VALID_PCOLORMESH_KWARGS - {'linewidths', 'linestyles'}
+
+VALID_CONTOUR_KWARGS = ACCEPTED_CONTOUR_KWARGS = get_keywords(
+    [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args]
+)
 
 
 class CompositeMap:
