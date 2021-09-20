@@ -45,6 +45,7 @@ print(downloaded_files)
 maps = {m.detector: m.submap(SkyCoord([-1100, 1100], [-1100, 1100],
                                       unit=u.arcsec, frame=m.coordinate_frame))
         for m in sunpy.map.Map(downloaded_files)}
+maps['AIA'].plot_settings['vmin'] = 0  # set the minimum plotted pixel value
 
 ##############################################################################
 # Now, let's plot both maps, and we draw the limb as seen by AIA onto the
@@ -62,22 +63,27 @@ visible, hidden = maps['AIA'].draw_limb()
 hidden.remove()
 
 ##############################################################################
-# Let's also plot the helioprojective coordinate grid as seen by SDO on the
-# STEREO image.
+# Let's plot the helioprojective coordinate grid as seen by SDO on the STEREO
+# image in a cropped view.  Note that only those grid lines that intersect the
+# edge of the plot will have corresponding ticks and tick labels.
 
 fig = plt.figure()
 ax = plt.subplot(projection=maps['EUVI'])
 
 maps['EUVI'].plot()
 
-# Move the title so it does not clash with the extra labels.
-tx, ty = ax.title.get_position()
-ax.title.set_position([tx, ty + 0.08])
+# Crop the view
+ax.set_xlim(500, 1300)
+ax.set_ylim(100, 900)
 
-# Change the default grid labels.
+# Move the title so it does not clash with the extra labels.
+ax.set_title(ax.get_title(), pad=72)
+
+# Change the default grid labels and line properties.
 stereo_x, stereo_y = ax.coords
 stereo_x.set_axislabel("Helioprojective Longitude (STEREO B) [arcsec]")
 stereo_y.set_axislabel("Helioprojective Latitude (STEREO B) [arcsec]")
+ax.coords.grid(color='white', linewidth=1)
 
 # Add a new coordinate overlay in the SDO frame.
 overlay = ax.get_coords_overlay(maps['AIA'].coordinate_frame)
@@ -86,12 +92,16 @@ overlay.grid()
 # Configure the grid:
 x, y = overlay
 
+# Wrap the longitude at 180 deg rather than the default 360.
+x.set_coord_type('longitude', 180.)
+
+# Set the tick spacing
+x.set_ticks(spacing=250*u.arcsec)
+y.set_ticks(spacing=250*u.arcsec)
+
 # Set the ticks to be on the top and left axes.
 x.set_ticks_position('tr')
 y.set_ticks_position('tr')
-
-# Wrap the longitude at 180 deg rather than the default 360.
-x.set_coord_type('longitude', 180.)
 
 # Change the defaults to arcseconds
 x.set_major_formatter('s.s')
