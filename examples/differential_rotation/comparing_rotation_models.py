@@ -54,12 +54,12 @@ for model in ['howard', 'snodgrass', 'allen', 'rigid']:
                                                        rotation_model=model))
 
 ##############################################################################
-# Plot all four differential-rotated meridians over the original plot.  To
-# plot each meridian, we use :meth:`~sunpy.map.GenericMap.draw_quadrangle` to
-# follow a line of constant longitude in the original frame.  (If one were to
-# instead use :meth:`astropy.visualization.wcsaxes.WCSAxes.plot_coord`,
-# ``meridian`` would need to include points at intermediate latitudes between
-# the two poles to render as desired.)
+# Finally, we plot the differentially rotated meridians over the map, using
+# :meth:`~sunpy.map.GenericMap.draw_quadrangle` to conveniently draw a line
+# of constant longitude in the original frame between two endpoints.  (One
+# could instead use :meth:`astropy.visualization.wcsaxes.WCSAxes.plot_coord`,
+# but then ``meridian`` would need to consist of a sequence of many points
+# spanning all latitudes between the two poles to render as desired.)
 # Note that the "rigid" model appears as the meridian again as expected for a
 # rotation of exactly one sidereal period.
 
