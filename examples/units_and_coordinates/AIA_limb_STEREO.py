@@ -17,18 +17,17 @@ import sunpy.map
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-##############################################################################
-# The first step is to download some data, we are going to get an image from
-# early 2011 when the STEREO spacecraft were roughly 90 deg separated from the
-# Earth.
+###############################################################################
+# The first step is to download some data. We download an image from STEREO-A
+# and an image from SDO, which are separated in longitude.
 
-stereo = (a.Source('STEREO_B') &
+stereo = (a.Source('STEREO_A') &
           a.Instrument("EUVI") &
-          a.Time('2011-01-01', '2011-01-01T00:10:00'))
+          a.Time('2021-01-01', '2021-01-01T00:10:00'))
 
 aia = (a.Instrument.aia &
        a.Sample(24 * u.hour) &
-       a.Time('2011-01-01', '2011-01-02'))
+       a.Time('2021-01-01', '2021-01-02'))
 
 wave = a.Wavelength(30 * u.nm, 31 * u.nm)
 result = Fido.search(wave, aia | stereo)
