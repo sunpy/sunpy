@@ -1,11 +1,11 @@
 ************************
-Using SunPy's HEK module
+Using sunpy's HEK module
 ************************
 
 The Heliophysics Event Knowledgebase (HEK) is a repository of feature
 and event information about the Sun.
 Entries are generated both by automated algorithms and human observers.
-SunPy accesses this information through the `~sunpy.net.hek` module, which was developed through support from the European Space Agency Summer of Code in Space (ESA-SOCIS) 2011.
+sunpy accesses this information through the `~sunpy.net.hek` module, which was developed through support from the European Space Agency Summer of Code in Space (ESA-SOCIS) 2011.
 
 A simple query
 **************

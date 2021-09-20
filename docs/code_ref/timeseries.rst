@@ -1,11 +1,11 @@
 .. _timeseries_code_ref:
 
-SunPy timeseries
+sunpy timeseries
 ****************
 
 Overview
 ========
-One of the core classes in SunPy is a timeseries. A number of instruments
+One of the core classes in sunpy is a timeseries. A number of instruments
 are supported through subclasses of the base `~sunpy.timeseries.GenericTimeSeries` class.
 To see :ref:`ts-sources` for a list of all of them.
 

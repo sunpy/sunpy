@@ -10,8 +10,8 @@ Developer's Guide
 
 {% if is_development %}
 
-This article describes the guidelines to be followed by developers working on SunPy.
-If you are thinking of contributing to SunPy please read the following carefully.
+This article describes the guidelines to be followed by developers working on sunpy.
+If you are thinking of contributing to sunpy please read the following carefully.
 
 We currently recommend the :ref:`newcomers` as the place to start.
 This goes over the basics and has links to useful tutorials on git.

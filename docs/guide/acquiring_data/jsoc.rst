@@ -6,7 +6,7 @@ Joint Science Operations Center (JSOC) contains data products from the Solar Dyn
 as well as certain other missions and instruments. These data are available from the JSOC database,
 which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`_.
 
-SunPy's JSOC Client provides an easier interface to query for JSOC data and make export requests.
+sunpy's JSOC Client provides an easier interface to query for JSOC data and make export requests.
 It uses `drms module <https://docs.sunpy.org/projects/drms>`_ as its backend, and exposes a similar API as
 the VSO Client.
 
@@ -26,7 +26,7 @@ staged for download and then you can download them. Fido combines the stages int
 Setup
 *****
 
-SunPy's Fido module is in `sunpy.net`. It can be imported as follows:
+sunpy's Fido module is in `sunpy.net`. It can be imported as follows:
 
     >>> from sunpy.net import Fido, attrs as a
 
@@ -108,7 +108,7 @@ variable set to the Fido search, in this case, res::
 Now, let's break down the arguments of ``Fido.search`` to understand
 better what we've done.  The first argument ``a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00')``
 sets the start and end times for the query (any date/time
-format understood by SunPy's :ref:`parse_time function <parse-time>`
+format understood by sunpy's :ref:`parse_time function <parse-time>`
 can be used to specify dates and time). The Time attribute takes UTC time,
 as default. If you need to pass a Time in some other time scale, such as TAI,
 pass an Astropy Time object, like::
@@ -525,7 +525,7 @@ allowing a greater control over the whole process.
 Setup
 =====
 
-SunPy's JSOC module is in `~sunpy.net`.  It can be imported as follows::
+sunpy's JSOC module is in `~sunpy.net`.  It can be imported as follows::
 
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA

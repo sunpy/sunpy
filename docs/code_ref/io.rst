@@ -1,7 +1,7 @@
-SunPy IO
+sunpy IO
 ********
 
-This submodule contains two types of routines, the first reads (data, header)
+``sunpy.io`` contains two types of routines, the first reads (data, header)
 pairs from files in a way similar to FITS files. The other is special readers
 for files that are commonly used in solar physics.
 
@@ -39,7 +39,7 @@ asdf (Advanced Scientific Data Format)
 
 `asdf <https://asdf.readthedocs.io/en/latest/>`__ is a modern file format
 designed to meet the needs of the astronomy community. It has deep integration
-with Python and SunPy and Astropy as well as implementations in other languages.
+with Python, SunPy, and Astropy, as well as implementations in other languages.
 It can be used to store known Python objects in a portable, well defined file
 format. It is primarily useful for storing complex Astropy and SunPy objects in
 a way that can be loaded back into the same form as they were saved.
@@ -48,7 +48,7 @@ sunpy currently implements support for saving `Map <sunpy.map.GenericMap>` and
 `coordinate frame <sunpy.coordinates.frames>` objects into asdf files. As asdf
 tightly integrates into Python, saving a map to an asdf file will save the
 metadata, data, mask and the shift. The mask and shift are not currently saved
-to FITS. The following code shows to to save and load a SunPy Map to an asdf
+to FITS. The following code shows to to save and load a sunpy Map to an asdf
 file
 
 .. doctest-requires:: asdf

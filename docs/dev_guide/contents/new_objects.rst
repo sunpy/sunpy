@@ -1,7 +1,7 @@
 .. _new_maps_ts_etc:
 
 ************************************************
-Creating new SunPy Subclasses (Maps, TimeSeries)
+Creating new sunpy Subclasses (Maps, TimeSeries)
 ************************************************
 
 Writing a new Instrument Map Class

@@ -8,7 +8,7 @@ This document describes the standards required for a pull request to sunpy and a
 
 Each pull request **must** meet the following criteria before it is considered for merge:
 
-* The code must be PEP 8 compliant and meet the ill-defined SunPy quality standards.
+* The code must be PEP 8 compliant and meet the ill-defined sunpy quality standards.
   We have these in the :ref:`coding-standards` page.
 
 * The PR must contain a changelog entry if it changes the behavior of any code.
@@ -163,18 +163,18 @@ SunPy owners
 The SunPy owners group is the group of people who have total control over the SunPy GitHub organization.
 The SunPy board have control over who is in this group, it has been decided that generally it will be the Lead Developer and the SunPy board chair and vice-chair.
 
-SunPy Maintainers
+sunpy Maintainers
 -----------------
 
-This is the group of people who have push access to the main SunPy repository.
+This is the group of people who have push access to the main sunpy repository.
 The membership of this group is at the discretion of the Lead Developer, but shall generally be made up of people who have demonstrated themselves to be trust worthy and active contributors to the project.
 
 This group has `subgroups <https://github.com/orgs/sunpy/teams/sunpy-maintainers/teams>`__ for each section of the repository that has `maintainers <https://sunpy.org/project/#maintainers>`__.
 The members of these groups will automatically be requested to review all PRs which change files in that subpackage.
 
-SunPy Developers
+sunpy Developers
 ----------------
 
-The members of this group have "read" access to the SunPy repository.
+The members of this group have "read" access to the sunpy repository.
 As all these repository are open anyway, what this effectively means is that these people can be assigned to issues.
-The members of this group are people who are involved in the development of SunPy at a good frequency, they are people who’s opinions have been demonstrated to be constructive and informative.
+The members of this group are people who are involved in the development of sunpy at a good frequency, they are people who’s opinions have been demonstrated to be constructive and informative.
