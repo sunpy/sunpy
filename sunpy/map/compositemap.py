@@ -19,16 +19,15 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 # Valid keyword arguments for each plotting method
-VALID_IMSHOW_KWARGS = ACCEPTED_IMSHOW_KWARGS = get_keywords(
+ACCEPTED_IMSHOW_KWARGS = get_keywords(
     [GenericMap.plot, plt.Axes.imshow, AxesImage.__init__, _ImageBase.__init__]
 ) | get_set_methods(AxesImage)
 
-VALID_PCOLORMESH_KWARGS = get_keywords(
+ACCEPTED_PCOLORMESH_KWARGS = (get_keywords(
     [GenericMap.plot, plt.Axes.pcolormesh, QuadMesh.__init__, Collection.__init__]
-) | get_set_methods(QuadMesh)
-ACCEPTED_PCOLORMESH_KWARGS = VALID_PCOLORMESH_KWARGS - {'linewidths', 'linestyles'}
+) | get_set_methods(QuadMesh)) - {'linewidths', 'linestyles'}
 
-VALID_CONTOUR_KWARGS = ACCEPTED_CONTOUR_KWARGS = get_keywords(
+ACCEPTED_CONTOUR_KWARGS = get_keywords(
     [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args]
 )
 
