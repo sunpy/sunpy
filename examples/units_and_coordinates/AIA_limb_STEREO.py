@@ -23,11 +23,11 @@ from sunpy.net import attrs as a
 
 stereo = (a.Source('STEREO_A') &
           a.Instrument("EUVI") &
-          a.Time('2021-01-01', '2021-01-01T00:10:00'))
+          a.Time('2021-01-01 00:06', '2021-01-01 00:07'))
 
 aia = (a.Instrument.aia &
        a.Sample(24 * u.hour) &
-       a.Time('2021-01-01', '2021-01-02'))
+       a.Time('2021-01-01 00:06', '2021-01-02 00:06'))
 
 wave = a.Wavelength(30 * u.nm, 31 * u.nm)
 result = Fido.search(wave, aia | stereo)
