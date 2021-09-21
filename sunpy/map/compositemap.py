@@ -3,9 +3,9 @@
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 import matplotlib.pyplot as plt
-from matplotlib.image import AxesImage, _ImageBase
+from matplotlib.collections import Collection, QuadMesh
 from matplotlib.contour import ContourSet, QuadContourSet
-from matplotlib.collections import QuadMesh, Collection
+from matplotlib.image import AxesImage, _ImageBase
 
 import astropy.units as u
 
