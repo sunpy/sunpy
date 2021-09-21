@@ -17,6 +17,7 @@ import sunpy.coordinates
 import sunpy.map
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+from sunpy.sun import constants
 
 ###############################################################################
 # The first step is to download some data. We download an image from STEREO-A
@@ -47,6 +48,15 @@ maps = {m.detector: m.submap(SkyCoord([-1100, 1100]*u.arcsec,
         for m in sunpy.map.Map(files)}
 maps['AIA'].plot_settings['vmin'] = 0  # set the minimum plotted pixel value
 
+
+###############################################################################
+# We will be transforming coordinates where the formation height of 304 A
+# emission makes a difference, so we set the reference solar radius to 4 Mm
+# above the solar surface (see Alissandrakis 2019).
+
+for m in maps.values():
+    m.meta['rsun_ref'] = (constants.radius + 4*u.Mm).to_value('m')
+
 ###############################################################################
 # Plot both maps.
 
@@ -74,23 +84,24 @@ maps['AIA'].plot(axes=ax)
 maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right)
 
 ###############################################################################
-# Create a submap of this area and draw a circle around a feature.
+# Create a submap of this area and draw an X at a specific feature of interest.
 
 subaia = maps['AIA'].submap(aia_bottom_left, top_right=aia_top_right)
 fig = plt.figure()
 ax = fig.add_subplot(projection=subaia)
 subaia.plot()
 
-feature_aia = SkyCoord(-700 * u.arcsec,
-                       -149 * u.arcsec,
+feature_aia = SkyCoord(-706 * u.arcsec,
+                       -181 * u.arcsec,
                        frame=maps['AIA'].coordinate_frame)
-ax.plot_coord(feature_aia, 'bo', fillstyle='none', markersize=20)
+ax.plot_coord(feature_aia, 'bx', fillstyle='none', markersize=20)
 
 ###############################################################################
 # We can transform the coordinate of the feature to see its representation as
 # seen by STEREO EUVI.  The original coordinate did not contain a distance from
-# the observer, so it is converted to a 3D coordinate assuming that it lies on
-# the solar surface.
+# the observer, so it is converted to a 3D coordinate assuming that it has a
+# radius from Sun center equal to the reference solar radius of the coordinate
+# frame, which we set earlier to be the formation height of 304 A emission.
 
 print(feature_aia.transform_to(maps['EUVI'].coordinate_frame))
 
@@ -111,22 +122,22 @@ maps['EUVI'].plot(axes=ax2)
 maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right, axes=ax2)
 
 ###############################################################################
-# We can now zoom in on the region in the EUVI image, and we also draw a circle
-# around the feature marked earlier.  We do not need to explicitly transform
-# the feature coordinate to the matching coordinate frame; that is performed
+# We can now zoom in on the region in the EUVI image, and we also draw an X
+# at the feature marked earlier.  We do not need to explicitly transform the
+# feature coordinate to the matching coordinate frame; that is performed
 # automatically by :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord`.
 
 fig = plt.figure(figsize=(15, 5))
 
 ax1 = fig.add_subplot(1, 2, 1, projection=subaia)
 subaia.plot(axes=ax1)
-ax1.plot_coord(feature_aia, 'bo', fillstyle='none', markersize=20)
+ax1.plot_coord(feature_aia, 'bx', fillstyle='none', markersize=20)
 
 subeuvi = maps['EUVI'].submap(aia_bottom_left, top_right=aia_top_right)
 
 ax2 = fig.add_subplot(1, 2, 2, projection=subeuvi)
 subeuvi.plot(axes=ax2)
 maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right, axes=ax2)
-ax2.plot_coord(feature_aia, 'bo', fillstyle='none', markersize=20)
+ax2.plot_coord(feature_aia, 'bx', fillstyle='none', markersize=20)
 
 plt.show()
