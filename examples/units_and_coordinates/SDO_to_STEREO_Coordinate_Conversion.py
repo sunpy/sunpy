@@ -52,7 +52,8 @@ maps['AIA'].plot_settings['vmin'] = 0  # set the minimum plotted pixel value
 ###############################################################################
 # We will be transforming coordinates where the formation height of 304 A
 # emission makes a difference, so we set the reference solar radius to 4 Mm
-# above the solar surface (see Alissandrakis 2019).
+# above the solar surface (see `Alissandrakis 2019
+# <https://doi.org/10.1007/s11207-019-1552-1>`__).
 
 for m in maps.values():
     m.meta['rsun_ref'] = (constants.radius + 4*u.Mm).to_value('m')
