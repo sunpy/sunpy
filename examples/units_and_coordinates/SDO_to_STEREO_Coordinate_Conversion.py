@@ -6,6 +6,8 @@ AIA to STEREO coordinate conversion
 How to convert a point of a source on an AIA image
 to a position on a STEREO image.
 """
+# sphinx_gallery_thumbnail_number = 5
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u
@@ -22,10 +24,10 @@ from sunpy.net import attrs as a
 
 stereo = (a.Source('STEREO_A') &
           a.Instrument("EUVI") &
-          a.Time('2021-01-01', '2021-01-01T00:10:00'))
+          a.Time('2021-01-01 00:06', '2021-01-01 00:07'))
 aia = (a.Instrument.aia &
        a.Sample(24 * u.hour) &
-       a.Time('2021-01-01', '2021-01-02'))
+       a.Time('2021-01-01 00:06', '2021-01-02 00:06'))
 wave = a.Wavelength(30 * u.nm, 31 * u.nm)
 res = Fido.search(wave, aia | stereo)
 print(res)
@@ -80,7 +82,7 @@ ax = fig.add_subplot(projection=subaia)
 subaia.plot()
 
 feature_aia = SkyCoord(-700 * u.arcsec,
-                       -150 * u.arcsec,
+                       -149 * u.arcsec,
                        frame=maps['AIA'].coordinate_frame)
 ax.plot_coord(feature_aia, 'bo', fillstyle='none', markersize=20)
 
@@ -111,8 +113,8 @@ maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right, axes=ax2)
 ###############################################################################
 # We can now zoom in on the region in the EUVI image, and we also draw a circle
 # around the feature marked earlier.  We do not need to explicitly transform
-# the feature coordinate to the matching coordinate frame; that is taken care
-# of automatically.
+# the feature coordinate to the matching coordinate frame; that is performed
+# automatically by :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord`.
 
 fig = plt.figure(figsize=(15, 5))
 
