@@ -72,7 +72,7 @@ ax = plt.subplot(projection=maps['EUVI'])
 
 maps['EUVI'].plot()
 
-# Crop the view
+# Crop the view using pixel coordinates
 ax.set_xlim(500, 1300)
 ax.set_ylim(100, 900)
 
