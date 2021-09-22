@@ -76,8 +76,9 @@ maps['EUVI'].plot()
 ax.set_xlim(500, 1300)
 ax.set_ylim(100, 900)
 
-# Move the title so it does not clash with the extra labels.
-ax.set_title(ax.get_title(), pad=72)
+# Shrink the plot slightly and move the title up to make room for new labels.
+ax.set_position([0.1, 0.1, 0.8, 0.7])
+ax.set_title(ax.get_title(), pad=45)
 
 # Change the default grid labels and line properties.
 stereo_x, stereo_y = ax.coords
