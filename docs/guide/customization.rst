@@ -1,7 +1,7 @@
 .. _customizing-sunpy:
 
 *****************
-Customizing SunPy
+Customizing sunpy
 *****************
 
 .. _customizing-with-sunpyrc-files:
@@ -9,9 +9,9 @@ Customizing SunPy
 The :file:`sunpyrc` file
 ========================
 
-Sunpy uses a :file:`sunpyrc` configuration file to customize certain
-properties. You can control a number of key features of SunPy such as
-where your data will download to. SunPy looks for the ``sunpyrc`` file
+The sunpy core package uses a :file:`sunpyrc` configuration file to customize
+certain properties. You can control a number of key features of sunpy such as
+where your data will download to. sunpy looks for the ``sunpyrc`` file
 in a platform specific directory, which you can see the path for by running::
 
   >>> import sunpy
@@ -46,7 +46,7 @@ in a platform specific directory, which you can see the path for by running::
 To maintain your own customizations place a copy of the default sunpyrc file
 into the *first* path printed above.
 You can use `sunpy.util.config.copy_default_config` to write the default config into the correct place.
-Do not edit the default file directly as every time you install or update SunPy, this file will be overwritten.
+Do not edit the default file directly as every time you install or update sunpy, this file will be overwritten.
 
 See below for the example config file.
 

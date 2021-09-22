@@ -55,3 +55,8 @@ def test_rsun(createEIT):
 def test_norm_clip(createEIT):
     # Tests that the default normalizer has clipping disabled
     assert not createEIT.plot_settings['norm'].clip
+
+
+def test_wcs(createEIT):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    createEIT.pixel_to_world(0*u.pix, 0*u.pix)

@@ -1,25 +1,25 @@
 .. _units-coordinates-sunpy:
 
-Units and Coordinates in SunPy
+Units and Coordinates in sunpy
 ******************************
 
 This section of the guide will talk about representing physical units and
-physical coordinates in SunPy. SunPy makes use of :ref:`Astropy <astropy:astropy-coordinates>` for
+physical coordinates in sunpy. sunpy makes use of :ref:`Astropy <astropy:astropy-coordinates>` for
 both these tasks.
 
 
-Units in SunPy
+Units in sunpy
 ==============
 
-All functions in SunPy that accept or return numbers associated with physcial
+All functions in sunpy that accept or return numbers associated with physcial
 quantities accept and return `~astropy.units.Quantity` objects. These objects
-represent a number (or an array of numbers) and a unit. This means SunPy is
+represent a number (or an array of numbers) and a unit. This means sunpy is
 always explicit about the units associated with a value. Quantities and units
 are powerful tools for keeping track of variables with a physical meaning and
 make it straightforward to convert the same physical quantity into different units.
 
 In this section of the guide we will give a quick introduction to `astropy.units`
-and then demostrate how to use units with SunPy.
+and then demostrate how to use units with sunpy.
 
 To use units we must first import them from Astropy. To save on typing we usually
 import units as ``u``::
@@ -126,11 +126,11 @@ have the same units on the output from this function::
   >>> speed(1*u.m, 1*u.minute)
   <Quantity 0.01666667 m / s>
 
-Physical Coordinates in SunPy
+Physical Coordinates in sunpy
 =============================
 
 In much the same way as `~astropy.units` are used for representing physical
-quantities, SunPy uses `astropy.coordinates` to represent points in physical
+quantities, sunpy uses `astropy.coordinates` to represent points in physical
 space. This applies to both points in 3D space and projected coordinates in
 images.
 
@@ -139,7 +139,7 @@ The astropy coordinates module is primarily used through the
 
   >>> from astropy.coordinates import SkyCoord
 
-To enable the use of the solar physics specific frames defined in SunPy we also
+To enable the use of the solar physics specific frames defined in sunpy we also
 need to import them::
 
   >>> from sunpy.coordinates import frames
@@ -153,7 +153,7 @@ A SkyCoord object to represent a point on the Sun can then be created::
       (70., -30.)>
 
 This `~astropy.coordinates.SkyCoord` object can then be transformed to any
-other coordinate frame defined either in Astropy or SunPy, for example::
+other coordinate frame defined either in Astropy or sunpy, for example::
 
   >>> c.transform_to(frames.Helioprojective(observer="earth"))
   <SkyCoord (Helioprojective: obstime=2017-08-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
@@ -177,7 +177,7 @@ Both `~sunpy.coordinates.frames.Helioprojective` and
 position of the observer. Therefore to transform either of these frames to a
 different frame the location of the observer must be known.
 The observer can be specified for a coordinate object using the ``observer``
-argument to `~astropy.coordinates.SkyCoord`.  For SunPy to calculate the
+argument to `~astropy.coordinates.SkyCoord`.  For sunpy to calculate the
 location of Earth or another solar-system body, it must know the time for
 which the coordinate is valid; this is specified with the ``obstime`` argument.
 
@@ -194,13 +194,13 @@ one observer to a coordinate seen by another::
       (-1285.47497992, 106.20918654, 0.72405937)>
 
 
-Using Coordinates with SunPy Map
+Using Coordinates with sunpy Map
 --------------------------------
 
 .. plot::
    :include-source:
 
-   SunPy Map uses coordinates to specify locations on the image, and to plot
+   sunpy Map uses coordinates to specify locations on the image, and to plot
    overlays on plots of maps. When a Map is created, a coordinate frame is
    constructed from the header information. This can be accessed using
    ``.coordinate_frame``:

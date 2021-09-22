@@ -1,0 +1,1 @@
+Updated `sunpy.map.CompositeMap.plot` to support the ``linestyles`` and ``colors`` arguments, in addition to the existing ``linewidths`` argument.

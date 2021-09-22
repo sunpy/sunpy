@@ -32,7 +32,17 @@ Increase in required package versions
 =====================================
 We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 3.1:
 
+- astropy >= 4.2
+- numpy >= 1.17.0
+
 .. _whatsnew-3.1-contributors:
+
+New WISPR map source
+====================
+A new map source for the WISPR instrument on Parker Solar Probe has been added.
+This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
+information for the `~sunpy.map.GenericMap.processing_level` and
+`~sunpy.map.GenericMap.exposure_time`.
 
 Changes to map date/time handling
 =================================
@@ -64,12 +74,19 @@ to use `~sunpy.map.GenericMap.date_average`,
 `~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
 instead if you need one of these specific times.
 
-New WISPR map source
-====================
-A new map source for the WISPR instrument on Parker Solar Probe has been added.
-This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
-information for the `~sunpy.map.GenericMap.processing_level` and
-`~sunpy.map.GenericMap.exposure_time`.
+Addition of new time format `~sunpy.time.TimeTaiSeconds`
+--------------------------------------------------------
+The new `~sunpy.time.TimeTaiSeconds` format is the number of
+SI seconds from 1958-01-01 00:00:00, which includes UTC leap seconds.
+1958-01-01 00:00:00 is the defined time when International Atomic Time (TAI)
+and Universal Time (UT) are synchronized.
+
+This format is equivalent to the output of the SSW ``anytim2tai`` routine, and
+related routines, for times after 1972-01-01.  Be aware that the SSW routines
+are not written to provide valid results for times before 1972-01-01.
+
+This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch
+is 12 years earlier.
 
 Contributors to this Release
 ============================

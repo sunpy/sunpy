@@ -24,7 +24,7 @@ from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
-from astropy.visualization.wcsaxes import WCSAxes
+from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
@@ -32,7 +32,7 @@ import sunpy.io as io
 import sunpy.visualization.colormaps
 from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, Helioprojective, get_earth, sun
-from sunpy.coordinates.utils import get_rectangle_coordinates
+from sunpy.coordinates.utils import get_limb_coordinates, get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
@@ -43,12 +43,6 @@ from sunpy.util.exceptions import SunpyUserWarning, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
-
-# Quadrangle is not present in Astropy<4.2, so we fall back to a vendored version
-try:
-    from astropy.visualization.wcsaxes import Quadrangle
-except ImportError:
-    from sunpy.visualization._quadrangle import Quadrangle
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
@@ -2100,14 +2094,9 @@ class GenericMap(NDData):
 
         # Otherwise, we use Polygon to be able to distort the limb
 
-        # Create the limb coordinate array using Heliocentric Radial
-        limb_radial_distance = self.observer_coordinate.radius * np.cos(self.rsun_obs)
-        limb_hcr_rho = limb_radial_distance * np.sin(self.rsun_obs)
-        limb_hcr_z = self.observer_coordinate.radius - limb_radial_distance * np.cos(self.rsun_obs)
-        limb_hcr_psi = np.linspace(0, 2*np.pi, resolution+1)[:-1] << u.rad
-        limb = SkyCoord(limb_hcr_rho, limb_hcr_psi, limb_hcr_z, representation_type='cylindrical',
-                        frame='heliocentric', observer=self.observer_coordinate, obstime=self.date)
-
+        # Get the limb coordinates
+        limb = get_limb_coordinates(self.observer_coordinate, self.rsun_meters,
+                                    resolution=resolution)
         # Transform the limb to the axes frame and get the 2D vertices
         axes_frame = axes._transform_pixel2world.frame_out
         limb_in_axes = limb.transform_to(axes_frame)

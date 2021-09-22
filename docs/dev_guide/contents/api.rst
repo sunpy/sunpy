@@ -18,7 +18,7 @@ This means that all of the public API will follow the deprecation policy detaile
 Deprecation Policy and Breaking Changes
 =======================================
 
-All public API within the SunPy project (the sunpy package and stable affiliated packages) will enforce strict standards when it comes to either changing, updating or breaking the API.
+All public API within the SunPy project (the sunpy core package and stable affiliated packages) will enforce strict standards when it comes to either changing, updating or breaking the API.
 
 .. _deprecation:
 
@@ -56,7 +56,7 @@ The same applies if you want to change the default value of a keyword argument f
 
 .. note::
 
-    This is a summary of `SEP-0009`_ which as the formal SunPy deprecation policy.
+    This is a summary of `SEP-0009`_ which is the formal SunPy project deprecation policy.
 
 .. _SEP-0009: https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0009.md#deprecations-and-documentation
 
