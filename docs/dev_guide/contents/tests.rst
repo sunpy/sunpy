@@ -235,6 +235,10 @@ Generally we do not run the tests on our sample data, so only do this if you hav
 Figure unit tests
 -----------------
 
+.. note::
+    The figure tests and the hashes they use are only checked on Linux and might be different on other platforms.
+    We should suggest if you do not use a Linux, to add a fake hash to the json files and then CircleCi (ran on a PR) will tell you the real hash to use.
+
 You can write sunpy unit tests that test the generation of matplotlib figures by adding the decorator ``sunpy.tests.helpers.figure_test``.
 Here is a simple example::
 
@@ -277,8 +281,7 @@ If you want to check what the images look like, you can do::
 
     $ tox -e py38-figure -- --mpl-generate-path=baseline
 
-The images output from the tests will be stored in a folder called baseline so you can double check the test works as you expected.
-
+The images output from the tests will be stored in a folder called ``.tmp/py38-figure/baseline`` or ``baseline`` in the sunpy folder, so you can double check the test works as you expected.
 
 .. _doctests:
 

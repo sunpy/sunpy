@@ -21,7 +21,6 @@ from astropy.visualization import wcsaxes
 
 import sunpy
 import sunpy.coordinates
-import sunpy.data.sample
 import sunpy.data.test
 import sunpy.map
 import sunpy.sun
