@@ -178,7 +178,7 @@ Further we can add general notes that someone deems important for a release.
 Updating and Maintaining the Changelog
 ======================================
 
-The changelog will be read by users, so this description should be aimed at SunPy users instead of describing internal changes which are only relevant to the developers.
+The changelog will be read by users, so this description should be aimed at sunpy users instead of describing internal changes which are only relevant to the developers.
 
 The current changelog is kept in the file "CHANGELOG.rst" at the root of the repository.
 You do not need to update this file as we use `towncrier`_ to update our changelog.
@@ -191,9 +191,9 @@ You can install towncrier and then run ``towncrier --draft`` if you want to get 
 
 .. _towncrier: https://pypi.org/project/towncrier/
 
-Releasing SunPy
+Releasing sunpy
 ===============
 
-We have a `step by step checklist`_ on the SunPy Wiki on how to release SunPy.
+We have a `step by step checklist`_ on the SunPy Wiki on how to release the sunpy core package.
 
 .. _step by step checklist: https://github.com/sunpy/sunpy/wiki/Home%3A-Release-Checklist

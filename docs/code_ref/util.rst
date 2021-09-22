@@ -1,4 +1,4 @@
-SunPy util
+sunpy util
 **********
 
 .. automodapi:: sunpy.util

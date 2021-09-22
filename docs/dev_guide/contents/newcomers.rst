@@ -5,7 +5,7 @@ Newcomers' Guide
 ****************
 
 Welcome to the SunPy newcomers' guide.
-If you have come across this page, you just might be new to SunPy.
+If you have come across this page, you just might be new to the SunPy project.
 We aim to be a comprehensive Python package that allows solar physicists to deep dive in the vast amount of solar data available.
 
 Firstly, we want to thank you for your interest in contributing to SunPy!

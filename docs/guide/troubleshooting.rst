@@ -27,7 +27,7 @@ To quickly collect information on your system, you can use our convenience funct
 The output should look something like: ::
 
     ==========================================================
-     SunPy Installation Information
+     sunpy Installation Information
 
      Sunday, 18. November 2012 11:06PM UT
     ==========================================================
@@ -41,7 +41,7 @@ The output should look something like: ::
     ####################
      Required libraries
     ####################
-    SunPy: 0.1
+    sunpy: 0.1
     NumPy: 1.6.2
     SciPy: 0.10.1
     Matplotlib: 1.2.x

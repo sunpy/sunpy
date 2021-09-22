@@ -4,7 +4,7 @@
 Coding Standards
 ****************
 
-The purpose of the page is to describe the standards that are expected of all the code in SunPy.
+The purpose of the page is to describe the standards that are expected of all the code in the SunPy project.
 All potential developers should read and abide by the following standards.
 Code which does not follow these standards closely will not be accepted.
 
@@ -19,8 +19,8 @@ Language Standard
 * The new Python 3 formatting style should be used (i.e.
   ``"{0:s}".format("spam")`` instead of ``"%s" % "spam"``).
 
-* The core package and affiliated packages should be importable with no dependencies other than components already in SunPy, the `Python Standard Library <https://docs.python.org/3/library/index.html>`_, and packages already required by SunPy.
-  Adding dependencies to SunPy will be considered but are highly discouraged.
+* The core package and affiliated packages should be importable with no dependencies other than components already in the sunpy core package, the `Python Standard Library <https://docs.python.org/3/library/index.html>`_, and packages already required by the sunpy core package.
+  Adding dependencies to sunpy core will be considered but are highly discouraged.
   Such optional dependencies should be recorded in the ``setup.cfg`` file in the ``extras_require`` entry.
 
 Coding Style/Conventions
@@ -195,8 +195,8 @@ Including C Code
 
 * The use of `Cython`_ is strongly recommended for C extensions.
 
-* If a C extension has a dependency on an external C library, the source code for the library should be bundled with SunPy, provided the license for the C library is compatible with the SunPy license.
-  Additionally, the package must be compatible with using a system-installed library in place of the library included in SunPy.
+* If a C extension has a dependency on an external C library, the source code for the library should be bundled with sunpy, provided the license for the C library is compatible with the sunpy license.
+  Additionally, the package must be compatible with using a system-installed library in place of the library included in sunpy.
 
 * In cases where C extensions are needed but `Cython`_ cannot be used, the `PEP 7 Style Guide for C Code <https://www.python.org/dev/peps/pep-0007/>`_ is recommended.
 

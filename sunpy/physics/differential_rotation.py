@@ -84,6 +84,8 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     Examples
     --------
 
+    .. minigallery:: sunpy.physics.differential_rotation.diff_rot
+
     Default rotation calculation over two days at 30 degrees latitude:
 
     >>> import numpy as np

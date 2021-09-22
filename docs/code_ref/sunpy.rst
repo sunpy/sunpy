@@ -1,4 +1,4 @@
-SunPy
+sunpy
 *****
 
 .. automodapi:: sunpy

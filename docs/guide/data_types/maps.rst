@@ -2,15 +2,15 @@
 Maps
 ****
 
-Maps in SunPy are are 2-dimensional data associated with a coordinate system. In
+Maps in sunpy are are 2-dimensional data associated with a coordinate system. In
 this guide, we will cover some of the basic functionality of maps. Once you've
 read through this guide check out :doc:`/code_ref/map` for a more thorough look
-at SunPy maps. There you can see what instruments are currently supported or you
+at sunpy maps. There you can see what instruments are currently supported or you
 can access the code reference for each instrument-specific map subclass.
 
 Creating maps
 =============
-To make things easy, SunPy can download several example files which are used
+To make things easy, sunpy can download several example files which are used
 throughout the docs. These files have names like
 ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE``. To
 create a `~sunpy.map.Map` from the the sample AIA image
@@ -27,24 +27,24 @@ local FITS file try the following::
 
     >>> my_map = sunpy.map.Map('/mydirectory/mymap.fits')   # doctest: +SKIP
 
-SunPy should automatically detects the type of file (e.g. FITS), what instrument it is
+sunpy should automatically detects the type of file (e.g. FITS), what instrument it is
 associated with (e.g. AIA, EIT, LASCO) and will automatically look in the
 appropriate places for the FITS keywords it needs to interpret the coordinate
-system. If the type of FITS file is not recognized then SunPy will try some
+system. If the type of FITS file is not recognized then sunpy will try some
 default FITS keywords and return a `~sunpy.map.GenericMap` but results
-may vary. SunPy can also create maps from the jpg2000 files from
+may vary. sunpy can also create maps from the jpg2000 files from
 `helioviewer.org <https://helioviewer.org/>`_.
 
 Creating Custom Maps
 ====================
 It is also possible to create maps using custom data (e.g. from a simulation or an observation
-from a data source that is not explicitly supported in SunPy.) To do this you need to provide
+from a data source that is not explicitly supported in sunpy.) To do this you need to provide
 `sunpy.map.Map` with both the data array as well as appropriate
 meta information. The meta information is important as it informs the `sunpy.map.Map`
 of the correct coordinate information associated with the data array. The meta information should be provided to
 `sunpy.map.Map` in the form of a header as a `dict` or `~sunpy.util.MetaDict`.
 
-The keys that are required for the header information follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_. SunPy now provides a map header helper function to assist the user in creating a header that contains the correct meta information
+The keys that are required for the header information follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_. sunpy now provides a map header helper function to assist the user in creating a header that contains the correct meta information
 to generate a `sunpy.map.Map`.
 
 The helper functionality includes a `~sunpy.map.meta_keywords` function
@@ -238,7 +238,7 @@ from the source file.
 
 Getting at the data
 ===================
-The data in a SunPy Map object is accessible through the
+The data in a sunpy Map object is accessible through the
 `~sunpy.map.GenericMap.data` attribute.  The data is implemented as a
 NumPy `~numpy.ndarray`, so for example, to get
 the 0th element in the array ::
@@ -265,7 +265,7 @@ the SunPyGenericMap object ::
 Here the dimensions attribute is similar to the `~numpy.ndarray.shape`
 attribute, however returning an `~astropy.units.quantity.Quantity`.
 
-If you'd like to use the data in a SunPy `~sunpy.map.GenericMap` object
+If you'd like to use the data in a sunpy `~sunpy.map.GenericMap` object
 elsewhere, you can use either of the following::
 
     >>> var = my_map.data  # doctest: +REMOTE_DATA
@@ -303,7 +303,7 @@ by accessing the data array directly. For example::
 
 Plotting
 ========
-As is true of all of the SunPy data objects, the SunPy `~sunpy.map.GenericMap`
+As is true of all of the sunpy data objects, the sunpy `~sunpy.map.GenericMap`
 object (and all of its instrument-specific sub-classes) has its
 own built-in plot methods so that it is easy to quickly view your map.
 To create a plot just type::
@@ -313,7 +313,7 @@ To create a plot just type::
 This will open a matplotlib plot on your screen.
 In addition, to enable users to modify the plot it is possible to grab the
 matplotlib axes object by using the `~sunpy.map.GenericMap.plot()` command.
-This makes it possible to use the SunPy plot as the foundation for a
+This makes it possible to use the sunpy plot as the foundation for a
 more complicated figure. For a bit more information about this and some
 examples see :ref:`plotting`.
 
@@ -331,7 +331,7 @@ Plotting Keywords
 -----------------
 
 For Map `~matplotlib.pyplot.imshow` does most of the heavy
-lifting in the background while SunPy makes a number of choices for you so that
+lifting in the background while sunpy makes a number of choices for you so that
 you don't have to (e.g. colortable, plot title). Changing these defaults
 is made possible through two simple interfaces. You can pass any
 `~matplotlib.pyplot.imshow` keyword into
@@ -361,7 +361,7 @@ dictionary. In the following example we change the title of the plot by changing
     import sunpy.data.sample
     import matplotlib.pyplot as plt
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    smap.plot_settings['title'] = "My Second SunPy Plot"
+    smap.plot_settings['title'] = "My Second sunpy Plot"
     smap.plot_settings['cmap'] = plt.cm.Blues_r
     fig = plt.figure()
     smap.plot()
@@ -379,7 +379,7 @@ the data array is first mapped onto the range 0-1 using an instance of
 `~matplotlib.colors.Normalize` or a subclass; then this number is mapped to a
 color using an instance of a subclass of a `~matplotlib.colors.Colormap`.
 
-SunPy provides the colormaps for each mission as defined by the mission teams.
+sunpy provides the colormaps for each mission as defined by the mission teams.
 The Map object chooses the appropriate colormap for you when it is created as
 long as it recognizes the instrument. To see what colormaps are available::
 
@@ -389,7 +389,7 @@ long as it recognizes the instrument. To see what colormaps are available::
     'goes-rsuvi284', 'goes-rsuvi304', 'sdoaia94', 'sdoaia131', 'sdoaia171',
     ...
 
-The SunPy colormaps are registered with matplotlib so you can grab them like
+The sunpy colormaps are registered with matplotlib so you can grab them like
 you would any other colormap::
 
     >>> import matplotlib.pyplot as plt
@@ -636,7 +636,7 @@ instruments).  For example, to create a simple composite map::
 
     >>> my_maps = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE, sunpy.data.sample.RHESSI_IMAGE, composite=True)  # doctest: +REMOTE_DATA
 
-A `~sunpy.map.CompositeMap` is different from a regular SunPy `~sunpy.map.GenericMap` object and therefore
+A `~sunpy.map.CompositeMap` is different from a regular sunpy `~sunpy.map.GenericMap` object and therefore
 different associated methods. To list which maps are part of your composite map use::
 
     >>> my_maps.list_maps()  # doctest: +REMOTE_DATA
@@ -659,7 +659,7 @@ map, and then plots the result.
     my_maps.plot()
     plt.show()
 
-This is not a particularly pretty plot but it shows what SunPy can do!
+This is not a particularly pretty plot but it shows what sunpy can do!
 
 Working with your map
 =====================
@@ -729,7 +729,7 @@ where the template is in your image.  The images are then shifted to the
 location of the best match.  This aligns your images to the position of the
 features in your representative template.
 
-SunPy provides a function to coalign the maps inside the `~sunpy.map.MapSequence`.
+sunpy provides a function to coalign the maps inside the `~sunpy.map.MapSequence`.
 The implementation of this functionality requires the installation of the
 scikit-image library, a commonly used image processing library.
 To coalign a `~sunpy.map.MapSequence`, simply import
@@ -772,7 +772,7 @@ the rotation of the Sun.  The Sun rotates differentially, depending on
 latitude, with features at the equator moving faster than features at
 the poles.
 
-SunPy provides a function to shift images in `~sunpy.map.MapSequence` following solar
+sunpy provides a function to shift images in `~sunpy.map.MapSequence` following solar
 rotation.  This function shifts an image according to the solar
 differential rotation calculated at the latitude of the center of the
 field of view.  The image is not *differentially* rotated.  This

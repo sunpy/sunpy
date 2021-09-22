@@ -1,7 +1,7 @@
 .. _map:
 
 *********
-SunPy map
+sunpy map
 *********
 
 .. module:: sunpy.map
@@ -14,9 +14,9 @@ SunPy map
 
 Overview
 ========
-One of core classes in SunPy is a Map. A SunPy Map object is simply a
+One of core classes in sunpy is a Map. A sunpy Map object is simply a
 spatially-aware data array, often an image. In order to make it easy to work
-with image data in SunPy, the Map object provides a number of methods for
+with image data in sunpy, the Map object provides a number of methods for
 commonly performed operations.
 
 2D map objects are subclasses of `~sunpy.map.GenericMap` and these objects are
@@ -34,7 +34,7 @@ available. See :ref:`map-classes`.
 
 Creating Map Objects
 ====================
-SunPy Map objects are constructed using the special factory
+sunpy Map objects are constructed using the special factory
 class `~sunpy.map.Map`: ::
 
     >>> x = sunpy.map.Map('file.fits')  # doctest: +SKIP
@@ -64,7 +64,7 @@ follows:
 sunpy.map Package
 =================
 
-All SunPy Maps are derived from `sunpy.map.GenericMap`, all the methods and attributes are documented in that class.
+All sunpy Maps are derived from `sunpy.map.GenericMap`, all the methods and attributes are documented in that class.
 
 .. automodapi:: sunpy.map
     :no-main-docstr:

@@ -4,13 +4,13 @@
 Testing Guidelines
 ******************
 
-This section describes the testing framework and format standards for tests in SunPy.
+This section describes the testing framework and format standards for tests in sunpy.
 Here we have heavily adapted the `Astropy version <https://docs.astropy.org/en/latest/development/testguide.html>`_, and **it is worth reading that link.**
 
 Testing Framework
 =================
 
-The testing framework used by SunPy is the `pytest`_ framework, accessed through the ``pytest`` command.
+The testing framework used by sunpy is the `pytest`_ framework, accessed through the ``pytest`` command.
 
 .. _pytest: https://pytest.org/en/latest/
 
@@ -22,7 +22,7 @@ The testing framework used by SunPy is the `pytest`_ framework, accessed through
 Testing Dependencies
 ---------------------
 
-Since the testing dependencies are not actually required to install or use SunPy, they are not included in "install_requires" in "setup.cfg".
+Since the testing dependencies are not actually required to install or use sunpy, they are not included in "install_requires" in "setup.cfg".
 
 Developers who want to run the test suite will need to install the testing packages using pip::
 
@@ -33,7 +33,7 @@ If you want to see the current test dependencies, you check "extras_require" in 
 Running Tests
 -------------
 
-There are currently two different ways to invoke the SunPy tests.
+There are currently two different ways to invoke the sunpy tests.
 However, we strongly suggest using ``tox`` as the default one.
 Each method uses the widely-used ``pytest`` framework and are detailed below.
 
@@ -49,7 +49,7 @@ Then you can run any of them doing::
 
     $ tox -e <name of env>
 
-This will create a test environment in ".tox" and build, install SunPy and runs the entire test suite.
+This will create a test environment in ".tox" and build, install sunpy and runs the entire test suite.
 This is the method that our continuous integration uses.
 
 .. _tox: https://tox.readthedocs.io/en/latest/
@@ -83,7 +83,7 @@ If a test errors, you can use ``pdb`` to create a debugging session at the momen
 Test coverage reports
 ---------------------
 
-SunPy can use `pytest-cov`_  generate test coverage reports and settings are stored in ``setup.cfg``.
+sunpy can use `pytest-cov`_  generate test coverage reports and settings are stored in ``setup.cfg``.
 This plugin can be installed using `pip`_::
 
     $ pip install pytest-cov
@@ -103,7 +103,7 @@ If you want to create a report in html, you can run::
 Running tests in parallel
 -------------------------
 
-It is possible to speed up SunPy's tests using the `pytest-xdist`_ plugin.
+It is possible to speed up sunpy's tests using the `pytest-xdist`_ plugin.
 This plugin can be installed using `pip`_::
 
     pip install pytest-xdist
@@ -188,7 +188,7 @@ These tests should be included inside each package, e.g::
 Online Tests
 ------------
 
-There are some tests for functions and methods in SunPy that require a working connection to the internet.
+There are some tests for functions and methods in sunpy that require a working connection to the internet.
 ``pytest`` is configured in a way that it iterates over all tests that have been marked as ``pytest.mark.remote_data`` and checks if there is an established connection to the internet.
 If there is none, the test is skipped, otherwise it is run.
 
@@ -235,7 +235,7 @@ Generally we do not run the tests on our sample data, so only do this if you hav
 Figure unit tests
 -----------------
 
-You can write SunPy unit tests that test the generation of matplotlib figures by adding the decorator ``sunpy.tests.helpers.figure_test``.
+You can write sunpy unit tests that test the generation of matplotlib figures by adding the decorator ``sunpy.tests.helpers.figure_test``.
 Here is a simple example::
 
     import matplotlib.pyplot as plt
@@ -286,7 +286,7 @@ Writing doctests
 ----------------
 
 Code examples in the documentation will also be run as tests and this helps to validate that the documentation is accurate and up to date.
-SunPy uses the same system as Astropy, so for information on writing doctests see the astropy `documentation <https://docs.astropy.org/en/latest/development/testguide.html#writing-doctests>`_.
+sunpy uses the same system as Astropy, so for information on writing doctests see the astropy `documentation <https://docs.astropy.org/en/latest/development/testguide.html#writing-doctests>`_.
 
 You do not have to do anything extra in order to run any documentation tests.
 Within our ``setup.cfg`` file we have set default options for ``pytest``, such that you only need to run::

@@ -25,7 +25,7 @@ Furthermore, you bypass the need for the conda resolver to sort out your root en
 Installing sunpy using Miniconda
 --------------------------------
 
-To install SunPy launch a system command prompt or the 'Anaconda Prompt' (under Windows).
+To install sunpy launch a system command prompt or the 'Anaconda Prompt' (under Windows).
 First configure conda for to add the `conda-forge channel <https://conda-forge.org/>`__::
 
     conda config --add channels conda-forge
