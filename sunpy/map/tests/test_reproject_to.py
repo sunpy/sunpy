@@ -5,6 +5,7 @@ import warnings
 
 import numpy as np
 import pytest
+from matplotlib.testing.decorators import check_figures_equal
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -50,15 +51,41 @@ def test_reproject_to_hgs(aia171_test_map, hgs_header):
     aia171_test_map.reproject_to(hgs_header).plot()
 
 
-@figure_test
+@check_figures_equal(extensions=["png"])
 @pytest.mark.filterwarnings('ignore:Missing metadata')  # TODO: fix bug for HGS maps
-def test_reproject_to_hgs_wcs(aia171_test_map, hgs_header):
-    aia171_test_map.reproject_to(WCS(hgs_header)).plot()
+def test_reproject_to_hgs_wcs(fig_test, fig_ref, aia171_test_map, hgs_header):
+    with warnings.catch_warnings():
+        # NumPy <1.19 emits a RuntimeWarning because of comparison against NaNs
+        warnings.filterwarnings("ignore", message='invalid value encountered',
+                                category=RuntimeWarning)
+
+        # Tests whether reprojecting to a WCS instance gives the same answer as to a header
+        header_map = aia171_test_map.reproject_to(hgs_header)
+        wcs_map = aia171_test_map.reproject_to(WCS(hgs_header))
+
+        ax_ref = fig_ref.add_subplot(projection=header_map)
+        header_map.plot(axes=ax_ref)
+
+        ax_test = fig_test.add_subplot(projection=wcs_map)
+        wcs_map.plot(axes=ax_test)
 
 
-@figure_test
-def test_reproject_to_hpc(aia171_test_map, hpc_header):
-    aia171_test_map.reproject_to(hpc_header).plot()
+@check_figures_equal(extensions=["png"])
+def test_reproject_to_hpc_default(fig_test, fig_ref, aia171_test_map, hpc_header):
+    with warnings.catch_warnings():
+        # NumPy <1.19 emits a RuntimeWarning because of comparison against NaNs
+        warnings.filterwarnings("ignore", message='invalid value encountered',
+                                category=RuntimeWarning)
+
+        # Tests whether the default reprojection is "interpolation"
+        default_map = aia171_test_map.reproject_to(hpc_header)
+        interpolation_map = aia171_test_map.reproject_to(hpc_header, algorithm='interpolation')
+
+        ax_ref = fig_ref.add_subplot(projection=interpolation_map)
+        interpolation_map.plot(axes=ax_ref)
+
+        ax_test = fig_test.add_subplot(projection=default_map)
+        default_map.plot(axes=ax_test)
 
 
 @figure_test
@@ -77,8 +104,6 @@ def test_reproject_to_hpc_adaptive(aia171_test_map, hpc_header):
 
 
 def test_return_footprint(aia171_test_map, hpc_header):
-    pytest.importorskip("reproject")
-
     with warnings.catch_warnings():
         # NumPy <1.19 emits a RuntimeWarning because of comparison against NaNs
         warnings.filterwarnings("ignore", message='invalid value encountered',
@@ -94,6 +119,5 @@ def test_return_footprint(aia171_test_map, hpc_header):
 
 
 def test_invalid_inputs(aia171_test_map, hpc_header):
-    pytest.importorskip("reproject")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="The specified algorithm must be one of"):
         aia171_test_map.reproject_to(hpc_header, algorithm='something')
