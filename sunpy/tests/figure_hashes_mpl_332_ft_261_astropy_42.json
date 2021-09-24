@@ -6,6 +6,7 @@
   "sunpy.map.tests.test_compositemap.test_plot_composite_map_colors": "ca7af0e1ee21df8b76bac76f27ac934c452f7906d4bc9000f1faa1dde742aa62",
   "sunpy.map.tests.test_compositemap.test_set_alpha_composite_map": "b9d729ff67b0307c037ac62f97c69bb80d22ad6679a0e56352075845d4ef732b",
   "sunpy.map.tests.test_compositemap.test_peek_composite_map": "bd1df27446d420f3e8cb6fa07daff88b77dd0f0441e4acf83ee48341a9e3218f",
+  "sunpy.map.tests.test_mapbase.test_rotation_rect_pixelated_data": "4592fe2709c1ff7c43d82f46239dba0abdbdd011f0b52d81202433f33f7fd7f1",
   "sunpy.map.tests.test_mapsequence.test_norm_animator": "a400eef26fdd915ccf12769031bd8dadedbf8f6a93e31cd5982bffe2484702ee",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot": "1e5435af7bb854d47ebeabf354350f27bf989325aa5d77b930bdcdb043ce25df",
   "sunpy.map.tests.test_plotting.test_plot_aia171": "1e5435af7bb854d47ebeabf354350f27bf989325aa5d77b930bdcdb043ce25df",
