@@ -30,7 +30,12 @@ aia_map.peek(clip_interval=(1, 99.99)*u.percent)
 # allows us to preserve all of the metadata of the object along with the actual
 # array data. When we load the FITS file again, we get an identical
 # `~sunpy.map.sources.sdo.AIAMap` object.
+#
+# All changes to `~sunpy.map.GenericMap` are saved within the FITS file.
 
+aia_map = aia_map.rotate(45*u.deg)
+# Please be aware that if you try to save this twice,
+# it will not overwrite but error instead.
 aia_map.save('aia_map.fits')
 
 ################################################################################
