@@ -873,6 +873,21 @@ def test_convert_error_with_no_obstime(frame_class):
         frame.transform_to(ICRS())
 
 
+@pytest.mark.parametrize("frame_class_1", _frames_wo_observer)
+@pytest.mark.parametrize("frame_class_2", _frames_wo_observer)
+def test_convert_error_with_no_obstime_sunpy_frames(frame_class_1, frame_class_2):
+    # Check that transforming from a frame with a time to a frame without a time
+    # errors
+    frame_1 = frame_class_1(CartesianRepresentation(0, 0, 0)*u.km, obstime=None)
+    frame_2 = frame_class_2(CartesianRepresentation(0, 0, 0)*u.km, obstime='2020-01-01')
+
+    with pytest.raises(ConvertError, match=r".*obstime.*"):
+        frame_1.transform_to(frame_2)
+
+    with pytest.raises(ConvertError, match=r".*obstime.*"):
+        frame_2.transform_to(frame_1)
+
+
 # Convenience function to check whether a transformation succeeds if the target `obstime` is `None`
 def assert_no_obstime_on_target_end(start_class, end_class):
     start_obstime = Time("2001-01-01")
