@@ -221,6 +221,7 @@ sunpy_map.asdf
 baseline
 docs/guide/data_types/figure.png
 october_M1_flares.csv
+aia_map.fits
 
 ### Pycharm(?)
 .idea
