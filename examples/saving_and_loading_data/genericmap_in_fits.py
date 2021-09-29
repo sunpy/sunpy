@@ -32,7 +32,7 @@ aia_map.peek(clip_interval=(1, 99.99)*u.percent)
 # `~sunpy.map.sources.sdo.AIAMap` object.
 #
 # All changes to `~sunpy.map.GenericMap` are saved within the FITS file. For example,
-# if we rotate the image by 45 degrees and then save it to a FITS file, these changes 
+# if we rotate the image by 45 degrees and then save it to a FITS file, these changes
 # are reflected in both the image data and metadata when we load the data back in.
 
 aia_map = aia_map.rotate(45*u.deg)
