@@ -6,9 +6,8 @@ from textwrap import dedent
 from functools import wraps
 from collections.abc import Sequence
 
-from astropy.table import Column, Row, Table
+from astropy.table import Column, QTable, Row, Table, TableAttribute
 
-from sunpy.util._table_attribute import QTable, TableAttribute
 from sunpy.util.util import get_width
 
 __all__ = ['QueryResponseColumn', 'BaseQueryResponse',
