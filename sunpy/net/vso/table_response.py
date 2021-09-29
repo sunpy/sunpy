@@ -8,10 +8,10 @@ import numpy as np
 from zeep.helpers import serialize_object
 
 import astropy.units as u
+from astropy.table import TableAttribute
 
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.time import parse_time
-from sunpy.util._table_attribute import TableAttribute
 
 __all__ = ['VSOQueryResponseTable']
 

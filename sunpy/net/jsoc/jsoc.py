@@ -17,7 +17,6 @@ from sunpy import config, log
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 from sunpy.net.jsoc.attrs import walker
-from sunpy.util._table_attribute import TableAttribute
 from sunpy.util.exceptions import warn_user
 from sunpy.util.parfive_helpers import Downloader, Results
 
@@ -33,12 +32,12 @@ class NotExportedError(Exception):
 
 
 class JSOCResponse(QueryResponseTable):
-    query_args = TableAttribute()
-    requests = TableAttribute()
+    query_args = astropy.table.TableAttribute()
+    requests = astropy.table.TableAttribute()
     display_keys = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
     # This variable is used to detect if the result has been sliced before it is passed
     # to fetch and issue a warning to the user about not being able to post-filter JSOC searches.
-    _original_num_rows = TableAttribute(default=None)
+    _original_num_rows = astropy.table.TableAttribute(default=None)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
