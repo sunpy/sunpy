@@ -46,13 +46,11 @@ def hpc_header(aia171_test_map):
 
 
 @figure_test
-@pytest.mark.filterwarnings('ignore:Missing metadata')  # TODO: fix bug for HGS maps
 def test_reproject_to_hgs(aia171_test_map, hgs_header):
     aia171_test_map.reproject_to(hgs_header).plot()
 
 
 @check_figures_equal(extensions=["png"])
-@pytest.mark.filterwarnings('ignore:Missing metadata')  # TODO: fix bug for HGS maps
 def test_reproject_to_hgs_wcs(fig_test, fig_ref, aia171_test_map, hgs_header):
     with warnings.catch_warnings():
         # NumPy <1.19 emits a RuntimeWarning because of comparison against NaNs
