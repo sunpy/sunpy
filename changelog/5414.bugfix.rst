@@ -1,0 +1,2 @@
+:meth:`sunpy.map.GenericMap.draw_limb` no longer plots or returns the hidden
+part of the limb if it does not have any points.
