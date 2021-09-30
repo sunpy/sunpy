@@ -1,2 +1,5 @@
-:meth:`sunpy.map.GenericMap.draw_limb` no longer plots or returns the hidden
-part of the limb if it does not have any points.
+When the limb is entirely visible, :meth:`sunpy.map.GenericMap.draw_limb` no
+longer plots an invisible patch for the hidden part of the limb and now returns
+`None` instead of the invisible patch. Similarly, when the limb is entirely
+invisible, no patch is drawn for the visible part and `None` is returned
+instead of the visible patch.

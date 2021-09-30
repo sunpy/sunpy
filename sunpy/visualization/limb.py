@@ -38,7 +38,7 @@ def draw_limb(axes, observer, *, rsun=R_sun, resolution=1000, **kwargs):
 
     Returns
     -------
-    visible : `~matplotlib.patches.Polygon` or `~matplotlib.patches.Circle`
+    visible : `~matplotlib.patches.Polygon` or `~matplotlib.patches.Circle` or None
         The patch added to the axes for the visible part of the limb (i.e., the
         "near" side of the Sun).
     hidden : `~matplotlib.patches.Polygon` or None
@@ -50,9 +50,13 @@ def draw_limb(axes, observer, *, rsun=R_sun, resolution=1000, **kwargs):
     Keyword arguments are passed onto the patches.
 
     If the limb is a true circle, ``visible`` will instead be
-    `~matplotlib.patches.Circle` and ``hidden`` will be ``None``. If there
-    are no visible points (e.g., on a synoptic map any limb is fully)
-    visible ``hidden`` will be ``None``.
+    `~matplotlib.patches.Circle` and ``hidden`` will be ``None``.
+
+    If there are no hidden points (e.g., on a synoptic map any limb is fully
+    visible) ``hidden`` will be ``None``.
+
+    If there are no visible points (e.g., for an observer on the opposite side
+    of the Sun to the map observer) ``visible`` will be ``None``.
 
     To avoid triggering Matplotlib auto-scaling, these patches are added as
     artists instead of patches.  One consequence is that the plot legend is not
@@ -112,13 +116,15 @@ def draw_limb(axes, observer, *, rsun=R_sun, resolution=1000, **kwargs):
                    (vertices[1:, 1] - vertices[:-1, 1]) ** 2)
     continuous = np.concatenate([[True, True], step[1:] < 100 * step[:-1]])
 
-    # Create the Polygon for the near side of the Sun (using a solid line)
-    if 'linestyle' not in kwargs:
-        c_kw['linestyle'] = '-'
-    visible = patches.Polygon(vertices, **c_kw)
-    _modify_polygon_visibility(visible, is_visible & continuous)
-    # Add patches as artists rather than patches to avoid triggering auto-scaling
-    axes.add_artist(visible)
+    visible, hidden = None, None
+    if np.sum(is_visible) > 0:
+        # Create the Polygon for the near side of the Sun (using a solid line)
+        if 'linestyle' not in kwargs:
+            c_kw['linestyle'] = '-'
+        visible = patches.Polygon(vertices, **c_kw)
+        _modify_polygon_visibility(visible, is_visible & continuous)
+        # Add patches as artists rather than patches to avoid triggering auto-scaling
+        axes.add_artist(visible)
 
     if np.sum(~is_visible) > 0:
         # Create the Polygon for the far side of the Sun (using a dotted line)
@@ -127,8 +133,6 @@ def draw_limb(axes, observer, *, rsun=R_sun, resolution=1000, **kwargs):
         hidden = patches.Polygon(vertices, **c_kw)
         _modify_polygon_visibility(hidden, ~is_visible & continuous)
         axes.add_artist(hidden)
-    else:
-        hidden = None
 
     return visible, hidden
 
