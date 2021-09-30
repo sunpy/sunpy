@@ -7,9 +7,6 @@ Testing Guidelines
 This section describes the testing framework and format standards for tests in sunpy.
 Here we have heavily adapted the `Astropy version <https://docs.astropy.org/en/latest/development/testguide.html>`_, and **it is worth reading that link.**
 
-Testing Framework
-=================
-
 The testing framework used by sunpy is the `pytest`_ framework, accessed through the ``pytest`` command.
 
 .. _pytest: https://pytest.org/en/latest/
@@ -19,8 +16,8 @@ The testing framework used by sunpy is the `pytest`_ framework, accessed through
     The ``pytest`` project was formerly called ``py.test``, and you may
     see the two spellings used interchangeably.
 
-Testing Dependencies
----------------------
+Dependencies for testing
+------------------------
 
 Since the testing dependencies are not actually required to install or use sunpy, they are not included in "install_requires" in "setup.cfg".
 
@@ -31,14 +28,14 @@ Developers who want to run the test suite will need to install the testing packa
 If you want to see the current test dependencies, you check "extras_require" in "setup.cfg".
 
 Running Tests
--------------
+=============
 
 There are currently two different ways to invoke the sunpy tests.
 However, we strongly suggest using ``tox`` as the default one.
 Each method uses the widely-used ``pytest`` framework and are detailed below.
 
 ``tox``
-^^^^^^^^
+-------
 
 The primary method is to use `tox`_, which is a generic virtualenv management and test command line tool.
 We have several environments within our "tox.ini" file and you can list them::
@@ -55,7 +52,7 @@ This is the method that our continuous integration uses.
 .. _tox: https://tox.readthedocs.io/en/latest/
 
 ``pytest``
-^^^^^^^^^^
+----------
 
 The test suite can be run directly from the native ``pytest`` command.
 In this case, it is important for developers to be aware that they must manually rebuild any extensions by running ``python setup.py build_ext`` before testing.
@@ -80,25 +77,29 @@ If a test errors, you can use ``pdb`` to create a debugging session at the momen
 
     $ pytest --pdb
 
-Test coverage reports
----------------------
+Remote data
+-----------
+By default, no online tests are selected and so to run the online tests you have to::
 
-sunpy can use `pytest-cov`_  generate test coverage reports and settings are stored in ``setup.cfg``.
-This plugin can be installed using `pip`_::
+    $ tox -e py38-online
 
-    $ pip install pytest-cov
+or::
 
-To generate a test coverage report, use::
+    $ pytest --remote-data=any
 
-    $ pytest --cov ./sunpy
+Figure tests
+------------
+In order to avoid changes in figures due to different package versions, we recommend using tox to run the figure tests::
 
-This will print to the terminal a report of line coverage of our test suite.
-If you want to create a report in html, you can run::
+    $ tox -e py38-figure
 
-    $ pytest --cov-report xml:cov.xml --cov ./sunpy
-    $ coverage html
-
-.. _pytest-cov: https://pypi.org/project/pytest-cov/
+This will ensure that any figures created are checked using the package versions that were used to create the original figure hashes.
+Running this will create a folder, "figure_test_images", within your work folder ("<local clone location>/figure_test_images"), which is ignored by git.
+Inside this folder will be all the images created, as well as a json file with the hashes of the figures created by the test run.
+The current hashes are located within "sunpy/tests/figure_hashes_mpl_<ver>_ft_<ver>_astropy_<ver>.json" and this will be where you will need to update old hashes or create new figure entries if anything changes.
+The filenames are the versions of Matplotlib, freetype and astropy used.
+If these versions differ to your local setup, the figure tests will not run.
+In theory, the Python version does not change the results as we have pinned the packages that cause the hash to vary.
 
 Running tests in parallel
 -------------------------
@@ -119,6 +120,26 @@ or::
 
 .. _pytest-xdist: https://pypi.python.org/pypi/pytest-xdist
 .. _pip: https://pypi.org/project/pip/
+
+Coverage reports
+----------------
+
+sunpy can use `pytest-cov`_  generate test coverage reports and settings are stored in ``setup.cfg``.
+This plugin can be installed using `pip`_::
+
+    $ pip install pytest-cov
+
+To generate a test coverage report, use::
+
+    $ pytest --cov ./sunpy
+
+This will print to the terminal a report of line coverage of our test suite.
+If you want to create a report in html, you can run::
+
+    $ pytest --cov-report xml:cov.xml --cov ./sunpy
+    $ coverage html
+
+.. _pytest-cov: https://pypi.org/project/pytest-cov/
 
 Writing tests
 =============
@@ -199,14 +220,6 @@ Marking tests is pretty straightforward, use the decorator ``@pytest.mark.remote
         """Add one to the argument."""
         return x + 1
 
-By default, no online tests are selected and so to run the online tests you have to::
-
-    $ tox -e py37-online
-
-or::
-
-    $ pytest --remote-data=any
-
 Tests that create files
 -----------------------
 
@@ -239,7 +252,7 @@ Figure unit tests
     The figure tests and the hashes they use are only checked on Linux and might be different on other platforms.
     We should suggest if you do not use a Linux, to add a fake hash to the json files and then CircleCi (ran on a PR) will tell you the real hash to use.
 
-You can write sunpy unit tests that test the generation of matplotlib figures by adding the decorator ``sunpy.tests.helpers.figure_test``.
+You can write sunpy unit tests that test the generation of Matplotlib figures by adding the decorator ``sunpy.tests.helpers.figure_test``.
 Here is a simple example::
 
     import matplotlib.pyplot as plt
@@ -252,24 +265,11 @@ Here is a simple example::
 The current figure at the end of the unit test, or an explicitly returned figure, has its hash (currently ``SHA256``) compared against an established hash collection (more on this below).
 If the hashes do not match, the figure has changed, and thus the test is considered to have failed.
 
-To run the figure tests you need to be very careful, as any pixel that has changed, will change the hash.
-In order to avoid changes due to different package versions, we recommend using tox::
-
-    $ tox -e py38-figure
-
-This will ensure that any figures created are checked using the package versions that were used to create the original figure hashes.
-Running this will create a folder, "figure_test_images", within your work folder ("<local clone location>/figure_test_images"), which is ignored by git.
-Inside this folder will be all the images created, as well as a json file with the hashes of the figures created by the test run.
-The current hashes are located within "sunpy/tests/figure_hashes_mpl_<ver>_ft_<ver>_astropy_<ver>.json" and this will be where you will need to update old hashes or create new figure entries if anything changes.
-The filenames are the versions of matplotlib, freetype and astropy used.
-If these versions differ to your local setup, the figure tests will not run.
-In theory, the Python version does not change the results as we have pinned the packages that cause the hash to vary.
-
-If you are adding a new figure test you will need to do a few more steps::
+If you are adding a new figure test you will need to generate a new hash library::
 
     $ tox -e py38-figure -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_332_ft_261_astropy_42.json
 
-The filename changes if the version of astropy or matplotlib or freetype gets updated.
+The filename changes if the version of astropy or Matplotlib or freetype gets updated.
 So you might need to adjust this command.
 For the development figure tests::
 
@@ -285,8 +285,8 @@ The images output from the tests will be stored in a folder called ``.tmp/py38-f
 
 .. _doctests:
 
-Writing doctests
-----------------
+doctests
+--------
 
 Code examples in the documentation will also be run as tests and this helps to validate that the documentation is accurate and up to date.
 sunpy uses the same system as Astropy, so for information on writing doctests see the astropy `documentation <https://docs.astropy.org/en/latest/development/testguide.html#writing-doctests>`_.
