@@ -221,8 +221,8 @@ def get_width():
 
 def get_keywords(func):
     """
-    Returns a set of keyword names from `func`'s signature.
-    Recursive if `func` is a list of functions and methods.
+    Returns a set of keyword names from ``func``'s signature.
+    Recursive if ``func`` is a list of functions and methods.
 
     Parameters
     ----------
@@ -249,7 +249,7 @@ def get_keywords(func):
 def get_set_methods(obj):
     """
     Returns a set of keyword names that can be handled by
-    an object's `set_...` methods.
+    an object's ``set_...`` methods.
 
     Parameters
     ----------
