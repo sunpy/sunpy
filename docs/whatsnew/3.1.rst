@@ -41,8 +41,8 @@ We have bumped the minimum version of several packages we depend on; these are t
 
 New limb drawing function
 =========================
-The solar limb as seen from an arbitrary observer coordinate can now be drawn using the :func:`sunpy.visualization.draw_limb`
-function.
+The solar limb as seen from an arbitrary observer coordinate can now be drawn on a world coordinate system aware
+Axes using the :func:`sunpy.visualization.draw_limb` function.
 
 .. minigallery:: sunpy.visualization.draw_limb
 
