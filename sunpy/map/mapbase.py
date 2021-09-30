@@ -1569,19 +1569,12 @@ class GenericMap(NDData):
                           ((pad_y, pad_y), (pad_x, pad_x)),
                           mode='constant',
                           constant_values=(missing, missing))
-        new_meta['crpix1'] += pad_x
-        new_meta['crpix2'] += pad_y
 
         # All of the following pixel calculations use a pixel origin of 0
 
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
 
-        # Create a temporary WCS so we can use it for the data to pixel calculation.
-        new_wcs = self.wcs.deepcopy()
-        new_wcs.wcs.crpix += [pad_x, pad_y]
-
-        # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = new_wcs.world_to_pixel(self.reference_coordinate)
+        pixel_rotation_center = u.Quantity(self.reference_pixel).value + [pad_x, pad_y]
 
         if recenter:
             pixel_center = pixel_rotation_center
