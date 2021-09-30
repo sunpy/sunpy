@@ -121,32 +121,32 @@ class XRSTimeSeries(GenericTimeSeries):
         """
         Parses the various metafields to extract GOES satellite number.
         """
-        #various pattern matches for the meta fields.
+        # various pattern matches for the meta fields.
         pattern_old = ("{}go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits{}")
         pattern_new = ("{}sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc{}")
         pattern_r = ("{}sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc{}")
-        pattern_telescop=("GOES {SatelliteNumber:02d}")
-        pattern_inst=("{}GOES 1-{SatelliteNumber:02d} {}")
+        pattern_telescop = ("GOES {SatelliteNumber:02d}")
+        pattern_inst = ("{}GOES 1-{SatelliteNumber:02d} {}")
 
-        try: 
+        try:
             id = self.meta.metas[0]['id']
-            parsed=parse(pattern_r,str(id))
-            if parsed==None:
-                parsed=parse(pattern_new,str(id))
-                if parsed==None:
-                    parsed=parse(pattern_old,str(id))
-                    if parsed==None:
-                        id=self.meta.metas[0]['Instrument']
-                        parsed=parse(pattern_inst,str(id))
+            parsed = parse(pattern_r, str(id))
+            if parsed is None:
+                parsed = parse(pattern_new, str(id))
+                if parsed is None:
+                    parsed = parse(pattern_old, str(id))
+                    if parsed is None:
+                        id = self.meta.metas[0]['Instrument']
+                        parsed = parse(pattern_inst, str(id))
         except KeyError:
             try:
-                id=self.meta.metas[0]['TELESCOP']
-                parsed=parse(pattern_telescop,str(id))
+                id = self.meta.metas[0]['TELESCOP']
+                parsed = parse(pattern_telescop, str(id))
             except KeyError:
                 print("Error: Satellite Number not found in metadata")
-                return -1                   
+                return -1          
         return parsed['SatelliteNumber']
-       
+        
     @peek_show
     def peek(self, title="GOES Xray Flux", **kwargs):
         """
