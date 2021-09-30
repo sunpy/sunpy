@@ -825,6 +825,13 @@ def test_rotate_with_incompatible_missing_dtype():
         test_map.rotate(order=3, missing=np.nan)
 
 
+def test_rotate_crpix_zero_degrees(generic_map):
+    # Rotating a map by zero degrees should not change the location of the reference pixel at all
+    rotated_map = generic_map.rotate(0*u.deg)
+    assert rotated_map.reference_pixel.x == generic_map.reference_pixel.x
+    assert rotated_map.reference_pixel.y == generic_map.reference_pixel.y
+
+
 def test_rotate_pad_crpix(generic_map):
     rotated_map = generic_map.rotate(30*u.deg)
     # This tests that the reference pixel of the map is in the expected place.

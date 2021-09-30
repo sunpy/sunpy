@@ -9,7 +9,7 @@
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot": "1e5435af7bb854d47ebeabf354350f27bf989325aa5d77b930bdcdb043ce25df",
   "sunpy.map.tests.test_mapsequence.test_norm_animator": "a400eef26fdd915ccf12769031bd8dadedbf8f6a93e31cd5982bffe2484702ee",
   "sunpy.map.tests.test_plotting.test_draw_contours_aia": "8ade014395359ca6cc8428af7294fb0b79cc63cc5c2ab87f83d03fe513055e40",
-  "sunpy.map.tests.test_plotting.test_draw_contours_different_wcs": "06a4655c72ec72c7874cb8b6727fd574b978c5e83d630fd04bddf35264e72247",
+  "sunpy.map.tests.test_plotting.test_draw_contours_different_wcs": "2ce6ccb1cb73509291a4a514400f4d11373af267e2b88f1c3c5fb959c20f3dbd",
   "sunpy.map.tests.test_plotting.test_draw_grid_aia171": "3a48eb20a152a3fd0744d20cf0d7cf5c0d43ec626b6d95337598dfee4ddbc0e4",
   "sunpy.map.tests.test_plotting.test_draw_limb_different_observer": "d85fc7e939ac813274bdf7886c646fdab2fca61659f18009c8f5f2b760c4bb57",
   "sunpy.map.tests.test_plotting.test_draw_limb_heliographic_stonyhurst": "2f7cf5251db91da34a86b3a72610acc9b257e4c586f2dcf6f10381bd7c3ea186",
