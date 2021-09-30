@@ -60,6 +60,7 @@ from .frames import (
 RSUN_METERS = constants.get('radius').si.to(u.m)
 
 __all__ = ['transform_with_sun_center',
+           'propagate_with_solar_surface',
            'hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
@@ -73,6 +74,10 @@ __all__ = ['transform_with_sun_center',
 
 # Boolean flag for whether to ignore the motion of the center of the Sun in inertial space
 _ignore_sun_motion = False
+
+
+# If not None, the name of the differential-rotation model to use for any obstime change
+_autoapply_diffrot = None
 
 
 @contextmanager
@@ -90,6 +95,20 @@ def transform_with_sun_center():
     Under this context manager, transformations will instead move the coordinate over time to
     "follow" the translational motion of the center of Sun, thus maintaining the position of the
     coordinate relative to the center of the Sun.
+
+    Notes
+    -----
+    This context manager accounts only for the motion of the center of the Sun, i.e.,
+    translational motion.  The motion of solar features due to any rotation of the Sun about its
+    rotational axis is not accounted for.
+
+    Due to the implementation approach, this context manager modifies transformations between only
+    these five coordinate frames:
+    `~sunpy.coordinates.frames.HeliographicStonyhurst`,
+    `~sunpy.coordinates.frames.HeliographicCarrington`,
+    `~sunpy.coordinates.frames.HeliocentricInertial`,
+    `~sunpy.coordinates.frames.Heliocentric`, and
+    `~sunpy.coordinates.frames.Helioprojective`.
 
     Examples
     --------
@@ -109,31 +128,102 @@ def transform_with_sun_center():
     ...     sun_center.transform_to(end_frame)  # now following Sun center
     <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0., 0., 0.)>
-
-    Notes
-    -----
-    This context manager accounts only for the motion of the center of the Sun, i.e.,
-    translational motion.  The motion of solar features due to any rotation of the Sun about its
-    rotational axis is not accounted for.
-
-    Due to the implementation approach, this context manager modifies transformations between only
-    these five coordinate frames:
-    `~sunpy.coordinates.frames.HeliographicStonyhurst`,
-    `~sunpy.coordinates.frames.HeliographicCarrington`,
-    `~sunpy.coordinates.frames.HeliocentricInertial`,
-    `~sunpy.coordinates.frames.Heliocentric`, and
-    `~sunpy.coordinates.frames.Helioprojective`.
     """
     try:
         global _ignore_sun_motion
 
         old_ignore_sun_motion = _ignore_sun_motion  # nominally False
 
-        log.debug("Ignore the motion of the center of the Sun for transformations")
+        if not old_ignore_sun_motion:
+            log.debug("Ignoring the motion of the center of the Sun for transformations")
         _ignore_sun_motion = True
         yield
     finally:
+        if not old_ignore_sun_motion:
+            log.debug("Stop ignoring the motion of the center of the Sun for transformations")
         _ignore_sun_motion = old_ignore_sun_motion
+
+
+@contextmanager
+def propagate_with_solar_surface(rotation_model='howard'):
+    """
+    Context manager for coordinate transformations to automatically apply solar
+    differential rotation for any change in observation time.
+
+    Normally, coordinates refer to a point in inertial space (relative to the
+    barycenter of the solar system).  Transforming to a different observation time
+    does not move the point at all, but rather only updates the coordinate
+    representation as needed for the origin and axis orientations at the new
+    observation time.
+
+    Under this context manager, transformations will instead treat the coordinate
+    as if it were referring to a point on the solar surface instead of a point in
+    inertial space.  If a transformation has a change in observation time, the
+    heliographic longitude of the point will be updated according to the specified
+    rotation model.
+
+    Parameters
+    ----------
+    rotation_model : `str`
+        Accepted model names are ``'howard'`` (default), ``'snodgrass'``,
+        ``'allen'``, and ``'rigid'``.  See the documentation for
+        :func:`~sunpy.physics.differential_rotation.diff_rot` for the differences
+        between these models.
+
+    Notes
+    -----
+    This context manager also ignores the motion of the center of the Sun (see
+    :func:`~sunpy.coordinates.transformations.transform_with_sun_center`).
+
+    Due to the implementation approach, this context manager modifies
+    transformations between only these five coordinate frames:
+    `~sunpy.coordinates.frames.HeliographicStonyhurst`,
+    `~sunpy.coordinates.frames.HeliographicCarrington`,
+    `~sunpy.coordinates.frames.HeliocentricInertial`,
+    `~sunpy.coordinates.frames.Heliocentric`, and
+    `~sunpy.coordinates.frames.Helioprojective`.
+
+    Examples
+    --------
+
+    .. minigallery:: sunpy.coordinates.propagate_with_solar_surface
+
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import HeliocentricInertial, propagate_with_solar_surface
+    >>> meridian = SkyCoord(0*u.deg, [-60, -30, 0, 30, 60]*u.deg, 1*u.AU,
+    ...                     frame=HeliocentricInertial, obstime='2021-09-15')
+    >>> out_frame = HeliocentricInertial(obstime='2021-09-21')
+    >>> with propagate_with_solar_surface():
+    ...     print(meridian.transform_to(out_frame))
+    <SkyCoord (HeliocentricInertial: obstime=2021-09-21T00:00:00.000): (lon, lat, distance) in (deg, deg, AU)
+        [(70.24182965, -60., 1.),
+         (82.09298036, -30., 1.),
+         (85.9579703 ,   0., 1.),
+         (82.09298036,  30., 1.),
+         (70.24182965,  60., 1.)]>
+    >>> with propagate_with_solar_surface(rotation_model='rigid'):
+    ...     print(meridian.transform_to(out_frame))
+    <SkyCoord (HeliocentricInertial: obstime=2021-09-21T00:00:00.000): (lon, lat, distance) in (deg, deg, AU)
+        [(85.1064, -60., 1.), (85.1064, -30., 1.),
+         (85.1064,   0., 1.), (85.1064,  30., 1.),
+         (85.1064,  60., 1.)]>
+    """
+    with transform_with_sun_center():
+        try:
+            global _autoapply_diffrot
+
+            old_autoapply_diffrot = _autoapply_diffrot  # nominally False
+
+            log.debug("Enabling automatic solar differential rotation "
+                      f"('{rotation_model}') for any changes in obstime")
+            _autoapply_diffrot = rotation_model
+            yield
+        finally:
+            if not old_autoapply_diffrot:
+                log.debug("Disabling automatic solar differential rotation "
+                          "for any changes in obstime")
+            _autoapply_diffrot = old_autoapply_diffrot
 
 
 # Global counter to keep track of the layer of transformation
@@ -656,7 +746,10 @@ def hgs_to_hgs(from_coo, to_frame):
     elif _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
-        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
+        if _autoapply_diffrot:
+            from_coo = from_coo._apply_diffrot((to_frame.obstime - from_coo.obstime).to('day'),
+                                               _autoapply_diffrot)
+        return from_coo.transform_to(HCRS(obstime=to_frame.obstime)).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,

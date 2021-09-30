@@ -22,7 +22,7 @@ from . import sun
 from .ephemeris import *
 from .frames import *
 from .metaframes import *
-from .transformations import _make_sunpy_graph, transform_with_sun_center
+from .transformations import _make_sunpy_graph, propagate_with_solar_surface, transform_with_sun_center
 from .wcs_utils import *
 
 __doc__ += _make_sunpy_graph()

@@ -33,7 +33,8 @@ from sunpy.coordinates import (
 )
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth
 from sunpy.coordinates.frames import _J2000
-from sunpy.coordinates.transformations import transform_with_sun_center
+from sunpy.coordinates.transformations import propagate_with_solar_surface, transform_with_sun_center
+from sunpy.physics.differential_rotation import diff_rot
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.sun.constants import sidereal_rotation_rate
 from sunpy.time import parse_time
@@ -982,3 +983,35 @@ def test_rsun_preservation():
         for frame in coords_in:
             out_coord = coord.transform_to(frame.replicate(**args_out))
             assert_quantity_allclose(out_coord.rsun, args_out['rsun'])
+
+
+def test_propagate_with_solar_surface():
+    # Test propagating the meridian by 6 days of solar rotation
+    meridian = SkyCoord(0*u.deg, np.arange(0, 90, 10)*u.deg, 1*u.AU,
+                        frame=HeliocentricInertial, obstime='2001-01-01')
+    dt = 6*u.day
+    end_frame = HeliocentricInertial(obstime=meridian.obstime + dt)
+
+    # Without the context manager
+    result1 = meridian.transform_to(end_frame)
+    assert u.allclose(result1.lon, 0*u.deg, atol=1e-1*u.deg)  # no rotation with the solar surface
+    assert not u.allclose(result1.lon, 0*u.deg, atol=1e-3*u.deg)  # some change due to translation
+    assert u.allclose(result1.lat, meridian.lat, atol=1e-2*u.deg)
+
+    # Using the context manager (also test default rotation model is 'howard')
+    with propagate_with_solar_surface():
+        result2 = meridian.transform_to(end_frame)
+    assert u.allclose(result2.lon, diff_rot(dt, meridian.lat, rot_type='howard'))
+
+    # Check that nesting the context manager doesn't confuse anything (also test other models)
+    with propagate_with_solar_surface('snodgrass'):
+        with propagate_with_solar_surface('allen'):
+            pass
+        result3 = meridian.transform_to(end_frame)  # should use 'snodgrass', not 'allen'
+    assert u.allclose(result3.lon, diff_rot(dt, meridian.lat, rot_type='snodgrass'))
+
+    # After the context manager, the coordinate should have the same result as the first transform
+    result4 = meridian.transform_to(end_frame)
+    assert_quantity_allclose(result4.lon, result1.lon)
+    assert_quantity_allclose(result4.lat, result1.lat)
+    assert_quantity_allclose(result4.distance, result1.distance)
