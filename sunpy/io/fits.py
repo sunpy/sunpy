@@ -194,8 +194,6 @@ def write(fname, data, header, hdu_type=None, **kwargs):
         hdu.header.extend(fits_header, strip=False, update=True)
 
         # Set the HDU's data
-        if hdu.data is not None:
-            raise ValueError('`hdu_type` must not contain data')
         hdu.data = data
     else:
         hdu = hdu_type(data=data, header=fits_header)

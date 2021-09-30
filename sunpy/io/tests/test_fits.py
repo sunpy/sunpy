@@ -98,11 +98,6 @@ def test_simple_write_compressed_instance(tmpdir):
     data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
     outfile = tmpdir / "test.fits"
 
-    # HDU instance must not contain data
-    hdu = fits.CompImageHDU(data)
-    with pytest.raises(ValueError, match='must not contain data'):
-        sunpy.io.fits.write(str(outfile), data, header, hdu_type=hdu)
-
     # Ensure HDU instance is used correctly
     hdu = fits.CompImageHDU()
     hdu.header['HELLO'] = 'world'  # should be in the written file
