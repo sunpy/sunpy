@@ -51,6 +51,8 @@ class XRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the XRSClient:
+    Source: https://umbra.nascom.nasa.gov/goes/fits
+    <BLANKLINE>
            Start Time               End Time        Instrument ... Source Provider
     ----------------------- ----------------------- ---------- ... ------ --------
     2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS ...   GOES     NOAA
@@ -76,6 +78,10 @@ class XRSClient(GenericClient):
                  r"/l2/data/xrsf-l2-flx1s_science/%Y/%m/sci_xrsf-l2-flx1s_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
     pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-flx1s_science/{year:4d}/"
                  "{month:2d}/sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+
+    @property
+    def info_url(self):
+        return 'https://umbra.nascom.nasa.gov/goes/fits'
 
     def post_search_hook(self, i, matchdict):
         tr = get_timerange_from_exdict(i)
@@ -196,6 +202,8 @@ class SUVIClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the SUVIClient:
+    Source: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes
+    <BLANKLINE>
            Start Time               End Time        Instrument ... Level Wavelength
                                                                ...        Angstrom
     ----------------------- ----------------------- ---------- ... ----- ----------
@@ -216,6 +224,10 @@ class SUVIClient(GenericClient):
     pattern2 = ('{}/goes/goes{SatelliteNumber:2d}/{}/dr_suvi-l{Level}-ci{Wavelength:03d}_g{SatelliteNumber:2d}_s'
                 '{year:4d}{month:2d}{day:2d}T{hour:2d}{minute:2d}{second:2d}Z_e'
                 '{eyear:4d}{emonth:2d}{eday:2d}T{ehour:2d}{eminute:2d}{esecond:2d}Z_{}')
+
+    @property
+    def info_url(self):
+        return 'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes'
 
     def post_search_hook(self, i, matchdict):
 

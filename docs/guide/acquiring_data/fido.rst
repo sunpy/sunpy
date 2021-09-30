@@ -103,6 +103,8 @@ To see a summary of the results of our query, simply type the name of the variab
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the LYRAClient:
+    Source: http://proba2.oma.be/lyra/data/bsd
+    <BLANKLINE>
            Start Time               End Time        Instrument ... Provider Level
     ----------------------- ----------------------- ---------- ... -------- -----
     2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA ...      ESA     2
@@ -121,6 +123,8 @@ Specific passbands can be searched for by supplying an `~astropy.units.Quantity`
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the NoRHClient:
+    Source: https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html
+    <BLANKLINE>
            Start Time               End Time        ... Provider Wavelength
                                                     ...             GHz
     ----------------------- ----------------------- ... -------- ----------
@@ -139,6 +143,8 @@ To search for data at a given cadence use the `a.Sample <sunpy.net.attrs.Sample>
     Results from 1 Provider:
     <BLANKLINE>
     289 Results from the VSOClient:
+    Source: http://vso.stanford.edu/cgi-bin/search
+    <BLANKLINE>
            Start Time       ...
                             ...
     ----------------------- ...
@@ -176,17 +182,23 @@ This joins queries together just as the logical ``OR`` operator would::
     Results from 3 Providers:
     <BLANKLINE>
     2 Results from the LYRAClient:
+    Source: http://proba2.oma.be/lyra/data/bsd
+    <BLANKLINE>
            Start Time               End Time        Instrument ... Provider Level
     ----------------------- ----------------------- ---------- ... -------- -----
     2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA ...      ESA     2
     2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA ...      ESA     3
     <BLANKLINE>
     1 Results from the RHESSIClient:
+    Source: https://hesperia.gsfc.nasa.gov/hessidata
+    <BLANKLINE>
            Start Time               End Time        Instrument ... Source Provider
     ----------------------- ----------------------- ---------- ... ------ --------
     2012-03-04 00:00:00.000 2012-03-04 23:59:59.999     RHESSI ... RHESSI     NASA
     <BLANKLINE>
     3 Results from the VSOClient:
+    Source: http://vso.stanford.edu/cgi-bin/search
+    <BLANKLINE>
            Start Time               End Time        ...   Size        Info
                                                     ...  Mibyte
     ----------------------- ----------------------- ... -------- --------------
@@ -215,12 +227,16 @@ For example, the following code returns a response containing LYRA data from the
     Results from 2 Providers:
     <BLANKLINE>
     2 Results from the LYRAClient:
+    Source: http://proba2.oma.be/lyra/data/bsd
+    <BLANKLINE>
            Start Time               End Time        Instrument ... Provider Level
     ----------------------- ----------------------- ---------- ... -------- -----
     2012-01-01 00:00:00.000 2012-01-01 23:59:59.999       LYRA ...      ESA     2
     2012-01-02 00:00:00.000 2012-01-02 23:59:59.999       LYRA ...      ESA     2
     <BLANKLINE>
     50 Results from the VSOClient:
+    Source: http://vso.stanford.edu/cgi-bin/search
+    <BLANKLINE>
            Start Time               End Time        ...   Size         Info
                                                     ...  Mibyte
     ----------------------- ----------------------- ... -------- ----------------
@@ -274,6 +290,8 @@ For example if we did a query for some AIA and HMI data::
     Results from 2 Providers:
     <BLANKLINE>
     402 Results from the VSOClient:
+    Source: http://vso.stanford.edu/cgi-bin/search
+    <BLANKLINE>
            Start Time       ...
                             ...
     ----------------------- ...
@@ -301,6 +319,8 @@ For example if we did a query for some AIA and HMI data::
     Length = 402 rows
     <BLANKLINE>
     42 Results from the VSOClient:
+    Source: http://vso.stanford.edu/cgi-bin/search
+    <BLANKLINE>
            Start Time               End Time        Source ...   Size   Wavetype
                                                            ...  Mibyte
     ----------------------- ----------------------- ------ ... -------- --------
@@ -342,6 +362,8 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     Results from 2 Providers:
     <BLANKLINE>
     402 Results from the VSOClient:
+    Source: http://vso.stanford.edu/cgi-bin/search
+    <BLANKLINE>
            Start Time       Instrument  Physobs   Wavelength [2]
                                                      Angstrom
     ----------------------- ---------- --------- ----------------
@@ -369,6 +391,8 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     Length = 402 rows
     <BLANKLINE>
     42 Results from the VSOClient:
+    Source: http://vso.stanford.edu/cgi-bin/search
+    <BLANKLINE>
            Start Time       Instrument        Physobs         Wavelength [2]
                                                                  Angstrom
     ----------------------- ---------- --------------------- ----------------

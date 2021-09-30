@@ -457,6 +457,13 @@ class BaseClient(ABC):
         using the incorrect client.
         """
 
+    @property
+    def info_url(self):
+        """
+        This should return a string that is a URL to the data server or
+        documentation on the data being served.
+        """
+
     @staticmethod
     def check_attr_types_in_query(query, required_attrs={}, optional_attrs={}):
         """

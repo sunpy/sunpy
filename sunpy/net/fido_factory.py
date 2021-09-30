@@ -181,7 +181,9 @@ class UnifiedResponse(Sequence):
         else:
             ret = 'Results from {} Providers:\n\n'.format(len(self))
         for block in self:
-            ret += "{} Results from the {}:\n".format(len(block), block.client.__class__.__name__)
+            ret += f"{len(block)} Results from the {block.client.__class__.__name__}:\n"
+            if block.client.info_url is not None:
+                ret += f'Source: {block.client.info_url}\n\n'
             lines = repr(block).split('\n')
             ret += '\n'.join(lines[1:])
             ret += '\n\n'

@@ -27,6 +27,8 @@ class NOAAIndicesClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the NOAAIndicesClient:
+    Source: https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json
+    <BLANKLINE>
      Instrument     Physobs     Source Provider
     ------------ -------------- ------ --------
     NOAA-Indices sunspot number   SIDC     SWPC
@@ -35,6 +37,10 @@ class NOAAIndicesClient(GenericClient):
 
     """
     required = {a.Instrument}
+
+    @property
+    def info_url(self):
+        return 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
 
     def search(self, *args, **kwargs):
         rowdict = self._get_match_dict(*args, **kwargs)
@@ -82,6 +88,8 @@ class NOAAPredictClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the NOAAPredictClient:
+    Source: https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json
+    <BLANKLINE>
      Instrument     Physobs     Source Provider
     ------------ -------------- ------ --------
     NOAA-Predict sunspot number   ISES     SWPC
@@ -90,6 +98,10 @@ class NOAAPredictClient(GenericClient):
 
     """
     required = {a.Instrument}
+
+    @property
+    def info_url(self):
+        return 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
 
     def search(self, *args, **kwargs):
         rowdict = self._get_match_dict(*args, **kwargs)

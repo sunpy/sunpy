@@ -666,3 +666,7 @@ class VSOClient(BaseClient):
 
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
             json.dump(attrs, attrs_file, indent=2)
+
+    @property
+    def info_url(self):
+        return 'http://vso.stanford.edu/cgi-bin/search'
