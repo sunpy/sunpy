@@ -1,0 +1,6 @@
+Printing the response from a `~sunpy.net.Fido` query now includes the URL where
+the data files are sourced from.
+
+If you develop a third-party `~sunpy.net.Fido` client, support for this can
+be automatically enabled by adding a ``info_url`` property to your
+`~sunpy.net.base_client.BaseClient` that returns a URL as a string.
