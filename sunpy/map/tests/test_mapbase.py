@@ -871,6 +871,46 @@ def test_rotate_invalid_order(generic_map):
         generic_map.rotate(order=-1)
 
 
+def test_rotate_assumed_obstime():
+    # Create an HPC map that is missing the observing time and has an off-disk reference coordinate
+    header = {
+        'crval1': -2000,
+        'crval2': 0,
+        'cdelt1': 1,
+        'cdelt2': 1,
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+        'naxis': 2,
+        'naxis1': 10,
+        'naxis2': 10,
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'crpix1': 4.5,
+        'crpix2': 6.5,
+        'hglt_obs': 0,
+        'hgln_obs': 0,
+        'dsun_obs': 150000000000,
+        'rsun_ref': 700000000,
+    }
+    original = sunpy.map.Map(np.zeros((10, 10)), header)
+
+    # Accessing the date makes the assumption of "now" for obstime
+    with pytest.warns(SunpyUserWarning, match="Missing metadata for observation time"):
+        original.date
+
+    # The assumption has already been made, so no further warning should be emitted by rotate()
+    rotated = original.rotate(0*u.deg)
+
+    # The reference coordinate should be unchanged by this 0-degree rotation
+    # Since the reference coordinate is off-disk, a non-identity transformation would result in NaNs
+    assert_quantity_allclose(rotated.reference_pixel.x, original.reference_pixel.x)
+    assert_quantity_allclose(rotated.reference_pixel.y, original.reference_pixel.y)
+
+    # The returned map should also be missing observing time
+    with pytest.warns(SunpyUserWarning, match="Missing metadata for observation time"):
+        rotated.date
+
+
 def test_as_mpl_axes_aia171(aia171_test_map):
     ax = plt.subplot(projection=aia171_test_map)
     assert isinstance(ax, wcsaxes.WCSAxes)

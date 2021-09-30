@@ -1540,12 +1540,12 @@ class GenericMap(NDData):
 
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
 
-        # Create a temporary map so we can use it for the data to pixel calculation.
-        temp_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        # Create a temporary WCS so we can use it for the data to pixel calculation.
+        new_wcs = self.wcs.deepcopy()
+        new_wcs.wcs.crpix += [pad_x, pad_y]
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate)).value
-        del temp_map
+        pixel_rotation_center = new_wcs.world_to_pixel(self.reference_coordinate)
 
         if recenter:
             pixel_center = pixel_rotation_center
