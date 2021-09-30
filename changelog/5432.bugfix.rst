@@ -1,0 +1,5 @@
+:meth:`sunpy.map.GenericMap.plot` no longer adds a unit string to the axis
+labels if the axes being plotted on is a WCSAxes. For a WCSAxes, angular units
+are indicated in the tick labels, and automatically change when the zoom level
+changes from e.g. degrees to arc-minutes. This could previously lead to
+situations where the axis label units were incorrect.

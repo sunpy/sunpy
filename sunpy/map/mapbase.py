@@ -2421,10 +2421,19 @@ class GenericMap(NDData):
             if title:
                 axes.set_title(title)
 
-            axes.set_xlabel(axis_labels_from_ctype(self.coordinate_system[0],
-                                                   self.spatial_units[0]))
-            axes.set_ylabel(axis_labels_from_ctype(self.coordinate_system[1],
-                                                   self.spatial_units[1]))
+            if wcsaxes_compat.is_wcsaxes(axes):
+                # WCSAxes has unit identifiers on the tick labels, so no need
+                # to add unit information to the label
+                spatial_units = [None, None]
+                ctype = axes.wcs.wcs.ctype
+            else:
+                spatial_units = self.spatial_units
+                ctype = self.coordinate_system
+
+            axes.set_xlabel(axis_labels_from_ctype(ctype[0],
+                                                   spatial_units[0]))
+            axes.set_ylabel(axis_labels_from_ctype(ctype[1],
+                                                   spatial_units[1]))
 
         if not wcsaxes_compat.is_wcsaxes(axes):
             bl = self._get_lon_lat(self.bottom_left_coord)
