@@ -5,7 +5,6 @@ import datetime
 from pathlib import Path
 from collections import OrderedDict
 from distutils.version import LooseVersion
-from sunpy.net.dataretriever.attrs.goes import SatelliteNumber
 
 import h5netcdf
 import matplotlib.dates
