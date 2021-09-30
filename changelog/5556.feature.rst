@@ -1,0 +1,1 @@
+Added `~sunpy.timeseries.sources.goes.XRSTimeSeries.satellite_number` allowing quick access to the GOES Satellite Number for all GOES series.
