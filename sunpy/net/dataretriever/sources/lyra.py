@@ -23,6 +23,8 @@ class LYRAClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the LYRAClient:
+    Source: http://proba2.oma.be/lyra/data/bsd
+    <BLANKLINE>
            Start Time               End Time        Instrument ... Provider Level
     ----------------------- ----------------------- ---------- ... -------- -----
     2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       LYRA ...      ESA     2
@@ -36,6 +38,10 @@ class LYRAClient(GenericClient):
     baseurl = (r'http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
                r'lyra_(\d){8}-000000_lev(\d){1}_std.fits')
     pattern = '{}/bsd/{year:4d}/{month:2d}/{day:2d}/{}_lev{Level:1d}_std.fits'
+
+    @property
+    def info_url(self):
+        return 'http://proba2.oma.be/lyra/data/bsd'
 
     @classmethod
     def register_values(cls):

@@ -112,6 +112,8 @@ class RHESSIClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the RHESSIClient:
+    Source: https://hesperia.gsfc.nasa.gov/hessidata
+    <BLANKLINE>
            Start Time               End Time        Instrument ... Source Provider
     ----------------------- ----------------------- ---------- ... ------ --------
     2016-01-01 00:00:00.000 2016-01-01 23:59:59.999     RHESSI ... RHESSI     NASA
@@ -121,6 +123,10 @@ class RHESSIClient(GenericClient):
 
     """
     pattern = '{}/catalog/hsi_obssumm_{year:4d}{month:2d}{day:2d}_{}'
+
+    @property
+    def info_url(self):
+        return 'https://hesperia.gsfc.nasa.gov/hessidata'
 
     def get_observing_summary_filename(self, time_range):
         """

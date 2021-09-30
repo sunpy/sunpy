@@ -77,6 +77,8 @@ variable set to the Fido search, in this case, res::
     Results from 1 Provider:
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -194,6 +196,8 @@ If you want to get a manual set of keywords in the response object, you can pass
     Results from 1 Provider:
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
     TELESCOP  INSTRUME           T_OBS
     -------- ---------- -----------------------
      SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
@@ -232,6 +236,8 @@ To display all of the columns, we can use ``show()`` without passing any argumen
     Results from 1 Provider:
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
             DATE                DATE__OBS        ... CALVER64
     -------------------- ----------------------- ... --------
     2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
@@ -301,6 +307,8 @@ To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`
     Results from 1 Provider:
     <BLANKLINE>
     61 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
     ----------------------- -------- --------- -------- -------
     2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
@@ -342,6 +350,8 @@ between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
     Results from 1 Provider:
     <BLANKLINE>
     7 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -370,6 +380,8 @@ Let's look for 2 different series data at the same time::
     Results from 2 Providers:
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -396,6 +408,8 @@ Let's look for 2 different series data at the same time::
     Length = 81 rows
     <BLANKLINE>
     2107 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
            T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
     -------------------- -------- -------- -------- -------
     2014-01-01T00:00:01Z  SDO/AIA    AIA_4       94    2145
@@ -435,6 +449,8 @@ of conditions which get passed to the JSOC.  Let's say you want all the
     Results from 2 Providers:
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -461,6 +477,8 @@ of conditions which get passed to the JSOC.  Let's say you want all the
     Length = 81 rows
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.02_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145

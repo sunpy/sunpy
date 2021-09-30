@@ -190,6 +190,10 @@ class JSOCClient(BaseClient):
     # Default number of max connections that the Downloader opens
     default_max_conn = 2
 
+    @property
+    def info_url(self):
+        return 'http://jsoc.stanford.edu'
+
     def search(self, *query, **kwargs):
         """
         Build a JSOC query and submit it to JSOC for processing.

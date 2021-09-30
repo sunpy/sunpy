@@ -31,6 +31,8 @@ class NoRHClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the NoRHClient:
+    Source: https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html
+    <BLANKLINE>
            Start Time               End Time        ... Provider Wavelength
                                                     ...             GHz
     ----------------------- ----------------------- ... -------- ----------
@@ -42,6 +44,10 @@ class NoRHClient(GenericClient):
     """
     baseurl = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
     pattern = '{}/tcx/{year:4d}/{month:2d}/{Wavelength:3l}{:4d}{day:2d}'
+
+    @property
+    def info_url(self):
+        return 'https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html'
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):

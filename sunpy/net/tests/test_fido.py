@@ -221,8 +221,8 @@ def test_repr():
 
     rep = repr(results)
     rep = rep.split('\n')
-    # 6 header lines, the results table and two blank lines at the end
-    assert len(rep) == 6 + len(list(results)[0]) + 2
+    # 8 header lines, the results table and two blank lines at the end
+    assert len(rep) == 8 + len(list(results)[0]) + 2
 
 
 def filter_queries(queries):

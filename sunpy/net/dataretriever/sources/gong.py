@@ -19,6 +19,8 @@ class GONGClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     5 Results from the GONGClient:
+    Source: https://gong2.nso.edu/oQR/zqs
+    <BLANKLINE>
            Start Time               End Time        ... Provider ExtentType
     ----------------------- ----------------------- ... -------- ----------
     2019-12-31 22:14:00.000 2019-12-31 22:14:59.999 ...      NSO   SYNOPTIC
@@ -32,6 +34,10 @@ class GONGClient(GenericClient):
     baseurl = (r'https://gong2.nso.edu/oQR/zqs/%Y%m/mrzqs%y%m%d/mrzqs%y%m%dt%H%Mc'
                r'(\d){4}_(\d){3}\.fits.gz')
     pattern = '{}/zqs/{year:4d}{month:2d}/mrzqs{:4d}{day:2d}/mrzqs{:6d}t{hour:2d}{minute:2d}c{}'
+
+    @property
+    def info_url(self):
+        return 'https://gong2.nso.edu/oQR/zqs'
 
     @classmethod
     def register_values(cls):

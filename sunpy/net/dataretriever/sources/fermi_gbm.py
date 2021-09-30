@@ -37,6 +37,8 @@ class GBMClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the GBMClient:
+    Source: https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily
+    <BLANKLINE>
            Start Time               End Time        ... Resolution Detector
     ----------------------- ----------------------- ... ---------- --------
     2015-06-21 00:00:00.000 2015-06-21 23:59:59.999 ...      ctime       n3
@@ -48,6 +50,10 @@ class GBMClient(GenericClient):
     """
     baseurl = r'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/%Y/%m/%d/current/glg_(\w){5}_(\w){2}_%y%m%d_v00.pha'
     pattern = '{}/daily/{year:4d}/{month:2d}/{day:2d}/current/glg_{Resolution:5}_{Detector:2}_{:6d}{}'
+
+    @property
+    def info_url(self):
+        return 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily'
 
     @classmethod
     def register_values(cls):
