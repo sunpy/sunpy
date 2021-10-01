@@ -11,9 +11,8 @@ from sunpy.util.exceptions import SunpyUserWarning, SunpyDeprecationWarning
 
 __all__ = ['affine_transform']
 
-# TODO: add deprecation for `use_scipy`
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
-                     recenter=False, missing=0.0, method='none', use_scipy=False):
+                     recenter=False, missing=0.0, method='skimage', use_scipy=False):
     """
     Rotates, shifts and scales an image.
 
@@ -53,12 +52,9 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         If `cv2`, uses :func:`cv2.warpAffine`.
         2. Elif function, uses user-defined function to perform affine transform.
         See `notes` for function requirements.
-        Default: `none`: Will attempt to use :func:`skimage.transform.warp`;
+        Default: `skimage`: Will attempt to use :func:`skimage.transform.warp`;
         on ImportError, will use :func:`scipy.ndimage.interpolation.affine_transform`.
         (This behavior is identical to the now-deprecated `use_scipy=False`)
-        (Option `none` will be deprecated in future releases. Please explicitly set method.)
-    use_scipy : `bool`, to be deprecated
-        Equivalent to setting `method=scipy`; please do that instead.
 
     Returns
     -------
@@ -95,7 +91,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     Method
     ------
     If a custom transform function is passed to `method`, it must have the function signature:
-    `foo(image,rmatrix,order,scale,missing,image_center,recenter)`
+    `custom_transform(image,rmatrix,order,scale,missing,image_center,recenter)`
     (identical to the parent affine_transform, without the `method` argument),
     and it must return the new rotated, scaled, translated image.
 
@@ -114,33 +110,28 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     _allowed_methods = {'scipy': _scipy_affine_transform, 'skimage': _skimage_affine_transform,
                         'cv2': _opencv_affine_transform}
 
-    if isinstance(method, str):
-        if method == 'none':
-            if use_scipy:
-                warnings.warn("Argument `use_scipy` has been deprecated."
-                              " Please set `method='scipy'`",
-                              SunpyDeprecationWarning)
-                method = _scipy_affine_transform
-            else:
-                warnings.warn("Setting `method='none'` will be deprecated in future releases."
-                              " Please set explicit method",
-                              SunpyDeprecationWarning)
-                try:
-                    import skimage
-                    method = _skimage_affine_transform
-                except ImportError:
-                    warnings.warn('`skimage` could not be imported. Using `scipy` instead',
-                                  SunpyUserWarning)
-                    warnings.warn('This fallback behavior will be deprecated. '
-                                  'Future versions will throw an ImportError and cease execution.',
-                                  SunpyDeprecationWarning)
-                    method = _scipy_affine_transform
+    if use_scipy:
+        warnings.warn("Argument `use_scipy` has been deprecated."
+                      " Please set `method='scipy'` in the future.",
+                      SunpyDeprecationWarning)
+        method = 'scipy'
 
-        else:
-            try:
-                method = _allowed_methods[method]
-            except KeyError:
-                raise ValueError("`method` {} not supported.".format(method))
+    if method == 'skimage':
+        try:
+            import skimage
+        except ImportError:
+            warnings.warn('`skimage` could not be imported. Using `scipy` instead',
+                          SunpyUserWarning)
+            warnings.warn('This fallback behavior will be deprecated. '
+                          'Future versions will throw an ImportError and cease execution.',
+                          SunpyDeprecationWarning)
+            method = 'scipy'
+
+    if isinstance(method, str):
+        try:
+            method = _allowed_methods[method]
+        except KeyError:
+            raise ValueError("`method` {} not supported.".format(method))
 
     if not isinstance(method, types.FunctionType):
         raise ValueError("argument `method` must be a string or function")

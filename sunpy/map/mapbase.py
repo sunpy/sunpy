@@ -1235,9 +1235,8 @@ class GenericMap(NDData):
         return new_map
 
     @u.quantity_input
-    # TODO: add deprecation for `use_scipy` argument
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, method='none', use_scipy=False):
+               recenter=False, missing=0.0, method='skimage', use_scipy=False):
         """
         Returns a new rotated and rescaled map.
 
@@ -1283,12 +1282,9 @@ class GenericMap(NDData):
             If `cv2`, uses :func:`cv2.warpAffine`.
             2. Elif function, uses user-defined function to perform affine transform.
             See `notes` for function requirements.
-            Default: `none`: Will attempt to use :func:`skimage.transform.warp`;
+            Default: `skimage`: Will attempt to use :func:`skimage.transform.warp`;
             on ImportError, will use :func:`scipy.ndimage.interpolation.affine_transform`.
             (This behavior is identical to the now-deprecated `use_scipy=False`)
-            (Option `none` will be deprecated in future releases. Please explicitly set method.)
-    use_scipy : `bool`, to be deprecated
-        Equivalent to setting `method=scipy`; please do that instead.
 
         Returns
         -------
