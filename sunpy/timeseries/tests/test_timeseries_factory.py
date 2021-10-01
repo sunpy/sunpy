@@ -150,6 +150,21 @@ class TestTimeSeries:
         ts_goes = sunpy.timeseries.TimeSeries(new_goes16_filepath)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
+    def test_implicit_goes_satno(self):
+        # Test a GOES TimeSeries for satellite number
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
+        assert ts_goes.satellite_number == 15
+
+    def test_implicit_new_goes15_satno(self):
+        # Test a GOES TimeSeries for satellite number
+        ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath)
+        assert ts_goes.satellite_number == 15
+
+    def test_implicit_new_goes16_satno(self):
+        # Test a GOES TimeSeries for satellite number
+        ts_goes = sunpy.timeseries.TimeSeries(new_goes16_filepath)
+        assert ts_goes.satellite_number == 17
+
     def test_implicit_lyra(self):
         # Test a LYRA TimeSeries
         ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath)
