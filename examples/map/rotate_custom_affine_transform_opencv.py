@@ -1,11 +1,12 @@
-#!/usr/bin/env python
-# coding: utf-8
+"""
+==================================================================
+Using a Custom Affine Transform in the Sunpy Map rotate() function
+==================================================================
 
-# # Using a Custom Affine Transform in the Sunpy Map rotate() function
-# #### (with OpenCV)
-# ----------
-# How to construct a custom affine transform for `map.rotate`.
-# Requires OpenCV (cv2) Python library.
+A demonstration of constructing a custom, drop-in affine transformation routine for
+map.rotate(), using OpenCV as an example.
+(Requires OpenCV (cv2) Python library.)
+"""
 
 import sunpy.data.sample
 import sunpy.map
@@ -14,45 +15,25 @@ import numpy as np
 import cv2
 from sunpy.image.transform import _calculate_shift
 
-#############################
+##############################################################################
 # Rotating a map in sunpy (via `map.rotate()`) has a choice between three libraries:
 # `scipy`, `skimage`, and `cv2` (OpenCV).
 # However, the `method=` argument in `sunpy.map.rotate` can accept a custom function designed
 # to use an external library. Here, we illustrate this process by defining a function
 # with the OpenCV library; this will be identical to the built-in `cv2` option.
 
+##############################################################################
 # First, our custom method must have a similar function call to
-# `sunpy.image.transform.affine_transform` and return the same output,
-# namely the rotated, scaled, and transformed image.
-# The required arguments are:
+# `sunpy.image.transform.affine_transform` and return the same output.
 
-# Parameters
-# ----------
-# image: `numpy.ndarray`
-#     2D image to be rotated
-# rmatrix : `numpy.ndarray` that is 2x2
-#     Linear transformation rotation matrix.
-# order : `int` 0-5
-#     Interpolation order to be used
-# scale : `float`
-#     A scale factor for the image
-# missing : `float`
-#    The value to replace any missing data after the transformation.
-# image_center : tuple, optional
-#     The point in the image to rotate around (axis of rotation).
-#     Defaults to the center of the array.
-# recenter : `bool` or array-like, optional
-#     Move the axis of rotation to the center of the array or recenter coords.
-#     Defaults to `True` i.e., recenter to the center of the array.
-
-
-# NOTE: the required libraries have already been imported globally
-# (see above: cv2, np, numbers)
 def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     """
     Uses `cv2.warpAffine` to do the affine transform on input `image` in same manner
     as sunpy's default `skimage.transform.warp`.
     """
+
+    # NOTE: required libraries have already been imported globally
+    # (see above: cv2, np, numbers)
 
     # Flags for converting input order from `integer` to the appropriate interpolation flag
     # As of Sept. 2020, OpenCV warpAffine does not support order 2,4,5
@@ -109,6 +90,7 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
                           borderMode=cv2.BORDER_CONSTANT, borderValue=missing)
 
 
+##############################################################################
 # Now we test our implementation against the built-in openCV method
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
