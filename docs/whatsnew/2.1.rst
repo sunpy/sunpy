@@ -1,0 +1,263 @@
+.. doctest-skip-all
+
+.. _whatsnew-2.1:
+
+************************
+What's New in SunPy 2.1?
+************************
+
+Overview
+========
+The SunPy project is pleased to announce the 2.1 release of the sunpy package.
+
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-2.1-goes1617`
+* :ref:`whatsnew-2.1-metadata`
+* :ref:`whatsnew-2.1-refactor`
+* :ref:`whatsnew-2.1-synoptic`
+* :ref:`whatsnew-2.1-cutouts`
+* :ref:`whatsnew-2.1-velocities`
+* :ref:`whatsnew-2.1-reprojecting`
+* :ref:`whatsnew-2.1-contours`
+* :ref:`whatsnew-2.1-performance`
+* :ref:`whatsnew-2.1-python`
+* :ref:`whatsnew-2.1-contributors`
+
+SunPy 2.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+
+* 1148 commits have been added since 2.0
+* 202 issues have been closed since 2.0
+* 306 pull requests have been merged since 2.0
+* 38 people have contributed since 2.0
+* 19 of which are new contributors
+
+Please find below a selection of what we consider to be the biggest changes or features with this release.
+
+.. _whatsnew-2.1-goes1617:
+
+Support for GOES-16 and GOES-17 X-Ray Sensor (XRS) data
+=======================================================
+We have now included support for the GOES-16 and GOES-17 XRS 1-second data. This data can now be queried and downloaded with `sunpy.net.Fido` and the files read in and analysed as a `sunpy.timeseries.TimeSeries`.
+
+.. minigallery:: sunpy.net.attrs.goes.SatelliteNumber
+
+.. _whatsnew-2.1-metadata:
+
+Fido Metadata
+=============
+
+Fido provides a unified interface to download data from several services but lacked support for search for metadata provided by catalogues or data providers.
+This has now changed and you can query JSOC, HEK and HEC with Fido::
+
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a
+    >>> results = Fido.search(timerange,
+                      a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
+                      a.jsoc.Series('hmi.m_45s'))
+    >>> results
+    Results from 2 Providers:
+
+    2 Results from the HEKClient:
+                                                                                                                        gs_thumburl                                                                                                                       ...
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ ...
+    http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100731_205448_25495028/www/EDS_FlareDetective-TriggerModule_20100801T033001-20100801T035225_AIA_171_S21W87_ssw_cutout_20100801_033013_AIA_171_S21W87_20100801_033012_context_0180.gif ...
+    http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100801_234037_25860951/www/EDS_FlareDetective-TriggerModule_20100801T033008-20100801T035232_AIA_193_S21W87_ssw_cutout_20100801_033020_AIA_193_S21W87_20100801_033019_context_0180.gif ...
+
+    1 Results from the JSOCClient:
+            T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+    ----------------------- -------- ---------- -------- -------
+    2010.08.01_03:40:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2099
+
+Alongside this, there is easier access to the results from a client by indexing the results by the client name::
+
+    >>> hek_results, jsoc_results = results['hek'], results['jsoc']
+
+In the first example you can see the search results from HEK are not too useful by default.
+The results are truncated as the long urls for the thumbnail take up too many characters and HEK can return up to 100 columns of information.
+With a new method ``show()`` on the results itself, you directly select the columns to display::
+
+    >>> hek_results.show('event_peaktime', 'obs_instrument', 'fl_peakflux')
+    event_peaktime   obs_instrument fl_peakflux
+    ------------------- -------------- -----------
+    2010-08-01T03:40:37            AIA     1027.64
+    2010-08-01T03:40:44            AIA     1441.78
+
+To find the keys for all of the columns you can do::
+
+    >>> hek_results.keys()
+    ['gs_thumburl',
+    'comment_count',
+    'hpc_bbox',
+    ...
+    'area_unit',
+    'obs_lastprocessingdate',
+    'refs']
+
+In addition, if you pass the entire search query into ``Fido.fetch()`` and it will ignore results that have no corresponding data files to retrieve.
+
+.. minigallery:: sunpy.net.attrs.hek.FL sunpy.net.attrs.hek.EventType
+
+.. _whatsnew-2.1-refactor:
+
+Fido Results Refactor
+=====================
+
+While working on the above change, several changes were made to the way that results are returned from ``sunpy.net.Fido.search`` and the search methods of the underlying clients.
+
+We have tried to minimize any breaking changes here and we believe that for most users the difference between 2.0 and 2.1 will be minor.
+
+The key highlights you will want to be aware of are:
+
+* Previously slicing the result of ``Fido.search()`` (a `~sunpy.net.fido_factory.UnifiedResponse` object) so that it had a length of one returned another `~sunpy.net.fido_factory.UnifiedResponse` object, now it will return a `~sunpy.net.base_client.QueryResponseTable` object, which is a subclass of `astropy.table.Table`.
+
+* All result objects contained within the results of a ``Fido.search()`` are now `~sunpy.net.base_client.QueryResponseTable` objects (or subclasses thereof).
+  These objects are subclasses of `astropy.table.Table` and can therefore be filtered and inspected as tabular objects, and the modified tables can be passed to ``Fido.fetch()``.
+
+* The keys available to be used when formatting the ``path=`` argument to ``Fido.fetch()`` have changed. This is to standardise them over the results from more clients and make them easier to use.
+  You can use the ``~.UnifiedResponse.path_format_keys`` method to see all the possible keys for a particular search.
+
+* The search results object returned from ``Fido.search`` now correctly counts all results in its `~sunpy.net.fido_factory.UnifiedResponse.file_num` property.
+
+* Results from the `~sunpy.net.dataretriever.NOAAIndicesClient` and the `~sunpy.net.dataretriever.NOAAPredictClient` no longer have ``Start Time`` or ``End Time`` in their results table as the results returned from the client are not dependent upon the time parameter of a search.
+
+.. _whatsnew-2.1-synoptic:
+
+New synoptic map sources and clients
+====================================
+`~sunpy.map.sources.MDISynopticMap` and `~sunpy.map.sources.HMISynopticMap` have been added as new data sources, and automatically fix common issues with FITS metadata from these sources. You do not need to change any code to use these, as sunpy automatically detects and uses the appropriate map sources for each file.
+
+It is now possible to search for GONG synoptic maps within `sunpy.net.Fido`, using ``a.Instrument('GONG')``.
+
+.. _whatsnew-2.1-cutouts:
+
+Requesting cutouts from the JSOC
+================================
+`~sunpy.net.Fido` can now be used to request cutouts from JSOC via the new ``a.jsoc.Cutout`` attr. This includes the ability to adjust the requested field of view to "track" a feature as it moves across the solar disk, perform sub-pixel image registration, and mask off-disk pixels.
+
+.. minigallery:: sunpy.net.attrs.jsoc.Cutout
+
+.. _whatsnew-2.1-velocities:
+
+Coordinates with velocities
+===========================
+It is now supported to transform coordinates with attached velocities, and the various ephemeris functions can optionally include velocity information.
+Transformations between coordinate frames will account for both any change in orientation of the velocity vector and any induced velocity due to relative motion between the frames.
+For example, consider Mars's position/velocity in `~sunpy.coordinates.frames.HeliographicStonyhurst`::
+
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import get_body_heliographic_stonyhurst
+    >>> mars = SkyCoord(get_body_heliographic_stonyhurst('mars', '2021-01-01',
+    ...                                                  include_velocity=True))
+    >>> mars
+    <SkyCoord( HeliographicStonyhurst: obstime=2021-01-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+        (-34.46752135, 1.77496469, 1.50936573)
+     (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
+        (-0.00048971, 0.00060976, 19.54950062)>
+    >>> mars.velocity.norm()
+    <Quantity 19.56823076 km / s>
+
+However, `~sunpy.coordinates.frames.HeliographicStonyhurst` is a non-inertial frame that rotates over time.
+By transforming this coordinate to `~sunpy.coordinates.frames.HeliocentricInertial`, we can see that Mars's actual velocity is larger::
+
+    >>> mars.heliocentricinertial
+    <SkyCoord (HeliocentricInertial: obstime=2021-01-01T00:00:00.000): (lon, lat, distance) in (deg, deg, AU)
+        (-9.91128592, 1.77496469, 1.50936573)
+     (d_lon, d_lat, d_distance) in (arcsec / s, arcsec / s, km / s)
+        (0.04174239, 0.00060976, 19.54950058)>
+    >>> mars.heliocentricinertial.velocity.norm()
+    <Quantity 49.68592218 km / s>
+
+See :ref:`sunpy-coordinates-velocities` for more information.
+
+.. _whatsnew-2.1-reprojecting:
+
+Alternatives for reprojecting a Helioprojective map
+===================================================
+The typical observation in `~sunpy.coordinates.frames.Helioprojective` coordinates does not contain full 3D information for the sources of emission, so an assumption needs to be made when transforming such coordinates to other coordinate frames.
+By default, SunPy assumes that the emission is coming from the surface of the Sun, which enables reprojections such as in the example :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py`.
+However, this assumption is not appropriate for some observations, e.g., from coronagraphs.
+
+There is now a context manager (:meth:`~sunpy.coordinates.frames.Helioprojective.assume_spherical_screen`) to override the default assumption such that any 2D coordinates are interpreted as being on the inside of a large spherical screen.
+See the following example for how this context manager enables alternative reprojections.
+
+.. minigallery:: sunpy.coordinates.Helioprojective.assume_spherical_screen
+
+.. _whatsnew-2.1-contours:
+
+Finding map contours
+====================
+The new :meth:`sunpy.map.GenericMap.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
+
+.. minigallery:: sunpy.map.GenericMap.contour
+
+.. _whatsnew-2.1-performance:
+
+Performance improvements
+========================
+Several functions in `sunpy.map` have been significantly sped up with improved algorithms.
+
+In addition, `sunpy.map.GenericMap.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications which make mutiple requests for the map WCS (e.g. plotting), and reducing the number of repeated warnings thrown when metadata is missing.
+
+.. _whatsnew-2.1-python:
+
+Increase in required package versions
+=====================================
+We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 2.1:
+
+- python 3.7
+- astropy 4.0
+- scipy 1.2
+- parfive 1.1
+- drms 0.6.1
+- matplotlib 2.2.2
+
+.. _whatsnew-2.1-contributors:
+
+Contributors to this Release
+============================
+
+The people who have contributed to the code for this release are:
+
+-  Abhijeet Manhas
+-  Abhishek Pandey  *
+-  Adrian Price-Whelan
+-  Albert Y. Shih
+-  Aryan Chouhan  *
+-  Conor MacBride  *
+-  Daniel Ryan
+-  David Pérez-Suárez
+-  David Stansby
+-  Dipanshu Verma  *
+-  Erik Tollerud  *
+-  Jai Ram Rideout
+-  Jeffrey Aaron Paul  *
+-  Johan L. Freiherr von Forstner  *
+-  Kateryna Ivashkiv  *
+-  Koustav Ghosh  *
+-  Kris Akira Stern
+-  Kritika Ranjan  *
+-  Laura Hayes
+-  Lazar Zivadinovic
+-  Nabil Freij
+-  Rutuja Surve
+-  Sashank Mishra
+-  Shane Maloney
+-  Shubham Jain  *
+-  SophieLemos  *
+-  Steven Christe
+-  Stuart Mumford
+-  Sudeep Sidhu  *
+-  Tathagata Paul  *
+-  Thomas A Caswell  *
+-  Will Barnes
+-  honey
+-  mridulpandey
+-  nakul-shahdadpuri  *
+-  platipo  *
+-  resakra  *
+-  sophielemos  *
+
+Where a * indicates that this release contains their first contribution to SunPy.

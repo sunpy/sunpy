@@ -122,16 +122,12 @@ class SqliteStorage(StorageProviderBase):
             self._setup()
 
     def _setup(self):
-        schema = ' text, '.join(self.COLUMN_NAMES) + ' text'
         with self.connection(commit=True) as conn:
-            # Do this in a try...except to prevent race conditions in the tests
-            try:
-                conn.execute(f'''CREATE TABLE {self._table_name}
-                                ({schema})''')
-            except sqlite3.OperationalError as exc:
-                if "cache_storage already exists" in str(exc):
-                    return
-                raise exc
+            self._create_table(conn)
+
+    def _create_table(self, conn):
+        schema = ' text, '.join(self.COLUMN_NAMES) + ' text'
+        conn.execute(f'''CREATE TABLE IF NOT EXISTS {self._table_name} ({schema})''')
 
     @contextmanager
     def connection(self, commit=False):
@@ -144,6 +140,7 @@ class SqliteStorage(StorageProviderBase):
             Whether to commit after succesful execution of db command.
         """
         conn = sqlite3.connect(str(self._db_path))
+        self._create_table(conn)
         try:
             yield conn
             if commit:

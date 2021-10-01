@@ -121,9 +121,9 @@ def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwarg
     >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
     >>> mc = sunpy.map.Map([map1, map2], sequence=True)  # doctest: +REMOTE_DATA
-    >>> derotated_mc = mapsequence_solar_derotate(mc)  # doctest: +REMOTE_DATA
-    >>> derotated_mc = mapsequence_solar_derotate(mc, layer_index=-1)  # doctest: +REMOTE_DATA
-    >>> derotated_mc = mapsequence_solar_derotate(mc, clip=False)  # doctest: +REMOTE_DATA
+    >>> derotated_mc = mapsequence_solar_derotate(mc)  # doctest: +SKIP
+    >>> derotated_mc = mapsequence_solar_derotate(mc, layer_index=-1)  # doctest: +SKIP
+    >>> derotated_mc = mapsequence_solar_derotate(mc, clip=False)  # doctest: +SKIP
     """
 
     # Size of the data

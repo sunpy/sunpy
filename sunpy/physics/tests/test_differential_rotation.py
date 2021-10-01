@@ -12,6 +12,8 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
+from sunpy.coordinates.metaframes import RotatedSunFrame
+from sunpy.coordinates.transformations import transform_with_sun_center
 from sunpy.map.maputils import map_edges
 from sunpy.physics.differential_rotation import (
     _get_bounding_coordinates,
@@ -128,6 +130,11 @@ def test_snodgrass(seconds_per_day):
     assert_quantity_allclose(rot, 135.4232 * u.deg, rtol=1e-3)
 
 
+def test_rigid(seconds_per_day):
+    rot = diff_rot(10 * seconds_per_day, [0, 30, 60] * u.deg, rot_type='rigid')
+    assert_quantity_allclose(rot, [141.844 * u.deg] * 3, rtol=1e-3)
+
+
 def test_fail(seconds_per_day):
     with pytest.raises(ValueError):
         rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='garbage')
@@ -168,12 +175,33 @@ def test_solar_rotate_coordinate():
         assert isinstance(d, SkyCoord)
 
         # Test the coordinate
-        np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -371.8885208634674, decimal=1)
-        np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 105.35006656251727, decimal=1)
-        np.testing.assert_allclose(d.distance.to(u.km).value, 1.499642e+08, rtol=1e-5)
+        np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -386.4519332773052, decimal=1)
+        np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 106.1647811048218, decimal=1)
+        np.testing.assert_allclose(d.distance.to(u.km).value, 1.499689e+08, rtol=1e-5)
 
         # Test that the SkyCoordinate is Helioprojective
         assert isinstance(d.frame, frames.Helioprojective)
+
+
+def test_consistency_with_rotatedsunframe():
+    old_observer = frames.HeliographicStonyhurst(10*u.deg, 20*u.deg, 1*u.AU, obstime='2001-01-01')
+    new_observer = frames.HeliographicStonyhurst(30*u.deg, 40*u.deg, 2*u.AU, obstime='2001-01-08')
+
+    hpc_coord = SkyCoord(100*u.arcsec, 200*u.arcsec, frame='helioprojective',
+                         observer=old_observer, obstime=old_observer.obstime)
+
+    # Perform the differential rotation using solar_rotate_coordinate()
+    result1 = solar_rotate_coordinate(hpc_coord, observer=new_observer)
+
+    # Perform the differential rotation using RotatedSunFrame, with translational motion of the Sun
+    # ignored using transform_with_sun_center()
+    rsf_coord = RotatedSunFrame(base=hpc_coord, rotated_time=new_observer.obstime)
+    with transform_with_sun_center():
+        result2 = rsf_coord.transform_to(result1.replicate_without_data())
+
+    assert_quantity_allclose(result1.Tx, result2.Tx)
+    assert_quantity_allclose(result1.Ty, result2.Ty)
+    assert_quantity_allclose(result1.distance, result2.distance)
 
 
 # Testing using observer inputs
@@ -189,7 +217,7 @@ def test_differential_rotate_observer_full_disk(aia171_test_map):
     new_observer = get_earth(aia171_test_map.date + 6*u.hr)
     dmap = differential_rotate(aia171_test_map, observer=new_observer)
     assert dmap.data.shape == aia171_test_map.data.shape
-    assert dmap.date == new_observer.obstime
+    assert dmap.date.isot == new_observer.obstime.isot
     assert dmap.heliographic_latitude == new_observer.lat
     assert dmap.heliographic_longitude == new_observer.lon
 
@@ -204,7 +232,7 @@ def test_differential_rotate_observer_all_on_disk(all_on_disk_map):
     new_observer = get_earth(all_on_disk_map.date + 48*u.hr)
     dmap = differential_rotate(all_on_disk_map, observer=new_observer)
     assert dmap.data.shape[1] > all_on_disk_map.data.shape[1]
-    assert dmap.date == new_observer.obstime
+    assert dmap.date.isot == new_observer.obstime.isot
     assert dmap.heliographic_latitude == new_observer.lat
     assert dmap.heliographic_longitude == new_observer.lon
 
@@ -219,7 +247,7 @@ def test_differential_rotate_observer_straddles_limb(straddles_limb_map):
         dmap = differential_rotate(straddles_limb_map, observer=new_observer)
     assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
     # The output map should have the positional properties of the observer
-    assert dmap.date == new_observer.obstime
+    assert dmap.date.isot == new_observer.obstime.isot
     assert dmap.heliographic_latitude == new_observer.lat
     assert dmap.heliographic_longitude == new_observer.lon
 
@@ -232,7 +260,7 @@ def test_differential_rotate_time_full_disk(aia171_test_map):
         dmap = differential_rotate(aia171_test_map, time=new_time)
     assert dmap.data.shape == aia171_test_map.data.shape
     # The output map should have the same time as the new time now.
-    assert dmap.date == new_time
+    assert dmap.date.isot == new_time.isot
 
 
 def test_differential_rotate_time_all_on_disk(all_on_disk_map):
@@ -248,7 +276,7 @@ def test_differential_rotate_time_all_on_disk(all_on_disk_map):
         dmap = differential_rotate(all_on_disk_map, time=new_time)
     assert dmap.data.shape[1] > all_on_disk_map.data.shape[1]
     # The output map should have the same time as the new time now.
-    assert dmap.date == new_time
+    assert dmap.date.isot == new_time.isot
 
 
 def test_differential_rotate_time_straddles_limb(straddles_limb_map):
@@ -262,7 +290,7 @@ def test_differential_rotate_time_straddles_limb(straddles_limb_map):
             dmap = differential_rotate(straddles_limb_map, time=new_time)
     assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
     # The output map should have the same time as the new time now.
-    assert dmap.date == new_time
+    assert dmap.date.isot == new_time.isot
 
 
 def test_differential_rotate_time_off_disk(all_off_disk_map):

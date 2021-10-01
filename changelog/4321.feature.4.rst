@@ -1,4 +1,0 @@
-New class attributes added to `~sunpy.net.dataretriever.GenericClient`:
-
-- ``baseurl`` and ``pattern`` which are required to define a new simple client.
-- ``optional`` and ``required`` which are a ``set`` of optional and required `~sunpy.net.attrs` respectively; which generalizes :meth:`~sunpy.net.dataretriever.GenericClient._can_handle_query`.

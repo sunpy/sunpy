@@ -1,0 +1,1 @@
+Added the :func:`~sunpy.coordinates.propagate_with_solar_surface` context manager for transformations, which will automatically apply solar differential rotation when transforming a coordinate between frames with a change in time (``obstime``).

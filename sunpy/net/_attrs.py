@@ -35,26 +35,25 @@ class Time(Range):
         functionality.
 
     """
+    type_name = "time"
 
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
         if isinstance(start, TimeRange):
-            self.start = start.start
-            self.end = start.end
+            self.start, self.end = start.start, start.end
         else:
-            self.start = parse_time(start)
-            self.end = parse_time(end)
+            self.start, self.end = parse_time(start), parse_time(end)
 
         if self.start > self.end:
             raise ValueError("End time must be after start time.")
-        self.near = None if near is None else parse_time(near)
+        self.near = parse_time(near) if near else None
 
         super().__init__(self.start, self.end)
 
     def __hash__(self):
-        if not (isinstance(self.start, collections.abc.Hashable) and
-                isinstance(self.end, collections.abc.Hashable)):
+        if not isinstance(self.start, collections.abc.Hashable) or \
+           not isinstance(self.end, collections.abc.Hashable):
             # The hash is the hash of the start and end time
             return hash((self.start.jd1, self.start.jd2, self.start.scale,
                          self.end.jd1, self.end.jd2, self.end.scale))
@@ -72,16 +71,22 @@ class Time(Range):
             raise TypeError
         if self.near is not None or other.near is not None:
             raise TypeError
-        return Range.__xor__(self, other)
+        return super().__xor__(other)
 
     def pad(self, timedelta):
         return type(self)(self.start - timedelta, self.start + timedelta)
 
     def __repr__(self):
-        return f'<sunpy.net.attrs.Time({self.start.iso}, {self.end.iso}{", " + self.near.iso if self.near else ""})>'
+        start = self.start.iso
+        end = self.end.iso
+        iso = self.near.iso if self.near else None
+        str_repr = ", ".join(str(param) for param in [start, end, iso] if param)
+        return f'<sunpy.net.attrs.Time({str_repr})>'
 
 
 class Wavelength(Range):
+    type_name = 'wave'
+
     def __init__(self, wavemin, wavemax=None):
         """
         Specifies the wavelength or spectral energy range of the detector.
@@ -118,9 +123,7 @@ class Wavelength(Range):
         for unit in supported_units:
             if wavemin.unit.is_equivalent(unit):
                 break
-            else:
-                unit = None
-        if unit is None:
+        else:
             raise u.UnitsError(f"This unit is not convertable to any of {supported_units}")
 
         wavemin, wavemax = sorted([wavemin.to(unit), wavemax.to(unit)])
@@ -276,4 +279,10 @@ class Source(SimpleAttr):
     See `VSO sources <https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE>`__.
     Please note that 'Source' is used internally by VSO to represent
     what the VSO Data Model refers to as 'Observatory'.
+    """
+
+
+class ExtentType(SimpleAttr):
+    """
+    The type of Extent; for example, "FULLDISK", "SYNOPTIC", "LIMB", etc.
     """

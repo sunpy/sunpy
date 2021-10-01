@@ -1,10 +1,10 @@
 .. _plotting:
 
 *****************
-Plotting in SunPy
+Plotting in sunpy
 *****************
 
-SunPy makes use of `matplotlib <https://matplotlib.org/>`_ for all of its
+sunpy makes use of `matplotlib <https://matplotlib.org/>`_ for all of its
 plotting - as such, it tries to follow the matplotlib plotting philosophy. It is
 therefore useful to go over how matplotlib works as background.
 
@@ -96,10 +96,10 @@ like change the labels on the x and y axes or add a legend.
 In the previous section, pyplot took care of creating these
 objects for you so you didn't have to worry about creating them yourself.
 
-4. SunPy Plotting Convention
+4. sunpy Plotting Convention
 ****************************
 
-To be consistent with matplotlib, SunPy has developed a standard plotting policy
+To be consistent with matplotlib, sunpy has developed a standard plotting policy
 which supports both simple and advanced matplotlib usage. The following examples
 focus on the map object but they should be applicable across all of the data
 objects.
@@ -107,7 +107,7 @@ objects.
 4.1 peek()
 **********
 
-For quick and easy access to a plot all SunPy base objects (i.e. maps, spectra,
+For quick and easy access to a plot all sunpy base objects (i.e. maps, spectra,
 timeseries) define their own `~sunpy.map.mapbase.GenericMap.peek` command which
 will create a plot for you and show it without you having to deal with any
 matplotlib setup. This is so that it is easy to take a quick look at your data.
@@ -128,18 +128,18 @@ plot window blocks the command line terminal and must be closed before doing any
 4.2 plot()
 **********
 
-For more advanced plotting the base SunPy objects also provide a
+For more advanced plotting the base sunpy objects also provide a
 `~sunpy.map.mapbase.GenericMap.plot` command. This command is similar to the
 pyplot `~matplotlib.pyplot.imshow` command in that it will create a figure and
 axes object for you if you haven't already.
 
 When you create a plot with `~sunpy.map.GenericMap.peek` or
-`~sunpy.map.GenericMap.plot`, SunPy will use `astropy.visualization.wcsaxes` to
+`~sunpy.map.GenericMap.plot`, sunpy will use `astropy.visualization.wcsaxes` to
 represent coordinates on the image accurately, for more information see
 :ref:`wcsaxes-plotting`.
 
 Using `~sunpy.map.GenericMap.plot` it is possible to customise the look of the
-plot by combining SunPy and matplotlib commands, for example you can over plot
+plot by combining sunpy and matplotlib commands, for example you can over plot
 contours on the Map:
 
 .. plot::
@@ -200,40 +200,8 @@ then used to modify the plot:
     plt.colorbar()
     plt.show()
 
-It is possible to create the same plot, explicitly not using
-`~astropy.visualization.wcsaxes`, however, this will not have the features of
-`~astropy.visualization.wcsaxes` which include correct representation of
-rotation and plotting in different coordinate systems.
-
-.. plot::
-    :include-source:
-
-    import matplotlib.pyplot as plt
-    import astropy.units as u
-
-    import sunpy.map
-    import sunpy.data.sample
-
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
-    fig, ax = plt.subplots()
-
-    im = smap.plot()
-
-    # Prevent the image from being re-scaled while overplotting.
-    ax.set_autoscale_on(False)
-
-    xc = [0,100,1000] * u.arcsec
-    yc = [0,100,1000] * u.arcsec
-
-    p = plt.plot(xc, yc, 'o')
-
-    # Set title.
-    ax.set_title('Custom plot without WCSAxes')
-
-    plt.colorbar()
-    plt.show()
-
+It is possible to create the same plot, explicitly not using `~astropy.visualization.wcsaxes`, however, this will not have the features of `~astropy.visualization.wcsaxes` which include correct representation of rotation and plotting in different coordinate systems.
+Please see this example :ref:`sphx_glr_generated_gallery_map_plot_frameless_image.py`.
 
 .. _wcsaxes-plotting:
 
@@ -262,7 +230,7 @@ so you will have to convert to degrees.::
     >>> ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
     ...         transform=ax.get_transform('world'))   # doctest: +SKIP
 
-Finally, here is a more complex example using SunPy maps, wcsaxes and Astropy
+Finally, here is a more complex example using sunpy maps, wcsaxes and Astropy
 units to plot a AIA image and a zoomed in view of an active region.
 
 .. plot::
@@ -281,7 +249,7 @@ units to plot a AIA image and a zoomed in view of an active region.
     x0 = -100 * u.arcsec
     y0 = -400 * u.arcsec
 
-    # Create a SunPy Map, and a second submap over the region of interest.
+    # Create a sunpy Map, and a second submap over the region of interest.
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     bottom_left = SkyCoord(x0 - length, y0 - length,
                         frame=smap.coordinate_frame)
@@ -299,7 +267,7 @@ units to plot a AIA image and a zoomed in view of an active region.
     smap.plot()
 
     # Draw a box on the image
-    smap.draw_rectangle(bottom_left, height=length * 2, width=length * 2)
+    smap.draw_quadrangle(bottom_left, height=length * 2, width=length * 2)
 
     # Create a second axis on the plot.
     ax2 = fig.add_subplot(2, 1, 2, projection=submap)

@@ -60,7 +60,7 @@ def test_value_slice(slice, value):
                                             (TESTING['MYSTRUCTURE']['NESTEDSTRUCT']
                                              ['MYLARRAYD'], np.int32),
                                             (TESTING['MYSTRUCTURE']['RANDOMNUMBERS'], np.int16),
-                                            (TESTING['MYSTRUCTURE']['MYCARRAY'], np.complex),
+                                            (TESTING['MYSTRUCTURE']['MYCARRAY'], complex),
                                             (TESTING['MYSTRUCTURE']['MYDCARRAY'], np.complex64)])
 def test_type(myarray, dtype):
     assert myarray.dtype == dtype

@@ -14,7 +14,9 @@ sphinx:
 
 python:
    install:
-      - method: pip
-        extra_requirements:
-           - dev
-        path: .
+     # Any extra pip dependencies not installed via extras should be specified
+     # in the conda environment file.
+     - method: pip
+       extra_requirements:
+          - dev
+       path: .

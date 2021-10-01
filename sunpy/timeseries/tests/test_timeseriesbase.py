@@ -27,7 +27,6 @@ from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util import SunpyUserWarning
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -48,8 +47,6 @@ rhessi_filepath = os.path.join(filepath,
 noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
 noaa_pre_json_filepath = os.path.join(filepath,
                                       'predicted-solar-cycle-truncated.json')
-noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
-noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 goes_filepath = os.path.join(filepath, 'go1520120601.fits.gz')
 
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
@@ -99,27 +96,14 @@ def noaa_ind_json_test_ts():
 @pytest.fixture
 def noaa_pre_json_test_ts():
     # NOAA pre data contains years long into the future, which ERFA complains about
-    with pytest.warns(ErfaWarning, match='dubious year'):
+    with pytest.warns(ErfaWarning, match=r'.*dubious year'):
         return sunpy.timeseries.TimeSeries(
             noaa_pre_json_filepath, source='NOAAPredictIndices')
 
 
 @pytest.fixture
-def noaa_ind_txt_test_ts():
-    with pytest.warns(SunpyDeprecationWarning):
-        return sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
-
-
-@pytest.fixture
-def noaa_pre_txt_test_ts():
-    with pytest.warns(SunpyDeprecationWarning):
-        return sunpy.timeseries.TimeSeries(
-            noaa_pre_txt_filepath, source='NOAAPredictIndices')
-
-
-@pytest.fixture
 def generic_ts():
-    # Generate the data and the corrisponding dates
+    # Generate the data and the corresponding dates
     base = parse_time("2016/10/01T05:00:00")
     dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
@@ -171,8 +155,8 @@ def table_ts():
 
 
 def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                    lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
-                    noaa_pre_json_test_ts, noaa_pre_txt_test_ts, generic_ts, table_ts):
+                    lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts,
+                    noaa_pre_json_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.units, OrderedDict)
     assert isinstance(esp_test_ts.units, OrderedDict)
     assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
@@ -182,15 +166,13 @@ def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, g
     assert isinstance(rhessi_test_ts.units, OrderedDict)
     assert isinstance(noaa_ind_json_test_ts.units, OrderedDict)
     assert isinstance(noaa_pre_json_test_ts.units, OrderedDict)
-    assert isinstance(noaa_pre_txt_test_ts.units, OrderedDict)
-    assert isinstance(noaa_ind_txt_test_ts.units, OrderedDict)
     assert isinstance(generic_ts.units, OrderedDict)
     assert isinstance(table_ts.units, OrderedDict)
 
 
 def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
-                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, generic_ts, table_ts):
+                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts,
+                   noaa_pre_json_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(esp_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
@@ -200,15 +182,13 @@ def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
     assert isinstance(rhessi_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(noaa_ind_json_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(noaa_pre_json_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(noaa_pre_txt_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(noaa_ind_txt_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(generic_ts.meta, TimeSeriesMetaData)
     assert isinstance(table_ts.meta, TimeSeriesMetaData)
 
 
 def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts, noaa_ind_txt_test_ts,
-                   noaa_pre_json_test_ts, noaa_pre_txt_test_ts, generic_ts, table_ts):
+                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts,
+                   noaa_pre_json_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.to_dataframe(), DataFrame)
     assert isinstance(esp_test_ts.to_dataframe(), DataFrame)
     assert isinstance(fermi_gbm_test_ts.to_dataframe(), DataFrame)
@@ -218,8 +198,6 @@ def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
     assert isinstance(rhessi_test_ts.to_dataframe(), DataFrame)
     assert isinstance(noaa_ind_json_test_ts.to_dataframe(), DataFrame)
     assert isinstance(noaa_pre_json_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(noaa_pre_txt_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(noaa_ind_txt_test_ts.to_dataframe(), DataFrame)
     assert isinstance(generic_ts.to_dataframe(), DataFrame)
     assert isinstance(table_ts.to_dataframe(), DataFrame)
 
@@ -232,40 +210,70 @@ def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
 
 @pytest.fixture
 def truncation_slice_test_ts_1(eve_test_ts):
-    # Truncate by slicing the second half off.
-    return eve_test_ts.truncate(0, int(len(eve_test_ts.to_dataframe()) / 2), None)
+    # Truncate by keeping only the first quarter.
+    return eve_test_ts.truncate(0, int(len(eve_test_ts.to_dataframe()) / 4), None)
 
 
 @pytest.fixture
 def truncation_slice_test_ts_2(eve_test_ts):
-    # Truncate by slicing the first half off.
+    # Truncate by keeping only the second quarter.
     return eve_test_ts.truncate(
-        int(len(eve_test_ts.to_dataframe()) / 2), len(eve_test_ts.to_dataframe()), None)
+        int(len(eve_test_ts.to_dataframe()) / 4), int(len(eve_test_ts.to_dataframe()) / 2), None
+    )
 
 
-def test_truncation_slices(eve_test_ts, truncation_slice_test_ts_1,
-                           truncation_slice_test_ts_2):
+@pytest.fixture
+def truncation_slice_test_ts_3(eve_test_ts):
+    # Truncate by keeping only the third quarter.
+    return eve_test_ts.truncate(
+        int(len(eve_test_ts.to_dataframe()) / 2), int(3 * len(eve_test_ts.to_dataframe()) / 4), None
+    )
+
+
+@pytest.fixture
+def truncation_slice_test_ts_4(eve_test_ts):
+    # Truncate by keeping only the fourth quarter.
+    return eve_test_ts.truncate(
+        int(3 * len(eve_test_ts.to_dataframe()) / 4), len(eve_test_ts.to_dataframe()), None
+    )
+
+
+def test_truncation_slices(eve_test_ts,
+                           truncation_slice_test_ts_1, truncation_slice_test_ts_2,
+                           truncation_slice_test_ts_3, truncation_slice_test_ts_4):
     # Test resulting DataFrame are similar
     assert len(eve_test_ts.to_dataframe()) == (len(truncation_slice_test_ts_1.to_dataframe()) +
-                                               len(truncation_slice_test_ts_2.to_dataframe()))
+                                               len(truncation_slice_test_ts_2.to_dataframe()) +
+                                               len(truncation_slice_test_ts_3.to_dataframe()) +
+                                               len(truncation_slice_test_ts_4.to_dataframe()))
     # Test column lists and unit dictionaries match
     assert (eve_test_ts.columns ==
             truncation_slice_test_ts_1.columns ==
-            truncation_slice_test_ts_2.columns)
+            truncation_slice_test_ts_2.columns ==
+            truncation_slice_test_ts_3.columns ==
+            truncation_slice_test_ts_4.columns)
     assert (eve_test_ts.meta.columns ==
             truncation_slice_test_ts_1.meta.columns ==
-            truncation_slice_test_ts_2.meta.columns)
-    assert eve_test_ts.units == truncation_slice_test_ts_1.units == truncation_slice_test_ts_2.units
+            truncation_slice_test_ts_2.meta.columns ==
+            truncation_slice_test_ts_3.meta.columns ==
+            truncation_slice_test_ts_4.meta.columns)
+    assert (eve_test_ts.units ==
+            truncation_slice_test_ts_1.units ==
+            truncation_slice_test_ts_2.units ==
+            truncation_slice_test_ts_3.units ==
+            truncation_slice_test_ts_4.units)
     # Test MetaDict match
     assert (eve_test_ts.meta.metadata[0][2] ==
             truncation_slice_test_ts_1.meta.metadata[0][2] ==
-            truncation_slice_test_ts_2.meta.metadata[0][2])
+            truncation_slice_test_ts_2.meta.metadata[0][2] ==
+            truncation_slice_test_ts_3.meta.metadata[0][2] ==
+            truncation_slice_test_ts_4.meta.metadata[0][2])
     # For TS and meta, Test time ranges match for the start and end of the TS.
     assert (truncation_slice_test_ts_1.time_range.start ==
             truncation_slice_test_ts_1.meta.time_range.start ==
             eve_test_ts.time_range.start)
-    assert (truncation_slice_test_ts_2.time_range.end ==
-            truncation_slice_test_ts_2.meta.time_range.end ==
+    assert (truncation_slice_test_ts_4.time_range.end ==
+            truncation_slice_test_ts_4.meta.time_range.end ==
             eve_test_ts.time_range.end)
 
 
@@ -461,13 +469,24 @@ def test_extraction(eve_test_ts, extraction_test_ts):
 
 
 @pytest.fixture
-def concatenated_slices_test_ts(truncation_slice_test_ts_1,
-                                truncation_slice_test_ts_2):
-    # Concatenate the slices to make a TS similar to the original
-    return truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_2)
+def concatenated_slices_test_ts(truncation_slice_test_ts_1, truncation_slice_test_ts_2,
+                                truncation_slice_test_ts_3, truncation_slice_test_ts_4):
+    # Concatenate the slices individually to make a TS similar to the original
+    truncation_slice_test_ts_1 = truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_2)
+    truncation_slice_test_ts_1 = truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_3)
+    return truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_4)
 
 
-def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
+@pytest.fixture
+def concatenated_slices_test_list(truncation_slice_test_ts_1, truncation_slice_test_ts_2,
+                                  truncation_slice_test_ts_3, truncation_slice_test_ts_4):
+    # Concatenate the slices in a list to make a TS similar to the original
+    return truncation_slice_test_ts_1.concatenate(
+        [truncation_slice_test_ts_2, truncation_slice_test_ts_3, truncation_slice_test_ts_4]
+    )
+
+
+def test_concatenation_of_slices_ts(eve_test_ts, concatenated_slices_test_ts):
     # Test resulting DataFrame is similar to the original
     assert_frame_equal(concatenated_slices_test_ts.to_dataframe(), eve_test_ts.to_dataframe())
     # Otherwise: concatenated_ts.data.equals(eve_test_ts)
@@ -481,14 +500,34 @@ def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
     # ToDo: Will TSMD.concatenate() want to re-merge the metadata entries back into one?
 
 
+def test_concatenation_of_slices_list(eve_test_ts, concatenated_slices_test_list):
+    # Test resulting DataFrame is similar to the original
+    assert_frame_equal(concatenated_slices_test_list.to_dataframe(), eve_test_ts.to_dataframe())
+    # Otherwise: concatenated_ts.data.equals(eve_test_ts)
+    # Compare timeranges from before and after match for both metadata and TS
+    assert eve_test_ts.meta.time_range == concatenated_slices_test_list.meta.time_range
+    assert eve_test_ts.time_range == concatenated_slices_test_list.time_range
+    # Test metadata MetaDict matches
+    eve_test_ts.meta.metadata[0][
+        2] == concatenated_slices_test_list.meta.metadata[0][
+            2] == concatenated_slices_test_list.meta.metadata[1][2]
+    # ToDo: Will TSMD.concatenate() want to re-merge the metadata entries back into one?
+
+
 @pytest.fixture
 def concatenation_different_data_test_ts(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate
     return eve_test_ts.concatenate(fermi_gbm_test_ts)
 
 
-def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
-                                         concatenation_different_data_test_ts):
+@pytest.fixture
+def concatenation_different_data_test_list(eve_test_ts, fermi_gbm_test_ts):
+    # Take two different data sources, pass one as an iterable and concatenate
+    return eve_test_ts.concatenate([fermi_gbm_test_ts])
+
+
+def test_concatenation_of_different_data_ts(eve_test_ts, fermi_gbm_test_ts,
+                                            concatenation_different_data_test_ts):
     # TODO: test the metadata is as expected using the below. (note ATM this fails if the order is changed)
     # assert concatenation_different_data_test_ts.meta.metadata[0] == fermi_gbm_test_ts.meta.metadata[0]
     # assert concatenation_different_data_test_ts.meta.metadata[1] == eve_test_ts.meta.metadata[0]
@@ -518,24 +557,68 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
     assert_frame_equal(concatenation_different_data_test_ts.to_dataframe(), comined_df)
 
 
-def test_concatenation_of_self(eve_test_ts):
+def test_concatenation_of_different_data_list(eve_test_ts, fermi_gbm_test_ts,
+                                              concatenation_different_data_test_list):
+    # Same test_concatenation_of_different_data_ts except an iterable is passed to concatenate
+    value = True
+    for key in list(concatenation_different_data_test_list.meta.metadata[0][2]
+                    .keys()):
+        if concatenation_different_data_test_list.meta.metadata[0][2][
+                key] != fermi_gbm_test_ts.meta.metadata[0][2][key]:
+            value = False
+    for key in list(concatenation_different_data_test_list.meta.metadata[1][2]
+                    .keys()):
+        if concatenation_different_data_test_list.meta.metadata[1][2][
+                key] != eve_test_ts.meta.metadata[0][2][key]:
+            value = False
+    assert value
+
+    # Test units concatenation
+    comined_units = copy.deepcopy(eve_test_ts.units)
+    comined_units.update(fermi_gbm_test_ts.units)
+    assert dict(concatenation_different_data_test_list.units) == dict(
+        comined_units)
+
+    # Test data is the concatenation
+    comined_df = pd.concat([eve_test_ts.to_dataframe(), fermi_gbm_test_ts.to_dataframe()],
+                           sort=False)
+    comined_df = comined_df.sort_index()
+    assert_frame_equal(concatenation_different_data_test_list.to_dataframe(), comined_df)
+
+
+def test_concatenation_of_self_ts(eve_test_ts):
     # Check that a self concatenation returns the original timeseries
     assert eve_test_ts.concatenate(eve_test_ts) == eve_test_ts
 
 
-def test_concatenation_different_data_error(eve_test_ts, fermi_gbm_test_ts):
+def test_concatenation_of_self_list(eve_test_ts):
+    # Check that a self concatenation as an iterable returns the original timeseries
+    assert eve_test_ts.concatenate([eve_test_ts]) == eve_test_ts
+
+
+def test_concatenation_different_data_ts_error(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate but set with the same_source
-    # kwarg as true, this should not concatenate.
-    with pytest.raises(TypeError):
+    # kwarg as true. This should not concatenate.
+    with pytest.raises(TypeError, match="TimeSeries classes must match if "
+                                        "'same_source' is specified."):
         eve_test_ts.concatenate(fermi_gbm_test_ts, same_source=True)
 
 
+def test_concatenation_different_data_list_error(eve_test_ts, fermi_gbm_test_ts):
+    # Take two different data sources, pass one as an iterable and concatenate
+    # but set with the same_source kwarg as true. This should not concatenate.
+    with pytest.raises(TypeError, match="TimeSeries classes must match if "
+                                        "'same_source' is specified."):
+        eve_test_ts.concatenate([fermi_gbm_test_ts], same_source=True)
+
+
 def test_generic_construction_concatenation():
+    nrows = 10
     # Generate the data and the corrisponding dates
     base = parse_time(datetime.datetime.today())
-    times = base - TimeDelta(np.arange(24 * 60)*u.minute)
-    intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
-    intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
+    times = base - TimeDelta(np.arange(nrows)*u.minute)
+    intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (nrows))))
+    intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (nrows))))
 
     # Create the data DataFrame, header MetaDict and units OrderedDict
     data = DataFrame(intensity1, index=times, columns=['intensity'])
@@ -705,18 +788,8 @@ def test_noaa_json_ind_peek(noaa_ind_json_test_ts):
 
 
 @figure_test
-def test_noaa_txt_ind_peek(noaa_ind_txt_test_ts):
-    noaa_ind_txt_test_ts.peek()
-
-
-@figure_test
 def test_noaa_json_pre_peek(noaa_pre_json_test_ts):
     noaa_pre_json_test_ts.peek()
-
-
-@figure_test
-def test_noaa_txt_pre_peek(noaa_pre_txt_test_ts):
-    noaa_pre_txt_test_ts.peek()
 
 
 @figure_test
@@ -786,28 +859,12 @@ def test_noaa_ind_json_invalid_peek(noaa_ind_json_test_ts):
         empty_ts.peek()
 
 
-def test_noaa_ind_txt_invalid_peek(noaa_ind_txt_test_ts):
-    a = noaa_ind_txt_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_ind_txt_test_ts.time_range.start - TimeDelta(1*u.day)
-    empty_ts = noaa_ind_txt_test_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError):
-        empty_ts.peek()
-
-
 def test_noaa_pre_json_invalid_peek(noaa_pre_json_test_ts):
     # NOAA pre data contains years long into the future, which ERFA complains about
     with pytest.warns(ErfaWarning, match='dubious year'):
         a = noaa_pre_json_test_ts.time_range.start - TimeDelta(2*u.day)
         b = noaa_pre_json_test_ts.time_range.start - TimeDelta(1*u.day)
         empty_ts = noaa_pre_json_test_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError):
-        empty_ts.peek()
-
-
-def test_noaa_pre_txt_invalid_peek(noaa_pre_txt_test_ts):
-    a = noaa_pre_txt_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_pre_txt_test_ts.time_range.start - TimeDelta(1*u.day)
-    empty_ts = noaa_pre_txt_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
@@ -847,6 +904,67 @@ def test_ts_shape(generic_ts):
 
 def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().to_dataframe().equals(generic_ts.to_dataframe().sort_index())
+
+# =============================================================================
+# Test Source Plot axes
+# =============================================================================
+
+
+def test_fermi_gbm_plot(fermi_gbm_test_ts):
+    fermi_gbm_test_ts.to_dataframe().columns
+    ax = fermi_gbm_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), fermi_gbm_test_ts.to_array().T[i])
+
+
+def test_goes_plot(goes_test_ts):
+    ax = goes_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), goes_test_ts.to_array().T[i])
+
+
+def test_rhessi_plot(rhessi_test_ts):
+    ax = rhessi_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), rhessi_test_ts.to_array().T[i])
+
+
+def test_norh_plot(norh_test_ts):
+    ax = norh_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), norh_test_ts.to_array().T[i])
+
+
+def test_noaa_json_ind_plot(noaa_ind_json_test_ts):
+    ax = noaa_ind_json_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), noaa_ind_json_test_ts._data[[
+                                      'sunspot SWO', 'sunspot SWO smooth']].to_numpy().T[i])
+
+
+def test_noaa_json_pre_plot(noaa_pre_json_test_ts):
+    ax = noaa_pre_json_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), noaa_pre_json_test_ts._data[[
+                                      'sunspot', 'sunspot high', 'sunspot low']].to_numpy().T[i])
+
+
+def test_eve_plot(eve_test_ts):
+    ax = eve_test_ts.plot()
+    for i, data in enumerate(ax.lines):
+        np.testing.assert_array_equal(data.get_ydata(), eve_test_ts.to_array().T[i])
+
+
+def test_esp_plot(esp_test_ts):
+    axes = esp_test_ts.plot()
+    for i, ax in enumerate(axes):
+        np.testing.assert_array_equal(ax.lines[0].get_ydata(), esp_test_ts.to_array().T[i])
+
+
+def test_lyra_plot(lyra_test_ts):
+    axes = lyra_test_ts.plot()
+    for i, ax in enumerate(axes):
+        np.testing.assert_array_equal(ax.lines[0].get_ydata(), lyra_test_ts.to_array().T[i])
 
 
 # TODO:

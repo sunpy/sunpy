@@ -35,7 +35,7 @@ plt.rcParams['figure.figsize'] = (16, 8)
 # Let’s download an EUV image from both AIA and EUVI A, when the
 # two spacecraft were separated by approximately 120 degrees.
 
-euvi = (a.vso.Source('STEREO_A') &
+euvi = (a.Source('STEREO_A') &
         a.Instrument("EUVI") &
         a.Time('2011-11-01', '2011-11-01T00:10:00'))
 
@@ -63,11 +63,24 @@ out_shape = (512, 512)
 map_aia = map_aia.resample(out_shape * u.pix)
 map_euvi = map_euvi.resample(out_shape * u.pix)
 
+######################################################################
+# Plot the two maps, with the solar limb as seen by each observatory
+# overlaid on both plots.
+
 fig = plt.figure()
+
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
 map_aia.plot(axes=ax1)
+map_aia.draw_limb(axes=ax1, color='white')
+map_euvi.draw_limb(axes=ax1, color='red')
+
 ax2 = fig.add_subplot(1, 2, 2, projection=map_euvi)
 map_euvi.plot(axes=ax2)
+limb_aia = map_aia.draw_limb(axes=ax2, color='white')
+limb_euvi = map_euvi.draw_limb(axes=ax2, color='red')
+
+plt.legend([limb_aia[0], limb_euvi[0]],
+           ['Limb as seen by AIA', 'Limb as seen by EUVI A'])
 
 ######################################################################
 # We now need to construct an output WCS. We build a custom header using
@@ -76,7 +89,7 @@ map_euvi.plot(axes=ax2)
 
 out_header = sunpy.map.make_fitswcs_header(
     out_shape,
-    map_aia.reference_coordinate,
+    map_aia.reference_coordinate.replicate(rsun=map_euvi.reference_coordinate.rsun),
     scale=u.Quantity(map_aia.scale),
     instrument="EUVI",
     observatory="AIA Observer",
@@ -85,11 +98,8 @@ out_header = sunpy.map.make_fitswcs_header(
 
 ######################################################################
 # Next we construct an `~astropy.wcs.WCS` object from the header.
-# Currently `~astropy.wcs.WCS` does not understand the observer
-# position, so we manually set that.
 
 out_wcs = WCS(out_header)
-out_wcs.heliographic_observer = map_aia.reference_coordinate.observer
 
 ######################################################################
 # We can now reproject the EUVI map to this output `~astropy.wcs.WCS`.
@@ -112,12 +122,16 @@ map_aia.plot(axes=ax1)
 ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
 outmap.plot(axes=ax2, title='EUVI image as seen from SDO')
 
+# Set the HPC grid color to black as the background is white
+ax2.coords[0].grid_lines_kwargs['edgecolor'] = 'k'
+ax2.coords[1].grid_lines_kwargs['edgecolor'] = 'k'
+
 ######################################################################
 # AIA as Seen from Mars
 # =====================
 #
 # The new observer coordinate doesn't have to be associated with an
-# existing Map. SunPy provides a function which can get the location
+# existing Map. sunpy provides a function which can get the location
 # coordinate for any known body. In this example, we use Mars.
 
 mars = get_body_heliographic_stonyhurst('mars', map_aia.date)
@@ -127,10 +141,10 @@ mars = get_body_heliographic_stonyhurst('mars', map_aia.date)
 # coordinate, which is similar to the one for AIA, except now with
 # the observer at Mars.
 
-mars_ref_coord = SkyCoord(map_aia.reference_coordinate.Tx,
-                          map_aia.reference_coordinate.Ty,
+mars_ref_coord = SkyCoord(0*u.arcsec, 0*u.arcsec,
                           obstime=map_aia.reference_coordinate.obstime,
                           observer=mars,
+                          rsun=map_aia.reference_coordinate.rsun,
                           frame="helioprojective")
 
 ######################################################################
@@ -146,12 +160,9 @@ mars_header = sunpy.map.make_fitswcs_header(
 )
 
 ######################################################################
-# Once again we need to generate a `~astropy.wcs.WCS` object and then
-# manually set the observer location.
+# Once again we need to generate a `~astropy.wcs.WCS` object.
 
 mars_wcs = WCS(mars_header)
-mars_wcs.heliographic_observer = mars
-
 output, footprint = reproject_interp(map_aia, mars_wcs, out_shape)
 
 ######################################################################

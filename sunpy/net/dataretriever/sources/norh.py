@@ -31,10 +31,13 @@ class NoRHClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the NoRHClient:
-         Start Time           End Time      Instrument Source Provider Wavelength
-    ------------------- ------------------- ---------- ------ -------- ----------
-    2016-01-01 00:00:00 2016-01-01 23:59:59       NORH   NAOJ      NRO   17.0 GHz
-    2016-01-02 00:00:00 2016-01-02 23:59:59       NORH   NAOJ      NRO   17.0 GHz
+    Source: https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html
+    <BLANKLINE>
+           Start Time               End Time        ... Provider Wavelength
+                                                    ...             GHz
+    ----------------------- ----------------------- ... -------- ----------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...      NRO       17.0
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...      NRO       17.0
     <BLANKLINE>
     <BLANKLINE>
 
@@ -42,10 +45,14 @@ class NoRHClient(GenericClient):
     baseurl = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
     pattern = '{}/tcx/{year:4d}/{month:2d}/{Wavelength:3l}{:4d}{day:2d}'
 
+    @property
+    def info_url(self):
+        return 'https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html'
+
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         """
-        Converts the wavength specified in the query to its
+        Converts the wavelength specified in the query to its
         representation in the url which can be used by the scraper.
         """
         d = cls._get_match_dict(*args, **kwargs)

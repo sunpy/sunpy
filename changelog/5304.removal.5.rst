@@ -1,0 +1,1 @@
+The deprecated ability to read txt files from `sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries` and `sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries` has been removed as the data provided by NOAA is now provided as JSON files.

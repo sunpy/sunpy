@@ -5,7 +5,6 @@ from copy import deepcopy
 
 from sunpy.visualization import animator as imageanimator
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
-from sunpy.visualization.wcsaxes_compat import _FORCE_NO_WCSAXES
 
 __all__ = ['MapSequenceAnimator']
 
@@ -73,10 +72,7 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         i = int(val)
         im.set_array(self.data[i].data)
         im.set_cmap(self.mapsequence[i].plot_settings['cmap'])
-
         norm = deepcopy(self.mapsequence[i].plot_settings['norm'])
-        # The following explicit call is for bugged versions of Astropy's ImageNormalize
-        norm.autoscale_None(self.data[i].data)
         im.set_norm(norm)
 
         if wcsaxes_compat.is_wcsaxes(im.axes):
@@ -105,17 +101,12 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         self.axes.set_ylabel(axis_labels_from_ctype(self.data[ind].coordinate_system[1],
                                                     self.data[ind].spatial_units[1]))
 
-    def _get_main_axes(self):
+    def _setup_main_axes(self):
         """
         Create an axes which is a `~astropy.visualization.wcsaxes.WCSAxes`.
         """
-        # If axes already exist, just return them
-        if len(self.fig.axes):
-            return self.fig.axes[0]
-        elif _FORCE_NO_WCSAXES:
-            return self.fig.add_subplot(111)
-        else:
-            return self.fig.add_subplot(111, projection=self.mapsequence[0].wcs)
+        if self.axes is None:
+            self.axes = self.fig.add_subplot(111, projection=self.mapsequence[0].wcs)
 
     def plot_start_image(self, ax):
         im = self.mapsequence[0].plot(

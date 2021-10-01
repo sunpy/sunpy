@@ -1,2 +1,0 @@
-Clarified the meaning of ``.bottom_left_coord`` and ``.top_right_coord`` in
-`sunpy.map.GenericMap`.

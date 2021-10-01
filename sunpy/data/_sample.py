@@ -46,6 +46,8 @@ _SAMPLE_DATA = {
     "GBM_TIMESERIES": "glg_cspec_n5_110607_v00.pha",
     "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
     "NORH_TIMESERIES": "tca110607.fits",
+    "LOFAR_IMAGE": "LOFAR_70MHZ_20190409_131136.fits",
+    "SRS_TABLE": "20110607SRS.txt",
 }
 
 # Reverse the dict because we want to use it backwards, but it is nicer to
@@ -71,7 +73,7 @@ def _download_sample_data(base_url, sample_files, overwrite):
     `parfive.Results`
         Download results. Will behave like a list of files.
     """
-    dl = Downloader(overwrite=overwrite, progress=False)
+    dl = Downloader(overwrite=overwrite, progress=True, headers={'Accept-Encoding': 'identity'})
     for url_file_name, fname in sample_files:
         url = urljoin(base_url, url_file_name)
         dl.enqueue_file(url, filename=fname)
@@ -81,7 +83,7 @@ def _download_sample_data(base_url, sample_files, overwrite):
 
 def _retry_sample_data(results):
     # In case we have a broken file on disk, overwrite it.
-    dl = Downloader(overwrite=True, progress=False)
+    dl = Downloader(overwrite=True, progress=True, headers={'Accept-Encoding': 'identity'})
     for err in results.errors:
         file_name = err.filepath_partial().name
         log.debug(

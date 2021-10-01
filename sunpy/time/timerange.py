@@ -26,7 +26,7 @@ class TimeRange:
        Regardless of how a `sunpy.time.TimeRange` is constructed it will always
        provide a positive time range where the start time is before the end time.
 
-       `~sunpy.time.TimeRange.__contains__` has been implemented which means you can
+       ``__contains__`` has been implemented which means you can
        check if a time is within the time range you have created.
        Please see the example section below.
 
@@ -347,12 +347,6 @@ class TimeRange:
                     0.2 minutes or
                     12.0 seconds]
         """
-        # TODO: After astropy 3.1 remove this check
-        if isinstance(window, timedelta):
-            window = TimeDelta(window, format="datetime")
-        if isinstance(cadence, timedelta):
-            cadence = TimeDelta(cadence, format="datetime")
-
         if not isinstance(window, TimeDelta):
             window = TimeDelta(window)
         if not isinstance(cadence, TimeDelta):
@@ -405,10 +399,11 @@ class TimeRange:
         """
         Return all partial days contained within the time range.
         """
+        delta = self.end.to_datetime().date() - self.start.to_datetime().date()
         dates = []
         dates = [
             parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
-            for i in range(int(self.days.value) + 1)
+            for i in range(delta.days + 1)
         ]
         return dates
 
@@ -442,3 +437,26 @@ class TimeRange:
         """
         this_time = parse_time(time)
         return this_time >= self.start and this_time <= self.end
+
+    def intersects(self, other):
+        """
+        Return `True` if this interval overlaps with *other*.
+
+        Parameters
+        ----------
+        other : sunpy.time.TimeRange
+            Other `~sunpy.time.TimeRange` to check for intersection.
+
+        Notes
+        -----
+        Both intervals are treated as closed, i.e., their endpoints are included.
+        """
+        # Order intervals so int1 has the earliest start time
+        if other.start > self.start:
+            int_first = self
+            int_second = other
+        else:
+            int_first = other
+            int_second = self
+
+        return int_second.start <= int_first.end

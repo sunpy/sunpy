@@ -13,7 +13,8 @@ SunPy 0.9 brings improved support for downloading data from the JSOC and bugfixe
 The 0.9.x series will be the last series of SunPy releases to support Python 2.
 This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
 The 0.9.x series will receive bugfixs only up until the and of life of Python 2 (around 18 months).
-No new functionality will be added to the 0.9.x series, which will also be the last version to include `sunpy.spectra`, `sunpy.lightcurve` and `sunpy.wcs`, all of which were deprecated in 0.8.
+No new functionality will be added to the 0.9.x series, which will also be the last version to include
+``sunpy.spectra``, ``sunpy.lightcurve`` and ``sunpy.wcs``, all of which were deprecated in 0.8.
 
 SunPy 1.0 and higher will support Python 3 only.
 All new functionality will be available only in SunPy 1.0 and higher.

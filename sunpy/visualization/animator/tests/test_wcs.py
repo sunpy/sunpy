@@ -5,6 +5,7 @@ import pytest
 
 import astropy.units as u
 from astropy.io import fits
+from astropy.visualization.wcsaxes import WCSAxes
 from astropy.wcs import WCS
 
 from sunpy.tests.helpers import figure_test
@@ -88,9 +89,6 @@ def wcs_3d():
     (np.arange(120).reshape((5, 4, 3, 2)), [0, 0, 0, 'x'], 1),
 ))
 def test_construct_array_animator(wcs_4d, data, slices, dim):
-    if dim == 1:
-        pytest.importorskip("astropy", minversion="4.0dev26173")
-
     array_animator = ArrayAnimatorWCS(data, wcs_4d, slices)
 
     assert isinstance(array_animator, ArrayAnimatorWCS)
@@ -137,10 +135,36 @@ def test_array_animator_wcs_2d_simple_plot(wcs_4d):
 
 
 @figure_test
+def test_array_animator_wcs_2d_clip_interval(wcs_4d):
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'], clip_interval=(1, 99)*u.percent)
+    return a.fig
+
+
+def test_array_animator_wcs_2d_clip_interval_change(wcs_4d):
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    pclims = [5, 95]
+    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'],
+                         clip_interval=pclims * u.percent)
+    lims0 = a._get_2d_plot_limits()
+    a.update_plot(1, a.im, a.sliders[0]._slider)
+    lims1 = a._get_2d_plot_limits()
+    assert np.all(lims0 != lims1)
+    assert np.all(lims0 == np.percentile(data[..., 0, 0], pclims))
+    assert np.all(lims1 == np.percentile(data[..., 1, 0], pclims))
+
+
+@figure_test
 def test_array_animator_wcs_2d_celestial_sliders(wcs_4d):
     data = np.arange(120).reshape((5, 4, 3, 2))
     a = ArrayAnimatorWCS(data, wcs_4d, ['x', 'y', 0, 0])
     return a.fig
+
+
+def test_to_axes(wcs_4d):
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    a = ArrayAnimatorWCS(data, wcs_4d, ['x', 'y', 0, 0])
+    assert isinstance(a.axes, WCSAxes)
 
 
 @figure_test
@@ -197,7 +221,6 @@ def test_array_animator_wcs_2d_extra_sliders(wcs_4d):
 
 @figure_test
 def test_array_animator_wcs_1d_update_plot(wcs_4d):
-    pytest.importorskip("astropy", minversion="4.0dev26173")
     data = np.arange(120).reshape((5, 4, 3, 2))
     a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 0], ylabel="Y axis!")
     a.sliders[0]._slider.set_val(1)
@@ -210,7 +233,6 @@ def test_array_animator_wcs_1d_update_plot_masked(wcs_3d):
     This test ensures the x axis of the line plot is correct even if the whole
     of the initial line plotted at construction of the animator is masked out.
     """
-    pytest.importorskip("astropy", minversion="4.0dev26173")
 
     nelem = np.prod(wcs_3d.array_shape)
     data = np.arange(nelem, dtype=np.float64).reshape(wcs_3d.array_shape)
@@ -243,8 +265,24 @@ def test_array_animator_wcs_coord_params(wcs_4d):
 
 
 @figure_test
+def test_array_animator_wcs_coord_params_no_ticks(wcs_4d):
+
+    coord_params = {
+        'hpln': {
+            'format_unit': u.deg,
+            'major_formatter': 'hh:mm:ss',
+            'axislabel': 'Longitude',
+            'ticks': False
+        }
+    }
+
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'], coord_params=coord_params)
+    return a.fig
+
+
+@figure_test
 def test_array_animator_wcs_coord_params_grid(wcs_4d):
-    pytest.importorskip("astropy", minversion="4.0dev26173")
 
     coord_params = {
         'hpln': {

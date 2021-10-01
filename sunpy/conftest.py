@@ -1,6 +1,5 @@
 import os
-import json
-import pathlib
+import logging
 import tempfile
 import importlib
 
@@ -9,16 +8,16 @@ import pytest
 import astropy
 import astropy.config.paths
 
-import sunpy.tests.helpers
-from sunpy.tests.hash import HASH_LIBRARY_NAME
-from sunpy.tests.helpers import generate_figure_webpage, new_hash_library
+from sunpy.util import SunpyUserWarning
 
 # Force MPL to use non-gui backends for testing.
 try:
     import matplotlib
+    import matplotlib.pyplot as plt
 except ImportError:
-    pass
+    HAVE_MATPLOTLIB = False
 else:
+    HAVE_MATPLOTLIB = True
     matplotlib.use('Agg')
 
 # Don't actually import pytest_remotedata because that can do things to the
@@ -30,14 +29,8 @@ HAVE_REMOTEDATA = remotedata_spec is not None
 collect_ignore = ["data/sample.py"]
 
 
-def pytest_addoption(parser):
-    parser.addoption("--figure_dir", action="store", default="./figure_test_images")
-
-
-@pytest.fixture(scope='session', autouse=True)
-def figure_base_dir(request):
-    sunpy.tests.helpers.figure_base_dir = pathlib.Path(
-        request.config.getoption("--figure_dir"))
+console_logger = logging.getLogger()
+console_logger.setLevel('INFO')
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -103,6 +96,17 @@ def undo_config_dir_patch():
 
 
 @pytest.fixture(scope='session', autouse=True)
+def hide_parfive_progress(request):
+    """
+    Globally set the HIDE_PARFIVE_PROGESS to hide the parfive progress bar in tests.
+    Used by the parfive helper class only.
+    """
+    os.environ["HIDE_PARFIVE_PROGESS"] = "True"
+    yield
+    del os.environ["HIDE_PARFIVE_PROGESS"]
+
+
+@pytest.fixture(scope='session', autouse=True)
 def tmp_dl_dir(request):
     """
     Globally set the default download directory for the test run to a tmp dir.
@@ -111,6 +115,15 @@ def tmp_dl_dir(request):
         os.environ["SUNPY_DOWNLOADDIR"] = tmpdir
         yield tmpdir
         del os.environ["SUNPY_DOWNLOADDIR"]
+
+
+@pytest.fixture(scope='session', autouse=True)
+def set_columns(request):
+    orig_columns = os.environ.get("COLUMNS", None)
+    os.environ['COLUMNS'] = '180'
+    yield
+    if orig_columns is not None:
+        os.environ['COLUMNS'] = orig_columns
 
 
 @pytest.fixture()
@@ -133,28 +146,15 @@ def pytest_runtest_setup(item):
         if 'remote_data' in item.keywords and not HAVE_REMOTEDATA:
             pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
 
+    # Confirm that the pyplot figure stack is empty before the test
+    if HAVE_MATPLOTLIB and plt.get_fignums():
+        raise SunpyUserWarning(f"There are stale pyplot figures prior to running {item.name}")
 
-def pytest_unconfigure(config):
-    # If at least one figure test has been run, print result image directory
-    if len(new_hash_library) > 0:
-        # Write the new hash library in JSON
-        figure_base_dir = pathlib.Path(config.getoption("--figure_dir"))
-        hashfile = figure_base_dir / HASH_LIBRARY_NAME
-        with open(hashfile, 'w') as outfile:
-            json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
-        """
-        Turn on internet when generating the figure comparison webpage.
-        """
-        if HAVE_REMOTEDATA:
-            from pytest_remotedata.disable_internet import turn_off_internet, turn_on_internet
-        else:
-            def turn_on_internet(): pass
-            def turn_off_internet(): pass
-
-        turn_on_internet()
-        generate_figure_webpage(new_hash_library)
-        turn_off_internet()
-
-        print('All images from image tests can be found in {}'.format(figure_base_dir.resolve()))
-        print("The corresponding hash library is {}".format(hashfile.resolve()))
+def pytest_runtest_teardown(item):
+    # Clear the pyplot figure stack if it is not empty after the test
+    # You can see these log messages by passing "-o log_cli=true" to pytest on the command line
+    if HAVE_MATPLOTLIB and plt.get_fignums():
+        console_logger.info(f"Removing {len(plt.get_fignums())} pyplot figure(s) "
+                            f"left open by {item.name}")
+        plt.close('all')

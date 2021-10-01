@@ -2,7 +2,6 @@ import os
 import pathlib
 from stat import S_IREAD, S_IRGRP, S_IROTH
 from unittest import mock
-from collections import OrderedDict
 
 import hypothesis.strategies as st
 import pytest
@@ -12,17 +11,17 @@ from parfive import Results
 from parfive.utils import FailedDownload
 
 import astropy.units as u
-from astropy.table import Table
 
 from sunpy import config
 from sunpy.net import Fido, attr
 from sunpy.net import attrs as a
 from sunpy.net import jsoc
+from sunpy.net.base_client import QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, srs_time, time_attr
-from sunpy.net.vso import QueryResponse as vsoQueryResponse
+from sunpy.net.vso import VSOQueryResponseTable
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.tests.helpers import no_vso, skip_windows
 from sunpy.time import TimeRange, parse_time
@@ -40,8 +39,6 @@ def offline_query(draw, instrument=offline_instruments()):
     # If we have AttrAnd then we don't have GOES
     if isinstance(query, a.Instrument) and query.value == 'goes':
         query &= draw(goes_time())
-    elif isinstance(query, a.Instrument) and query.value == 'soon':
-        query &= draw(srs_time())
     else:
         query = attr.and_(query, draw(time_attr()))
     return query
@@ -55,12 +52,14 @@ def online_query(draw, instrument=online_instruments()):
         query &= a.Level.zero
     if isinstance(query, a.Instrument) and query.value == 'norh':
         query &= a.Wavelength(17*u.GHz)
+    if isinstance(query, a.Instrument) and query.value == 'soon':
+        query &= draw(srs_time())
 
     return query
 
 
 @no_vso
-@settings(deadline=50000)
+@settings(deadline=50000, max_examples=10)
 @given(offline_query())
 def test_offline_fido(query):
     unifiedresp = Fido.search(query)
@@ -94,15 +93,9 @@ def check_response(query, unifiedresp):
     if not query_tr:
         raise ValueError("No Time Specified")
 
-    for block in unifiedresp.responses:
-        res_tr = block.time_range()
+    for block in unifiedresp:
         for res in block:
-            if isinstance(res, OrderedDict) or isinstance(res, dict):
-                assert res['Time'].start in res_tr
-                assert query_instr.lower() == res['Instrument'].lower()
-            else:
-                assert res.time.start in res_tr
-                assert query_instr.lower() == res.instrument.lower()
+            assert query_instr.lower() == res['Instrument'].lower()
 
 
 @pytest.mark.remote_data
@@ -110,7 +103,7 @@ def test_save_path(tmpdir):
     qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level.zero)
 
     # Test when path is str
-    files = Fido.fetch(qr, path=str(tmpdir / "{Instrument}" / "{Level}"))
+    files = Fido.fetch(qr, path=str(tmpdir / "{instrument}" / "{level}"))
     for f in files:
         assert str(tmpdir) in f
         assert f"EVE{os.path.sep}0" in f
@@ -122,7 +115,7 @@ def test_save_path_pathlib(tmpdir):
 
     # Test when path is pathlib.Path
     target_dir = tmpdir.mkdir("down")
-    path = pathlib.Path(target_dir, "{Instrument}", "{Level}")
+    path = pathlib.Path(target_dir, "{instrument}", "{level}")
     files = Fido.fetch(qr, path=path)
     for f in files:
         assert target_dir.strpath in f
@@ -181,8 +174,6 @@ def test_fetch():
 
 """
 UnifiedResponse Tests
-
-Use LYRA here because it does not use the internet to return results.
 """
 
 
@@ -191,7 +182,7 @@ def test_unifiedresponse_slicing():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
     assert isinstance(results[0:2], UnifiedResponse)
-    assert isinstance(results[0], UnifiedResponse)
+    assert isinstance(results[0], QueryResponseTable)
 
 
 @pytest.mark.remote_data
@@ -199,74 +190,14 @@ def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
     assert isinstance(results[::-1], UnifiedResponse)
-    assert len(results[::-1]) == len(results)
-    assert isinstance(results[0, ::-1], UnifiedResponse)
-    assert all(results._list[0][::-1].build_table() == results[0, ::-1]._list[0].build_table())
-
-
-@pytest.mark.remote_data
-def test_tables_single_response():
-    results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra, a.Level.two)
-    tables = results.tables
-
-    assert isinstance(tables, list)
-    assert isinstance(tables[0], Table)
-    assert len(tables) == 1
-
-    columns = ['Start Time', 'End Time', 'Instrument', 'Physobs',
-               'Source', 'Provider', 'Level']
-    assert columns == tables[0].colnames
-    assert len(tables[0]) == 5
-
-
-@pytest.mark.remote_data
-def test_tables_multiple_response():
-    results = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                          a.Instrument.lyra | (a.Instrument.rhessi & a.Physobs.summary_lightcurve))
-    tables = results.tables
-    assert isinstance(tables, list)
-    assert all(isinstance(t, Table) for t in tables)
-    assert len(tables) == 2
-
-    columns0 = ['Start Time', 'End Time', 'Instrument', 'Physobs',
-                'Source', 'Provider', 'Level']
-    columns1 = ['Start Time', 'End Time', 'Instrument', 'Physobs',
-                'Source', 'Provider']
-    assert columns0 == tables[0].colnames and columns1 == tables[1].colnames
-
-    assert all(entry == 'LYRA' for entry in tables[0]['Instrument'])
-    assert all(entry == 'RHESSI' for entry in tables[1]['Instrument'])
-
-
-@pytest.mark.remote_data
-def test_tables_all_types():
-    # Data retriver response objects
-    drclient = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                           a.Instrument.lyra | (a.Instrument.rhessi & a.Physobs.summary_lightcurve))
-    drtables = drclient.tables
-    assert isinstance(drtables, list)
-    assert isinstance(drtables[0], Table)
-
-    # VSO response objects
-    vsoclient = Fido.search(a.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
-                            a.Instrument.aia, a.Wavelength(171 * u.AA))
-    vsotables = vsoclient.tables
-    assert isinstance(vsotables, list)
-    assert isinstance(vsotables[0], Table)
-
-    # JSOC response objects
-    jsocclient = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-                             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))
-    jsoctables = jsocclient.tables
-
-    assert isinstance(jsoctables, list)
-    assert isinstance(jsoctables[0], Table)
+    assert len(results[::-1]) == len(results[::1])
+    assert isinstance(results[0, ::-1], QueryResponseTable)
+    assert all(results[0][::-1] == results[0, ::-1])
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 def test_vso_unifiedresponse(mock_build_client):
-    vrep = vsoQueryResponse([])
+    vrep = VSOQueryResponseTable()
     vrep.client = True
     uresp = UnifiedResponse(vrep)
     assert isinstance(uresp, UnifiedResponse)
@@ -277,7 +208,7 @@ def test_responses():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
 
-    for i, resp in enumerate(results.responses):
+    for i, resp in enumerate(results):
         assert isinstance(resp, QueryResponse)
 
     assert i + 1 == len(results)
@@ -290,8 +221,8 @@ def test_repr():
 
     rep = repr(results)
     rep = rep.split('\n')
-    # 6 header lines, the results table and two blank lines at the end
-    assert len(rep) == 6 + len(list(results.responses)[0]) + 2
+    # 8 header lines, the results table and two blank lines at the end
+    assert len(rep) == 8 + len(list(results)[0]) + 2
 
 
 def filter_queries(queries):
@@ -321,7 +252,7 @@ def test_path_read_only(tmp_path):
 
 
 @no_vso
-@settings(deadline=50000)
+@settings(deadline=50000, max_examples=10)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_indexing(queries):
     query1, query2 = queries
@@ -331,24 +262,54 @@ def test_fido_indexing(queries):
     assume(query1.attrs[1].start != query2.attrs[1].start)
 
     res = Fido.search(query1 | query2)
-
     assert len(res) == 2
-    assert len(res[0]) == 1
-    assert len(res[1]) == 1
+
+    assert isinstance(res[1:], UnifiedResponse)
+    assert len(res[1:]) == 1
+    assert isinstance(res[0:1], UnifiedResponse)
+    assert len(res[0:1]) == 1
+
+    assert isinstance(res[1:, 0], UnifiedResponse)
+    assert len(res[1:, 0]) == 1
+    assert isinstance(res[0:1, 0], UnifiedResponse)
+    assert len(res[0:1, 0]) == 1
+
+    assert isinstance(res[0][0], QueryResponseRow)
+    assert isinstance(res[1][0], QueryResponseRow)
+    assert isinstance(res[1, 0:1], QueryResponseTable)
 
     aa = res[0, 0]
+    assert isinstance(aa, QueryResponseRow)
+
+    aa = res[0, 'Instrument']
+    assert isinstance(aa, QueryResponseColumn)
+
+    aa = res[:, 'Instrument']
     assert isinstance(aa, UnifiedResponse)
-    assert len(aa) == 1
-    assert len(aa.get_response(0)) == 1
+    for table in aa:
+        assert len(table.columns) == 1
+
+    aa = res[0, ('Instrument',)]
+    assert isinstance(aa, QueryResponseTable)
+    for table in aa:
+        assert len(table.columns) == 1
 
     aa = res[:, 0]
     assert isinstance(aa, UnifiedResponse)
     assert len(aa) == 2
-    assert len(aa.get_response(0)) == 1
+    assert len(aa[0]) == 1
 
     aa = res[0, :]
-    assert isinstance(aa, UnifiedResponse)
-    assert len(aa) == 1
+    assert isinstance(aa, QueryResponseTable)
+
+    aa = res[0, 1:]
+    assert isinstance(aa, QueryResponseTable)
+
+    if len(res.keys()) == len(res):
+        aa = res[res.keys()[0], 1:]
+        assert isinstance(aa, QueryResponseTable)
+        aa = res[res.keys()[0], 'Instrument']
+        assert isinstance(aa, QueryResponseColumn)
 
     with pytest.raises(IndexError):
         res[0, 0, 0]
@@ -359,9 +320,12 @@ def test_fido_indexing(queries):
     with pytest.raises(IndexError):
         res[1.0132]
 
+    if isinstance(res, UnifiedResponse):
+        assert len(res) != 1
+
 
 @no_vso
-@settings(deadline=50000)
+@settings(deadline=50000, max_examples=10)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_iter(queries):
     query1, query2 = queries
@@ -377,7 +341,7 @@ def test_fido_iter(queries):
 
 
 @no_vso
-@settings(deadline=50000)
+@settings(deadline=50000, max_examples=10)
 @given(offline_query())
 def test_repr2(query):
     res = Fido.search(query)
@@ -417,11 +381,15 @@ def test_retry(mock_retry):
 
 
 def results_generator(dl):
-    http = list(dl.http_queue._queue)
-    ftp = list(dl.ftp_queue._queue)
+    http = dl.http_queue
+    ftp = dl.ftp_queue
+    # Handle compatibility with parfive 1.0
+    if not isinstance(dl.http_queue, list):
+        http = list(dl.http_queue._queue)
+        ftp = list(dl.ftp_queue._queue)
 
     outputs = []
-    for url in http+ftp:
+    for url in http + ftp:
         outputs.append(pathlib.Path(url.keywords['url'].split("/")[-1]))
 
     return Results(outputs)
@@ -433,15 +401,12 @@ def results_generator(dl):
 @mock.patch("parfive.Downloader.download", new=results_generator)
 def test_vso_errors_with_second_client(mock_download_all):
     query = a.Time("2011/01/01", "2011/01/02") & (a.Instrument.goes | a.Instrument.eit)
-
     qr = Fido.search(query)
-
     res = Fido.fetch(qr)
     assert len(res.errors) == 1
     assert len(res) != qr.file_num
-
     # Assert that all the XRSClient records are in the output.
-    for resp in qr.responses:
+    for resp in qr:
         if isinstance(resp, XRSClient):
             assert len(resp) == len(res)
 
@@ -461,9 +426,7 @@ def test_mixed_retry_error():
             return_value=["hello"])
 def test_client_fetch_wrong_type(mock_fetch):
     query = a.Time("2011/01/01", "2011/01/02") & a.Instrument.goes
-
     qr = Fido.search(query)
-
     with pytest.raises(TypeError):
         Fido.fetch(qr)
 
@@ -498,6 +461,14 @@ def test_fido_no_time(mocker):
 
 
 @pytest.mark.remote_data
+def test_jsoc_missing_email():
+    res = Fido.search(a.Time("2011/01/01", "2011/01/01 00:01"), a.jsoc.Series.aia_lev1_euv_12s)
+
+    with pytest.raises(ValueError, match=r"A registered email is required to get data from JSOC.*"):
+        Fido.fetch(res)
+
+
+@pytest.mark.remote_data
 def test_slice_jsoc():
     tstart = '2011/06/07 06:32:45'
     tend = '2011/06/07 06:33:15'
@@ -514,3 +485,36 @@ def test_slice_jsoc():
 def test_fido_repr():
     output = repr(Fido)
     assert output[:50] == '<sunpy.net.fido_factory.UnifiedDownloaderFactory o'
+
+
+@pytest.mark.remote_data
+def test_fido_metadata_queries():
+    results = Fido.search(a.Time('2010/8/1 03:40', '2010/8/1 3:40:10'),
+                          a.hek.FI | a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
+                          a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify("jsoc@cadair.com"))
+
+    assert len(results['hek']) == 2
+    assert isinstance(results['hek'], UnifiedResponse)
+    assert isinstance(results['hek'][0], QueryResponseTable)
+    assert len(results['hek'][1]) == 2
+    assert results[::-1][0] is results['jsoc']
+    assert isinstance(results['jsoc'], QueryResponseTable)
+
+    files = Fido.fetch(results)
+    assert len(files) == len(results['jsoc'])
+
+    assert results.keys() == ['hek', 'jsoc']
+
+
+def test_path_format_keys():
+    t1 = QueryResponseTable({'Start Time': ['2011/01/01', '2011/01/02'],
+                             '!excite!': ['cat', 'rabbit'],
+                             '01 wibble': ['parsnip', 'door']})
+    assert t1.path_format_keys() == {'start_time', '_excite_', '01_wibble'}
+
+    t2 = QueryResponseTable({'End Time': ['2011/01/01', '2011/01/02'],
+                             '!excite!': ['cat', 'rabbit']})
+    assert t2.path_format_keys() == {'_excite_', 'end_time'}
+
+    unif = UnifiedResponse(t1, t2)
+    assert unif.path_format_keys() == {'_excite_'}

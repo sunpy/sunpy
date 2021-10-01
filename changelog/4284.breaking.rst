@@ -1,3 +1,0 @@
-Support for Python 3.6 and Numpy 1.15 has been dropped in line with
-`NEP 29 <https://numpy.org/neps/nep-0029-deprecation_policy.html>__`.
-Also, the minimum supported version of Astropy is now 4.0, and the minimum version of scipy is now 1.2.

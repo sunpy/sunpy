@@ -4,22 +4,46 @@ Differential rotation using coordinate frames
 *********************************************
 
 Normally, coordinates refer to a point in inertial space (relative to the barycenter of the solar system).
-Transforming to a different observation time does not move the point at all, but rather only updates the coordinate representation as needed for the origin and axis orientations at the new observation time.
-However, the Sun both moves translationally in inertial space and rotates about its axis over time.
-Thus, a coordinate that points to a solar feature (e.g., the center of the Sun or an active region on its surface) will not continue to point to the same solar feature at other observation times.
+Transforming to a different observation time does not move the point itself, but if the coordinate frame origin and/or axis change with time, the coordinate representation is updated to account for this change.
+In solar physics an example of a frame that changes with time is the `~sunpy.coordinates.frames.HeliographicStonyhurst` (HGS) frame.
+Its origin moves with the center of the Sun, and its orientation rotates such that the longitude component of Earth is zero at any given time.
+A coordinate in a HGS frame of reference transformed to a HGS frame defined a day later will have a different longitude::
+
+  >>> from astropy.coordinates import SkyCoord
+  >>> import astropy.units as u
+  >>> from sunpy.coordinates import HeliographicStonyhurst
+
+  >>> hgs_coord = SkyCoord(0*u.deg, 0*u.deg, radius=1*u.au, frame='heliographic_stonyhurst', obstime="2001-01-01")
+  >>> new_frame = HeliographicStonyhurst(obstime="2001-01-02")
+  >>> new_hgs_coord = hgs_coord.transform_to(new_frame)
+  >>> hgs_coord.lon, new_hgs_coord.lon
+  (<Longitude 0. deg>, <Longitude -1.01372559 deg>)
+
+but when transformed to an inertial frame of reference we can see that these two coordinates refer to the same point in space::
+
+  >>> hgs_coord.transform_to('icrs')
+  <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, AU)
+      (101.79107615, 26.05004621, 0.99601156)>
+  >>> new_hgs_coord.transform_to('icrs')
+  <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, AU)
+      (101.79107615, 26.05004621, 0.99601156)>
 
 To evolve a coordinate in time such that it accounts for the rotational motion of the Sun, one can use the `~sunpy.coordinates.metaframes.RotatedSunFrame` "metaframe" class as described below.
 This machinery will take into account the latitude-dependent rotation rate of the solar surface, also known as differential rotation.
 Multiple models for differential rotation are supported (see :func:`~sunpy.physics.differential_rotation.diff_rot` for details).
 
+.. note::
+   `~sunpy.coordinates.metaframes.RotatedSunFrame` is a powerful metaframe, but can be tricky to use correctly.
+   We recommend users to first check if the simpler :func:`~sunpy.coordinates.propagate_with_solar_surface` context manager is sufficient for their needs.
+
 In addition, one may want to account for the translational motion of the Sun as well, and that can be achieved by also using the context manager :func:`~sunpy.coordinates.transform_with_sun_center` for desired coordinate transformations.
 
 Basics of the RotatedSunFrame class
 ===================================
-In a nutshell, the `~sunpy.coordinates.metaframes.RotatedSunFrame` class allows one to specify coordinates in a coordinate frame prior to an amount of solar (differential) rotation being applied.
+The `~sunpy.coordinates.metaframes.RotatedSunFrame` class allows one to specify coordinates in a coordinate frame prior to an amount of solar (differential) rotation being applied.
 That is, the coordinate will point to a location in inertial space at some time, but will use a coordinate system at a *different* time to refer to that point, while accounting for the differential rotation between those two times.
 
-Technical note: `~sunpy.coordinates.metaframes.RotatedSunFrame` is not itself a coordinate frame, but is instead a "metaframe".
+`~sunpy.coordinates.metaframes.RotatedSunFrame` is not itself a coordinate frame, but is instead a "metaframe".
 A new frame class is created on the fly corresponding to each base coordinate frame class.
 This tutorial will refer to these new classes as ``RotatedSun*`` frames.
 
@@ -35,15 +59,22 @@ Note that the ``RotatedSun*`` frame that is created in this example is appropria
   >>> from sunpy.coordinates import RotatedSunFrame
   >>> import sunpy.coordinates.frames as f
 
-  >>> rs_hgs = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime="2001-01-01"), duration=1*u.day)
+  >>> base_frame = f.HeliographicStonyhurst(obstime="2001-01-01")
+  >>> rs_hgs = RotatedSunFrame(base=base_frame, duration=1*u.day)
   >>> rs_hgs
-  <RotatedSunHeliographicStonyhurst Frame (base=<HeliographicStonyhurst Frame (obstime=2001-01-01T00:00:00.000)>, duration=1.0 d, rotation_model=howard)>
+  <RotatedSunHeliographicStonyhurst Frame (base=<HeliographicStonyhurst Frame (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km)>, duration=1.0 d, rotation_model=howard)>
 
 Once a ``RotatedSun*`` frame is created, it can be used in the same manner as other frames.  Here, we create a `~astropy.coordinates.SkyCoord` using the ``RotatedSun*`` frame::
 
-  >>> SkyCoord(0*u.deg, 0*u.deg, frame=rs_hgs)
-  <SkyCoord (RotatedSunHeliographicStonyhurst: base=<HeliographicStonyhurst Frame (obstime=2001-01-01T00:00:00.000)>, duration=1.0 d, rotation_model=howard): (lon, lat, radius) in (deg, deg, km)
-      (0., 0., 695700.)>
+  >>> rotated_coord = SkyCoord(0*u.deg, 0*u.deg, frame=rs_hgs)
+  >>> rotated_coord
+  <SkyCoord (RotatedSunHeliographicStonyhurst: base=<HeliographicStonyhurst Frame (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km)>, duration=1.0 d, rotation_model=howard): (lon, lat) in deg
+        (0., 0.)>
+
+Transforming this into the original heliographic Stonyhurst frame, we can see that the longitude is equal to the original zero degrees, plus an extra offset to account for one day of differential rotation::
+
+  >>> rotated_coord.transform_to(base_frame).lon
+  <Longitude 14.32632838 deg>
 
 Instead of explicitly specifying the duration of solar rotation, one can use the keyword argument ``rotated_time``.
 The duration will be automatically calculated from the difference between ``rotated_time`` and the ``obstime`` value of the base coordinate frame.
@@ -53,21 +84,14 @@ Here, we also include coordinate data in the supplied base coordinate frame::
   ...                                                        obstime="2020-03-04 00:00"),
   ...                          rotated_time="2020-03-06 12:00")
   >>> rs_hgc
-  <RotatedSunHeliographicCarrington Coordinate (base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard): (lon, lat, radius) in (deg, deg, km)
-      (10., 20., 695700.)>
+  <RotatedSunHeliographicCarrington Coordinate (base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard): (lon, lat) in deg
+      (10., 20.)>
 
 A ``RotatedSun*`` frame containing coordinate data can be supplied to ``SkyCoord`` as normal::
 
   >>> SkyCoord(rs_hgc)
-  <SkyCoord (RotatedSunHeliographicCarrington: base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard): (lon, lat, radius) in (deg, deg, km)
-      (10., 20., 695700.)>
-
-It is important to understand that the ``RotatedSun*`` coordinate *already* has differential rotation applied.
-If one converts the ``RotatedSun*`` coordinate to a "real" coordinate frame, even the base coordinate frame used in the ``RotatedSun*`` frame, one sees that the longitude for the coordinate is different from the initial representation (in this case, ~45 degrees instead of 10 degrees)::
-
-  >>> rs_hgc.transform_to(rs_hgc.base)
-  <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
-      (45.13354448, 20., 695700.)>
+  <SkyCoord (RotatedSunHeliographicCarrington: base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard): (lon, lat) in deg
+      (10., 20.)>
 
 The above examples used the default differential-rotation model, but any of the models available through :func:`sunpy.physics.differential_rotation.diff_rot` are selectable.
 For example, instead of the default ("howard"), one can specify "allen" using the keyword argument ``rotation_model``.
@@ -77,7 +101,7 @@ Note the slight difference in the "real" longitude compared to the output above:
   ...                                                       obstime="2020-03-04 00:00"),
   ...                         rotated_time="2020-03-06 12:00", rotation_model="allen")
   >>> allen.transform_to(allen.base)
-  <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
+  <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
       (45.22266666, 20., 695700.)>
 
 Transforming coordinate arrays
@@ -89,17 +113,16 @@ Again, the coordinates are already differentially rotated in inertial space; the
   ...                            base=f.HeliographicCarrington(observer="earth", obstime="2001-01-01"),
   ...                            duration=1*u.day)
   >>> meridian
-  <RotatedSunHeliographicCarrington Coordinate (base=<HeliographicCarrington Frame (obstime=2001-01-01T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=1.0 d, rotation_model=howard): (lon, lat, radius) in (deg, deg, km)
-      [(100., -75., 695700.), (100., -60., 695700.), (100., -45., 695700.),
-       (100., -30., 695700.), (100., -15., 695700.), (100.,   0., 695700.),
-       (100.,  15., 695700.), (100.,  30., 695700.), (100.,  45., 695700.),
-       (100.,  60., 695700.), (100.,  75., 695700.)]>
+  <RotatedSunHeliographicCarrington Coordinate (base=<HeliographicCarrington Frame (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=1.0 d, rotation_model=howard): (lon, lat) in deg
+      [(100., -75.), (100., -60.), (100., -45.), (100., -30.), (100., -15.),
+       (100.,   0.), (100.,  15.), (100.,  30.), (100.,  45.), (100.,  60.),
+       (100.,  75.)]>
 
 An easy way to "see" the differential rotation is to transform the coordinates to the base coordinate frame.
 Note that the points closer to the equator (latitude of 0 degrees) have evolved farther in longitude than the points at high latitudes::
 
   >>> meridian.transform_to(meridian.base)
-  <HeliographicCarrington Coordinate (obstime=2001-01-01T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
+  <HeliographicCarrington Coordinate (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
       [(110.7550473 , -75., 695700.), (111.70697161, -60., 695700.),
        (112.80904447, -45., 695700.), (113.68216339, -30., 695700.),
        (114.17617983, -15., 695700.), (114.32632838,   0., 695700.),
@@ -119,18 +142,19 @@ One can transform to the coordinate frame of 1 day in the future to see the diff
 Note that equator rotates slightly faster than the Carrington rotation rate (its longitude is now greater than 100 degrees), but most latitudes rotate slower than the Carrington rotation rate::
 
   >>> meridian.transform_to(f.HeliographicCarrington(observer="earth", obstime="2001-01-02"))
-  <HeliographicCarrington Coordinate (obstime=2001-01-02T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
-      [( 96.50789811, -74.8914282, 695909.38127233),
-       ( 97.49462820, -59.8996153, 696243.38330209),
-       ( 98.60551638, -44.9146241, 696540.31515474),
-       ( 99.48029014, -29.9354296, 696780.00037199),
-       ( 99.97426873, -14.9606150, 696946.17075815),
-       (100.12422892,   0.0115298, 697027.55741669),
-       ( 99.97381006,  14.9828933, 697018.64395509),
-       ( 99.47937534,  29.9554159, 696920.03443636),
-       ( 98.60439142,  44.9309609, 696738.41311151),
-       ( 97.49377622,  59.9111891, 696486.09843977),
-       ( 96.50760568,  74.8974460, 696180.21926700)]>
+  <HeliographicCarrington Coordinate (obstime=2001-01-02T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
+      [( 96.71777552, -75.1035280, 695509.61226612),
+       ( 97.60193088, -60.0954217, 695194.47689542),
+       ( 98.68350999, -45.0808511, 694918.44538999),
+       ( 99.54760854, -30.0611014, 694697.75301952),
+       (100.03737064, -15.0375281, 694544.31380180),
+       (100.18622957, -0.01157236, 694467.21969767),
+       (100.03737064,  15.0151761, 694471.58239044),
+       ( 99.54760854,  30.0410725, 694557.27090716),
+       ( 98.68350999,  45.0645144, 694719.82847332),
+       ( 97.60193088,  60.0838908, 694951.31065278),
+       ( 96.71777552,  75.0975847, 695238.51302901)]>
+
 
 .. testcleanup::
   >>> np.set_printoptions(floatmode=old_floatmode)
@@ -143,7 +167,7 @@ Using the context manager, the ``radius`` component stays as the solar radius as
   >>> from sunpy.coordinates import transform_with_sun_center
   >>> with transform_with_sun_center():
   ...     print(meridian.transform_to(f.HeliographicCarrington(observer="earth", obstime="2001-01-02")))
-  <HeliographicCarrington Coordinate (obstime=2001-01-02T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
+  <HeliographicCarrington Coordinate (obstime=2001-01-02T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
       [( 96.5706461 , -75., 695700.),
        ( 97.52257041, -60., 695700.),
        ( 98.62464327, -45., 695700.),
@@ -208,17 +232,18 @@ Note that the active region moves slightly slower across the disk of the Sun bec
    '2001-01-02 00:00:00.000' '2001-01-03 00:00:00.000'
    '2001-01-04 00:00:00.000' '2001-01-05 00:00:00.000'
    '2001-01-06 00:00:00.000'], rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-      [(-847.35767803, 419.05107437, 0.9822281 ),
-       (-764.81081635, 428.25724753, 0.9813374 ),
-       (-644.29157717, 437.09454986, 0.98056026),
-       (-491.84018851, 445.01082595, 0.97993388),
-       (-315.11434361, 451.4724754 , 0.97948809),
+      [(-853.35711952, 420.4015171 , 0.98229419),
+       (-771.20925988, 429.29848111, 0.98139195),
+       (-650.31062045, 437.85931953, 0.98060104),
+       (-496.63437759, 445.5199143 , 0.97996004),
+       (-317.86354884, 451.73196441, 0.97950022),
        (-123.        , 456.        , 0.97924388),
-       (  74.8471119 , 458.20167789, 0.97921235),
-       ( 268.50338021, 457.80291945, 0.97939415),
-       ( 448.29323287, 454.66911128, 0.97977955),
-       ( 605.28861971, 448.82020568, 0.98034895),
-       ( 731.76302454, 440.43591752, 0.98107395)]>
+       (  78.10371414, 457.91678153, 0.9792032 ),
+       ( 275.2631572 , 457.19447514, 0.97937958),
+       ( 458.50075883, 453.68922577, 0.97976366),
+       ( 618.57211117, 447.41720169, 0.98033575),
+       ( 747.44848403, 438.56081068, 0.9810669 )]>
+
 
 Transforming into RotatedSun frames
 -----------------------------------
@@ -229,7 +254,7 @@ Let's use a coordinate from earlier, which represents the coordinate in a "real"
 
   >>> coord = rs_hgc.transform_to(rs_hgc.base)
   >>> coord
-  <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
+  <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
       (45.13354448, 20., 695700.)>
 
 If we create a ``RotatedSun*`` frame for a different base time, we can represent that same point using coordinates prior to differential rotation::
@@ -238,11 +263,11 @@ If we create a ``RotatedSun*`` frame for a different base time, we can represent
   ...                                                          obstime=coord.obstime),
   ...                            rotated_time="2020-03-06 12:00")
   >>> rs_frame
-  <RotatedSunHeliographicCarrington Frame (base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard)>
+  <RotatedSunHeliographicCarrington Frame (base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard)>
 
   >>> new_coord = coord.transform_to(rs_frame)
   >>> new_coord
-  <RotatedSunHeliographicCarrington Coordinate (base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard): (lon, lat, radius) in (deg, deg, km)
+  <RotatedSunHeliographicCarrington Coordinate (base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard): (lon, lat, radius) in (deg, deg, km)
       (10., 20., 695700.)>
 
 There coordinates are stored in the ``RotatedSun*`` frame, but it can be useful to "pop off" this extra layer and retain only the coordinate representation in the base coordinate frame.
@@ -251,7 +276,7 @@ Be aware the resulting coordinate does *not* point to the same location in inert
 Essentially, the component values have been copied from one coordinate frame to a different coordinate frame, and thus this is not merely a transformation between coordinate frames::
 
   >>> new_coord.as_base()
-  <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
+  <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
       (10., 20., 695700.)>
 
 Example uses of RotatedSunFrame

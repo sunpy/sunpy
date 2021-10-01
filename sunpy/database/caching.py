@@ -25,7 +25,7 @@ class BaseCache(metaclass=ABCMeta):
         self.maxsize = maxsize
         self._dict = OrderedDict()
 
-    def get(self, key, default=None):  # pragma: no cover
+    def get(self, key, default=None):
         """Return the corresponding value to ``key`` if ``key`` is in the cache,
         ``default`` otherwise. This method has no side-effects, multiple calls
         with the same cache and the same passed key must always return the same
@@ -44,7 +44,7 @@ class BaseCache(metaclass=ABCMeta):
         attempted to be accessed.
 
         """
-        return  # pragma: no cover
+        return
 
     @abstractmethod
     def __setitem__(self, key, value):
@@ -97,68 +97,68 @@ class BaseCache(metaclass=ABCMeta):
     def __iter__(self):
         yield from self._dict.__iter__()
 
-    def __reversed__(self):  # pragma: no cover
+    def __reversed__(self):
         yield from self._dict.__reversed__()
 
-    def clear(self):  # pragma: no cover
+    def clear(self):
         return self._dict.clear()
 
-    def keys(self):  # pragma: no cover
+    def keys(self):
         return list(self._dict.keys())
 
-    def values(self):  # pragma: no cover
+    def values(self):
         return list(self._dict.values())
 
-    def items(self):  # pragma: no cover
+    def items(self):
         return list(self._dict.items())
 
-    def iterkeys(self):  # pragma: no cover
+    def iterkeys(self):
         return iter(self._dict.keys())
 
-    def itervalues(self):  # pragma: no cover
+    def itervalues(self):
         yield from self._dict.values()
 
-    def iteritems(self):  # pragma: no cover
+    def iteritems(self):
         yield from self._dict.items()
 
-    def update(self, *args, **kwds):  # pragma: no cover
+    def update(self, *args, **kwds):
         self._dict.update(*args, **kwds)
 
-    def pop(self, key, default=MutableMapping._MutableMapping__marker):  # pragma: no cover
+    def pop(self, key, default=MutableMapping._MutableMapping__marker):
         return self._dict.pop(key, default)
 
-    def setdefault(self, key, default=None):  # pragma: no cover
+    def setdefault(self, key, default=None):
         return self._dict.setdefault(key, default)
 
-    def popitem(self, last=True):  # pragma: no cover
+    def popitem(self, last=True):
         return self._dict.popitem(last)
 
-    def __reduce__(self):  # pragma: no cover
+    def __reduce__(self):
         return self._dict.__reduce__()
 
-    def copy(self):  # pragma: no cover
+    def copy(self):
         return self._dict.copy()
 
-    def __eq__(self, other):  # pragma: no cover
+    def __eq__(self, other):
         return self._dict.__eq__(other)
 
-    def __ne__(self, other):  # pragma: no cover
+    def __ne__(self, other):
         return self._dict.__ne__(other)
 
-    def viewkeys(self):  # pragma: no cover
+    def viewkeys(self):
         return self._dict.keys()
 
-    def viewvalues(self):  # pragma: no cover
+    def viewvalues(self):
         return self._dict.values()
 
-    def viewitems(self):  # pragma: no cover
+    def viewitems(self):
         return self._dict.items()
 
     @classmethod
-    def fromkeys(cls, iterable, value=None):  # pragma: no cover
+    def fromkeys(cls, iterable, value=None):
         return OrderedDict.fromkeys(iterable, value)
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self):
         return '{}({!r})'.format(self.__class__.__name__, dict(self._dict))
 
 

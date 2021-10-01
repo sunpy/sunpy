@@ -1,0 +1,1 @@
+Fixed an incorrect value for the FITS WCS ``LONPOLE`` keyword when using :func:`~sunpy.map.make_fitswcs_header` for `~sunpy.coordinates.frames.Helioprojective` maps with certain values of latitude for the reference coordinate.

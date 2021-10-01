@@ -29,6 +29,17 @@ sohoeit195 = ct.eit_color_table(195*u.angstrom)
 sohoeit284 = ct.eit_color_table(284*u.angstrom)
 sohoeit304 = ct.eit_color_table(304*u.angstrom)
 
+# Solar Orbiter EUI
+# These are deliberately the same as AIA
+solohri_euv174 = deepcopy(ct.aia_color_table(171*u.angstrom))
+solohri_euv174.name = 'SolO EUI HRI 174 angstrom'
+solofsi174 = deepcopy(ct.aia_color_table(171*u.angstrom))
+solofsi174.name = 'SolO EUI FSI 174 angstrom'
+solofsi304 = deepcopy(ct.aia_color_table(304*u.angstrom))
+solofsi304.name = 'SolO EUI FSI 304 angstrom'
+# Lyman alpha is a modified IDL red color table
+solohri_lya1216 = ct.solohri_lya1216_color_table()
+
 goesrsuvi94 = ct.suvi_color_table(94*u.angstrom)
 goesrsuvi131 = ct.suvi_color_table(131*u.angstrom)
 goesrsuvi171 = ct.suvi_color_table(171*u.angstrom)
@@ -76,6 +87,14 @@ hmimag = ct.hmi_mag_color_table()
 kcor = deepcopy(mplcm.get_cmap("gist_gray"))
 kcor.name = 'MLSO KCor'
 
+rhessi = ct.rhessi_color_table()
+std_gamma_2 = ct.std_gamma_2()
+
+euvi195 = ct.euvi_color_table(195*u.angstrom)
+euvi284 = ct.euvi_color_table(284*u.angstrom)
+euvi304 = ct.euvi_color_table(304*u.angstrom)
+euvi171 = ct.euvi_color_table(171*u.angstrom)
+
 cmlist = {
     'goes-rsuvi94': goesrsuvi94,
     'goes-rsuvi131': goesrsuvi131,
@@ -105,7 +124,6 @@ cmlist = {
     'stereocor2': stereocor2,
     'stereohi1': stereohi1,
     'stereohi2': stereohi2,
-    'rhessi': mplcm.jet,
     'yohkohsxtal': yohkohsxtal,
     'yohkohsxtwh': yohkohsxtwh,
     'hinodexrt': hinodexrt,
@@ -128,7 +146,17 @@ cmlist = {
     'irissjiFUV': ct.iris_sji_color_table('FUV'),
     'irissjiNUV': ct.iris_sji_color_table('NUV'),
     'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
-    'kcor': kcor
+    'kcor': kcor,
+    'rhessi': rhessi,
+    'std_gamma_2': std_gamma_2,
+    'euvi171': euvi171,
+    'euvi195': euvi195,
+    'euvi284': euvi284,
+    'euvi304': euvi304,
+    'solar orbiterfsi174': solofsi174,
+    'solar orbiterfsi304': solofsi304,
+    'solar orbiterhri_euv174': solohri_euv174,
+    'solar orbiterhri_lya1216': solohri_lya1216,
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works

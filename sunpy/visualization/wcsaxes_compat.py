@@ -6,9 +6,7 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 from astropy.visualization import wcsaxes
 
-# Force is put here to enable disabling all checks in this module.
-# It should only be used by tests and other such hacks.
-_FORCE_NO_WCSAXES = False
+from sunpy.coordinates import HeliographicStonyhurst
 
 __all__ = ["is_wcsaxes", "gca_wcs", "get_world_transform",
            "default_wcs_grid", "wcsaxes_heliographic_overlay"]
@@ -29,23 +27,21 @@ def is_wcsaxes(axes):
     `bool`
         Result of the test.
     """
-    if not _FORCE_NO_WCSAXES:
-        return isinstance(axes, wcsaxes.WCSAxes)
-    else:
-        return False
+    return isinstance(axes, wcsaxes.WCSAxes)
 
 
 def gca_wcs(wcs, fig=None, slices=None):
     """
-    Get the current axes, and return a `~astropy.visualization.wcsaxes.WCSAxes`
-    if possible.
+    Get the current axes, or create a new `~astropy.visualization.wcsaxes.WCSAxes`
+    if ``fig`` has no axes.
 
     Parameters
     ----------
     wcs : `astropy.wcs.WCS`
         A `~astropy.wcs.WCS` object used to create a new axes.
     fig : `matplotlib.figure.Figure`
-        The figure in which to check for the axes.
+        The figure in which to check for the axes. If ``None``, the current
+        figure is used (or a new one created if there are no current figures).
     slices : `tuple`
         ``slices`` is passed to `~astropy.visualization.wcsaxes.WCSAxes` to describe
         which two dimensions of the `~astropy.wcs.WCS` object are being plotted.
@@ -60,10 +56,7 @@ def gca_wcs(wcs, fig=None, slices=None):
         fig = plt.gcf()
 
     if not len(fig.get_axes()):
-        if not _FORCE_NO_WCSAXES:
-            ax = plt.gca(projection=wcs, slices=slices)
-        else:
-            ax = plt.gca()
+        ax = plt.axes(projection=wcs, slices=slices)
     else:
         ax = plt.gca()
 
@@ -113,7 +106,8 @@ def default_wcs_grid(axes):
 
 
 @u.quantity_input
-def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=True, **kwargs):
+def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=True,
+                                 obstime=None, rsun=None, **kwargs):
     """
     Create a heliographic overlay using
     `~astropy.visualization.wcsaxes.WCSAxes`.
@@ -128,6 +122,10 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
         Spacing for longitude and latitude grid in degrees.
     annotate : `bool`
         Passing `False` disables the axes labels and the ticks on the top and right axes.
+    obstime : `~astropy.time.Time`
+        The ``obstime`` to use for the `~sunpy.coordinates.HeliographicStonyhurst` grid.
+    rsun : `~astropy.units.Quantity`
+        The ``rsun`` to use for the `~sunpy.coordinates.HeliographicStonyhurst` grid.
 
     Returns
     -------
@@ -152,7 +150,7 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
     c1.set_ticks_position('bl')
     c2.set_ticks_position('bl')
 
-    overlay = axes.get_coords_overlay('heliographic_stonyhurst')
+    overlay = axes.get_coords_overlay(HeliographicStonyhurst(obstime=obstime, rsun=rsun))
 
     lon = overlay[0]
     lat = overlay[1]

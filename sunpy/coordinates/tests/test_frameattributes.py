@@ -7,9 +7,14 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
 from sunpy.coordinates import frames, get_earth
+from sunpy.coordinates.frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
+from sunpy.coordinates.frames import (
+    HeliocentricInertial,
+    HeliographicCarrington,
+    HeliographicStonyhurst,
+    Helioprojective,
+)
 from sunpy.time import parse_time
-from ..frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
-from ..frames import HeliocentricInertial, HeliographicStonyhurst, Helioprojective
 
 
 @pytest.fixture
@@ -23,7 +28,7 @@ def oca():
 
 
 def test_now(attr):
-    """ We can't actually test the value independantly """
+    """ We can't actually test the value independently """
     result, converted = attr.convert_input('now')
 
     assert isinstance(result, Time)
@@ -31,7 +36,7 @@ def test_now(attr):
 
 
 def test_none(attr):
-    """ We can't actually test the value independantly """
+    """ We can't actually test the value independently """
     result, converted = attr.convert_input(None)
 
     assert result is None
@@ -153,6 +158,14 @@ def test_coord_get():
     assert hasattr(obs, "object_name")
     assert obs.object_name == "mars"
     assert str(obs) == "<HeliographicStonyhurst Coordinate for 'mars'>"
+
+
+def test_observer_self_get():
+    hgc_noobstime = HeliographicCarrington(observer="self")
+    assert hgc_noobstime.observer == "self"
+
+    hgc_obstime = HeliographicCarrington(observer="self", obstime="2001-01-01")
+    assert hgc_obstime.observer == "self"
 
 
 def test_default_hcc_observer():

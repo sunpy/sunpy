@@ -8,13 +8,15 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates import Helioprojective
+from sunpy.coordinates import Helioprojective, sun
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
+           'all_corner_coords_from_map',
            'map_edges', 'solar_angular_radius', 'sample_at_coords',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
            'contains_limb', 'coordinate_is_on_solar_disk',
-           'on_disk_bounding_coordinates']
+           'on_disk_bounding_coordinates',
+           'contains_coordinate', 'contains_solar_center']
 
 
 def all_pixel_indices_from_map(smap):
@@ -32,12 +34,13 @@ def all_pixel_indices_from_map(smap):
         A `numpy.array` with the all the pixel indices built from the
         dimensions of the map.
     """
-    return np.meshgrid(*[np.arange(v.value) for v in smap.dimensions]) * u.pix
+    y, x = np.indices(smap.data.shape)
+    return [x, y] * u.pix
 
 
 def all_coordinates_from_map(smap):
     """
-    Returns the coordinates of every pixel in a map.
+    Returns the coordinates of the center of every pixel in a map.
 
     Parameters
     ----------
@@ -52,6 +55,15 @@ def all_coordinates_from_map(smap):
     """
     x, y = all_pixel_indices_from_map(smap)
     return smap.pixel_to_world(x, y)
+
+
+def all_corner_coords_from_map(smap):
+    """
+    Returns the coordinates of the pixel corners in a map.
+    """
+    ny, nx = smap.data.shape
+    y, x = np.indices((ny + 1, nx + 1))
+    return smap.pixel_to_world((x - 0.5) * u.pix, (y - 0.5) * u.pix)
 
 
 def map_edges(smap):
@@ -80,14 +92,29 @@ def map_edges(smap):
     return top, bottom, left_hand_side, right_hand_side
 
 
-@u.quantity_input
+def _verify_coordinate_helioprojective(coordinates):
+    """
+    Raises an error if the coordinate is not in the
+    `~sunpy.coordinates.frames.Helioprojective` frame.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
+    """
+    frame = coordinates.frame if hasattr(coordinates, 'frame') else coordinates
+    if not isinstance(frame, Helioprojective):
+        raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
+                         "but must be in the Helioprojective frame.")
+
+
 def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
 
-    The tangent of the angular size of the Sun is equal to the radius
-    of the Sun divided by the distance between the observer and the
-    center of the Sun.
+    The tangent vector from the observer to the edge of the Sun forms a
+    right-angle triangle with the radius of the Sun as the far side and the
+    Sun-observer distance as the hypotenuse.  Thus, the sine of the angular
+    radius of the Sun is ratio of these two distances.
 
     Parameters
     ----------
@@ -100,7 +127,8 @@ def solar_angular_radius(coordinates):
     angle : `~astropy.units.Quantity`
         The solar angular radius.
     """
-    return np.arctan(coordinates.rsun / coordinates.observer.radius)
+    _verify_coordinate_helioprojective(coordinates)
+    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
 def sample_at_coords(smap, coordinates):
@@ -164,6 +192,7 @@ def contains_full_disk(smap):
     within the field of the view of the instrument (although no emission
     from the disk itself is present in the data.)
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Calculate the distance of the edge of the world in solar radii
     coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
@@ -177,9 +206,7 @@ def contains_solar_center(smap):
     """
     Returns `True` if smap contains the solar center.
 
-    This is the case if and only if the solar center is inside the edges of the map. This
-    is checked by seeing if the sign of both the x and y coordintaes of the corners are opposite
-    (ie. the (0, 0) point is contained within the map).
+    This is the case if and only if the solar center is inside or on the edges of the map.
 
     Parameters
     ----------
@@ -191,12 +218,8 @@ def contains_solar_center(smap):
     bool
         True if the map contains the solar center.
     """
-    bottom_left = smap.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
-    top_right = smap.pixel_to_world(*(u.Quantity(smap.dimensions) - 0.5 * u.pix))
-    # Test if the x and y component of the coordinate changes sign along
-    # both axes, to check if (0, 0) is contained in the map
-    return ((bottom_left.Tx * top_right.Tx <= 0 * u.deg**2) and
-            (bottom_left.Ty * top_right.Ty <= 0 * u.deg**2))
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
+    return contains_coordinate(smap, SkyCoord(0*u.arcsec, 0*u.arcsec, frame=smap.coordinate_frame))
 
 
 @u.quantity_input
@@ -220,9 +243,7 @@ def coordinate_is_on_solar_disk(coordinates):
     `~bool`
         Returns `True` if the coordinate is on disk, `False` otherwise.
     """
-
-    if not isinstance(coordinates.frame, Helioprojective):
-        raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
+    _verify_coordinate_helioprojective(coordinates)
     # Calculate the angle of every pixel from the center of the Sun and compare it the angular
     # radius of the Sun.
     return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < solar_angular_radius(coordinates)
@@ -252,6 +273,7 @@ def is_all_off_disk(smap):
     within the field of view of the instrument, but the solar disk itself is not imaged.
     For such images this function will return `False`.
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Calculate the distance of the edge of the world in solar radii
     coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
@@ -281,6 +303,7 @@ def is_all_on_disk(smap):
         Returns `True` if all map coordinates have an angular radius less than
         the angular radius of the Sun.
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     return np.all(coordinate_is_on_solar_disk(edge_of_world))
 
@@ -313,6 +336,7 @@ def contains_limb(smap):
     within the field of view of the instrument, but the solar disk itself is not imaged.
     For such images this function will return `True`.
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     if contains_full_disk(smap):
         return True
     on_disk = coordinate_is_on_solar_disk(_edge_coordinates(smap))
@@ -337,6 +361,7 @@ def on_disk_bounding_coordinates(smap):
         top right coordinate of the smallest rectangular region that contains
         all the on-disk pixels in the input map.
     """
+    _verify_coordinate_helioprojective(smap.coordinate_frame)
     # Check that the input map is not all off disk.
     if is_all_off_disk(smap):
         raise ValueError("The entire map is off disk.")
@@ -355,3 +380,32 @@ def on_disk_bounding_coordinates(smap):
     return SkyCoord([np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
                     [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
                     frame=smap.coordinate_frame)
+
+
+def contains_coordinate(smap, coordinates):
+    """
+    Checks whether a coordinate falls within the bounds of a map.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        The input map.
+    coordinates : `~astropy.coordinates.SkyCoord`
+        The input coordinate.
+
+    Returns
+    -------
+    bool
+        `True` if ``coordinates`` falls within the bounds of ``smap``.
+        This includes the edges of the map. If multiple coordinates are input,
+        returns a boolean arrary.
+    """
+    # Dimensions of smap
+    xs, ys = smap.dimensions
+    # Converting coordinates to pixels
+    xc, yc = smap.world_to_pixel(coordinates)
+    point5pix = 0.5 * u.pix
+    return ((xc >= -point5pix) &
+            (xc <= xs - point5pix) &
+            (yc >= -point5pix) &
+            (yc <= ys - point5pix))

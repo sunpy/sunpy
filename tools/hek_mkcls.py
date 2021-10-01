@@ -240,9 +240,9 @@ fields = {
 def mk_gen(rest):
     """ Generate Misc class. """
     ret = ''
-    ret += '@apply\nclass Misc(object):\n'
+    ret += '@_makeinstance\nclass Misc:\n'
     for elem in sorted(rest):
-        ret += '    %s = %s(%r)\n' % (elem, fields[elem], elem)
+        ret += '    {} = {}({!r})\n'.format(elem, fields[elem], elem)
     return ret
 
 
@@ -251,20 +251,23 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
         name = key
 
     keys = sorted(
-        [(k, v) for k, v in fields.iteritems() if k.startswith(key)]
+        [(k, v) for k, v in fields.items() if k.startswith(key)]
     )
-    used.update(set([k for k, v in keys]))
+    used.update({k for k, v in keys})
     if not keys:
         if not nokeys:
             raise ValueError
-        return '%s = EventType(%r)' % (key, name.lower())
+        return f'{key} = EventType({name.lower()!r})'
     ret = ''
-    ret += '@apply\nclass %s(%s):\n' % (name, base)
+    if base != 'object':
+        ret += f'@_makeinstance\nclass {name}({base}):\n'
+    else:
+        ret += '@_makeinstance\nclass %s:\n' % name
     for k, v in keys:
-        ret += '    %s = %s(%r)\n' % (k[len(key) + pad:], v, k)
+        ret += '    {} = {}({!r})\n'.format(k[len(key) + pad:], v, k)
     if init:
-        ret += '''    def __init__(self):
-        EventType.__init__(self, %r)''' % name.lower()
+        ret += '''\n    def __init__(self):
+        super().__init__(%r)''' % name.lower()
     return ret
 
 
@@ -296,8 +299,8 @@ if __name__ == '__main__':
         fd.write(buf)
 
     fd.write('\n\n')
-    fd.write('\n\n'.join(mk_cls(evt, used, name=NAMES[evt]) for evt in EVENTS))
-    fd.write('\n\n')
+    fd.write('\n\n\n'.join(mk_cls(evt, used, name=NAMES[evt]) for evt in EVENTS))
+    fd.write('\n\n\n')
     fd.write('\n\n'.join(mk_cls(evt, used, 0, 0, 0, NAMES[evt], 'object') for evt in OTHER_NOPAD))
     fd.write('\n\n')
     fd.write('\n\n'.join(mk_cls(evt, used, 1, 0, 0, NAMES[evt], 'object') for evt in OTHER))

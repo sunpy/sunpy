@@ -4,13 +4,14 @@ import pytest
 from hypothesis import given
 
 import astropy.units as u
+from astropy.time import Time
 
 import sunpy.net.dataretriever.sources.goes as goes
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.tests.strategies import time_attr
-from sunpy.time import TimeRange, parse_time
+from sunpy.time import parse_time
 
 
 @pytest.fixture
@@ -49,7 +50,6 @@ def mock_query_object(suvi_client):
     end = '2019/05/25 00:52'
     wave = 94 * u.Angstrom
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'SUVI',
@@ -89,8 +89,8 @@ def test_fetch_working(suvi_client):
 
     # Compare if two objects have the same attribute
 
-    mock_qr = mock_qr.blocks[0]
-    qr = qr1.blocks[0]
+    mock_qr = mock_qr[0]
+    qr = qr1[0]
 
     assert mock_qr['Source'] == qr['Source']
     assert mock_qr['Provider'] == qr['Provider']
@@ -98,8 +98,8 @@ def test_fetch_working(suvi_client):
     assert mock_qr['Instrument'] == qr['Instrument']
     assert mock_qr['url'] == qr['url']
 
-    assert qr1.time_range() == TimeRange("2019-05-25T00:52:00.000",
-                                         "2019-05-25T00:56:00.000")
+    assert qr1['Start Time'] == Time("2019-05-25T00:52:00.000")
+    assert qr1['End Time'] == Time("2019-05-25T00:56:00.000")
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         download_list = suvi_client.fetch(qr1, path=tmpdirname)
@@ -148,7 +148,8 @@ def test_get_url_for_time_range_level2_allwave(suvi_client, start, end, expected
 def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_num_files):
     """check that we get all wavelengths if no wavelength is given"""
     goes_sat = a.goes.SatelliteNumber.sixteen
-    qresponse = suvi_client.search(a.Time(start, end), a.Wavelength(wave * u.Angstrom), goes_sat, a.Level('1b'))
+    qresponse = suvi_client.search(a.Time(start, end), a.Wavelength(
+        wave * u.Angstrom), goes_sat, a.Level('1b'))
     urls = [i['url'] for i in qresponse]
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files
@@ -197,16 +198,16 @@ def test_query(suvi_client, start, end, expected_num_files):
     qr1 = suvi_client.search(a.Time(start, end), a.Instrument.suvi, goes_sat, a.Level.two)
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == expected_num_files
-    assert qr1.time_range().start == parse_time('2019/05/25 00:52')
-    assert qr1.time_range().end == parse_time('2019/05/25 00:56')
+    assert qr1['Start Time'][0] == parse_time('2019/05/25 00:52')
+    assert qr1['End Time'][1] == parse_time('2019/05/25 00:56')
 
 
 def test_show(suvi_client):
     mock_qr = mock_query_object(suvi_client)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
-               'Provider', 'Level', 'Wavelength']
-    assert qrshow0.colnames == allcols
+    allcols = {'Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
+               'Provider', 'Level', 'Wavelength', 'url'}
+    assert not allcols.difference(qrshow0.colnames)
     assert qrshow1.colnames == ['Start Time', 'Instrument']
     assert qrshow0['Instrument'][0] == 'SUVI'

@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 
+from sunpy.net import attrs as a
 from sunpy.net.helio.hec import HECClient
 from sunpy.net.helio.parser import (
     endpoint_parser,
@@ -216,26 +217,9 @@ def test_wsdl_retriever_wsdl(mock_taverna_parser, mock_webservice_parser, mock_l
         wsdl_retriever()
 
 
-@mock.patch('sunpy.net.helio.parser.urllib.request.urlopen')
-def test_link_test(mock_urlopen):
-    """
-    Read from an open, 'mocked', URL.
-    """
-
-    class MockFile:
-
-        def __init__(self, content):
-            self.content = content
-
-        def read(self):
-            return self.content
-
-        def close(self):
-            return
-
-    expected = '<!doctype html><title>T</title>'
-    mock_urlopen.return_value = MockFile(expected)
-    assert link_test('http://www/google.com') == expected
+@pytest.mark.remote_data
+def test_link_test():
+    assert b"# SunPy Sample Data" in link_test('http://data.sunpy.org/sunpy/README.md')
 
 # The following two tests for `link_test` have empty URLs as arguments. This is because
 # when running the tests under Py2.7, I was getting the following error:
@@ -279,32 +263,33 @@ def test_get_table_names(client):
     tables = client.get_table_names()
     assert len(tables) == 126
     table = tables[0][0]
-    assert isinstance(table, bytes)
-    assert table == b'timed_see_flare'
+    assert isinstance(table, str)
+    assert table == 'timed_see_flare'
 
 
 @pytest.mark.remote_data
 def test_select_table(client, monkeypatch):
     monkeypatch.setattr('builtins.input', lambda x: "11")
-    assert isinstance(client.select_table(), bytes)
+    assert isinstance(client.select_table(), str)
     monkeypatch.setattr('builtins.input', lambda x: "e")
     assert client.select_table() is None
 
 
-# Deprecation warning from astropy, fixed in 4.0.2
-# (https://github.com/astropy/astropy/pull/10085)
-@pytest.mark.filterwarnings(r'ignore:tostring\(\) is deprecated')
 @pytest.mark.remote_data
-def test_time_query(client):
+def test_client_search(client):
     start = '2005/01/03'
     end = '2005/12/03'
-    table_name = b'rhessi_hxr_flare'
-    res = client.time_query(start, end, table=table_name, max_records=10)
-    assert len(res.array) == 10
+    table_name = 'rhessi_hxr_flare'
+    res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
+    assert len(res) == 10
 
 
-def test_client_mock_fail(client):
-    """
-    This test will xfail on the offline tests.
-    It just passes if the client is working.
-    """
+@pytest.mark.remote_data
+def test_HECResponse_iter(client):
+    start = '2005/01/03'
+    end = '2005/12/03'
+    table_name = 'rhessi_hxr_flare'
+    res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
+    for i in res:
+        # Just to make sure iter still works, check number of columns
+        assert len(i) == 13

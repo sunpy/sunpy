@@ -40,8 +40,7 @@ class SXTMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
@@ -56,7 +55,7 @@ class SXTMap(GenericMap):
         # use simple trigonometry to calculate the distance of the center of
         # the Sun from the spacecraft.  Note that the small angle approximation
         # is used, and the solar radius stored in SXT FITS files is in arcseconds.
-        self.meta['dsun_apparent'] = constants.au
+        self.meta['dsun_apparent'] = self.meta.get('dsun_apparent', constants.au)
         if 'solar_r' in self.meta:
             self.meta['dsun_apparent'] = constants.radius/(np.deg2rad(self.meta['solar_r']/3600.0))
 
@@ -77,6 +76,12 @@ class SXTMap(GenericMap):
         elif s.lower() == 'open':
             s = 'white-light'
         return s
+
+    @property
+    def wavelength(self):
+        """
+        Returns `None`, as SXT is a broadband imager.
+        """
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

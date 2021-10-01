@@ -15,7 +15,8 @@ from sunpy.data.sample import GOES_XRS_TIMESERIES
 from sunpy.timeseries import TimeSeries
 
 ###############################################################################
-# Let's first create a TimeSeries from sample data
+# Let's first create a TimeSeries from sample data.
+
 goes_lc = TimeSeries(GOES_XRS_TIMESERIES).truncate('2011/06/07 06:10', '2011/06/07 07:00')
 
 ###############################################################################
@@ -24,13 +25,15 @@ goes_lc = TimeSeries(GOES_XRS_TIMESERIES).truncate('2011/06/07 06:10', '2011/06/
 # using it to make a new signal where each element is the average of w adjacent
 # elements. Here we will use AstroPy’s convolve function with a “boxcar” kernel
 # of width w = 10.
+
 goes_lc = goes_lc.add_column(
     'xrsa_smoothed',
     convolve(goes_lc.quantity('xrsa'), kernel=Box1DKernel(50))
 )
 
 ###############################################################################
-# Plotting original and smoothed timeseries
+# Plotting original and smoothed timeseries.
+
 plt.xlabel('Time')
 plt.ylabel("Flux (Wm$^{-2}$")
 plt.title('Smoothing of Time Series')

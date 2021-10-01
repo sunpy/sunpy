@@ -32,20 +32,28 @@ class GBMClient(GenericClient):
     >>> res = Fido.search(a.Time('2015-06-21 00:00', '2015-06-23 23:59'),
     ...                   a.Instrument.gbm, a.Detector.n3,
     ...                   a.Resolution.ctime) #doctest: +REMOTE_DATA
-    >>> print(res) #doctest: +REMOTE_DATA
+    >>> res #doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the GBMClient:
-         Start Time           End Time      Instrument ... Resolution Detector
-    ------------------- ------------------- ---------- ... ---------- --------
-    2015-06-21 00:00:00 2015-06-21 23:59:59        GBM ...      ctime       n3
-    2015-06-22 00:00:00 2015-06-22 23:59:59        GBM ...      ctime       n3
-    2015-06-23 00:00:00 2015-06-23 23:59:59        GBM ...      ctime       n3
+    Source: https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily
+    <BLANKLINE>
+           Start Time               End Time        ... Resolution Detector
+    ----------------------- ----------------------- ... ---------- --------
+    2015-06-21 00:00:00.000 2015-06-21 23:59:59.999 ...      ctime       n3
+    2015-06-22 00:00:00.000 2015-06-22 23:59:59.999 ...      ctime       n3
+    2015-06-23 00:00:00.000 2015-06-23 23:59:59.999 ...      ctime       n3
     <BLANKLINE>
     <BLANKLINE>
+
     """
     baseurl = r'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/%Y/%m/%d/current/glg_(\w){5}_(\w){2}_%y%m%d_v00.pha'
     pattern = '{}/daily/{year:4d}/{month:2d}/{day:2d}/current/glg_{Resolution:5}_{Detector:2}_{:6d}{}'
+
+    @property
+    def info_url(self):
+        return 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily'
 
     @classmethod
     def register_values(cls):

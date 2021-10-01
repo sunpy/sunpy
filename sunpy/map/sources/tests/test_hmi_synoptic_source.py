@@ -3,10 +3,12 @@ from textwrap import dedent
 import numpy as np
 import pytest
 
+import astropy.units as u
 from astropy.io import fits
 
 from sunpy.map import Map
 from sunpy.map.sources.sdo import HMISynopticMap
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 
 @pytest.fixture
@@ -119,3 +121,22 @@ def test_observatory(hmi_synoptic):
 def test_measurement(hmi_synoptic):
     """Tests the measurement property of the HMISynopticMap object."""
     assert hmi_synoptic.measurement == "carrington"
+
+
+def test_date(hmi_synoptic):
+    """Check that accessing the date doesn't raise a warning."""
+    hmi_synoptic.date
+
+
+def test_unit(hmi_synoptic):
+    # Check that the default unit of Mx/cm**2 is correctly replaced with a
+    # FITS standard unit
+    assert hmi_synoptic.unit == u.G
+    hmi_synoptic.meta['bunit'] = 'm'
+    assert hmi_synoptic.unit == u.m
+
+
+def test_wcs(hmi_synoptic):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        hmi_synoptic.pixel_to_world(0*u.pix, 0*u.pix)

@@ -5,6 +5,8 @@ import numpy as np
 import scipy.interpolate
 import scipy.ndimage
 
+from sunpy.util.exceptions import warn_deprecated
+
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 
 
@@ -26,9 +28,8 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
         Original input array.
     dimensions : `tuple`
         Dimensions that new `numpy.ndarray` should have.
-    method : {'neighbor' | 'nearest' | 'linear' | 'spline'}, optional
+    method : {``"neighbor"``, ``"nearest"``, ``"linear"``, ``"spline"``}, optional
         Method to use for resampling interpolation.
-            * neighbor - Closest value from original data
             * nearest and linear - Uses "n x 1D" interpolations calculated by
               `scipy.interpolate.interp1d`.
             * spline - Uses `scipy.ndimage.map_coordinates`
@@ -66,6 +67,8 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
     # Resample data
     if method == 'neighbor':
+        warn_deprecated('Using "neighbor" as a method for resampling is deprecated. '
+                        'Use "nearest" instead.')
         data = _resample_neighbor(orig, dimensions, offset, m1)
     elif method in ['nearest', 'linear']:
         data = _resample_nearest_linear(orig, dimensions, method,
@@ -90,7 +93,7 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     dimensions : `tuple`
         Dimensions of resampled data.
     method : `str`
-        Interpolation method passed to `~scipy.interpolate.interp1d`
+        Interpolation method passed to `~scipy.interpolate.interpn`
     offset : `float`
         Either 0 or 0.5, depending on whether interpolation is at the edge or
         centers of bins.
@@ -100,29 +103,15 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
         otherwise ``orig`` is resampled by ``(i-1)/(x-1) * (j-1)/(y-1)``.
         This prevents extrapolation one element beyond bounds of input array.
     """
-    old_coords = [np.arange(i, dtype=np.float) + offset for i in orig.shape]
+    old_coords = [np.arange(i, dtype=float) + offset for i in orig.shape]
     scale = (orig.shape - m1) / (dimensions - m1)
-    new_coords = [(np.arange(dimensions[i], dtype=np.float) + offset) * scale[i] for i in
+    new_coords = [(np.arange(dimensions[i], dtype=float) + offset) * scale[i] for i in
                   range(len(dimensions))]
-
-    # first interpolation - for ndims = any
-    mint = scipy.interpolate.interp1d(old_coords[-1], orig, bounds_error=False,
-                                      fill_value='extrapolate', kind=method)
-
-    new_data = mint(new_coords[-1])
-
-    trorder = [orig.ndim - 1] + list(range(orig.ndim - 1))
-    for i in range(orig.ndim - 2, -1, -1):
-        new_data = new_data.transpose(trorder)
-        mint = scipy.interpolate.interp1d(old_coords[i], new_data,
-                                          bounds_error=False,
-                                          fill_value='extrapolate',
-                                          kind=method)
-        new_data = mint(new_coords[i])
-
-    if orig.ndim > 1:
-        # need one more transpose to return to original dimensions
-        new_data = new_data.transpose(trorder)
+    new_coords = np.stack(np.meshgrid(*new_coords, indexing='ij'), axis=-1)
+    # fill_value = None extrapolates outside the domain
+    new_data = scipy.interpolate.interpn(old_coords, orig, new_coords,
+                                         method=method, bounds_error=False,
+                                         fill_value=None)
 
     return new_data
 
@@ -131,6 +120,7 @@ def _resample_neighbor(orig, dimensions, offset, m1):
     """
     Resample Map using closest-value interpolation.
     """
+    # This can be deleted once the deprecation above in resample is expired
     dimlist = []
     dimensions = np.asarray(dimensions, dtype=int)
 

@@ -49,3 +49,8 @@ def test_observatory(kcor):
 def test_norm_clip(kcor):
     # Tests that the default normalizer has clipping disabled
     assert not kcor.plot_settings['norm'].clip
+
+
+def test_wcs(kcor):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    kcor.pixel_to_world(0*u.pix, 0*u.pix)

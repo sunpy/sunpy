@@ -1,18 +1,19 @@
 import os
 import glob
 
+import astropy.units as u
 from astropy.io.misc.asdf.tags.coordinates.frames import BaseCoordType
-from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates import frames
 from ...types import SunPyType
 
+# Make a list of all frames with only a single schema version
 sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
-# Handle HeliographicCarrington separately because it has multiple schema versions
 sunpy_frames.remove(frames.HeliographicCarrington)
+sunpy_frames.remove(frames.HeliographicStonyhurst)
 
 
-__all__ = ['SunPyCoordType', 'HeliographicCarringtonCoordType']
+__all__ = ['SunPyCoordType', 'HeliographicCarringtonCoordType', 'HeliographicStonyhurstCoordType']
 
 
 SCHEMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
@@ -34,8 +35,8 @@ def _get_frames():
     for fpath in files:
         path, fname = os.path.split(fpath)
         frame, _ = fname.split('-')
-        # Handle HeliographicCarrington separately because it has multiple schema versions
-        exclude_schemas = ['heliographic_carrington']
+        # Exclude frames with multiple schema versions
+        exclude_schemas = ['heliographic_stonyhurst', 'heliographic_carrington']
         if frame not in exclude_schemas:
             names.append(frame)
 
@@ -55,15 +56,23 @@ class SunPyCoordType(BaseCoordType, SunPyType):
         if new.has_data:
             assert new.data.components == old.data.components
             for comp in new.data.components:
-                assert_quantity_allclose(getattr(new.data, comp), getattr(old.data, comp))
+                assert u.allclose(getattr(new.data, comp), getattr(old.data, comp))
 
 
-# Handle HeliographicCarrington specially because it has multiple schema versions
+# HeliographicStonyhurst has multiple schema versions
+class HeliographicStonyhurstCoordType(SunPyCoordType):
+    name = "coordinates/frames/heliographic_stonyhurst"
+    types = ['sunpy.coordinates.frames.HeliographicStonyhurst']
+    version = "1.1.0"
+    supported_versions = ["1.0.0", "1.1.0"]
+
+
+# HeliographicCarrington has multiple schema versions
 class HeliographicCarringtonCoordType(SunPyCoordType):
     name = "coordinates/frames/heliographic_carrington"
     types = ['sunpy.coordinates.frames.HeliographicCarrington']
-    version = "1.1.0"
-    supported_versions = ["1.0.0", "1.1.0"]
+    version = "1.2.0"
+    supported_versions = ["1.0.0", "1.1.0", "1.2.0"]
 
     @classmethod
     def from_tree_tagged(cls, node, ctx):

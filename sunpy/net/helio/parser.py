@@ -2,26 +2,29 @@
 This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
 """
-import urllib
 import xml.etree.ElementTree as EL
 from contextlib import closing
+from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 
-from sunpy.net.helio import registry_links as RL
+from sunpy import log
 
 __all__ = ['webservice_parser', 'endpoint_parser', 'wsdl_retriever']
 
-# Lifespan in seconds before a link times-out
-LINK_TIMEOUT = 3
+
+LINK_TIMEOUT = 10
+REG_LINKS = [
+    'http://registry.helio-vo.eu/helio_registry/viewResourceEntry_body.jsp?XML=true&IVORN=ivo://helio-vo.eu/',
+    'https://helio.ukssdc.ac.uk/helio_registry/viewResourceEntry_body.jsp?XML=true&IVORN=ivo://helio-vo.eu/'
+]
 
 
 def webservice_parser(service='HEC'):
     """
     Quickly parses important contents from HELIO registry.
 
-    Uses the link contained in registry_links in with 'service' appended
-    and scrapes the web-service links contained on that webpage.
+    Uses the link with 'service' appended and scrapes the web-service links contained on that webpage.
 
     Parameters
     ----------
@@ -36,18 +39,22 @@ def webservice_parser(service='HEC'):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.webservice_parser()  # doctest: +SKIP
-    ['http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService',
-     'http://festung3.oats.inaf.it:8080/helio-hec/HelioService',
-     'http://festung1.oats.inaf.it:8080/helio-hec/HelioService',
-     'http://hec.helio-vo.eu/helio_hec/HelioService',
-     'http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService',
-     'http://festung3.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
-     'http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
-     'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
+    >>> parser.webservice_parser()  # doctest: +REMOTE_DATA
+    ['http://helio.mssl.ucl.ac.uk/helio-hec/HelioService',
+    'http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioService',
+    'http://voparis-helio.obspm.fr/helio-hec/HelioService',
+    'http://hec.helio-vo.eu/helio-hec/HelioService',
+    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService',
+    'http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService',
+    'http://voparis-helio.obspm.fr/helio-hec/HelioLongQueryService',
+    'http://hec.helio-vo.eu/helio-hec/HelioLongQueryService']
     """
-    link = RL.LINK + '/' + service.lower()
-    xml = link_test(link)
+    xml = None
+    for REG_LINK in REG_LINKS:
+        link = REG_LINK + service.lower()
+        xml = link_test(link)
+        if xml:
+            break
     if xml is None:
         return None
     root = EL.fromstring(xml)
@@ -106,7 +113,7 @@ def endpoint_parser(link):
     for web_link in soup.find_all('a'):
         url = web_link.get('href')
         if url not in endpoints:
-            endpoints.append(url)
+            endpoints.append(url.replace(":80", "", 1))
     return endpoints
 
 
@@ -175,9 +182,10 @@ def link_test(link):
         None
     """
     try:
-        with closing(urllib.request.urlopen(link, timeout=LINK_TIMEOUT)) as fd:
+        with closing(urlopen(link, timeout=LINK_TIMEOUT)) as fd:
             return fd.read()
-    except (ValueError, urllib.error.URLError):
+    except Exception as e:
+        log.debug(f"Failed to get {link} with {e}")
         return None
 
 
@@ -205,7 +213,7 @@ def wsdl_retriever(service='HEC'):
     --------
     >>> from sunpy.net.helio import parser
     >>> parser.wsdl_retriever()  # doctest: +REMOTE_DATA
-    'http://helio.mssl.ucl.ac.uk/helio_hec/HelioTavernaService?wsdl'
+    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService?wsdl'
 
     Notes
     -----
@@ -215,21 +223,12 @@ def wsdl_retriever(service='HEC'):
         this function to take a while to return. Timeout duration can be
         controlled through the LINK_TIMEOUT value
     """
-    def fail():
-        raise ValueError("No online HELIO servers can be found.")
     service_links = webservice_parser(service=service)
-    wsdl = None
-    wsdl_links = None
-    if service_links is None:
-        fail()
-    for link in service_links:
-        wsdl_links = taverna_parser(link)
-    if wsdl_links is None:
-        fail()
-    for end_point in wsdl_links:
-        if end_point is not None and link_test(end_point) is not None:
-            wsdl = end_point
-            break
-    if wsdl is None:
-        fail()
-    return wsdl
+    if service_links:
+        for link in service_links:
+            wsdl_links = taverna_parser(link)
+            if wsdl_links:
+                for end_point in wsdl_links:
+                    if end_point and link_test(end_point):
+                        return end_point
+    raise ValueError("No online HELIO servers can be found.")

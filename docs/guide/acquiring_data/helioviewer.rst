@@ -1,8 +1,8 @@
 ***********************************
-Querying Helioviewer.org with SunPy
+Querying Helioviewer.org with sunpy
 ***********************************
 
-SunPy can be used to make several basic requests using the The `Helioviewer.org API <https://api.helioviewer.org/docs/v2/>`_ including generating a PNG screenshot and downloading a `JPEG 2000 <https://wiki.helioviewer.org/wiki/JPEG_2000>`_ image.
+sunpy can be used to make several basic requests using the The `Helioviewer.org API <https://api.helioviewer.org/docs/v2/>`_ including generating a PNG screenshot and downloading a `JPEG 2000 <https://wiki.helioviewer.org/wiki/JPEG_2000>`_ image.
 
 As you can get JPEG 2000 images, you will need two other pieces of software in order to open them in Python.
 The first is OpenJPEG which is an open source library for reading and writing JPEG2000 files.
@@ -55,63 +55,7 @@ Let us begin by retrieving the available list of sources that Helioviewer suppor
     ('SDO', 'AIA', None, '4500'): 17
     ('SDO', 'HMI', None, 'continuum'): 18
     ('SDO', 'HMI', None, 'magnetogram'): 19
-    ('STEREO_A', 'SECCHI', 'EUVI', '171'): 20
-    ('STEREO_A', 'SECCHI', 'EUVI', '195'): 21
-    ('STEREO_A', 'SECCHI', 'EUVI', '284'): 22
-    ('STEREO_A', 'SECCHI', 'EUVI', '304'): 23
-    ('STEREO_B', 'SECCHI', 'EUVI', '171'): 24
-    ('STEREO_B', 'SECCHI', 'EUVI', '195'): 25
-    ('STEREO_B', 'SECCHI', 'EUVI', '284'): 26
-    ('STEREO_B', 'SECCHI', 'EUVI', '304'): 27
-    ('STEREO_A', 'SECCHI', 'COR1', 'white-light'): 28
-    ('STEREO_A', 'SECCHI', 'COR2', 'white-light'): 29
-    ('STEREO_B', 'SECCHI', 'COR1', 'white-light'): 30
-    ('STEREO_B', 'SECCHI', 'COR2', 'white-light'): 31
-    ('PROBA2', 'SWAP', None, '174'): 32
-    ('Yohkoh', 'SXT', None, 'AlMgMn'): 33
-    ('Yohkoh', 'SXT', None, 'thin-Al'): 34
-    ('Yohkoh', 'SXT', None, 'white-light'): 35
-    ('Hinode', 'XRT', 'Al_med', 'Al_thick'): 39
-    ('Hinode', 'XRT', 'Al_med', 'Be_thick'): 40
-    ('Hinode', 'XRT', 'Al_med', 'Open'): 42
-    ('Hinode', 'XRT', 'Al_med', 'Ti_poly'): 43
-    ('Hinode', 'XRT', 'Al_poly', 'Al_mesh'): 44
-    ('Hinode', 'XRT', 'Al_poly', 'Al_thick'): 45
-    ('Hinode', 'XRT', 'Al_poly', 'Be_thick'): 46
-    ('Hinode', 'XRT', 'Al_poly', 'Open'): 48
-    ('Hinode', 'XRT', 'Al_poly', 'Ti_poly'): 49
-    ('Hinode', 'XRT', 'Be_med', 'Open'): 54
-    ('Hinode', 'XRT', 'Be_thin', 'Open'): 60
-    ('Hinode', 'XRT', 'C_poly', 'Al_mesh'): 62
-    ('Hinode', 'XRT', 'C_poly', 'Al_thick'): 63
-    ('Hinode', 'XRT', 'C_poly', 'Open'): 66
-    ('Hinode', 'XRT', 'C_poly', 'Ti_poly'): 67
-    ('Hinode', 'XRT', 'Open', 'Al_mesh'): 69
-    ('Hinode', 'XRT', 'Open', 'Al_thick'): 70
-    ('Hinode', 'XRT', 'Open', 'Be_thick'): 71
-    ('Hinode', 'XRT', 'Open', 'Ti_poly'): 74
-    ('TRACE', None, None, '171'): 75
-    ('TRACE', None, None, '195'): 76
-    ('TRACE', None, None, '284'): 77
-    ('TRACE', None, None, '1216'): 78
-    ('TRACE', None, None, '1550'): 79
-    ('TRACE', None, None, '1600'): 80
-    ('TRACE', None, None, '1700'): 81
-    ('TRACE', None, None, 'white-light'): 82
-    ('MLSO', 'COSMO', 'KCor', '735'): 83
-    ('Hinode', 'XRT', 'Any', 'Any'): 10001
-    ('Hinode', 'XRT', 'Any', 'Al_mesh'): 10002
-    ('Hinode', 'XRT', 'Any', 'Al_thick'): 10003
-    ('Hinode', 'XRT', 'Any', 'Be_thick'): 10004
-    ('Hinode', 'XRT', 'Any', 'Gband'): 10005
-    ('Hinode', 'XRT', 'Any', 'Open'): 10006
-    ('Hinode', 'XRT', 'Any', 'Ti_poly'): 10007
-    ('Hinode', 'XRT', 'Al_med', 'Any'): 10008
-    ('Hinode', 'XRT', 'Al_poly', 'Any'): 10009
-    ('Hinode', 'XRT', 'Be_med', 'Any'): 10010
-    ('Hinode', 'XRT', 'Be_thin', 'Any'): 10011
-    ('Hinode', 'XRT', 'C_poly', 'Any'): 10012
-    ('Hinode', 'XRT', 'Open', 'Any'): 10013
+    ...
 
 Every JPEG 2000 file provided by the Helioviewer Project has been processed to generate an image that
 can be used for browsing purposes.
@@ -140,7 +84,7 @@ Since this is a JPEG 2000 image, to plot this image you can either call Glymur d
    >>> import glymur # doctest: +SKIP
    >>> im = glymur.Jp2k(file)[:]  # doctest: +SKIP
 
-The better method is to load the image into a SunPy Map object::
+The better method is to load the image into a sunpy Map object::
 
    >>> from sunpy.map import Map
    >>> aia = Map(file)  # doctest: +SKIP
@@ -148,7 +92,7 @@ The better method is to load the image into a SunPy Map object::
 
 .. image:: helioviewer-1.png
 
-The SunPy Map selects a color table based on the JPEG 2000 image meta data for plotting.
+The sunpy Map selects a color table based on the JPEG 2000 image meta data for plotting.
 This will be the color table that is used by the Helioviewer Project to display JPEG 2000 images in their own clients.
 
 In this example we will query Helioviewer for the relevant JPEG 2000 file closest to the input time, for a SDO/HMI continuum image and crop to focus on an active region::
@@ -179,7 +123,7 @@ We will recreate the first example using the PNG function::
    >>> import matplotlib.pyplot as plt
    >>> from matplotlib.image import imread
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +REMOTE_DATA
+   >>> file = hv.download_png('2020/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +REMOTE_DATA
    >>> im = imread(file)  # doctest: +REMOTE_DATA
    >>> plt.imshow(im)  # doctest: +SKIP
    >>> plt.axis('off')  # doctest: +SKIP

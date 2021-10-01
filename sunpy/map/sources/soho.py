@@ -8,6 +8,7 @@ from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEclipti
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
+from sunpy import log
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.time import parse_time
@@ -38,7 +39,8 @@ class EITMap(GenericMap):
         # Assume pixel units are arcesc if not given
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
-
+        if 'waveunit' not in header or not header['waveunit']:
+            header['waveunit'] = "Angstrom"
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
@@ -49,10 +51,6 @@ class EITMap(GenericMap):
     @property
     def detector(self):
         return "EIT"
-
-    @property
-    def waveunit(self):
-        return "Angstrom"
 
     @property
     def rsun_obs(self):
@@ -106,22 +104,33 @@ class LASCOMap(GenericMap):
         # Fill in some missing or broken info
         # Test if change has already been applied
         if 'T' not in self.meta['date-obs']:
-            datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
-                                                                self.meta.get('date_obs')
-                                                                ),
-                                             time=self.meta.get('time-obs',
-                                                                self.meta.get('time_obs')
-                                                                )
-                                             )
-            self.meta['date-obs'] = datestr
+            datestr = "{date}T{time}".format(
+                date=self.meta.get('date-obs', self.meta.get('date_obs')),
+                time=self.meta.get('time-obs', self.meta.get('time_obs')))
+            self.meta['date-obs'] = parse_time(datestr).isot
 
         # If non-standard Keyword is present, correct it too, for compatibility.
         if 'date_obs' in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
-        self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = 'soholasco{det!s}'.format(det=self.detector[1])
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+
+        # For Helioviewer images, clear rotation metadata, as these have already been rotated.
+        # Also check that all CROTAn keywords exist to make sure that it's an untouched
+        # Helioviewer file.
+        if ('helioviewer' in self.meta
+                and 'crota' in self.meta and 'crota1' in self.meta and 'crota2' in self.meta):
+            log.debug("LASCOMap: Cleaning up CROTAn keywords "
+                      "because the map has already been rotated by Helioviewer")
+            self.meta.pop('crota')
+            self.meta.pop('crota1')
+            self.meta['crota2'] = 0
+
+    @property
+    def nickname(self):
+        filter = self.meta.get('filter', '')
+        return f'{self.instrument}-{self.detector} {filter}'
 
     @property
     def measurement(self):
@@ -169,7 +178,6 @@ class MDIMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing or broken info
-        self._nickname = self.detector + " " + self.measurement
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
         threshold = max([abs(vmin), abs(vmax)])
@@ -193,7 +201,7 @@ class MDIMap(GenericMap):
                 ] + super()._supported_observer_coordinates
 
     @property
-    def detector(self):
+    def instrument(self):
         return "MDI"
 
     @property
@@ -203,9 +211,9 @@ class MDIMap(GenericMap):
     @property
     def measurement(self):
         """
-        Returns the type of data in the map.
+        Returns the measurement type.
         """
-        return "magnetogram" if self.meta.get('dpc_obsr', " ").find('Mag') != -1 else "continuum"
+        return self.meta.get('CONTENT', '')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -232,7 +240,7 @@ class MDISynopticMap(MDIMap):
             header['date-obs'] = header['t_obs']
             header['date-obs'] = parse_time(header['date-obs']).isot
         for i in [1, 2]:
-            if header[f'CRDER{i}'] == 'nan':
+            if header.get(f'CRDER{i}') == 'nan':
                 header.pop(f'CRDER{i}')
         super().__init__(data, header, **kwargs)
 

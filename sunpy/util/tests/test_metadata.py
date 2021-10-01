@@ -1,6 +1,8 @@
+import copy
+
 import pytest
 
-from sunpy.util.metadata import MetaDict
+from sunpy.util.metadata import MetaDict, ModifiedItem
 
 
 # TODO: Should these be here and not in util?
@@ -145,7 +147,7 @@ def empty_keycomments():
 
 def test_init_with_lst_of_lsts(seas_metadict, sea_locations):
     """
-    Initialise `MetaDict` with a list of lists.
+    Initialise "Metadict" with a list of lists.
 
     Each sub list is a key/value pair.
 
@@ -158,7 +160,7 @@ def test_init_with_lst_of_lsts(seas_metadict, sea_locations):
 
 def test_init_with_tuple_of_tuples(sea_locations):
     """
-    Initialise `MetaDict` with a tuple of tuples.
+    Initialise "Metadict" with a tuple of tuples.
 
     Each 'sub-tuple' is a key/value pair.
 
@@ -172,7 +174,7 @@ def test_init_with_tuple_of_tuples(sea_locations):
 
 def test_init_with_dict(sea_locations):
     """
-    Initialise `MetaDict` with standard Python dictionary.
+    Initialise "Metadict" with standard Python dictionary.
 
     Order of insertion is *not* preserved - only check the contents.
     """
@@ -181,7 +183,7 @@ def test_init_with_dict(sea_locations):
 
 def test_init_with_metadict(atomic_weights):
     """
-    Initialise `MetaDict` with another `MetaDict`.
+    Initialise "Metadict" with another "Metadict".
     """
     original = MetaDict(atomic_weights)
     new = MetaDict(original)
@@ -193,7 +195,7 @@ def test_init_with_metadict(atomic_weights):
 
 def test_init_with_keycomments(atomic_weights_keycomments, atomic_weights_pruned_keycomments):
     """
-    Initialise `MetaDict` with keycomments. Ensure caller's keycomments dict is not mutated.
+    Initialise "Metadict" with keycomments. Ensure caller's keycomments dict is not mutated.
     """
     orig_dict = pairs_to_dict(atomic_weights_keycomments)
     orig_keycomments = orig_dict['keycomments'].copy()
@@ -419,7 +421,7 @@ def seas_and_atomic_weights():
 @pytest.fixture
 def combined_seas_atomic():
     """
-    The expected result of a `MetaDict` initailsed with `sea_locations` and
+    The expected result of a "Metadict" initialized with `sea_locations` and
     then updated with `seas_and_atomic_weights`
     """
     return [['labrador', 'americas'],
@@ -432,7 +434,7 @@ def combined_seas_atomic():
 
 def test_update_with_like_keys(seas_metadict, seas_and_atomic_weights, combined_seas_atomic):
     """
-    Update the `MetaDict` 'world_seas' with another `MetaDict`, 'atomic_seas'.
+    Update the "Metadict" 'world_seas' with another "Metadict", 'atomic_seas'.
 
     'atomic_seas' has some keys which are the same as 'world_seas', some
     are different.
@@ -443,28 +445,26 @@ def test_update_with_like_keys(seas_metadict, seas_and_atomic_weights, combined_
     world_seas = seas_metadict
     atomic_seas = MetaDict(seas_and_atomic_weights)
     world_seas.update(atomic_seas)
-
     check_contents_and_insertion_order(world_seas, combined_seas_atomic)
 
 
 def test_update_with_dict(seas_metadict, seas_and_atomic_weights, combined_seas_atomic):
     """
-    Update an existing `MetaDict` with a standard python dictionary some of
+    Update an existing "Metadict" with a standard python dictionary some of
     whose keys are the same, some are different.
 
-    In the updated `MetaDict`, values of existing keys should be updated
+    In the updated "Metadict", values of existing keys should be updated
     but as we are using a standard dictionary, insertion order of the
     new items is non-deterministic so only check the contents of the
     updated structure.
     """
     seas_metadict.update(pairs_to_dict(seas_and_atomic_weights))
-
     check_contents(seas_metadict, combined_seas_atomic)
 
 
 def test_update_with_same_metadict(seas_metadict, sea_locations):
     """
-    Upadate a 'MetaDict' with itself.
+    Update a 'MetaDict' with itself.
 
     Nothing should changes.
     """
@@ -475,11 +475,10 @@ def test_update_with_same_metadict(seas_metadict, sea_locations):
 
 def test_key_case_insensitivity(seas_metadict):
     """
-    The keys of a `Metadict` are case insensitive.
+    The keys of a "Metadict" are case insensitive.
 
     Using the key 'BALTIC' is identical to the key 'baltic'.
     """
-
     # membership
     assert 'laptev' in seas_metadict
     assert 'LAPTEV' in seas_metadict
@@ -512,3 +511,43 @@ def test_key_case_insensitivity(seas_metadict):
     assert seas_metadict['bering'] == 'Russia'
     assert seas_metadict['BeRinG'] == 'Russia'
     assert seas_metadict.get('BERING') == 'Russia'
+
+
+def test_original_copy():
+    md = MetaDict({'foo': 'bar'})
+    assert md.original_meta == md
+
+    # Add a key, make sure original contents doesn't change
+    md['a'] = 'b'
+    assert md.original_meta != md
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+    assert md.added_items == {'a': 'b'}
+
+    # Check that creating a new MetaDict preserves the original copy
+    md = MetaDict(md)
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+
+    # Check that creating a copy preserves the original copy
+    md = copy.copy(md)
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+
+    # Check that creating a deepcopy preserves the original copy
+    md = copy.deepcopy(md)
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+
+    # Check that creating using .copy() preserves the original copy
+    md = md.copy()
+    assert list(md.keys()) == ['foo', 'a']
+    assert list(md.original_meta.keys()) == ['foo']
+
+    # Check modification of items
+    md['foo'] = 'bar1'
+    assert md.modified_items == {'foo': ModifiedItem('bar', 'bar1')}
+
+    # Check removal of items
+    md.pop('foo')
+    assert md.removed_items == {'foo': 'bar'}

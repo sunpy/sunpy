@@ -1,17 +1,15 @@
 import os
-import platform
-from distutils.version import LooseVersion
 
 import numpy as np
 import pytest
 
+import asdf
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 
 import sunpy.coordinates.frames as frames
 from sunpy.tests.helpers import asdf_entry_points
 
-asdf = pytest.importorskip('asdf', '2.0.2')
 from asdf.tests.helpers import assert_roundtrip_tree  # NOQA isort:skip
 
 sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
@@ -61,22 +59,12 @@ def test_hgc_100():
             assert hgc.observer.object_name == 'earth'
 
 
-# Skip these two tests on windows due to a weird interaction with atomicfile
-# and tmpdir
-skip_windows_asdf = pytest.mark.skipif(
-    (LooseVersion(asdf.__version__) < LooseVersion("2.3.1")
-     and platform.system() == 'Windows'),
-    reason="See https://github.com/spacetelescope/asdf/pull/632")
-
-
-@skip_windows_asdf
 @asdf_entry_points
 def test_saveframe(coordframe_scalar, tmpdir):
     tree = {'frame': coordframe_scalar}
     assert_roundtrip_tree(tree, tmpdir)
 
 
-@skip_windows_asdf
 @asdf_entry_points
 def test_saveframe_arr(coordframe_array, tmpdir):
     tree = {'frame': coordframe_array}

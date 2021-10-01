@@ -1,2 +1,0 @@
-Removed `~sunpy.net.vso.attrs.Source` and `~sunpy.net.vso.attrs.Provider`. They are now `~sunpy.net.attrs.Source` and `~sunpy.net.attrs.Provider` respectively.
-Thus ``attrs``, ``Source`` and ``Provider`` are moved from VSO namespace to `~sunpy.net.attrs`.

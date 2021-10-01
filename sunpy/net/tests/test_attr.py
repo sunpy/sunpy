@@ -80,11 +80,23 @@ class SA3(attr.SimpleAttr):
     pass
 
 
+class SA4(attr.SimpleAttr):
+    pass
+
+
 def test_empty():
     class TestAttr(attr.Attr):
         pass
 
     assert repr(TestAttr)
+
+
+@pytest.mark.parametrize("different_type", [
+    int, str, float, list, set, tuple, dict, object
+])
+def test_empty(different_type):
+    attr_ = attr.Attr()
+    assert attr_ != different_type()
 
 
 def test_attr_and():
@@ -109,6 +121,25 @@ def test_attr_and_AttrAnd():
     assert a2 in an.attrs
     assert a3 in an.attrs
     assert len(an.attrs) == 3
+
+
+def test_attr_multi_and_AttrAnd():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    a3 = SA3(3)
+    a4 = SA4(4)
+    a_and1 = (a2 & a3)
+    a_and2 = (a1 & a4)
+    an = a_and1 & a_and2
+
+    assert isinstance(a_and1, attr.AttrAnd)
+    assert isinstance(a_and2, attr.AttrAnd)
+    assert isinstance(an, attr.AttrAnd)
+    assert a1 in an.attrs
+    assert a2 in an.attrs
+    assert a3 in an.attrs
+    assert a4 in an.attrs
+    assert len(an.attrs) == 4
 
 
 def test_attr_and_AttrOr():
@@ -327,6 +358,15 @@ def test_asterisk_attrs(ALL):
     attr.Attr.update_values({GenericClient: {Instrument: [('*')]}})
     assert Instrument.all == ALL
     assert "Instrument(all: All values of this type are supported.)" in repr(Instrument.all)
+
+
+@pytest.mark.parametrize("wrong_name", [
+    ("not star",), ("*whoops",)
+])
+def test_single_pair_argument_attrs(wrong_name):
+    # This checks that other single string entries fail.
+    with pytest.raises(ValueError):
+        attr.Attr.update_values({GenericClient: {Instrument: [wrong_name]}})
 
 
 def test_asterisk_attrs_time():

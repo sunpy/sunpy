@@ -1,4 +1,4 @@
-SunPy util
+sunpy util
 **********
 
 .. automodapi:: sunpy.util
@@ -7,20 +7,15 @@ SunPy util
 
 .. automodapi:: sunpy.util.datatype_factory_base
 
-.. automodapi:: sunpy.util.multimethod
-
 .. automodapi:: sunpy.util.net
 
 .. automodapi:: sunpy.util.xml
-
-.. automodapi:: sunpy.util.scraper
 
 .. automodapi:: sunpy.util.sphinx
 
 .. automodapi:: sunpy.util.sphinx.generate
    :headings: ^"
 
-.. automodapi:: sunpy.util.sphinx.changelog
-   :headings: ^"
-
 .. automodapi:: sunpy.util.functools
+
+.. automodapi:: sunpy.util.types

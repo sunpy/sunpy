@@ -6,12 +6,13 @@ from datetime import datetime
 from collections import OrderedDict
 
 import astropy.units as u
+from astropy.time import Time
 
 from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
-from sunpy.time import TimeRange
-from sunpy.util.scraper import Scraper
+from sunpy.net.scraper import Scraper, get_timerange_from_exdict
+from sunpy.time import TimeRange, parse_time
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -22,7 +23,23 @@ class XRSClient(GenericClient):
     """
     Provides access to the GOES XRS fits files archive.
 
-    Searches data hosted by the `Solar Data Analysis Center <https://umbra.nascom.nasa.gov/goes/fits/>`__.
+    Searches for GOES XRS data both on NASA servers prior to re-processed
+    GOES 13, 14 and 15 and on the NOAA archive for > GOES 13.
+    For satellite numbers > 13 the XRSClient searches the NOAA archive, and
+    returns the re-processed science-quality data for GOES 13, 14 and 15, and
+    also the new GOES-R series 16 and 17.
+
+    Note - the new science quality data have scaling factors removed for 13, 14 and 15
+    and they are not added to GOES 16 AND 17. This means the peak flux will be different to
+    the older version of the data, such as those collected from the NASA servers.
+
+    See the following readmes about the data
+
+    * Reprocessed 13, 14, 15 :
+        https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf
+
+    * GOES-R 16, 17 :
+         https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/docs/GOES-R_XRS_L1b_Science-Quality_Data_Readme.pdf
 
     Examples
     --------
@@ -34,18 +51,105 @@ class XRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the XRSClient:
-         Start Time           End Time      Instrument ... Provider SatelliteNumber
-    ------------------- ------------------- ---------- ... -------- ---------------
-    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...     SDAC              13
-    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...     SDAC              13
-    2016-01-01 00:00:00 2016-01-01 23:59:59        XRS ...     SDAC              15
-    2016-01-02 00:00:00 2016-01-02 23:59:59        XRS ...     SDAC              15
+    Source: https://umbra.nascom.nasa.gov/goes/fits
+    <BLANKLINE>
+           Start Time               End Time        Instrument ... Source Provider
+    ----------------------- ----------------------- ---------- ... ------ --------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS ...   GOES     NOAA
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS ...   GOES     NOAA
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS ...   GOES     NOAA
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS ...   GOES     NOAA
     <BLANKLINE>
     <BLANKLINE>
 
     """
-    baseurl = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
-    pattern = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
+    # GOES XRS data from NASA servers upto GOES 15. The reprocessed 13, 14, 15 data should be taken from NOAA server.
+    baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
+    pattern_old = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
+
+    # GOES XRS 13, 14, 15 from NOAA (re-processed data)
+    baseurl_new = (r"https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/"
+                   r"goes{SatelliteNumber}/gxrs-l2-irrad_science/%Y/%m/sci_gxrs-l2-irrad_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
+    pattern_new = ("{}/goes{SatelliteNumber:02d}/gxrs-l2-irrad_science/{year:4d}/"
+                   "{month:2d}/sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+
+    # GOES XRS data for GOES-R Series - 16, 17
+    baseurl_r = (r"https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber}"
+                 r"/l2/data/xrsf-l2-flx1s_science/%Y/%m/sci_xrsf-l2-flx1s_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
+    pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-flx1s_science/{year:4d}/"
+                 "{month:2d}/sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+
+    @property
+    def info_url(self):
+        return 'https://umbra.nascom.nasa.gov/goes/fits'
+
+    def post_search_hook(self, i, matchdict):
+        tr = get_timerange_from_exdict(i)
+        rowdict = OrderedDict()
+        rowdict['Start Time'] = tr.start
+        rowdict['Start Time'].format = 'iso'
+        rowdict['End Time'] = tr.end
+        rowdict['End Time'].format = 'iso'
+        rowdict["Instrument"] = matchdict["Instrument"][0].upper()
+        rowdict["SatelliteNumber"] = i["SatelliteNumber"]
+        rowdict["Physobs"] = matchdict["Physobs"][0]
+        rowdict["url"] = i["url"]
+        rowdict["Source"] = matchdict["Source"][0]
+        if i["url"].endswith(".fits"):
+            rowdict["Provider"] = matchdict["Provider"][0]
+        else:
+            rowdict["Provider"] = matchdict["Provider"][1]
+
+        return rowdict
+
+    def search(self, *args, **kwargs):
+        matchdict = self._get_match_dict(*args, **kwargs)
+        # this is for the case when the timerange overlaps with the provider change.
+        if matchdict["Start Time"] < "2009-09-01" and matchdict["End Time"] >= "2009-09-01":
+            matchdict_before, matchdict_after = matchdict.copy(), matchdict.copy()
+            matchdict_after["Start Time"] = parse_time('2009-09-01')
+            matchdict_before["End Time"] = parse_time('2009-08-31')
+            metalist_before = self._get_metalist(matchdict_before)
+            metalist_after = self._get_metalist(matchdict_after)
+            metalist = metalist_before + metalist_after
+        else:
+            metalist = self._get_metalist(matchdict)
+        return QueryResponse(metalist, client=self)
+
+    def _get_metalist_fn(self, matchdict, baseurl, pattern):
+        """
+        Function to help get list of OrderedDicts.
+        """
+        metalist = []
+        scraper = Scraper(baseurl, regex=True)
+        tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
+        filemeta = scraper._extract_files_meta(tr, extractor=pattern,
+                                               matcher=matchdict)
+        for i in filemeta:
+            rowdict = self.post_search_hook(i, matchdict)
+            metalist.append(rowdict)
+        return metalist
+
+    def _get_metalist(self, matchdict):
+        """
+        Function to get the list of OrderDicts.
+        This makes it easier for when searching for overlapping providers.
+        """
+        metalist = []
+        # the data before the re-processed GOES 13, 14, 15 data.
+        if (matchdict["End Time"] < "2009-09-01") or (matchdict["End Time"] >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
+            metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
+        # new data from NOAA.
+        else:
+            if matchdict["End Time"] >= "2017-02-07":
+                for sat in [16, 17]:
+                    metalist += self._get_metalist_fn(matchdict,
+                                                      self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
+            if matchdict["End Time"] <= "2020-03-04":
+                for sat in [13, 14, 15]:
+                    metalist += self._get_metalist_fn(matchdict,
+                                                      self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
+        return metalist
 
     @classmethod
     def _attrs_module(cls):
@@ -54,14 +158,16 @@ class XRSClient(GenericClient):
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
-        goes_number = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        goes_number = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
         adict = {attrs.Instrument: [
             ("GOES", "The Geostationary Operational Environmental Satellite Program."),
-            ("XRS", "GOES X-ray Flux")],
+            ("XRS", "GOES X-ray Sensor")],
             attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
-            attrs.Source: [('NASA', 'The National Aeronautics and Space Administration.')],
-            attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.')],
+            attrs.Source: [("GOES", "The Geostationary Operational Environmental Satellite Program.")],
+            attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.'),
+                             ('NOAA', 'The National Oceanic and Atmospheric Administration.')],
             attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
+
         return adict
 
 
@@ -96,11 +202,14 @@ class SUVIClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the SUVIClient:
-         Start Time           End Time      Instrument ... Level   Wavelength
-    ------------------- ------------------- ---------- ... ----- --------------
-    2020-07-10 00:00:00 2020-07-10 00:04:00       SUVI ...     2 304.0 Angstrom
-    2020-07-10 00:04:00 2020-07-10 00:08:00       SUVI ...     2 304.0 Angstrom
-    2020-07-10 00:08:00 2020-07-10 00:12:00       SUVI ...     2 304.0 Angstrom
+    Source: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes
+    <BLANKLINE>
+           Start Time               End Time        Instrument ... Level Wavelength
+                                                               ...        Angstrom
+    ----------------------- ----------------------- ---------- ... ----- ----------
+    2020-07-10 00:00:00.000 2020-07-10 00:04:00.000       SUVI ...     2      304.0
+    2020-07-10 00:04:00.000 2020-07-10 00:08:00.000       SUVI ...     2      304.0
+    2020-07-10 00:08:00.000 2020-07-10 00:12:00.000       SUVI ...     2      304.0
     <BLANKLINE>
     <BLANKLINE>
 
@@ -116,17 +225,21 @@ class SUVIClient(GenericClient):
                 '{year:4d}{month:2d}{day:2d}T{hour:2d}{minute:2d}{second:2d}Z_e'
                 '{eyear:4d}{emonth:2d}{eday:2d}T{ehour:2d}{eminute:2d}{esecond:2d}Z_{}')
 
+    @property
+    def info_url(self):
+        return 'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes'
+
     def post_search_hook(self, i, matchdict):
 
         # extracting start times and end times
-        start = datetime(i['year'], i['month'], i['day'], i['hour'], i['minute'], i['second'])
-        end = datetime(i['year'], i['month'], i['day'], i['ehour'], i['eminute'], i['esecond'])
-        timerange = TimeRange(start, end)
+        start = Time(datetime(i['year'], i['month'], i['day'], i['hour'], i['minute'], i['second']))
+        start.format = 'iso'
+        end = Time(datetime(i['year'], i['month'], i['day'], i['ehour'], i['eminute'], i['esecond']))
+        end.format = 'iso'
 
         rowdict = OrderedDict()
-        rowdict['Time'] = timerange
-        rowdict['Start Time'] = start.strftime(TIME_FORMAT)
-        rowdict['End Time'] = end.strftime(TIME_FORMAT)
+        rowdict['Start Time'] = start
+        rowdict['End Time'] = end
         rowdict['Instrument'] = matchdict['Instrument'][0].upper()
         rowdict['Physobs'] = matchdict['Physobs'][0]
         rowdict['Source'] = matchdict['Source'][0]
@@ -175,7 +288,8 @@ class SUVIClient(GenericClient):
                     urlpattern = baseurl.format(**formdict)
 
                     scraper = Scraper(urlpattern)
-                    filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern)
+                    tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+                    filesmeta = scraper._extract_files_meta(tr, extractor=pattern)
                     for i in filesmeta:
                         rowdict = self.post_search_hook(i, matchdict)
                         metalist.append(rowdict)

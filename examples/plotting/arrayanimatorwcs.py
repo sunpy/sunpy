@@ -6,8 +6,6 @@ Creating a visualization with ArrayAnimatorWCS
 This example shows how to create a simple visualization using
 `~sunpy.visualization.animator.ArrayAnimatorWCS`.
 """
-# Start by importing the necessary modules.
-
 import matplotlib.pyplot as plt
 
 import astropy.units as u
@@ -22,7 +20,7 @@ from sunpy.visualization.animator import ArrayAnimatorWCS
 # To showcase how to visualize a sequence of 2D images using
 # `~sunpy.visualization.animator.ArrayAnimatorWCS`, we will use images from
 # our sample data. The problem with this is that they are not part of
-# a continuous dataset. To overcome this we wil do two things.
+# a continuous dataset. To overcome this we will do two things.
 # Create a stacked array of the images and create a `~astropy.wcs.WCS` header.
 # The easiest method  for the array is to create a `~sunpy.map.MapSequence`.
 
@@ -50,8 +48,7 @@ wcs.wcs.cdelt = [time_diff.value] + list(u.Quantity(m.scale).value)
 wcs.wcs.crval = [0, m._reference_longitude.value, m._reference_latitude.value]
 wcs.wcs.ctype = ['TIME'] + list(m.coordinate_system)
 wcs.wcs.cunit = ['s'] + list(m.spatial_units)
-wcs.rsun = m.rsun_meters
-wcs.heliographic_observer = m.observer_coordinate
+wcs.wcs.aux.rsun_ref = m.rsun_meters.to_value(u.m)
 
 # Now the resulting WCS object will look like:
 print(wcs)
@@ -68,14 +65,13 @@ plt.show()
 
 ###############################################################################
 # You might notice that the animation could do with having the axes look
-# neater. `~sunpy.visualization.ArrayAnimatorWCS` provides a way of setting
+# neater. `~sunpy.visualization.animator.ArrayAnimatorWCS` provides a way of setting
 # some display properties of the `~astropy.visualization.wcsaxes.WCSAxes`
 # object on every frame of the animation via use of the ``coord_params`` dict.
 # They keys of the ``coord_params`` dict are either the first half of the
 # ``CTYPE`` key, the whole ``CTYPE`` key or the entries in
 # ``wcs.world_axis_physical_types`` here we use the short ctype identifiers for
 # the latitude and longitude axes.
-
 
 coord_params = {
     'hpln': {
@@ -87,7 +83,6 @@ coord_params = {
         'ticks': {'spacing': 10*u.arcmin, 'color': 'black'}
     },
 }
-
 
 # We have to recreate the visualization since we displayed it earlier.
 wcs_anim = ArrayAnimatorWCS(sequence_array, wcs, [0, 'x', 'y'], vmax=1000,

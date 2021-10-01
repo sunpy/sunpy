@@ -1,2 +1,0 @@
-Nanosecond precision is now retained when using `~sunpy.time.parse_time` with
-a `~pandas.Timestamp`.

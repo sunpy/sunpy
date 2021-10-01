@@ -7,7 +7,7 @@
         {
             "name": "Stuart J. Mumford",
             "orcid": "0000-0003-4217-4642",
-            "affiliation": "1 - SP2RC, School of Mathematics and Statistics, The University of Sheffield, UK 2 - National Solar Observatory, 3665 Discovery Drive, Boulder, CO 80303 3 - Aperio Software Ltd., Headingley Enterprise and Arts Centre, Bennett Road, Leeds LS6 3HN "
+            "affiliation": "Aperio Software Ltd., Headingley Enterprise and Arts Centre, Bennett Road, Leeds LS6 3HN"
         },
         {
             "name": "Nabil Freij",
@@ -28,14 +28,19 @@
             "name": "Florian Mayer"
         },
         {
-            "name": "V. Keith Hughitt",
-            "orcid": "0000-0003-0787-9559",
-            "affiliation": "Center for Cancer Research, National Cancer Institute, Bethesda, MD 20892-9760, USA"
+            "name": "David Stansby",
+            "orcid": "0000-0002-1365-1908",
+            "affiliation": "Mullard Space Science Laboratory, University College London, Surrey, UK"
         },
         {
             "name": "Albert Y. Shih",
             "orcid": "0000-0001-6874-2594",
             "affiliation": "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
+        },
+        {
+            "name": "V. Keith Hughitt",
+            "orcid": "0000-0003-0787-9559",
+            "affiliation": "Center for Cancer Research, National Cancer Institute, Bethesda, MD 20892-9760, USA"
         },
         {
             "name": "Daniel F. Ryan",
@@ -46,17 +51,17 @@
             "name": "Simon Liedtke"
         },
         {
-            "name": "David Stansby",
-            "orcid": "0000-0002-1365-1908",
-            "affiliation": "Mullard Space Science Laboratory, University College London, Surrey, UK"
-        },
-        {
             "name": "David Pérez-Suárez",
             "orcid": "0000-0003-0784-6909",
             "affiliation": "University College London, Gower Street, London, UK"
         },
         {
             "name": "Vishnunarayan K I."
+        },
+        {
+            "name": "Laura Hayes",
+            "orcid": "0000-0002-6835-2390",
+            "affiliation": "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
         },
         {
             "name": "Pritish Chakraborty",
@@ -79,11 +84,6 @@
             "affiliation": "DIRAC Institute, Department of Astronomy, University of Washington, Seattle, WA 98195, USA"
         },
         {
-            "name": "Laura Hayes",
-            "orcid": "0000-0002-6835-2390",
-            "affiliation": "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
-        },
-        {
             "name": "Rishabh Sharma"
         },
         {
@@ -100,10 +100,20 @@
             "name": "Alex Hamilton"
         },
         {
+            "name": "Abhijeet Manhas",
+            "orcid": "0000-0002-0757-2883",
+            "affiliation": " School of Computing and Electrical Engineering, Indian Institute of Technology Mandi"
+        },
+        {
             "name": "Asish Panda"
         },
         {
             "name": "Matt Earnshaw"
+        },
+        {
+            "name": "Will Barnes",
+            "orcid": "0000-0001-9642-6089",
+            "affiliation": "National Research Council Research Associate residing at the Naval Research Laboratory, Washington, D.C. 20375, USA"
         },
         {
             "name": "Nitin Choudhary",
@@ -117,11 +127,6 @@
             "name": "Raahul Singh",
             "orcid": "0000-0003-4114-8856",
             "affiliation": "​Indian Institute of Information Technology Sri City​"
-        },
-        {
-            "name": "Will Barnes",
-            "orcid": "0000-0001-9642-6089",
-            "affiliation": "National Research Council Research Associate residing at the Naval Research Laboratory, Washington, D.C. 20375, USA"
         },
         {
             "name": "Prateek Chanda",
@@ -147,11 +152,6 @@
             "name": "Rajul Srivastava"
         },
         {
-            "name": "Abhijeet Manhas",
-            "orcid": "0000-0002-0757-2883",
-            "affiliation": " School of Computing and Electrical Engineering, Indian Institute of Technology Mandi"
-        },
-        {
             "name": "Yash Jain",
             "orcid": "0000-0001-5347-4734",
             "affiliation": "Indian Institute of Technology, Kharagpur, 721302, India"
@@ -168,12 +168,12 @@
             "orcid": "0000-0003-0260-453X"
         },
         {
-            "name": "Michael Charlton"
-        },
-        {
             "name": "Shane Maloney",
             "orcid": "0000-0002-4715-1805",
             "affiliation": "Trinity College Dublin / Dublin Institute for Advanced Studies"
+        },
+        {
+            "name": "Michael Charlton"
         },
         {
             "name": "Sashank Mishra",
@@ -187,6 +187,11 @@
         },
         {
             "name": "Himanshu"
+        },
+        {
+            "name": "Aryan Chouhan",
+            "orcid": "0000-0001-8004-7586",
+            "affiliation": "Dwarkadas J. Sanghvi College of Engineering, Mumbai"
         },
         {
             "name": "Sanskar Modi"
@@ -205,9 +210,7 @@
             "name": "Naman9639"
         },
         {
-            "name": "Monica G. Bobra",
-            "affiliation": "W.W. Hansen Experimental Physics Laboratory, Stanford University, Stanford, CA 94305, USA",
-            "orcid": "0000-0002-5662-9604"
+            "name": "Lazar Zivadinovic"
         },
         {
             "name": "Jose Ivan Campos Rozo",
@@ -215,12 +218,34 @@
             "affiliation": "Institut für Physik/IGAM - Karl-Franzens University of Graz, Austria"
         },
         {
+            "name": "Monica G. Bobra",
+            "affiliation": "W.W. Hansen Experimental Physics Laboratory, Stanford University, Stanford, CA 94305, USA",
+            "orcid": "0000-0002-5662-9604"
+        },
+        {
             "name": "Larry Manley"
+        },
+        {
+            "name": "Jeffrey Aaron Paul",
+            "affiliation": "(Dayananda Sagar College of Engineering, Bangalore)"
+        },
+        {
+            "name": "Kateryna Ivashkiv"
         },
         {
             "name": "Agneet Chatterjee",
             "orcid": "0000-0002-0961-9569",
             "affiliation": "Jadavpur University, Kolkata"
+        },
+        {
+            "name": "Kris Akira Stern",
+            "orcid": "0000-0003-1613-8947",
+            "affiliation": " University of Hong Kong (Hong Kong SAR), University of London (Great Britain)"
+        },
+        {
+            "name": "Johan Freiherr von Forstner",
+            "orcid": "0000-0002-1390-4776",
+            "affiliation": "Institut für Experimentelle und Angewandte Physik, University of Kiel, Germany"
         },
         {
             "name": "Juanjo Bazán",
@@ -242,6 +267,19 @@
             "name": "Michael Malocha"
         },
         {
+            "name": "Dominik Stańczak",
+            "affiliation": "University of Warsaw",
+            "orcid": "0000-0001-6291-8843"
+        },
+        {
+            "name": "SophieLemos"
+        },
+        {
+            "name": "Shresth Verma",
+            "orcid": "0000-0003-0370-5471",
+            "affiliation": "ABV-Indian Institute of Information Technology and Management, Gwalior, MP 474015, India"
+        },
+        {
             "name": "Ruben De Visscher"
         },
         {
@@ -250,20 +288,7 @@
             "affiliation": "JSS Academy Of Technical Education, Bengaluru"
         },
         {
-            "name": "Dominik Stańczak",
-            "affiliation": "University of Warsaw",
-            "orcid": "0000-0001-6291-8843"
-        },
-        {
-            "name": "Shresth Verma",
-            "orcid": "0000-0003-0370-5471",
-            "affiliation": "ABV-Indian Institute of Information Technology and Management, Gwalior, MP 474015, India"
-        },
-        {
             "name": "Airmansmith97"
-        },
-        {
-            "name": "Ankit Agrawal"
         },
         {
             "name": "Dumindu Buddhika"
@@ -274,10 +299,18 @@
             "affiliation": "Shri Siddhi Vinayak Institute of Technology, Bareilly"
         },
         {
+            "name": "Arib Alam"
+        },
+        {
+            "name": "Ankit Agrawal"
+        },
+        {
             "name": "Swapnil Sharma"
         },
         {
-            "name": "Arib Alam"
+            "name": "Jai Ram Rideout",
+            "orcid": "0000-0003-2587-1454",
+            "affiliation": "Dogfox Software LLC, Flagstaff, AZ 86001, USA"
         },
         {
             "name": "Matt Bates"
@@ -291,24 +324,26 @@
             "name": "Pankaj Mishra"
         },
         {
-            "name": "Jai Ram Rideout",
-            "orcid": "0000-0003-2587-1454",
-            "affiliation": "Dogfox Software LLC, Flagstaff, AZ 86001, USA"
+            "name": "Dhruv Goel"
         },
         {
             "name": "Deepankar Sharma"
         },
         {
-            "name": "Sanjeev Dubey"
+            "name": "Garrison Taylor",
+            "affiliation": "Harvard-Smithsonian Center for Astrophysics, Cambridge, MA 02138, USA"
         },
         {
-            "name": "Mateo Inchaurrandieta"
+            "name": "Goran Cetusic"
         },
         {
             "name": "Guntbert Reiter"
         },
         {
-            "name": "Dhruv Goel"
+            "name": "Jacob"
+        },
+        {
+            "name": "Mateo Inchaurrandieta"
         },
         {
             "name": "Sally Dacie",
@@ -316,14 +351,21 @@
             "affiliation": "Mullard Space Science Laboratory, University College London, Holmbury St. Mary, Surrey, RH5 6NT, UK"
         },
         {
-            "name": "Jacob"
+            "name": "Sanjeev Dubey"
         },
         {
-            "name": "Goran Cetusic"
+            "name": "Utkarsh Parkhi"
         },
         {
-            "name": "Garrison Taylor",
-            "affiliation": "Harvard-Smithsonian Center for Astrophysics, Cambridge, MA 02138, USA"
+            "name": "Sudeep Sidhu"
+        },
+        {
+            "name": "Rutuja Surve"
+        },
+        {
+            "name": "Arthur Eigenbrot",
+            "orcid": "0000-0003-0810-4368",
+            "affiliation": "National Solar Observatory"
         },
         {
             "name": "Tomas Meszaros"
@@ -332,26 +374,18 @@
             "name": "Erik M. Bray"
         },
         {
-            "name": "Arthur Eigenbrot",
-            "orcid": "0000-0003-0810-4368",
-            "affiliation": "National Solar Observatory"
-        },
-        {
             "name": "Serge Zahniy",
             "orcid": "0000-0001-8835-7087",
             "affiliation": "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
         },
         {
-            "name": "Lazar Zivadinovic"
+            "name": "Chloé Guennou"
         },
         {
-            "name": "Utkarsh Parkhi"
+            "name": "Abhigyan Bose"
         },
         {
-            "name": "Thomas Robitaille"
-        },
-        {
-            "name": "Amogh J"
+            "name": "Ankit"
         },
         {
             "name": "André Chicrala",
@@ -359,21 +393,24 @@
             "affiliation": "Northumbria University, England"
         },
         {
-            "name": "Ankit"
-        },
-        {
-            "name": "Chloé Guennou"
+            "name": "Amogh J"
         },
         {
             "name": "Daniel D'Avella"
         },
         {
-            "name": "Daniel Williams",
-            "affiliation": "SUPA, University of Glasgow, Glasgow G12 8QQ, United Kingdom",
-            "orcid": "0000-0003-3772-198X"
+            "name": "Jordan Ballew"
         },
         {
-            "name": "Jordan Ballew"
+            "name": "Adrian Price-Whelan",
+            "orcid": "0000-0003-0872-7098",
+            "affiliation": "Center for Computational Astrophysics, Flatiron Institute, 162 Fifth Ave, New York, NY 10010, USA"
+        },
+        {
+            "name": "Thomas Robitaille"
+        },
+        {
+            "name": "Tom Augspurger"
         },
         {
             "name": "Nick Murphy",
@@ -384,50 +421,42 @@
             "name": "Priyank Lodha"
         },
         {
-            "name": "Rutuja Surve"
-        },
-        {
-            "name": "Abhigyan Bose"
-        },
-        {
-            "name": "Tom Augspurger"
-        },
-        {
             "name": "Yash Krishan"
         },
         {
-            "name": "neerajkulk"
-        },
-        {
-            "name": "Ishtyaq Habib"
-        },
-        {
-            "name": "Joseph Letts",
-            "orcid": "0000-0001-9900-739X"
-        },
-        {
-            "name": "Yash Kothari"
-        },
-        {
-            "name": "Duygu Keşkek"
+            "name": "Abhishek Pandey"
         },
         {
             "name": "honey"
         },
         {
-            "name": "Carlos Molina",
-            "orcid": "0000-0003-0300-4106"
+            "name": "Dipanshu Verma",
+            "affiliation": "Indian Institute of Technology, Mandi",
+            "orcid": "0000-0003-2461-5547"
         },
         {
-            "name": "Ole Streicher",
-            "orcid": "0000-0001-7751-1843",
-            "affiliation": "Leibniz Institute for Astrophysics Potsdam, Germany"
+            "name": "neerajkulk"
         },
         {
-            "name": "Reid Gomillion"
+            "name": "Daniel Williams",
+            "affiliation": "SUPA, University of Glasgow, Glasgow G12 8QQ, United Kingdom",
+            "orcid": "0000-0003-3772-198X"
         },
         {
             "name": "Bernhard M. Wiedemann"
+        },
+        {
+            "name": "Yash Kothari"
+        },
+        {
+            "name": "mridulpandey"
+        },
+        {
+            "name": "Ishtyaq Habib"
+        },
+        {
+            "name": "Carlos Molina",
+            "orcid": "0000-0003-0300-4106"
         },
         {
             "name": "Benjamin Mampaey",
@@ -435,46 +464,37 @@
             "affiliation": "Royal Observatory of Belgium"
         },
         {
+            "name": "Ole Streicher",
+            "orcid": "0000-0001-7751-1843",
+            "affiliation": "Leibniz Institute for Astrophysics Potsdam, Germany"
+        },
+        {
+            "name": "Yukie Nomiya",
+            "orcid": "0000-0002-9572-6300",
+            "affiliation": "Sapienza University of Rome, Italy"
+        },
+        {
+            "name": "Reid Gomillion"
+        },
+        {
+            "name": "Joseph Letts",
+            "orcid": "0000-0001-9900-739X"
+        },
+        {
+            "name": "Adwait Bhope",
+            "orcid": "0000-0002-7133-8776",
+            "affiliation": "Savitribai Phule Pune University, India"
+        },
+        {
             "name": "Andrew Hill"
         },
         {
-            "name": "Kris Akira Stern",
-            "orcid": "0000-0003-1613-8947",
-            "affiliation": " University of Hong Kong (Hong Kong SAR), University of London (Great Britain)"
+            "name": "Duygu Keşkek"
         },
         {
-            "name": "Gulshan Mittal"
-        },
-        {
-            "name": "Freek Verstringe",
-            "affiliation": "Royal Observatory of Belgium"
-        },
-        {
-            "name": "Fionnlagh Mackenzie Dover",
-            "orcid": "0000-0002-1984-7303",
-            "affiliation": "SP2RC, School of Mathematics and Statistics, The University of Sheffield, UK"
-        },
-        {
-            "name": "Emmanuel Arias"
-        },
-        {
-            "name": "Brandon Stone"
-        },
-        {
-            "name": "Swapnil Kannojia",
-            "orcid": "0000-0002-4233-774X",
-            "affiliation": "Maulana Azad National Institute of Technology, Bhopal"
-        },
-        {
-            "name": "Arseniy Kustov"
-        },
-        {
-            "name": "Tannmay Yadav",
-            "orcid": "0000-0002-3143-5635",
-            "affiliation": "Department of Chemical Engineering, Indian Institute of Technology Kharagpur, 721302, India"
-        },
-        {
-            "name": "Tessa D. Wilkinson"
+            "name": "Kritika Ranjan",
+            "orcid": "0000-0001-5638-016X",
+            "affiliation": "Jain (Deemed-to-be University), Bangalore"
         },
         {
             "name": "Tiago M. D. Pereira",
@@ -482,29 +502,18 @@
             "affiliation": "1 - Rosseland Centre for Solar Physics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway 2 - Institute of Theoretical Astrophysics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway "
         },
         {
-            "name": "mridulpandey"
-        },
-        {
-            "name": "Arfon Smith"
-        },
-        {
             "name": "Trung Kien Dang",
             "orcid": "0000-0001-7562-6495",
             "affiliation": "Saw Swee Hock School of Public Health, National University Health System, National University of Singapore, Singapore"
         },
         {
-            "name": "Ambar Mehrotra"
+            "name": "Varun Bankar"
         },
         {
-            "name": "Adrian Price-Whelan",
-            "orcid": "0000-0003-0872-7098",
-            "affiliation": "Center for Computational Astrophysics, Flatiron Institute, 162 Fifth Ave, New York, NY 10010, USA"
+            "name": "Abijith Bahuleyan"
         },
         {
             "name": "Abijith B"
-        },
-        {
-            "name": "yasintoda"
         },
         {
             "name": "Abigail L. Stevens",
@@ -517,17 +526,26 @@
             "affiliation": "International Institute of Information Technology, Hyderabad 500 032, India"
         },
         {
-            "name": "Norbert Gyenge"
+            "name": "nakul-shahdadpuri"
         },
         {
-            "name": "Mickaël Schoentgen",
-            "orcid": "0000-0002-0106-4810"
+            "name": "Koustav Ghosh"
         },
         {
-            "name": "abijith-bahuleyan"
+            "name": "Kaustubh Hiware",
+            "orcid": "0000-0003-3301-1016",
+            "affiliation": "Indian Institute of Technology, Kharagpur"
         },
         {
-            "name": "Matthew Mendero"
+            "name": "yasintoda"
+        },
+        {
+            "name": "Kalpesh Krishna",
+            "orcid": "0000-0001-6574-0817",
+            "affiliation": "University of Massachusetts, Amherst"
+        },
+        {
+            "name": "MOULOUDI Mohamed Lyes"
         },
         {
             "name": "Manas Mangaonkar"
@@ -536,26 +554,18 @@
             "name": "Mark Cheung"
         },
         {
-            "name": "Rajasekhar Reddy Mekala"
-        },
-        {
-            "name": "Kaustubh Hiware",
-            "orcid": "0000-0003-3301-1016",
-            "affiliation": "Indian Institute of Technology, Kharagpur"
-        },
-        {
-            "name": "Rishabh Mishra"
-        },
-        {
-            "name": "Kalpesh Krishna",
-            "orcid": "0000-0001-6574-0817",
-            "affiliation": "University of Massachusetts, Amherst"
+            "name": "platipo"
         },
         {
             "name": "Juan Camilo Buitrago-Casas"
         },
         {
-            "name": "S Shashank"
+            "name": "Matthew Mendero"
+        },
+        {
+            "name": "Megh Dedhia",
+            "orcid": "0000-0002-5828-7679",
+            "affiliation": "DJ Sanghvi College of Engineering, Mumbai University"
         },
         {
             "name": "Jaylen Wimbish"
@@ -567,16 +577,13 @@
             "name": "Igor Babuschkin"
         },
         {
+            "name": "Mickaël Schoentgen",
+            "orcid": "0000-0002-0106-4810"
+        },
+        {
             "name": "Harsh Mathur",
             "orcid": "0000-0001-5253-4213",
             "affiliation": "Indian Institute of Astrophysics, Bangalore"
-        },
-        {
-            "name": "Shashank Srikanth",
-            "affiliation": "International Institute of Information Technology, Hyderabad"
-        },
-        {
-            "name": "jamescalixto"
         },
         {
             "name": "Gulshan Kumar",
@@ -584,9 +591,96 @@
             "affiliation": "International Institute of Information Technology, Hyderabad"
         },
         {
+            "name": "Freek Verstringe",
+            "affiliation": "Royal Observatory of Belgium"
+        },
+        {
+            "name": "Fionnlagh Mackenzie Dover",
+            "orcid": "0000-0002-1984-7303",
+            "affiliation": "SP2RC, School of Mathematics and Statistics, The University of Sheffield, UK"
+        },
+        {
+            "name": "Erik Tollerud"
+        },
+        {
             "name": "Norbert G Gyenge",
             "orcid": "0000-0003-0464-1537",
             "affiliation": "SP2RC, School of Mathematics and Statistics, University of Sheffield, Sheffield, S3 7RH, UK"
+        },
+        {
+            "name": "Emmanuel Arias"
+        },
+        {
+            "name": "Rajasekhar Reddy Mekala"
+        },
+        {
+            "name": "Conor MacBride",
+            "orcid": "0000-0002-9901-8723",
+            "affiliation": "Astrophysics Research Centre, School of Mathematics and Physics, Queen’s University Belfast, Belfast BT7 1NN, UK"
+        },
+        {
+            "name": "Ratul Das",
+            "orcid": "0000-0002-5845-9979",
+            "affiliation": "National Institute of Science Education and Research, Bhubaneswar, Odisha, India"
+        },
+        {
+            "name": "Rishabh Mishra"
+        },
+        {
+            "name": "Brandon Stone"
+        },
+        {
+            "name": "resakra"
+        },
+        {
+            "name": "Samriddhi Agarwal",
+            "orcid": "0000-0003-4497-1637",
+            "affiliation": "Ryan International School, Bengaluru, Karnataka, India"
+        },
+        {
+            "name": "Kaustubh Chaudhari",
+            "orcid": "0000-0003-1734-5075",
+            "affiliation": "Indian Institute of Information Technology, Gwalior"
+        },
+        {
+            "name": "Arseniy Kustov"
+        },
+        {
+            "name": "Arfon Smith"
+        },
+        {
+            "name": "Shashank Srikanth",
+            "affiliation": "International Institute of Information Technology, Hyderabad"
+        },
+        {
+            "name": "Shubham Jain"
+        },
+        {
+            "name": "Ambar Mehrotra"
+        },
+        {
+            "name": "Amarjit Singh Gaba",
+            "orcid": "0000-0002-9505-0160",
+            "affiliation": "School of Mathematics, Cardiff University, Cardiff, Wales, UK"
+        },
+        {
+            "name": "Swapnil Kannojia",
+            "orcid": "0000-0002-4233-774X",
+            "affiliation": "Maulana Azad National Institute of Technology, Bhopal"
+        },
+        {
+            "name": "Tannmay Yadav",
+            "orcid": "0000-0002-3143-5635",
+            "affiliation": "Department of Chemical Engineering, Indian Institute of Technology Kharagpur, 721302, India"
+        },
+        {
+            "name": "Tathagata Paul"
+        },
+        {
+            "name": "Tessa D. Wilkinson"
+        },
+        {
+            "name": "Thomas A Caswell"
         },
         {
             "name": "Sophie A. Murray",

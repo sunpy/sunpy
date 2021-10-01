@@ -158,10 +158,31 @@ def test_append_invalid_timerange(basic_1_md):
 # Test TimeSeriesMetaData Concatenation
 # =============================================================================
 
-def test_concatenate(basic_ascending_append_md, basic_4_md, complex_append_md):
+def test_concatenate_ts(basic_ascending_append_md, basic_4_md, complex_append_md):
     concatenated = copy.deepcopy(basic_ascending_append_md)
     concatenated = concatenated.concatenate(basic_4_md)
     assert concatenated == complex_append_md
+
+
+def test_concatenate_list(basic_ascending_append_md, basic_3_md, basic_4_md, complex_append_md):
+    concatenated = copy.deepcopy(basic_ascending_append_md)
+    concatenated = concatenated.concatenate([basic_3_md, basic_4_md])
+    assert concatenated == complex_append_md
+
+
+def test_concatenate_invalid_type(basic_ascending_append_md):
+    concatenated = copy.deepcopy(basic_ascending_append_md)
+    with pytest.raises(TypeError, match="Invalid type provided: <class 'int'>. "
+                                        "Please provide a TimeSeriesMetaData object or "
+                                        "an iterable containing TimeSeriesMetaData objects."):
+        concatenated = concatenated.concatenate(100)
+
+
+def test_concatenate_invalid_type_within_list(basic_ascending_append_md):
+    concatenated = copy.deepcopy(basic_ascending_append_md)
+    with pytest.raises(TypeError, match="Invalid type within iterable. Iterable must only contain "
+                                        "TimeSeriesMetaData objects."):
+        concatenated = concatenated.concatenate([100])
 
 
 # =============================================================================

@@ -50,7 +50,7 @@ def vso_session():
     client = vso.VSOClient()
     qr = client.search(
         a.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
-        a.Instrument.rhessi)
+        a.Instrument.rhessi, response_format="legacy")
     entries = tables.entries_from_query_result(qr)
     database = Database('sqlite:///:memory:')
     for entry in entries:

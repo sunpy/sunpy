@@ -1,1 +1,0 @@
-Fixed a bug where SunPy could not be successfully imported if the default text encoding of the running environment was unable to handle non-ASCII characters.

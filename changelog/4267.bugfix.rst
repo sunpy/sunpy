@@ -1,2 +1,0 @@
-Fixed a bug where transformation errors were not getting raised in some situations when a coordinate frame had ``obstime`` set to the default value of ``None`` and `~astropy.coordinates.SkyCoord` was not being used.
-Users are recommended to use `~astropy.coordinates.SkyCoord` to manage coordinate transformations unless they have a specific reason not to.

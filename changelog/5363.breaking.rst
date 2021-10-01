@@ -1,0 +1,2 @@
+Fill values are now set to `numpy.nan` in ``sunpy.timeseries.sources.noaa`` file
+parsers. They were previously set to a fill value of ``-1``.

@@ -27,7 +27,7 @@ from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinat
 
 ##############################################################################
 # Next lets explore solar differential rotation by replicating Figure 1
-# in Beck 1999
+# in Beck 1999.
 
 latitudes = np.arange(0, 90, 1) * u.deg
 dt = 1 * u.day
@@ -48,13 +48,13 @@ plt.title('Solar Differential Rotation Rate')
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 ##############################################################################
-# Let's define our starting coordinates
+# Let's define our starting coordinates.
 
 hpc_y = np.arange(-700, 800, 100) * u.arcsec
 hpc_x = np.zeros_like(hpc_y)
 
 ##############################################################################
-# Let's define how many days in the future we want to rotate to
+# Let's define how many days in the future we want to rotate to.
 
 dt = TimeDelta(4*u.day)
 future_date = aia_map.date + dt
@@ -64,7 +64,7 @@ future_date = aia_map.date + dt
 
 fig = plt.figure()
 ax = plt.subplot(projection=aia_map)
-aia_map.plot()
+aia_map.plot(clip_interval=(1, 99.99)*u.percent)
 ax.set_title('The effect of {} days of differential rotation'.format(dt.to(u.day).value))
 aia_map.draw_grid()
 
@@ -75,7 +75,7 @@ for this_hpc_x, this_hpc_y in zip(hpc_x, hpc_y):
                      [start_coord.Ty, rotated_coord.Ty],
                      frame=aia_map.coordinate_frame)
     ax.plot_coord(coord, 'o-')
-
 plt.ylim(0, aia_map.data.shape[1])
 plt.xlim(0, aia_map.data.shape[0])
+
 plt.show()

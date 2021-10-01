@@ -1,5 +1,0 @@
-`sunpy.GenericMap.rsun_obs` no longer assumes the observer is at Earth if
- ``rsun_obs`` was not present in the map metadata. The sun-observer
- distance is now taken directly from the observer coordinate. If the observer
- coordinate is not present, this defaults to the Earth, retaining previous
- behaviour.

@@ -1,1 +1,0 @@
-Added a gallery example for saving and loading sunpy Maps using asdf.

@@ -39,14 +39,15 @@ class BaseFuncAnimator:
         Some arbitrary data.
     slider_functions: `list`
         A list of functions to call when that slider is changed.
-        These functions will have `val`, the axes image object and the slider
+        These functions will have ``val``, the axes image object and the slider
         widget instance passed to them, e.g., ``update_slider(val, im, slider)``
     slider_ranges: `list`
         A list of ``[min,max]`` pairs to set the ranges for each slider or an array
         of values for all points of the slider.
         (The slider update function decides which to support.)
     fig: `matplotlib.figure.Figure`, optional
-        `~matplotlib.figure.Figure` to use. Defaults to `None`.
+        `~matplotlib.figure.Figure` to use. Defaults to `None`, in which case a new
+        figure is created.
     interval: `int`, optional
         Animation interval in milliseconds. Defaults to 200.
     colorbar: `bool`, optional
@@ -64,6 +65,11 @@ class BaseFuncAnimator:
     slider_labels: `list`, optional
         A list of labels to draw in the slider, must be the same length as
         ``slider_functions``.
+
+    Attributes
+    ----------
+    fig : `matplotlib.figure.Figure`
+    axes : `matplotlib.axes.Axes`
 
     Notes
     -----
@@ -109,12 +115,17 @@ class BaseFuncAnimator:
         self.timer = None
 
         # Set up axes
+        self.axes = None
         self._make_axes_grid()
         self._add_widgets()
         self._set_active_slider(0)
 
         # Set the current axes to the main axes so commands like plt.ylabel() work.
-        plt.sca(self.axes)
+        #
+        # Only do this if figure has a manager, so directly constructed figures
+        # (ie. via matplotlib.figure.Figure()) work.
+        if hasattr(self.fig.canvas, "manager") and self.fig.canvas.manager is not None:
+            plt.sca(self.axes)
 
         # Do Plot
         self.im = self.plot_start_image(self.axes)
@@ -146,7 +157,10 @@ class BaseFuncAnimator:
         Parameters
         ----------
         axes: `matplotlib.axes.Axes`, optional
-            The `matplotlib.axes.Axes` to animate. Defaults to `None`.
+            The `matplotlib.axes.Axes` to animate. Defaults to `None`, in which
+            case the Axes associated with this animator are used. Passing a
+            custom Axes can be useful if you want to create the animation on
+            a custom figure that is not the figure set up by this Animator.
         slider: `int`, optional
             The slider to animate along. Defaults to 0.
         startframe: `int`, optional
@@ -161,7 +175,7 @@ class BaseFuncAnimator:
         Extra keywords are passed to `matplotlib.animation.FuncAnimation`.
         """
         if not axes:
-            axes = plt.gca()
+            axes = self.axes
         anim_fig = axes.get_figure()
 
         if endframe is None:
@@ -204,7 +218,7 @@ class BaseFuncAnimator:
         self.fig.canvas.mpl_connect('key_press_event', self._key_press)
 
     def _add_colorbar(self, im):
-        self.colorbar = plt.colorbar(im, self.cax)
+        self.colorbar = self.fig.colorbar(im, self.cax)
 
 # =============================================================================
 #   Figure event callback functions
@@ -248,16 +262,16 @@ class BaseFuncAnimator:
 # =============================================================================
 #   Build the figure and place the widgets
 # =============================================================================
-    def _get_main_axes(self):
+    def _setup_main_axes(self):
         """
         Allow replacement of main axes by subclassing.
+        This method must set the ``axes`` attribute.
         """
-        if not len(self.fig.axes):
-            self.fig.add_subplot(111)
-        return self.fig.axes[0]
+        if self.axes is None:
+            self.axes = self.fig.add_subplot(111)
 
     def _make_axes_grid(self):
-        self.axes = self._get_main_axes()
+        self._setup_main_axes()
 
         # Split up the current axes so there is space for start & stop buttons
         self.divider = make_axes_locatable(self.axes)
@@ -602,7 +616,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         return axis_ranges, extent
 
     @abc.abstractmethod
-    def plot_start_image(self, ax):  # pragma: no cover
+    def plot_start_image(self, ax):
         """
         Abstract method for plotting first slice of array.
 

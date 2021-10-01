@@ -1,11 +1,9 @@
 import socket
 from unittest import mock
 from urllib.error import URLError
-from urllib.request import urlretrieve
 
 import pytest
 
-import sunpy.instr.rhessi
 import sunpy.net.dataretriever.sources.rhessi as rhessi
 from sunpy.net import Fido
 from sunpy.net import attrs as a
@@ -52,8 +50,6 @@ def test_get_observing_summary_dbase_file_build_correct_url(mock_get_base_url, m
         'http://www.example.com/dbase/hsi_obssumm_filedb_201601.txt')
 
 
-# Test `rhessi.get_base_url()`
-
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.urlopen', return_value=None)
 def test_get_base_url(mock_urlopen):
     """
@@ -79,8 +75,6 @@ def test_get_base_url_on_timeout(mock_urlopen):
     with pytest.raises(OSError):
         rhessi.get_base_url()
 
-
-# Test `rhessi.get_observing_summary_filename(...)`
 
 def parsed_dbase():
     """
@@ -110,22 +104,8 @@ def parsed_dbase():
             'npackets': [0, 0, 0, 0, 0]}
 
 
-@pytest.mark.remote_data
-def test_parsed_dbase():
-    """
-    Test that parsed_based still matches what is returned by rhessi.
-    """
-    filename, _ = urlretrieve(
-        "https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt")
-    dbase = sunpy.instr.rhessi.parse_observing_summary_dbase_file(filename)
-    rows = {}
-    for key in dbase.keys():
-        rows[key] = dbase[key][:5]
-    assert rows == parsed_dbase()
-
-
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
-@mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase_file,
                                                 mock_parse_observing_summary_dbase_file,
@@ -134,13 +114,12 @@ def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase
     Given a time range of one day, make sure we get one days data back, i.e. one file.
     """
     filename = LCClient.get_observing_summary_filename(('2003-11-01', '2003-11-01T23:59:59'))
-
     assert len(filename) == 1
     assert filename[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_157.fits'
 
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
-@mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbase_file,
                                                  mock_parse_observing_summary_dbase_file,
@@ -165,7 +144,7 @@ def test_can_handle_query(LCClient):
 
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
-@mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_query(mock_get_observing_summary_dbase_file,
                mock_parse_observing_summary_dbase_file,
@@ -179,7 +158,7 @@ def test_query(mock_get_observing_summary_dbase_file,
 
 @no_vso
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
-@mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_fido_mock(mock_get_observing_summary_dbase_file,
                    mock_parse_observing_summary_dbase_file,
@@ -206,11 +185,9 @@ def mock_query_object(LCClient):
     """
     Creating a Query Response object and prefilling it with some information
     """
-    # Creating a Query Response Object
     start = '2016/1/1'
     end = '2016/1/1 23:59:59'
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'RHESSI',
@@ -228,7 +205,7 @@ def test_show(LCClient):
     mock_qr = mock_query_object(LCClient)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source', 'Provider']
-    assert qrshow0.colnames == allcols
+    allcols = {'Start Time', 'End Time', 'Instrument', 'Physobs', 'Source', 'Provider', 'url'}
+    assert not allcols.difference(qrshow0.colnames)
     assert qrshow1.colnames == ['Start Time', 'Instrument']
     assert qrshow0['Instrument'][0] == 'RHESSI'

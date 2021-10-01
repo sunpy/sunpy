@@ -1,7 +1,0 @@
-Removed deprecated functions:
-
-`sunpy.coordinates.frames.Helioprojective.calculate_distance`, alternative is `sunpy.coordinates.frames.Helioprojective.calculate_distance.make_3d`.
-``sunpy.image.coalignment.repair_image_nonfinite`` - if you wish to repair the image, this has to be done manually before calling the various `sunpy.image.coalignment` functions. The ``repair_nonfinite`` keyword argument to ``calculate_shift`` and  ``calculate_match_template_shift`` has been removed.
-`sunpy.instr.lyra.download_lytaf_database` - this just downloaded the file at ``http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db``, which can be done manually.
-`sunpy.util.net.check_download_file`, no alternative.
-`sunpy.visualization.animator.ImageAnimatorWCS`, alternative is `sunpy.visualization.animator.ArrayAnimatorWCS`.

@@ -16,6 +16,7 @@ from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
 # We start with the sample data and create a submap of a smaller region.
+
 aia = sunpy.map.Map(AIA_171_IMAGE)
 top_right = SkyCoord(0 * u.arcsec, 1000 * u.arcsec, frame=aia.coordinate_frame)
 bottom_left = SkyCoord(-1000 * u.arcsec, 0 * u.arcsec, frame=aia.coordinate_frame)
@@ -28,19 +29,38 @@ smap = aia.submap(bottom_left, top_right=top_right)
 # command expects pixel coordinates. It is also possible to plot a point using the
 # map coordinates if we pass the transformation but this transform expects
 # the values to be in degrees and not arcseconds.
+
+# sphinx_gallery_defer_figures
+
 fig = plt.figure()
 ax = plt.subplot(projection=smap)
-print(ax)
+
 ax.imshow(smap.data)
+
+################################################################################
+# Add an overlay grid, showing the native coordinates of the map.
+
+# sphinx_gallery_defer_figures
+
+ax.coords.grid(color='yellow', linestyle='solid', alpha=0.5)
+
+################################################################################
 # plot a point in the middle of the image
+
+# sphinx_gallery_defer_figures
+
 pixel_coord = [smap.data.shape[0]/2., smap.data.shape[1]/2.] * u.pix
 ax.plot(pixel_coord[0], pixel_coord[1], 'x', color='white',
         label=f'Pixel coordinate [{pixel_coord[0]}, {pixel_coord[1]}]')
-ax.coords.grid(color='yellow', linestyle='solid', alpha=0.5)
+
+
+################################################################################
+# Using the transform command expects coordinates in degrees and not arcseconds.
 
 map_coord = ([-300, 200] * u.arcsec)
-# Using the transform command expects coordinates in degrees and not arcseconds
+
 ax.plot(map_coord[0].to('deg'), map_coord[1].to('deg'), 'o', color='white', transform=ax.get_transform('world'),
         label=f'Map coordinate [{map_coord[0]}, {map_coord[1]}]')
 plt.legend()
+
 plt.show()

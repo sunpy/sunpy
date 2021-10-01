@@ -1,5 +1,6 @@
 import warnings
 
+import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
@@ -69,6 +70,8 @@ def test_apparent_latitude(t1, t2):
 def test_angular_radius(t2):
     # Validate against a published value from the Astronomical Almanac (2013, C13)
     # The Astromomical Almanac uses a slightly different radius for the Sun (6.96e5 km)
+    # The Astronomical Almanac also uses a small-angle approximation
+    # See https://archive.org/details/131123ExplanatorySupplementAstronomicalAlmanac/page/n212/mode/1up
     assert_quantity_allclose(sun.angular_radius(t2),
                              Angle('0d15m44.61s') / (6.96e5*u.km) * radius,  # scale to IAU radius
                              atol=0.005*u.arcsec)
@@ -470,6 +473,39 @@ def test_carrington_rotation_starttime(crot, julian_days):
                                  julian_days * u.day, atol=0.11*u.s)
 
 
+@pytest.mark.parametrize("crot, longitude, crot_fractional",
+                         [(2000, 360, 2000.0),
+                          (2000.0, 270, 2000.25)
+                          ])
+def test_carrington_rotation_time_longitude(crot, longitude, crot_fractional):
+    assert sun.carrington_rotation_time(crot*u.one, longitude*u.deg) == \
+        sun.carrington_rotation_time(crot_fractional*u.one)
+
+
+@pytest.mark.parametrize("crot, longitude, crot_fractional",
+                         [
+                             (np.array([2000, 2000]), np.array(
+                                 [180, 90]), np.array([2000.5, 2000.75])),
+                             (2000, np.array([180, 90]), np.array([2000.5, 2000.75])),
+                             (np.array([2000, 2000]), 180, np.array([2000.5, 2000.5]))
+                         ])
+def test_carrington_rotation_time_longitude_numpy(crot, longitude, crot_fractional):
+    assert all(sun.carrington_rotation_time(crot*u.one, longitude*u.deg) ==
+               sun.carrington_rotation_time(crot_fractional*u.one))
+
+
+@pytest.mark.parametrize("crot, longitude",
+                         [
+                             (2000, 0),
+                             (2000, -10),
+                             (2000, 400),
+                             (2000.5, 180),
+                         ])
+def test_carrington_rotation_time_longitude_err(crot, longitude):
+    with pytest.raises(ValueError):
+        sun.carrington_rotation_time(crot*u.one, longitude*u.deg)
+
+
 def test_carrington_rotation_roundtrip():
     t = Time('2010-1-1')
     crot = sun.carrington_rotation_number(t)
@@ -477,3 +513,9 @@ def test_carrington_rotation_roundtrip():
     dt = t - t_roundtrip
     # Stated precision in the docstring is 0.11 seconds
     assert_quantity_allclose(dt.to(u.s), 0*u.s, atol=0.11*u.s)
+
+
+def test_carrington_rotation_str():
+    # Check that by default a human parseable string is returned
+    t = sun.carrington_rotation_time(2210)
+    assert str(t) == '2018-10-26 20:48:16.137'

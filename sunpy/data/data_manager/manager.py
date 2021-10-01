@@ -1,11 +1,9 @@
 import pathlib
-import warnings
 import functools
-from typing import Dict
 from contextlib import contextmanager
 from urllib.parse import urlparse
 
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.util import hash_file
 
 __all__ = ['DataManager']
@@ -26,8 +24,9 @@ class DataManager:
 
         self._file_cache = {}
 
+        self._namespace = None
         self._skip_hash_check = False
-        self._skip_file: Dict[str, str] = {}
+        self._skip_file = {}
 
     def require(self, name, urls, sha_hash):
         """
@@ -49,7 +48,8 @@ class DataManager:
         def decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                replace = self._skip_file.get(name, None)
+                self._namespace = self._get_module(func)
+                replace = self._skip_file.get(name)
                 if replace:
                     uri_parse = urlparse(replace['uri'])
                     if uri_parse.scheme in ("", "file"):
@@ -61,14 +61,16 @@ class DataManager:
                         file_path = uri_parse.netloc + uri_parse.path
                         file_hash = hash_file(file_path)
                     else:
-                        file_path, file_hash, _ = self._cache._download_and_hash([replace['uri']])
+                        file_path, file_hash, _ = self._cache._download_and_hash(
+                            [replace['uri']], self._namespace
+                        )
                     if replace['hash'] and file_hash != replace['hash']:
                         # if hash provided to replace function doesn't match the hash of the file
                         # raise error
                         raise ValueError(
                             "Hash provided to override_file does not match hash of the file.")
                 elif self._skip_hash_check:
-                    file_path = self._cache.download(urls, redownload=True)
+                    file_path = self._cache.download(urls, self._namespace, redownload=True)
                 else:
                     details = self._cache.get_by_hash(sha_hash)
                     if not details:
@@ -80,7 +82,7 @@ class DataManager:
                             # in the database
                             raise ValueError(f"{urls} has already been downloaded, but no file "
                                              f"matching the hash {sha_hash} can be found.")
-                        file_path = self._cache.download(urls)
+                        file_path = self._cache.download(urls, self._namespace)
                         file_hash = hash_file(file_path)
                         if file_hash != sha_hash:
                             # the hash of the file downloaded does not match provided hash
@@ -94,9 +96,9 @@ class DataManager:
                         # This is to handle the case when the local file
                         # appears to be tampered/corrupted
                         if hash_file(details['file_path']) != details['file_hash']:
-                            warnings.warn("Hashes do not match, the file will be redownloaded (could be be tampered/corrupted)",
-                                          SunpyUserWarning)
-                            file_path = self._cache.download(urls, redownload=True)
+                            warn_user("Hashes do not match, the file will be redownloaded "
+                                      "(could be be tampered/corrupted)")
+                            file_path = self._cache.download(urls, self._namespace, redownload=True)
                             # Recheck the hash again, if this fails, we will exit.
                             if hash_file(file_path) != details['file_hash']:
                                 raise RuntimeError("Redownloaded file also has the incorrect hash."
@@ -104,8 +106,12 @@ class DataManager:
                         else:
                             file_path = details['file_path']
 
-                self._file_cache[name] = file_path
-                return func(*args, **kwargs)
+                if name not in self._file_cache:
+                    self._file_cache[name] = {}
+                self._file_cache[name][self._namespace] = file_path
+                result = func(*args, **kwargs)
+                self._namespace = None
+                return result
             return wrapper
 
         return decorator
@@ -172,10 +178,28 @@ class DataManager:
         `KeyError`
             If ``name`` is not in the cache.
         """
-        return pathlib.Path(self._file_cache[name])
+        return pathlib.Path(self._file_cache[name][self._namespace])
 
     def _cache_has_file(self, urls):
         for url in urls:
             if self._cache._get_by_url(url):
                 return True
         return False
+
+    def _get_module(self, func):
+        """
+        Returns the name of the module (appended with a dot) that a function belongs to.
+
+        Parameters
+        ----------
+        func : function
+            A function whose module is to be found.
+
+        Returns
+        -------
+        A `str` that represents the module name appended with a dot.
+        """
+        module = func.__module__.lstrip('.').split('.')[0] + '.'
+        if module == '__main__.':
+            module = ''
+        return module

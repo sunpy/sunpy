@@ -12,7 +12,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import range_time
 from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -60,9 +59,9 @@ def test_can_handle_query(time):
 def test_query(LCClient, time):
     qr1 = LCClient.search(time, Instrument('lyra'))
     assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
+    assert qr1[0]['Start Time'] == time.start
     almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-    assert qr1.time_range().end == time.end + almost_day
+    assert qr1[-1]['End Time'] == time.end + almost_day
 
 
 @pytest.mark.remote_data
@@ -108,7 +107,6 @@ def mock_query_object(LCClient):
     start = '2016/1/1'
     end = '2016/1/1 23:59:59'
     obj = {
-        'Time': TimeRange(parse_time(start), parse_time(end)),
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
         'Instrument': 'LYRA',
@@ -127,8 +125,8 @@ def test_show(LCClient):
     mock_qr = mock_query_object(LCClient)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
-    allcols = ['Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
-               'Provider', 'Level']
-    assert qrshow0.colnames == allcols
+    allcols = {'Start Time', 'End Time', 'Instrument', 'Physobs', 'Source',
+               'Provider', 'Level', 'url'}
+    assert not allcols.difference(qrshow0.colnames)
     assert qrshow1.colnames == ['Start Time', 'Instrument']
     assert qrshow0['Instrument'][0] == 'LYRA'

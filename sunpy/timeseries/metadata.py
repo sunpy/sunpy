@@ -2,13 +2,13 @@
 This module provies metadata support for `~sunpy.timeseries.TimeSeries`.
 """
 import copy
-import warnings
 import itertools
+from collections.abc import Iterable
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 
 __all__ = ["TimeSeriesMetaData"]
@@ -30,14 +30,13 @@ class TimeSeriesMetaData:
 
     Parameters
     ----------
-    meta : `dict`, `MetaDict`, `tuple`, `list`
+    meta : `dict`, `~sunpy.util.MetaDict`, `tuple`, `list`
         The metadata giving details about the time series data/instrument.
         Defaults to `None`.
     timerange : `~sunpy.time.TimeRange`
         A `~sunpy.time.TimeRange` representing the timespan of the data. Defaults to `None`.
     colnames : `list`
-        A mapping from column names in ``data`` to the physical units of that column.
-        Defaults to `None`.
+        Column names. Defaults to `None`.
 
     Attributes
     ----------
@@ -113,9 +112,9 @@ class TimeSeriesMetaData:
                     self.metadata.append((timerange, colnames, MetaDict()))
                 else:
                     self.metadata.append((timerange, [], MetaDict()))
-                    warnings.warn("No time range given for metadata. "
-                                  "This will mean the metadata can't be linked "
-                                  "to columns in data.", SunpyUserWarning)
+                    warn_user("No time range given for metadata. "
+                              "This will mean the metadata can't be linked "
+                              "to columns in data.")
             else:
                 raise ValueError("You cannot create a TimeSeriesMetaData "
                                  "object without specifying a TimeRange")
@@ -336,24 +335,41 @@ class TimeSeriesMetaData:
         # Return a TimeSeriesMetaData object
         return TimeSeriesMetaData(meta=metadata)
 
-    def concatenate(self, tsmetadata2):
+    def concatenate(self, others):
         """
-        Combine the metadata from a `~sunpy.timeseries.TimeSeriesMetaData` with
-        the current `~sunpy.timeseries.TimeSeriesMetaData` and return as a new
-        `~sunpy.timeseries.TimeSeriesMetaData`.
+        Combine the metadata from a `~sunpy.timeseries.TimeSeriesMetaData` or an
+        iterable containing multiple `~sunpy.timeseries.TimeSeriesMetaData`
+        with the current `~sunpy.timeseries.TimeSeriesMetaData` and return it as
+        a new `~sunpy.timeseries.TimeSeriesMetaData`.
 
         Parameters
         ----------
-        tsmetadata2 : `~sunpy.timeseries.TimeSeriesMetaData`
-            The second TimeSeriesMetaData object.
+        others : `~sunpy.timeseries.TimeSeriesMetaData` or `collections.abc.Iterable`
+            The second `~sunpy.timeseries.metadata.TimeSeriesMetaData` object or an iterable
+            containing multiple `~sunpy.timeseries.metadata.TimeSeriesMetaData` objects.
         """
+        # If an individual TimeSeriesMetaData object is to be concatenated, wrap it in a list
+        # Else if it is an iterable, check if all items within it are valid
+        # Else, data provided is invalid
+        if isinstance(others, self.__class__):
+            others = [others]
+        elif isinstance(others, Iterable):
+            if not all(isinstance(series, self.__class__) for series in others):
+                raise TypeError("Invalid type within iterable. Iterable must only contain "
+                                "TimeSeriesMetaData objects.")
+        else:
+            raise TypeError(f"Invalid type provided: {type(others)}. "
+                            "Please provide a TimeSeriesMetaData object or "
+                            "an iterable containing TimeSeriesMetaData objects.")
+
         # Create a copy of the metadata
         meta = TimeSeriesMetaData(copy.copy(self.metadata))
 
-        # Append each metadata entry from the second TimeSeriesMetaData object
+        # Append each metadata entry of each TimeSeriesMetaData object from the iterable
         # to the original TimeSeriesMetaData object.
-        for entry in tsmetadata2.metadata:
-            meta.append(entry[0], entry[1], entry[2])
+        for series in others:
+            for entry in series.metadata:
+                meta.append(entry[0], entry[1], entry[2])
 
         return meta
 
@@ -555,8 +571,7 @@ class TimeSeriesMetaData:
                 col_overlap = list(set(self.metadata[i][1]) & set(self.metadata[j][1]))
                 # If we have an overlap then show a warning
                 if col_overlap:
-                    warnings.warn(
-                        f'Metadata entries {i} and {j} contain interleaved data.', SunpyUserWarning)
+                    warn_user(f'Metadata entries {i} and {j} contain interleaved data.')
 
         # TODO: Check all entries are in tr.start time order.
         return True

@@ -35,7 +35,6 @@ def TimeDelta(draw):
     abs max is about 10 weeks + 10 days + 10 hours + 10 minutes + a bit
     """
     st.sampled_from(['weeks', 'days', 'hours', 'minutes', 'seconds'])
-    values = st.floats(min_value=1, max_value=10)
     time_dict = {'days': st.floats(min_value=1, max_value=8),
                  'hours': st.floats(min_value=1, max_value=12),
                  'minutes': st.floats(min_value=1, max_value=30),
@@ -55,7 +54,7 @@ def offline_instruments():
     Returns a strategy for any instrument that does not need the internet to do
     a query.
     """
-    offline_instr = ['noaa-indices', 'noaa-predict', 'soon']
+    offline_instr = ['noaa-indices', 'noaa-predict']
     offline_instr = st.builds(a.Instrument, st.sampled_from(offline_instr))
 
     return st.one_of(offline_instr)
@@ -66,7 +65,7 @@ def online_instruments():
     Returns a strategy for any instrument that does need the internet to do
     a query.
     """
-    online_instr = ['lyra', 'goes', 'eve', 'rhessi', 'norh']
+    online_instr = ['lyra', 'goes', 'eve', 'rhessi', 'norh', 'soon']
     online_instr = st.builds(a.Instrument, st.sampled_from(online_instr))
 
     return online_instr

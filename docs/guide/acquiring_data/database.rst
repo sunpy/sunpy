@@ -89,7 +89,7 @@ size                   The size of the data in kilobytes (-1 if unknown).
 wavemin                The value of the measured wave length.
 wavemax                This is the same value as ``wavemin``. The value is
                        stored twice, because each
-                       ``suds.sudsobject.QueryResponseBlock`` which is
+                       `sunpy.net.dataretriever.client.QueryResponse` which is
                        used by the vso package contains both these values.
 path                   A local file path where the according FITS file is
                        saved.
@@ -431,7 +431,7 @@ for more information.
 
 4. Removing entries
 *******************
-`Database.remove()` can be used to remove database entries from the SunPy
+`Database.remove()` can be used to remove database entries from the sunpy
 database. It takes a ``tables.DatabaseEntry`` object as argument.
 
 For example, imagine we want to only have database entries which have an
@@ -676,7 +676,7 @@ method accepts any number of ORed query attributes (using \|) and
 combines them using AND. It returns a list of matched database entries.
 The special thing about querying databases is that all attributes support
 the unary operator ``~`` to negate specific attributes. Example: the query
-``~Instrument.eit`` returns all entries that have *not* been observed
+``Instrument.eit`` returns all entries that have *not* been observed
 with the EIT.
 
 7.1 Using VSO attributes

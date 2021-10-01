@@ -2,14 +2,16 @@ import os
 import tempfile
 from unittest import mock
 
-import pandas as pd
 import pytest
 from parfive import Results
 
 import astropy.table
 import astropy.time
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
+import sunpy.data.test
+import sunpy.map
 import sunpy.net.attrs as a
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.util.exceptions import SunpyUserWarning
@@ -20,25 +22,27 @@ def client():
     return JSOCClient()
 
 
-def test_jsocresponse_double():
-    j1 = JSOCResponse(table=astropy.table.Table(data=[[1, 2, 3, 4]]))
-    j1.append(astropy.table.Table(data=[[1, 2, 3, 4]]))
-    assert isinstance(j1, JSOCResponse)
-    assert all(j1.table == astropy.table.vstack([astropy.table.Table(
-        data=[[1, 2, 3, 4]]), astropy.table.Table(data=[[1, 2, 3, 4]])]))
+@pytest.fixture
+def jsoc_response_double():
+    resp = JSOCResponse([{'T_REC': '2011/01/01T00:00', 'INSTRUME': 'AIA'},
+                         {'T_REC': '2011/01/02T00:00', 'INSTRUME': 'AIA'}])
+
+    resp.query_args = [{'start_time': astropy.time.Time("2020-01-01T01:00:36.000"),
+                        'end_time': astropy.time.Time("2020-01-01T01:00:38.000"),
+                        'series': 'hmi.M_45s', 'notify': 'jsoc@cadair.com'}]
+
+    return resp
 
 
 def test_jsocresponse_single():
-    j1 = JSOCResponse(table=None)
-    assert len(j1) == 0
-    j1.append(astropy.table.Table(data=[[1, 2, 3, 4]]))
-    assert all(j1.table == astropy.table.Table(data=[[1, 2, 3, 4]]))
+    j1 = JSOCResponse(data=[[1, 2, 3, 4]])
+    assert all(j1 == astropy.table.Table(data=[[1, 2, 3, 4]]))
     assert len(j1) == 4
 
 
 def test_empty_jsoc_response():
     Jresp = JSOCResponse()
-    assert len(Jresp.table) == 0
+    assert len(Jresp) == 0
     assert Jresp.query_args is None
     assert Jresp.requests is None
     assert len(Jresp) == 0
@@ -73,21 +77,9 @@ def test_post_pass(client):
     assert tmpresp['method'] == 'url'
 
 
-@pytest.mark.remote_data
-def test_build_table(client):
-    responses = client.search(
-        a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
-    table = responses.build_table()
-    assert isinstance(table, astropy.table.Table)
-
-    columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
-    assert columns == table.colnames
-
-
 def test_show(client):
     jdict = {'TELESCOP': ['SDO/HMI', 'SDO/AIA'], 'CAR_ROT': [2145, 2145]}
-    responses = JSOCResponse(table=astropy.table.Table(jdict))
+    responses = JSOCResponse(astropy.table.Table(jdict))
     showtable = responses.show('TELESCOP')
     assert isinstance(showtable, astropy.table.Table)
     assert showtable.colnames == ['TELESCOP']
@@ -98,8 +90,8 @@ def test_show(client):
 def test_post_wavelength(client):
     responses = client.search(
         a.Time('2020/07/30T13:30:00', '2020/07/30T14:00:00'),
-        a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(193 * u.AA) |
-        a.jsoc.Wavelength(335 * u.AA), a.jsoc.Notify('jsoc@cadair.com'))
+        a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(193 * u.AA) |
+        a.Wavelength(335 * u.AA), a.jsoc.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses)
     [r.wait() for r in aa]
     tmpresp = aa[0]._d
@@ -127,7 +119,7 @@ def test_post_wave_series(client):
         client.search(
             a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
             a.jsoc.Series('hmi.M_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
-            a.jsoc.Wavelength(193 * u.AA) | a.jsoc.Wavelength(335 * u.AA))
+            a.Wavelength(193 * u.AA) | a.Wavelength(335 * u.AA))
 
 
 @pytest.mark.remote_data
@@ -184,7 +176,8 @@ def test_invalid_query(client):
 def test_lookup_records_errors(client):
     d1 = {'end_time': astropy.time.Time('2020-01-01 01:00:35'),
           'start_time': astropy.time.Time('2020-01-01 00:00:35')}
-    with pytest.raises(ValueError):          # Series must be specified for a JSOC Query
+    # Series must be specified for a JSOC Query
+    with pytest.raises(ValueError):
         client._lookup_records(d1)
 
     d1.update({'series': 'aia.lev1_euv_12s'})
@@ -195,7 +188,8 @@ def test_lookup_records_errors(client):
 
     d1['keys'] = 'T_OBS'
     d1.update({'primekey': {'foo': 'bar'}})
-    with pytest.raises(ValueError):          # Unexpected PrimeKeys were passed.
+    # Unexpected PrimeKeys were passed.
+    with pytest.raises(ValueError):
         client._lookup_records(d1)
 
     del d1['primekey']
@@ -205,8 +199,9 @@ def test_lookup_records_errors(client):
     with pytest.raises(TypeError):
         client._lookup_records(d1)
 
+    # Unexpected Segments were passed.
     d1.update({'segment': 'foo'})
-    with pytest.raises(ValueError):          # Unexpected Segments were passed.
+    with pytest.raises(ValueError):
         client._lookup_records(d1)
 
     del d1['segment']
@@ -289,16 +284,6 @@ def test_make_recordset(client):
     exp = 'hmi.sharp_720s[][2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI@300.0s]'\
           '{continuum,magnetogram}'
     assert client._make_recordset(**d1) == exp
-
-
-@pytest.mark.remote_data
-def test_search_metadata(client):
-    metadata = client.search_metadata(a.Time('2020-01-01T00:00:00', '2020-01-01T00:02:00'),
-                                      a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
-    assert isinstance(metadata, pd.DataFrame)
-    assert metadata.shape == (11, 176)
-    for i in metadata.index.values:
-        assert (i.startswith('aia.lev1_euv_12s') and i.endswith('[304]'))
 
 
 @pytest.mark.remote_data
@@ -433,3 +418,39 @@ def test_jsoc_attrs(client):
     assert a.jsoc.Segment in attrs.keys()
     assert len(attrs[a.jsoc.Series]) != 0
     assert len(attrs[a.jsoc.Segment]) != 0
+
+
+@pytest.mark.flaky(reruns_delay=30)
+@pytest.mark.remote_data
+def test_jsoc_cutout_attrs(client):
+    m_ref = sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits'))
+    cutout = a.jsoc.Cutout(
+        SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=m_ref.coordinate_frame),
+        top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=m_ref.coordinate_frame),
+        tracking=True
+    )
+    q = client.search(
+        a.Time(m_ref.date, m_ref.date + 1 * u.min),
+        a.Wavelength(171*u.angstrom),
+        a.jsoc.Series.aia_lev1_euv_12s,
+        a.jsoc.Notify('jsoc@cadair.com'),  # Put your email here
+        a.jsoc.Segment.image,
+        cutout,
+    )
+    req = client.request_data(q, method='url', protocol='fits')
+    req.wait()
+    assert req.status == 0
+    files = client.get_request(req, max_conn=2)
+    assert len(files) == 6
+    m = sunpy.map.Map(files, sequence=True)
+    assert m.all_maps_same_shape()
+    assert m.as_array().shape == (1085, 1085, 6)
+
+
+def test_row_and_warning(mocker, client, jsoc_response_double):
+    mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.get_request")
+    request_data = mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.request_data")
+    with pytest.warns(SunpyUserWarning):
+        client.fetch(jsoc_response_double[0], sleep=0)
+
+    assert request_data.called_once_with(jsoc_response_double[0].as_table())

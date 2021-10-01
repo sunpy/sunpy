@@ -1,11 +1,11 @@
 .. _time-in-sunpy:
 
 *************
-Time in SunPy
+Time in sunpy
 *************
 
 Working with times and time ranges is a standard task in solar data analysis and as such
-SunPy strives to provide convenient and easy methods to do the simple stuff. Python
+sunpy strives to provide convenient and easy methods to do the simple stuff. Python
 already provides an object for a time or date through `datetime.datetime`.
 However, `datetime.datetime` does not provide support for common time formats used in
 solar physics nor leap seconds. To alleviate this, we use `astropy.time.Time` internally
@@ -16,7 +16,7 @@ which allows us to provide a superior user experience.
 1. Parsing Times
 ================
 
-Solar data is associated with a number of different time formats. SunPy provides a simple
+Solar data is associated with a number of different time formats. sunpy provides a simple
 parsing function which can deal with most every format that a user may encounter. Called
 `sunpy.time.parse_time()`, this function can take a variety of inputs.
 
@@ -118,14 +118,14 @@ as you would do with `~astropy.time.Time`. An example::
     >>> parse_time(times, format='isot', scale='tai')
     <Time object: scale='tai' format='isot' value=['1999-01-01T00:00:00.123' '2010-01-01T00:00:00.000']>
 
-Please be aware that all SunPy functions which require time as an input sanitize the input using `~sunpy.time.parse_time`.
+Please be aware that all sunpy functions which require time as an input sanitize the input using `~sunpy.time.parse_time`.
 
 2. Time Ranges
 ==============
 
 A very standard task in data analysis is to have to deal with pairs of times or time
 ranges. This occurs very often with plotting or when searching for data. To deal with
-time ranges SunPy provides the `sunpy.time.TimeRange` object. A TimeRange object can be created
+time ranges sunpy provides the `sunpy.time.TimeRange` object. A TimeRange object can be created
 very easily by providing it with two time strings, a start time and an end time: ::
 
     >>> from sunpy.time import TimeRange

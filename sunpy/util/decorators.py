@@ -32,14 +32,11 @@ def deprecated(since, message='', name='', alternative='', pending=False,
     """
     Used to mark a function or class as deprecated.
 
-    To mark an attribute as deprecated, use `deprecated_attribute`.
-
     Parameters
     ------------
     since : str
         The release at which this API became deprecated.  This is
         required.
-
     message : str, optional
         Override the default deprecation message.  The format
         specifier ``func`` may be used for the name of the function,
@@ -47,7 +44,6 @@ def deprecated(since, message='', name='', alternative='', pending=False,
         to insert the name of an alternative to the deprecated
         function. ``obj_type`` may be used to insert a friendly name
         for the type of object being deprecated.
-
     name : str, optional
         The name of the deprecated function or class; if not provided
         the name is automatically determined from the passed in
@@ -63,18 +59,15 @@ def deprecated(since, message='', name='', alternative='', pending=False,
         An alternative function or class name that the user may use in
         place of the deprecated object.  The deprecation warning will
         tell the user about this alternative if provided.
-
     pending : bool, optional
         If True, uses a SunpyPendingDeprecationWarning instead of a
         ``warning_type``.
-
     obj_type : str, optional
         The type of this object, if the automatically determined one
         needs to be overridden.
-
-    warning_type : warning
+    warning_type : `Warning`
         Warning to be issued.
-        Default is `~sunpy.utils.exceptions.SunpyDeprecationWarning`.
+        Default is `~sunpy.util.exceptions.SunpyDeprecationWarning`.
     """
     major, minor = get_removal_version(since)
     removal_version = f"{major}.{minor}"
@@ -317,11 +310,68 @@ def deprecate_positional_args_since(since, keyword_only=False):
                             for name, arg in zip(kwonly_args[:extra_args],
                                                  args[-extra_args:])]
                 last_supported_version = ".".join(map(str, get_removal_version(since)))
-                warnings.warn(f"Pass {', '.join(args_msg)} as keyword args. "
-                              f"From version {last_supported_version} "
-                              "passing these as positional arguments will result in an error.",
-                              SunpyDeprecationWarning)
+                warn_deprecated(f"Pass {', '.join(args_msg)} as keyword args. "
+                                f"From version {last_supported_version} "
+                                "passing these as positional arguments will result in an error.")
             kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
             return f(**kwargs)
         return inner_f
     return deprecate_positional_args
+
+
+_NOT_FOUND = object()
+
+
+def cached_property_based_on(attr_name):
+    """
+    A decorator to cache the value of a property based on the output of a
+    different class attribute.
+
+    This decorator caches the values of ``getattr(instance, method)`` and
+    ``prop(instance)``. When the decorated property is accessed,
+    ``getattr(instance, method)`` is called. If this returns the same as its
+    cached value, the cached value of ``prop`` is returned. Otherwise both
+    ``meth`` and ``prop`` are recomputed, cached, and the new value of ``prop``
+    is returned.
+
+    Parameters
+    ----------
+    attr_name :
+        The name of the attribute, on which changes are checked for. The actual
+        attribute is accessed using ``getattr(attr_name, instance)``.
+
+    Notes
+    -----
+    The cached value of ``meth(instance)`` is stored under the key ``meth.__name__``.
+    """
+    def outer(prop):
+        """
+        prop: the property method being decorated
+        """
+        @wraps(outer)
+        def inner(instance):
+            """
+            Parameters
+            ----------
+            instance:
+                Any class instance that has the property ``prop``,
+                and attribute ``attr``.
+            """
+            cache = instance.__dict__
+            prop_key = prop.__name__
+
+            # Check if our caching method has changed ouptut
+            new_attr_val = getattr(instance, attr_name)
+            old_attr_val = cache.get(attr_name, _NOT_FOUND)
+            if (old_attr_val is _NOT_FOUND or
+                    new_attr_val != old_attr_val or
+                    prop_key not in cache):
+                # Store the new attribute value
+                cache[attr_name] = new_attr_val
+                # Recompute the property
+                new_val = prop(instance)
+                cache[prop_key] = new_val
+
+            return cache[prop_key]
+        return inner
+    return outer

@@ -3,13 +3,12 @@
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 import matplotlib.pyplot as plt
-import numpy as np
 
 import astropy.units as u
 
 from sunpy.map import GenericMap
 from sunpy.util import expand_list
-from sunpy.visualization import axis_labels_from_ctype, peek_show
+from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 __all__ = ['CompositeMap']
 
@@ -228,7 +227,7 @@ class CompositeMap:
         if percent is False:
             self._maps[index].levels = levels
         else:
-            self._maps[index].levels = [self._maps[index].max()*level/100.0 for level in levels]
+            self._maps[index].levels = u.Quantity(levels, u.percent)
 
     def set_plot_settings(self, index, plot_settings):
         """Sets the plot settings for a layer in the composite image.
@@ -309,10 +308,8 @@ class CompositeMap:
         ----------
         index: int
             Index to determine which map to use to draw grid.
-
         axes: `~matplotlib.axes.Axes` or None
             Axes to plot limb on or None to use current axes.
-
         grid_spacing : `float`
             Spacing (in degrees) for longitude and latitude grid.
 
@@ -342,7 +339,12 @@ class CompositeMap:
 
     def plot(self, axes=None, annotate=True,
              title="SunPy Composite Plot", **matplot_args):
-        """Plots the composite map object using matplotlib
+        """Plots the composite map object by calling :meth:`~sunpy.map.GenericMap.plot`
+        or :meth:`~sunpy.map.GenericMap.draw_contours`.
+
+        By default, each map is plotted as an image.  If a given map has levels
+        defined (via :meth:`~sunpy.map.CompositeMap.set_levels`), that map will instead
+        be plotted as contours.
 
         Parameters
         ----------
@@ -359,18 +361,30 @@ class CompositeMap:
             Title of the composite map.
 
         **matplot_args : `dict`
-            Matplotlib Any additional imshow arguments that should be used
+            Any additional Matplotlib arguments that should be used
             when plotting.
 
         Returns
         -------
         ret : `list`
             List of axes image or quad contour sets that have been plotted.
+
+        Notes
+        -----
+        Matplotlib arguments for setting the line width (``linewidths``), line style
+        (``linestyles``) or line color (``colors``) will apply only to those maps
+        that are plotted as contours. Similar arguments (i.e., ``linewidth``,
+        ``lw``, ``color``, ``c``, ``linestyle`` and ``ls``) will also be ignored
+        for maps plotted as images.
+
+        If a transformation is required to overlay the maps with the correct
+        alignment, the plot limits may need to be manually set because
+        Matplotlib autoscaling may not work as intended.
         """
 
-        # Get current axes
+        # If axes are not provided, create a WCSAxes based on the first map
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self._maps[0].wcs)
 
         if annotate:
             axes.set_xlabel(axis_labels_from_ctype(self._maps[0].coordinate_system[0],
@@ -384,40 +398,31 @@ class CompositeMap:
         # Plot layers of composite map
         for m in self._maps:
             # Parameters for plotting
-            bl = m._get_lon_lat(m.bottom_left_coord)
-            tr = m._get_lon_lat(m.top_right_coord)
-            x_range = list(u.Quantity([bl[0], tr[0]]).to(m.spatial_units[0]).value)
-            y_range = list(u.Quantity([bl[1], tr[1]]).to(m.spatial_units[1]).value)
             params = {
-                "origin": "lower",
-                "extent": x_range + y_range,
-                "cmap": m.plot_settings['cmap'],
-                "norm": m.plot_settings['norm'],
                 "alpha": m.alpha,
                 "zorder": m.zorder,
             }
             params.update(matplot_args)
 
             # The request to show a map layer rendered as a contour is indicated by a
-            # non False levels property.  If levels is False, then the layer is
-            # rendered using imshow.
+            # non False levels property.
             if m.levels is False:
-                # Check if the linewidths argument is provided, if so, then delete it from params.
-                if matplot_args.get('linewidths'):
-                    del params['linewidths']
+                # Check if any linewidth, color, or linestyle arguments are provided,
+                # if so, then delete them from params.
+                for item in ['linewidth', 'linewidths', 'lw',
+                             'color', 'colors', 'c',
+                             'linestyle', 'linestyles', 'ls']:
+                    if item in matplot_args:
+                        del params[item]
 
-                # Check for the presence of masked map data
-                if m.mask is None:
-                    ret.append(axes.imshow(m.data, **params))
-                else:
-                    ret.append(axes.imshow(np.ma.array(np.asarray(m.data), mask=m.mask), **params))
+                # We tell GenericMap.plot() that we need to autoalign the map
+                if wcsaxes_compat.is_wcsaxes(axes):
+                    params['autoalign'] = True
+
+                params['annotate'] = False
+                ret.append(m.plot(**params))
             else:
-                # Check for the presence of masked map data
-                if m.mask is None:
-                    ret.append(axes.contour(m.data, m.levels, **params))
-                else:
-                    ret.append(axes.contour(np.ma.array(np.asarray(
-                        m.data), mask=m.mask), m.levels, **params))
+                ret.append(m.draw_contours(m.levels, **params))
 
                 # Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
@@ -430,8 +435,7 @@ class CompositeMap:
         return ret
 
     @peek_show
-    def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
-             draw_grid=False, **matplot_args):
+    def peek(self, colorbar=True, draw_limb=True, draw_grid=False, **matplot_args):
         """
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the `~sunpy.map.CompositeMap.plot`
@@ -442,10 +446,6 @@ class CompositeMap:
         colorbar : `bool` or `int`
             Whether to display a colorbar next to the plot.
             If specified as an integer a colorbar is plotted for that index.
-
-        basic_plot : `bool`
-            If true, the data is plotted by itself at it's natural scale; no
-            title, labels, or axes are shown.
 
         draw_limb : `bool`
             If true, draws a circle representing the solar limb.
@@ -459,16 +459,9 @@ class CompositeMap:
         """
 
         # Create a figure and add title and axes
-        figure = plt.figure(frameon=not basic_plot)
+        figure = plt.figure()
 
-        # Basic plot
-        if basic_plot:
-            axes = plt.Axes(figure, [0., 0., 1., 1.])
-            axes.set_axis_off()
-            figure.add_axes(axes)
-            matplot_args.update({'annotate': False})
-        else:
-            axes = figure.add_subplot(111)
+        axes = figure.add_subplot(111, projection=self._maps[0])
 
         ret = self.plot(axes=axes, **matplot_args)
 

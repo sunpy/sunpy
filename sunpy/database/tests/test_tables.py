@@ -66,14 +66,17 @@ def fido_search_result():
 @pytest.fixture
 def query_result():
     client = vso.VSOClient()
-    return client.search(net_attrs.Time('2001/1/1', '2001/1/2'), net_attrs.Instrument('EIT'))
+    return client.search(net_attrs.Time('2001/1/1', '2001/1/2'),
+                         net_attrs.Instrument('EIT'),
+                         response_format="legacy")
 
 
 @pytest.fixture
 def qr_with_none_waves():
     return vso.VSOClient().search(
         net_attrs.Time('20121224T120049.8', '20121224T120049.8'),
-        net_attrs.Provider('SDAC'), net_attrs.Instrument('VIRGO'))
+        net_attrs.Provider('SDAC'), net_attrs.Instrument('VIRGO'),
+        response_format="legacy")
 
 
 @pytest.fixture
@@ -81,14 +84,17 @@ def qr_block_with_missing_physobs():
     return vso.VSOClient().search(
         net_attrs.Time('20130805T120000', '20130805T121000'),
         net_attrs.Instrument('SWAVES'), net_attrs.Source('STEREO_A'),
-        net_attrs.Provider('SSC'), net_attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
+        net_attrs.Provider('SSC'), net_attrs.Wavelength(
+            10 * u.kHz, 160 * u.kHz),
+        response_format="legacy")[0]
 
 
 @pytest.fixture
 def qr_block_with_kev_unit():
     return vso.VSOClient().search(
         net_attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
-        net_attrs.Instrument('RHESSI'))[0]
+        net_attrs.Instrument('RHESSI'),
+        response_format="legacy")[0]
 
 
 def test_fits_header_entry_equality():
@@ -147,13 +153,14 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid='EVE_L1_esp_2012001_00',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
-        size=-1.0,
+        size=None,
         instrument='EVE',
         wavemin=0.1, wavemax=30.4)
     # 2 entries from goes
     assert entries[58] == DatabaseEntry(
-        source='NASA', provider='SDAC', physobs='irradiance',
-        fileid='https://umbra.nascom.nasa.gov/goes/fits/2012/go1520120101.fits',
+        source='GOES', provider='NOAA', physobs='irradiance',
+        fileid='https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/'
+               'gxrs-l2-irrad_science/2012/01/sci_gxrs-l2-irrad_g15_d20120101_v0-0-0.nc',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
@@ -162,16 +169,16 @@ def test_entries_from_fido_search_result(fido_search_result):
     assert entries[60] == DatabaseEntry(
         source='SIDC', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_start=None,
+        observation_time_end=None,
         wavemin=np.nan, wavemax=np.nan,
         instrument='NOAA-Indices')
     # 1 entry from noaa-predict
     assert entries[61] == DatabaseEntry(
         source='ISES', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json',
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_start=None,
+        observation_time_end=None,
         wavemin=np.nan, wavemax=np.nan,
         instrument='NOAA-Predict')
     # 2 entries from norh
@@ -211,7 +218,7 @@ def test_entries_from_fido_search_result_JSOC():
 @pytest.mark.remote_data
 def test_from_fido_search_result_block(fido_search_result):
     entry = DatabaseEntry._from_fido_search_result_block(
-        fido_search_result[0, 0][0].get_response(0).blocks[0])
+        fido_search_result[0, 0])
     expected_entry = DatabaseEntry(
         source='PROBA2', provider='ESA', physobs='irradiance',
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
@@ -250,7 +257,8 @@ def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs)
 @pytest.mark.remote_data
 def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     # See issue #766.
-    entry = DatabaseEntry._from_query_result_block(qr_block_with_kev_unit.blocks[0])
+    entry = DatabaseEntry._from_query_result_block(
+        qr_block_with_kev_unit.blocks[0])
     assert entry.source == 'RHESSI'
     assert entry.provider == 'LSSP'
     assert entry.fileid in ['/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
@@ -333,7 +341,7 @@ def test_entries_from_file_time_string_parse_format():
 
     assert len(entries) == 4
     entry = entries[0]
-    assert len(entry.fits_header_entries) == 17
+    assert len(entry.fits_header_entries) == 16
 
     assert entry.observation_time_start == datetime(2011, 6, 7, 0, 0)
     assert entry.observation_time_end == datetime(2011, 6, 7, 0, 0)
@@ -418,7 +426,7 @@ def test_entries_from_dir_recursively_true():
         entries = list(entries_from_dir(testdir, True,
                                         default_waveunit='angstrom',
                                         time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 131
+    assert len(entries) == 93
 
 
 def test_entries_from_dir_recursively_false():
@@ -426,7 +434,7 @@ def test_entries_from_dir_recursively_false():
         entries = list(entries_from_dir(testdir, False,
                                         default_waveunit='angstrom',
                                         time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 110
+    assert len(entries) == 72
 
 
 @pytest.mark.remote_data

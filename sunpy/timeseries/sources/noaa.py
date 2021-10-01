@@ -4,17 +4,14 @@ This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 from pathlib import Path
 from collections import OrderedDict
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from pandas.io.parsers import read_csv
+from matplotlib import pyplot as plt
 
 import astropy.units as u
-from astropy.time import Time
 
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.decorators import deprecated
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -31,9 +28,11 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
     * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
     * The RI sunspot number is the official International Sunspot Number and is
-      issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+      issued by the `Solar Influence Data Analysis Center (SDIC)
+      <http://sidc.oma.be>`__ in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
-    * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+    * Radio flux at 10.7 cm is produced by
+      `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`__ and the units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
     .. note::
@@ -58,10 +57,64 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaaindices'
 
-    @peek_show
-    def peek(self, type='sunspot SWO', **kwargs):
+    def plot(self, axes=None, plot_type='sunspot SWO', **kwargs):
         """
-        Plots NOAA Indices as a function of time. An example is shown below.
+        Plots NOAA Indices as a function of time from a pandas dataframe.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries.
+        plot_type : {``"sunspot SWO"``, ``"sunspot RI"``, ``"sunspot compare"``, ``"radio"``, ``"geo"``}, optional
+            The type of plot required. Defaults to ``"sunspot SWO"``.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
+
+        Returns
+        -------
+        `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        self._validate_data_for_plotting()
+        if axes is None:
+            axes = plt.gca()
+
+        if plot_type == 'sunspot SWO':
+            to_plot = ['sunspot SWO', 'sunspot SWO smooth']
+            ylabel = 'Sunspot Number'
+        elif plot_type == 'sunspot RI':
+            to_plot = ['sunspot RI', 'sunspot RI smooth']
+            ylabel = 'Sunspot Number'
+        elif plot_type == 'sunspot compare':
+            to_plot = ['sunspot RI', 'sunspot SWO']
+            ylabel = 'Sunspot Number'
+        elif plot_type == 'radio':
+            to_plot = ['radio flux', 'radio flux smooth']
+            ylabel = 'Radio Flux [sfu]'
+        elif plot_type == 'geo':
+            to_plot = ['geomagnetic ap', 'geomagnetic ap smooth']
+            ylabel = 'Geomagnetic AP Index'
+        else:
+            raise ValueError(f'Got unknown plot type "{type}"')
+
+        to_plot = self.to_dataframe()[to_plot]
+        to_plot.plot(ax=axes, **kwargs)
+
+        axes.set_xlim(min(to_plot.dropna(how='all').index),
+                      max(to_plot.dropna(how='all').index))
+        axes.set_ylim(0)
+        axes.set_ylabel(ylabel)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend()
+        return axes
+
+    @peek_show
+    def peek(self, title="Solar Cycle Progression", plot_type='sunspot SWO', **kwargs):
+        """
+        Displays the NOAA Indices as a function of time by calling
+        `~sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries.plot`.
 
         .. plot::
 
@@ -72,102 +125,25 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
-        type : {'sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'geo'}, optional
-            The type of plot required. Defaults to "sunspot SWO".
+        title : `str`, optional
+            The title of the plot. Defaults to "Solar Cycle Progression".
+        plot_type : {``"sunspot SWO"``, ``"sunspot RI"``, ``"sunspot compare"``, ``"radio"``, ``"geo"``}, optional
+            The type of plot required. Defaults to ``"sunspot SWO"``.
         **kwargs : `dict`
-            Additional plot keyword arguments that are handed to `axes.plot` functions
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
         """
-        # Check we have a timeseries valid for plotting
-        self._validate_data_for_plotting()
-
-        figure = plt.figure()
-        axes = plt.gca()
-        dataframe = self.to_dataframe()
-        if type == 'sunspot SWO':
-            axes = dataframe['sunspot SWO'].plot(**kwargs)
-            dataframe['sunspot SWO smooth'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
-        elif type == 'sunspot RI':
-            axes = dataframe['sunspot RI'].plot(**kwargs)
-            dataframe['sunspot RI smooth'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
-        elif type == 'sunspot compare':
-            axes = dataframe['sunspot RI'].plot(**kwargs)
-            dataframe['sunspot SWO'].plot(**kwargs)
-            axes.set_ylabel('Sunspot Number')
-        elif type == 'radio':
-            axes = dataframe['radio flux'].plot(**kwargs)
-            dataframe['radio flux smooth'].plot(**kwargs)
-            axes.set_ylabel('Radio Flux [sfu]')
-        elif type == 'geo':
-            axes = dataframe['geomagnetic ap'].plot(**kwargs)
-            dataframe['geomagnetic ap smooth'].plot(**kwargs)
-            axes.set_ylabel('Geomagnetic AP Index')
-        else:
-            raise ValueError(f'Got unknown plot type "{type}"')
-
-        axes.set_ylim(0)
-        axes.set_title('Solar Cycle Progression')
-
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
-        axes.legend()
-
-        return figure
+        axes = self.plot(plot_type=plot_type, **kwargs)
+        axes.set_title(title)
+        return axes.get_figure()
 
     @classmethod
     def _parse_file(cls, filepath):
         suffix = Path(filepath).suffix
         if suffix == '.json':
             return cls._parse_json_file(filepath)
-        elif suffix == ".txt":
-            return cls._parse_txt_file(filepath)
         else:
-            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.txt' or '.json'")
-
-    @staticmethod
-    @deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
-    def _parse_txt_file(filepath):
-        """
-        Parses an NOAA indices text file.
-
-        Parameters
-        ----------
-        filepath : `str`
-            The path to the file you want to parse.
-        """
-        header = []
-        with open(filepath, 'r') as fp:
-            line = fp.readline()
-            # Read header at top of file
-            while line.startswith((":", "#")):
-                header += line
-                line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth',
-                      'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
-            data = read_csv(fp, delim_whitespace=True, names=fields,
-                            comment='#', dtype={'yyyy': np.str, 'mm': np.str})
-            data = data.dropna(how='any')
-            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
-            timeindex.precision = 9
-            data['time'] = timeindex.isot.astype('datetime64')
-            data = data.set_index('time')
-            data = data.drop('mm', 1)
-            data = data.drop('yyyy', 1)
-
-            # Add the units data
-            units = OrderedDict([('sunspot SWO', u.dimensionless_unscaled),
-                                 ('sunspot RI', u.dimensionless_unscaled),
-                                 ('sunspot ratio', u.dimensionless_unscaled),
-                                 ('sunspot SWO smooth', u.dimensionless_unscaled),
-                                 ('sunspot RI smooth', u.dimensionless_unscaled),
-                                 ('radio flux', u.W/u.m**2),
-                                 ('radio flux smooth', u.W/u.m**2),
-                                 ('geomagnetic ap', u.dimensionless_unscaled),
-                                 ('geomagnetic smooth', u.dimensionless_unscaled)])
-            # TODO: check units
-            # TODO: fix header/meta, it's returning rubbish.
-            return data, MetaDict({'comments': header}), units
+            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.json'")
 
     @staticmethod
     def _parse_json_file(filepath):
@@ -190,6 +166,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
                   'f10.7': 'radio flux',
                   'smoothed_f10.7': 'radio flux smooth'}
         data = data.rename(columns=rename)
+        # -1 is used as a fill value, replace with NaN
+        data = data.replace(-1, np.nan)
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)
@@ -251,11 +229,42 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaapredictindices'
 
-    @ peek_show
-    def peek(self, **plot_args):
+    def plot(self, axes=None, **plot_args):
         """
-        Plots predicted NOAA Indices as a function of time. An example is shown
-        below.
+        Plots predicted NOAA Indices as a function of time from a pandas dataframe.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
+
+        Returns
+        -------
+        `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        self._validate_data_for_plotting()
+        dataframe = self.to_dataframe()
+        if axes is None:
+            axes = plt.gca()
+        dataframe['sunspot'].plot(color='b', **plot_args)
+        dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
+        dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
+        axes.set_ylim(0)
+        axes.set_ylabel('Sunspot Number')
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend()
+        return axes
+
+    @peek_show
+    def peek(self, title="Solar Cycle Sunspot Number Prediction", **plot_args):
+        """
+        Displays the predicted NOAA Indices as a function of time by calling
+        `~sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries.plot`.
 
         .. plot::
 
@@ -266,39 +275,26 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
+        title : `str`, optional
+            The title of the plot. Defaults to "Solar Cycle Sunspot Number Prediction".
         **plot_args : `dict`
-            Additional plot keyword arguments that are handed to `axes.plot` functions
+            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
+            functions.
         """
-        # Check we have a timeseries valid for plotting
-        self._validate_data_for_plotting()
-        figure = plt.figure()
-        axes = plt.gca()
-        dataframe = self.to_dataframe()
-        axes = dataframe['sunspot'].plot(color='b', **plot_args)
-        dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
-        dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
+        axes = self.plot(**plot_args)
+        axes.set_title(title)
+        fig = plt.gcf()
+        return fig
 
-        axes.set_ylim(0)
-        axes.set_title('Solar Cycle Sunspot Number Prediction')
-        axes.set_ylabel('Sunspot Number')
-
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
-        axes.legend()
-
-        return figure
-
-    @ classmethod
+    @classmethod
     def _parse_file(cls, filepath):
         suffix = Path(filepath).suffix
         if suffix == '.json':
             return cls._parse_json_file(filepath)
-        elif suffix == ".txt":
-            return cls._parse_txt_file(filepath)
         else:
-            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.txt' or '.json'")
+            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.json'")
 
-    @ classmethod
+    @classmethod
     def is_datasource_for(cls, **kwargs):
         """
         Determines if header corresponds to an NOAA predict indices
@@ -307,49 +303,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
 
-    @ staticmethod
-    @ deprecated("2.1", "NOAA data products have moved to a new JSON file format.")
-    def _parse_txt_file(filepath):
-        """
-        Parses an NOAA Predict indices text file.
-
-        Parameters
-        ----------
-        filepath : `str`
-            The path to the file you want to parse.
-        """
-        header = ''
-        with open(filepath, 'r') as fp:
-            line = fp.readline()
-            # Read header at top of file
-            while line.startswith((":", "#")):
-                header += line
-                line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high',
-                      'radio flux', 'radio flux low', 'radio flux high')
-            data = read_csv(filepath, delim_whitespace=True, names=fields,
-                            comment='#', skiprows=2, dtype={'yyyy': np.str, 'mm': np.str})
-            data = data.dropna(how='any')
-
-            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
-            timeindex.precision = 9
-            data['time'] = timeindex.isot.astype('datetime64')
-
-            data = data.set_index('time')
-            data = data.drop('mm', 1)
-            data = data.drop('yyyy', 1)
-
-            # Add the units data
-            units = OrderedDict([('sunspot', u.dimensionless_unscaled),
-                                 ('sunspot low', u.dimensionless_unscaled),
-                                 ('sunspot high', u.dimensionless_unscaled),
-                                 ('radio flux', u.W/u.m**2),
-                                 ('radio flux low', u.W/u.m**2),
-                                 ('radio flux high', u.W/u.m**2)])
-            # Todo: check units used.
-            return data, MetaDict({'comments': header}), units
-
-    @ staticmethod
+    @staticmethod
     def _parse_json_file(filepath):
         """
         Parses an NOAA Predict indices JSON file.
@@ -369,6 +323,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
                   'high_f10.7': 'radio flux high',
                   'low_f10.7': 'radio flux low'}
         data = data.rename(columns=rename)
+        # -1 is used as a fill value, replace with NaN
+        data = data.replace(-1, np.nan)
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)

@@ -3,7 +3,7 @@
 Sample data set overview
 ========================
 
-An overview of the coordinated sample data set.
+An overview of the coordinated sample data set (available through `sunpy.data.sample`).
 """
 import matplotlib.pyplot as plt
 
@@ -26,20 +26,22 @@ import sunpy.timeseries
 # and the literature contains a number of a papers about it (e.g. `Li et al.
 # <https://iopscience.iop.org/article/10.1088/0004-637X/746/1/13/meta>`_,
 # `Inglis et al. <https://iopscience.iop.org/article/10.1088/0004-637X/777/1/30/meta>`_)
-
-###############################################################################
 # The following image of the flare is now fairly iconic.
+
 aia_cutout03_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT03_IMAGE)
 fig = plt.figure()
 ax = fig.add_subplot(111, projection=aia_cutout03_map)
 aia_cutout03_map.plot()
+
 plt.show()
 
 ###############################################################################
 # Let's take a look at the GOES XRS data.
+
 goes = sunpy.timeseries.TimeSeries(sample_data.GOES_XRS_TIMESERIES)
 fig = plt.figure()
 goes.plot()
+
 plt.show()
 
 ###############################################################################
@@ -79,11 +81,13 @@ aia_1600_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_1600_map.draw_grid()
 
 fig.tight_layout(pad=8.50)
+
 plt.show()
 
 ###############################################################################
 # We also provide a series of AIA cutouts so that you can get a sense of the
 # dynamics of the in-falling material.
+
 aia_cutout01_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT01_IMAGE)
 aia_cutout02_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT02_IMAGE)
 aia_cutout03_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT03_IMAGE)
@@ -107,18 +111,23 @@ ax = fig.add_subplot(515, projection=aia_cutout05_map)
 aia_cutout05_map.plot()
 
 fig.tight_layout(pad=5.50)
+
 plt.show()
 
 ###############################################################################
 # There are a number of other data sources available as well, such as SWAP.
+
 swap_map = sunpy.map.Map(sample_data.SWAP_LEVEL1_IMAGE)
 fig = plt.figure()
 swap_map.plot()
+
 plt.show()
 
 ###############################################################################
-# And also RHESSI.
+# Also RHESSI.
+
 rhessi_map = sunpy.map.Map(sample_data.RHESSI_IMAGE)
 fig = plt.figure()
 rhessi_map.plot()
+
 plt.show()

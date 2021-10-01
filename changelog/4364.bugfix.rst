@@ -1,2 +1,0 @@
-The flare class labels in GOES ``peek()`` plots are now drawn at the center of
-the flare classes. Previously they were (ambiguously) drawn on the boundaries.

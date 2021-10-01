@@ -228,6 +228,7 @@ def test_parse_time_ISO():
         ('04-May-2007', dt5),
         ('04-May-2007 21:08:12.999999', dt2),
         ('20070504_210812', dt3),
+        ('2007/05/04T21:08', dt4),
     ]
 
     for k, v in lst:
@@ -335,6 +336,11 @@ def test_parse_time_list_2():
                 ['1998-01-01 00:00:03', '1995-12-31 23:59:60']]
 
     assert np.all(parse_time(tstrings) == Time(tstrings))
+
+
+def test_parse_time_list_3():
+    tstrings = ['2001-Jan-01', '2001-Jan-02', '2001-Jan-03']
+    assert np.all(parse_time(tstrings) == Time.strptime(tstrings, '%Y-%b-%d'))
 
 
 def test_is_time():

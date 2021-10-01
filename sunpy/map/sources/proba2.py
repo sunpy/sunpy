@@ -26,8 +26,7 @@ class SWAPMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         # It needs to be verified that these must actually be set and
         # are not already in the header.

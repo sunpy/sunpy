@@ -1,20 +1,23 @@
-import os
-
 import numpy as np
 import pytest
 
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
+from astropy.tests.helper import assert_quantity_allclose
 
-import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
+from sunpy.coordinates.frames import HeliographicCarrington
 from sunpy.coordinates.utils import GreatArc
 from sunpy.map.maputils import (
+    _verify_coordinate_helioprojective,
     all_coordinates_from_map,
+    all_corner_coords_from_map,
     all_pixel_indices_from_map,
+    contains_coordinate,
     contains_full_disk,
     contains_limb,
+    contains_solar_center,
     coordinate_is_on_solar_disk,
     is_all_off_disk,
     is_all_on_disk,
@@ -23,13 +26,6 @@ from sunpy.map.maputils import (
     sample_at_coords,
     solar_angular_radius,
 )
-
-testpath = sunpy.data.test.rootdir
-
-
-@pytest.fixture
-def aia171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
 
 @pytest.fixture
@@ -50,6 +46,24 @@ def straddles_limb_map(aia171_test_map):
 @pytest.fixture
 def sub_smap(aia171_test_map):
     return aia171_test_map.submap((0, 0)*u.pix, top_right=(50, 60)*u.pix)
+
+
+@pytest.fixture
+def non_helioprojective_map():
+    data = np.arange(0, 100).reshape(10, 10)
+    coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28 08:24',
+                     observer='earth', frame=HeliographicCarrington)
+    header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
+                                                         reference_pixel=[0, 0]*u.pixel,
+                                                         scale=[2, 2]*u.arcsec/u.pixel,
+                                                         telescope='Fake Telescope', instrument='UV detector',
+                                                         wavelength=1000*u.angstrom)
+    return sunpy.map.Map(data, header)
+
+
+@pytest.fixture
+def non_helioprojective_skycoord():
+    return SkyCoord(0 * u.rad, 0 * u.rad, frame="icrs")
 
 
 @pytest.fixture
@@ -79,6 +93,31 @@ def test_all_coordinates_from_map(sub_smap):
     assert isinstance(coordinates, SkyCoord)
     assert isinstance(coordinates.frame, BaseCoordinateFrame)
     assert coordinates.frame.name == sub_smap.coordinate_frame.name
+
+    xpix, ypix = sub_smap.world_to_pixel(coordinates[0, 0])
+    assert_quantity_allclose(xpix, 0*u.pix, atol=1e-7*u.pix)
+    assert_quantity_allclose(ypix, 0*u.pix, atol=1e-7*u.pix)
+
+    xpix, ypix = sub_smap.world_to_pixel(coordinates[-1, -1])
+    assert_quantity_allclose(xpix, sub_smap.dimensions[0] - 1*u.pix)
+    assert_quantity_allclose(ypix, sub_smap.dimensions[1] - 1*u.pix)
+
+
+def test_all_corner_coordinates_from_map(sub_smap):
+    coordinates = all_corner_coords_from_map(sub_smap)
+    shape = sub_smap.data.shape
+    assert coordinates.shape == (shape[0] + 1, shape[1] + 1)
+    assert isinstance(coordinates, SkyCoord)
+    assert isinstance(coordinates.frame, BaseCoordinateFrame)
+    assert coordinates.frame.name == sub_smap.coordinate_frame.name
+
+    xpix, ypix = sub_smap.world_to_pixel(coordinates[0, 0])
+    assert_quantity_allclose(xpix, -0.5*u.pix)
+    assert_quantity_allclose(ypix, -0.5*u.pix)
+
+    xpix, ypix = sub_smap.world_to_pixel(coordinates[-1, -1])
+    assert_quantity_allclose(xpix, sub_smap.dimensions[0] - 0.5*u.pix)
+    assert_quantity_allclose(ypix, sub_smap.dimensions[1] - 0.5*u.pix)
 
 
 def test_map_edges(all_off_disk_map):
@@ -175,3 +214,61 @@ def test_data_at_coordinates(aia171_test_map, aia_test_arc):
     intensity_along_arc = aia171_test_map.data[y, x]
     np.testing.assert_almost_equal(data[0], intensity_along_arc[0], decimal=1)
     np.testing.assert_almost_equal(data[-1], intensity_along_arc[-1], decimal=1)
+
+
+def test_contains_solar_center(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map, sub_smap):
+    assert contains_solar_center(aia171_test_map)
+    assert not contains_solar_center(all_off_disk_map)
+    assert not contains_solar_center(all_on_disk_map)
+    assert not contains_solar_center(straddles_limb_map)
+    assert not contains_solar_center(sub_smap)
+
+
+def test_verify_coordinate_helioprojective(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map,
+                                           sub_smap, non_helioprojective_map, non_helioprojective_skycoord):
+    # These should be helioprojective.
+    _verify_coordinate_helioprojective(aia171_test_map.coordinate_frame)
+    _verify_coordinate_helioprojective(all_off_disk_map.coordinate_frame)
+    _verify_coordinate_helioprojective(all_on_disk_map.coordinate_frame)
+    _verify_coordinate_helioprojective(straddles_limb_map.coordinate_frame)
+    _verify_coordinate_helioprojective(sub_smap.coordinate_frame)
+    # These are not.
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
+        _verify_coordinate_helioprojective(non_helioprojective_map.coordinate_frame)
+    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
+        _verify_coordinate_helioprojective(non_helioprojective_skycoord)
+
+
+def test_functions_raise_non_frame_coords(non_helioprojective_skycoord):
+    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
+        solar_angular_radius(non_helioprojective_skycoord)
+    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
+        coordinate_is_on_solar_disk(non_helioprojective_skycoord)
+
+
+def test_functions_raise_non_frame_map(non_helioprojective_map):
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
+        contains_full_disk(non_helioprojective_map)
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
+        contains_solar_center(non_helioprojective_map)
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
+        is_all_off_disk(non_helioprojective_map)
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
+        contains_limb(non_helioprojective_map)
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
+        on_disk_bounding_coordinates(non_helioprojective_map)
+
+
+def test_contains_coord(aia171_test_map):
+    smap = aia171_test_map
+    for coord in [smap.bottom_left_coord,
+                  smap.top_right_coord,
+                  SkyCoord(0*u.deg, 0*u.deg, frame=smap.coordinate_frame)]:
+        assert contains_coordinate(smap, coord)
+
+    assert not contains_coordinate(smap, SkyCoord(2000*u.arcsec, 2000*u.arcsec,
+                                                  frame=smap.coordinate_frame))
+
+    multi_coord = SkyCoord([0, 2000]*u.arcsec, [0, 2000]*u.arcsec,
+                           frame=smap.coordinate_frame)
+    assert (contains_coordinate(smap, multi_coord) == [True, False]).all()

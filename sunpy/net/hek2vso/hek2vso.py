@@ -12,10 +12,10 @@ import sys
 from tqdm import tqdm
 
 from astropy import units
-from astropy.table import Table
 
 from sunpy.net import attrs as a
 from sunpy.net import hek, vso
+from sunpy.net.hek import HEKTable
 
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
@@ -38,22 +38,21 @@ def translate_results_to_query(results):
 
     Examples
     --------
+    >>> from sunpy.net import attrs as a
     >>> from sunpy.net.hek import hek, HEKClient
     >>> from sunpy.net.hek2vso import hek2vso, H2VClient
     >>> h = HEKClient()  # doctest: +REMOTE_DATA
     >>> h2v = H2VClient()  # doctest: +REMOTE_DATA
-    >>> q = h.search(hek.attrs.Time('2011/08/09 07:23:56',
-    ...             '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))  # doctest: +REMOTE_DATA
+    >>> q = h.search(a.Time('2011/08/09 07:23:56',
+    ...             '2011/08/09 12:40:29'), a.hek.EventType('FL'))  # doctest: +REMOTE_DATA
     >>> len(q)  # doctest: +REMOTE_DATA
     19
 
     >>> hek2vso.translate_results_to_query(q[0])  # doctest: +REMOTE_DATA
-    [[<Time(<Time object: scale='utc' format='isot' value=2011-08-08T01:30:04.000>, <Time object: scale='utc' format='isot' value=2011-08-10T00:00:04.000>, None)>, <Source('SDO')>, <Instrument('HMI')>, <Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>]]
-    >>> hek2vso.translate_results_to_query(q)   # doctest: +SKIP
-    [[<Time(<Time object: scale='utc' format='isot' value=2011-08-08T01:30:04.000>, <Time object: scale='utc' format='isot' value=2011-08-10T00:00:04.000>, None)>, <Source('SDO')>, <Instrument('HMI')>, <Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>], ..., [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T08:01:21.000>, <Time object: scale='utc' format='isot' value=2011-08-09T08:16:45.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
+    [[<sunpy.net.attrs.Time(2011-08-08 01:30:04.000, 2011-08-10 00:00:04.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(HMI: Helioseismic and Magnetic Imager) object at ...>, <sunpy.net.attrs.Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>]]
     """
     queries = []
-    if isinstance(results, Table):
+    if isinstance(results, HEKTable):
         for result in results:
             query = vso_attribute_parse(result)
             queries.append(query)
@@ -77,16 +76,16 @@ def vso_attribute_parse(phrase):
 
     Examples
     --------
+    >>> from sunpy.net import attrs as a
     >>> from sunpy.net.hek import hek, HEKClient
     >>> from sunpy.net.hek2vso import hek2vso, H2VClient
     >>> h = HEKClient()  # doctest: +REMOTE_DATA
     >>> h2v = H2VClient()  # doctest: +REMOTE_DATA
-    >>> q = h.search(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))  # doctest: +REMOTE_DATA
+    >>> q = h.search(a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), a.hek.EventType('FL'))  # doctest: +REMOTE_DATA
     >>> len(q)  # doctest: +REMOTE_DATA
     19
-
     >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA
-    [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T07:22:38.000>, <Time object: scale='utc' format='isot' value=2011-08-09T08:32:02.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
+    [<sunpy.net.attrs.Time(2011-08-09 07:22:38.000, 2011-08-09 08:32:02.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Atmospheric Imaging Assembly) object at ...>, <sunpy.net.attrs.Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
         query = [a.Time(phrase['event_starttime'],
@@ -140,10 +139,9 @@ class H2VClient:
 
         Examples
         --------
-        >>> from sunpy.net import hek, hek2vso
+        >>> from sunpy.net import attrs as a, hek, hek2vso
         >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
-        >>> q = h2v.full_query((hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
-        ...                    hek.attrs.EventType('FL')))  # doctest: +REMOTE_DATA
+        >>> q = h2v.full_query((a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), a.hek.EventType('FL')))  # doctest: +REMOTE_DATA
         """
         self._quick_clean()
         if progress:
@@ -154,7 +152,7 @@ class H2VClient:
         return self.translate_and_query(self.hek_results,
                                         limit=limit, progress=progress)
 
-    def translate_and_query(self, hek_results, limit=None, progress=False):
+    def translate_and_query(self, hek_results, limit=None, progress=False, vso_response_format="table"):
         """
         Translates HEK results, makes a VSO query, then returns the results.
 
@@ -168,7 +166,7 @@ class H2VClient:
             The results from a HEK query in the form of a list.
         limit : int
             An approximate limit to the desired number of VSO results.
-        progress : Boolean
+        progress : bool
             A flag to turn off the progress bar, defaults to "off"
 
         Examples
@@ -178,14 +176,14 @@ class H2VClient:
         >>> tstart = '2011/08/09 07:23:56'
         >>> tend = '2011/08/09 12:40:29'
         >>> event_type = 'FL'
-        >>> q = h.search(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))  # doctest: +REMOTE_DATA
+        >>> q = h.search(a.Time(tstart, tend), a.hek.EventType(event_type))  # doctest: +REMOTE_DATA
         >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
         >>> res = h2v.translate_and_query(q)  # doctest: +REMOTE_DATA
         """
         vso_query = translate_results_to_query(hek_results)
 
         for query in tqdm(vso_query, unit="records"):
-            temp = self.vso_client.search(*query)
+            temp = self.vso_client.search(*query, response_format=vso_response_format)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
             if limit is not None:

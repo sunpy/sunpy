@@ -1,3 +1,4 @@
+#!/bin/env python
 import json
 import subprocess
 
@@ -22,7 +23,7 @@ authors = [author.split('\t')[1] for author in authors]
 # Remove initials
 authors = [remove_initials(auth) for auth in authors]
 # List of authors to ignore because they are bots
-manual_ignore = ['codetriage-readme-bot']
+manual_ignore = ['codetriage-readme-bot', 'sunpy-backport[bot]']
 authors = [auth for auth in authors if auth not in manual_ignore]
 
 # Get list of current authors in zenodo.yml
@@ -36,15 +37,21 @@ already_auth = [remove_initials(auth) for auth in already_auth]
 
 new_creators = []
 # Loop through all the current authors
+print('New contributors since the last update of zenodo.json:')
 for author in authors:
     # If already in .zenodo.json, take the entry to preserve ORCID and affiliation
     if author in already_auth:
         new_creators.append(creators[already_auth.index(author)])
     else:
+        print(author)
         new_creators.append({'name': author})
 
 # Add in anyone currently in .zenodo.json, but who hasn't committed to the repository
-for author in list(set(already_auth) - set(authors)):
+print('\nContributors with no code commits:')
+non_commitors = list(set(already_auth) - set(authors))
+non_commitors.sort()
+for author in non_commitors:
+    print(author)
     new_creators.append(creators[already_auth.index(author)])
 
 data['creators'] = new_creators

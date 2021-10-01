@@ -1,13 +1,15 @@
 """
 Test Generic Map
 """
-import os
+import re
 import tempfile
+import contextlib
 from unittest import mock
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from packaging import version
 
 import astropy.units as u
 import astropy.wcs
@@ -15,7 +17,6 @@ from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.time import Time
 from astropy.visualization import wcsaxes
 
 import sunpy
@@ -23,105 +24,28 @@ import sunpy.coordinates
 import sunpy.data.test
 import sunpy.map
 import sunpy.sun
-from sunpy.coordinates import sun
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
+from sunpy.map.sources import AIAMap
+from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
-from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
+from sunpy.util.metadata import ModifiedItem
 
 testpath = sunpy.data.test.rootdir
 
 
-@pytest.fixture
-def hmi_test_map():
-    return sunpy.map.Map(os.path.join(testpath, "resampled_hmi.fits"))
-
-
-@pytest.fixture
-def aia171_test_map():
-    map = sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
-
-    # Get rid of the blank keyword to prevent some astropy fits fixing warnings
-    header = dict(map.meta)
-    header.pop('blank')
-    return sunpy.map.Map((map.data, header))
-
-
-@pytest.fixture
-def heliographic_test_map():
-    map = sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
-
-    # Fix unit strings to prevent some astropy fits fixing warnings
-    header = dict(map.meta)
-    header['cunit1'] = 'deg'
-    header['cunit2'] = 'deg'
-    # Set observer location to avoid warnings later
-    header['hgln_obs'] = 0.0
-    return sunpy.map.Map((map.data, header))
-
-
-@pytest.fixture
-def aia171_test_map_with_mask(aia171_test_map):
-    shape = aia171_test_map.data.shape
-    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
-    mask[0:shape[0] // 2, 0:shape[1] // 2] = True
-    return sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
-
-
-@pytest.fixture
-def generic_map():
-    data = np.ones([6, 6], dtype=np.float64)
-    dobs = Time('1970-01-01T00:00:00')
-    l0 = sun.L0(dobs).to_value(u.deg)
-    b0 = sun.B0(dobs).to_value(u.deg)
-    dsun = sun.earth_distance(dobs).to_value(u.m)
-    header = {
-        'CRVAL1': 0,
-        'CRVAL2': 0,
-        'CRPIX1': 5,
-        'CRPIX2': 5,
-        'CDELT1': 10,
-        'CDELT2': 10,
-        'CUNIT1': 'arcsec',
-        'CUNIT2': 'arcsec',
-        'PC1_1': 0,
-        'PC1_2': -1,
-        'PC2_1': 1,
-        'PC2_2': 0,
-        'NAXIS1': 6,
-        'NAXIS2': 6,
-        'date-obs': dobs.isot,
-        'crln_obs': l0,
-        'crlt_obs': b0,
-        "dsun_obs": dsun,
-        'mjd-obs': 40587.0,
-        'obsrvtry': 'Foo',
-        'detector': 'bar',
-        'wavelnth': 10,
-        'waveunit': 'm',
-        'bunit': 'ct/s',
-    }
-    return sunpy.map.Map((data, header))
-
-
-@pytest.fixture
-def simple_map():
-    # A 3x3 map, with it's center at (0, 0), and scaled differently in
-    # each direction
-    data = np.arange(9).reshape((3, 3))
-    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg',
-                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.m,
-                                           frame='heliographic_stonyhurst'))
-    ref_pix = [1, 1] * u.pix
-    scale = [2, 1] * u.arcsec / u.pix
-    header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
-    return sunpy.map.Map(data, header)
-
-
 def test_fits_data_comparison(aia171_test_map):
-    """Make sure the data is the same in pyfits and SunPy"""
+    """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        data = fits.open(os.path.join(testpath, 'aia_171_level1.fits'))[0].data
+        data = fits.open(testpath / 'aia_171_level1.fits')[0].data
     np.testing.assert_allclose(aia171_test_map.data, data)
+
+
+def test_header_fits_io():
+    with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
+        with fits.open(testpath / 'aia_171_level1.fits') as hdu:
+            AIAMap(hdu[0].data, hdu[0].header)
 
 
 def test_get_item(generic_map):
@@ -144,6 +68,35 @@ def test_wcs(aia171_test_map):
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
 
 
+def test_wcs_cache(aia171_test_map):
+    wcs1 = aia171_test_map.wcs
+    wcs2 = aia171_test_map.wcs
+    # Check that without any changes to the header, retreiving the wcs twice
+    # returns the same object instead of recomputing the wcs
+    assert wcs1 is wcs2
+
+    # Change the header and make sure the wcs is re-computed
+    new_crpix = 20
+    assert new_crpix != wcs2.wcs.crpix[0]
+    aia171_test_map.meta['crpix1'] = new_crpix
+
+    new_wcs = aia171_test_map.wcs
+    assert new_wcs.wcs.crpix[0] == new_crpix
+
+
+def test_obs_coord_cache(aia171_test_map):
+    coord1 = aia171_test_map.observer_coordinate
+    coord2 = aia171_test_map.observer_coordinate
+    assert coord1 is coord2
+
+    # Change metadata, and check that the coordinate changes
+    aia171_test_map.meta['haex_obs'] += 10
+    new_coord = aia171_test_map.observer_coordinate
+    assert new_coord.lon != coord2.lon
+    assert new_coord.lat != coord2.lat
+    assert new_coord.radius != coord2.radius
+
+
 def test_header_immutability(aia171_test_map):
     # Check that accessing the wcs of a map doesn't modify the meta data
     assert 'KEYCOMMENTS' in aia171_test_map.meta
@@ -153,11 +106,6 @@ def test_header_immutability(aia171_test_map):
 
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
-
-
-def test_size(generic_map):
-    with pytest.warns(SunpyDeprecationWarning, match='Use map.data.size instead'):
-        assert generic_map.size == 36 * u.pix
 
 
 def test_min(generic_map):
@@ -201,8 +149,45 @@ def test_nickname_set(generic_map):
     assert generic_map.nickname == 'hi'
 
 
-def test_date(generic_map):
-    assert isinstance(generic_map.date, Time)
+date_dict = {'DATE-AVG': parse_time('2020-01-01'),
+             'DATE-OBS': parse_time('2020-02-01'),
+             'DATE-BEG': parse_time('2020-03-01'),
+             'DATE-END': parse_time('2020-03-03')}
+date_begend = date_dict['DATE-BEG'] + (date_dict['DATE-END'] - date_dict['DATE-BEG']) / 2
+
+
+@pytest.mark.parametrize('keys, expected_date',
+                         ([['DATE-AVG', 'DATE-OBS', 'DATE-BEG', 'DATE-END'], date_dict['DATE-OBS']],
+                          [['DATE-AVG', 'DATE-BEG', 'DATE-END'], date_dict['DATE-AVG']],
+                          [['DATE-BEG', 'DATE-END'], date_begend],
+                          [['DATE-BEG'], date_dict['DATE-BEG']],
+                          [['DATE-END'], date_dict['DATE-END']],
+                          [[], 'now']
+                          ))
+def test_date(generic_map, keys, expected_date):
+    # Remove pre-existing date keys
+    for key in date_dict:
+        generic_map.meta.pop(key, None)
+    # Add new date keys
+    for key in keys:
+        generic_map.meta[key] = date_dict[key].isot
+    # Check date is the correct value
+    if expected_date == 'now':
+        expected_date = parse_time('now')
+        # Check equal to within a tolerance as parse_time('now') is run
+        # at slightly different times in .date and the line above
+        with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observation time'):
+            assert generic_map.date - expected_date < 1*u.s
+    else:
+        assert generic_map.date == expected_date
+
+
+def test_date_scale(generic_map):
+    # Check that default time scale is UTC
+    assert 'timesys' not in generic_map.meta
+    assert generic_map.date.scale == 'utc'
+    generic_map.meta['timesys'] = 'tai'
+    assert generic_map.date.scale == 'tai'
 
 
 def test_date_aia(aia171_test_map):
@@ -213,6 +198,12 @@ def test_detector(generic_map):
     assert generic_map.detector == 'bar'
 
 
+def test_timeunit(generic_map):
+    assert generic_map.timeunit == u.Unit('s')
+    generic_map.meta['timeunit'] = 'h'
+    assert generic_map.timeunit == u.Unit('h')
+
+
 def test_dsun(generic_map):
     assert_quantity_allclose(generic_map.dsun, sun.earth_distance(generic_map.date))
 
@@ -221,15 +212,30 @@ def test_rsun_meters(generic_map):
     assert generic_map.rsun_meters == sunpy.sun.constants.radius
 
 
-def test_rsun_obs(generic_map):
-    with pytest.warns(SunpyUserWarning,
-                      match='Missing metadata for solar angular radius: assuming '
-                      'photospheric limb as seen from observer coordinate.'):
-        assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
+def test_rsun_obs_without_rsun_ref(generic_map):
+    assert_quantity_allclose(generic_map.rsun_obs,
+                             sun.angular_radius(generic_map.date))
+
+
+def test_rsun_obs_with_rsun_ref(generic_map):
+    generic_map.meta['rsun_ref'] = sunpy.sun.constants.radius.to_value(u.m)
+    # The following should not raise a warning because we can calculate it exactly
+    assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
 
 
 def test_coordinate_system(generic_map):
-    assert generic_map.coordinate_system == ('HPLN-   ', 'HPLT-   ')
+    assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+
+
+def test_default_coordinate_system(generic_map):
+    generic_map.meta.pop('ctype1')
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata'):
+        assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+
+    generic_map.meta.pop('ctype2')
+    generic_map.meta['ctype1'] = 'HPLN-TAN'
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE2 from metadata'):
+        assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
 def test_carrington_longitude(generic_map):
@@ -318,7 +324,9 @@ def test_rotation_matrix_cd_cdelt():
         'NAXIS1': 6,
         'NAXIS2': 6,
         'CUNIT1': 'arcsec',
-        'CUNIT2': 'arcsec'
+        'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1.], [1., 0]]))
@@ -340,14 +348,16 @@ def test_rotation_matrix_cd_cdelt_square():
         'NAXIS1': 6,
         'NAXIS2': 6,
         'CUNIT1': 'arcsec',
-        'CUNIT2': 'arcsec'
+        'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1], [1., 0]]))
 
 
 def test_swap_cd():
-    amap = sunpy.map.Map(os.path.join(testpath, 'swap_lv1_20140606_000113.fits'))
+    amap = sunpy.map.Map(testpath / 'swap_lv1_20140606_000113.fits')
     np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
 
 
@@ -358,12 +368,39 @@ def test_world_to_pixel(generic_map):
 
 
 def test_world_to_pixel_error(generic_map):
-    strerr = 'world_to_pixel takes a Astropy coordinate frame or SkyCoord instance'
+    strerr = 'Expected the following order of world arguments: SkyCoord'
     with pytest.raises(ValueError, match=strerr):
         generic_map.world_to_pixel(1)
 
 
-def test_save(aia171_test_map, generic_map):
+def test_world_pixel_roundtrip(simple_map):
+    pix = 1 * u.pix, 1 * u.pix
+    coord = simple_map.pixel_to_world(*pix)
+    pix_roundtrip = simple_map.world_to_pixel(coord)
+
+    assert u.allclose(pix_roundtrip.x, pix[0], atol=1e-10 * u.pix)
+    assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
+
+
+def test_swapped_ctypes(simple_map):
+    # Check that CTYPES different from normal work fine
+    simple_map.meta['ctype1'] = 'HPLT-TAN'   # Usually HPLN
+    simple_map.meta['ctype2'] = 'HPLN-TAN'   # Usually HPLT
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -1 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -2 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Tx, 1 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 2 * u.arcsec)
+
+    # Put them back
+    simple_map.meta['ctype1'] = 'HPLN-TAN'   # Usually HPLN
+    simple_map.meta['ctype2'] = 'HPLT-TAN'   # Usually HPLT
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -2 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -1 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Tx, 2 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 1 * u.arcsec)
+
+
+def test_save(aia171_test_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
@@ -377,7 +414,7 @@ def test_save(aia171_test_map, generic_map):
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
-def test_save_compressed(aia171_test_map, generic_map):
+def test_save_compressed(aia171_test_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
@@ -406,6 +443,8 @@ def test_default_shift():
         'NAXIS2': 6,
         'CUNIT1': 'arcsec',
         'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
     }
     cd_map = sunpy.map.Map((data, header))
     assert cd_map.shifted_value[0].value == 0
@@ -491,8 +530,6 @@ pixel_corners = [
 ]
 
 
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the left/right direction')
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 @pytest.mark.parametrize('rect, submap_out', pixel_corners)
 def test_submap_pixel(simple_map, rect, submap_out):
     # Check that result is the same specifying corners either way round
@@ -505,8 +542,6 @@ def test_submap_pixel(simple_map, rect, submap_out):
 # The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when
 # converting to world coordinates due to round-off error when round-tripping
 # through pixel_to_world -> world_to_pixel
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the left/right direction')
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 @pytest.mark.parametrize('rect, submap_out', pixel_corners[:2] + pixel_corners[3:])
 def test_submap_world(simple_map, rect, submap_out):
     # Check that coordinates behave the same way
@@ -522,7 +557,50 @@ def test_submap_world(simple_map, rect, submap_out):
         np.testing.assert_equal(submap.data, submap_out)
 
 
-# Check that submap works with units convertable to pix but that aren't pix
+@pytest.mark.parametrize('test_map', ("aia171_roll_map", "aia171_test_map",
+                                      "hmi_test_map", "aia171_test_map_with_mask"),
+                         indirect=['test_map'])
+def test_submap_world_corners(test_map):
+    """
+    This test checks that when an unaligned map is cropped with submap that the
+    resulting map contains all four corners of the input world coordinate
+    bounding box.
+    """
+    corners = SkyCoord(Tx=[300, 300, 800, 800], Ty=[0, 500, 500, 0],
+                       unit=u.arcsec, frame=test_map.coordinate_frame)
+
+    submap = test_map.submap(corners[0], top_right=corners[2])
+
+    pix_corners = np.array(submap.wcs.world_to_pixel(corners)).T
+    for pix_corner in pix_corners:
+        assert ((-0.5, -0.5) <= pix_corner).all()
+        assert (pix_corner <= submap.data.shape[::-1]).all()
+
+    if test_map.mask is not None:
+        assert submap.mask.shape == submap.data.shape
+
+
+@pytest.mark.parametrize('test_map', ("aia171_test_map", "heliographic_test_map"),
+                         indirect=['test_map'])
+def test_submap_hgs_corners(test_map):
+    """
+    This test checks that when an unaligned map is cropped with submap that the
+    resulting map contains all four corners of the input world coordinate
+    bounding box.
+    """
+    corners = SkyCoord([10, 10, 40, 40], [-10, 30, 30, -10],
+                       unit=u.deg, frame="heliographic_stonyhurst",
+                       obstime=test_map.date)
+
+    submap = test_map.submap(corners[0], top_right=corners[2])
+
+    pix_corners = np.array(submap.wcs.world_to_pixel(corners)).T
+    for pix_corner in pix_corners:
+        assert ((-0.5, -0.5) <= pix_corner).all()
+        assert (pix_corner <= submap.data.shape[::-1]).all()
+
+
+# Check that submap works with units convertible to pix but that aren't pix
 @pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
 def test_submap_data_header(generic_map, unit):
     """Check data and header information for a submap"""
@@ -565,48 +643,90 @@ def test_resample(simple_map, shape):
     # Check that the corner coordinates of the input and output are the same
     resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
     original_lower_left = simple_map.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
-    assert resampled_lower_left.Tx == original_lower_left.Tx
-    assert resampled_lower_left.Ty == original_lower_left.Ty
+    assert u.allclose(resampled_lower_left.Tx, original_lower_left.Tx)
+    assert u.allclose(resampled_lower_left.Ty, original_lower_left.Ty)
 
     resampled_upper_left = resampled.pixel_to_world((shape[0] - 0.5) * u.pix,
                                                     (shape[1] - 0.5) * u.pix)
     original_upper_left = simple_map.pixel_to_world(2.5 * u.pix, 2.5 * u.pix)
-    assert resampled_upper_left.Tx == original_upper_left.Tx
-    assert resampled_upper_left.Ty == original_upper_left.Ty
+    assert u.allclose(resampled_upper_left.Tx, original_upper_left.Tx)
+    assert u.allclose(resampled_upper_left.Ty, original_upper_left.Ty)
 
 
-resample_test_data = [('linear', (100, 200) * u.pixel), ('neighbor', (128, 256) * u.pixel),
-                      ('nearest', (512, 128) * u.pixel), ('spline', (200, 200) * u.pixel)]
+resample_test_data = [('linear', (100, 200) * u.pixel, contextlib.nullcontext()),
+                      ('neighbor', (128, 256) * u.pixel, pytest.raises(SunpyDeprecationWarning)),
+                      ('nearest', (512, 128) * u.pixel, contextlib.nullcontext()),
+                      ('spline', (200, 200) * u.pixel, contextlib.nullcontext())]
 
 
-@pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
-def test_resample_dimensions(generic_map, sample_method, new_dimensions):
+@pytest.mark.parametrize('sample_method, new_dimensions, cm', resample_test_data)
+def test_resample_dimensions(generic_map, sample_method, new_dimensions, cm):
     """Check that resampled map has expected dimensions."""
-    resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-    assert resampled_map.dimensions[0] == new_dimensions[0]
-    assert resampled_map.dimensions[1] == new_dimensions[1]
+    with cm:
+        resampled_map = generic_map.resample(new_dimensions, method=sample_method)
+        assert resampled_map.dimensions[0] == new_dimensions[0]
+        assert resampled_map.dimensions[1] == new_dimensions[1]
 
 
-@pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
-def test_resample_metadata(generic_map, sample_method, new_dimensions):
+@pytest.mark.parametrize('sample_method, new_dimensions, cm', resample_test_data)
+def test_resample_metadata(generic_map, sample_method, new_dimensions, cm):
     """
     Check that the resampled map has correctly adjusted metadata.
     """
-    resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-    assert float(resampled_map.meta['cdelt1']) / generic_map.meta['cdelt1'] \
-        == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
-    assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
-        == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
-    assert resampled_map.meta['crpix1'] == (resampled_map.data.shape[1] + 1) / 2.
-    assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
-    assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
-    assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
-    assert resampled_map.meta['naxis1'] == new_dimensions[0].value
-    assert resampled_map.meta['naxis2'] == new_dimensions[1].value
-    for key in generic_map.meta:
-        if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1',
-                       'crval2', 'naxis1', 'naxis2'):
-            assert resampled_map.meta[key] == generic_map.meta[key]
+    with cm:
+        resampled_map = generic_map.resample(new_dimensions, method=sample_method)
+        assert float(resampled_map.meta['cdelt1']) / generic_map.meta['cdelt1'] \
+            == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
+        assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
+            == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
+        # TODO: we should really test the numbers here, not just that the correct
+        # header values have been modified. However, I am lazy and we have figure
+        # tests.
+        assert resampled_map.meta['crpix1'] != generic_map.meta['crpix1']
+        assert resampled_map.meta['crpix2'] != generic_map.meta['crpix2']
+        assert u.allclose(resampled_map.meta['crval1'], generic_map.meta['crval1'])
+        assert u.allclose(resampled_map.meta['crval2'], generic_map.meta['crval2'])
+        assert resampled_map.meta['naxis1'] == new_dimensions[0].value
+        assert resampled_map.meta['naxis2'] == new_dimensions[1].value
+        for key in generic_map.meta:
+            if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1',
+                           'crval2', 'naxis1', 'naxis2'):
+                assert resampled_map.meta[key] == generic_map.meta[key]
+
+
+@pytest.mark.parametrize('sample_method, new_dimensions, cm', resample_test_data)
+def test_resample_simple_map(simple_map, sample_method, new_dimensions, cm):
+    # Put the reference pixel at the top-right of the bottom-left pixel
+    simple_map.meta['crpix1'] = 1.5
+    simple_map.meta['crpix2'] = 1.5
+    assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
+    # Make the superpixel map
+    new_dims = (9, 6) * u.pix
+    with cm:
+        resamp_map = simple_map.resample(new_dims, method=sample_method)
+        # Reference pixel should change, but reference coordinate should not
+        assert list(resamp_map.reference_pixel) == [2.5 * u.pix, 1.5 * u.pix]
+        assert resamp_map.reference_coordinate == simple_map.reference_coordinate
+
+
+def test_superpixel_simple_map(simple_map):
+    # Put the reference pixel at the top-right of the bottom-left pixel
+    simple_map.meta['crpix1'] = 1.5
+    simple_map.meta['crpix2'] = 1.5
+    assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
+    # Make the superpixel map
+    new_dims = (2, 2) * u.pix
+    superpix_map = simple_map.superpixel(new_dims)
+    # Reference pixel should change, but referenc coordinate should not
+    assert list(superpix_map.reference_pixel) == [0 * u.pix, 0 * u.pix]
+    assert superpix_map.reference_coordinate == simple_map.reference_coordinate
+
+    # Check that offset works
+    superpix_map = simple_map.superpixel(new_dims, offset=[1, 2] * u.pix)
+    # Reference pixel should change, but referenc coordinate should not
+    assert u.allclose(list(superpix_map.reference_pixel),
+                      [-0.5 * u.pix, -1 * u.pix])
+    assert superpix_map.reference_coordinate == simple_map.reference_coordinate
 
 
 def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
@@ -648,10 +768,29 @@ def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
     superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
     assert_quantity_allclose(
         superpixel_map_sum.dimensions[0],
-        np.int((aia171_test_map.dimensions[0] / dimensions[0]).value) * u.pix - 1 * u.pix)
+        int((aia171_test_map.dimensions[0] / dimensions[0]).value) * u.pix - 1 * u.pix)
     assert_quantity_allclose(
         superpixel_map_sum.dimensions[1],
-        np.int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
+        int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
+
+
+def test_superpixel_units(generic_map):
+    new_dims = (2, 2) * u.pix
+    super1 = generic_map.superpixel(new_dims)
+    super2 = generic_map.superpixel(new_dims.to(u.kpix))
+    assert super1.meta == super2.meta
+
+    offset = (1, 2) * u.pix
+    super1 = generic_map.superpixel(new_dims, offset=offset)
+    super2 = generic_map.superpixel(new_dims, offset=offset.to(u.kpix))
+    assert super1.meta == super2.meta
+
+
+def test_superpixel_fractional_inputs(generic_map):
+    super1 = generic_map.superpixel((2, 3) * u.pix)
+    super2 = generic_map.superpixel((2.2, 3.2) * u.pix)
+    assert np.all(super1.data == super2.data)
+    assert super1.meta == super2.meta
 
 
 def test_superpixel_err(generic_map):
@@ -711,6 +850,20 @@ def test_rotate(aia171_test_map):
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
+@pytest.mark.xfail(version.parse(np.__version__) >= version.parse("1.2.0"),
+                   reason="Numpy >= 1.20.0 doesn't allow NaN to int conversion")
+def test_rotate_with_incompatible_missing_dtype():
+    data = np.arange(0, 100).reshape(10, 10)
+    coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime='2013-10-28',
+                     observer='earth', frame=sunpy.coordinates.Helioprojective)
+    header = sunpy.map.make_fitswcs_header(data, coord)
+    test_map = sunpy.map.Map(data, header)
+    with pytest.warns(SunpyUserWarning,
+                      match="The specified `missing` value is not an integer, but the data "
+                      "array is of integer type, so the output may be strange."):
+        test_map.rotate(order=3, missing=np.nan)
+
+
 def test_rotate_pad_crpix(generic_map):
     rotated_map = generic_map.rotate(30*u.deg)
     # This tests that the reference pixel of the map is in the expected place.
@@ -760,23 +913,12 @@ def test_rotate_invalid_order(generic_map):
 def test_as_mpl_axes_aia171(aia171_test_map):
     ax = plt.subplot(projection=aia171_test_map)
     assert isinstance(ax, wcsaxes.WCSAxes)
-    # This test doesn't work, it seems that WCSAxes copies or changes the WCS
-    # object.
-    #  assert ax.wcs is aia171_test_map.wcs
     assert all([ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype, aia171_test_map.wcs.wcs.ctype)])
-    # Map adds these attributes, so we use them to check.
-    assert hasattr(ax.wcs, 'heliographic_observer')
-
-
-def test_pixel_to_world_no_projection(generic_map):
-    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel))
-    assert_quantity_allclose(out.Tx, 0*u.arcsec)
-    assert_quantity_allclose(out.Ty, 0*u.arcsec)
 
 
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
-    with pytest.warns(SunpyUserWarning) as w:
+    with pytest.warns(SunpyMetadataWarning) as w:
         bad_header = {
             'CRVAL1': 0,
             'CRVAL2': 0,
@@ -867,7 +1009,7 @@ def test_more_than_two_dimensions():
     """Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
     loaded.  We need to load a >2-dim dataset with a TELESCOP header"""
 
-    # Data crudely represnts 4 stokes, 4 wavelengths with Y,X of 3 and 5.
+    # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.
     bad_data = np.random.rand(4, 4, 3, 5)
     hdr = fits.Header()
     hdr['TELESCOP'] = 'XXX'
@@ -886,6 +1028,8 @@ def test_missing_metadata_warnings():
         header = {}
         header['cunit1'] = 'arcsec'
         header['cunit2'] = 'arcsec'
+        header['ctype1'] = 'HPLN-TAN'
+        header['ctype2'] = 'HPLT-TAN'
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
@@ -978,46 +1122,6 @@ width_deg = 20 * u.arcsec
 height_deg = 20 * u.arcsec
 
 
-def test_deprecated_submap_inputs(generic_map2, coords):
-    bl_coord, tr_coord, bl_tr_coord = coords
-    # deprecated
-    with pytest.warns(SunpyDeprecationWarning):
-        smap = generic_map2.submap(bl_coord, tr_coord)
-    assert u.allclose(smap.dimensions, (3, 3) * u.pix)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        smap = generic_map2.submap(bl_pix, tr_pix)
-    assert u.allclose(smap.dimensions, (3, 3) * u.pix)
-
-    # error
-    with pytest.raises(TypeError, match="width must be specified as a keyword argument"):
-        generic_map2.submap(bl_coord, width_deg, height_deg)
-
-    with pytest.raises(TypeError, match="width must be specified as a keyword argument"):
-        generic_map2.submap(bl_pix, width_pix, height_pix)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        with pytest.raises(ValueError,
-                           match="Either top_right alone or both width and height must be specified."):
-            generic_map2.submap(bl_coord, width_deg, height=height_deg)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        with pytest.raises(ValueError,
-                           match="Either top_right alone or both width and height must be specified"):
-            generic_map2.submap(bl_pix, width_pix, height=height_pix)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        with pytest.raises(TypeError,
-                           match="Invalid input, top_right must be of type SkyCoord or BaseCoordinateFrame."):
-            generic_map2.submap(bl_coord, width_deg)
-
-    with pytest.warns(SunpyDeprecationWarning):
-        with pytest.raises(ValueError,
-                           match="Either top_right alone or both width and height must be specified"):
-            generic_map2.submap(bl_pix, width_pix, height=height_pix)
-
-
-@pytest.mark.skip
 def test_submap_kwarg_only_input_errors(generic_map2, coords):
     """
     This test replaces the one above when the deprecation period is over.
@@ -1037,43 +1141,6 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
             generic_map2.submap(*args, **kwargs)
 
 
-def test_submap_kwarg_only_input_errors(generic_map2, coords):
-    bl_coord, tr_coord, bl_tr_coord = coords
-
-    inputs = (
-        dict(width=width_pix),
-        dict(top_right=tr_pix, width=width_pix),
-        dict(top_right=tr_pix, height=height_pix),
-        dict(),  # Only post deprecation
-    )
-    for kwargs in inputs:
-        with pytest.raises(ValueError, match="top_right alone or both width and height "
-                                             "must be specified"):
-            generic_map2.submap(bl_pix, **kwargs)
-
-    with pytest.raises(TypeError, match="width and height must be a Quantity in units of pixels"):
-        generic_map2.submap(bl_pix, width=width_deg, height=height_deg)
-
-    with pytest.raises(TypeError,
-                       match="top_right must be a Quantity in units of pixels."):
-        generic_map2.submap([10, 10]*u.deg, top_right=[10, 10]*u.deg)
-
-    with pytest.raises(ValueError, match=r"must have shape \(2\, \)"):
-        generic_map2.submap(10*u.pix, top_right=10*u.pix)
-
-    with pytest.raises(ValueError, match=r"must have shape \(2\, \)"):
-        generic_map2.submap([10, 10, 10]*u.pix, top_right=[10, 10, 10]*u.pix)
-
-    with pytest.raises(u.UnitsError):
-        generic_map2.submap([10, 10]*u.deg, width=10*u.km, height=10*u.J)
-
-    with pytest.raises(ValueError,
-                       match="either bottom_left and top_right or bottom_left and height and width should be provided"):
-        generic_map2.submap(SkyCoord([10, 10, 10]*u.deg, [10, 10, 10]*u.deg,
-                                     frame=generic_map2.coordinate_frame))
-
-
-@pytest.mark.filterwarnings('ignore:The rectangle is inverted in the bottom/top direction')
 def test_submap_inputs(generic_map2, coords):
     bl_coord, tr_coord, bl_tr_coord = coords
 
@@ -1103,3 +1170,177 @@ def test_contour(simple_map):
     assert contour.obstime == simple_map.date
     assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
+
+
+def test_contour_units(simple_map):
+    # Check that contouring with units works as intended
+    simple_map.meta['bunit'] = 'm'
+
+    # Same units
+    contours = simple_map.contour(1.5 * u.m)
+    assert len(contours) == 1
+
+    # Different units, but convertible
+    contours_cm = simple_map.contour(150 * u.cm)
+    for c1, c2 in zip(contours, contours_cm):
+        assert np.all(c1 == c2)
+
+    # Percentage
+    contours_percent = simple_map.contour(100 * u.percent)
+    contours_ref = simple_map.contour(np.max(simple_map.data) * simple_map.unit)
+    for c1, c2 in zip(contours_percent, contours_ref):
+        assert np.all(c1 == c2)
+
+
+def test_contour_input(simple_map):
+    simple_map.meta['bunit'] = 'm'
+
+    with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
+        simple_map.draw_contours(1.5)
+    with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
+        simple_map.contour(1.5)
+
+    with pytest.raises(u.UnitsError, match=re.escape("'s' (time) and 'm' (length) are not convertible")):
+        simple_map.draw_contours(1.5 * u.s)
+    with pytest.raises(u.UnitsError, match=re.escape("'s' (time) and 'm' (length) are not convertible")):
+        simple_map.contour(1.5 * u.s)
+
+    # With no units, check that dimensionless works
+    simple_map.meta.pop('bunit')
+    simple_map.draw_contours(1.5 * u.dimensionless_unscaled)
+    simple_map.contour(1.5 * u.dimensionless_unscaled)
+
+    with pytest.raises(u.UnitsError, match='This map has no unit'):
+        simple_map.draw_contours(1.5 * u.m)
+    with pytest.raises(u.UnitsError, match='This map has no unit'):
+        simple_map.contour(1.5 * u.m)
+
+
+def test_print_map(generic_map):
+    out_repr = generic_map.__repr__()
+    assert isinstance(out_repr, str)
+    assert object.__repr__(generic_map) in out_repr
+    out_str = generic_map.__str__()
+    assert isinstance(out_str, str)
+    assert out_str in out_repr
+
+
+def test_fix_bitpix(aia171_test_map):
+    original = aia171_test_map.meta.pop('bitpix')
+    aia171_test_map._fix_bitpix()
+    assert aia171_test_map.meta['bitpix'] == original
+
+
+def test_parse_submap_quantity_inputs(aia171_test_map):
+    bottom_left = (0, 0)*u.arcsec
+    top_right = (200, 200)*u.arcsec
+    width = 200*u.arcsec
+    height = 300*u.arcsec
+
+    with pytest.raises(ValueError, match=re.escape("Either top_right alone or both width and height "
+                       "must be specified when bottom_left is a Quantity")):
+        aia171_test_map.submap(bottom_left=bottom_left[0],
+                               top_right=None, width=None, height=None)
+
+    with pytest.raises(ValueError, match=re.escape("bottom_left must have shape (2, ) "
+                       "when specified as a Quantity")):
+        aia171_test_map.submap(bottom_left=bottom_left[0],
+                               top_right=top_right, width=None, height=None)
+
+    with pytest.raises(ValueError, match=re.escape("top_right must have shape (2, ) when specified as "
+                       "a Quantity")):
+        aia171_test_map.submap(bottom_left=bottom_left,
+                               top_right=top_right[0], width=None, height=None)
+
+    with pytest.raises(TypeError, match=re.escape("When bottom_left is a Quantity, top_right "
+                       "must be a Quantity in units of pixels.")):
+        aia171_test_map.submap(bottom_left=bottom_left,
+                               top_right=top_right, width=None, height=None)
+
+    with pytest.raises(TypeError, match=re.escape("When bottom_left is a Quantity, width and height "
+                       "must be a Quantity in units of pixels.")):
+        aia171_test_map.submap(bottom_left=bottom_left,
+                               top_right=None, width=width, height=height)
+
+
+def test_wavelength_properties(simple_map):
+    simple_map.meta.pop('waveunit', None)
+    simple_map.meta['wavelnth'] = 1
+    assert simple_map.measurement == 1 * u.one
+    assert simple_map.wavelength == 1 * u.one
+
+    simple_map.meta['waveunit'] = ''
+    assert simple_map.measurement == 1 * u.one
+    assert simple_map.wavelength == 1 * u.one
+
+    simple_map.meta['waveunit'] = 'm'
+    assert simple_map.measurement == 1 * u.m
+    assert simple_map.wavelength == 1 * u.m
+
+
+def test_meta_modifications(aia171_test_map):
+    aiamap = aia171_test_map
+    old_cdelt1 = aiamap.meta['cdelt1']
+    aiamap.meta['cdelt1'] = 20
+
+    assert aiamap.meta.original_meta != aiamap.meta
+    assert aiamap.meta.added_items == {'bunit': 'ct'}
+    assert aiamap.meta.removed_items == {}
+    assert aiamap.meta.modified_items == {'cdelt1': ModifiedItem(old_cdelt1, 20)}
+
+    # Check that rotate doesn't modify the original metadata
+    aiamap_rot = aiamap.rotate(30 * u.deg)
+    assert aiamap_rot.meta.original_meta == aiamap.meta.original_meta
+    assert set(aiamap_rot.meta.added_items.keys()) == set(['bunit', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
+    assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
+    assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
+
+
+def test_no_wcs_observer_info(heliographic_test_map):
+    # Check that HeliographicCarrington WCS has observer info set
+    assert isinstance(heliographic_test_map.coordinate_frame, HeliographicCarrington)
+    wcs_aux = heliographic_test_map.wcs.wcs.aux
+    assert wcs_aux.hgln_obs is not None
+    assert wcs_aux.hglt_obs is not None
+    assert wcs_aux.dsun_obs is not None
+
+    # Remove observer information, and change coordinate system to HeliographicStonyhurst
+    heliographic_test_map.meta.pop('HGLN_OBS')
+    heliographic_test_map.meta.pop('HGLT_OBS')
+    heliographic_test_map.meta.pop('DSUN_OBS')
+    heliographic_test_map.meta['CTYPE1'] = 'HGLN-CAR'
+    heliographic_test_map.meta['CTYPE2'] = 'HGLT-CAR'
+    assert isinstance(heliographic_test_map.coordinate_frame, HeliographicStonyhurst)
+
+    # Check that GenericMap.wcs doesn't set an observer
+    wcs_aux = heliographic_test_map.wcs.wcs.aux
+    assert wcs_aux.hgln_obs is None
+    assert wcs_aux.hglt_obs is None
+    assert wcs_aux.dsun_obs is None
+
+
+def test_rsun_meters_no_warning_for_hgs(heliographic_test_map):
+    # Make sure that Stonyhurst heliographic maps do not emit a warning about assuming an
+    # Earth-based observer when returning the physical radius of the Sun, because such an
+    # assumption is not necessary
+
+    # Convert the heliographic test map to Stonyhurst heliographic coordinates
+    heliographic_test_map.meta.pop('HGLN_OBS')
+    heliographic_test_map.meta.pop('HGLT_OBS')
+    heliographic_test_map.meta.pop('DSUN_OBS')
+    heliographic_test_map.meta['CTYPE1'] = 'HGLN-CAR'
+    heliographic_test_map.meta['CTYPE2'] = 'HGLT-CAR'
+
+    # Add a custom physical radius for the Sun
+    heliographic_test_map.meta['rsun_ref'] = 1.1 * sunpy.sun.constants.radius.to_value(u.m)
+
+    assert_quantity_allclose(heliographic_test_map.rsun_meters,
+                             heliographic_test_map.meta['rsun_ref'] << u.m)
+
+
+@figure_test
+def test_rotation_rect_pixelated_data(aia171_test_map):
+    aia_map = sunpy.map.Map(aia171_test_map)
+    rect_map = aia_map.superpixel([2, 1] * u.pix, func=np.mean)
+    rect_rot_map = rect_map.rotate(30 * u.deg)
+    rect_rot_map.peek()

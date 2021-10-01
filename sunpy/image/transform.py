@@ -7,7 +7,9 @@ import types
 
 import numpy as np
 
+
 from sunpy.util.exceptions import SunpyUserWarning, SunpyDeprecationWarning
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['affine_transform']
 
@@ -392,4 +394,6 @@ def _calculate_shift(image, rmatrix, image_center=None, recenter=False):
         rot_center = image_center
 
     displacement = np.dot(rmatrix, rot_center)
+
     return image_center - displacement
+  

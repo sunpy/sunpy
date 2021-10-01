@@ -1,6 +1,7 @@
 import os
 import glob
 import datetime
+from pathlib import Path
 from collections import OrderedDict
 
 import numpy as np
@@ -18,7 +19,6 @@ import sunpy.timeseries
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -26,19 +26,22 @@ from sunpy.util.metadata import MetaDict
 # =============================================================================
 
 filepath = sunpy.data.test.rootdir
-eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
 esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
+eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
+eve_many_filepath = glob.glob(os.path.join(filepath, "eve", "*"))
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
-norh_filepath = os.path.join(filepath, 'tca110810_truncated')
-lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
-rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
-noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
-noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated.json')
-noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
-noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
-goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
 goes_filepath = os.path.join(filepath, 'go1520110607.fits')
-a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
+goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
+lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
+new_goes15_filepath = os.path.join(filepath, 'goes_truncated_test_goes15.nc')
+new_goes16_filepath = os.path.join(filepath, 'goes_truncated_test_goes16.nc')
+noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
+noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
+noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated.json')
+noaa_pre_txt_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
+norh_filepath = os.path.join(filepath, 'tca110810_truncated')
+rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
+psp_filepath = os.path.join(filepath, 'psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
 
 # =============================================================================
 # Multi file Tests
@@ -46,9 +49,10 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 
 class TestTimeSeries:
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_concatenate_same_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
-        ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
+        ts_from_list = sunpy.timeseries.TimeSeries(eve_many_filepath, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
         ts_from_folder = sunpy.timeseries.TimeSeries(
@@ -58,11 +62,12 @@ class TestTimeSeries:
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
         ts_from_list.columns == sunpy.timeseries.TimeSeries(
-            a_list_of_many[0], source='EVE', concatenate=True).columns
+            eve_many_filepath[0], source='EVE', concatenate=True).columns
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_concatenate_different_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
-        ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
+        ts_from_list = sunpy.timeseries.TimeSeries(eve_many_filepath, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         ts_from_folder = sunpy.timeseries.TimeSeries(
             os.path.join(filepath, "eve"), source='EVE', concatenate=True)
@@ -71,20 +76,45 @@ class TestTimeSeries:
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
         ts_from_list.columns == sunpy.timeseries.TimeSeries(
-            a_list_of_many[0], source='EVE', concatenate=True).columns
+            eve_many_filepath[0], source='EVE', concatenate=True).columns
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_generate_list_of_ts(self):
         # Test making a list TimeSeries from multiple files
-        ts_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE')
+        ts_list = sunpy.timeseries.TimeSeries(eve_many_filepath, source='EVE')
         assert isinstance(ts_list, list)
         for ts in ts_list:
             assert isinstance(ts, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
+    @pytest.mark.filterwarnings('ignore:Unknown units')
     def test_factory_generate_from_glob(self):
         # Test making a TimeSeries from a glob
         ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(
             filepath, "eve", "*"), source='EVE', concatenate=True)
         assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
+
+    @pytest.mark.filterwarnings('ignore:Unknown units')
+    def test_factory_generate_from_pathlib(self):
+        # Test making a TimeSeries from a : pathlib.PosixPath
+        ts_from_pathlib = sunpy.timeseries.TimeSeries(Path(filepath).joinpath("gbm.fits"),
+                                                      source="GBMSummary")
+        assert isinstance(ts_from_pathlib, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
+
+    def test_read_cdf(self):
+        ts_psp = sunpy.timeseries.TimeSeries(psp_filepath)
+        assert len(ts_psp) == 2
+
+        ts = ts_psp[0]
+        assert ts.columns == ['psp_fld_l2_mag_RTN_1min_0',
+                              'psp_fld_l2_mag_RTN_1min_1',
+                              'psp_fld_l2_mag_RTN_1min_2']
+        assert ts.quantity('psp_fld_l2_mag_RTN_1min_0').unit == u.nT
+        assert len(ts.quantity('psp_fld_l2_mag_RTN_1min_0')) == 118
+
+        ts = ts_psp[1]
+        assert ts.columns == ['psp_fld_l2_quality_flags']
+        assert ts.quantity('psp_fld_l2_quality_flags').unit == u.dimensionless_unscaled
+        assert len(ts.quantity('psp_fld_l2_quality_flags')) == 1440
 
 # =============================================================================
 # Individual Implicit Source Tests
@@ -108,6 +138,16 @@ class TestTimeSeries:
     def test_implicit_goes_com(self):
         # Test a GOES TimeSeries
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com)
+        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+
+    def test_implicit_new_goes15(self):
+        # Test a GOES TimeSeries
+        ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath)
+        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+
+    def test_implicit_new_goes16(self):
+        # Test a GOES TimeSeries
+        ts_goes = sunpy.timeseries.TimeSeries(new_goes16_filepath)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_implicit_lyra(self):
@@ -160,6 +200,16 @@ class TestTimeSeries:
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
+    def test_new_goes15(self):
+        # Test a GOES TimeSeries
+        ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath, source='XRS')
+        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+
+    def test_new_goes16(self):
+        # Test a GOES TimeSeries
+        ts_goes = sunpy.timeseries.TimeSeries(new_goes16_filepath, source='XRS')
+        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+
     def test_lyra(self):
         # Test a LYRA TimeSeries
         ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
@@ -175,26 +225,14 @@ class TestTimeSeries:
         ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_json_filepath, source='NOAAIndices')
         assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
 
-    def test_noaa_ind_txt(self):
-        # Test a NOAAPredictIndices TimeSeries txt
-        with pytest.warns(SunpyDeprecationWarning):
-            ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_txt_filepath, source='NOAAIndices')
-        assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
-
     # The pre- data involves dates long in the future, so ignore an ERFA warning
     # when parsing these dates.
+
     @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
     def test_noaa_pre_json(self):
         # Test a NOAAIndices TimeSeries json
         ts_noaa_pre = sunpy.timeseries.TimeSeries(
             noaa_pre_json_filepath, source='NOAAPredictIndices')
-        assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
-
-    def test_noaa_pre_txt(self):
-        # Test a NOAAIndices TimeSeries txt
-        with pytest.warns(SunpyDeprecationWarning):
-            ts_noaa_pre = sunpy.timeseries.TimeSeries(
-                noaa_pre_txt_filepath, source='NOAAPredictIndices')
         assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
 
 # ==============================================================================
@@ -221,14 +259,15 @@ class TestTimeSeries:
         base = parse_time(datetime.datetime.today())
         times = base - TimeDelta(np.arange(24*60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        units = {'intensity': u.W/u.m**2}
         data = DataFrame(intensity, index=times, columns=['intensity'])
 
         # Use a FITS file HDU using sunpy.io
         hdulist = sunpy.io.read_file(goes_filepath)
         meta = hdulist[0].header
         meta_md = MetaDict(OrderedDict(meta))
-        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta)
-        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md)
+        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta, units)
+        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md, units)
         assert ts_hdu_meta == ts_md_meta
 
         # Use a FITS file HDU using astropy.io
@@ -236,8 +275,8 @@ class TestTimeSeries:
         meta = hdulist[0].header
         hdulist.close()
         meta_md = MetaDict(sunpy.io.header.FileHeader(meta))
-        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta)
-        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md)
+        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta, units)
+        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md, units)
         assert ts_hdu_meta == ts_md_meta
 
     def test_generic_construction_basic(self):
@@ -275,7 +314,8 @@ class TestTimeSeries:
         meta = MetaDict({'key': 'value'})
 
         # Create TS omitting units input arguments
-        ts_1 = sunpy.timeseries.TimeSeries(data, meta)
+        with pytest.warns(SunpyUserWarning, match='Unknown units for intensity'):
+            ts_1 = sunpy.timeseries.TimeSeries(data, meta)
         assert isinstance(ts_1, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
         assert ts_1.columns == ['intensity']
         assert ts_1.units == OrderedDict([('intensity', u.dimensionless_unscaled)])
@@ -322,7 +362,7 @@ class TestTimeSeries:
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
         meta = MetaDict({'key': 'value'})
         meta2 = MetaDict({'key2': 'value2'})
 
@@ -352,7 +392,7 @@ class TestTimeSeries:
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
         meta = MetaDict({'key': 'value'})
         meta2 = MetaDict({'key2': 'value2'})
 
@@ -428,51 +468,51 @@ class TestTimeSeries:
 
     def test_invalid_filepath(self):
         invalid_filepath = os.path.join(filepath, 'invalid_filepath_here')
-        with pytest.raises(NoMatchError):
+        with pytest.raises(ValueError, match='Did not find any files'):
             sunpy.timeseries.TimeSeries(invalid_filepath)
         # Now with silence_errors kwarg set
-        with pytest.raises(NoMatchError):
+        with pytest.raises(ValueError, match='Did not find any files'):
             sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_invalid_file(self):
         invalid_filepath = os.path.join(filepath, 'annotation_ppt.db')
-        with pytest.raises(TypeError):
+        with pytest.raises(NoMatchError):
             sunpy.timeseries.TimeSeries(invalid_filepath)
         # Now with silence_errors kwarg set
-        with pytest.raises(TypeError):
-            sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
+        ts = sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
+        assert ts == []
 
     def test_validate_units(self):
         valid_units = OrderedDict(
             [('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))])
-        assert sunpy.timeseries.TimeSeries._validate_units(valid_units)
+        assert sunpy.timeseries.TimeSeries._is_units(valid_units)
         # Test for not having only units for values
         invalid_units_1 = OrderedDict(
             [('Watt Per Meter Squared', 'string'), ('Meter Cubed', u.Unit("m3"))])
-        assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_1)
+        assert not sunpy.timeseries.TimeSeries._is_units(invalid_units_1)
         # Test for being a MetaDict object
         invalid_units_2 = MetaDict(OrderedDict(
             [('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))]))
-        assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_2)
+        assert not sunpy.timeseries.TimeSeries._is_units(invalid_units_2)
 
     def test_validate_meta_basic(self):
         valid_meta_1 = MetaDict({'key': 'value'})
-        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_1)
+        assert sunpy.timeseries.TimeSeries._is_metadata(valid_meta_1)
         valid_meta_2 = OrderedDict({'key': 'value'})
-        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_2)
+        assert sunpy.timeseries.TimeSeries._is_metadata(valid_meta_2)
         time_range = sunpy.time.TimeRange('2020-01-01 12:00', '2020-01-02 12:00')
         valid_meta_3 = sunpy.timeseries.TimeSeriesMetaData(time_range)
-        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_3)
+        assert sunpy.timeseries.TimeSeries._is_metadata(valid_meta_3)
         invalid_meta = []
-        assert not sunpy.timeseries.TimeSeries._validate_meta(invalid_meta)
+        assert not sunpy.timeseries.TimeSeries._is_metadata(invalid_meta)
 
     def test_validate_meta_astropy_header(self):
         # Manually open a goes file for the sunpy.io.header.FileHeader test
         hdus = sunpy.io.read_file(goes_filepath)
         header = hdus[0].header
-        assert sunpy.timeseries.TimeSeries._validate_meta(header)
+        assert sunpy.timeseries.TimeSeries._is_metadata(header)
         # Manually open a goes file for the astropy.io.fits.header.Header test
         hdulist = fits.open(goes_filepath)
         header = hdulist[0].header
         hdulist.close()
-        assert sunpy.timeseries.TimeSeries._validate_meta(header)
+        assert sunpy.timeseries.TimeSeries._is_metadata(header)

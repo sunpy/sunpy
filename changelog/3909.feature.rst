@@ -1,1 +1,0 @@
-Added a `sunpy.map.GenericMap.contour()` method to find the contours on a map.

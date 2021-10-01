@@ -15,11 +15,13 @@ from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
-# We use the SunPy sample data.
+# We use the sunpy sample data.
+
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
 # You can access the observer coordinate with:
+
 print(aiamap.observer_coordinate)
 
 ###############################################################################
@@ -30,6 +32,7 @@ print(aiamap.observer_coordinate)
 # 42,164.71 km and an inclination of 28.05 deg.
 # We will convert it to Geocentric Celestial Reference System (GCRS)
 # whose center is at the Earth's center-of-mass.
+
 sdo_gcrs = aiamap.observer_coordinate.gcrs
 sun = get_body_heliographic_stonyhurst('sun', aiamap.date)
 
@@ -38,12 +41,14 @@ sun = get_body_heliographic_stonyhurst('sun', aiamap.date)
 # This looks like the Earth is in the way of SDO's
 # field of view but remember that it is also above the plane of this plot
 # by its declination.
+
 ax = plt.subplot(projection='polar')
 circle = plt.Circle((0.0, 0.0), 1.0, transform=ax.transProjectionAffine + ax.transAxes, color="green",
                     alpha=0.4, label="Earth")
 ax.add_artist(circle)
-plt.text(0.48, 0.5, "Earth", transform=ax.transAxes)
-plt.polar(sdo_gcrs.ra.to('rad'), sdo_gcrs.distance / R_earth, 'o', label=f'SDO {sdo_gcrs.dec:.2f}')
-plt.polar(sun.lon.to('rad').value * np.ones(2), [1, 10], '-', label='to Sun', color='black')
-plt.legend()
+ax.text(0.48, 0.5, "Earth", transform=ax.transAxes)
+ax.plot(sdo_gcrs.ra.to('rad'), sdo_gcrs.distance / R_earth, 'o', label=f'SDO {sdo_gcrs.dec:.2f}')
+ax.plot(sun.lon.to('rad').value * np.ones(2), [1, 10], '-', label='to Sun', color='black')
+ax.legend()
+
 plt.show()

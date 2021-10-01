@@ -26,14 +26,14 @@ Notes
 import os
 import re
 import sys
-import warnings
+import math
 import traceback
 import collections
 
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_metadata, warn_user
 
 __all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit']
 
@@ -87,7 +87,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                     message += line
                     message += '\n'
                 message += repr(e)
-                warnings.warn(message, SunpyUserWarning)
+                warn_user(message)
 
     return pairs
 
@@ -138,7 +138,9 @@ def get_header(afile):
                 if card.comment != '':
                     keydict.update({card.keyword: card.comment})
             header['KEYCOMMENTS'] = keydict
-            header['WAVEUNIT'] = extract_waveunit(header)
+            waveunit = extract_waveunit(header)
+            if waveunit is not None:
+                header['WAVEUNIT'] = waveunit
 
             headers.append(header)
     finally:
@@ -206,14 +208,17 @@ def header_to_fits(header):
     for k, v in header.items():
         # Drop any keys that have non-ascii characters
         if not fits.Card._ascii_text_re.match(str(v)):
-            warnings.warn(f'The meta key {k} is not valid ascii, dropping from the FITS header',
-                          SunpyUserWarning)
+            warn_metadata(f'The meta key {k} is not valid ascii, dropping from the FITS header')
             continue
         # Drop any keys which are too long to save into FITS
         if len(k) > 8:
-            warnings.warn(f"The meta key {k} is too long, dropping from the FITS header "
-                          "(maximum allowed key length is 8 characters).",
-                          SunpyUserWarning)
+            warn_metadata(f"The meta key {k} is too long, dropping from the FITS header "
+                          "(maximum allowed key length is 8 characters).")
+            continue
+
+        if isinstance(v, float) and math.isnan(v):
+            warn_metadata(f'The meta key {k} has a NaN value, which is not valid in a FITS '
+                          'header, dropping from the FITS header')
             continue
 
         if k.upper() in ('COMMENT', 'HV_COMMENT'):

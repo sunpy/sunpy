@@ -1,3 +1,0 @@
-`sunpy.net.dataretriever.sources.noaa.SRSClient` now correctly returns zero
-results for queries in the future or before 1996, which is when data is first
-available.

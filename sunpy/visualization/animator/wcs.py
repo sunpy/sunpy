@@ -3,6 +3,7 @@ from functools import partial
 import numpy as np
 
 import astropy.units as u
+from astropy.visualization import AsymmetricPercentileInterval
 from astropy.wcs.wcsapi import BaseLowLevelWCS
 
 from sunpy.extern import modest_image
@@ -34,7 +35,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         axes. The list should be the same length as the number of pixel
         dimensions with ``'x'`` and (optionally) ``'y'`` in the elements
         corresponding to the axes to be plotted. If only ``'x'`` is present a
-        line plot will be drawn. All other elements should be `0`.
+        line plot will be drawn. All other elements should be ``0``.
     coord_params: `dict`, optional
         This dict allows you to override
         `~astropy.visualization.wcsaxes.WCSAxes` parameters for each world
@@ -48,7 +49,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
         * ``major_formatter``: `~astropy.visualization.wcsaxes.CoordinateHelper.set_major_formatter`
         * ``axislabel``: `~astropy.visualization.wcsaxes.CoordinateHelper.set_axislabel`
         * ``grid``: `~astropy.visualization.wcsaxes.CoordinateHelper.grid` (The value should be a dict of keyword arguments to ``grid()`` or `True`).
-        * ``ticks``: `dict` the keyword arguments to the `~astropy.visualization.wcsaxes.CoordinateHelper.set_ticks` method.
+        * ``ticks``: `dict` or `bool` the keyword arguments to the
+          `~astropy.visualization.wcsaxes.CoordinateHelper.set_ticks` method,
+          or `False` to display no ticks for this coord.
+
     ylim: `tuple` or `str`, optional
        The yaxis limits to use when drawing a line plot, if 'fixed' then use
        the global data limits, if 'dynamic' then set the y limit for each frame
@@ -56,10 +60,12 @@ class ArrayAnimatorWCS(ArrayAnimator):
     ylabel: `string`, optional
        The yaxis label to use when drawing a line plot. Setting the label on
        the y-axis on an image plot should be done via ``coord_params``.
-
+    clip_interval : two-element `~astropy.units.Quantity`, optional
+        If provided, the data for each step will be clipped to the percentile interval bounded by the two numbers.
     """
 
-    def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None, **kwargs):
+    def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None,
+                 clip_interval: u.percent = None, **kwargs):
         if not isinstance(wcs, BaseLowLevelWCS):
             raise ValueError("A WCS object should be provided that implements the astropy WCS API.")
         if wcs.pixel_n_dim != data.ndim:
@@ -77,13 +83,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
             image_axes.append(slices[::-1].index("y"))
             self.plot_dimensionality = 2
 
-        if self.plot_dimensionality == 1:
-            try:
-                from astropy.visualization.wcsaxes.frame import RectangularFrame1D  # NOQA
-            except ImportError as e:
-                raise ImportError(
-                    "Astropy 4.0 must be installed to do line plotting with WCSAxes.") from e
-
         self.naxis = data.ndim
         self.num_sliders = self.naxis - self.plot_dimensionality
         self.slices_wcsaxes = list(slices)
@@ -91,6 +90,11 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.coord_params = coord_params
         self.ylim = ylim
         self.ylabel = ylabel
+
+        if clip_interval is not None and len(clip_interval) != 2:
+            raise ValueError('A range of 2 values must be specified for clip_interval.')
+
+        self.clip_interval = clip_interval
 
         extra_slider_labels = []
         if "slider_functions" in kwargs and "slider_labels" not in kwargs:
@@ -106,10 +110,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
         Read first the axes names property of the wcs and fall back to physical types.
         """
-        # world_axis_names was only added to the APE 14 API in 4.0, so do this for backwards compatibility.
-        world_axis_names = getattr(self.wcs, "world_axis_names", [''] * self.wcs.world_n_dim)
         # Return the name if it is set, or the physical type if it is not.
-        return [l or t for l, t in zip(world_axis_names, self.wcs.world_axis_physical_types)]
+        return [l or t for l, t in zip(self.wcs.world_axis_names, self.wcs.world_axis_physical_types)]
 
     def _compute_slider_labels_from_wcs(self, slices):
         """
@@ -187,18 +189,20 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
             ticks = params.get("ticks", None)
             if ticks is not None:
-                if not isinstance(ticks, dict):
+                if isinstance(ticks, bool):
+                    coord.set_ticks_visible(ticks)
+                    coord.set_ticklabel_visible(ticks)
+                elif isinstance(ticks, dict):
+                    coord.set_ticks(**ticks)
+                else:
                     raise TypeError(
-                        "The 'ticks' value in the coord_params dictionary must be a dict.")
-                coord.set_ticks(**ticks)
+                        "The 'ticks' value in the coord_params dictionary must be a dict or a boolean."
+                    )
 
-    def _get_main_axes(self):
-        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
-                                 slices=self.slices_wcsaxes)
-
-        self._apply_coord_params(axes)
-
-        return axes
+    def _setup_main_axes(self):
+        self.axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
+                                      slices=self.slices_wcsaxes)
+        self._apply_coord_params(self.axes)
 
     def plot_start_image(self, ax):
         if self.plot_dimensionality == 1:
@@ -217,6 +221,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         the matplotlib artist.
         """
         ind = int(val)
+        if ind == int(slider.cval):
+            return
         ax_ind = self.slider_axes[slider.slider_ind]
         self.frame_slice[ax_ind] = ind
         self.slices_wcsaxes[self.wcs.pixel_n_dim - ax_ind - 1] = ind
@@ -266,15 +272,14 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
         Update the line plot.
         """
-        if val != slider.cval:
-            self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
-            line.set_ydata(self.data[self.frame_index])
+        self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
+        line.set_ydata(self.data[self.frame_index])
 
-            # If we are not setting ylim globally then we set it per frame.
-            if self.ylim == 'dynamic':
-                self.axes.set_ylim(self.data[self.frame_index].min(),
-                                   self.data[self.frame_index].max())
-            slider.cval = val
+        # If we are not setting ylim globally then we set it per frame.
+        if self.ylim == 'dynamic':
+            self.axes.set_ylim(self.data[self.frame_index].min(),
+                               self.data[self.frame_index].max())
+        slider.cval = val
 
     def plot_start_image_2d(self, ax):
         """
@@ -283,6 +288,9 @@ class ArrayAnimatorWCS(ArrayAnimator):
         imshow_args = {'interpolation': 'nearest',
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
+
+        if self.clip_interval is not None:
+            imshow_args['vmin'], imshow_args['vmax'] = self._get_2d_plot_limits()
 
         im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
 
@@ -302,11 +310,23 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         return im
 
+    def _get_2d_plot_limits(self):
+        """
+        Get vmin, vmax of a data slice when clip_interval is specified.
+        """
+        percent_limits = self.clip_interval.to('%').value
+        vmin, vmax = AsymmetricPercentileInterval(*percent_limits).get_limits(self.data_transposed)
+        return vmin, vmax
+
     def update_plot_2d(self, val, im, slider):
         """
         Update the image plot.
         """
-        if val != slider.cval:
-            self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
-            im.set_array(self.data_transposed)
-            slider.cval = val
+        self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
+        im.set_array(self.data_transposed)
+
+        if self.clip_interval is not None:
+            vmin, vmax = self._get_2d_plot_limits()
+            im.set_clim(vmin, vmax)
+
+        slider.cval = val

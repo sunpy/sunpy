@@ -1,0 +1,40 @@
+name: Stale Bot
+
+on:
+  schedule:
+#            ┌───────── minute (0 - 59)
+#            │ ┌───────── hour (0 - 23)
+#            │ │ ┌───────── day of the month (1 - 31)
+#            │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
+#            │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
+    - cron: '0 1 * * 1' # Every Monday at 1am UTC
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        operations-per-run: 50
+        days-before-issue-stale: 99999999 # Never mark issues as stale
+        days-before-pr-stale: 150
+        days-before-close: 30
+        stale-pr-label: 'Stale'
+        stale-pr-message: >-
+          Hello :wave:,
+          Thanks for your contribution to sunpy!
+
+          I have marked this pull request as stale because there hasn't had any activity in five months.
+          If you are still working on this, or if it's waiting on a maintainer to look at it then please let us know and we will keep it open.
+          Please add a comment with: @sunpy/sunpy-developers to get someone's attention.
+
+          If nobody comments on this pull request for another month, it will be closed.
+        close-pr-message: >-
+          Hello again :wave:,
+          We want to thank you again for your contribution to sunpy!
+
+          This pull request has had no activity since my last reminder, so I am going to close it.
+          If at any time you want to come back to this please feel free to reopen it!
+          If you want to discuss this, please add a comment with: @sunpy/sunpy-developers and someone will get back to you soon.
+        exempt-pr-labels:  'Keep Open'

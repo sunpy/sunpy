@@ -1,3 +1,0 @@
-Maps created directly via. `sunpy.map.GenericMap` now have their metadata
-automatically converted to a `~sunpy.util.MetaDict`, which is the same current
-behaviour of the `sunpy.map.Map` factory.

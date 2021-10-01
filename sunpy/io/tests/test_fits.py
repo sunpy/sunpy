@@ -11,7 +11,7 @@ import sunpy.data.test
 import sunpy.io.fits
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 from sunpy.io.fits import extract_waveunit, get_header, header_to_fits
-from sunpy.util import MetaDict, SunpyUserWarning
+from sunpy.util import MetaDict, SunpyMetadataWarning
 
 testpath = sunpy.data.test.rootdir
 
@@ -84,17 +84,19 @@ def test_simple_write_compressed(tmpdir):
 
 
 def test_write_with_metadict_header_astropy(tmpdir):
-    fits_file = fits.open(AIA_171_IMAGE)
-    data, header = fits_file[0].data, fits_file[0].header
+    with fits.open(AIA_171_IMAGE) as fits_file:
+        data, header = fits_file[0].data, fits_file[0].header
     meta_header = MetaDict(OrderedDict(header))
     temp_file = tmpdir / "temp.fits"
-    with pytest.warns(SunpyUserWarning, match='The meta key comment is not valid ascii'):
+    with pytest.warns(SunpyMetadataWarning, match='The meta key comment is not valid ascii'):
         sunpy.io.fits.write(str(temp_file), data, meta_header)
     assert temp_file.exists()
-
+    fits_file.close()
 
 # Various warnings are thrown in this test, but we just want to check that the code
 # works without exceptions
+
+
 @pytest.mark.filterwarnings('ignore')
 def test_fitsheader():
     """Test that all test data can be converted back to a FITS header."""
@@ -110,16 +112,25 @@ def test_fitsheader():
 
 def test_warn_nonascii():
     # Check that a non-ascii character raises a warning and not an error
-    with pytest.warns(SunpyUserWarning, match='not valid ascii'):
+    with pytest.warns(SunpyMetadataWarning, match='not valid ascii'):
         fits = header_to_fits({'bad': 'test\t',
                                'good': 'test'})
     assert 'GOOD' in fits.keys()
     assert 'BAD' not in fits.keys()
 
 
+def test_warn_nan():
+    # Check that a NaN value raises a warning and not an error
+    with pytest.warns(SunpyMetadataWarning, match='has a NaN value'):
+        fits = header_to_fits({'bad': float('nan'),
+                               'good': 1.0})
+    assert 'GOOD' in fits.keys()
+    assert 'BAD' not in fits.keys()
+
+
 def test_warn_longkey():
     # Check that a key that is too long raises a warning and not an error
-    with pytest.warns(SunpyUserWarning, match='The meta key badlongkey is too long'):
+    with pytest.warns(SunpyMetadataWarning, match='The meta key badlongkey is too long'):
         fits = header_to_fits({'badlongkey': 'test',
                                'goodkey': 'test'})
     assert 'GOODKEY' in fits.keys()

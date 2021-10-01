@@ -96,8 +96,8 @@ The easiest interface to work with coordinates is through the `~astropy.coordina
   >>> c = SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame=frames.Heliocentric)
   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
   >>> c
-  <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-      (70., -30., 695700.)>
+  <SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+      (70., -30.)>
 
 
 It is also possible to use strings to specify the frame but in that case make sure to
@@ -168,13 +168,13 @@ Heliocentric is typically used with Cartesian components::
 
 Both of the heliographic frames have the components of latitude, longitude and radius::
 
-   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
+   >>> c = SkyCoord(70*u.deg, -30*u.deg, 1*u.AU, frame=frames.HeliographicStonyhurst)
    >>> c.lat
    <Latitude -30. deg>
    >>> c.lon
    <Longitude 70. deg>
    >>> c.radius
-   <Distance 695700. km>
+   <Distance 1. AU>
 
 Heliographic Stonyhurst, when used with Cartesian components, is known as Heliocentric
 Earth Equatorial (HEEQ).  Here's an example of how to use
@@ -206,7 +206,7 @@ coordinates is::
    <SkyCoord (Helioprojective: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
        (0., 0.)>
    >>> c.transform_to(frames.HeliographicCarrington)
-   <SkyCoord (HeliographicCarrington: obstime=2017-07-26T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, AU)
+   <SkyCoord (HeliographicCarrington: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, AU)
        (283.95956776, 5.31701821, 0.00465047)>
 
 It is also possible to transform to any coordinate system implemented in Astropy. This can be used to find the position of the solar limb in AltAz equatorial coordinates::
@@ -218,9 +218,8 @@ It is also possible to transform to any coordinate system implemented in Astropy
     >>> west_limb = SkyCoord(900*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective,
     ...                      observer=greenbelt.get_itrs(greenbelt_frame.obstime), obstime=time)  # doctest: +REMOTE_DATA
     >>> west_limb.transform_to(greenbelt_frame)  # doctest: +REMOTE_DATA
-    <SkyCoord (AltAz: obstime=2017-07-11 15:00:00.000, location=(1126916.53031967, -4833386.58391627, 3992696.622115747) m, pressure=0.0 hPa, temperature=0.0 deg_C, relative_humidity=0, obswl=1.0 micron): (az, alt, distance) in (deg, deg, m)
-        (111.40839101, 57.16645715, 1.51860261e+11)>
-
+    <SkyCoord (AltAz: obstime=2017-07-11 15:00:00.000, location=(1126916.53031967, -4833386.58391627, 3992696.62211575) m, pressure=0.0 hPa, temperature=0.0 deg_C, relative_humidity=0.0, obswl=1.0 micron): (az, alt, distance) in (deg, deg, m)
+        (111.40782056, 57.1660434, 1.51859559e+11)>
 
 Observer Location Information
 =============================
@@ -240,10 +239,12 @@ transformations cannot be performed.
 The location of the observer is automatically populated from meta data when
 coordinate frames are created using map.
 
+In the case of `~sunpy.coordinates.frames.HeliographicCarrington`, one can specify ``observer='self'`` to indicate that the coordinate itself should be used as the observer for defining the coordinate frame.
+
 It is possible to convert from a `~sunpy.coordinates.frames.Helioprojective`
 frame with one observer location to another
 `~sunpy.coordinates.frames.Helioprojective` frame with a different observer
-location, by converting through `~sunpy.coordinates.frames.Heliographic`, this
+location, by converting through `~sunpy.coordinates.frames.HeliographicStonyhurst`, this
 does involve making an assumption of the radius of the Sun to calculate the
 position on the solar sphere. The conversion can be performed as follows::
 
@@ -298,7 +299,7 @@ with a frame, some examples in `sunpy.coordinates` are ``obstime`` or
 ``observer`` for observer location. Only the frames where this data is
 meaningful have these attributes, i.e. only the Helioprojective frames have
 ``observer``. However, when you transform into another frame and then back to a
-projective frame using `SkyCoord` it will remember the attributes previously
+projective frame using `~astropy.coordinates.SkyCoord` it will remember the attributes previously
 provided, and repopulate the final frame with them. If you were to do
 transformations using the Frames alone this would not happen.
 
@@ -318,6 +319,7 @@ More Detailed Information
 
    carrington
    rotatedsunframe
+   velocities
    wcs
    other_api
 

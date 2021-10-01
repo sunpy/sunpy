@@ -8,6 +8,7 @@ import astropy.units as u
 import sunpy.data.test
 import sunpy.map
 from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 @pytest.fixture
@@ -22,7 +23,7 @@ def shape(aia171_test_map):
 
 
 def resample_meta(aia171_test_map, dimensions, method, center, minusone):
-    map_resampled = aia171_test_map.resample(dimensions)
+    map_resampled = aia171_test_map.resample(dimensions, method=method)
     return tuple(map_resampled.data.shape)
 
 
@@ -39,7 +40,9 @@ def resample_method(aia171_test_map, method):
 
 
 def test_resample_neighbor(aia171_test_map):
-    resample_method(aia171_test_map, 'neighbor')
+    with pytest.warns(SunpyDeprecationWarning,
+                      match='Using "neighbor" as a method for resampling is deprecated.'):
+        resample_method(aia171_test_map, 'neighbor')
 
 
 def test_resample_nearest(aia171_test_map):
@@ -64,11 +67,11 @@ def test_reshape(aia171_test_map, shape):
     assert im.shape == (shape[0]/2, 2, shape[1]/2, 2)
     # Dimension divides the array shape exactly with remainder
     im = reshape_image_to_4d_superpixel(aia171_test_map.data, (7, 5), (0, 0))
-    assert im.shape == (np.int(shape[0]/7), 7, np.int(shape[1]/5), 5)
+    assert im.shape == (int(shape[0]/7), 7, int(shape[1]/5), 5)
     # Dimension divides the array shape exactly with no remainder, and there is
     # an offset
     im = reshape_image_to_4d_superpixel(aia171_test_map.data, (2, 2), (1, 1))
-    assert im.shape == (np.int(shape[0]/2) - 1, 2, np.int(shape[1]/2) - 1, 2)
+    assert im.shape == (int(shape[0]/2) - 1, 2, int(shape[1]/2) - 1, 2)
     # Dimension divides the array shape exactly with remainder, and there is
     # an offset
     d = (9, 7)

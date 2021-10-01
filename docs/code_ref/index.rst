@@ -7,18 +7,18 @@ Code Reference
 .. toctree::
    :maxdepth: 2
 
-   sunpy
+   known_issues
+   stability
    coordinates/index
    data
    database
    image
-   instr
    io
    map
    net
    physics
-   roi
    sun
+   sunpy
    time
    timeseries
    util

@@ -6,7 +6,7 @@ Joint Science Operations Center (JSOC) contains data products from the Solar Dyn
 as well as certain other missions and instruments. These data are available from the JSOC database,
 which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`_.
 
-SunPy's JSOC Client provides an easier interface to query for JSOC data and make export requests.
+sunpy's JSOC Client provides an easier interface to query for JSOC data and make export requests.
 It uses `drms module <https://docs.sunpy.org/projects/drms>`_ as its backend, and exposes a similar API as
 the VSO Client.
 
@@ -26,7 +26,7 @@ staged for download and then you can download them. Fido combines the stages int
 Setup
 *****
 
-SunPy's Fido module is in `sunpy.net`. It can be imported as follows:
+sunpy's Fido module is in `sunpy.net`. It can be imported as follows:
 
     >>> from sunpy.net import Fido, attrs as a
 
@@ -61,11 +61,9 @@ Constructing a Basic Query
 
 Let's start with a very simple query.  We could ask for all ``hmi.v_45s`` series data
 between January 1st from 00:00 to 01:00, 2014.
-We can add email address to the search query with the `sunpy.net.jsoc.attrs.Notify` attribute.
-Please note you can search without this but right now, you can not add the email address after the search.
 
-    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'),
-    ...                   a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
@@ -79,6 +77,8 @@ variable set to the Fido search, in this case, res::
     Results from 1 Provider:
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -110,7 +110,7 @@ variable set to the Fido search, in this case, res::
 Now, let's break down the arguments of ``Fido.search`` to understand
 better what we've done.  The first argument ``a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00')``
 sets the start and end times for the query (any date/time
-format understood by SunPy's :ref:`parse_time function <parse-time>`
+format understood by sunpy's :ref:`parse_time function <parse-time>`
 can be used to specify dates and time). The Time attribute takes UTC time,
 as default. If you need to pass a Time in some other time scale, such as TAI,
 pass an Astropy Time object, like::
@@ -136,24 +136,17 @@ that are specified to construct the query.
 ``a.jsoc.Series()`` is compulsory to be provided in each of the jsoc queries. Apart from this,
 at least one PrimeKey must be passed (generally ``a.Time()``).
 
-The third argument::
-
-    >>> a.jsoc.Notify('sunpy@sunpy.org')
-    <sunpy.net.jsoc.attrs.Notify: sunpy@sunpy.org object ...>
-
-tells JSOC what email address you are registered with and to email when your request is ready to download.
 
 Querying with other PrimeKeys
 =============================
 
 Other than Time, one other PrimeKey is supported with in-built attribute.
-In case of AIA series, ``a.jsoc.Wavelength()`` can be passed as a PrimeKey::
+In case of AIA series, ``a.Wavelength()`` can be passed as a PrimeKey::
 
     >>> import astropy.units as u
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                               a.jsoc.Notify('sunpy@sunpy.org'),
     ...                               a.jsoc.Series('aia.lev1_euv_12s'),
-    ...                               a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
+    ...                               a.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
 
 Note that, only Time and Wavelength are in-built attributes here. If you need to pass any other PrimeKey,
 it should be passed like this::
@@ -194,23 +187,84 @@ Upon doing ``Fido.search()`` as described above, only a limited set of keywords 
 object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, ``'T_OBS'`` and ``'WAVELNTH'``.
 
 If you want to get a manual set of keywords in the response object, you can pass the set of keywords using
-`~sunpy.net.jsoc.attrs.Keys` attribute.
+:meth:`~sunpy.net.base_client.QueryResponseTable.show` method.
 
     >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'),
-    ...                   a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS']))  # doctest: +REMOTE_DATA
-
-The parameter passed into ``a.jsoc.Keys()`` can be either a list of strings, or a string with keywords seperated by
-comma and a space. Meaning to say,: ``a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS'])`` and
-``jsoc.attrs.Keys('TELESCOP, INSTRUME, T_OBS')``
-
-both are correct.
+    ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+    >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+    TELESCOP  INSTRUME           T_OBS
+    -------- ---------- -----------------------
+     SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:05:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:05:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:06:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:07:22_TAI
+         ...        ...                     ...
+     SDO/HMI HMI_FRONT2 2014.01.01_00:53:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:53:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:54:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:55:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:56:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 Passing an incorrect keyword won't throw an error, but the corresponding column in the table will
-contain ``Invalid KeyLink``.
+not be displayed.
 
-To get all of the keywords, you can either use the `~sunpy.net.jsoc.JSOCClient.search_metadata` method,
-or alternatively pass ``a.jsoc.Keys('***ALL***')`` with the series name and PrimeKey.
+To display all of the columns, we can use ``show()`` without passing any arguments::
+
+    >>> res.show()  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+            DATE                DATE__OBS        ... CALVER64
+    -------------------- ----------------------- ... --------
+    2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
+    2014-01-05T17:47:10Z 2014-01-01T00:00:24.20Z ...     4370
+    2014-01-05T17:48:18Z 2014-01-01T00:01:09.20Z ...     4370
+    2014-01-05T17:49:25Z 2014-01-01T00:01:54.20Z ...     4370
+    2014-01-05T17:50:34Z 2014-01-01T00:02:39.20Z ...     4370
+    2014-01-05T17:51:42Z 2014-01-01T00:03:24.20Z ...     4370
+    2014-01-05T17:52:50Z 2014-01-01T00:04:09.20Z ...     4370
+    2014-01-05T17:53:59Z 2014-01-01T00:04:54.20Z ...     4370
+    2014-01-05T17:55:08Z 2014-01-01T00:05:39.20Z ...     4370
+    2014-01-05T17:56:16Z 2014-01-01T00:06:24.20Z ...     4370
+                     ...                     ... ...      ...
+    2014-01-05T19:05:49Z 2014-01-01T00:52:09.20Z ...     4370
+    2014-01-05T17:35:43Z 2014-01-01T00:52:54.20Z ...     4370
+    2014-01-05T17:36:54Z 2014-01-01T00:53:39.20Z ...     4370
+    2014-01-05T17:38:01Z 2014-01-01T00:54:24.20Z ...     4370
+    2014-01-05T17:39:09Z 2014-01-01T00:55:09.20Z ...     4370
+    2014-01-05T17:40:17Z 2014-01-01T00:55:54.20Z ...     4370
+    2014-01-05T17:41:25Z 2014-01-01T00:56:39.20Z ...     4370
+    2014-01-05T17:42:33Z 2014-01-01T00:57:24.20Z ...     4370
+    2014-01-05T17:43:41Z 2014-01-01T00:58:09.20Z ...     4370
+    2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z ...     4370
+    2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 
 Using Segments
@@ -237,7 +291,7 @@ Also, if you provide an incorrect segment name, it will throw a meaningful error
 by the given series::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.sharp_720s'), a.jsoc.Notify('sunpy@sunpy.org'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
     ...             a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
     Traceback (most recent call last):
     ...
@@ -247,12 +301,14 @@ by the given series::
 To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`` using ``AND`` operator::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.sharp_720s'), a.jsoc.Notify('sunpy@sunpy.org'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
     ...             a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
     61 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
     ----------------------- -------- --------- -------- -------
     2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
@@ -288,12 +344,14 @@ using `~sunpy.net.attrs.Sample`. In other words, if you need to query for ``hmi.
 between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
 
     >>> import astropy.units as u
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.v_45s'), a.Sample(10*u.min))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
     7 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -316,12 +374,14 @@ Complex queries can be built using ``OR`` operators.
 
 Let's look for 2 different series data at the same time::
 
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -348,6 +408,8 @@ Let's look for 2 different series data at the same time::
     Length = 81 rows
     <BLANKLINE>
     2107 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
            T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
     -------------------- -------- -------- -------- -------
     2014-01-01T00:00:01Z  SDO/AIA    AIA_4       94    2145
@@ -382,11 +444,13 @@ of conditions which get passed to the JSOC.  Let's say you want all the
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
     ...             a.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
-    ...             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
+    ...             a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -413,6 +477,8 @@ of conditions which get passed to the JSOC.  Let's say you want all the
     Length = 81 rows
     <BLANKLINE>
     81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
     ----------------------- -------- ---------- -------- -------
     2014.01.02_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -453,7 +519,17 @@ Downloading data
 To download the files located by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`,
 you can download them by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`::
 
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
+    ...             a.jsoc.Notify('solar@example.com')  # doctest: +SKIP
     >>> downloaded_files = Fido.fetch(res)  # doctest: +SKIP
+
+To export a request for download, you must have used the `sunpy.net.jsoc.attrs.Notify` attribute at search time to specify your email address.
+
+.. note::
+
+   **Only complete searches can be downloaded from JSOC**, this means that no slicing operations performed on the results object will affect the number of files downloaded.
+
 
 Using JSOCClient for complex usage
 **********************************
@@ -467,7 +543,7 @@ allowing a greater control over the whole process.
 Setup
 =====
 
-SunPy's JSOC module is in `~sunpy.net`.  It can be imported as follows::
+sunpy's JSOC module is in `~sunpy.net`.  It can be imported as follows::
 
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
@@ -504,11 +580,11 @@ downloaded. Only then, can we download them. The download request can be staged 
     <ExportRequest id="JSOC_20170713_1461", status=0>
 
 The function `~sunpy.net.jsoc.JSOCClient.request_data` stages the request.
-It returns a `drms.ExportRequest` object, which has many attributes.
+It returns a `drms.client.ExportRequest` object, which has many attributes.
 The most important ones are ``id`` and ``status``. Only when the status is 0, we can
 move to the third step, i.e. downloading the data.
 
-If you are making more than 1 query at a time, it will return a list of `~drms.ExportRequest` objects. Hence, access the
+If you are making more than 1 query at a time, it will return a list of `~drms.client.ExportRequest` objects. Hence, access the
 list elements accordingly. You can get the id and status of the request (if it is not a list) by::
 
     >>> requests.id  # doctest: +SKIP

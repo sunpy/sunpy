@@ -7,11 +7,11 @@ Logging system
 Overview
 ========
 
-The SunPy logging system makes use of the `~astropy.logger.AstropyLogger`.
+The sunpy logging system makes use of the `~astropy.logger.AstropyLogger`.
 Its purpose is to provide users the ability to decide which log and warning messages to show,
 to capture them, and to send them to a file.
 
-All messages provided by SunPy use this logging facility which is based
+All messages provided by sunpy use this logging facility which is based
 on the Python `logging` module rather than print statements.
 
 Messages can have one of several levels, in increasing order of importance:
@@ -33,7 +33,7 @@ By default, all messages except for DEBUG messages are displayed.
 
 Configuring the logging system
 ==============================
-The default configuration for the logger is determined by the default SunPy
+The default configuration for the logger is determined by the default sunpy
 configuration file. To make permanent changes to the logger configuration
 see the ``[logger]`` section of the Sunpy configuration
 file (:doc:`sunpyrc </guide/customization>`).

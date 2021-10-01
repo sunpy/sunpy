@@ -6,34 +6,62 @@ import codecs
 import urllib
 from pathlib import Path
 from collections import OrderedDict
+from urllib.parse import urljoin
+from urllib.request import urlopen
 
 from astropy.utils.decorators import lazyproperty
 
 import sunpy
 import sunpy.util.parfive_helpers as parfive
+from sunpy import log
 from sunpy.time import parse_time
 from sunpy.util.util import partial_key_match
 from sunpy.util.xml import xml_to_dict
 
 __all__ = ['HelioviewerClient']
 
+HELIOVIEWER_API_URLS = [
+    "https://helioviewer-api.ias.u-psud.fr/",
+    "https://api.helioviewer.org/",
+]
+
+
+def check_connection(url):
+    try:
+        resp = urlopen(urljoin(url, "/v2/getDataSources/"))
+        assert resp.getcode() == 200
+        assert isinstance(json.loads(resp.read()), dict)
+        return url
+    except Exception as e:
+        log.debug(f"Unable to connect to {url}:\n {e}")
+        log.info(f"Connection to {url} failed. Retrying with different url.")
+    return None
+
 
 class HelioviewerClient:
     """Helioviewer.org Client"""
 
-    def __init__(self, url="https://api.helioviewer.org/"):
+    def __init__(self, url=None):
         """
         Parameters
         ----------
         url : `str`
             Default URL points to the Helioviewer API.
         """
+        if url is None:
+            for url in HELIOVIEWER_API_URLS:
+                if check_connection(url):
+                    break
+
+        if url is None:
+            raise ValueError("No online helioviewer API can be found.")
+
         self._api = url
 
     @lazyproperty
     def data_sources(self):
         """
-        We trawl through the return from `getDataSources` to create a clean
+        We trawl through the return from ``getDataSources`` to create a clean
         dictionary for all available sourceIDs.
 
         Here is a list of all of them: https://api.helioviewer.org/docs/v2/#appendix_datasources
@@ -78,11 +106,12 @@ class HelioviewerClient:
         Finds the closest image available for the specified source and date.
         **This does not download any file.**
 
-        This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_ from the Helioviewer API.
+        This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_
+        from the Helioviewer API.
 
         .. note::
-            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-            can then be used to get required information.
+            We can use ``observatory`` and ``measurement`` or ``instrument`` and ``measurement`` to
+            get the value for source ID which can then be used to get required information.
 
         Parameters
         ----------
@@ -134,13 +163,13 @@ class HelioviewerClient:
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
-        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-        can then be used to get required information.
-        This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_
+        from the Helioviewer API.
 
         .. note::
-            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-            can then be used to get required information.
+            We can use ``observatory`` and ``measurement`` or ``instrument`` and ``measurement``
+            to get the value for source ID which can then be used to get required information.
 
         Parameters
         ----------
@@ -199,13 +228,13 @@ class HelioviewerClient:
         """
         Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section
         of Helioviewer-specific metadata.
-        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-        can then be used to get required information.
-        This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_
+        from the Helioviewer API.
 
         .. note::
-            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-            can then be used to get required information.
+            We can use ``observatory`` and ``measurement`` or ``instrument`` and ``measurement``
+            to get the value for source ID which can then be used to get required information.
 
         Parameters
         ----------
@@ -287,7 +316,7 @@ class HelioviewerClient:
         Parameters
         ----------
         date : `astropy.time.Time`, `str`
-            A `parse_time` parsable string or `~astropy.time.Time` object
+            A `~sunpy.time.parse_time` parsable string or `~astropy.time.Time` object
             for the desired date of the image
         image_scale : `float`
             The zoom scale of the image in arcseconds per pixel.

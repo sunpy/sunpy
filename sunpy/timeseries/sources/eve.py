@@ -1,13 +1,12 @@
 import os
 import codecs
 from os.path import basename
-from datetime import datetime
 from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import dates
-from pandas import DataFrame
+from pandas import DataFrame, to_datetime
 from pandas.io.parsers import read_csv
 
 import astropy.units as u
@@ -58,36 +57,60 @@ class ESPTimeSeries(GenericTimeSeries):
 
     _source = 'esp'
 
-    @peek_show
-    def peek(self, title='EVE/ESP Level1', **kwargs):
+    def plot(self, axes=None, **kwargs):
         """
+        Plots the EVE ESP Level 1 timeseries data.
+
+        Parameters
+        ----------
+        axes : numpy.ndarray of `matplotlib.axes.Axes`, optional
+            The axes on which to plot the TimeSeries.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `pandas.DataFrame.plot`.
+
+        Returns
+        -------
+        array of `~matplotlib.axes.Axes`
+            The plot axes.
+        """
+        self._validate_data_for_plotting()
+        names = ("Flux \n 0.1-7nm", "Flux \n 18nm", "Flux \n 26nm", "Flux \n 30nm", "Flux \n 36nm")
+        colors = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan')
+        predefined_axes = False
+        if isinstance(axes, np.ndarray):
+            predefined_axes = True
+        elif axes is None:
+            axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
+        for i, ax in enumerate(axes):
+            if predefined_axes:
+                ax.plot(self._data[self._data.columns[i]], color=colors[i%len(colors)], label=self._data.columns[i])
+                plt.xticks(rotation=30)
+            ax.set_ylabel(names[i])
+            ax.legend(loc="upper right")
+        axes[-1].set_xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
+        axes[-1].set_xlabel("Time (UT) " + str(self.to_dataframe().index[0])[0:11])
+        axes[-1].xaxis.set_major_formatter(dates.DateFormatter("%H:%M"))
+        return axes
+
+    @peek_show
+    def peek(self, title="EVE/ESP Level 1", **kwargs):
+        """
+        Displays the EVE ESP Level 1 timeseries data by calling
+        `~sunpy.timeseries.sources.eve.ESPTimeSeries.plot`.
+
         Parameters
         ----------
         title : `str`, optional
-            Plot title.
+            The title of the plot. Defaults to "EVE/ESP Level 1".
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `pandas.DataFrame.plot`.
         """
-
-        self._validate_data_for_plotting()
-
-        names = ('Flux \n 0.1-7nm', 'Flux \n 18nm', 'Flux \n 26nm', 'Flux \n 30nm', 'Flux \n 36nm')
-
-        figure = plt.figure()
-        axes = plt.gca()
-        axes = self.to_dataframe().plot(ax=axes, subplots=True, sharex=True, **kwargs)
-        plt.xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
-
+        axes = self.plot(**kwargs)
         axes[0].set_title(title)
-        for i, ax in enumerate(axes):
-            ax.set_ylabel(names[i])
-            ax.legend(loc='upper right')
-        axes[-1].set_xlabel('Time (UT) ' + str(self.to_dataframe().index[0])[0:11])
-        axes[-1].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
-        plt.tight_layout()
-        plt.subplots_adjust(hspace=0.05)
-
-        return figure
+        fig = axes[0].get_figure()
+        fig.tight_layout()
+        fig.subplots_adjust(hspace=0.05)
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -150,7 +173,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     Level 0CS data is primarily used for space weather.
     It is provided near real-time and is crudely calibrated 1-minute averaged broadband irradiances from ESP and MEGS-P broadband.
-    For other levels of EVE data, use `~sunpy.net.Fido`, with `sunpy.net.attrs.Instrument('eve')`.
+    For other levels of EVE data, use `~sunpy.net.Fido`, with ``sunpy.net.attrs.Instrument('eve')``.
 
     Data is available starting on 2010/03/01.
 
@@ -159,7 +182,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')  # doctest: +REMOTE_DATA
-    >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')  # doctest: +REMOTE_DATA
+    >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')  # doctest: +SKIP
     >>> eve.peek(subplots=True)  # doctest: +SKIP
 
     References
@@ -176,15 +199,14 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     @peek_show
     def peek(self, column=None, **kwargs):
         """
-        Plots the time series in a new figure. An example is shown below:
+        Plots the time series in a new figure.
 
-        ..
-            .. plot::
+        .. plot::
 
-                import sunpy.timeseries
-                from sunpy.data.sample import EVE_TIMESERIES
-                eve = sunpy.timeseries.TimeSeries(EVE_TIMESERIES, source='eve')
-                eve.peek(subplots=True)
+            import sunpy.timeseries
+            from sunpy.data.sample import EVE_TIMESERIES
+            eve = sunpy.timeseries.TimeSeries(EVE_TIMESERIES, source='eve')
+            eve.peek(subplots=True, figsize=(22,11))
 
         Parameters
         ----------
@@ -197,7 +219,6 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 
-        figure = plt.figure()
         # Choose title if none was specified
         if "title" not in kwargs and column is None:
             if len(self.to_dataframe().columns) > 1:
@@ -210,14 +231,18 @@ class EVESpWxTimeSeries(GenericTimeSeries):
                     kwargs['title'] = 'EVE Averages'
 
         if column is None:
-            self.plot(**kwargs)
+            axes = self.to_dataframe().plot(sharex=True, **kwargs)
         else:
             data = self.to_dataframe()[column]
             if "title" not in kwargs:
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
-            data.plot(**kwargs)
+            axes = data.plot(**kwargs)
 
-        return figure
+        if "subplots" in kwargs:
+            fig = axes[0].get_figure()
+        else:
+            fig = axes.get_figure()
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -228,22 +253,21 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
-            fp.seek(0)
 
-            if line1.startswith("Date"):
-                return cls._parse_average_csv(fp)
-            elif line1.startswith(";"):
-                return cls._parse_level_0cs(fp)
+        if line1.startswith("Date"):
+            return cls._parse_average_csv(filepath)
+        elif line1.startswith(";"):
+            return cls._parse_level_0cs(filepath)
 
     @staticmethod
-    def _parse_average_csv(fp):
+    def _parse_average_csv(filepath):
         """
         Parses an EVE Averages file.
         """
-        return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
+        return "", read_csv(filepath, sep=",", index_col=0, parse_dates=True)
 
     @staticmethod
-    def _parse_level_0cs(fp):
+    def _parse_level_0cs(filepath):
         """
         Parses and EVE Level 0CS file.
         """
@@ -251,15 +275,16 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         missing_data_val = np.nan
         header = []
         fields = []
-        line = fp.readline()
-        # Read header at top of file
-        while line.startswith(";"):
-            header.append(line)
-            if '; Missing data:' in line:
-                is_missing_data = True
-                missing_data_val = line.split(':')[1].strip()
-
+        with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
             line = fp.readline()
+            # Read header at top of file
+            while line.startswith(";"):
+                header.append(line)
+                if '; Missing data:' in line:
+                    is_missing_data = True
+                    missing_data_val = line.split(':')[1].strip()
+
+                line = fp.readline()
 
         meta = MetaDict()
         for hline in header:
@@ -283,17 +308,27 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
         # Next line is YYYY DOY MM DD
         date_parts = line.split(" ")
-
         year = int(date_parts[0])
         month = int(date_parts[2])
         day = int(date_parts[3])
 
-        def parser(x):
-            # Parse date column (HHMM)
-            return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
+        data = read_csv(filepath, delim_whitespace=True, names=fields, comment=';',
+                        dtype={'HHMM': int})
+        # First line is YYYY DOY MM DD
+        data = data.iloc[1:, :]
+        data['Hour'] = data['HHMM'] // 100
+        data['Minute'] = data['HHMM'] % 100
+        data = data.drop(['HHMM'], axis=1)
 
-        data = read_csv(fp, sep=r"\s+", names=fields,
-                        index_col=0, date_parser=parser, header=None, engine='python')
+        data['Year'] = year
+        data['Month'] = month
+        data['Day'] = day
+
+        datecols = ['Year', 'Month', 'Day', 'Hour', 'Minute']
+        data['Time'] = to_datetime(data[datecols])
+        data = data.set_index('Time')
+        data = data.drop(datecols, axis=1)
+
         if is_missing_data:  # If missing data specified in header
             data[data == float(missing_data_val)] = np.nan
 

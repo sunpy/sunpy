@@ -3,23 +3,21 @@ import copy
 import json
 import time
 import urllib
-import warnings
 from pathlib import Path
 
 import drms
 import numpy as np
-import pandas as pd
 
 import astropy.table
 import astropy.time
 import astropy.units as u
 from astropy.utils.misc import isiterable
 
-from sunpy import config
+from sunpy import config, log
 from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 from sunpy.net.jsoc.attrs import walker
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 from sunpy.util.parfive_helpers import Downloader, Results
 
 __all__ = ['JSOCClient', 'JSOCResponse']
@@ -33,71 +31,22 @@ class NotExportedError(Exception):
     pass
 
 
-class JSOCResponse(BaseQueryResponse):
-    def __init__(self, table=None, client=None):
-        """
-        table : `astropy.table.Table`
-        """
-        super().__init__()
-        self.table = table or astropy.table.QTable()
-        self.query_args = getattr(table, 'query_args', None)
-        self.requests = getattr(table, 'requests', None)
-        self._client = client
+class JSOCResponse(QueryResponseTable):
+    query_args = astropy.table.TableAttribute()
+    requests = astropy.table.TableAttribute()
+    display_keys = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
+    # This variable is used to detect if the result has been sliced before it is passed
+    # to fetch and issue a warning to the user about not being able to post-filter JSOC searches.
+    _original_num_rows = astropy.table.TableAttribute(default=None)
 
-    @property
-    def client(self):
-        return self._client
-
-    @client.setter
-    def client(self, client):
-        self._client = client
-
-    @property
-    def blocks(self):
-        return list(self.table.iterrows)
-
-    def __len__(self):
-        if self.table is None:
-            return 0
-        else:
-            return len(self.table)
-
-    def __getitem__(self, item):
-        if isinstance(item, int):
-            item = slice(item, item + 1)
-        ret = type(self)(self.table[item])
-        ret.query_args = self.query_args
-        ret.requests = self.requests
-        ret.client = self._client
-
-        warnings.warn("Downloading of sliced JSOC results is not supported. "
-                      "All the files present in the original response will be downloaded.",
-                      SunpyUserWarning)
-        return ret
-
-    def __iter__(self):
-        return (t for t in [self])
-
-    def build_table(self):
-        return self.table
-
-    def append(self, table):
-        if self.table is None:
-            self.table = table
-        else:
-            self.table = astropy.table.vstack([self.table, table])
-
-    def response_block_properties(self):
-        """
-        Returns a set of class attributes on all the response blocks.
-        """
-        warnings.warn("The JSOC client does not support response block properties.", SunpyUserWarning)
-        return set()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_num_rows = len(self)
 
 
 class JSOCClient(BaseClient):
     """
-    This is a client to the JSOC Data Export service.
+    Provides access to the JSOC Data Export service.
 
     It exposes a similar API to the VSO client, although the underlying model
     is more complex. The JSOC stages data before you can download it, so a JSOC
@@ -141,7 +90,7 @@ class JSOCClient(BaseClient):
         The response object holds the records that your query will return:
 
         >>> print(response)   # doctest: +REMOTE_DATA
-                T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+                 T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
         ----------------------- -------- ---------- -------- -------
         2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
         2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -195,7 +144,7 @@ class JSOCClient(BaseClient):
         >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
         >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-        ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
+        ...                          a.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
         The response object holds the records that your query will return:
 
@@ -237,16 +186,22 @@ class JSOCClient(BaseClient):
         >>> res.wait(progress=True)   # doctest: +SKIP
 
     """
+    # Default number of max connections that the Downloader opens
+    default_max_conn = 2
+
+    @property
+    def info_url(self):
+        return 'http://jsoc.stanford.edu'
 
     def search(self, *query, **kwargs):
         """
         Build a JSOC query and submit it to JSOC for processing.
 
         Takes a variable number of `~sunpy.net.jsoc.attrs` as parameters,
-        which are chained together using the AND (`&`) operator.
+        which are chained together using the AND (``&``) operator.
 
         Complex queries to be easily formed using logical operators such as
-        `&` and `|`, in the same way as the VSO client.
+        ``&`` and ``|``, in the same way as the VSO client.
 
         Parameters
         ----------
@@ -272,7 +227,7 @@ class JSOCClient(BaseClient):
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> response = client.search(a.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
-            ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
+            ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA),
             ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
                    T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
@@ -291,34 +246,33 @@ class JSOCClient(BaseClient):
 
         *Example 2*
 
-        Request keyword data of ``hmi.v_45s`` for certain specific keywords only::
+        Request keyword data of ``hmi.v_45s`` and show specific columns only::
 
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-            ...                          a.jsoc.Series('hmi.v_45s'),
-            ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA
-                         T_REC               DATAMEAN            OBS_VR
-            ----------------------- ------------------ ------------------
-            2014.01.01_00:00:45_TAI        1906.518188        1911.202614
-            2014.01.01_00:01:30_TAI        1908.876221        1913.945512
-            2014.01.01_00:02:15_TAI          1911.7771 1916.6679989999998
-            2014.01.01_00:03:00_TAI        1913.422485 1919.3699239999999
-            2014.01.01_00:03:45_TAI        1916.500488        1922.050862
-            2014.01.01_00:04:30_TAI        1920.414795 1924.7110050000001
-            2014.01.01_00:05:15_TAI        1922.636963         1927.35015
-            2014.01.01_00:06:00_TAI 1924.6973879999998        1929.968523
-            2014.01.01_00:06:45_TAI        1927.758301 1932.5664510000001
-            2014.01.01_00:07:30_TAI        1929.646118         1935.14288
-            2014.01.01_00:08:15_TAI        1932.097046        1937.698521
-            2014.01.01_00:09:00_TAI 1935.7286379999998         1940.23353
-            2014.01.01_00:09:45_TAI        1937.754028        1942.747605
-            2014.01.01_00:10:30_TAI 1940.1462399999998        1945.241147
+            ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+            >>> print(response.show('T_REC', 'WAVELNTH', 'CAR_ROT'))  # doctest: +REMOTE_DATA
+                     T_REC          WAVELNTH CAR_ROT
+            ----------------------- -------- -------
+            2014.01.01_00:00:45_TAI   6173.0    2145
+            2014.01.01_00:01:30_TAI   6173.0    2145
+            2014.01.01_00:02:15_TAI   6173.0    2145
+            2014.01.01_00:03:00_TAI   6173.0    2145
+            2014.01.01_00:03:45_TAI   6173.0    2145
+            2014.01.01_00:04:30_TAI   6173.0    2145
+            2014.01.01_00:05:15_TAI   6173.0    2145
+            2014.01.01_00:06:00_TAI   6173.0    2145
+            2014.01.01_00:06:45_TAI   6173.0    2145
+            2014.01.01_00:07:30_TAI   6173.0    2145
+            2014.01.01_00:08:15_TAI   6173.0    2145
+            2014.01.01_00:09:00_TAI   6173.0    2145
+            2014.01.01_00:09:45_TAI   6173.0    2145
+            2014.01.01_00:10:30_TAI   6173.0    2145
 
-            *Example 3*
+        *Example 3*
 
         Request data of ``aia.lev1_euv_12s`` on the basis of PrimeKeys other than ``T_REC``::
 
@@ -349,66 +303,10 @@ class JSOCClient(BaseClient):
             iargs.update(block)
             # Update blocks with deep copy of iargs because in _make_recordset we use .pop() on element from iargs
             blocks.append(copy.deepcopy(iargs))
-            return_results.append(self._lookup_records(iargs))
+            return_results = astropy.table.vstack([return_results, self._lookup_records(iargs)])
         return_results.query_args = blocks
+        return_results._original_num_rows = len(return_results)
         return return_results
-
-    def search_metadata(self, *query, **kwargs):
-        """
-        Get the metadata of all the files obtained in a search query.
-        Builds a jsoc query, similar to query method, and takes similar inputs.
-
-        Complex queries to be easily formed using logical operators such as
-        ``&`` and ``|``, in the same way as the query function.
-
-        Parameters
-        ----------
-        query : a variable number of `~sunpy.net.jsoc.attrs`
-                as parameters, which are chained together using
-                the ``AND`` (``&``) operator.
-
-        Returns
-        -------
-        res : `~pandas.DataFrame` object
-            A collection of metadata of all the files.
-
-        Example
-        -------
-
-        Request metadata or all all AIA 304 image data between 2014-01-01T00:00 and
-        2014-01-01T01:00.
-
-        Since, the function only performs a lookdata, and does not make a proper export
-        request, attributes like Segment need not be passed::
-
-            >>> import astropy.units as u
-            >>> from sunpy.net import jsoc
-            >>> from sunpy.net import attrs as a
-            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-            >>> metadata = client.search_metadata(
-            ...                         a.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
-            ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
-            >>> print(metadata[['T_OBS', 'WAVELNTH']])  # doctest: +REMOTE_DATA
-                                                                        T_OBS  WAVELNTH
-            aia.lev1_euv_12s[2014-01-01T00:00:01Z][304]  2014-01-01T00:00:08.57Z       304
-            aia.lev1_euv_12s[2014-01-01T00:00:13Z][304]  2014-01-01T00:00:20.58Z       304
-            aia.lev1_euv_12s[2014-01-01T00:00:25Z][304]  2014-01-01T00:00:32.57Z       304
-            aia.lev1_euv_12s[2014-01-01T00:00:37Z][304]  2014-01-01T00:00:44.58Z       304
-            aia.lev1_euv_12s[2014-01-01T00:00:49Z][304]  2014-01-01T00:00:56.57Z       304
-            aia.lev1_euv_12s[2014-01-01T00:01:01Z][304]  2014-01-01T00:01:08.59Z       304
-
-        """
-        query = and_(*query)
-        blocks = []
-        res = pd.DataFrame()
-        for block in walker.create(query):
-            iargs = kwargs.copy()
-            iargs.update(block)
-            iargs.update({'meta': True})
-            blocks.append(iargs)
-            res = res.append(self._lookup_records(iargs))
-
-        return res
 
     def request_data(self, jsoc_response, method='url', **kwargs):
         """
@@ -419,8 +317,7 @@ class JSOCClient(BaseClient):
         ----------
         jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             The results of a query
-
-        method : {'url', 'url-tar', 'url-quick'}
+        method : {``"url"``, ``"url-tar"``, ``"url-quick"``}
             Method for requesting JSOC data, can be 'url-tar', 'url' (the default) and 'url-quick'
             If 'url-tar' it will request JSOC to provide single .tar file which contains all data
             If 'url' it will request JSOC to provide all data as separate .fits files
@@ -429,12 +326,10 @@ class JSOCClient(BaseClient):
 
         Returns
         -------
-        requests : `~drms.ExportRequest` object or
-                   a list of  `~drms.ExportRequest` objects
-
+        requests : `~drms.client.ExportRequest` object or
+                   a list of  `~drms.client.ExportRequest` objects
             Request Id can be accessed by requests.id
             Request status can be accessed by requests.status
-
         """
 
         requests = []
@@ -446,6 +341,7 @@ class JSOCClient(BaseClient):
             ds = self._make_recordset(**block)
             cd = drms.Client(email=block.get('notify', ''))
             protocol = block.get('protocol', 'fits')
+            cutout = block.get('cutout')
 
             if protocol not in supported_protocols:
                 error_message = f"Protocols other than {','.join(supported_protocols)} "\
@@ -455,10 +351,11 @@ class JSOCClient(BaseClient):
                 error_message = f"Methods other than {','.join(supported_methods)} "\
                                 "are not supported."
                 raise TypeError(error_message)
+            process = {'im_patch': cutout} if cutout is not None else None
 
             if method != 'url-tar':
                 method = 'url' if protocol == 'fits' else 'url_quick'
-            r = cd.export(ds, method=method, protocol=protocol)
+            r = cd.export(ds, method=method, protocol=protocol, process=process)
 
             requests.append(r)
 
@@ -466,51 +363,62 @@ class JSOCClient(BaseClient):
             return requests[0]
         return requests
 
+    @convert_row_to_table
     def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
-              downloader=None, wait=True, sleep=10, max_conn=4, **kwargs):
+              downloader=None, wait=True, sleep=10, max_conn=default_max_conn, **kwargs):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
+
+        .. note::
+
+            **Only complete searches can be downloaded from JSOC**, this means
+            that no slicing operations performed on the results object will
+            affect the number of files downloaded.
 
         Parameters
         ----------
         jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             A response object
-
         path : `str`
             Path to save data to, defaults to SunPy download dir
-
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
             have been downloaded. If `False`, no progress bar will be shown.
-
         overwrite : `bool` or `str`, optional
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
-
         max_conn : `int`
             Maximum number of download connections.
-
         downloader : `parfive.Downloader`, optional
             The download manager to use.
-
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
-
+           any effect if ``downloader`` is not `None`.
         sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
             of the request.
 
         Returns
         -------
-        results : a `~sunpy.net.download.Results` instance
-            A Results object
+        results : a `parfive.Results` instance
+            A `parfive.Results` object.
 
-        """
+       """
+        for resp in jsoc_response.query_args:
+            if 'notify' not in resp:
+                raise ValueError('A registered email is required to get data from JSOC. '
+                                 'Please supply an email with attrs.jsoc.Notify to Fido.search. '
+                                 'Then pass those new results back into Fido.fetch')
+
+        if len(jsoc_response) != jsoc_response._original_num_rows:
+            warn_user("Downloading of sliced JSOC results is not supported. "
+                      "All the files present in the original response will "
+                      "be downloaded when passed to fetch().")
+
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
 
@@ -533,7 +441,7 @@ class JSOCClient(BaseClient):
                                 wait=wait, max_conn=max_conn, **defaults)
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
-                    downloader=None, wait=True, max_conn=4, **kwargs):
+                    downloader=None, wait=True, max_conn=default_max_conn, **kwargs):
         """
         Query JSOC to see if the request(s) is ready for download.
 
@@ -541,36 +449,30 @@ class JSOCClient(BaseClient):
 
         Parameters
         ----------
-        requests : `~drms.ExportRequest`, `str`, `list`
-            `~drms.ExportRequest` objects or `str` request IDs or lists
+        requests : `~drms.client.ExportRequest`, `str`, `list`
+            `~drms.client.ExportRequest` objects or `str` request IDs or lists
             returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
-
         path : `str`
             Path to save data to, defaults to SunPy download dir.
-
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
             have been downloaded. If `False`, no progress bar will be shown.
-
         overwrite : `bool` or `str`, optional
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
-
         downloader : `parfive.Downloader`, optional
             The download manager to use.
-
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
+           any effect if ``downloader`` is not `None`.
 
         Returns
         -------
-        res: `~sunpy.net.download.Results`
-            A `~sunpy.net.download.Results` instance or `None` if no URLs to download
-
+        res: `parfive.Results`
+            A `parfive.Results` instance or `None` if no URLs to download
         """
         c = drms.Client()
 
@@ -618,18 +520,16 @@ class JSOCClient(BaseClient):
                     fname = os.path.expanduser(fname)
                     paths.append(fname)
 
-        if max_conn * kwargs['max_splits'] > 10:
-            warnings.warn(("JSOC does not support more than 10 parallel connections. " +
-                           "Changing the number of parallel connections to 8."), SunpyUserWarning)
-            kwargs['max_splits'] = 2
-            max_conn = 4
-
         dl_set = True
         if not downloader:
             dl_set = False
             downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=max_conn)
-        else:
-            downloader.max_conn = max_conn
+
+        if downloader.max_conn * kwargs['max_splits'] > 10:
+            warn_user("JSOC does not support more than 10 parallel connections. " +
+                      f"Changing the number of parallel connections to {2 * self.default_max_conn}.")
+            kwargs['max_splits'] = 2
+            downloader.max_conn = self.default_max_conn
 
         urls = []
         for request in requests:
@@ -738,9 +638,10 @@ class JSOCClient(BaseClient):
                     end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                     sample=sample)
             else:
-                error_message = "Time attribute has been passed both as a Time()"\
-                                " and PrimeKey(). Please provide any one of them"\
-                                " or separate them by OR operator."
+                error_message = ("Time attribute has been passed both as a Time()"
+                                 " and PrimeKey(). Please provide any one of them"
+                                 " or separate them by OR operator."
+                                 )
                 raise ValueError(error_message)
 
         else:
@@ -750,9 +651,9 @@ class JSOCClient(BaseClient):
             # but it is a good idea to keep a check.
             match = set(primekey.keys()) & PKEY_LIST_TIME
             if len(match) > 1:
-                error_message = "Querying of series, having more than 1 Time-type "\
-                                "prime-keys is not yet supported. Alternative is to "\
-                                "use only one of the primekey to query for series data."
+                error_message = ("Querying of series, having more than 1 Time-type "
+                                 "prime-keys is not yet supported. Alternative is to "
+                                 "use only one of the primekey to query for series data.")
                 raise ValueError(error_message)
 
             if match:
@@ -771,9 +672,9 @@ class JSOCClient(BaseClient):
             else:
                 # This is executed when wavelength has been passed both through PrimeKey()
                 # and Wavelength().
-                error_message = "Wavelength attribute has been passed both as a Wavelength()"\
-                                " and PrimeKey(). Please provide any one of them"\
-                                " or separate them by OR operator."
+                error_message = ("Wavelength attribute has been passed both as a Wavelength()"
+                                 " and PrimeKey(). Please provide any one of them"
+                                 " or separate them by OR operator.")
                 raise ValueError(error_message)
 
         else:
@@ -821,63 +722,52 @@ class JSOCClient(BaseClient):
         """
         Do a LookData request to JSOC to workout what results the query returns.
         """
-
-        keywords_default = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
         isMeta = iargs.get('meta', False)
+        keywords = iargs.get('keys', '**ALL**')
         c = drms.Client()
-
-        if isMeta:
-            keywords = '**ALL**'
-        else:
-            keywords = iargs.get('keys', keywords_default)
 
         if 'series' not in iargs:
             error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
 
         if not isinstance(keywords, list) and not isinstance(keywords, str):
-            error_message = "Keywords can only be passed as a list or "\
-                            "comma-separated strings."
+            error_message = "Keywords can only be passed as a list or comma-separated strings."
             raise TypeError(error_message)
 
-        # Raise errors for PrimeKeys
         # Get a set of the PrimeKeys that exist for the given series, and check
         # whether the passed PrimeKeys is a subset of that.
         pkeys = c.pkeys(iargs['series'])
         pkeys_passed = iargs.get('primekey', None)  # pkeys_passes is a dict, with key-value pairs.
         if pkeys_passed is not None:
             if not set(list(pkeys_passed.keys())) <= set(pkeys):
-                error_message = "Unexpected PrimeKeys were passed. The series {series} "\
-                                "supports the following PrimeKeys {pkeys}"
+                error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following PrimeKeys: {pkeys}"
                 raise ValueError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
         # Raise errors for wavelength
         wavelength = iargs.get('wavelength', '')
         if wavelength != '':
             if 'WAVELNTH' not in pkeys:
-                error_message = "The series {series} does not support wavelength attribute."\
-                                "The following primekeys are supported {pkeys}"
+                error_message = f"The series {iargs['series']} does not support wavelength attribute. The following primekeys are supported {pkeys}"
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
         # Raise errors for segments
         # Get a set of the segments that exist for the given series, and check
         # whether the passed segments is a subset of that.
         si = c.info(iargs['series'])
-        segs = list(si.segments.index.values)          # Fetches all valid segment names
+        # Fetches all valid segment names
+        segs = list(si.segments.index.values)
         segs_passed = iargs.get('segment', None)
         if segs_passed is not None:
 
             if not isinstance(segs_passed, list) and not isinstance(segs_passed, str):
-                error_message = "Segments can only be passed as a comma-separated"\
-                                " string or a list of strings."
+                error_message = "Segments can only be passed as a comma-separated string or a list of strings."
                 raise TypeError(error_message)
 
             elif isinstance(segs_passed, str):
                 segs_passed = segs_passed.replace(' ', '').split(',')
 
             if not set(segs_passed) <= set(segs):
-                error_message = "Unexpected Segments were passed. The series {series} "\
-                                "contains the following Segments {segs}"
+                error_message = f"Unexpected Segments were passed. The series {iargs['series']} contains the following Segments {segs}"
                 raise ValueError(error_message.format(series=iargs['series'], segs=segs))
 
             iargs['segment'] = segs_passed
@@ -893,12 +783,9 @@ class JSOCClient(BaseClient):
         else:
             key = keywords
 
+        log.debug(f"Running following query: {ds}")
+        log.debug(f"Requesting following keywords: {key}")
         r = c.query(ds, key=key, rec_index=isMeta)
-
-        # If the method was called from search_metadata(), return a Pandas Dataframe,
-        # otherwise return astropy.table
-        if isMeta:
-            return r
 
         if r is None or r.empty:
             return astropy.table.Table()
@@ -912,7 +799,8 @@ class JSOCClient(BaseClient):
 
         required = {a.jsoc.Series}
         optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
-                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample}
+                    a.jsoc.Segment, a.jsoc.PrimeKey, a.Sample,
+                    a.jsoc.Cutout}
         return cls.check_attr_types_in_query(query, required, optional)
 
     @classmethod
@@ -955,7 +843,7 @@ class JSOCClient(BaseClient):
             keyword_info = {}
             keyword_info["series_store"] = series_store
             keyword_info["segments"] = segments
-            json.dump(keyword_info, attrs_file)
+            json.dump(keyword_info, attrs_file, indent=2)
 
     @staticmethod
     def load_jsoc_values():

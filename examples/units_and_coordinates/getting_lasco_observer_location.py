@@ -32,7 +32,7 @@ lasco = sunpy.map.Map(f)
 
 ###############################################################################
 # A user warning let's you know that there is missing metadata for the observer
-# location. SunPy goes ahead and assumes that the observer is at Earth.
+# location. sunpy goes ahead and assumes that the observer is at Earth.
 
 print(lasco.observer_coordinate)
 
@@ -57,6 +57,7 @@ lat.set_major_formatter('d.dd')
 ax.plot_coord(mercury_hpc_wrong, 's', color='white',
               fillstyle='none', markersize=12, label='Mercury')
 lasco.plot()
+
 plt.show()
 
 ###############################################################################
@@ -105,4 +106,5 @@ lon.set_major_formatter('d.dd')
 lat.set_major_formatter('d.dd')
 ax.plot_coord(mercury_hpc, 's', color='white', fillstyle='none', markersize=12, label='Mercury')
 lasco.plot()
+
 plt.show()

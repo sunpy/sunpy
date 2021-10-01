@@ -1,3 +1,0 @@
-Additions in `~sunpy.util.scraper` to support the refactoring of `~sunpy.net.dataretriever.GenericClient`:
-- :meth:`~sunpy.util.scraper.Scraper.findDatewith_extractor` that parses the url using extractor to return its start time.
-- A ``matcher`` in :meth:`~sunpy.util.scraper.Scraper._extract_files_meta` which validates the extracted metadata by using the dictionary returned from :meth:`~sunpy.net.dataretriever.GenericClient._get_match_dict`.

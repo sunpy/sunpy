@@ -11,6 +11,7 @@ from contextlib import contextmanager
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm.exc import ObjectDeletedError
 
 from astropy import units
 
@@ -40,7 +41,7 @@ class EntryNotFoundError(Exception):
     def __init__(self, entry_id):
         self.entry_id = entry_id
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return 'an entry with the ID {:d} does not exist'.format(
             self.entry_id)
 
@@ -54,7 +55,7 @@ class EntryAlreadyAddedError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return (
             'the entry {!r} was already added '
             'to the database'.format(self.database_entry))
@@ -70,7 +71,7 @@ class EntryAlreadyStarredError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return (
             'the entry {!r} is already marked '
             'as starred'.format(self.database_entry))
@@ -85,7 +86,7 @@ class EntryAlreadyUnstarredError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return (
             'the entry {!r} is already not marked '
             'as starred'.format(self.database_entry))
@@ -100,7 +101,7 @@ class NoSuchTagError(Exception):
     def __init__(self, tag_name):
         self.tag_name = tag_name
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return 'the tag {!r} is not saved in the database'.format(
             self.tag_name)
 
@@ -115,7 +116,7 @@ class TagAlreadyAssignedError(Exception):
         self.database_entry = database_entry
         self.tag_name = tag_name
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         errmsg = 'the database entry {0!r} has already assigned the tag {1!r}'
         return errmsg.format(self.database_entry, self.tag_name)
 
@@ -151,7 +152,7 @@ def split_database(source_database, destination_database, *query_string):
     >>> database1 = Database('sqlite:///:memory:')
     >>> database2 = Database('sqlite:///:memory:')
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
-    >>> qr = client.search(a.Time('2011-05-08', '2011-05-08 00:00:05'))  # doctest: +REMOTE_DATA
+    >>> qr = client.search(a.Time('2011-05-08', '2011-05-08 00:00:05'), response_format="legacy")  # doctest: +REMOTE_DATA
     >>> database1.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
     >>> database1, database2 = split_database(database1, database2,
     ...            a.Instrument.aia | a.Instrument.erne)  # doctest: +REMOTE_DATA
@@ -211,7 +212,7 @@ class Database:
         :class:`sunpy.database.caching.LRUCache` and
         :class:`sunpy.database.caching.LFUCache`.
         The default value is :class:`sunpy.database.caching.LRUCache`.
-    cache_size : int
+    cache_size : `int`
         The maximum number of database entries, default is no limit.
     default_waveunit : `str` or `~astropy.units.Quantity`, optional
         The wavelength unit that will be used if an entry is added to the
@@ -232,15 +233,12 @@ class Database:
         A SQLAlchemy session object. This may be used for advanced queries and
         advanced manipulations and should only be used by people who are
         experienced with SQLAlchemy.
-
-    cache_size: int
+    cache_size : `int`
         The maximum number of database entries. This attribute is read-only. To
         change this value, use the method
         :meth:`sunpy.database.Database.set_cache_size`.
-
     tags : list of sunpy.database.Tag objects
         A list of all saved tags in database. This attribute is read-only.
-
     default_waveunit : str
         See "Parameters" section.
 
@@ -490,7 +488,7 @@ class Database:
 
         Examples
         --------
-        The `~sunpy.Database.database.fetch` method can be used along with the ``overwrite=True``
+        This method can be used along with the ``overwrite=True``
         argument to overwrite and redownload files corresponding to the query, even if
         its entries are already present in the database. Note that the ``overwrite=True``
         argument deletes the old matching database entries and new database entries are
@@ -533,7 +531,7 @@ class Database:
         client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
-        qr = client.search(*query)
+        qr = client.search(*query, response_format="legacy")
 
         # don't do anything if querying results in no data
         if not qr:
@@ -608,7 +606,7 @@ class Database:
         db_entries = walker.create(and_(*query), self.session)
 
         # If any of the DatabaseEntry-s lack the sorting attribute, the
-        # sorting key should fall back to 'id', orherwise it fails with
+        # sorting key should fall back to 'id', otherwise it fails with
         # TypeError on py3
         if any([getattr(entry, sortby) is None for entry in db_entries]):
             sortby = 'id'
@@ -797,7 +795,7 @@ class Database:
 
         """
         vso_qr = itertools.chain.from_iterable(
-            H2VClient().translate_and_query(query_result))
+            H2VClient().translate_and_query(query_result, vso_response_format="legacy"))
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
 
     def download_from_hek_query_result(self, query_result, client=None, path=None, progress=False,
@@ -808,8 +806,8 @@ class Database:
 
         Parameters
         ----------
-        query_result : `HEKTable` or `HEKRow`
-            The value returned by :meth:`sunpy.net.hek.HEKClient.search`
+        query_result : `~sunpy.net.hek.HEKTable` or `~sunpy.net.hek.HEKRow`
+            The value returned by :meth:`sunpy.net.hek.HEKClient.search`.
         client : `sunpy.net.vso.VSOClient`, optional
             VSO Client instance to use for search and download.
             If not specified a new instance will be created.
@@ -830,7 +828,8 @@ class Database:
             return
 
         iterator = itertools.chain.from_iterable(
-            H2VClient().translate_and_query(query_result))
+            H2VClient().translate_and_query(query_result,
+                                            vso_response_format="legacy"))
 
         vso_qr = []
 
@@ -844,17 +843,15 @@ class Database:
     def download_from_vso_query_result(self, query_result, client=None,
                                        path=None, progress=False,
                                        ignore_already_added=False, overwrite=False):
-        """download(query_result, client=sunpy.net.vso.VSOClient(),
-        path=None, progress=False, ignore_already_added=False)
-
+        """
         Add new database entries from a VSO query result and download the
-        corresponding data files. See :meth:`sunpy.database.Database.download`
+        corresponding data files. See :meth:`sunpy.database.Database.fetch`
         for information about the caching mechanism used and about the
         parameters ``client``, ``path``, ``progress``.
 
         Parameters
         ----------
-        query_result : sunpy.net.vso.QueryResponse
+        query_result : sunpy.net.vso.VSOQueryResponseTable
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
 
@@ -874,7 +871,7 @@ class Database:
 
         Parameters
         ----------
-        query_result : sunpy.net.vso.QueryResponse
+        query_result : sunpy.net.vso.VSOQueryResponseTable
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
 
@@ -969,8 +966,8 @@ class Database:
 
         Parameters
         ----------
-        file : str or file-like object
-            Either a path pointing to a FITS file or a an opened file-like
+        file : str, file object
+            Either a path pointing to a FITS file or an opened file-like
             object. If an opened file object, its mode must be one of the
             following rb, rb+, or ab+.
 
@@ -1029,7 +1026,7 @@ class Database:
             remove_entry_cmd()
         try:
             del self._cache[database_entry.id]
-        except KeyError:
+        except (KeyError, ObjectDeletedError):
             # entry cannot be removed because it was already removed or never
             # existed in the database. This can be safely ignored, the user
             # doesn't even know there's a cache here
@@ -1068,7 +1065,7 @@ class Database:
         --------
         :meth:`sunpy.database.commands.CommandManager.clear_histories`
         """
-        self._command_manager.clear_histories()  # pragma: no cover
+        self._command_manager.clear_histories()
 
     def undo(self, n=1):
         """undo the last n commands.
@@ -1078,7 +1075,7 @@ class Database:
         :meth:`sunpy.database.commands.CommandManager.undo`
 
         """
-        self._command_manager.undo(n)  # pragma: no cover
+        self._command_manager.undo(n)
 
     def redo(self, n=1):
         """redo the last n commands.
@@ -1088,7 +1085,7 @@ class Database:
         :meth:`sunpy.database.commands.CommandManager.redo`
 
         """
-        self._command_manager.redo(n)  # pragma: no cover
+        self._command_manager.redo(n)
 
     def display_entries(self, columns=None, sort=False):
         print(_create_display_table(self, columns, sort))

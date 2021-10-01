@@ -3,6 +3,7 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
+from sunpy import log
 from sunpy.map import GenericMap
 
 __all__ = ['RHESSIMap']
@@ -51,9 +52,19 @@ class RHESSIMap(GenericMap):
             self.meta['cunit2'] = 'arcsec'
             self.meta['ctype2'] = 'HPLT-TAN'
 
-        self.meta['waveunit'] = 'keV'
-        self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
+        self.meta['waveunit'] = self.meta.get('waveunit', 'keV')
+        self.meta['wavelnth'] = self.meta.get('wavelnth',
+                                              [self.meta['energy_l'], self.meta['energy_h']])
         self.plot_settings['cmap'] = 'rhessi'
+
+        if ('TIMESYS' in self.meta and
+                self.meta['keycomments']['TIMESYS'] == 'Reference Time'):
+            log.debug('Moving "TIMESYS" FITS keyword to "DATEREF"')
+            self.meta['DATEREF'] = self.meta.pop('TIMESYS')
+
+        if 'CROTA' in self.meta and 'CROTA2' not in self.meta:
+            log.debug("Renaming 'CROTA' to 'CROTA2'")
+            self.meta['CROTA2'] = self.meta.pop('CROTA')
 
     @property
     def detector(self):

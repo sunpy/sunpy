@@ -2,13 +2,14 @@ import pytest
 from hypothesis import given, settings
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, SkyCoord, frame_transform_graph
+from astropy.coordinates import HeliocentricMeanEcliptic, SkyCoord, frame_transform_graph
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
 import sunpy.coordinates.frames as f
 from sunpy.coordinates.metaframes import RotatedSunFrame, _rotatedsun_cache
 from sunpy.physics.differential_rotation import diff_rot
+from sunpy.sun import constants
 from .helpers import assert_longitude_allclose
 from .strategies import latitudes, longitudes, times
 
@@ -64,15 +65,21 @@ def rot_hpc():
                             duration=4*u.day))
 
 
+# Test a non-SunPy frame
+@pytest.fixture
+def rot_hme():
+    return (HeliocentricMeanEcliptic,
+            RotatedSunFrame(lon=1*u.deg, lat=2*u.deg, distance=3*u.AU,
+                            base=HeliocentricMeanEcliptic(obstime='2001-01-01', equinox='2001-01-01'),
+                            duration=4*u.day))
+
+
 @pytest.mark.parametrize("indirect_fixture",
-                         ["rot_hgs", "rot_hgc", "rot_hci", "rot_hcc", "rot_hpc"], indirect=True)
+                         ["rot_hgs", "rot_hgc", "rot_hci", "rot_hcc", "rot_hpc", "rot_hme"], indirect=True)
 def test_class_creation(indirect_fixture):
     base_class, rot_frame = indirect_fixture
 
     rot_class = type(rot_frame)
-
-    # Check that that the RotatedSunFrame metaclass is derived from the frame's metaclass
-    assert issubclass(type(rot_class), type(base_class))
 
     # Check that the RotatedSunFrame class name has both 'RotatedSun' and the name of the base
     assert 'RotatedSun' in rot_class.__name__
@@ -81,10 +88,13 @@ def test_class_creation(indirect_fixture):
     # Check that the base class is in fact the specified class
     assert type(rot_frame.base) == base_class
 
+    # Check that the new class does *not* have the `obstime` frame attribute
+    assert 'obstime' not in rot_frame.frame_attributes
+
     # Check that one-leg transformations have been created
     assert len(frame_transform_graph.get_transform(rot_class, rot_class).transforms) == 1
-    assert len(frame_transform_graph.get_transform(base_class, rot_class).transforms) == 1
-    assert len(frame_transform_graph.get_transform(rot_class, base_class).transforms) == 1
+    assert len(frame_transform_graph.get_transform(f.HeliographicStonyhurst, rot_class).transforms) == 1
+    assert len(frame_transform_graph.get_transform(rot_class, f.HeliographicStonyhurst).transforms) == 1
 
     # Check that the base frame is in the cache
     assert base_class in _rotatedsun_cache
@@ -92,6 +102,10 @@ def test_class_creation(indirect_fixture):
     # Check that the component data has been migrated
     assert rot_frame.has_data
     assert not rot_frame.base.has_data
+
+
+def test_no_obstime_frame_attribute():
+    assert 'obstime' not in RotatedSunFrame.frame_attributes
 
 
 def test_as_base(rot_hgs):
@@ -108,11 +122,6 @@ def test_as_base(rot_hgs):
 def test_no_base():
     with pytest.raises(TypeError):
         RotatedSunFrame()
-
-
-def test_no_sunpy_frame():
-    with pytest.raises(TypeError):
-        RotatedSunFrame(base=BaseCoordinateFrame)
 
 
 def test_no_obstime():
@@ -184,7 +193,7 @@ def test_alternate_rotation_model():
                                    f.HeliocentricInertial])
 @given(lon=longitudes(), lat=latitudes(),
        obstime=times(), rotated_time1=times(), rotated_time2=times())
-@settings(deadline=None)
+@settings(deadline=None, max_examples=10)
 def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_time2):
     # Tests the transformations (to, from, and loopback) for consistency with `diff_rot` output
 
@@ -192,6 +201,11 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
         base = frame(lon=lon, lat=lat, observer='earth', obstime=obstime)
     else:
         base = frame(lon=lon, lat=lat, obstime=obstime)
+
+    # Map any 2D coordinate to the surface of the Sun
+    if base.spherical.distance.unit is u.one and u.allclose(base.spherical.distance, 1*u.one):
+        newrepr = base.spherical * constants.radius
+        base = base.realize_frame(newrepr)
 
     # Test the RotatedSunFrame->base transformation
     rsf1 = RotatedSunFrame(base=base, rotated_time=rotated_time1)
@@ -224,3 +238,41 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     assert_quantity_allclose(result3.lat, result1.lat)
     # Use the `spherical` property since the name of the component varies with frame
     assert_quantity_allclose(result3.spherical.distance, result1.spherical.distance)
+
+
+@pytest.mark.parametrize("indirect_fixture",
+                         ["rot_hgs", "rot_hci"], indirect=True)
+def test_obstime_change(indirect_fixture):
+    base_class, rot_frame = indirect_fixture
+
+    # Transforming a RotatedSun coordinate to a different obstime should give the same answer
+    # as first transforming to its base and then transforming to the different obstime
+    new_frame = base_class(obstime='2001-01-31')
+    new_implicit = rot_frame.transform_to(new_frame)
+    new_explicit = rot_frame.transform_to(rot_frame.base).transform_to(new_frame)
+
+    assert_longitude_allclose(new_implicit.lon, new_explicit.lon, atol=1e-10*u.deg)
+
+
+@pytest.mark.parametrize("indirect_fixture",
+                         ["rot_hgs", "rot_hci"], indirect=True)
+def test_obstime_change_loopback(indirect_fixture):
+    base_class, rot_frame = indirect_fixture
+
+    # Doing a explicit loopback transformation through an intermediate frame with a different
+    # obstime should get back to the original coordinate
+    int_frame = base_class(obstime='2001-01-31')
+    loopback = rot_frame.transform_to(int_frame).transform_to(rot_frame)
+
+    assert_longitude_allclose(loopback.lon, rot_frame.lon, atol=1e-10*u.deg)
+
+
+@pytest.mark.parametrize("indirect_fixture",
+                         ["rot_hgs", "rot_hgc", "rot_hci", "rot_hcc", "rot_hpc", "rot_hme"], indirect=True)
+def test_tranformation_to_nonobserver_frame(indirect_fixture):
+    base_class, rot_frame = indirect_fixture
+
+    hgs_frame = f.HeliographicStonyhurst(obstime='2020-01-01')
+    hgs_coord = rot_frame.transform_to(hgs_frame)
+
+    assert hgs_coord.obstime == hgs_frame.obstime

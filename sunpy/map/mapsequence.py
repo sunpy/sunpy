@@ -2,7 +2,6 @@
 
 import html
 import textwrap
-import warnings
 import webbrowser
 from copy import deepcopy
 from tempfile import NamedTemporaryFile
@@ -14,7 +13,8 @@ import numpy.ma as ma
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.util import SunpyUserWarning, expand_list
+from sunpy.util import expand_list
+from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
 from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
@@ -99,8 +99,8 @@ class MapSequence:
 
         # Output a warning about rendering time if there are more than 9 Maps
         if nmaps > 9:
-            warnings.warn(f"Rendering the summary for a MapSequence of {nmaps} Maps "
-                          "may take a while.", SunpyUserWarning)
+            warn_user(f"Rendering the summary for a MapSequence of {nmaps} Maps "
+                      "may take a while.")
 
         # Assemble the individual HTML repr from each Map, all hidden initally
         repr_list = [f"<div style='display: none' index={i}>{m._repr_html_()}</div>"
@@ -258,10 +258,10 @@ class MapSequence:
 
         Parameters
         ----------
-        axes: mpl axes
+        axes: matplotlib.axes.Axes
             axes to plot the animation on, if none uses current axes
 
-        resample: list or False
+        resample: list
             Draws the map at a lower resolution to increase the speed of
             animation. Specify a list as a fraction i.e. [0.25, 0.25] to
             plot at 1/4 resolution.
@@ -275,7 +275,7 @@ class MapSequence:
 
         plot_function : function
             A function to be called as each map is plotted.
-            For more information see `sunpy.visualization.MapSequenceAnimator`.
+            For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
 
         Returns
         -------
@@ -284,7 +284,7 @@ class MapSequence:
 
         See Also
         --------
-        `sunpy.visualization.mapsequenceanimator.MapSequenceAnimator`
+        `sunpy.visualization.animator.MapSequenceAnimator`
 
         Examples
         --------
@@ -393,10 +393,10 @@ class MapSequence:
 
         Parameters
         ----------
-        fig: mpl.figure
+        fig: matplotlib.figure.Figure
             Figure to use to create the explorer
 
-        resample: list or False
+        resample: list
             Draws the map at a lower resolution to increase the speed of
             animation. Specify a list as a fraction i.e. [0.25, 0.25] to
             plot at 1/4 resolution.
@@ -413,16 +413,15 @@ class MapSequence:
 
         plot_function : function
             A function to call to overplot extra items on the map plot.
-            For more information see `sunpy.visualization.MapSequenceAnimator`.
+            For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
 
         Returns
         -------
-        mapsequenceanim : `sunpy.visualization.MapSequenceAnimator`
-            A mapsequence animator instance.
+        mapsequenceanim : `sunpy.visualization.animator.MapSequenceAnimator`
 
         See Also
         --------
-        sunpy.visualization.mapsequenceanimator.MapSequenceAnimator
+        sunpy.visualization.animator.MapSequenceAnimator
 
         Examples
         --------
@@ -512,3 +511,37 @@ class MapSequence:
         Return all the meta objects as a list.
         """
         return [m.meta for m in self.maps]
+
+    def save(self, filepath, filetype='auto', **kwargs):
+        """
+        Saves the sequence, with one file per map.
+
+        Currently SunPy can save files only in the FITS format.
+
+        Parameters
+        ----------
+        filepath : str
+            Location to save the file(s) to.  The string must contain ``"{index}"``,
+            which will be populated with the corresponding index number for each
+            map.  Format specifiers (e.g., ``"{index:03}"``) can be used.
+        filetype : str
+            'auto' or any supported file extension.
+        kwargs :
+            Any additional keyword arguments are passed to
+            `~sunpy.io.write_file`.
+
+        Examples
+        --------
+        >>> from sunpy.map import Map
+        >>> import sunpy.data.sample # doctest: +REMOTE_DATA
+        >>> smap = Map(sunpy.data.sample.HMI_LOS_IMAGE,
+        ...            sunpy.data.sample.AIA_1600_IMAGE,
+        ...            sequence=True)  # doctest: +REMOTE_DATA
+        >>> smap.save('map_{index:03}.fits')  # doctest: +SKIP
+
+        """
+        if filepath.format(index=0) == filepath:
+            raise ValueError("'{index}' must be appear in the string")
+
+        for index, map_seq in enumerate(self.maps):
+            map_seq.save(filepath.format(index=index), filetype, **kwargs)

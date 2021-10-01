@@ -1,0 +1,144 @@
+.. doctest-skip-all
+
+.. _whatsnew-3.0:
+
+************************
+What's New in SunPy 3.0?
+************************
+
+Overview
+========
+The SunPy project is pleased to announce the 3.0 release of the sunpy package.
+
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-3.0-map-plotting`
+* :ref:`whatsnew-3.0-map-eui`
+* :ref:`whatsnew-3.0-map-metadata`
+* :ref:`whatsnew-3.0-instr`
+* :ref:`whatsnew-3.0-python`
+
+SunPy 3.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+
+* 526 commits have been added since 2.1
+* 53 issues have been closed since 2.1
+* 109 pull requests have been merged since 2.1
+* 26 people have contributed since 2.1
+* 10 of which are new contributors
+
+Please find below a selection of what we consider to be the biggest changes or features with this release.
+
+.. _whatsnew-3.0-map-plotting:
+
+Improvements to Visualization of Maps
+=====================================
+
+In this release a number of Map visualisation methods have been improved to be more coordinate aware than previous releases.
+The first new feature is :meth:`sunpy.map.GenericMap.draw_quadrangle` which replaces the old ``draw_rectangle`` method.
+:meth:`~sunpy.map.GenericMap.draw_quadrangle` draws rectangles where the edges follow lines of constant longitude and latitude in the coordinate system in which the box is drawn.
+
+.. minigallery:: sunpy.map.GenericMap.draw_quadrangle
+
+The next change is to :meth:`sunpy.map.GenericMap.draw_limb`, which now supports drawing the limb as seen by any observer on any image.
+This means that it is possible to visualize the sections of the limb which are visible in one map on another, or to draw the limb as seen from helioprojective map observer on a synoptic map.
+For a demonstration of this new functionality see the first figure in the :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py` example.
+
+The last major change is to :meth:`sunpy.map.GenericMap.plot`, which now has an ``autoalign=True`` keyword argument.
+This option when set to `True` will use :meth:`~matplotlib.axes.Axes.pcolormesh` to transform the image being plotted the correct coordinates of the axes it is being plotted on.
+This allows for plots of two images with different projections to be visualized together correctly.
+It is worth noting that using ``autoalign=True`` is computationally expensive, and when used with interactive plots there is a significant performance penalty every time the plot is modified.
+See the :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py` example for details.
+
+.. _whatsnew-3.0-map-eui:
+
+Improved Support for Solar Orbiter's EUI Instrument in Map
+==========================================================
+
+A new map source to support data from the Extreme Ultraviolet Imager (EUI) instrument on the Solar Orbiter (SolO) spacecraft has been added.
+This source improves the accuracy of the observer position by using the heliocentric inertial coordinates as well as correctly setting the processing level, exposure time and colormap.
+Data from EUI will automatically load using this source via `sunpy.map.Map`.
+
+.. _whatsnew-3.0-map-metadata:
+
+Inspect history of map metadata changes
+==========================================
+
+The ``.meta`` property of a `~sunpy.map.GenericMap` now keeps a record of the contents of the metadata (normally a FITS header) when it was created.
+This can be accessed via the `~sunpy.util.metadata.MetaDict.original_meta` property.
+This allows any changes made by sunpy or by the user directly to be tracked with the following properties:
+
+* `~sunpy.util.metadata.MetaDict.added_items`
+* `~sunpy.util.metadata.MetaDict.removed_items`
+* `~sunpy.util.metadata.MetaDict.modified_items`
+
+See the new :ref:`sphx_glr_generated_gallery_map_map_metadata_modification.py` example for details.
+
+.. _whatsnew-3.0-instr:
+
+``sunpy.instr`` moved to ``sunkit-instruments``
+===============================================
+
+The ``sunpy.instr`` subpackage has been moved to a separate affiliated package called `sunkit-instruments <https://docs.sunpy.org/projects/sunkit-instruments/>`__.
+This has been done to make the core package align with the goal that instrument specific analysis and processing code should live in affiliated packages.
+
+.. _whatsnew-3.0-python:
+
+Increase in required package versions
+=====================================
+We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 3.0:
+
+- asdf>=2.6.0
+- astropy >= 4.1.0
+- beautifulsoup4>=4.8.0
+- dask[array]>=2.0.0
+- drms>=0.6.1
+- glymur>=0.8.18,!=0.9.0
+- h5netcdf>=0.8.1
+- matplotlib>=3.1.0
+- numpy >= 1.16.0
+- pandas>=0.24.0
+- parfive >= 1.2.0
+- python-dateutil>=2.8.0
+- scipy >= 1.3.0
+- scipy>=1.3.0
+- sqlalchemy>=1.3.4
+- tqdm>=4.32.1
+- zeep>=3.4.0
+
+.. _whatsnew-3.0-contributors:
+
+Contributors to this Release
+============================
+
+The people who have contributed to the code for this release are:
+
+-  Abhijeet Manhas
+-  Abhishek Pandey
+-  Adwait Bhope  *
+-  Albert Y. Shih
+-  Amarjit Singh Gaba  *
+-  Aryan Chouhan
+-  David Stansby
+-  Jeffrey Aaron Paul
+-  Kateryna Ivashkiv
+-  Kaustubh Chaudhari  *
+-  Kritika Ranjan
+-  Laura Hayes
+-  Megh Dedhia  *
+-  Monica Bobra
+-  Mouloudi Mohamed Lyes  *
+-  Nabil Freij
+-  Nakul Shahdadpuri
+-  Ratul Das  *
+-  Samriddhi Agarwal  *
+-  Shane Maloney
+-  Stuart Mumford
+-  Tathagata Paul
+-  Thomas A Caswell
+-  Varun Bankar  *
+-  Will Barnes
+-  Yukie Nomiya  *
+
+Where a * indicates that this release contains their first contribution to sunpy.

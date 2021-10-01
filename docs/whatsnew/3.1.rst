@@ -1,0 +1,108 @@
+.. doctest-skip-all
+
+.. _whatsnew-3.1:
+
+************************
+What's New in SunPy 3.1?
+************************
+
+Overview
+========
+The SunPy project is pleased to announce the 3.1 release of the sunpy package.
+
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-3.1-python`
+* :ref:`whatsnew-3.1-map-datetime`
+* :ref:`whatsnew-3.1-diffrot-context`
+
+SunPy 3.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+
+* X commits have been added since 3.0
+* X issues have been closed since 3.0
+* X pull requests have been merged since 3.0
+* X people have contributed since 3.0
+* X of which are new contributors
+
+Please find below a selection of what we consider to be the biggest changes or features with this release.
+
+.. _whatsnew-3.1-python:
+
+Increase in required package versions
+=====================================
+We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 3.1:
+
+- astropy >= 4.2
+- numpy >= 1.17.0
+
+.. _whatsnew-3.1-map-datetime:
+
+New WISPR map source
+====================
+A new map source for the WISPR instrument on Parker Solar Probe has been added.
+This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
+information for the `~sunpy.map.GenericMap.processing_level` and
+`~sunpy.map.GenericMap.exposure_time`.
+
+Changes to map date/time handling
+=================================
+
+New date properties
+-------------------
+The properties `~sunpy.map.GenericMap.date_start`,
+`~sunpy.map.GenericMap.date_end`, and `~sunpy.map.GenericMap.date_average` have
+been added to be drawn from the relevant FITS metadata, if present in the map
+header. These are from new keywords defined in version 4 of the FITS standard,
+which have precise meanings compared to the previously ill-defined DATE-OBS.
+
+Changes to `~sunpy.map.GenericMap.date`
+---------------------------------------
+`sunpy.map.GenericMap.date` now looks for more metadata than just DATE-OBS.
+This property can return any one of the new properties (see above) depending
+on the metadata present in the map. It now draws from, in order of preference:
+
+1. The DATE-OBS FITS keyword
+2. `~sunpy.map.GenericMap.date_average`
+3. `~sunpy.map.GenericMap.date_start`
+4. `~sunpy.map.GenericMap.date_end`
+5. The current time.
+
+If DATE-OBS is present alongside DATE-AVG or DATE-BEG and DATE-END, this results
+in a behaviour change to favour the new (more precisely defined) keywords.
+It is recommended
+to use `~sunpy.map.GenericMap.date_average`,
+`~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
+instead if you need one of these specific times.
+
+Addition of new time format `~sunpy.time.TimeTaiSeconds`
+--------------------------------------------------------
+The new `~sunpy.time.TimeTaiSeconds` format is the number of
+SI seconds from 1958-01-01 00:00:00, which includes UTC leap seconds.
+1958-01-01 00:00:00 is the defined time when International Atomic Time (TAI)
+and Universal Time (UT) are synchronized.
+
+This format is equivalent to the output of the SSW ``anytim2tai`` routine, and
+related routines, for times after 1972-01-01.  Be aware that the SSW routines
+are not written to provide valid results for times before 1972-01-01.
+
+This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch
+is 12 years earlier.
+
+.. _whatsnew-3.1-diffrot-context:
+
+Propagating solar-surface coordinates in time
+=============================================
+
+There is now an easy-to-use context manager (:func:`~sunpy.coordinates.propagate_with_solar_surface`) to enable coordinate transformations to take solar rotation into account.
+Normally, a coordinate refers to a point in inertial space, so transforming it to a different observation time does not move the point at all.
+Under this context manager, a coordinate will be treated as if it were referring to a point on the solar surface.
+Coordinate transformations with a change in observation time will automatically rotate the point in heliographic longitude for the time difference, with the amount of rotation depending on the specified differential-rotation model.
+
+.. minigallery:: sunpy.coordinates.propagate_with_solar_surface
+
+.. _whatsnew-3.1-contributors:
+
+Contributors to this Release
+============================

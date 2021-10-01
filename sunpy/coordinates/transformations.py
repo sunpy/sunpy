@@ -28,25 +28,20 @@ from astropy.coordinates import (
     ConvertError,
     HeliocentricMeanEcliptic,
     get_body_barycentric,
-    get_body_barycentric_posvel,
 )
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.builtin_frames import make_transform_graph_docs
 from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.coordinates.matrix_utilities import matrix_product, matrix_transpose, rotation_matrix
 from astropy.coordinates.representation import (
-    CartesianDifferential,
     CartesianRepresentation,
     SphericalRepresentation,
     UnitSphericalRepresentation,
 )
 # Import erfa via astropy to make sure we are using the same ERFA library as Astropy
 from astropy.coordinates.sky_coordinate import erfa
-from astropy.coordinates.transformations import (
-    AffineTransform,
-    FunctionTransform,
-    FunctionTransformWithFiniteDifference,
-)
+from astropy.coordinates.transformations import FunctionTransform, FunctionTransformWithFiniteDifference
+from astropy.time import Time
 
 from sunpy import log
 from sunpy.sun import constants
@@ -65,6 +60,7 @@ from .frames import (
 RSUN_METERS = constants.get('radius').si.to(u.m)
 
 __all__ = ['transform_with_sun_center',
+           'propagate_with_solar_surface',
            'hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
@@ -78,6 +74,10 @@ __all__ = ['transform_with_sun_center',
 
 # Boolean flag for whether to ignore the motion of the center of the Sun in inertial space
 _ignore_sun_motion = False
+
+
+# If not None, the name of the differential-rotation model to use for any obstime change
+_autoapply_diffrot = None
 
 
 @contextmanager
@@ -96,25 +96,6 @@ def transform_with_sun_center():
     "follow" the translational motion of the center of Sun, thus maintaining the position of the
     coordinate relative to the center of the Sun.
 
-    Examples
-    --------
-    >>> from astropy.coordinates import SkyCoord
-    >>> from sunpy.coordinates import HeliographicStonyhurst, transform_with_sun_center
-    >>> import astropy.units as u
-    >>> start_frame = HeliographicStonyhurst(obstime="2001-01-01")
-    >>> end_frame = HeliographicStonyhurst(obstime="2001-02-01")
-    >>> sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame=start_frame)
-    >>> sun_center
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-01-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
-        (0., 0., 0.)>
-    >>> sun_center.transform_to(end_frame)  # transformations do not normally follow Sun center
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
-        (-156.66825767, 5.96399877, 0.00027959)>
-    >>> with transform_with_sun_center():
-    ...     sun_center.transform_to(end_frame)  # now following Sun center
-    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
-        (0., 0., 0.)>
-
     Notes
     -----
     This context manager accounts only for the motion of the center of the Sun, i.e.,
@@ -128,17 +109,121 @@ def transform_with_sun_center():
     `~sunpy.coordinates.frames.HeliocentricInertial`,
     `~sunpy.coordinates.frames.Heliocentric`, and
     `~sunpy.coordinates.frames.Helioprojective`.
+
+    Examples
+    --------
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import HeliographicStonyhurst, transform_with_sun_center
+    >>> import astropy.units as u
+    >>> start_frame = HeliographicStonyhurst(obstime="2001-01-01")
+    >>> end_frame = HeliographicStonyhurst(obstime="2001-02-01")
+    >>> sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame=start_frame)
+    >>> sun_center
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-01-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
+        (0., 0., 0.)>
+    >>> sun_center.transform_to(end_frame)  # transformations do not normally follow Sun center
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
+        (23.33174233, -5.96399877, 0.00027959)>
+    >>> with transform_with_sun_center():
+    ...     sun_center.transform_to(end_frame)  # now following Sun center
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
+        (0., 0., 0.)>
     """
     try:
         global _ignore_sun_motion
 
         old_ignore_sun_motion = _ignore_sun_motion  # nominally False
 
-        log.debug("Ignore the motion of the center of the Sun for transformations")
+        if not old_ignore_sun_motion:
+            log.debug("Ignoring the motion of the center of the Sun for transformations")
         _ignore_sun_motion = True
         yield
     finally:
+        if not old_ignore_sun_motion:
+            log.debug("Stop ignoring the motion of the center of the Sun for transformations")
         _ignore_sun_motion = old_ignore_sun_motion
+
+
+@contextmanager
+def propagate_with_solar_surface(rotation_model='howard'):
+    """
+    Context manager for coordinate transformations to automatically apply solar
+    differential rotation for any change in observation time.
+
+    Normally, coordinates refer to a point in inertial space (relative to the
+    barycenter of the solar system).  Transforming to a different observation time
+    does not move the point at all, but rather only updates the coordinate
+    representation as needed for the origin and axis orientations at the new
+    observation time.
+
+    Under this context manager, transformations will instead treat the coordinate
+    as if it were referring to a point on the solar surface instead of a point in
+    inertial space.  If a transformation has a change in observation time, the
+    heliographic longitude of the point will be updated according to the specified
+    rotation model.
+
+    Parameters
+    ----------
+    rotation_model : `str`
+        Accepted model names are ``'howard'`` (default), ``'snodgrass'``,
+        ``'allen'``, and ``'rigid'``.  See the documentation for
+        :func:`~sunpy.physics.differential_rotation.diff_rot` for the differences
+        between these models.
+
+    Notes
+    -----
+    This context manager also ignores the motion of the center of the Sun (see
+    :func:`~sunpy.coordinates.transformations.transform_with_sun_center`).
+
+    Due to the implementation approach, this context manager modifies
+    transformations between only these five coordinate frames:
+    `~sunpy.coordinates.frames.HeliographicStonyhurst`,
+    `~sunpy.coordinates.frames.HeliographicCarrington`,
+    `~sunpy.coordinates.frames.HeliocentricInertial`,
+    `~sunpy.coordinates.frames.Heliocentric`, and
+    `~sunpy.coordinates.frames.Helioprojective`.
+
+    Examples
+    --------
+
+    .. minigallery:: sunpy.coordinates.propagate_with_solar_surface
+
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import HeliocentricInertial, propagate_with_solar_surface
+    >>> meridian = SkyCoord(0*u.deg, [-60, -30, 0, 30, 60]*u.deg, 1*u.AU,
+    ...                     frame=HeliocentricInertial, obstime='2021-09-15')
+    >>> out_frame = HeliocentricInertial(obstime='2021-09-21')
+    >>> with propagate_with_solar_surface():
+    ...     print(meridian.transform_to(out_frame))
+    <SkyCoord (HeliocentricInertial: obstime=2021-09-21T00:00:00.000): (lon, lat, distance) in (deg, deg, AU)
+        [(70.24182965, -60., 1.),
+         (82.09298036, -30., 1.),
+         (85.9579703 ,   0., 1.),
+         (82.09298036,  30., 1.),
+         (70.24182965,  60., 1.)]>
+    >>> with propagate_with_solar_surface(rotation_model='rigid'):
+    ...     print(meridian.transform_to(out_frame))
+    <SkyCoord (HeliocentricInertial: obstime=2021-09-21T00:00:00.000): (lon, lat, distance) in (deg, deg, AU)
+        [(85.1064, -60., 1.), (85.1064, -30., 1.),
+         (85.1064,   0., 1.), (85.1064,  30., 1.),
+         (85.1064,  60., 1.)]>
+    """
+    with transform_with_sun_center():
+        try:
+            global _autoapply_diffrot
+
+            old_autoapply_diffrot = _autoapply_diffrot  # nominally False
+
+            log.debug("Enabling automatic solar differential rotation "
+                      f"('{rotation_model}') for any changes in obstime")
+            _autoapply_diffrot = rotation_model
+            yield
+        finally:
+            if not old_autoapply_diffrot:
+                log.debug("Disabling automatic solar differential rotation "
+                          "for any changes in obstime")
+            _autoapply_diffrot = old_autoapply_diffrot
 
 
 # Global counter to keep track of the layer of transformation
@@ -206,16 +291,20 @@ def _observers_are_equal(obs_1, obs_2):
                            "requires the destination observer to be specified, as the "
                            f"source observer is set to {obs_1}.")
     if isinstance(obs_1, str):
+        if obs_1 == "self":
+            return False
         raise ConvertError("The source observer needs to have `obstime` set because the "
                            "destination observer is different.")
     if isinstance(obs_2, str):
+        if obs_2 == "self":
+            return False
         raise ConvertError("The destination observer needs to have `obstime` set because the "
                            "source observer is different.")
 
     return np.atleast_1d((u.allclose(obs_1.lat, obs_2.lat) and
                           u.allclose(obs_1.lon, obs_2.lon) and
                           u.allclose(obs_1.radius, obs_2.radius) and
-                          obs_1.obstime == obs_2.obstime)).all()
+                          _times_are_equal(obs_1.obstime, obs_2.obstime))).all()
 
 
 def _check_observer_defined(frame):
@@ -223,9 +312,24 @@ def _check_observer_defined(frame):
         raise ConvertError("This transformation cannot be performed because the "
                            f"{frame.__class__.__name__} frame has observer=None.")
     elif isinstance(frame.observer, str):
-        raise ConvertError("This transformation cannot be performed because the "
-                           f"{frame.__class__.__name__} frame needs a specified obstime "
-                           f"to fully resolve observer='{frame.observer}'.")
+        if frame.observer != "self":
+            raise ConvertError("This transformation cannot be performed because the "
+                               f"{frame.__class__.__name__} frame needs a specified obstime "
+                               f"to fully resolve observer='{frame.observer}'.")
+        elif not isinstance(frame, HeliographicCarrington):
+            raise ConvertError(f"The {frame.__class__.__name__} frame has observer='self' "
+                               "but this is valid for only HeliographicCarrington frames.")
+
+
+def _times_are_equal(time_1, time_2):
+    # Checks whether times are equal
+    if isinstance(time_1, Time) and isinstance(time_2, Time):
+        # We explicitly perform the check in TAI to avoid possible numerical precision differences
+        # between a time in UTC and the same time after a UTC->TAI->UTC conversion
+        return np.all(time_1.tai == time_2.tai)
+
+    # We also deem the times equal if they are both None
+    return time_1 is None and time_2 is None
 
 
 # =============================================================================
@@ -240,7 +344,7 @@ def _transform_obstime(frame, obstime):
     If the frame's obstime is None, the frame is copied with the new obstime.
     """
     # If obstime is None or the obstime matches, nothing needs to be done
-    if obstime is None or np.all(frame.obstime == obstime):
+    if obstime is None or _times_are_equal(frame.obstime, obstime):
         return frame
 
     # Transform to the new obstime using the appropriate loopback transformation
@@ -281,12 +385,16 @@ def hgs_to_hgc(hgscoord, hgcframe):
     Convert from Heliographic Stonyhurst to Heliographic Carrington.
     """
     _check_observer_defined(hgcframe)
+    if isinstance(hgcframe.observer, str) and hgcframe.observer == "self":
+        observer_radius = hgscoord.radius
+    else:
+        observer_radius = hgcframe.observer.radius
 
     # First transform the HGS coord to the HGC obstime
     int_coord = _transform_obstime(hgscoord, hgcframe.obstime)
 
     # Rotate from HGS to HGC
-    total_matrix = _rotation_matrix_hgs_to_hgc(int_coord.obstime, hgcframe.observer.radius)
+    total_matrix = _rotation_matrix_hgs_to_hgc(int_coord.obstime, observer_radius)
     newrepr = int_coord.cartesian.transform(total_matrix)
 
     return hgcframe._replicate(newrepr, obstime=int_coord.obstime)
@@ -301,12 +409,19 @@ def hgc_to_hgs(hgccoord, hgsframe):
     """
     _check_observer_defined(hgccoord)
 
+    hgccoord = hgccoord.make_3d()
+
+    if isinstance(hgccoord.observer, str) and hgccoord.observer == "self":
+        observer_radius = hgccoord.radius
+    else:
+        observer_radius = hgccoord.observer.radius
+
     # First transform the HGC coord to the HGS obstime
     int_coord = _transform_obstime(hgccoord, hgsframe.obstime)
 
     # Rotate from HGC to HGS
     total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hgc(int_coord.obstime,
-                                                                hgccoord.observer.radius))
+                                                                observer_radius))
     newrepr = int_coord.cartesian.transform(total_matrix)
 
     return hgsframe._replicate(newrepr, obstime=int_coord.obstime)
@@ -419,8 +534,12 @@ def hcc_to_hgs(helioccoord, heliogframe):
     newrepr = helioccoord.cartesian.transform(total_matrix)
     int_coord = HeliographicStonyhurst(newrepr, obstime=hcc_observer_at_hcc_obstime.obstime)
 
-    # Loopback transform HGS if there is a change in obstime
-    return _transform_obstime(int_coord, heliogframe.obstime)
+    # For historical reasons, we support HCC with no obstime transforming to HGS with an obstime
+    if int_coord.obstime is None and heliogframe.obstime is not None:
+        int_coord = int_coord.replicate(obstime=heliogframe.obstime)
+
+    # Loopback transform HGS as needed
+    return int_coord.transform_to(heliogframe)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -431,6 +550,8 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     Convert from Heliographic Stonyhurst to Heliocentric Cartesian.
     """
     _check_observer_defined(heliocframe)
+
+    heliogcoord = heliogcoord.make_3d()
 
     # Loopback transform HGS if there is a change in obstime
     int_coord = _transform_obstime(heliogcoord, heliocframe.obstime)
@@ -455,7 +576,7 @@ def hpc_to_hpc(from_coo, to_frame):
     It does this by transforming through HGS.
     """
     if _observers_are_equal(from_coo.observer, to_frame.observer) and \
-       np.all(from_coo.obstime == to_frame.obstime):
+       _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
     _check_observer_defined(from_coo)
@@ -528,11 +649,9 @@ _SUN_DETILT_MATRIX = _rotation_matrix_reprs_to_reprs(_SOLAR_NORTH_POLE_HCRS,
                                                      CartesianRepresentation(0, 0, 1))
 
 
-@frame_transform_graph.transform(AffineTransform, HCRS, HeliographicStonyhurst)
-@_transformation_debug("HCRS->HGS (affine transformation)")
-def hcrs_to_hgs(hcrscoord, hgsframe):
+def _affine_params_hcrs_to_hgs(hcrs_time, hgs_time):
     """
-    Convert from HCRS to Heliographic Stonyhurst (HGS).
+    Return the affine parameters (matrix and offset) from HCRS to HGS
 
     HGS shares the same origin (the Sun) as HCRS, but has its Z axis aligned with the Sun's
     rotation axis and its X axis aligned with the projection of the Sun-Earth vector onto the Sun's
@@ -542,23 +661,10 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     of time and is pre-computed, while the second matrix depends on the time-varying Sun-Earth
     vector.
     """
-    if hgsframe.obstime is None:
-        raise ConvertError("To perform this transformation, the coordinate"
-                           " frame needs a specified `obstime`.")
-
-    # Check whether differentials are involved on either end
-    has_differentials = ((hcrscoord._data is not None and hcrscoord.data.differentials) or
-                         (hgsframe._data is not None and hgsframe.data.differentials))
-
     # Determine the Sun-Earth vector in ICRS
     # Since HCRS is ICRS with an origin shift, this is also the Sun-Earth vector in HCRS
-    # If differentials exist, also obtain Sun and Earth velocities
-    if has_differentials:
-        sun_pos_icrs, sun_vel = get_body_barycentric_posvel('sun', hgsframe.obstime)
-        earth_pos_icrs, earth_vel = get_body_barycentric_posvel('earth', hgsframe.obstime)
-    else:
-        sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
-        earth_pos_icrs = get_body_barycentric('earth', hgsframe.obstime)
+    sun_pos_icrs = get_body_barycentric('sun', hgs_time)
+    earth_pos_icrs = get_body_barycentric('earth', hgs_time)
     sun_earth = earth_pos_icrs - sun_pos_icrs
 
     # De-tilt the Sun-Earth vector to the frame with the Sun's rotation axis parallel to the Z axis
@@ -571,42 +677,61 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
 
     # All of the above is calculated for the HGS observation time
     # If the HCRS observation time is different, calculate the translation in origin
-    if not _ignore_sun_motion and np.any(hcrscoord.obstime != hgsframe.obstime):
-        sun_pos_old_icrs = get_body_barycentric('sun', hcrscoord.obstime)
-        offset_icrf = sun_pos_icrs - sun_pos_old_icrs
+    if not _ignore_sun_motion and np.any(hcrs_time != hgs_time):
+        sun_pos_old_icrs = get_body_barycentric('sun', hcrs_time)
+        offset_icrf = sun_pos_old_icrs - sun_pos_icrs
     else:
         offset_icrf = sun_pos_icrs * 0  # preserves obstime shape
-
-    # Add velocity if needed (at the HGS observation time)
-    if has_differentials:
-        vel_icrf = (sun_vel - earth_vel).represent_as(CartesianDifferential)
-        offset_icrf = offset_icrf.with_differentials(vel_icrf)
 
     offset = offset_icrf.transform(total_matrix)
     return total_matrix, offset
 
 
-@frame_transform_graph.transform(AffineTransform, HeliographicStonyhurst, HCRS)
-@_transformation_debug("HGS->HCRS (affine transformation)")
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HCRS, HeliographicStonyhurst)
+@_transformation_debug("HCRS->HGS")
+def hcrs_to_hgs(hcrscoord, hgsframe):
+    """
+    Convert from HCRS to Heliographic Stonyhurst (HGS).
+
+    Even though we calculate the parameters for the affine transform, we use
+    ``FunctionTransformWithFiniteDifference`` because otherwise there is no way to account for the
+    induced angular velocity when transforming a coordinate with velocity information.
+    """
+    if hgsframe.obstime is None:
+        raise ConvertError("To perform this transformation, the HeliographicStonyhurst"
+                           " frame needs a specified `obstime`.")
+
+    rot_matrix, offset = _affine_params_hcrs_to_hgs(hcrscoord.obstime, hgsframe.obstime)
+
+    return hgsframe.realize_frame(hcrscoord.cartesian.transform(rot_matrix) + offset)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliographicStonyhurst, HCRS)
+@_transformation_debug("HGS->HCRS")
 def hgs_to_hcrs(hgscoord, hcrsframe):
     """
     Convert from Heliographic Stonyhurst to HCRS.
+
+    Even though we calculate the parameters for the affine transform, we use
+    ``FunctionTransformWithFiniteDifference`` because otherwise there is no way to account for the
+    induced angular velocity when transforming a coordinate with velocity information.
     """
+    if hgscoord.obstime is None:
+        raise ConvertError("To perform this transformation, the HeliographicStonyhurst"
+                           " frame needs a specified `obstime`.")
+
+    hgscoord = hgscoord.make_3d()
+
     # Calculate the matrix and offset in the HCRS->HGS direction
-    total_matrix, offset = hcrs_to_hgs(hcrsframe, hgscoord)
+    forward_matrix, forward_offset = _affine_params_hcrs_to_hgs(hcrsframe.obstime, hgscoord.obstime)
 
     # Invert the transformation to get the HGS->HCRS transformation
-    reverse_matrix = matrix_transpose(total_matrix)
-    # If differentials exist, properly negate the velocity
-    if offset.differentials:
-        pos = -offset.without_differentials()
-        vel = -offset.differentials['s']
-        offset = pos.with_differentials(vel)
-    else:
-        offset = -offset
-    reverse_offset = offset.transform(reverse_matrix)
+    reverse_matrix = matrix_transpose(forward_matrix)
+    reverse_offset = (-forward_offset).transform(reverse_matrix)
 
-    return reverse_matrix, reverse_offset
+    return hcrsframe.realize_frame(hgscoord.cartesian.transform(reverse_matrix) + reverse_offset)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -618,10 +743,13 @@ def hgs_to_hgs(from_coo, to_frame):
     """
     if to_frame.obstime is None:
         return from_coo.replicate()
-    elif np.all(from_coo.obstime == to_frame.obstime):
+    elif _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
-        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
+        if _autoapply_diffrot:
+            from_coo = from_coo._apply_diffrot((to_frame.obstime - from_coo.obstime).to('day'),
+                                               _autoapply_diffrot)
+        return from_coo.transform_to(HCRS(obstime=to_frame.obstime)).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -632,7 +760,7 @@ def hgc_to_hgc(from_coo, to_frame):
     Convert between two Heliographic Carrington frames.
     """
     if _observers_are_equal(from_coo.observer, to_frame.observer) and \
-       np.all(from_coo.obstime == to_frame.obstime):
+       _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
     _check_observer_defined(from_coo)
@@ -652,7 +780,7 @@ def hcc_to_hcc(from_coo, to_frame):
     Convert between two Heliocentric frames.
     """
     if _observers_are_equal(from_coo.observer, to_frame.observer) and \
-       np.all(from_coo.obstime == to_frame.obstime):
+       _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
     _check_observer_defined(from_coo)
@@ -733,7 +861,7 @@ def hee_to_hee(from_coo, to_frame):
     """
     Convert between two Heliocentric Earth Ecliptic frames.
     """
-    if np.all(from_coo.obstime == to_frame.obstime):
+    if _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     elif to_frame.obstime is None:
         return from_coo
@@ -804,7 +932,7 @@ def gse_to_gse(from_coo, to_frame):
     """
     Convert between two Geocentric Solar Ecliptic frames.
     """
-    if np.all(from_coo.obstime == to_frame.obstime):
+    if _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         heecoord = from_coo.transform_to(HeliocentricEarthEcliptic(obstime=from_coo.obstime))
@@ -838,6 +966,9 @@ def hgs_to_hci(hgscoord, hciframe):
     """
     Convert from Heliographic Stonyhurst to Heliocentric Inertial
     """
+
+    hgscoord = hgscoord.make_3d()
+
     # First transform the HGS coord to the HCI obstime
     int_coord = _transform_obstime(hgscoord, hciframe.obstime)
 
@@ -880,7 +1011,7 @@ def hci_to_hci(from_coo, to_frame):
     """
     Convert between two Heliocentric Inertial frames.
     """
-    if np.all(from_coo.obstime == to_frame.obstime):
+    if _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
@@ -960,7 +1091,8 @@ def gei_to_gei(from_coo, to_frame):
     """
     Convert between two Geocentric Earth Equatorial frames.
     """
-    if np.all((from_coo.equinox == to_frame.equinox) and (from_coo.obstime == to_frame.obstime)):
+    if _times_are_equal(from_coo.equinox, to_frame.equinox) and \
+       _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)

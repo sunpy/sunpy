@@ -29,7 +29,7 @@ def test_function():
 ##############################################################################
 # To access the downloaded file inside the function, you can use
 # `~sunpy.data.data_manager.manager.DataManager.get` function
-# `manager.get` returns a `pathlib.Path` object.
+# which returns a `pathlib.Path` object.
 
 
 @manager.require('test_file',
@@ -43,19 +43,19 @@ def test_function():
 # During subsequent calls, no downloading will take place.
 
 
-test_function()  # The file will be downloaded
-test_function()  # No downloading here
+print(test_function())  # The file will be downloaded
+print(test_function())  # No downloading here
 
 ##############################################################################
 # In case the user wants to skip the hash check, there is a helper context manager
 # `~sunpy.data.data_manager.manager.DataManager.skip_hash_check`.
 
 with manager.skip_hash_check():
-    test_function()
+    print(test_function())
 
 ##############################################################################
 # If the user knows the function is going to use a file and want to replace it with another version
 # they can do that too.
 
 with manager.override_file('test_file', 'http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits'):
-    test_function()
+    print(test_function())

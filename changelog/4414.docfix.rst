@@ -1,1 +1,0 @@
-Fixed broken documentation links in the guide.

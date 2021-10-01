@@ -1,3 +1,0 @@
-Removed deprecated function :func:`sunpy.instr.aia.aiaprep`.
-Alternative is `~aiapy.calibrate.register` for converting AIA
-images from level 1 to level 1.5.

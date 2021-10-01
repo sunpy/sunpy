@@ -3,6 +3,7 @@ from functools import partial
 import matplotlib.animation as mplanim
 import matplotlib.axes as maxes
 import matplotlib.backend_bases as mback
+import matplotlib.figure as mfigure
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
@@ -28,8 +29,9 @@ def button_func1(*args, **kwargs):
     print(*args, **kwargs)
 
 
-@pytest.mark.parametrize('fig, colorbar, buttons', ((None, False, [[], []]),
-                                                    (plt.figure(), True, [[button_func1], ["hi"]])))
+@pytest.mark.parametrize('fig, colorbar, buttons',
+                         ((None, False, [[], []]),
+                          (mfigure.Figure(), True, [[button_func1], ["hi"]])))
 def test_base_func_init(fig, colorbar, buttons):
     data = np.random.random((3, 10, 10))
     func0 = partial(update_plotval, data=data)
@@ -47,7 +49,7 @@ def test_base_func_init(fig, colorbar, buttons):
     tfa._set_active_slider(1)
     assert tfa.active_slider == 1
 
-    fig = plt.figure()
+    fig = tfa.fig
     event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='down')
     tfa._key_press(event)
     assert tfa.active_slider == 0
@@ -96,14 +98,16 @@ def test_base_func_init(fig, colorbar, buttons):
     assert tfa.active_slider == 0
 
 
-@pytest.fixture
-def funcanimator():
+# Make sure figures created directly and through pyplot work
+@pytest.fixture(params=[plt.figure, mfigure.Figure])
+def funcanimator(request):
     data = np.random.random((3, 10, 10))
     func = partial(update_plotval, data=data)
     funcs = [func]
     ranges = [(0, 3)]
+    fig = request.param()
 
-    return FuncAnimatorTest(data, funcs, ranges)
+    return FuncAnimatorTest(data, funcs, ranges, fig=fig)
 
 
 def test_to_anim(funcanimator):
@@ -112,8 +116,24 @@ def test_to_anim(funcanimator):
 
 
 def test_to_axes(funcanimator):
-    ax = funcanimator._get_main_axes()
-    assert isinstance(ax, maxes._subplots.SubplotBase)
+    assert isinstance(funcanimator.axes, maxes.SubplotBase)
+
+
+def test_axes_set():
+    data = np.random.random((3, 10, 10))
+    funcs = [partial(update_plotval, data=data)]
+    ranges = [(0, 3)]
+
+    # Create Figure for animator
+    fig1 = plt.figure()
+    # Create new Figure, Axes, and set current axes
+    fig2, ax = plt.subplots()
+    plt.sca(ax)
+    ani = FuncAnimatorTest(data, funcs, ranges, fig=fig1)
+    # Make sure the animator axes is now the current axes
+    assert plt.gca() is ani.axes
+
+    [plt.close(f) for f in [fig1, fig2]]
 
 
 def test_edges_to_centers_nd():
@@ -166,16 +186,27 @@ def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0](np.arange(10)))
 
 
-xdata = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
+XDATA = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
 
 
 @pytest.mark.parametrize('plot_axis_index, axis_ranges, xlabel, xlim',
                          [(-1, None, None, None),
-                          (-1, [None, None, xdata], 'x-axis', None)])
+                          (-1, [None, None, XDATA], 'x-axis', None)])
 def test_lineanimator_init(plot_axis_index, axis_ranges, xlabel, xlim):
     data = np.random.random((5, 5, 10))
     LineAnimator(data=data, plot_axis_index=plot_axis_index, axis_ranges=axis_ranges,
                  xlabel=xlabel, xlim=xlim)
+
+
+def test_lineanimator_init_nans():
+    data = np.random.random((5, 5, 10))
+    data[0][0][:] = np.nan
+    line_anim = LineAnimator(data=data, plot_axis_index=-1, axis_ranges=[None, None, XDATA],
+                             xlabel='x-axis', xlim=None, ylim=None)
+    assert line_anim.ylim[0] is not None
+    assert line_anim.ylim[1] is not None
+    assert line_anim.xlim[0] is not None
+    assert line_anim.xlim[1] is not None
 
 
 @figure_test
@@ -187,7 +218,5 @@ def test_lineanimator_figure():
     slider_axis0 = 0
     xdata = np.tile(np.linspace(
         0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
-
     ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata])
-
     return ani.fig

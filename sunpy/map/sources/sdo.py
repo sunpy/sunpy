@@ -7,6 +7,7 @@ from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEclipti
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
+from sunpy import log
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
@@ -44,22 +45,18 @@ class AIAMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        if 'bunit' not in header and 'pixlunit' in header:
+            # PIXLUNIT is not a FITS standard keyword
+            header['bunit'] = header['pixlunit']
+
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
         self.meta['detector'] = self.meta.get('detector', "AIA")
-        if 'bunit' not in self.meta and 'pixlunit' in self.meta:
-            # PIXLUNIT is not a FITS standard keyword
-            self.meta['bunit'] = self.meta['pixlunit']
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
-        # DN is not a FITS standard unit, so convert to counts
-        if self.meta.get('bunit', None) == 'DN':
-            self.meta['bunit'] = 'ct'
-        if self.meta.get('bunit', None) == 'DN/s':
-            self.meta['bunit'] = 'ct/s'
 
     @property
     def _supported_observer_coordinates(self):
@@ -104,6 +101,11 @@ class HMIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        # To avoid FITS fixed warnings, have to do this before super()
+        for i in [1, 2]:
+            if header.get(f'CRDER{i}', None) == 'nan':
+                # nan is not a valid value in the FITS standard
+                header.pop(f'CRDER{i}')
 
         super().__init__(data, header, **kwargs)
 
@@ -132,21 +134,51 @@ class HMIMap(GenericMap):
 
 
 class HMISynopticMap(HMIMap):
+    """
+    SDO/HMI Synoptic Map.
 
+    Synoptic maps are constructed from HMI 720s line-of-sight magnetograms
+    collected over a 27-day solar rotation.
+
+    See `~sunpy.map.sources.sdo.HMIMap` for information on the HMI instrument.
+
+    References
+    ----------
+    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
+    * `JSOC's HMI Synoptic Charts <http://jsoc.stanford.edu/HMI/LOS_Synoptic_charts.html>`__
+    """
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
 
         if self.meta['cunit1'] == 'Degree':
-            self.meta['cunit1'] = 'degree'
+            self.meta['cunit1'] = 'deg'
 
         if self.meta['cunit2'] == 'Sine Latitude':
-            self.meta['cunit2'] = 'degree'
+            log.debug("Editing CUNIT2, CDELT1, CDLET2 keywords to the correct "
+                      "values for a CEA projection.")
+            self.meta['cunit2'] = 'deg'
 
             # Since, this map uses the cylindrical equal-area (CEA) projection,
             # the spacing should be modified to 180/pi times the original value
             # Reference: Section 5.5, Thompson 2006
             self.meta['cdelt2'] = 180 / np.pi * self.meta['cdelt2']
             self.meta['cdelt1'] = np.abs(self.meta['cdelt1'])
+
+        if 'date-obs' not in self.meta and 't_obs' in self.meta:
+            log.debug('Setting "DATE-OBS" keyword from "T_OBS"')
+            self.meta['date-obs'] = self.meta['t_obs']
+
+        self.plot_settings['cmap'] = 'hmimag'
+        self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
+
+    @property
+    def unit(self):
+        unit_str = self.meta.get('bunit', None)
+        if unit_str == 'Mx/cm^2':
+            # Maxwells aren't in the IAU unit sytle manual, so replace with Gauss
+            return u.Unit('G')
+        else:
+            return super().unit
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

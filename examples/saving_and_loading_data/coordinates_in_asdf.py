@@ -7,20 +7,18 @@ In this example we are going to look at saving and loading collections of
 coordinates with `asdf <https://asdf.readthedocs.io/en/latest/>`__.
 
 asdf is a modern file format designed to meet the needs of the astronomy
-community. It has deep integration with Python and SunPy and Astropy as well as
+community. It has deep integration with Python and sunpy and Astropy as well as
 implementations in other languages. It can be used to store known Python
 objects in a portable, well defined file format. It is primarily useful for
 storing complex Astropy and SunPy objects in a way that can be loaded back into
 the same form as they were saved.
 
 .. note::
-    This example requires Astropy 3.2 and asdf 2.3.0
+    This example requires astropy>=3.2 and asdf>=2.3.0
 
 """
-
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.optimize
 
 import asdf
 import astropy.units as u
@@ -39,39 +37,30 @@ from sunpy.sun import constants
 
 
 @u.quantity_input
-def semi_circular_loop(length: u.m, latitude: u.deg = 0*u.deg):
+def semi_circular_loop(length: u.cm, latitude: u.deg = 0*u.deg):
     """
-    Return a Heliographic Stonyhurst coordinate object with points of a semi circular loop in it.
+    Return HGS coordinates for a semi-circular loop
     """
-    r_sun = constants.radius
-
-    def r_2_func(x):
-        return np.arccos(0.5 * x / r_sun.to(u.cm).value) - np.pi + length.to(u.cm).value / 2. / x
-
-    # Find the loop radius corresponding to the loop length
-    r_2 = scipy.optimize.bisect(r_2_func,
-                                length.to(u.cm).value / (2 * np.pi),
-                                length.to(u.cm).value / np.pi) * u.cm
-    alpha = np.arccos(0.5 * (r_2 / r_sun))
-    phi = np.linspace(-np.pi * u.rad + alpha, np.pi * u.rad - alpha, 2000)
-
+    angles = np.linspace(0, 1, 1000) * np.pi * u.rad
+    z = length / np.pi * np.sin(angles)
+    x = length / np.pi * np.cos(angles)
     hcc_frame = frames.Heliocentric(
-        observer=frames.HeliographicStonyhurst(lon=0 * u.deg, lat=latitude, radius=1 * u.AU))
+        observer=frames.HeliographicStonyhurst(lon=0 * u.deg, lat=latitude, radius=constants.au))
 
     return SkyCoord(
-        x=r_2 * np.sin(phi),
-        y=0 * u.cm,
-        z=r_2 * np.cos(phi) + r_sun,
-        frame=hcc_frame).transform_to('heliographic_stonyhurst')
+        x=x,
+        y=np.zeros_like(x),
+        z=z + constants.radius,
+        frame=hcc_frame)
 
 
 ################################################################################
 # Use this function to generate a `~astropy.coordinates.SkyCoord` object.
+
 loop_coords = semi_circular_loop(500*u.Mm, 30*u.deg)
 print(loop_coords.shape)
 # print the first and last coordinate point
 print(loop_coords[[0, -1]])
-
 
 ################################################################################
 # This is a regular coordinate object that can be transformed to other frames
@@ -81,10 +70,9 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 ax = plt.subplot(projection=aiamap)
 aiamap.plot(axes=ax, clip_interval=(1, 99.5) * u.percent)
-ax.plot_coord(loop_coords.transform_to(aiamap.coordinate_frame), 'r')
+ax.plot_coord(loop_coords, 'r')
 
 plt.show()
-
 
 ################################################################################
 # We can now save these loop points to an asdf file to use later. The advantage
@@ -100,10 +88,9 @@ tree = {'loop_points': loop_coords}
 with asdf.AsdfFile(tree) as asdf_file:
     asdf_file.write_to("loop_coords.asdf")
 
-
 ################################################################################
 # This asdf file is a portable file and can be safely loaded by anyone with
-# Astropy and SunPy installed. We can reload the file like so:
+# Astropy and sunpy installed. We can reload the file like so:
 
 with asdf.open("loop_coords.asdf") as input_asdf:
     new_coords = input_asdf['loop_points']

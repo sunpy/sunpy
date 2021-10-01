@@ -27,7 +27,7 @@ To quickly collect information on your system, you can use our convenience funct
 The output should look something like: ::
 
     ==========================================================
-     SunPy Installation Information
+     sunpy Installation Information
 
      Sunday, 18. November 2012 11:06PM UT
     ==========================================================
@@ -41,7 +41,7 @@ The output should look something like: ::
     ####################
      Required libraries
     ####################
-    SunPy: 0.1
+    sunpy: 0.1
     NumPy: 1.6.2
     SciPy: 0.10.1
     Matplotlib: 1.2.x
@@ -78,7 +78,7 @@ To locate your :file:`.sunpy/` directory, use :func:`sunpy.print_config`::
 
 We use `appdirs <https://github.com/ActiveState/appdirs>`__ to work out the location depending on your operating system.
 
-If you would like to use a different configuration directory, you can do so by specifying the location in your  :envvar:`SUNPY_CONFIGDIR` environment variable.
+If you would like to use a different configuration directory, you can do so by specifying the location in your ``SUNPY_CONFIGDIR`` environment variable.
 
 .. _reporting-problems:
 

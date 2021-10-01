@@ -16,7 +16,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.data.test
 import sunpy.map
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
 
 filepath = pathlib.Path(sunpy.data.test.rootdir)
 a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]
@@ -58,6 +58,11 @@ class TestMap:
     def test_mapsequence(self):
         # Test making a MapSequence
         sequence = sunpy.map.Map(a_list_of_many, sequence=True)
+        assert isinstance(sequence, sunpy.map.MapSequence)
+
+    def test_mapsequence_sortby(self):
+        # Test making a MapSequence with sortby kwarg
+        sequence = sunpy.map.Map(a_list_of_many, sequence=True, sortby=None)
         assert isinstance(sequence, sunpy.map.MapSequence)
 
     def test_composite(self):
@@ -156,7 +161,8 @@ class TestMap:
         header = {'cdelt1': 10, 'cdelt2': 10,
                   'telescop': 'sunpy',
                   'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-        pair_map = sunpy.map.Map(data, header)
+        with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+            pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
         # Common keys not strings
@@ -166,7 +172,8 @@ class TestMap:
                   'detector': 1,
                   'instrume': 50,
                   'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-        pair_map = sunpy.map.Map(data, header)
+        with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+            pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
     def test_errors(self, tmpdir):
@@ -228,7 +235,7 @@ class TestMap:
         # Test save out
         eitmap = sunpy.map.Map(a_fname)
         afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-        with pytest.warns(SunpyUserWarning, match='The meta key  is not valid ascii'):
+        with pytest.warns(SunpyMetadataWarning, match='The meta key  is not valid ascii'):
             eitmap.save(afilename, filetype='fits', overwrite=True)
         backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
@@ -252,8 +259,8 @@ def test_map_list_urls_cache():
 @pytest.mark.parametrize('file, mapcls',
                          [[filepath / 'EIT' / "efz20040301.000010_s.fits", sunpy.map.sources.EITMap],
                           [filepath / "lasco_c2_25299383_s.fts", sunpy.map.sources.LASCOMap],
-                          [filepath / "mdi_fd_Ic_6h_01d.5871.0000_s.fits", sunpy.map.sources.MDIMap],
-                          [filepath / "mdi_fd_M_96m_01d.5874.0005_s.fits", sunpy.map.sources.MDIMap],
+                          [filepath / "mdi.fd_Ic.20101015_230100_TAI.data.fits", sunpy.map.sources.MDIMap],
+                          [filepath / "mdi.fd_M_96m_lev182.20101015_191200_TAI.data.fits", sunpy.map.sources.MDIMap],
                           [filepath / "euvi_20090615_000900_n4euA_s.fts", sunpy.map.sources.EUVIMap],
                           [filepath / "cor1_20090615_000500_s4c1A.fts", sunpy.map.sources.CORMap],
                           [filepath / "hi_20110910_114721_s7h2A.fts", sunpy.map.sources.HIMap],
@@ -267,3 +274,16 @@ def test_map_list_urls_cache():
 def test_sources(file, mapcls):
     m = sunpy.map.Map(file)
     assert isinstance(m, mapcls)
+
+
+def test_no_2d_hdus(tmpdir):
+    # Create a fake FITS file with a valid header but 1D data
+    tmp_fpath = str(tmpdir / 'data.fits')
+    with fits.open(AIA_171_IMAGE, ignore_blank=True) as hdul:
+        fits.writeto(tmp_fpath, np.arange(100), hdul[0].header)
+
+    with pytest.raises(NoMapsInFileError, match='Found no HDUs with >= 2D data'):
+        sunpy.map.Map(tmp_fpath)
+
+    with pytest.warns(SunpyUserWarning, match='One of the arguments failed to parse'):
+        sunpy.map.Map([tmp_fpath, AIA_171_IMAGE], silence_errors=True)

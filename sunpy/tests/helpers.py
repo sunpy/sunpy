@@ -1,19 +1,18 @@
-import os
-import urllib
 import platform
 import warnings
+from pathlib import Path
 from functools import wraps
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy.distutils.system_info as sysinfo
 import pkg_resources
 import pytest
-from matplotlib.testing import compare
 
+import astropy
 from astropy.wcs.wcs import FITSFixedWarning
 
 import sunpy.map
-from sunpy.tests import hash
 
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_32bit',
            'warnings_as_errors', 'asdf_entry_points']
@@ -64,6 +63,16 @@ def warnings_as_errors(request):
 new_hash_library = {}
 
 
+def get_hash_library_name():
+    """
+    Generate the hash library name for this env.
+    """
+    ft2_version = f"{mpl.ft2font.__freetype_version__.replace('.', '')}"
+    mpl_version = "dev" if "+" in mpl.__version__ else mpl.__version__.replace('.', '')
+    astropy_version = "dev" if "dev" in astropy.__version__ else astropy.__version__.replace('.', '')
+    return f"figure_hashes_mpl_{mpl_version}_ft_{ft2_version}_astropy_{astropy_version}.json"
+
+
 def figure_test(test_function):
     """
     A decorator for a test that verifies the hash of the current figure or the
@@ -71,7 +80,7 @@ def figure_test(test_function):
     in the library. A PNG is also created in the 'result_image' directory,
     which is created on the current path.
 
-    All such decorated tests are marked with `pytest.mark.figure` for convenient filtering.
+    All such decorated tests are marked with `pytest.mark.mpl_image` for convenient filtering.
 
     Examples
     --------
@@ -79,157 +88,20 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
-    @pytest.mark.figure
+    hash_library_name = get_hash_library_name()
+    hash_library_file = Path(__file__).parent / hash_library_name
+
+    @pytest.mark.remote_data
+    @pytest.mark.mpl_image_compare(hash_library=hash_library_file,
+                                   savefig_kwargs={'metadata': {'Software': None}},
+                                   style='default')
     @wraps(test_function)
-    def wrapper(*args, **kwargs):
-        if not os.path.exists(hash.HASH_LIBRARY_FILE):
-            pytest.xfail(f'Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}')
-        # figure_base_dir is a pytest fixture defined on use.
-        if figure_base_dir is None:
-            pytest.xfail("No directory to save figures to found")
-
-        name = "{}.{}".format(test_function.__module__,
-                              test_function.__name__)
-        # Run the test function and get the figure
-        plt.figure()
-        fig = test_function(*args, **kwargs)
-        if fig is None:
-            fig = plt.gcf()
-
-        # Save the image that was generated
-        figure_base_dir.mkdir(exist_ok=True)
-        result_image_loc = figure_base_dir / f'{name}.png'
-        # Have to set Software to None to prevent Matplotlib injecting it's version number
-        plt.savefig(str(result_image_loc), metadata={'Software': None})
-        plt.close('all')
-
-        # Create hash
-        imgdata = open(result_image_loc, "rb")
-        figure_hash = hash._hash_file(imgdata)
-        imgdata.close()
-
-        new_hash_library[name] = figure_hash
-        if name not in hash.hash_library:
-            pytest.fail(f"Hash not present: {name}")
-
-        expected_hash = hash.hash_library[name]
-        if expected_hash != figure_hash:
-            raise RuntimeError(f'Figure hash ({figure_hash}) does not match expected hash ({expected_hash}).\n'
-                               f'New image generated and placed at {result_image_loc}')
-
-    return wrapper
-
-
-# Skip coverage on this because we test it every time the CI runs --coverage!
-def _patch_coverage(testdir, sourcedir):  # pragma: no cover
-    """
-    This function is used by the ``setup.py test`` command to change the
-    filepath of the source code from the temporary directory "setup.py"
-    installs the code into to the actual directory "setup.py" was executed in.
-    """
-    import coverage
-
-    coveragerc = os.path.join(os.path.dirname(__file__), "coveragerc")
-
-    # Load the .coverage file output by pytest-cov
-    covfile = os.path.join(testdir, ".coverage")
-    cov = coverage.Coverage(covfile, config_file=coveragerc)
-    cov.load()
-    cov.get_data()
-
-    # Change the filename for the datafile to the new directory
-    if hasattr(cov, "_data_files"):
-        dfs = cov._data_files
-    else:
-        dfs = cov.data_files
-
-    dfs.filename = os.path.join(sourcedir, ".coverage")
-
-    # Replace the testdir with source dir
-    # Lovingly borrowed from astropy (see licences directory)
-    lines = cov.data._lines
-    for key in list(lines.keys()):
-        new_path = os.path.relpath(
-            os.path.realpath(key),
-            os.path.realpath(testdir))
-        new_path = os.path.abspath(
-            os.path.join(sourcedir, new_path))
-        lines[new_path] = lines.pop(key)
-
-    cov.save()
-
-
-html_intro = '''
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-table, th, td {
-    border: 1px solid black;
-}
-</style>
-</head>
-<body>
-
-<h2>Image test comparison</h2>
-
-<table>
-  <tr>
-    <th>Test Name</th>
-    <th>Baseline image</th>
-    <th>Diff</th>
-    <th>New image</th>
-  </tr>
-'''
-
-
-def _generate_fig_html(fname):
-    generated_image = figure_base_dir / (fname + '.png')
-
-    envname = os.environ.get("TOX_ENV_NAME", None)
-    if envname is None:
-        raise RuntimeError("Could not find a TOXENV environment variable")
-    # Download baseline image
-    baseline_url = f'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/sunpy-master/figures/{envname}/'
-    baseline_image_url = baseline_url + generated_image.name
-    baseline_image = figure_base_dir / "reference_images" / generated_image.name
-    baseline_image_exists = baseline_image.exists()
-    if not baseline_image_exists:
-        baseline_image.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            urllib.request.urlretrieve(baseline_image_url, baseline_image)
-            baseline_image_exists = True
-        except urllib.error.HTTPError:
-            pass
-
-    # Create diff between baseline and generated image
-    diff_image = figure_base_dir / "difference_images" / generated_image.name
-    diff_image.parent.mkdir(parents=True, exist_ok=True)
-    if baseline_image_exists:
-        result = compare.compare_images(str(baseline_image), str(generated_image), tol=0)
-        # Result is None if the images are the same
-        if result is None:
-            return ''
-        compare.save_diff_image(str(baseline_image), str(generated_image), str(diff_image))
-
-    html_block = ('<tr>'
-                  '<td>{}\n'.format(generated_image.stem) +
-                  f'<td><img src="{baseline_image.relative_to(figure_base_dir)}"></td>\n' +
-                  f'<td><img src="{diff_image.relative_to(figure_base_dir)}"></td>\n' +
-                  f'<td><img src="{generated_image.relative_to(figure_base_dir)}"></td>\n' +
-                  '</tr>\n\n')
-    return html_block
-
-
-def generate_figure_webpage(hash_library):
-    html_file = figure_base_dir / 'fig_comparison.html'
-    with open(html_file, 'w') as f:
-        f.write(html_intro)
-        for fname in hash_library:
-            f.write(_generate_fig_html(fname))
-        f.write('</table>')
-        f.write('</body>')
-        f.write('</html>')
+    def test_wrapper(*args, **kwargs):
+        ret = test_function(*args, **kwargs)
+        if ret is None:
+            ret = plt.gcf()
+        return ret
+    return test_wrapper
 
 
 def no_vso(f):

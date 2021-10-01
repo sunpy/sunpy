@@ -1,64 +1,31 @@
 from pathlib import Path
 from collections import OrderedDict
 
-import astropy.table
+import numpy as np
 
 import sunpy
 from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.net.base_client import BaseClient, QueryResponseRow, QueryResponseTable
+from sunpy.net.scraper import Scraper, get_timerange_from_exdict
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
-from sunpy.util.scraper import Scraper, get_timerange_from_exdict
 
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['QueryResponse', 'GenericClient']
 
 
-class QueryResponse(BaseQueryResponse):
-    """
-    A container for files metadata returned by
-    searches from Dataretriver clients.
-    """
-
-    def __init__(self, lst, client=None):
-        super().__init__()
-        self._data = lst
-        self._client = client
-
-    @property
-    def blocks(self):
-        return self._data
-
-    @property
-    def client(self):
-        return self._client
-
-    @client.setter
-    def client(self, client):
-        self._client = client
+class QueryResponse(QueryResponseTable):
+    hide_keys = ['url']
 
     def time_range(self):
         """
         Returns the time-span for which records are available.
         """
-        return TimeRange(min(qrblock['Time'].start for qrblock in self),
-                         max(qrblock['Time'].end for qrblock in self))
-
-    def __len__(self):
-        return len(self._data)
-
-    def __getitem__(self, item):
-        # Always index so a list comes back
-        if isinstance(item, int):
-            item = slice(item, item+1)
-        return type(self)(self._data[item], client=self.client)
-
-    def __iter__(self):
-        for block in self._data:
-            yield block
+        if 'Start Time' in self.colnames and 'End Time' in self.colnames:
+            return TimeRange(np.min(self['Start Time']), np.max(self['End Time']))
 
     def response_block_properties(self):
         """
@@ -70,22 +37,6 @@ class QueryResponse(BaseQueryResponse):
 
         s.remove(None)
         return s
-
-    def build_table(self):
-        if len(self._data) == 0:
-            return astropy.table.Table()
-
-        # finding column names to be shown in the response table.
-        colnames = []
-        for colname in self._data[0].keys():
-            if colname != 'url' and colname != 'Time':
-                colnames.append(colname)
-        columns = OrderedDict(((col, [])) for col in colnames)
-
-        for qrblock in self:
-            for colname in columns.keys():
-                columns[colname].append(qrblock[colname])
-        return astropy.table.Table(columns)
 
 
 class GenericClient(BaseClient):
@@ -107,18 +58,12 @@ class GenericClient(BaseClient):
     They help to translate the attrs for scraper before and after the search respectively.
     """
     baseurl = None
-    """
-    A regex string that can match all urls supported by the client.
-    """
+    # A regex string that can match all urls supported by the client.
+    # A string which is used to extract the desired metadata from urls correctly,
+    # using ``sunpy.extern.parse.parse``.
     pattern = None
-    """
-    A string which is used to extract the desired metadata from urls correctly,
-    using :func:`~sunpy.extern.parse.parse`
-    """
+    # Set of required 'attrs' for client to handle the query.
     required = {a.Time, a.Instrument}
-    """
-    Set of required 'attrs' for client to handle the query.
-    """
 
     @classmethod
     def _get_match_dict(cls, *args, **kwargs):
@@ -126,7 +71,7 @@ class GenericClient(BaseClient):
         Constructs a dictionary using the query and registered Attrs that represents
         all possible values of the extracted metadata for files that matches the query.
         The returned dictionary is used to validate the metadata of searched files
-        in `:func:~sunpy.util.scraper.Scraper._extract_files_meta`.
+        in :func:`~sunpy.net.scraper.Scraper._extract_files_meta`.
 
         Parameters
         ----------
@@ -149,12 +94,12 @@ class GenericClient(BaseClient):
             # since complex attrs like Range can't be compared with string matching.
             if issubclass(i, SimpleAttr):
                 matchdict[attrname] = []
-                for val, desc in regattrs_dict[i]:
+                for val, _ in regattrs_dict[i]:
                     matchdict[attrname].append(val)
         for elem in args:
             if isinstance(elem, a.Time):
-                timerange = TimeRange(elem.start, elem.end)
-                matchdict['Time'] = timerange
+                matchdict['Start Time'] = elem.start
+                matchdict['End Time'] = elem.end
             elif hasattr(elem, 'value'):
                 matchdict[elem.__class__.__name__] = [str(elem.value).lower()]
             elif isinstance(elem, a.Wavelength):
@@ -169,7 +114,7 @@ class GenericClient(BaseClient):
     def pre_search_hook(cls, *args, **kwargs):
         """
         Helper function to return the baseurl, pattern and matchdict
-        for the client required by `:func:~sunpy.net.dataretriever.GenericClient.search`
+        for the client required by :func:`~sunpy.net.dataretriever.GenericClient.search`
         before using the scraper.
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
@@ -195,7 +140,7 @@ class GenericClient(BaseClient):
 
     def post_search_hook(self, exdict, matchdict):
         """
-        Helper function used after `:func:~sunpy.net.dataretriever.GenericClient.search`
+        Helper function used after :func:`~sunpy.net.dataretriever.GenericClient.search`
         which makes the extracted metadata representable in a query response table.
 
         Parameters
@@ -203,7 +148,7 @@ class GenericClient(BaseClient):
         exdict: `dict`
             Represents metadata extracted from files.
         matchdict: `dict`
-            Contains attr values accessed from `register_values()`
+            Contains attr values accessed from ``register_values()``
             and the search query itself.
 
         Returns
@@ -215,12 +160,13 @@ class GenericClient(BaseClient):
         rowdict = OrderedDict()
         tr = get_timerange_from_exdict(exdict)
         start = tr.start
+        start.format = 'iso'
         end = tr.end
-        rowdict['Time'] = TimeRange(start, end)
-        rowdict['Start Time'] = start.strftime(TIME_FORMAT)
-        rowdict['End Time'] = end.strftime(TIME_FORMAT)
+        end.format = 'iso'
+        rowdict['Start Time'] = start
+        rowdict['End Time'] = end
         for k in matchdict:
-            if k != 'Time' and k != 'Wavelength':
+            if k not in ('Start Time', 'End Time', 'Wavelength'):
                 if k == 'Physobs':
                     # not changing case for Phsyobs
                     rowdict[k] = matchdict[k][0]
@@ -258,8 +204,10 @@ class GenericClient(BaseClient):
                 fname = default_dir / '{file}'
             elif '{file}' not in str(path):
                 fname = path / '{file}'
+            else:
+                fname = path
 
-            temp_dict = qres.blocks[i].copy()
+            temp_dict = qres[i].response_block_map
             temp_dict['file'] = str(filename)
             fname = fname.expanduser()
             fname = Path(str(fname).format(**temp_dict))
@@ -285,8 +233,10 @@ class GenericClient(BaseClient):
         """
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         scraper = Scraper(baseurl, regex=True)
-        filesmeta = scraper._extract_files_meta(matchdict['Time'], extractor=pattern,
+        tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+        filesmeta = scraper._extract_files_meta(tr, extractor=pattern,
                                                 matcher=matchdict)
+        filesmeta = sorted(filesmeta, key=lambda k: k['url'])
         metalist = []
         for i in filesmeta:
             rowdict = self.post_search_hook(i, matchdict)
@@ -294,7 +244,7 @@ class GenericClient(BaseClient):
         return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,
-              progress=True, downloader=None, wait=True):
+              progress=True, downloader=None, wait=True, **kwargs):
         """
         Download a set of results.
 
@@ -309,7 +259,7 @@ class GenericClient(BaseClient):
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
-            and the existing file will be overwritten, if `'unique'` the filename
+            and the existing file will be overwritten, if ``'unique'`` the filename
             will be modified to be unique.
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
@@ -318,7 +268,9 @@ class GenericClient(BaseClient):
             The download manager to use.
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
+           any effect if ``downloader`` is not `None`.
+        **kwargs : dict, optional
+            Passed to `parfive.Downloader.enqueue_file`.
 
         Returns
         -------
@@ -328,7 +280,12 @@ class GenericClient(BaseClient):
         if path is not None:
             path = Path(path)
 
-        urls = [qrblock['url'] for qrblock in qres]
+        if isinstance(qres, QueryResponseRow):
+            qres = qres.as_table()
+
+        urls = []
+        if len(qres):
+            urls = list(qres['url'])
 
         filenames = [url.split('/')[-1] for url in urls]
 
@@ -340,7 +297,7 @@ class GenericClient(BaseClient):
             downloader = Downloader(progress=progress, overwrite=overwrite)
 
         for url, filename in zip(urls, paths):
-            downloader.enqueue_file(url, filename=filename)
+            downloader.enqueue_file(url, filename=filename, **kwargs)
 
         if dl_set and not wait:
             return

@@ -1,6 +1,6 @@
 """
 This module provides dictionaries for generating
-`~matplotlib.colors.LinearSegmentedColormaps`, and a dictionary of these
+`~matplotlib.colors.LinearSegmentedColormap`, and a dictionary of these
 dictionaries.
 """
 import pathlib
@@ -13,32 +13,86 @@ import astropy.units as u
 __all__ = [
     'aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
-    'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table'
+    'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table',
+    'rhessi_color_table', 'std_gamma_2', 'euvi_color_table', 'solohri_lya1216_color_table',
 ]
 
-cmap_data_dir = pathlib.Path(__file__).parent.absolute() / 'data'
 
-# The following values describe color table 3 for IDL (Red Temperature)
-idl_3 = np.loadtxt(cmap_data_dir / 'idl_3.csv', delimiter=',')
-r0, g0, b0 = idl_3[:, 0], idl_3[:, 1], idl_3[:, 2]
+CMAP_DATA_DIR = pathlib.Path(__file__).parent.absolute() / 'data'
 
-c0 = np.arange(256, dtype='f')
-c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
-c2 = (np.arange(256)**2 / 255.0).astype('f')
-c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
 
-aia_wave_dict = {
-    1600*u.angstrom: (c3, c3, c2),
-    1700*u.angstrom: (c1, c0, c0),
-    4500*u.angstrom: (c0, c0, b0 / 2.0),
-    94*u.angstrom: (c2, c3, c0),
-    131*u.angstrom: (g0, r0, r0),
-    171*u.angstrom: (r0, c0, b0),
-    193*u.angstrom: (c1, c0, c2),
-    211*u.angstrom: (c1, c0, c3),
-    304*u.angstrom: (r0, g0, b0),
-    335*u.angstrom: (c2, c0, c1)
-}
+def create_cdict(r, g, b):
+    """
+    Create the color tuples in the correct format.
+    """
+    i = np.linspace(0, 1, r.size)
+    cdict = {name: list(zip(i, el / 255.0, el / 255.0))
+             for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}
+    return cdict
+
+
+def _cmap_from_rgb(r, g, b, name):
+    cdict = create_cdict(r, g, b)
+    return colors.LinearSegmentedColormap(name, cdict)
+
+
+def cmap_from_rgb_file(name, fname):
+    """
+    Create a colormap from a RGB .csv file.
+
+    The .csv file must have 3  equal-length columns of integer data, with values
+    between 0 and 255, which are the red, green, and blue values for the colormap.
+
+    Parameters
+    ----------
+    name : str
+        Name of the colormap.
+    fname : str
+        Filename of data file. Relative to the sunpy colormap data directory.
+
+    Returns
+    -------
+    matplotlib.colors.LinearSegmentedColormap
+    """
+    data = np.loadtxt(CMAP_DATA_DIR / fname, delimiter=',')
+    if data.shape[1] != 3:
+        raise RuntimeError(f'RGB data files must have 3 columns (got {data.shape[1]})')
+    return _cmap_from_rgb(data[:, 0], data[:, 1], data[:, 2], name)
+
+
+def get_idl3():
+    # The following values describe color table 3 for IDL (Red Temperature)
+    return np.loadtxt(CMAP_DATA_DIR / 'idl_3.csv', delimiter=',')
+
+
+def solohri_lya1216_color_table():
+    solohri_lya1216 = get_idl3()
+    solohri_lya1216[:, 2] = solohri_lya1216[:, 0] * np.linspace(0, 1, 256)
+    return _cmap_from_rgb(*solohri_lya1216.T, 'SolO EUI HRI Lyman Alpha')
+
+
+def create_aia_wave_dict():
+    idl_3 = get_idl3()
+    r0, g0, b0 = idl_3[:, 0], idl_3[:, 1], idl_3[:, 2]
+
+    c0 = np.arange(256, dtype='f')
+    c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
+    c2 = (np.arange(256)**2 / 255.0).astype('f')
+    c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
+
+    aia_wave_dict = {
+        1600*u.angstrom: (c3, c3, c2),
+        1700*u.angstrom: (c1, c0, c0),
+        4500*u.angstrom: (c0, c0, b0 / 2.0),
+        94*u.angstrom: (c2, c3, c0),
+        131*u.angstrom: (g0, r0, r0),
+        171*u.angstrom: (r0, c0, b0),
+        193*u.angstrom: (c1, c0, c2),
+        211*u.angstrom: (c1, c0, c3),
+        304*u.angstrom: (r0, g0, b0),
+        335*u.angstrom: (c2, c0, c1)
+    }
+    return aia_wave_dict
 
 
 @u.quantity_input
@@ -54,6 +108,7 @@ def aia_color_table(wavelength: u.angstrom):
     wavelength : `~astropy.units.quantity`
         Wavelength for the desired AIA color table.
     """
+    aia_wave_dict = create_aia_wave_dict()
     try:
         r, g, b = aia_wave_dict[wavelength]
     except KeyError:
@@ -108,6 +163,7 @@ sxt_gold_g = 255 * (np.arange(256)**1.25) / (255.0**1.25)
 sxt_gold_b = np.concatenate((np.zeros(185), 255.0 * np.arange(71) / 71.0))
 
 grayscale = np.arange(256)
+grayscale.setflags(write=False)
 
 
 def sxt_color_table(sxt_filter):
@@ -129,6 +185,8 @@ def xrt_color_table():
     """
     Returns the color table used for all Hinode XRT images.
     """
+    idl_3 = get_idl3()
+    r0, g0, b0 = idl_3[:, 0], idl_3[:, 1], idl_3[:, 2]
     return _cmap_from_rgb(r0, g0, b0, 'Hinode XRT')
 
 
@@ -166,6 +224,8 @@ def sot_color_table(measurement):
     The relations between observation and color have been defined in
     hinode.py
     """
+    idl_3 = get_idl3()
+    r0, g0, b0 = idl_3[:, 0], idl_3[:, 1], idl_3[:, 2]
     try:
         r, g, b = {
             'intensity': (r0, g0, b0),
@@ -284,6 +344,7 @@ def suvi_color_table(wavelength: u.angstrom):
     Returns one of the fundamental color tables for SUVI images.
     SUVI uses AIA color tables.
     """
+    aia_wave_dict = create_aia_wave_dict()
     try:
         if wavelength == 195*u.angstrom:
             r, g, b = aia_wave_dict[193*u.angstrom]
@@ -299,41 +360,19 @@ def suvi_color_table(wavelength: u.angstrom):
     return _cmap_from_rgb(r, g, b, 'GOES-R SUVI {:s}'.format(str(wavelength)))
 
 
-def cmap_from_rgb_file(name, fname):
-    """
-    Create a colormap from a RGB .csv file.
-
-    The .csv file must have 3  equal-length columns of integer data, with values
-    between 0 and 255, which are the red, green, and blue values for the colormap.
-
-    Parameters
-    ----------
-    name : str
-        Name of the colormap.
-    fname : str
-        Filename of data file. Relative to the sunpy colormap data directory.
-
-    Returns
-    -------
-    cmap : matplotlib.colors.LinearSegmentedColormap
-    """
-    data = np.loadtxt(cmap_data_dir / fname, delimiter=',')
-    if data.shape[1] != 3:
-        raise RuntimeError(f'RGB data files must have 3 columns (got {data.shape[1]})')
-    return _cmap_from_rgb(data[:, 0], data[:, 1], data[:, 2], name)
+def rhessi_color_table():
+    return cmap_from_rgb_file("rhessi", "rhessi.csv")
 
 
-def _cmap_from_rgb(r, g, b, name):
-    cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap(name, cdict)
+def std_gamma_2():
+    return cmap_from_rgb_file("std_gamma_2", "std_gamma_2.csv")
 
 
-def create_cdict(r, g, b):
-    """
-    Create the color tuples in the correct format.
-    """
-    i = np.linspace(0, 1, r0.size)
-
-    cdict = {name: list(zip(i, el / 255.0, el / 255.0))
-             for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}
-    return cdict
+def euvi_color_table(wavelength: u.angstrom):
+    try:
+        return cmap_from_rgb_file(f'EUVI {str(wavelength)}', f'euvi_{int(wavelength.value)}.csv')
+    except OSError:
+        raise ValueError(
+            "Invalid EUVI wavelength. Valid values are "
+            "171, 195, 284, 304."
+        )

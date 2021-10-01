@@ -1,1 +1,0 @@
-Added a `~sunpy.map.sources.MDISynopticMap` map source class.

@@ -1,2 +1,0 @@
-Deprecated the use of `sunpy.map.Map.size` property
-with suggested use of `sunpy.map.Map.data.size` instead.

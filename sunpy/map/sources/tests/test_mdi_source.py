@@ -10,10 +10,10 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+from astropy.coordinates import Angle
 from astropy.io import fits
 
 import sunpy.data.test
-from sunpy.coordinates import frames
 from sunpy.map import Map
 from sunpy.map.sources.soho import MDIMap, MDISynopticMap
 from sunpy.util.exceptions import SunpyMetadataWarning
@@ -22,7 +22,7 @@ from sunpy.util.exceptions import SunpyMetadataWarning
 @pytest.fixture
 def mdi():
     path = sunpy.data.test.rootdir
-    fitspath = glob.glob(os.path.join(path, "mdi_fd_Ic_6h_01d.5871.0000_s.fits"))
+    fitspath = glob.glob(os.path.join(path, "mdi.fd_Ic.20101015_230100_TAI.data.fits"))
     return Map(fitspath)
 
 
@@ -131,9 +131,9 @@ def test_observatory(mdi):
     assert mdi.observatory == "SOHO"
 
 
-def test_measurement(mdi):
-    """Tests the measurement property of the MDIMap object."""
-    assert mdi.measurement == "continuum"
+def test_instrument(mdi):
+    """Tests the instrument property of the MDIMap object."""
+    assert mdi.instrument == "MDI"
 
 
 def test_waveunit(mdi):
@@ -141,15 +141,14 @@ def test_waveunit(mdi):
 
 
 def test_observer(mdi):
-    assert isinstance(mdi.observer_coordinate.frame, frames.HeliographicStonyhurst)
-    assert u.allclose(mdi.observer_coordinate.lat, -5.774028172878*u.deg)
-    assert u.allclose(mdi.observer_coordinate.lon, -0.10522355*u.deg)
-    assert u.allclose(mdi.observer_coordinate.radius, 0.9739569156244*u.AU)
+    assert mdi.observer_coordinate.frame.name == 'heliographic_stonyhurst'
+    assert u.allclose(mdi.observer_coordinate.lat, Angle(mdi.meta['CRLT_OBS']*u.degree))
+    assert u.allclose(mdi.observer_coordinate.radius, mdi.meta['DSUN_OBS']*u.m)
 
 
 def test_carrington(mdi):
-    assert u.allclose(mdi.carrington_longitude, mdi.meta['obs_l0']*u.deg)
-    assert u.allclose(mdi.carrington_latitude, mdi.meta['obs_b0']*u.deg)
+    assert u.allclose(mdi.carrington_longitude, Angle(mdi.meta['CRLN_OBS']*u.deg))
+    assert u.allclose(mdi.carrington_latitude, Angle(mdi.meta['CRLT_OBS']*u.deg))
 
 
 @pytest.mark.filterwarnings("error")
@@ -158,3 +157,10 @@ def test_synoptic_source(mdi_synoptic):
     # Check that the WCS is valid
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
         mdi_synoptic.wcs
+
+
+def test_wcs(mdi, mdi_synoptic):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    mdi.pixel_to_world(0*u.pix, 0*u.pix)
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        mdi_synoptic.pixel_to_world(0*u.pix, 0*u.pix)

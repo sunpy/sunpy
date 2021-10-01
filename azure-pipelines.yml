@@ -1,12 +1,16 @@
 name: $(BuildDefinitionName)_$(Date:yyyyMMdd)$(Rev:.rr)
+variables:
+  CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+  CIBW_MANYLINUX_I686_IMAGE: manylinux2014
+  JSOC_EMAIL: "jsoc@cadair.com"  # For the example gallery on the dev deps build
 
 schedules:
   - cron: "0 0 * * *"
     displayName: Daily midnight build
     branches:
       include:
-      - master
-      - 2.0
+      - main
+      - 3.0
     always: true
 
 resources:
@@ -31,76 +35,148 @@ trigger:
     - '*pre*'
     - '*post*'
 
-jobs:
-- template: run-tox-env.yml@OpenAstronomy
-  parameters:
-    submodules: false
-    coverage: codecov
-    toxdeps: tox-pypi-filter
-    posargs: -n=4
-    libraries:
-      apt:
-        - libopenjp2-7
-        - graphviz
-      brew:
-        - openjpeg
-      yum:
-        - openssl-devel
-        - freetype-devel
-        - libpng-devel
+pr:
+  autoCancel: true
 
-    envs:
-      - macos: py38
-        name: py38_test
-        posargs: -n=1
+stages:
+  - stage: FirstPhaseTests
+    displayName: Core Tests
+    jobs:
+    - template: run-tox-env.yml@OpenAstronomy
+      parameters:
+        default_python: '3.8'
+        submodules: false
+        coverage: codecov
+        toxdeps: tox-pypi-filter
+        posargs: -n=4
+        libraries:
+          apt:
+            - libopenjp2-7
+        envs:
+          - linux: codestyle
+            name: style_check
+            pytest: false
+            libraries: {}
+          - linux: py39
 
-      - windows: py37
-        name: py37_test
+  - stage: SecondPhaseTests
+    displayName: Stage 2 Tests
+    dependsOn: FirstPhaseTests
+    jobs:
+    - template: run-tox-env.yml@OpenAstronomy
+      parameters:
+        default_python: '3.8'
+        submodules: false
+        coverage: codecov
+        toxdeps: tox-pypi-filter
+        posargs: -n=4
+        libraries:
+          apt:
+            - libopenjp2-7
+            - graphviz
+          brew:
+            - openjpeg
+        envs:
+          - macos: py37
+          - windows: py38
+          - linux: build_docs
+            posargs: " "
+            pytest: false
+          - linux: py38-online
+          - linux: py37-oldestdeps
+          - linux: py38-conda
+            libraries: {}
 
-      - linux: py38-online
-        name: py38_test_online
 
-      - linux32: py38-32bit
-        name: py38_test_32bit
+  - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
+    - stage: CronTests
+      displayName: Cron Tests
+      dependsOn: []  # Don't wait on other stages
+      jobs:
+      - template: run-tox-env.yml@OpenAstronomy
+        parameters:
+          default_python: '3.8'
+          submodules: false
+          coverage: codecov
+          toxdeps: tox-pypi-filter
+          posargs: -n=4
+          libraries:
+            apt:
+              - libopenjp2-7
+              - graphviz
+            yum:
+              - openssl-devel
+              - freetype-devel
+              - libpng-devel
+              - hdf5-devel
+          envs:
+            - linux: base_deps
+            - linux: py38-devdeps
+            - linux: py38-hypothesis
+            - linux: pyinstaller
 
-      - linux: codestyle
-        name: python_codestyle
-        pytest: false
+  # On branches which aren't main, and not Pull Requests, build the wheels but only upload them on tags
+  - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
+    - stage: Release
+      dependsOn: SecondPhaseTests
+      jobs:
+      - template: publish.yml@OpenAstronomy
+        parameters:
+          # Only Upload to PyPI on tags
+          ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
+            pypi_connection_name : 'PyPI'
+          test_extras: 'dev'
+          test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
+          submodules: false
+          targets:
+            - wheels_cp3[789]-manylinux*x86_64
+            - wheels_cp3[789]-macosx*
+            - sdist
 
-      - linux: py38-hypothesis
-
-      - linux: py38-conda
-        name: py38_conda
-        libraries: {}
-
-      - linux: py37-oldestdeps
-        name: py37_test_oldestdeps
-
-      - linux: py38-devdeps
-
-      - linux: build_docs
-        posargs: " "
-        pytest: false
-
-# On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
-- ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
-  - template: publish.yml@OpenAstronomy
-    parameters:
-      # Only Upload to PyPI on tags
-      ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
-        pypi_connection_name : 'PyPI'
-      test_extras: 'dev'
-      test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
-      submodules: false
-
-      targets:
-        - wheels_cp3[78]-manylinux*x86_64
-        - wheels_cp3[78]-macosx*
-        - sdist
+  - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
+    - stage: CronNotifier_OK
+      condition: succeeded()
       dependsOn:
-        - py37_test
-        - py38_test
-        - py38_test_online
-        - py38_test_32bit
-        - py37_test_oldestdeps
-        - py38_conda
+        - SecondPhaseTests
+        - CronTests
+        - Release
+      jobs:
+      - job: notify
+        pool:
+          vmImage: ubuntu-20.04
+        steps:
+        - bash: |
+            sudo apt-get install httpie xonsh
+            http --version
+        - bash: xonsh ./tools/send_matrix_message.xsh
+          env:
+            ROOMID: '%21JYqfIVJjWANcHnfktY:cadair.com'  # sunpy development room
+            HOMESERVER: 'https://matrix.cadair.com'
+            BRANCH: $(Build.SourceBranchName)
+            ACCESS_TOKEN: $(azurebot_access_token)
+            BUILDID: $(Build.BuildId)
+            STATUS: Succeeded
+
+  - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
+    - stage: CronNotifier_Fail
+      condition: failed()
+      dependsOn:
+        - SecondPhaseTests
+        - CronTests
+        - Release
+      jobs:
+      - job: notify
+        pool:
+          vmImage: ubuntu-20.04
+        steps:
+        - bash: |
+            sudo apt-get install httpie xonsh
+            http --version
+        - bash: xonsh ./tools/send_matrix_message.xsh
+          env:
+            ROOMID: '%21JYqfIVJjWANcHnfktY:cadair.com'  # sunpy development room
+            HOMESERVER: 'https://matrix.cadair.com'
+            BRANCH: $(Build.SourceBranchName)
+            ACCESS_TOKEN: $(azurebot_access_token)
+            BUILDID: $(Build.BuildId)
+            STATUS: Failed

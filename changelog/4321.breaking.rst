@@ -1,1 +1,0 @@
-Removed `~sunpy.net.dataretriever.QueryResponseBlock` as `~sunpy.net.dataretriever.QueryResponse` now uses a `list` of `~collections.OrderedDict` for building the response table.

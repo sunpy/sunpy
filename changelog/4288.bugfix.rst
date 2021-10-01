@@ -1,2 +1,0 @@
-Fixed a bug in `~sunpy.net.dataretriever.sources.goes.XRSClient._get_url_for_timerange` which returned incorrect URLs
-because of not using ``**kwargs`` in the client's ``_get_overlap_urls()`` method.

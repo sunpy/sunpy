@@ -3,10 +3,10 @@ TimeSeries
 ***********
 
 Time series data are a fundamental part of many data analysis projects
-in heliophysics as well as other areas. SunPy therefore provides a TimeSeries
+in heliophysics as well as other areas. sunpy therefore provides a TimeSeries
 object to handle this type of data. This new object supersedes the now
 deprecated Lightcurve datatype. Once you've read through this guide check out
-the :doc:`/code_ref/timeseries` for a more thorough look at SunPy TimeSeries
+the :doc:`/code_ref/timeseries` for a more thorough look at sunpy TimeSeries
 and to see what data sources it currently supports.
 
 Sections 1 and 2 below describe how to create TimeSeries objects.  Section 3
@@ -24,7 +24,7 @@ in detail the TimeSeries metadata.
 1. Creating a TimeSeries from an observational data source
 ==========================================================
 
-A TimeSeries object can be created from local files.  For convenience, SunPy can
+A TimeSeries object can be created from local files.  For convenience, sunpy can
 download several example timeseries of observational data. These files have names like
 ``sunpy.data.sample.EVE_TIMESERIES`` and ``sunpy.data.sample.GOES_XRS_TIMESERIES``.
 To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries` type the
@@ -46,14 +46,13 @@ a local GOES/XRS FITS file try the following: ::
 
     >>> my_timeseries = ts.TimeSeries('/mydirectory/myts.fits', source='XRS')   # doctest: +SKIP
 
-SunPy will attempt to detect automatically the instrument source for most FITS
+sunpy will attempt to detect automatically the instrument source for most FITS
 files. However timeseries data are stored in a variety of file types (FITS, txt,
 csv) and formats, and so it is not always possible to detect the source. For
 this reason, it is good practice to explicitly state the source for the file.
-SunPy ships with a number of known instrumental sources.  If you would like
-SunPy to include another instrumental source please follow the `SunPy
-contribution guide <https://sunpy.org/contribute/>`.
-
+sunpy ships with a number of known instrumental sources.  If you would like
+sunpy to include another instrumental source please follow the
+`sunpy contribution guide <https://sunpy.org/contribute>`__.
 The `~sunpy.timeseries.TimeSeries` factory has the ability to make a list of
 TimeSeries objects using a list of filepaths, a folder or a glob, for example: ::
 
@@ -186,9 +185,9 @@ the header information as read from the source files. A word of caution: many
 data sources provide little to no meta data so this variable might be empty.
 The meta data is described in more detail later in this guide. Similarly there
 are properties for getting `~sunpy.timeseries.GenericTimeSeries.columns`
-as a list of strings, `~sunpy.timeseries.GenericTimeSeries.get_index`
+as a list of strings, `~sunpy.timeseries.GenericTimeSeries.index`
 values and `~sunpy.timeseries.GenericTimeSeries.time_range` of
-the data.  The actual data in a SunPy TimeSeries object is accessible through
+the data.  The actual data in a sunpy TimeSeries object is accessible through
 the `~sunpy.timeseries.GenericTimeSeries.data` attribute.  The
 data is implemented as a Pandas `~pandas.DataFrame`, so to get a look at what
 data you have available use: ::
@@ -242,7 +241,7 @@ dictionary to determine the `~astropy.units.quantity.Quantity`: ::
 4. Plotting
 ===========
 
-The SunPy TimeSeries object has its own built-in plot methods so that
+The sunpy TimeSeries object has its own built-in plot methods so that
 it is easy to quickly view your time series. To create a plot just
 type:
 
@@ -251,22 +250,30 @@ type:
 
     import sunpy.timeseries as ts
     import sunpy.data.sample
-    ts_plot = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
-    fig = ts_plot.peek()
 
-This will open a matplotlib plot on your screen. The `~sunpy.timeseries.GenericTimeSeries.peek`
-method provides a view on data customised for each source while `~sunpy.timeseries.GenericTimeSeries.plot`
-provides a more general plot.  Note that `~sunpy.timeseries.GenericTimeSeries.peek`
-returns a `matplotlib.figure.Figure` object, if you want to save this to a PNG
-file you can use the ``savefig`` method:
+    ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
+    ts.peek()
 
-    >>> fig.savefig('figure.png')  # doctest: +SKIP
+This will open a Matplotlib plot on your screen. If you want to save this to a PNG
+file you can do so from the Matplotlib GUI.
 
-In addition, to enable users to modify the plot it is possible to grab the
-matplotlib axes object by using the `~sunpy.timeseries.GenericTimeSeries.plot`
-command.  This makes it possible to use the SunPy plot as the foundation for a
-more complicated figure. For a more information about this and some examples see
-:ref:`plotting`.
+In addition, to enable users to modify the plot it is possible to use the
+`~sunpy.timeseries.GenericTimeSeries.plot` command.  This makes it possible to
+use the sunpy plot as the foundation for a more complicated figure:
+
+.. plot::
+   :include-source:
+
+   import matplotlib.pyplot as plt
+
+   import sunpy.timeseries as ts
+   import sunpy.data.sample
+
+   ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
+   fig, ax = plt.subplots()
+   ts.plot(axes=ax)
+   # Modify the figure here
+   fig.savefig('figure.png')
 
 
 5 Manipulating TimeSeries
@@ -503,15 +510,14 @@ to better fit your output.  For example: ::
 Similar to the TimeSeries, the metadata has some properties for convenient
 access to the global metadata details, including
 `~sunpy.timeseries.TimeSeriesMetaData.columns` as a list of
-strings, `~sunpy.timeseries.TimeSeriesMetaData.index` values
-and `~sunpy.timeseries.TimeSeriesMetaData.time_range` of the data.
+strings,  and `~sunpy.timeseries.TimeSeriesMetaData.time_range` of the data.
 Beyond this, there are properties to get lists of details for all the entries in
 the `~sunpy.timeseries.TimeSeriesMetaData` object, including
 `~sunpy.timeseries.TimeSeriesMetaData.timeranges`,
 `~sunpy.timeseries.TimeSeriesMetaData.columns` (as a list of string
 column names) and `~sunpy.timeseries.TimeSeriesMetaData.metas`.
-Similar to TimeSeries objects you can `~sunpy.timeseries.TimeSeriesMetaData.truncate`
-and `~sunpy.timeseries.TimeSeriesMetaData.concatenate` `~sunpy.timeseries.TimeSeriesMetaData`
+Similar to TimeSeries objects you can `~sunpy.timeseries.TimeSeriesMetaData.concatenate`
+`~sunpy.timeseries.TimeSeriesMetaData`
 objects, but generally you won't need to do this as it is done automatically
 when actioned on the TimeSeries.
 Note that when truncating a `~sunpy.timeseries.TimeSeriesMetaData`

@@ -78,11 +78,15 @@ Some simple parse() format string examples:
 
     >>> parse("Bring me a {}", "Bring me a shrubbery")
     <Result ('shrubbery',) {}>
-    >>> r = parse("The {} who say {}", "The knights who say Ni!")
+    >>> r = parse("The {} who {} {}", "The knights who say Ni!")
     >>> print(r)
-    <Result ('knights', 'Ni!') {}>
+    <Result ('knights', 'say', 'Ni!') {}>
     >>> print(r.fixed)
-    ('knights', 'Ni!')
+    ('knights', 'say', 'Ni!')
+    >>> print(r[0])
+    knights
+    >>> print(r[1:])
+    ('say', 'Ni!')
     >>> r = parse("Bring out the holy {item}", "Bring out the holy hand grenade")
     >>> print(r)
     <Result () {'item': 'hand grenade'}>
@@ -93,8 +97,11 @@ Some simple parse() format string examples:
     >>> 'item' in r
     True
 
-Note that `in` only works if you have named fields. Dotted names and indexes
-are possible though the application must make additional sense of the result:
+Note that `in` only works if you have named fields.
+
+Dotted names and indexes are possible with some limits. Only word identifiers
+are supported (ie. no numeric indexes) and the application must make additional
+sense of the result:
 
 .. code-block:: pycon
 
@@ -377,8 +384,12 @@ the pattern, the actual match represents the shortest successful match for
 
 ----
 
-**Version history (in brief)**:
-
+- 1.19.0 Added slice access to fixed results (thanks @jonathangjertsen).
+  Also corrected matching of *full string* vs. *full line* (thanks @giladreti)
+  Fix issue with using digit field numbering and types
+- 1.18.0 Correct bug in int parsing introduced in 1.16.0 (thanks @maxxk)
+- 1.17.0 Make left- and center-aligned search consume up to next space
+- 1.16.0 Make compiled parse objects pickleable (thanks @martinResearch)
 - 1.15.0 Several fixes for parsing non-base 10 numbers (thanks @vladikcomper)
 - 1.14.0 More broad acceptance of Fortran number format (thanks @purpleskyfall)
 - 1.13.1 Project metadata correction.
@@ -452,12 +463,13 @@ the pattern, the actual match represents the shortest successful match for
   and removed the restriction on mixing fixed-position and named fields
 - 1.0.0 initial release
 
-This code is copyright 2012-2019 Richard Jones <richard@python.org>
+This code is copyright 2012-2021 Richard Jones <richard@python.org>
 See the end of the source file for the license of use.
 '''
 
 from __future__ import absolute_import
-__version__ = '1.15.0'
+
+__version__ = '1.19.0'
 
 # yes, I now have two problems
 import re
@@ -467,7 +479,7 @@ from decimal import Decimal
 from functools import partial
 import logging
 
-__all__ = 'parse search findall with_pattern'.split()
+__all__ = ['parse', 'search', 'findall', 'with_pattern']
 
 log = logging.getLogger(__name__)
 
@@ -494,15 +506,17 @@ def with_pattern(pattern, regex_group_count=None):
     :param regex_group_count: Indicates how many regex-groups are in pattern.
     :return: wrapped function
     """
+
     def decorator(func):
         func.pattern = pattern
         func.regex_group_count = regex_group_count
         return func
+
     return decorator
 
 
-def int_convert(base=None):
-    '''Convert a string to an integer.
+class int_convert:
+    """Convert a string to an integer.
 
     The string may start with a sign.
 
@@ -513,10 +527,14 @@ def int_convert(base=None):
     it overrides the default base of 10.
 
     It may also have other non-numeric characters that we can ignore.
-    '''
+    """
+
     CHARS = '0123456789abcdefghijklmnopqrstuvwxyz'
 
-    def f(string, match, base=base):
+    def __init__(self, base=None):
+        self.base = base
+
+    def __call__(self, string, match):
         if string[0] == '-':
             sign = -1
             number_start = 1
@@ -527,34 +545,46 @@ def int_convert(base=None):
             sign = 1
             number_start = 0
 
+        base = self.base
         # If base wasn't specified, detect it automatically
         if base is None:
 
-          # Assume decimal number, unless different base is detected
-          base = 10
+            # Assume decimal number, unless different base is detected
+            base = 10
 
-          # For number formats starting with 0b, 0o, 0x, use corresponding base ...
-          if string[number_start] == '0' and len(string) - number_start > 2:
-              if string[number_start+1] in 'bB':
-                  base = 2
-              elif string[number_start+1] in 'oO':
-                  base = 8
-              elif string[number_start+1] in 'xX':
-                  base = 16
+            # For number formats starting with 0b, 0o, 0x, use corresponding base ...
+            if string[number_start] == '0' and len(string) - number_start > 2:
+                if string[number_start + 1] in 'bB':
+                    base = 2
+                elif string[number_start + 1] in 'oO':
+                    base = 8
+                elif string[number_start + 1] in 'xX':
+                    base = 16
 
-        chars = CHARS[:base]
+        chars = int_convert.CHARS[:base]
         string = re.sub('[^%s]' % chars, '', string.lower())
         return sign * int(string, base)
-    return f
+
+
+class convert_first:
+    """Convert the first element of a pair.
+    This equivalent to lambda s,m: converter(s). But unlike a lambda function, it can be pickled
+    """
+
+    def __init__(self, converter):
+        self.converter = converter
+
+    def __call__(self, string, match):
+        return self.converter(string)
 
 
 def percentage(string, match):
-    return float(string[:-1]) / 100.
+    return float(string[:-1]) / 100.0
 
 
 class FixedTzOffset(tzinfo):
-    """Fixed offset in minutes east from UTC.
-    """
+    """Fixed offset in minutes east from UTC."""
+
     ZERO = timedelta(0)
 
     def __init__(self, offset, name):
@@ -562,8 +592,7 @@ class FixedTzOffset(tzinfo):
         self._name = name
 
     def __repr__(self):
-        return '<%s %s %s>' % (self.__class__.__name__, self._name,
-            self._offset)
+        return '<%s %s %s>' % (self.__class__.__name__, self._name, self._offset)
 
     def utcoffset(self, dt):
         return self._offset
@@ -581,18 +610,29 @@ class FixedTzOffset(tzinfo):
 
 
 MONTHS_MAP = dict(
-    Jan=1, January=1,
-    Feb=2, February=2,
-    Mar=3, March=3,
-    Apr=4, April=4,
+    Jan=1,
+    January=1,
+    Feb=2,
+    February=2,
+    Mar=3,
+    March=3,
+    Apr=4,
+    April=4,
     May=5,
-    Jun=6, June=6,
-    Jul=7, July=7,
-    Aug=8, August=8,
-    Sep=9, September=9,
-    Oct=10, October=10,
-    Nov=11, November=11,
-    Dec=12, December=12
+    Jun=6,
+    June=6,
+    Jul=7,
+    July=7,
+    Aug=8,
+    August=8,
+    Sep=9,
+    September=9,
+    Oct=10,
+    October=10,
+    Nov=11,
+    November=11,
+    Dec=12,
+    December=12,
 )
 DAYS_PAT = r'(Mon|Tue|Wed|Thu|Fri|Sat|Sun)'
 MONTHS_PAT = r'(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)'
@@ -602,17 +642,28 @@ AM_PAT = r'(\s+[AP]M)'
 TZ_PAT = r'(\s+[-+]\d\d?:?\d\d)'
 
 
-def date_convert(string, match, ymd=None, mdy=None, dmy=None,
-        d_m_y=None, hms=None, am=None, tz=None, mm=None, dd=None):
-    '''Convert the incoming string containing some date / time info into a
+def date_convert(
+    string,
+    match,
+    ymd=None,
+    mdy=None,
+    dmy=None,
+    d_m_y=None,
+    hms=None,
+    am=None,
+    tz=None,
+    mm=None,
+    dd=None,
+):
+    """Convert the incoming string containing some date / time info into a
     datetime instance.
-    '''
+    """
     groups = match.groups()
     time_only = False
     if mm and dd:
-        y=datetime.today().year
-        m=groups[mm]
-        d=groups[dd]
+        y = datetime.today().year
+        m = groups[mm]
+        d = groups[dd]
     elif ymd is not None:
         y, m, d = re.split(r'[-/\s]', groups[ymd])
     elif mdy is not None:
@@ -703,13 +754,11 @@ class RepeatedNameError(ValueError):
 REGEX_SAFETY = re.compile(r'([?\\\\.[\]()*+\^$!\|])')
 
 # allowed field types
-ALLOWED_TYPES = set(list('nbox%fFegwWdDsSl') +
-    ['t' + c for c in 'ieahgcts'])
+ALLOWED_TYPES = set(list('nbox%fFegwWdDsSl') + ['t' + c for c in 'ieahgcts'])
 
 
 def extract_format(format, extra_types):
-    '''Pull apart the format [[fill]align][0][width][.precision][type]
-    '''
+    """Pull apart the format [[fill]align][0][width][.precision][type]"""
     fill = align = None
     if format[0] in '<>=^':
         align = format[0]
@@ -754,8 +803,8 @@ PARSE_RE = re.compile(r"""({{|}}|{\w*(?:(?:\.\w+)|(?:\[[^\]]+\]))*(?::[^}]+)?})"
 
 
 class Parser(object):
-    '''Encapsulate a format string that may be used to parse other strings.
-    '''
+    """Encapsulate a format string that may be used to parse other strings."""
+
     def __init__(self, format, extra_types=None, case_sensitive=False):
         # a mapping of a name as in {hello.world} to a regex-group compatible
         # name, like hello__world Its used to prevent the transformation of
@@ -789,8 +838,7 @@ class Parser(object):
 
     def __repr__(self):
         if len(self._format) > 20:
-            return '<%s %r>' % (self.__class__.__name__,
-                self._format[:17] + '...')
+            return '<%s %r>' % (self.__class__.__name__, self._format[:17] + '...')
         return '<%s %r>' % (self.__class__.__name__, self._format)
 
     @property
@@ -802,33 +850,44 @@ class Parser(object):
                 # access error through sys to keep py3k and backward compat
                 e = str(sys.exc_info()[1])
                 if e.endswith('this version only supports 100 named groups'):
-                    raise TooManyFields('sorry, you are attempting to parse '
-                        'too many complex fields')
+                    raise TooManyFields(
+                        'sorry, you are attempting to parse ' 'too many complex fields'
+                    )
         return self.__search_re
 
     @property
     def _match_re(self):
         if self.__match_re is None:
-            expression = r'^%s$' % self._expression
+            expression = r'\A%s\Z' % self._expression
             try:
                 self.__match_re = re.compile(expression, self._re_flags)
             except AssertionError:
                 # access error through sys to keep py3k and backward compat
                 e = str(sys.exc_info()[1])
                 if e.endswith('this version only supports 100 named groups'):
-                    raise TooManyFields('sorry, you are attempting to parse '
-                        'too many complex fields')
+                    raise TooManyFields(
+                        'sorry, you are attempting to parse ' 'too many complex fields'
+                    )
             except re.error:
-                raise NotImplementedError("Group names (e.g. (?P<name>) can "
-                    "cause failure, as they are not escaped properly: '%s'" %
-                    expression)
+                raise NotImplementedError(
+                    "Group names (e.g. (?P<name>) can "
+                    "cause failure, as they are not escaped properly: '%s'" % expression
+                )
         return self.__match_re
 
+    @property
+    def named_fields(self):
+        return self._named_fields.copy()
+
+    @property
+    def fixed_fields(self):
+        return self._fixed_fields.copy()
+
     def parse(self, string, evaluate_result=True):
-        '''Match my format to the string exactly.
+        """Match my format to the string exactly.
 
         Return a Result or Match instance or None if there's no match.
-        '''
+        """
         m = self._match_re.match(string)
         if m is None:
             return None
@@ -839,7 +898,7 @@ class Parser(object):
             return Match(self, m)
 
     def search(self, string, pos=0, endpos=None, evaluate_result=True):
-        '''Search the string for my format.
+        """Search the string for my format.
 
         Optionally start the search at "pos" character index and limit the
         search to a maximum index of endpos - equivalent to
@@ -849,7 +908,7 @@ class Parser(object):
         Match instance is returned instead of the actual Result instance.
 
         Return either a Result instance or None if there's no match.
-        '''
+        """
         if endpos is None:
             endpos = len(string)
         m = self._search_re.search(string, pos, endpos)
@@ -861,8 +920,10 @@ class Parser(object):
         else:
             return Match(self, m)
 
-    def findall(self, string, pos=0, endpos=None, extra_types=None, evaluate_result=True):
-        '''Search "string" for all occurrences of "format".
+    def findall(
+        self, string, pos=0, endpos=None, extra_types=None, evaluate_result=True
+    ):
+        """Search "string" for all occurrences of "format".
 
         Optionally start the search at "pos" character index and limit the
         search to a maximum index of endpos - equivalent to
@@ -870,10 +931,12 @@ class Parser(object):
 
         Returns an iterator that holds Result or Match instances for each format match
         found.
-        '''
+        """
         if endpos is None:
             endpos = len(string)
-        return ResultIterator(self, string, pos, endpos, evaluate_result=evaluate_result)
+        return ResultIterator(
+            self, string, pos, endpos, evaluate_result=evaluate_result
+        )
 
     def _expand_named_fields(self, named_fields):
         result = {}
@@ -887,7 +950,7 @@ class Parser(object):
 
             if subkeys:
                 for subkey in re.findall(r'\[[^\]]+\]', subkeys):
-                    d = d.setdefault(k,{})
+                    d = d.setdefault(k, {})
                     k = subkey[1:-1]
 
             # assign the value to the last key
@@ -920,8 +983,7 @@ class Parser(object):
 
         # now figure the match spans
         spans = dict((n, m.span(name_map[n])) for n in named_fields)
-        spans.update((i, m.span(n + 1))
-            for i, n in enumerate(self._fixed_fields))
+        spans.update((i, m.span(n + 1)) for i, n in enumerate(self._fixed_fields))
 
         # and that's our result
         return Result(fixed_fields, self._expand_named_fields(named_fields), spans)
@@ -975,16 +1037,24 @@ class Parser(object):
         # now figure whether this is an anonymous or named field, and whether
         # there's any format specification
         format = ''
-        if field and field[0].isalpha():
-            if ':' in field:
-                name, format = field.split(':')
-            else:
-                name = field
+
+        if ':' in field:
+            name, format = field.split(':')
+        else:
+            name = field
+
+        # This *should* be more flexible, but parsing complicated structures
+        # out of the string is hard (and not necessarily useful) ... and I'm
+        # being lazy. So for now `identifier` is "anything starting with a
+        # letter" and digit args don't get attribute or element stuff.
+        if name and name[0].isalpha():
             if name in self._name_to_group_map:
                 if self._name_types[name] != format:
-                    raise RepeatedNameError('field type %r for field "%s" '
-                        'does not match previous seen type %r' % (format,
-                        name, self._name_types[name]))
+                    raise RepeatedNameError(
+                        'field type %r for field "%s" '
+                        'does not match previous seen type %r'
+                        % (format, name, self._name_types[name])
+                    )
                 group = self._name_to_group_map[name]
                 # match previously-seen value
                 return r'(?P=%s)' % group
@@ -997,8 +1067,6 @@ class Parser(object):
         else:
             self._fixed_fields.append(self._group_index)
             wrap = r'(%s)'
-            if ':' in field:
-                format = field[1:]
             group = self._group_index
 
         # simplest case: no type specifier ({} or {name})
@@ -1019,10 +1087,7 @@ class Parser(object):
             if regex_group_count is None:
                 regex_group_count = 0
             self._group_index += regex_group_count
-
-            def f(string, m):
-                return type_converter(string)
-            self._type_conversions[group] = f
+            self._type_conversions[group] = convert_first(type_converter)
         elif type == 'n':
             s = r'\d{1,3}([,.]\d{3})*'
             self._group_index += 1
@@ -1045,79 +1110,104 @@ class Parser(object):
             self._type_conversions[group] = percentage
         elif type == 'f':
             s = r'\d*\.\d+'
-            self._type_conversions[group] = lambda s, m: float(s)
+            self._type_conversions[group] = convert_first(float)
         elif type == 'F':
             s = r'\d*\.\d+'
-            self._type_conversions[group] = lambda s, m: Decimal(s)
+            self._type_conversions[group] = convert_first(Decimal)
         elif type == 'e':
             s = r'\d*\.\d+[eE][-+]?\d+|nan|NAN|[-+]?inf|[-+]?INF'
-            self._type_conversions[group] = lambda s, m: float(s)
+            self._type_conversions[group] = convert_first(float)
         elif type == 'g':
             s = r'\d+(\.\d+)?([eE][-+]?\d+)?|nan|NAN|[-+]?inf|[-+]?INF'
             self._group_index += 2
-            self._type_conversions[group] = lambda s, m: float(s)
+            self._type_conversions[group] = convert_first(float)
         elif type == 'd':
             if format.get('width'):
                 width = r'{1,%s}' % int(format['width'])
             else:
                 width = '+'
-            s = r'\d{w}|[-+ ]?0[xX][0-9a-fA-F]{w}|[-+ ]?0[bB][01]{w}|[-+ ]?0[oO][0-7]{w}'.format(w=width)
-            self._type_conversions[group] = int_convert() # do not specify numeber base, determine it automatically
+            s = r'\d{w}|[-+ ]?0[xX][0-9a-fA-F]{w}|[-+ ]?0[bB][01]{w}|[-+ ]?0[oO][0-7]{w}'.format(
+                w=width
+            )
+            self._type_conversions[
+                group
+            ] = int_convert()  # do not specify number base, determine it automatically
         elif type == 'ti':
-            s = r'(\d{4}-\d\d-\d\d)((\s+|T)%s)?(Z|\s*[-+]\d\d:?\d\d)?' % \
-                TIME_PAT
+            s = r'(\d{4}-\d\d-\d\d)((\s+|T)%s)?(Z|\s*[-+]\d\d:?\d\d)?' % TIME_PAT
             n = self._group_index
-            self._type_conversions[group] = partial(date_convert, ymd=n + 1,
-                hms=n + 4, tz=n + 7)
+            self._type_conversions[group] = partial(
+                date_convert, ymd=n + 1, hms=n + 4, tz=n + 7
+            )
             self._group_index += 7
         elif type == 'tg':
             s = r'(\d{1,2}[-/](\d{1,2}|%s)[-/]\d{4})(\s+%s)?%s?%s?' % (
-                ALL_MONTHS_PAT, TIME_PAT, AM_PAT, TZ_PAT)
+                ALL_MONTHS_PAT,
+                TIME_PAT,
+                AM_PAT,
+                TZ_PAT,
+            )
             n = self._group_index
-            self._type_conversions[group] = partial(date_convert, dmy=n + 1,
-                hms=n + 5, am=n + 8, tz=n + 9)
+            self._type_conversions[group] = partial(
+                date_convert, dmy=n + 1, hms=n + 5, am=n + 8, tz=n + 9
+            )
             self._group_index += 9
         elif type == 'ta':
             s = r'((\d{1,2}|%s)[-/]\d{1,2}[-/]\d{4})(\s+%s)?%s?%s?' % (
-                ALL_MONTHS_PAT, TIME_PAT, AM_PAT, TZ_PAT)
+                ALL_MONTHS_PAT,
+                TIME_PAT,
+                AM_PAT,
+                TZ_PAT,
+            )
             n = self._group_index
-            self._type_conversions[group] = partial(date_convert, mdy=n + 1,
-                hms=n + 5, am=n + 8, tz=n + 9)
+            self._type_conversions[group] = partial(
+                date_convert, mdy=n + 1, hms=n + 5, am=n + 8, tz=n + 9
+            )
             self._group_index += 9
         elif type == 'te':
             # this will allow microseconds through if they're present, but meh
-            s = r'(%s,\s+)?(\d{1,2}\s+%s\s+\d{4})\s+%s%s' % (DAYS_PAT,
-                MONTHS_PAT, TIME_PAT, TZ_PAT)
+            s = r'(%s,\s+)?(\d{1,2}\s+%s\s+\d{4})\s+%s%s' % (
+                DAYS_PAT,
+                MONTHS_PAT,
+                TIME_PAT,
+                TZ_PAT,
+            )
             n = self._group_index
-            self._type_conversions[group] = partial(date_convert, dmy=n + 3,
-                hms=n + 5, tz=n + 8)
+            self._type_conversions[group] = partial(
+                date_convert, dmy=n + 3, hms=n + 5, tz=n + 8
+            )
             self._group_index += 8
         elif type == 'th':
             # slight flexibility here from the stock Apache format
-            s = r'(\d{1,2}[-/]%s[-/]\d{4}):%s%s' % (MONTHS_PAT, TIME_PAT,
-                TZ_PAT)
+            s = r'(\d{1,2}[-/]%s[-/]\d{4}):%s%s' % (MONTHS_PAT, TIME_PAT, TZ_PAT)
             n = self._group_index
-            self._type_conversions[group] = partial(date_convert, dmy=n + 1,
-                hms=n + 3, tz=n + 6)
+            self._type_conversions[group] = partial(
+                date_convert, dmy=n + 1, hms=n + 3, tz=n + 6
+            )
             self._group_index += 6
         elif type == 'tc':
             s = r'(%s)\s+%s\s+(\d{1,2})\s+%s\s+(\d{4})' % (
-                DAYS_PAT, MONTHS_PAT, TIME_PAT)
+                DAYS_PAT,
+                MONTHS_PAT,
+                TIME_PAT,
+            )
             n = self._group_index
-            self._type_conversions[group] = partial(date_convert,
-                d_m_y=(n + 4, n + 3, n + 8), hms=n + 5)
+            self._type_conversions[group] = partial(
+                date_convert, d_m_y=(n + 4, n + 3, n + 8), hms=n + 5
+            )
             self._group_index += 8
         elif type == 'tt':
             s = r'%s?%s?%s?' % (TIME_PAT, AM_PAT, TZ_PAT)
             n = self._group_index
-            self._type_conversions[group] = partial(date_convert, hms=n + 1,
-                am=n + 4, tz=n + 5)
+            self._type_conversions[group] = partial(
+                date_convert, hms=n + 1, am=n + 4, tz=n + 5
+            )
             self._group_index += 5
         elif type == 'ts':
             s = r'%s(\s+)(\d+)(\s+)(\d{1,2}:\d{1,2}:\d{1,2})?' % MONTHS_PAT
             n = self._group_index
-            self._type_conversions[group] = partial(date_convert, mm=n+1, dd=n+3,
-                hms=n + 5)
+            self._type_conversions[group] = partial(
+                date_convert, mm=n + 1, dd=n + 3, hms=n + 5
+            )
             self._group_index += 5
         elif type == 'l':
             s = r'[A-Za-z]+'
@@ -1171,48 +1261,50 @@ class Parser(object):
 
         # align "=" has been handled
         if align == '<':
-            s = '%s%s*' % (s, fill)
+            s = '%s%s+' % (s, fill)
         elif align == '>':
             s = '%s*%s' % (fill, s)
         elif align == '^':
-            s = '%s*%s%s*' % (fill, s, fill)
+            s = '%s*%s%s+' % (fill, s, fill)
 
         return s
 
 
 class Result(object):
-    '''The result of a parse() or search().
+    """The result of a parse() or search().
 
     Fixed results may be looked up using `result[index]`.
+    Slices of fixed results may also be looked up.
 
     Named results may be looked up using `result['name']`.
 
     Named results may be tested for existence using `'name' in result`.
-    '''
+    """
+
     def __init__(self, fixed, named, spans):
         self.fixed = fixed
         self.named = named
         self.spans = spans
 
     def __getitem__(self, item):
-        if isinstance(item, int):
+        if isinstance(item, (int, slice)):
             return self.fixed[item]
         return self.named[item]
 
     def __repr__(self):
-        return '<%s %r %r>' % (self.__class__.__name__, self.fixed,
-            self.named)
+        return '<%s %r %r>' % (self.__class__.__name__, self.fixed, self.named)
 
     def __contains__(self, name):
         return name in self.named
 
 
 class Match(object):
-    '''The result of a parse() or search() if no results are generated.
+    """The result of a parse() or search() if no results are generated.
 
     This class is only used to expose internal used regex match objects
     to the user and use them for external Parser.evaluate_result calls.
-    '''
+    """
+
     def __init__(self, parser, match):
         self.parser = parser
         self.match = match
@@ -1223,10 +1315,11 @@ class Match(object):
 
 
 class ResultIterator(object):
-    '''The result of a findall() operation.
+    """The result of a findall() operation.
 
     Each element is a Result instance.
-    '''
+    """
+
     def __init__(self, parser, string, pos, endpos, evaluate_result=True):
         self.parser = parser
         self.string = string
@@ -1253,7 +1346,7 @@ class ResultIterator(object):
 
 
 def parse(format, string, extra_types=None, evaluate_result=True, case_sensitive=False):
-    '''Using "format" attempt to pull values from "string".
+    """Using "format" attempt to pull values from "string".
 
     The format must match the string contents exactly. If the value
     you're looking for is instead just a part of the string use
@@ -1277,14 +1370,21 @@ def parse(format, string, extra_types=None, evaluate_result=True, case_sensitive
     See the module documentation for the use of "extra_types".
 
     In the case there is no match parse() will return None.
-    '''
+    """
     p = Parser(format, extra_types=extra_types, case_sensitive=case_sensitive)
     return p.parse(string, evaluate_result=evaluate_result)
 
 
-def search(format, string, pos=0, endpos=None, extra_types=None, evaluate_result=True,
-        case_sensitive=False):
-    '''Search "string" for the first occurrence of "format".
+def search(
+    format,
+    string,
+    pos=0,
+    endpos=None,
+    extra_types=None,
+    evaluate_result=True,
+    case_sensitive=False,
+):
+    """Search "string" for the first occurrence of "format".
 
     The format may occur anywhere within the string. If
     instead you wish for the format to exactly match the string
@@ -1311,14 +1411,21 @@ def search(format, string, pos=0, endpos=None, extra_types=None, evaluate_result
     See the module documentation for the use of "extra_types".
 
     In the case there is no match parse() will return None.
-    '''
+    """
     p = Parser(format, extra_types=extra_types, case_sensitive=case_sensitive)
     return p.search(string, pos, endpos, evaluate_result=evaluate_result)
 
 
-def findall(format, string, pos=0, endpos=None, extra_types=None, evaluate_result=True,
-        case_sensitive=False):
-    '''Search "string" for all occurrences of "format".
+def findall(
+    format,
+    string,
+    pos=0,
+    endpos=None,
+    extra_types=None,
+    evaluate_result=True,
+    case_sensitive=False,
+):
+    """Search "string" for all occurrences of "format".
 
     You will be returned an iterator that holds Result instances
     for each format match found.
@@ -1342,13 +1449,13 @@ def findall(format, string, pos=0, endpos=None, extra_types=None, evaluate_resul
     If the format is invalid a ValueError will be raised.
 
     See the module documentation for the use of "extra_types".
-    '''
+    """
     p = Parser(format, extra_types=extra_types, case_sensitive=case_sensitive)
-    return Parser(format, extra_types=extra_types).findall(string, pos, endpos, evaluate_result=evaluate_result)
+    return p.findall(string, pos, endpos, evaluate_result=evaluate_result)
 
 
 def compile(format, extra_types=None, case_sensitive=False):
-    '''Create a Parser instance to parse "format".
+    """Create a Parser instance to parse "format".
 
     The resultant Parser has a method .parse(string) which
     behaves in the same manner as parse(format, string).
@@ -1362,7 +1469,7 @@ def compile(format, extra_types=None, case_sensitive=False):
     See the module documentation for the use of "extra_types".
 
     Returns a Parser instance.
-    '''
+    """
     return Parser(format, extra_types=extra_types, case_sensitive=case_sensitive)
 
 

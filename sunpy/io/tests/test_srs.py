@@ -13,7 +13,9 @@ testpath = sunpy.data.test.rootdir
 
 filenames = [{'file': '20150906SRS.txt', 'rows': 5},
              {'file': '20150306SRS.txt', 'rows': 4},
-             {'file': '20150101SRS.txt', 'rows': 9}]
+             {'file': '20150101SRS.txt', 'rows': 9},
+             # This is a corrected copy
+             {'file': "20100621SRS.txt", "rows": 3}]
 
 COORDINATES = [{'text': 'N10W05', 'latitude': 10, 'longitude': 5},
                {'text': 'N89E00', 'latitude': 89, 'longitude': 0},
@@ -23,9 +25,9 @@ COORDINATES = [{'text': 'N10W05', 'latitude': 10, 'longitude': 5},
 LOCATION = Column(data=[x['text'] for x in COORDINATES], name='Location')
 LONGLAT = Table()
 LONGLAT.add_column(MaskedColumn(data=[x['longitude'] for x in COORDINATES], name='Longitude',
-                                unit=u.deg, mask=True))
+                                unit=u.deg, mask=True, fill_value=-99999))
 LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name='Latitude',
-                                unit=u.deg))
+                                unit=u.deg, fill_value=-99999))
 
 
 @pytest.mark.filterwarnings('ignore:dropping mask in Quantity column')

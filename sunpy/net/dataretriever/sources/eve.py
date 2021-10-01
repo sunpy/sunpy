@@ -25,10 +25,12 @@ class EVEClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the EVEClient:
-         Start Time           End Time      Instrument ... Source Provider Level
-    ------------------- ------------------- ---------- ... ------ -------- -----
-    2016-01-01 00:00:00 2016-01-01 23:59:59        EVE ...    SDO     LASP     0
-    2016-01-02 00:00:00 2016-01-02 23:59:59        EVE ...    SDO     LASP     0
+    Source: https://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/
+    <BLANKLINE>
+           Start Time               End Time        Instrument ... Provider Level
+    ----------------------- ----------------------- ---------- ... -------- -----
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        EVE ...     LASP     0
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        EVE ...     LASP     0
     <BLANKLINE>
     <BLANKLINE>
 
@@ -36,6 +38,10 @@ class EVEClient(GenericClient):
     baseurl = (r'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
                r'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
     pattern = '{}/SpWx/{:4d}/{year:4d}{month:2d}{day:2d}_EVE_L{Level:1d}{}'
+
+    @property
+    def info_url(self):
+        return 'https://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
 
     @classmethod
     def register_values(cls):

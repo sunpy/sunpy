@@ -1,0 +1,4 @@
+Added `sunpy.map.sources.WISPRMap` as a map source for WISPR on Parker Solar Probe.
+This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
+information for the `~sunpy.map.GenericMap.processing_level` and
+`~sunpy.map.GenericMap.exposure_time`.

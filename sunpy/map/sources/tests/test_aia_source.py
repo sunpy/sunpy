@@ -7,6 +7,8 @@ import glob
 
 import pytest
 
+import astropy.units as u
+
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.sdo import AIAMap
@@ -59,3 +61,8 @@ def test_measurement(createAIAMap):
 def test_norm_clip(createAIAMap):
     # Tests that the default normalizer has clipping disabled
     assert not createAIAMap.plot_settings['norm'].clip
+
+
+def test_wcs(createAIAMap):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    createAIAMap.pixel_to_world(0*u.pix, 0*u.pix)

@@ -32,19 +32,15 @@ from sunpy.net import attrs as a
 
 stereo = (a.Instrument("EUVI") &
           a.Time('2011-11-01', '2011-11-01T00:10:00'))
-
 aia = (a.Instrument.aia &
        a.Sample(24 * u.hour) &
        a.Time('2011-11-01', '2011-11-02'))
-
 wave = a.Wavelength(19.5 * u.nm, 19.5 * u.nm)
-
 res = Fido.search(wave, aia | stereo)
-
 files = Fido.fetch(res)
 
 ######################################################################
-# Next we create a SunPy map for each of the files.
+# Next we create a sunpy map for each of the files.
 
 maps = sunpy.map.Map(sorted(files))
 
@@ -79,12 +75,13 @@ ax.add_artist(circle)
 ax.text(earth.lon.to_value("rad")+0.05, earth.radius.to_value(r_unit), "Earth")
 
 for this_satellite, this_coord in [(m.observatory, m.observer_coordinate) for m in maps]:
-    plt.polar(this_coord.lon.to('rad'), this_coord.radius.to(r_unit), 'o', label=this_satellite)
+    ax.plot(this_coord.lon.to('rad'), this_coord.radius.to(r_unit), 'o', label=this_satellite)
 
 ax.set_theta_zero_location("S")
 ax.set_rlim(0, 1.3)
 
-plt.legend()
+ax.legend()
+
 plt.show()
 
 ######################################################################
@@ -94,13 +91,12 @@ plt.show()
 # then construct a World Coordinate System (WCS) object for that header.
 
 shape_out = (180, 360)  # This is set deliberately low to reduce memory consumption
-
 header = sunpy.map.make_fitswcs_header(shape_out,
                                        SkyCoord(0, 0, unit=u.deg,
                                                 frame="heliographic_stonyhurst",
                                                 obstime=maps[0].date),
-                                       scale=[180 / shape_out[0],
-                                              360 / shape_out[1]] * u.deg / u.pix,
+                                       scale=[360 / shape_out[1],
+                                              180 / shape_out[0]] * u.deg / u.pix,
                                        wavelength=int(maps[0].meta['wavelnth']) * u.AA,
                                        projection_code="CAR")
 out_wcs = WCS(header)
@@ -118,8 +114,8 @@ array, footprint = reproject_and_coadd(maps, out_wcs, shape_out,
 
 outmap = sunpy.map.Map((array, header))
 outmap.plot_settings = maps[0].plot_settings
-
 outmap.plot()
+
 plt.show()
 
 ######################################################################
@@ -133,7 +129,7 @@ plt.show()
 # which highly weigh points close to the centre of the disk in the input
 # image.
 #
-# We can achieve this by using SunPy's coordinate framework. First we
+# We can achieve this by using sunpy's coordinate framework. First we
 # calculate all the world coordinates for all the pixels in all three
 # input maps.
 
@@ -159,6 +155,7 @@ for w in weights:
 plt.figure()
 plt.imshow(weights[0])
 plt.colorbar()
+
 plt.show()
 
 ######################################################################
@@ -191,7 +188,6 @@ ax = plt.subplot(projection=out_wcs)
 im = outmap.plot(vmin=400)
 
 lon, lat = ax.coords
-
 lon.set_coord_type("longitude")
 lon.coord_wrap = 180
 lon.set_format_unit(u.deg)

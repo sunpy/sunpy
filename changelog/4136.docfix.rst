@@ -1,1 +1,0 @@
-Clarified spline option for `sunpy.map.Map.resampling`.

@@ -3,8 +3,8 @@ This module provies `sunpy.timeseries.GenericTimeSeries` which all other
 `sunpy.timeseries.TimeSeries` classes inherit from.
 """
 import copy
-import warnings
 from collections import OrderedDict
+from collections.abc import Iterable
 
 import pandas as pd
 
@@ -15,7 +15,8 @@ from astropy.table import Column, Table
 from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.datatype_factory_base import NoMatchError
+from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -61,7 +62,9 @@ class GenericTimeSeries:
     >>> times = parse_time("now") - TimeDelta(np.arange(24 * 60)*u.minute)
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
     >>> df = pd.DataFrame(intensity, index=times, columns=['intensity'])
-    >>> ts = TimeSeries(df)
+    >>> header = {}
+    >>> units = {'intensity': u.W/u.m**2}
+    >>> ts = TimeSeries(df, header, units)
     >>> ts.peek()  # doctest: +SKIP
 
     References
@@ -122,8 +125,8 @@ class GenericTimeSeries:
         """
         A `pandas.DataFrame` representing one or more fields as a function of time.
         """
-        warnings.warn("Using .data to access the dataframe is discouraged; "
-                      "use .to_dataframe() instead.", SunpyUserWarning)
+        warn_user("Using .data to access the dataframe is discouraged; "
+                  "use .to_dataframe() instead.")
         return self._data
 
     @data.setter
@@ -250,7 +253,7 @@ class GenericTimeSeries:
         """
         if colname not in self.columns:
             raise ValueError(f'Given column name ({colname}) not in list of columns {self.columns}')
-        data = self._data.drop(colname, 'columns')
+        data = self._data.drop(colname, axis='columns')
         units = self.units.copy()
         units.pop(colname)
         return self.__class__(data, self.meta, units)
@@ -354,17 +357,18 @@ class GenericTimeSeries:
         object._sanitize_units()
         return object
 
-    def concatenate(self, otherts, same_source=False, **kwargs):
+    def concatenate(self, others, same_source=False, **kwargs):
         """
-        Concatenate with another `~sunpy.timeseries.TimeSeries`. This function
-        will check and remove any duplicate times. It will keep the column
-        values from the original timeseries to which the new time series is
-        being added.
+        Concatenate with another `~sunpy.timeseries.TimeSeries` or an iterable containing multiple
+        `~sunpy.timeseries.TimeSeries`. This function will check and remove any duplicate times.
+        It will keep the column values from the original timeseries to which the new time
+        series is being added.
 
         Parameters
         ----------
-        otherts : `~sunpy.timeseries.TimeSeries`
-            Another `~sunpy.timeseries.TimeSeries`.
+        others : `~sunpy.timeseries.TimeSeries` or `collections.abc.Iterable`
+            Another `~sunpy.timeseries.TimeSeries` or an iterable containing multiple
+            `~sunpy.timeseries.TimeSeries`.
         same_source : `bool`, optional
             Set to `True` to check if the sources of the time series match. Defaults to `False`.
 
@@ -376,28 +380,60 @@ class GenericTimeSeries:
         Notes
         -----
         Extra keywords are passed to `pandas.concat`.
+
+        Examples
+        --------
+        A single `~sunpy.timeseries.TimeSeries` or an `collections.abc.Iterable` containing multiple
+        `~sunpy.timeseries.TimeSeries` can be passed to concatenate.
+
+        >>> timeseries_1.concatenate(timeseries_2) # doctest: +SKIP
+        >>> timeseries_1.concatenate([timeseries_2, timeseries_3]) # doctest: +SKIP
+
+        Set ``same_source`` to `True` if the sources of the time series are the same.
+
+        >>> timeseries_1.concatenate([timeseries_2, timeseries_3], same_source=True) # doctest: +SKIP
         """
-        # TODO: decide if we want to be able to concatenate multiple time series at once.
-        # check to see if nothing needs to be done
-        if self == otherts:
+        # Check to see if nothing needs to be done in case the same TimeSeries is provided.
+        if self == others:
             return self
+        elif isinstance(others, Iterable):
+            if len(others) == 1 and self == next(iter(others)):
+                return self
 
         # Check the sources match if specified.
-        if same_source and not (isinstance(otherts, self.__class__)):
-            raise TypeError("TimeSeries classes must match if specified.")
+        if (
+            same_source
+            and isinstance(others, Iterable)
+            and not all(isinstance(series, self.__class__) for series in others)
+        ):
+            raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
+        elif (
+            same_source
+            and not isinstance(others, Iterable)
+            and not isinstance(others, self.__class__)
+        ):
+            raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
 
-        # Concatenate the metadata and data
-        kwargs['sort'] = kwargs.pop('sort', False)
-        meta = self.meta.concatenate(otherts.meta)
-        data = pd.concat([self._data.copy(), otherts.to_dataframe()], **kwargs)
+        # If an iterable is not provided, it must be a TimeSeries object, so wrap it in a list.
+        if not isinstance(others, Iterable):
+            others = [others]
+
+        # Concatenate the metadata and data.
+        kwargs["sort"] = kwargs.pop("sort", False)
+        meta = self.meta.concatenate([series.meta for series in others])
+        data = pd.concat(
+            [self._data.copy(), *list(series.to_dataframe() for series in others)], **kwargs
+        )
 
         # Add all the new units to the dictionary.
         units = OrderedDict()
         units.update(self.units)
-        units.update(otherts.units)
+        units.update(
+            {k: v for unit in list(series.units for series in others) for k, v in unit.items()}
+        )
 
         # If sources match then build similar TimeSeries.
-        if self.__class__ == otherts.__class__:
+        if all(self.__class__ == series.__class__ for series in others):
             object = self.__class__(data.sort_index(), meta, units)
         else:
             # Build generic time series if the sources don't match.
@@ -425,7 +461,7 @@ class GenericTimeSeries:
 
         Returns
         -------
-        axes : `~matplotlib.axes.Axes`
+        `~matplotlib.axes.Axes`
             The plot axes.
         """
         import matplotlib.pyplot as plt
@@ -486,14 +522,12 @@ class GenericTimeSeries:
         specific validation should be handled in the relevant file in
         the "sunpy.timeseries.sources".
         """
-        warnings.simplefilter('always', Warning)
-
         for meta_property in ('cunit1', 'cunit2', 'waveunit'):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
 
-                warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
+                warn_user(f"Unknown value for {meta_property.upper()}.")
 
     def _validate_units(self, units, **kwargs):
         """
@@ -505,14 +539,12 @@ class GenericTimeSeries:
         specific validation should be handled in the relevant file in
         the "sunpy.timeseries.sources".
         """
-        warnings.simplefilter('always', Warning)
-
         result = True
         for key in units:
             if not isinstance(units[key], astropy.units.UnitBase):
                 # If this is not a unit then this can't be a valid units dict.
                 result = False
-                warnings.warn(f"Invalid unit given for {key}.", SunpyUserWarning)
+                warn_user(f"Invalid unit given for {key}.")
 
         return result
 
@@ -526,13 +558,11 @@ class GenericTimeSeries:
         * Add unitless entries for columns with no units defined.
         * Re-arrange the order of the dictionary to match the columns.
         """
-        warnings.simplefilter('always', Warning)
-
         # Populate unspecified units:
         for column in set(self._data.columns.tolist()) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
-            warnings.warn(f"Unknown units for {column}.", SunpyUserWarning)
+            warn_user(f"Unknown units for {column}.")
 
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()
@@ -553,8 +583,6 @@ class GenericTimeSeries:
         * Remove column references in the metadata that don't match to a column in the data.
         * Remove metadata entries that have no columns matching the data.
         """
-        warnings.simplefilter('always', Warning)
-
         # Truncate the metadata
         self.meta._truncate(self.time_range)
 
@@ -597,7 +625,7 @@ class GenericTimeSeries:
 
         Returns
         -------
-        `~pandas.core.frame.DataFrame`
+        `~pandas.DataFrame`
         """
         return self._data
 
@@ -670,4 +698,4 @@ class GenericTimeSeries:
         filepath : `str`
             The path to the file you want to parse.
         """
-        return NotImplemented
+        raise NoMatchError(f'Could not find any timeseries sources to parse {filepath}')

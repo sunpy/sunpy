@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -264,3 +264,31 @@ def test_contains(timerange_a):
         assert '2100/1/1'not in timerange
     assert '2014/05/03 12:00' in timerange
     assert '2014/05/05 21:00' in timerange
+
+
+def test_get_dates_daylist_less_24_hours():
+    starttime = datetime(2020, 1, 1, 12)
+    endtime = datetime(2020, 1, 2, 11)
+    interval = sunpy.time.TimeRange(starttime, endtime)
+    daylist = interval.get_dates()
+    day_one = Time("2020-01-01T00:00:00.000")
+    day_two = Time("2020-01-02T00:00:00.000")
+    assert len(daylist) == 2
+    assert daylist[0] == day_one
+    assert daylist[1] == day_two
+
+
+def test_intersects():
+    tr1 = sunpy.time.TimeRange('2020-01-01', '2020-01-02')
+    tr2 = sunpy.time.TimeRange('2020-01-03', '2020-01-04')
+    assert not tr1.intersects(tr2)
+    assert not tr2.intersects(tr1)
+
+    # Check interval edges intersect
+    tr2 = sunpy.time.TimeRange('2020-01-02', '2020-01-04')
+    assert tr1.intersects(tr2)
+    assert tr2.intersects(tr1)
+
+    tr2 = sunpy.time.TimeRange('2020-01-01', '2020-01-04')
+    assert tr1.intersects(tr2)
+    assert tr2.intersects(tr1)

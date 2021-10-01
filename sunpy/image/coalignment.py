@@ -1,8 +1,8 @@
 """
-This module provides routines for the coalignment of images and
-`~sunpy.map.mapsequences`.
+This module provides routines for the co-alignment of images and
+`~sunpy.map.mapsequence.MapSequence`.
 
-Currently this module provides image coalignment by template matching.
+Currently this module provides image co-alignment by template matching.
 Which is partially inspired by the SSWIDL routine
 `tr_get_disp.pro <http://www.heliodocs.com/php/xdoc_print.php?file=$SSW/trace/idl/util/tr_get_disp.pro>`__.
 
@@ -16,7 +16,6 @@ References
    Processing and Pattern Recognition Society, Quebec City, Canada, May 15-19,
    1995, p. 120-123 http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf.
 """
-import warnings
 from copy import deepcopy
 
 import numpy as np
@@ -27,7 +26,7 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.map.mapbase import GenericMap
-from sunpy.util import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
@@ -298,18 +297,18 @@ def check_for_nonfinite_entries(layer_image, template_image):
         A two-dimensional `numpy.ndarray`.
     """
     if not np.all(np.isfinite(layer_image)):
-        warnings.warn('The layer image has nonfinite entries. '
-                      'This could cause errors when calculating shift between two '
-                      'images. Please make sure there are no infinity or '
-                      'Not a Number values. For instance, replacing them with a '
-                      'local mean.', SunpyUserWarning)
+        warn_user('The layer image has nonfinite entries. '
+                  'This could cause errors when calculating shift between two '
+                  'images. Please make sure there are no infinity or '
+                  'Not a Number values. For instance, replacing them with a '
+                  'local mean.')
 
     if not np.all(np.isfinite(template_image)):
-        warnings.warn('The template image has nonfinite entries. '
-                      'This could cause errors when calculating shift between two '
-                      'images. Please make sure there are no infinity or '
-                      'Not a Number values. For instance, replacing them with a '
-                      'local mean.', SunpyUserWarning)
+        warn_user('The template image has nonfinite entries. '
+                  'This could cause errors when calculating shift between two '
+                  'images. Please make sure there are no infinity or '
+                  'Not a Number values. For instance, replacing them with a '
+                  'local mean.')
 
 
 @u.quantity_input

@@ -1,3 +1,0 @@
-An error is now raised if ``vmin`` or ``vmax`` are passed to
-to `sunpy.map.GenericMap.plot` and they are already set on the map ``norm``.
-This is consistent with upcoming Matplotlib changes.

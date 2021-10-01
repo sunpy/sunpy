@@ -3,16 +3,14 @@ Coordinate frames that are defined relative to other frames
 """
 
 from astropy import units as u
-from astropy.coordinates import SphericalRepresentation
 from astropy.coordinates.attributes import Attribute, QuantityAttribute
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
 
-from sunpy import log
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from .frames import HeliocentricInertial, SunPyBaseCoordinateFrame
+from .frames import HeliographicStonyhurst, SunPyBaseCoordinateFrame
 from .offset_frame import NorthOffsetFrame
 from .transformations import _transformation_debug
 
@@ -45,84 +43,64 @@ def _make_rotatedsun_cls(framecls):
     if framecls in _rotatedsun_cache:
         return _rotatedsun_cache[framecls]
 
-    # Obtain the base frame's metaclass by getting the type of the base frame's class
-    framemeta = type(framecls)
+    members = {'__doc__': f'{RotatedSunFrame.__doc__}\n{framecls.__doc__}'}
 
-    # Subclass the metaclass for the RotatedSunFrame from the base frame's metaclass
-    class RotatedSunMeta(framemeta):
-        """
-        This metaclass renames the class to be "RotatedSun<framecls>".
-        """
-        def __new__(cls, name, bases, members):
-            newname = name[:-5] if name.endswith('Frame') else name
-            newname += framecls.__name__
+    # Copy over the defaults from the input frame class
+    attrs_to_copy = ['_default_representation',
+                     '_default_differential',
+                     '_frame_specific_representation_info']
+    for attr in attrs_to_copy:
+        members[attr] = getattr(framecls, attr)
 
-            return super().__new__(cls, newname, bases, members)
-
-    # We need this to handle the intermediate metaclass correctly, otherwise we could
-    # just subclass RotatedSunFrame.
-    _RotatedSunFramecls = RotatedSunMeta('RotatedSunFrame',
-                                         (RotatedSunFrame, framecls),
-                                         {'__doc__': RotatedSunFrame.__doc__})
+    _RotatedSunFramecls = type(f'RotatedSun{framecls.__name__}', (RotatedSunFrame,), members)
 
     @frame_transform_graph.transform(FunctionTransform, _RotatedSunFramecls, _RotatedSunFramecls)
     @_transformation_debug(f"{_RotatedSunFramecls.__name__}->{_RotatedSunFramecls.__name__}")
     def rotatedsun_to_rotatedsun(from_rotatedsun_coord, to_rotatedsun_frame):
         """Transform between two rotated-Sun frames."""
         # This transform goes through the parent frames on each side.
-        # from_frame -> from_frame.base -> to_frame.base -> to_frame
-        intermediate_from = from_rotatedsun_coord.transform_to(from_rotatedsun_coord.base)
-        intermediate_to = intermediate_from.transform_to(to_rotatedsun_frame.base)
-        return intermediate_to.transform_to(to_rotatedsun_frame)
+        # from_frame -> HGS -> to_frame
+        int_frame = HeliographicStonyhurst(obstime=from_rotatedsun_coord.base.obstime)
+        int_coord = from_rotatedsun_coord.transform_to(int_frame)
+        return int_coord.transform_to(to_rotatedsun_frame)
 
-    @frame_transform_graph.transform(FunctionTransform, framecls, _RotatedSunFramecls)
-    @_transformation_debug(f"{framecls.__name__}->{_RotatedSunFramecls.__name__}")
-    def reference_to_rotatedsun(reference_coord, rotatedsun_frame):
-        # Transform to HCI
-        hci_frame = HeliocentricInertial(obstime=rotatedsun_frame.base.obstime)
-        hci_coord = reference_coord.transform_to(hci_frame)
-        oldrepr = hci_coord.spherical
+    @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, _RotatedSunFramecls)
+    @_transformation_debug(f"HGS->{_RotatedSunFramecls.__name__}")
+    def reference_to_rotatedsun(hgs_coord, rotatedsun_frame):
+        int_frame = HeliographicStonyhurst(obstime=rotatedsun_frame.base.obstime)
+        int_coord = hgs_coord.make_3d().transform_to(int_frame)  # obstime change handled here
 
-        # Rotate the coordinate in HCI
-        from sunpy.physics.differential_rotation import diff_rot
-        log.debug(f"Applying {rotatedsun_frame.duration} of solar rotation")
-        newlon = oldrepr.lon - diff_rot(rotatedsun_frame.duration,
-                                        oldrepr.lat,
-                                        rot_type=rotatedsun_frame.rotation_model,
-                                        frame_time='sidereal')
-        newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
+        # Rotate the coordinate in HGS
+        int_coord = int_coord._apply_diffrot(-rotatedsun_frame.duration,
+                                             rotatedsun_frame.rotation_model)
 
-        # Transform back from HCI
-        new_coord = hci_coord.realize_frame(newrepr).transform_to(rotatedsun_frame.base)
+        # Transform from HGS
+        new_coord = int_coord.transform_to(rotatedsun_frame.base)
         return rotatedsun_frame.realize_frame(new_coord.data)
 
-    @frame_transform_graph.transform(FunctionTransform, _RotatedSunFramecls, framecls)
-    @_transformation_debug(f"{_RotatedSunFramecls.__name__}->{framecls.__name__}")
-    def rotatedsun_to_reference(rotatedsun_coord, reference_frame):
-        # Transform to HCI
+    @frame_transform_graph.transform(FunctionTransform, _RotatedSunFramecls, HeliographicStonyhurst)
+    @_transformation_debug(f"{_RotatedSunFramecls.__name__}->HGS")
+    def rotatedsun_to_reference(rotatedsun_coord, hgs_frame):
+        # Transform to HGS
         from_coord = rotatedsun_coord.base.realize_frame(rotatedsun_coord.data)
-        hci_coord = from_coord.transform_to(HeliocentricInertial(obstime=reference_frame.obstime))
-        oldrepr = hci_coord.spherical
+        if hasattr(from_coord, 'make_3d'):
+            from_coord = from_coord.make_3d()
+        int_frame = HeliographicStonyhurst(obstime=rotatedsun_coord.base.obstime)
+        int_coord = from_coord.transform_to(int_frame)
 
-        # Rotate the coordinate in HCI
-        from sunpy.physics.differential_rotation import diff_rot
-        log.debug(f"Applying {rotatedsun_coord.duration} of solar rotation")
-        newlon = oldrepr.lon + diff_rot(rotatedsun_coord.duration,
-                                        oldrepr.lat,
-                                        rot_type=rotatedsun_coord.rotation_model,
-                                        frame_time='sidereal')
-        newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
+        # Rotate the coordinate in HGS
+        int_coord = int_coord._apply_diffrot(rotatedsun_coord.duration,
+                                             rotatedsun_coord.rotation_model)
 
-        # Transform back from HCI
-        hci_coord = HeliocentricInertial(newrepr, obstime=reference_frame.obstime)
-        return hci_coord.transform_to(reference_frame)
+        # Transform from HGS
+        return int_coord.transform_to(hgs_frame)  # obstime change handled here
 
     _rotatedsun_cache[framecls] = _RotatedSunFramecls
     return _RotatedSunFramecls
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-class RotatedSunFrame:
+class RotatedSunFrame(SunPyBaseCoordinateFrame):
     """
     A frame that applies solar rotation to a base coordinate frame.
 
@@ -148,7 +126,9 @@ class RotatedSunFrame:
         The time to rotate the Sun to.  If provided, ``duration`` will be set to the difference
         between this time and the observation time in ``base``.
     rotation_model : `str`
-        Accepted model names are ``'howard'`` (default), ``'snodgrass'``, and ``'allen'``.
+        Accepted model names are ``'howard'`` (default), ``'snodgrass'``, ``'allen'``, and ``'rigid'``.
+        See the documentation for :func:`~sunpy.physics.differential_rotation.diff_rot` for differences
+        between these models.
 
     Notes
     -----
@@ -159,6 +139,10 @@ class RotatedSunFrame:
     """
     # This code reuses significant code from Astropy's implementation of SkyOffsetFrame
     # See licenses/ASTROPY.rst
+
+    # We don't want to inherit the frame attributes of SunPyBaseCoordinateFrame (namely `obstime`)
+    # Note that this does not work for Astropy 4.3+, so we need to manually remove it below
+    _inherit_descriptors_ = False
 
     # Even though the frame attribute `base` is a coordinate frame, we use `Attribute` instead of
     # `CoordinateAttribute` because we are preserving the supplied frame rather than converting to
@@ -180,10 +164,6 @@ class RotatedSunFrame:
             # If a SkyCoord is provided, use the underlying frame
             if hasattr(base_frame, 'frame'):
                 base_frame = base_frame.frame
-
-            # The base frame needs to be a SunPy frame to have the overridden size() property
-            if not isinstance(base_frame, SunPyBaseCoordinateFrame):
-                raise TypeError("Only SunPy coordinate frames are currently supported.")
 
             newcls = _make_rotatedsun_cls(base_frame.__class__)
             return newcls.__new__(newcls, *args, **kwargs)
@@ -235,3 +215,8 @@ class RotatedSunFrame:
         Returns the sum of the base frame's observation time and the rotation of duration.
         """
         return self.base.obstime + self.duration
+
+
+# For Astropy 4.3+, we need to manually remove the `obstime` frame attribute from RotatedSunFrame
+if 'obstime' in RotatedSunFrame.frame_attributes:
+    del RotatedSunFrame.frame_attributes['obstime']

@@ -7,9 +7,10 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 
-from sunpy.coordinates import Heliocentric
+from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, get_body_heliographic_stonyhurst
+from sunpy.sun import constants
 
-__all__ = ['GreatArc', 'get_rectangle_coordinates']
+__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates']
 
 
 class GreatArc:
@@ -266,6 +267,7 @@ class GreatArc:
                         frame=Heliocentric).transform_to(self.start_frame)
 
 
+@u.quantity_input
 def get_rectangle_coordinates(bottom_left, *, top_right=None,
                               width: u.deg = None, height: u.deg = None):
     """
@@ -384,3 +386,87 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
             top_right = top_right.frame
 
     return bottom_left, top_right
+
+
+def solar_angle_equivalency(observer):
+    """
+    Return the equivalency to convert between a physical distance on the Sun
+    and an angular separation as seen by a specified observer.
+
+    .. note::
+        This equivalency assumes that the physical distance is perpendicular to
+        the Sun-observer line.  That is, the tangent of the angular separation
+        is equal to the ratio of the physical distance to the Sun-observer
+        distance.  For large physical distances, a different assumption may be
+        more appropriate.
+
+    Parameters
+    ----------
+    observer : `~astropy.coordinates.SkyCoord`
+        Observer location for which the equivalency is calculated.
+
+    Returns
+    -------
+    equiv : equivalency function that can be used as keyword ``equivalencies`` for astropy unit conversion.
+
+    Examples
+    --------
+    >>> import astropy.units as u
+    >>> from sunpy.coordinates import get_body_heliographic_stonyhurst
+    >>> earth_observer = get_body_heliographic_stonyhurst("earth", "2013-10-28")
+    >>> distance_in_km = 725*u.km
+    >>> distance_in_km.to(u.arcsec, equivalencies=solar_angle_equivalency(earth_observer))
+    INFO: Apparent body location accounts for 495.82 seconds of light travel time [sunpy.coordinates.ephemeris]
+    <Quantity 1.00603718 arcsec>
+    """
+
+    if not isinstance(observer, (SkyCoord, BaseCoordinateFrame)):
+        raise TypeError(
+            "Invalid input, observer must be of type SkyCoord or BaseCoordinateFrame.")
+    if observer.obstime is None:
+        raise ValueError(
+            "Observer must have an observation time, `obstime`.")
+
+    obstime = observer.obstime
+    sun_coord = get_body_heliographic_stonyhurst("sun", time=obstime, observer=observer)
+    sun_observer_distance = sun_coord.separation_3d(observer).to_value(u.m)
+
+    equiv = [(u.radian,
+              u.meter,
+              lambda x: np.tan(x)*sun_observer_distance,
+              lambda x: np.arctan(x/sun_observer_distance))]
+
+    return equiv
+
+
+@u.quantity_input
+def get_limb_coordinates(observer, rsun: u.m = constants.radius, resolution=1000):
+    """
+    Get coordinates for the solar limb as viewed by a specified observer.
+
+    Parameters
+    ----------
+    observer : `~astropy.coordinates.SkyCoord`
+        Observer coordinate.
+    rsun : `~astropy.units.Quantity`
+        Physical radius of the limb from Sun center. Defaults to the standard
+        photospheric radius.
+    resolution : int
+        Number of coordinates to return. The coordinates are equally spaced
+        around the limb as seen from the observer.
+    """
+    observer = observer.transform_to(
+        HeliographicStonyhurst(obstime=observer.obstime))
+    dsun = observer.radius
+    if dsun <= rsun:
+        raise ValueError('Observer distance must be greater than rsun')
+    # Create the limb coordinate array using Heliocentric Radial
+    limb_radial_distance = np.sqrt(dsun**2 - rsun**2)
+    limb_hcr_rho = limb_radial_distance * rsun / dsun
+    limb_hcr_z = dsun - np.sqrt(limb_radial_distance**2 - limb_hcr_rho**2)
+    limb_hcr_psi = np.linspace(0, 2*np.pi, resolution+1)[:-1] << u.rad
+    limb = SkyCoord(limb_hcr_rho, limb_hcr_psi, limb_hcr_z,
+                    representation_type='cylindrical',
+                    frame='heliocentric',
+                    observer=observer, obstime=observer.obstime)
+    return limb
