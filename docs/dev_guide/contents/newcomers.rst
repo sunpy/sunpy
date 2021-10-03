@@ -171,6 +171,10 @@ This will make submitting changes easier in the long term for you:
     $ cd sunpy-git
     $ pip install -e .[dev]
 
+.. note::
+    If this does not work, it could be due to a missing C compiler (e.g., ``gcc`` or ``clang``) that is required to build sunpy at install.
+    Getting the compiler either from your system package manager, XCode or Anaconda should address this.
+    
 Now you have the latest version of sunpy installed and are ready to work on it using your favorite editor!
 Ideally, when you start making changes you want to create a git branch:
 
