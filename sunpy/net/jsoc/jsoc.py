@@ -724,73 +724,60 @@ class JSOCClient(BaseClient):
         """
         isMeta = iargs.get('meta', False)
         keywords = iargs.get('keys', '**ALL**')
-        c = drms.Client()
-
+        client = drms.Client()
         if 'series' not in iargs:
             error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
-
         if not isinstance(keywords, list) and not isinstance(keywords, str):
             error_message = "Keywords can only be passed as a list or comma-separated strings."
             raise TypeError(error_message)
-
         # Get a set of the PrimeKeys that exist for the given series, and check
         # whether the passed PrimeKeys is a subset of that.
-        pkeys = c.pkeys(iargs['series'])
+        pkeys = client.pkeys(iargs['series'])
         pkeys_passed = iargs.get('primekey', None)  # pkeys_passes is a dict, with key-value pairs.
         if pkeys_passed is not None:
             if not set(list(pkeys_passed.keys())) <= set(pkeys):
                 error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following PrimeKeys: {pkeys}"
                 raise ValueError(error_message.format(series=iargs['series'], pkeys=pkeys))
-
         # Raise errors for wavelength
         wavelength = iargs.get('wavelength', '')
         if wavelength != '':
             if 'WAVELNTH' not in pkeys:
                 error_message = f"The series {iargs['series']} does not support wavelength attribute. The following primekeys are supported {pkeys}"
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
-
         # Raise errors for segments
         # Get a set of the segments that exist for the given series, and check
         # whether the passed segments is a subset of that.
-        si = c.info(iargs['series'])
+        si = client.info(iargs['series'])
         # Fetches all valid segment names
         segs = list(si.segments.index.values)
         segs_passed = iargs.get('segment', None)
         if segs_passed is not None:
-
             if not isinstance(segs_passed, list) and not isinstance(segs_passed, str):
                 error_message = "Segments can only be passed as a comma-separated string or a list of strings."
                 raise TypeError(error_message)
-
             elif isinstance(segs_passed, str):
                 segs_passed = segs_passed.replace(' ', '').split(',')
-
             if not set(segs_passed) <= set(segs):
                 error_message = f"Unexpected Segments were passed. The series {iargs['series']} contains the following Segments {segs}"
                 raise ValueError(error_message.format(series=iargs['series'], segs=segs))
-
             iargs['segment'] = segs_passed
-
         # If Time has been passed as a PrimeKey, convert the Time object into TAI time scale,
         # and then, convert it to datetime object.
-
         ds = self._make_recordset(**iargs)
-
         # Convert the list of keywords into comma-separated string.
         if isinstance(keywords, list):
             key = str(keywords)[1:-1].replace(' ', '').replace("'", '')
         else:
             key = keywords
-
         log.debug(f"Running following query: {ds}")
         log.debug(f"Requesting following keywords: {key}")
-        r = c.query(ds, key=key, rec_index=isMeta)
+        result = client.query(ds, key=key, rec_index=isMeta)
 
-        if r is None or r.empty:
+        if result is None or result.empty:
             return astropy.table.Table()
         else:
-            return astropy.table.Table.from_pandas(r)
+            return astropy.table.Table.from_pandas(result)
 
     @classmethod
     def _can_handle_query(cls, *query):
