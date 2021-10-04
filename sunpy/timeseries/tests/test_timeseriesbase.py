@@ -107,10 +107,14 @@ def generic_ts():
     base = parse_time("2016/10/01T05:00:00")
     dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
+    intensity2 = np.cos(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
-    # Create the data DataFrame, header MetaDict and units OrderedDict
-    data = DataFrame(intensity, index=dates.isot.astype('datetime64'), columns=['intensity'])
-    units = OrderedDict([('intensity', u.W / u.m**2)])
+    # Create the data DataFrame, header MetaDict and units dict
+    data = DataFrame(np.column_stack([intensity, intensity2]),
+                     index=dates.isot.astype('datetime64'),
+                     columns=['intensity', 'intensity2'])
+    units = {'intensity': u.W / u.m**2,
+             'intensity2': u.W / u.m**2}
     meta = MetaDict({'key': 'value'})
 
     # Create the time series
@@ -722,7 +726,7 @@ def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
 def test_ts_to_table(generic_ts):
     tbl = generic_ts.to_table()
     assert isinstance(tbl, Table)
-    assert tbl.keys() == ['date', generic_ts.columns[0]]
+    assert tbl.keys() == ['date', *generic_ts.columns]
     assert len(tbl) == len(generic_ts.to_dataframe())
     assert (tbl[generic_ts.columns[0]].quantity ==
             generic_ts.quantity(generic_ts.columns[0])).all()
@@ -795,6 +799,12 @@ def test_noaa_json_pre_peek(noaa_pre_json_test_ts):
 @figure_test
 def test_generic_ts_peek(generic_ts):
     generic_ts.peek()
+
+
+@figure_test
+def test_column_subset_peek(generic_ts):
+    generic_ts.peek(columns=['intensity2'])
+
 
 # =============================================================================
 # Test Peek Of Invalid Data for all sources

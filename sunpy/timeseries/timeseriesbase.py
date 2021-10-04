@@ -49,7 +49,7 @@ class GenericTimeSeries:
     meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`
         The metadata giving details about the time series data/instrument.
     units : `dict`
-        A mapping from column names in ``data`` to the physical units ofthat column.
+        A mapping from column names in ``data`` to the physical units of that column.
 
     Examples
     --------
@@ -446,7 +446,7 @@ class GenericTimeSeries:
 
 # #### Plotting Methods #### #
 
-    def plot(self, axes=None, **plot_args):
+    def plot(self, axes=None, columns=None, **plot_args):
         """
         Plot a plot of the `~sunpy.timeseries.TimeSeries`.
 
@@ -455,6 +455,8 @@ class GenericTimeSeries:
         axes : `~matplotlib.axes.Axes`, optional
             If provided the image will be plotted on the given axes.
             Defaults to `None`, so the current axes will be used.
+        columns : list[str], optional
+            If provided, only plot the specified columns.
         **plot_args : `dict`, optional
             Additional plot keyword arguments that are handed to
             :meth:`pandas.DataFrame.plot`.
@@ -470,12 +472,21 @@ class GenericTimeSeries:
         if axes is None:
             axes = plt.gca()
 
-        axes = self._data.plot(ax=axes, **plot_args)
+        if columns is None:
+            columns = self._data.columns
 
+        axes = self._data[columns].plot(ax=axes, **plot_args)
+
+        units = set([self.units[col] for col in columns])
+        if len(units) == 1:
+            # If units of all columns being plotted are the same, add a unit
+            # label to the y-axis.
+            unit = u.Unit(list(units)[0])
+            axes.set_ylabel(unit.to_string())
         return axes
 
     @peek_show
-    def peek(self, **kwargs):
+    def peek(self, columns=None, **kwargs):
         """
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the
@@ -483,6 +494,8 @@ class GenericTimeSeries:
 
         Parameters
         ----------
+        columns : list[str], optional
+            If provided, only plot the specified columns.
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
         """
@@ -493,7 +506,7 @@ class GenericTimeSeries:
 
         # Now make the plot
         figure = plt.figure()
-        self.plot(**kwargs)
+        self.plot(columns=columns, **kwargs)
 
         return figure
 
