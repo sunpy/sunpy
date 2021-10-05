@@ -119,7 +119,7 @@ class XRSTimeSeries(GenericTimeSeries):
     @property
     def satellite_number(self):
         """
-        Parses the various metafields to extract GOES satellite number.
+        Parses the various formats for metafields to extract GOES satellite number.
         """
         # various pattern matches for the meta fields.
         pattern_old = ("{}go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits{}")
