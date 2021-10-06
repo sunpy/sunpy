@@ -31,8 +31,8 @@ import sunpy.coordinates
 import sunpy.io as io
 import sunpy.visualization.colormaps
 from sunpy import config, log
-from sunpy.coordinates import HeliographicCarrington, Helioprojective, get_earth, sun
-from sunpy.coordinates.utils import get_limb_coordinates, get_rectangle_coordinates
+from sunpy.coordinates import HeliographicCarrington, get_earth, sun
+from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
@@ -2044,7 +2044,9 @@ class GenericMap(NDData):
         Keyword arguments are passed onto the patches.
 
         If the limb is a true circle, ``visible`` will instead be
-        `~matplotlib.patches.Circle` and ``hidden`` will be ``None``.
+        `~matplotlib.patches.Circle` and ``hidden`` will be ``None``. If there
+        are no visible points (e.g., on a synoptic map any limb is fully)
+        visible ``hidden`` will be ``None``.
 
         To avoid triggering Matplotlib auto-scaling, these patches are added as
         artists instead of patches.  One consequence is that the plot legend is not
@@ -2052,8 +2054,10 @@ class GenericMap(NDData):
         :ref:`sphx_glr_gallery_text_labels_and_annotations_custom_legends.py` in
         the Matplotlib documentation for examples of creating a custom legend.
         """
-        # Put import here to reduce sunpy.map import time
+        # Put imports here to reduce sunpy.map import time
         from matplotlib import patches
+
+        import sunpy.visualization.limb
 
         # Don't use _check_axes() here, as drawing the limb works fine on none-WCSAxes,
         # even if the image is rotated relative to the axes
@@ -2061,78 +2065,18 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
         is_wcsaxes = wcsaxes_compat.is_wcsaxes(axes)
 
-        c_kw = {'fill': False,
-                'color': 'white',
-                'zorder': 100}
-        c_kw.update(kwargs)
-
-        # Obtain the solar radius and the world->pixel transform
-        if not is_wcsaxes:
-            radius = self.rsun_obs.value
-            transform = axes.transData
+        if is_wcsaxes:
+            # TODO: supply custom limb radius
+            return sunpy.visualization.limb.draw_limb(
+                axes, self.observer_coordinate, resolution=resolution,
+                rsun=self.rsun_meters, **kwargs)
         else:
-            radius = self.rsun_obs.to_value(u.deg)
-            transform = axes.get_transform('world')
-
-        # transform is always passed on as a keyword argument
-        c_kw.setdefault('transform', transform)
-
-        # If not WCSAxes or if the map's frame matches the axes's frame and is Helioprojective,
-        # we can use Circle
-        if not is_wcsaxes or (self.coordinate_frame == axes._transform_pixel2world.frame_out
-                              and isinstance(self.coordinate_frame, Helioprojective)):
-            c_kw.setdefault('radius', radius)
+            # If not WCSAxes use a Circle
+            c_kw.setdefault('radius', self.rsun_obs.value)
 
             circ = patches.Circle([0, 0], **c_kw)
             axes.add_artist(circ)
-
             return circ, None
-
-        # Otherwise, we use Polygon to be able to distort the limb
-
-        # Get the limb coordinates
-        limb = get_limb_coordinates(self.observer_coordinate, self.rsun_meters,
-                                    resolution=resolution)
-        # Transform the limb to the axes frame and get the 2D vertices
-        axes_frame = axes._transform_pixel2world.frame_out
-        limb_in_axes = limb.transform_to(axes_frame)
-        Tx = limb_in_axes.spherical.lon.to_value(u.deg)
-        Ty = limb_in_axes.spherical.lat.to_value(u.deg)
-        vertices = np.array([Tx, Ty]).T
-
-        # Determine which points are visible
-        if hasattr(axes_frame, 'observer'):
-            # The reference distance is the distance to the limb for the axes observer
-            rsun = getattr(axes_frame, 'rsun', self.rsun_meters)
-            reference_distance = np.sqrt(axes_frame.observer.radius**2 - rsun**2)
-            is_visible = limb_in_axes.spherical.distance <= reference_distance
-        else:
-            # If the axes has no observer, the entire limb is considered visible
-            is_visible = np.ones_like(limb_in_axes.spherical.distance, bool, subok=False)
-
-        # Identify discontinuities in the limb
-        # Use the same approach as astropy.visualization.wcsaxes.grid_paths.get_lon_lat_path()
-        step = np.sqrt((vertices[1:, 0] - vertices[:-1, 0]) ** 2 +
-                       (vertices[1:, 1] - vertices[:-1, 1]) ** 2)
-        continuous = np.concatenate([[True, True], step[1:] < 100 * step[:-1]])
-
-        # Create the Polygon for the near side of the Sun (using a solid line)
-        if 'linestyle' not in kwargs:
-            c_kw['linestyle'] = '-'
-        visible = patches.Polygon(vertices, **c_kw)
-        _modify_polygon_visibility(visible, is_visible & continuous)
-
-        # Create the Polygon for the far side of the Sun (using a dotted line)
-        if 'linestyle' not in kwargs:
-            c_kw['linestyle'] = ':'
-        hidden = patches.Polygon(vertices, **c_kw)
-        _modify_polygon_visibility(hidden, ~is_visible & continuous)
-
-        # Add both patches as artists rather than patches to avoid triggering auto-scaling
-        axes.add_artist(visible)
-        axes.add_artist(hidden)
-
-        return visible, hidden
 
     @u.quantity_input
     def draw_quadrangle(self, bottom_left, *, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,

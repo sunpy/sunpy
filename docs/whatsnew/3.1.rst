@@ -40,7 +40,15 @@ We have bumped the minimum version of several packages we depend on; these are t
 - numpy >= 1.17.0
 - pandas >= 1.0.0
 
-.. _whatsnew-3.1-map-datetime:
+.. _whatsnew-3.1-draw-limb:
+
+New limb drawing function
+=========================
+The solar limb as seen from an arbitrary observer coordinate can now be drawn on a world coordinate system aware
+Axes using the :func:`sunpy.visualization.draw_limb` function.
+
+.. minigallery:: sunpy.visualization.draw_limb
+
 
 New WISPR map source
 ====================
@@ -48,6 +56,8 @@ A new map source for the WISPR instrument on Parker Solar Probe has been added.
 This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
 information for the `~sunpy.map.GenericMap.processing_level` and
 `~sunpy.map.GenericMap.exposure_time`.
+
+.. _whatsnew-3.1-map-datetime:
 
 Changes to map date/time handling
 =================================
