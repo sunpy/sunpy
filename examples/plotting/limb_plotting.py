@@ -17,9 +17,7 @@ from sunpy.visualization.limb import draw_limb
 ###############################################################################
 # Let's download a magnetic field synoptic map and read it into a Map.
 
-filename = download_file(
-    'http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Synoptic_Mr.2191.fits', cache=True)
-syn_map = sunpy.map.Map(filename)
+syn_map = sunpy.map.Map('http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Synoptic_Mr.2191.fits')
 syn_map.plot_settings['cmap'] = 'hmimag'
 syn_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 
