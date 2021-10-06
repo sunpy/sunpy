@@ -8,8 +8,6 @@ observer.
 """
 import matplotlib.pyplot as plt
 
-from astropy.utils.data import download_file
-
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.visualization.limb import draw_limb
