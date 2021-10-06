@@ -98,6 +98,9 @@ Here's an example of creating a header from some generic data and an `astropy.co
     dsun_obs: 148644585949.49
     hgln_obs: 0.0
     hglt_obs: 4.7711570596394
+    naxis: 2
+    naxis1: 10
+    naxis2: 10
     rsun_obs: 965.3829548285768
 
 
@@ -131,6 +134,9 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     dsun_obs: 148644585949.49
     hgln_obs: 0.0
     hglt_obs: 4.7711570596394
+    naxis: 2
+    naxis1: 10
+    naxis2: 10
     rsun_obs: 965.3829548285768
 
 As we can see, a list of WCS and observer meta information is contained within the generated headers,

@@ -14,11 +14,9 @@ or higher installed.
 # sphinx_gallery_thumbnail_number = 4
 
 import matplotlib.pyplot as plt
-from reproject import reproject_interp
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-from astropy.wcs import WCS
 
 import sunpy.map
 from sunpy.coordinates import Helioprojective
@@ -44,7 +42,7 @@ new_observer = SkyCoord(70*u.deg, 20*u.deg, 1*u.AU, obstime=aia_map.date,
 
 ######################################################################
 # Create a WCS header for this new observer using helioprojective
-# coordinates, and create the corresponding `~astropy.wcs.WCS` object.
+# coordinates.
 
 out_shape = aia_map.data.shape
 
@@ -59,7 +57,6 @@ out_header = sunpy.map.make_fitswcs_header(
     instrument=aia_map.instrument,
     wavelength=aia_map.wavelength
 )
-out_wcs = WCS(out_header)
 
 ######################################################################
 # If you reproject the AIA Map to the perspective of the new observer,
@@ -68,9 +65,7 @@ out_wcs = WCS(out_header)
 # be mapped to the surface of the Sun, and thus do not show up in the
 # output.
 
-output, _ = reproject_interp(aia_map, out_wcs, out_shape)
-outmap_default = sunpy.map.Map((output, out_header))
-outmap_default.plot_settings = aia_map.plot_settings
+outmap_default = aia_map.reproject_to(out_header)
 
 plt.figure()
 plt.subplot(projection=outmap_default)
@@ -84,9 +79,7 @@ outmap_default.plot()
 # of AIA (compared to, say, a coronagraph).
 
 with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate):
-    output, _ = reproject_interp(aia_map, out_wcs, out_shape)
-outmap_screen_all = sunpy.map.Map((output, out_header))
-outmap_screen_all.plot_settings = aia_map.plot_settings
+    outmap_screen_all = aia_map.reproject_to(out_header)
 
 plt.figure()
 plt.subplot(projection=outmap_screen_all)
@@ -99,9 +92,7 @@ outmap_screen_all.plot()
 
 with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate,
                                              only_off_disk=True):
-    output, _ = reproject_interp(aia_map, out_wcs, out_shape)
-outmap_screen_off_disk = sunpy.map.Map((output, out_header))
-outmap_screen_off_disk.plot_settings = aia_map.plot_settings
+    outmap_screen_off_disk = aia_map.reproject_to(out_header)
 
 plt.figure()
 plt.subplot(projection=outmap_screen_off_disk)

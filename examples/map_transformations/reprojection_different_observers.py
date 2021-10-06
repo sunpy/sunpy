@@ -14,11 +14,9 @@ You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 o
 # sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt
-from reproject import reproject_interp
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-from astropy.wcs import WCS
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
@@ -97,30 +95,23 @@ out_header = sunpy.map.make_fitswcs_header(
 )
 
 ######################################################################
-# Next we construct an `~astropy.wcs.WCS` object from the header.
+# We can now reproject the EUVI map to this output WCS header.
+# The :meth:`~sunpy.map.GenericMap.reproject_to` defaults to using
+# the fast :func:`reproject.reproject_interp` algorithm, but a different
+# algorithm can be specified (e.g., :func:`reproject.reproject_adaptive`).
 
-out_wcs = WCS(out_header)
-
-######################################################################
-# We can now reproject the EUVI map to this output `~astropy.wcs.WCS`.
-# Here we are using the fastest but least accurate method of reprojection,
-# :func:`reproject.reproject_interp`. A more accurate but slower method is
-# :func:`reproject.reproject_adaptive`.
-
-output, footprint = reproject_interp(map_euvi, out_wcs, out_shape)
+outmap = map_euvi.reproject_to(out_header)
 
 ######################################################################
 # We can now plot the STEREO/EUVI image as seen from the position of
 # SDO, next to the AIA image.
-
-outmap = sunpy.map.Map(output, out_header)
-outmap.plot_settings = map_euvi.plot_settings
 
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
 map_aia.plot(axes=ax1)
 ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
 outmap.plot(axes=ax2, title='EUVI image as seen from SDO')
+map_euvi.draw_limb(color='blue')
 
 # Set the HPC grid color to black as the background is white
 ax2.coords[0].grid_lines_kwargs['edgecolor'] = 'k'
@@ -160,25 +151,19 @@ mars_header = sunpy.map.make_fitswcs_header(
 )
 
 ######################################################################
-# Once again we need to generate a `~astropy.wcs.WCS` object.
-
-mars_wcs = WCS(mars_header)
-output, footprint = reproject_interp(map_aia, mars_wcs, out_shape)
-
-######################################################################
 # We generate the output map and plot it next to the original image.
 
-outmap = sunpy.map.Map((output, mars_header))
-outmap.plot_settings = map_aia.plot_settings
+outmap = map_aia.reproject_to(mars_header)
 
 fig = plt.figure()
 
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
 map_aia.plot(axes=ax1)
-outmap.draw_grid(color='w')
+map_aia.draw_grid(color='w')
 
 ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
 outmap.plot(axes=ax2, title='AIA observation as seen from Mars')
-outmap.draw_grid(color='w')
+map_aia.draw_grid(color='w')
+map_aia.draw_limb(color='blue')
 
 plt.show()
