@@ -8,7 +8,8 @@ import astropy.units as u
 
 from sunpy.map import GenericMap
 from sunpy.util import expand_list
-from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
+from sunpy.util.visualization import axis_labels_from_ctype, peek_show
+from sunpy.visualization import wcsaxes_compat
 
 __all__ = ['CompositeMap']
 

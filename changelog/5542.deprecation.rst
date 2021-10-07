@@ -1,0 +1,2 @@
+``sunpy.visualization.peek_show()`` and ``sunpy.visualization.axis_labels_from_ctype()``
+are not intended to be user-facing functionality, and are therefore deprecated.

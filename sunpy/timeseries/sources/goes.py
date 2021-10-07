@@ -22,7 +22,7 @@ from sunpy.io.file_tools import UnrecognizedFileTypeError
 from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
-from sunpy.visualization import peek_show
+from sunpy.util.visualization import peek_show
 
 __all__ = ['XRSTimeSeries']
 

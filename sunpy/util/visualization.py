@@ -1,0 +1,54 @@
+from functools import wraps
+
+import matplotlib.pyplot as plt
+
+
+def peek_show(func):
+    """
+    A decorator to place on ``peek()`` methods to show the figure.
+
+    The ``peek()`` method should return the figure then this method will
+    attempt to show it in the correct way. This decorator will not return the
+    figure to the user.
+    """
+    @wraps(func)
+    def show_figure(*args, **kwargs):
+        _ = func(*args, **kwargs)
+        plt.show()
+
+    return show_figure
+
+
+def axis_labels_from_ctype(ctype, unit):
+    """
+    Returns axis labels for the given coordinate type and unit.
+
+    Parameters
+    ----------
+    ctype: `str`
+        Coordinate type.
+    unit: `str`
+        Required unit.
+
+    Returns
+    -------
+    `str`
+        "Axis Label [Unit]"
+    """
+    ctype_short = ctype[:4]
+
+    labels = {'HGLN': f'Heliographic Longitude',
+              'CRLN': f'Carrington Longitude',
+              'HPLN': f'Helioprojective Longitude (Solar-X)',
+              'SOLX': f'Heliocentric X',
+
+              'HGLT': f'Latitude',
+              'CRLT': f'Latitude',
+              'HPLT': f'Helioprojective Latitude (Solar-Y)',
+              'SOLY': f'Heliocentric Y'}
+
+    label = labels.get(ctype_short, f"{ctype}")
+    if unit is not None:
+        label += f' [{unit}]'
+
+    return label

@@ -1,13 +1,13 @@
 """
 This module provides plotting support in iPython.
 """
-from functools import wraps
-
-import matplotlib.pyplot as plt
+import sunpy.util.visualization as viz
+from sunpy.util.decorators import deprecated
 
 __all__ = ['peek_show', "axis_labels_from_ctype"]
 
 
+@deprecated('3.1')
 def peek_show(func):
     """
     A decorator to place on ``peek()`` methods to show the figure.
@@ -16,14 +16,10 @@ def peek_show(func):
     attempt to show it in the correct way. This decorator will not return the
     figure to the user.
     """
-    @wraps(func)
-    def show_figure(*args, **kwargs):
-        _ = func(*args, **kwargs)
-        plt.show()
-
-    return show_figure
+    return viz.peek_show(func)
 
 
+@deprecated('3.1')
 def axis_labels_from_ctype(ctype, unit):
     """
     Returns axis labels for the given coordinate type and unit.
@@ -40,20 +36,4 @@ def axis_labels_from_ctype(ctype, unit):
     `str`
         "Axis Label [Unit]"
     """
-    ctype_short = ctype[:4]
-
-    labels = {'HGLN': f'Heliographic Longitude',
-              'CRLN': f'Carrington Longitude',
-              'HPLN': f'Helioprojective Longitude (Solar-X)',
-              'SOLX': f'Heliocentric X',
-
-              'HGLT': f'Latitude',
-              'CRLT': f'Latitude',
-              'HPLT': f'Helioprojective Latitude (Solar-Y)',
-              'SOLY': f'Heliocentric Y'}
-
-    label = labels.get(ctype_short, f"{ctype}")
-    if unit is not None:
-        label += f' [{unit}]'
-
-    return label
+    return viz.axis_labels_from_ctype(ctype, unit)

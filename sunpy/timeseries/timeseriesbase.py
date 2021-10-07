@@ -18,7 +18,7 @@ from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
-from sunpy.visualization import peek_show
+from sunpy.util.visualization import peek_show
 
 # define and register a new unit, needed for RHESSI
 det = u.def_unit('detector')

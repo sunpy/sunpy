@@ -41,7 +41,8 @@ from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import cached_property_based_on
 from sunpy.util.exceptions import SunpyUserWarning, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
+from sunpy.util.visualization import axis_labels_from_ctype, peek_show
+from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 
 TIME_FORMAT = config.get("general", "time_format")

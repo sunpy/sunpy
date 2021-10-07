@@ -16,7 +16,7 @@ from sunpy import config
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
-from sunpy.visualization import peek_show
+from sunpy.util.visualization import peek_show
 
 TIME_FORMAT = config.get("general", "time_format")
 

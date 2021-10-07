@@ -3,8 +3,9 @@ This module provides a way to animate `~sunpy.map.MapSequence`.
 """
 from copy import deepcopy
 
+from sunpy.util.visualization import axis_labels_from_ctype
 from sunpy.visualization import animator as imageanimator
-from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
+from sunpy.visualization import wcsaxes_compat
 
 __all__ = ['MapSequenceAnimator']
 
