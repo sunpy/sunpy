@@ -280,12 +280,10 @@ class DataAttr(Attr):
     def __new__(cls, *args, **kwargs):
         if cls is DataAttr:
             raise TypeError("You should not directly instantiate DataAttr, only it's subclasses.")
-
         return super().__new__(cls)
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-
         # Because __new__() is defined, this will block natural introspection of the arguments for
         # __init__() in all subclasses because the signature of __new__() takes precedence over the
         # signature of __init__().  We add a __new__() to all subclasses that do not explicitly
@@ -295,9 +293,7 @@ class DataAttr(Attr):
 
             def signed_new(cls, *args, **kwargs):
                 return unsigned_new(cls, *args, **kwargs)
-
             signed_new.__signature__ = inspect.signature(cls.__init__)
-
             cls.__new__ = signed_new
 
 
@@ -371,6 +367,33 @@ class SimpleAttr(DataAttr):
     @property
     def type_name(self):
         return self.__class__.__name__.lower()
+
+
+class ComparisionAttr(DataAttr):
+    """
+    An attribute that stores a comparision to the value.
+
+    Parameters
+    ----------
+    label : str
+    value : str
+    operator : str, optional
+        The comparison operator. Default is "=".
+    """
+
+    def __init__(self, label, value, operator="="):
+        super().__init__()
+        self.label = label
+        self.value = value
+        self.operator = operator
+
+    def __repr__(self):
+        return f"{object.__repr__(self)}" + "\n" + f"{self.label}{self.operator}{self.value}"
+
+    def collides(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.operator == other.operator and self.label == other.label
 
 
 class Range(DataAttr):

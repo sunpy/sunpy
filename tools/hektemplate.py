@@ -17,7 +17,7 @@ from sunpy.net import attr as _attr
 from sunpy.net import attrs as _attrs
 from sunpy.time import parse_time as _parse_time
 
-# Due to the fact this file is autogenerted it doesn't have an __all__, so all
+# Due to the fact this file is autogenereted it doesn't have an __all__, so all
 # not _ prefixed variables must be parseable by automodapi
 
 

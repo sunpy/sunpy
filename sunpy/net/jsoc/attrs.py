@@ -2,7 +2,7 @@ import astropy.units as u
 
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.net._attrs import Time, Wavelength
-from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
+from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, ComparisionAttr, DataAttr, SimpleAttr
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'PrimeKey', 'Cutout']
 
@@ -40,6 +40,19 @@ class PrimeKey(DataAttr):
 
     def collides(self, other):
         return False
+
+
+class Keyword(ComparisionAttr):
+    """
+    JSOC Keywords.
+
+    Parameters
+    ----------
+    label : str
+    value : str
+    operator : str, optional
+        The comparison operator. Default is "=".
+    """
 
 
 class Segment(SimpleAttr):
@@ -109,12 +122,16 @@ class Cutout(DataAttr):
     """
 
     @u.quantity_input
-    def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
-                 height: u.arcsec = None, tracking=False, register=False,
-                 nan_off_limb=False):
+    def __init__(
+        self, bottom_left, top_right=None, width: u.arcsec = None,
+        height: u.arcsec = None, tracking=False, register=False,
+        nan_off_limb=False
+    ):
         super().__init__()
-        bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width,
-                                           height=height)
+        bl, tr = get_rectangle_coordinates(
+            bottom_left, top_right=top_right, width=width,
+            height=height
+        )
         self.value = {
             't_ref': bl.obstime.isot,
             # JSOC input is disable tracking so take the negative
@@ -138,17 +155,14 @@ walker = AttrWalker()
 
 @walker.add_creator(AttrOr)
 def _create1(wlk, query):
-
     qblocks = []
     for iattr in query.attrs:
         qblocks.extend(wlk.create(iattr))
-
     return qblocks
 
 
 @walker.add_creator(AttrAnd, DataAttr)
 def _create(wlk, query):
-
     map_ = {}
     wlk.apply(query, map_)
     return [map_]
@@ -156,21 +170,27 @@ def _create(wlk, query):
 
 @walker.add_applier(AttrAnd)
 def _apply(wlk, query, imap):
-
     for iattr in query.attrs:
         wlk.apply(iattr, imap)
 
 
 @walker.add_applier(SimpleAttr)
 def _apply1(wlk, query, imap):
-
     imap[query.__class__.__name__.lower()] = query.value
 
 
 @walker.add_applier(PrimeKey)
 def _apply1(wlk, query, imap):
-
     key = 'primekey'
+    if key in imap:
+        imap[key][query.label] = query.value
+    else:
+        imap[key] = {query.label: query.value}
+
+
+@walker.add_applier(Keyword)
+def _apply1(wlk, query, imap):
+    key = 'keyword'
     if key in imap:
         imap[key][query.label] = query.value
     else:
@@ -179,7 +199,6 @@ def _apply1(wlk, query, imap):
 
 @walker.add_applier(Segment)
 def _apply1(wlk, query, imap):
-
     key = 'segment'
     if key in imap:
         imap[key].append(query.value)
