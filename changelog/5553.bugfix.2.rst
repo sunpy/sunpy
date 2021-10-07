@@ -1,0 +1,1 @@
+Fixed a bug where rotating a `~sunpy.map.Map` could result in an extremely small shift (at the numerical-precision level) in the mapping from world coordinates to pixels.
