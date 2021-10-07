@@ -168,7 +168,7 @@ class TestTimeSeries:
     def test_implicit_goes_satno_missing(self):
         # Test a GOES TimeSeries for a missin satellite number
         ts_goes = sunpy.timeseries.TimeSeries(new_goes16_filepath)
-        ts_goes.meta.metas[0]['id']=b'missing_GOES_satno.nc'
+        del ts_goes.meta.metas[0]['id']
         assert ts_goes.satellite_number is None
 
     def test_implicit_lyra(self):
