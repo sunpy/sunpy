@@ -394,11 +394,20 @@ class CompositeMap:
         `~matplotlib.axes.Axes.pcolormesh`, and contours are plotted using
         `~matplotlib.axes.Axes.contour`.
         The Matplotlib arguments accepted by the plotting method are passed to it.
+        (For compatability reasons, we enforce a more restrictive set of
+        accepted `~matplotlib.axes.Axes.pcolormesh` arguments.)
         If any Matplotlib arguments are not used by any plotting method,
         a ``TypeError`` will be raised.
-        For the full list of arguments accepted by each plotting method see
-        ``ACCEPTED_IMSHOW_KWARGS``, ``ACCEPTED_PCOLORMESH_KWARGS``
-        and ``ACCEPTED_CONTOUR_KWARGS``.
+        The ``sunpy.map.compositemap`` module includes variables which list the
+        full set of arguments passed to each plotting method. These are:
+
+        >>> import sunpy.map.compositemap
+        >>> sunpy.map.compositemap.ACCEPTED_IMSHOW_KWARGS
+        %%ACCEPTED_IMSHOW_KWARGS%%
+        >>> sunpy.map.compositemap.ACCEPTED_PCOLORMESH_KWARGS
+        %%ACCEPTED_PCOLORMESH_KWARGS%%
+        >>> sunpy.map.compositemap.ACCEPTED_CONTOUR_KWARGS
+        %%ACCEPTED_CONTOUR_KWARGS%%
 
         If a transformation is required to overlay the maps with the correct
         alignment, the plot limits may need to be manually set because
@@ -527,3 +536,7 @@ class OutOfRangeAlphaValue(ValueError):
     """Exception to raise when an alpha value outside of the range 0-1 is
     requested.
     """
+
+
+for n in ('ACCEPTED_IMSHOW_KWARGS', 'ACCEPTED_PCOLORMESH_KWARGS', 'ACCEPTED_CONTOUR_KWARGS'):
+    CompositeMap.plot.__doc__ = CompositeMap.plot.__doc__.replace(f'%%{n}%%', str(locals()[n]))
