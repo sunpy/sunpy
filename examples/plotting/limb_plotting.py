@@ -26,12 +26,17 @@ coords = {body: get_body_heliographic_stonyhurst(body, syn_map.date)
 
 ###############################################################################
 # Now we can plot the map the the solar limb seen from these two coordinates.
+# To create a legend for these limbs, we need to keep the patches returned by
+# :func:`~sunpy.visualization.draw_limb` and provide them to
+# :meth:`~matplotlib.axes.Axes.legend`.
 fig = plt.figure(figsize=(12, 5))
 ax = plt.subplot(projection=syn_map)
 im = syn_map.plot()
 
+visible_limbs = []
 for (body, coord), color in zip(coords.items(), ['tab:green', 'tab:red']):
-    draw_limb(ax, coord, color=color, label=f'Limb seen from {body}')
+    v, _ = draw_limb(ax, coord, color=color, label=f'Limb seen from {body}')
+    visible_limbs.append(v)
 
-ax.legend()
+ax.legend(handles=visible_limbs)
 plt.show()
