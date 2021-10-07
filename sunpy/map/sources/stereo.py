@@ -38,9 +38,7 @@ class EUVIMap(GenericMap):
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
 
     def _rotation_matrix_from_crota(self):
-        lam = self.scale[0] / self.scale[1]
-        p = np.deg2rad(self.meta.get('CROTA2', self.meta.get('CROTA', 0)))
-        return self._pc_matrix(lam, p)
+        return super()._rotation_matrix_from_crota('CROTA')
 
     @property
     def waveunit(self):
