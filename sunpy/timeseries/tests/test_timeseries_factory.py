@@ -166,7 +166,7 @@ class TestTimeSeries:
         assert ts_goes.satellite_number == 17
 
     def test_implicit_goes_satno_missing(self):
-        # Test a GOES TimeSeries for a missin satellite number
+        # Test a GOES TimeSeries for a missing satellite number
         ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath)
         del ts_goes.meta.metas[0]['id']
         assert ts_goes.satellite_number is None
