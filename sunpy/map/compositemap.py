@@ -25,7 +25,10 @@ ACCEPTED_IMSHOW_KWARGS = get_keywords(
 
 ACCEPTED_PCOLORMESH_KWARGS = (get_keywords(
     [GenericMap.plot, plt.Axes.pcolormesh, QuadMesh.__init__, Collection.__init__]
-) | get_set_methods(QuadMesh)) - {'linewidths', 'linestyles'}
+) | get_set_methods(QuadMesh)) - {
+    'color', 'ec', 'edgecolor', 'facecolor', 'linestyle', 'linestyles',
+    'linewidth', 'linewidths', 'ls', 'lw'
+}
 
 ACCEPTED_CONTOUR_KWARGS = get_keywords(
     [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args]
