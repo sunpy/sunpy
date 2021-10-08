@@ -62,19 +62,17 @@ map_r_cv.peek()
 
 # Comparing raw differences:
 
-from sunpy.visualization.colormaps import cm as sunpy_cm
-
 fig0,ax0 = plt.subplots()
-img0 = ax0.imshow(np.abs(map_r_sk.data - map_r_sci.data), vmin=0, vmax = 150, cmap=sunpy_cm.cmap)
+img0 = ax0.imshow(map_r_sk.data - map_r_sci.data, vmin=-150., vmax = 150, cmap=plt.cm.seismic)
 fig0.colorbar(img0)
 ax0.set_title("Raw Difference: Sklearn vs. Scipy")
 
 fig1,ax1 = plt.subplots()
-img1 = ax1.imshow(np.abs(map_r_sci.data - map_r_cv.data), vmin=0, vmax = 150, cmap=sunpy_cm.cmap)
+img1 = ax1.imshow(map_r_sci.data - map_r_cv.data, vmin=-150., vmax = 150, cmap=plt.cm.seismic)
 fig1.colorbar(img1)
 ax1.set_title("Raw Difference: Scipy vs. OpenCV")
 
 fig2,ax2 = plt.subplots()
-img2 = ax2.imshow(np.abs(map_r_sk.data - map_r_cv.data), vmin=0, vmax = 150, cmap=sunpy_cm.cmap)
+img2 = ax2.imshow(map_r_sk.data - map_r_cv.data, vmin=-150., vmax = 150, cmap=plt.cm.seismic)
 fig2.colorbar(img2)
 ax2.set_title("Raw Difference: Sklearn vs. OpenCV")

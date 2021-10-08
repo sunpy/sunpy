@@ -38,14 +38,14 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     _CV_ORDER_FLAGS = {
         0: cv2.INTER_NEAREST,
         1: cv2.INTER_LINEAR,
-        2: cv2.INTER_CUBIC,
         3: cv2.INTER_CUBIC,
-        4: cv2.INTER_CUBIC,
-        5: cv2.INTER_CUBIC
     }
 
-    # convert order to appropriate cv2 flag
-    order = _CV_ORDER_FLAGS[max(0, min(order, 5))]
+    try:
+        order = _CV_ORDER_FLAGS[order]
+    except KeyError:
+        raise ValueError("Input order={} not supported in openCV.".format(order),
+                      " Please use order = 0, 1, or 3.")
 
     # needed to convert `missing` from potentially a np.dtype
     # to the native `int` type required for cv2.warpAffine

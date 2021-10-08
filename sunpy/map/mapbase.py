@@ -1489,7 +1489,7 @@ class GenericMap(NDData):
             controls the order of the spline. Faster performance may be
             obtained at the cost of accuracy by using lower values.
             When using cv2, only order=0,1,3 are supported. Other values of `order`
-            will be cast to `order=3` (bi-cubic interpolation).
+            will raise an error.
             Default: 4
         scale : float
             A scale factor for the image, default is no scaling
@@ -1499,16 +1499,16 @@ class GenericMap(NDData):
         missing : float
             The numerical value to fill any missing points after rotation.
             Default: 0.0
-        method : `string` or function(), optional
-            1. If `string`: `skimage`, `scipy`, or `cv2'
-            If `skimage`, uses :func:`skimage.transform.warp`.
-            If `scipy`, uses :func:`scipy.ndimage.interpolation.affine_transform`.
-            If `cv2`, uses :func:`cv2.warpAffine`.
+        method : `str` or function(), optional
+            1. If `str`: ``'skimage'``, ``'scipy'``, or ``'cv2'``
+            If ``'skimage'``, uses :func:`skimage.transform.warp`.
+            If ``'scipy'``, uses :func:`scipy.ndimage.interpolation.affine_transform`.
+            If ``'cv2'``, uses :func:`cv2.warpAffine`.
             2. Elif function, uses user-defined function to perform affine transform.
             See `notes` for function requirements.
-            Default: `skimage`: Will attempt to use :func:`skimage.transform.warp`;
+            Default: ``'skimage'``: Will attempt to use :func:`skimage.transform.warp`;
             on ImportError, will use :func:`scipy.ndimage.interpolation.affine_transform`.
-            (This behavior is identical to the now-deprecated `use_scipy=False`)
+            (This behavior is identical to the now-deprecated ``use_scipy=False``)
 
         Returns
         -------
@@ -1527,13 +1527,13 @@ class GenericMap(NDData):
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
         See :func:`sunpy.image.transform.affine_transform` for details on the
-        `scipy` and `skimage` transformations, situations when the underlying data
+        ``scipy``, ``skimage`` and ``cv2`` transformations, situations when the underlying data
         is modified prior to rotation, and differences from IDL's rot().
 
-        If a custom function is passed to `method`, it must accept the same arguments
-        as `sunpy.image.transform.affine_transform` (except for `method=`) and
+        If a custom function is passed to ``method``, it must accept the same arguments
+        as :func:`sunpy.image.transform.affine_transform` (except for ``method=``) and
         return the same type of output.
-        See `sunpy.image.transform.affine_transform` for details.
+        See :func:`sunpy.image.transform.affine_transform` for details.
         """
         # Put the import here to reduce sunpy.map import time
         from sunpy.image.transform import affine_transform
