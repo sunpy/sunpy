@@ -26,6 +26,9 @@ jobs:
           repository: sunpy/sunpy-benchmarks
           ref: main
           path: asv_results
+      - name: Symlink results
+        run: |
+          ln -s asv_results/results ./results
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
@@ -45,14 +48,12 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.ASV_CI_KEY }}
       - name: Push results
-        uses: JamesIves/github-pages-deploy-action@4.1.4
+        uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: main
-          folder: asv_results/results
+          folder: asv_results
           repository-name: sunpy/sunpy-benchmarks
-          target-folder: results
           ssh-key: true
-          clean: false
           commit-message: |
             Push new results from GitHub Actions
             repository: ${{ github.repository }}

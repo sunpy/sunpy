@@ -251,6 +251,7 @@ sunpy_tests/
 *.box
 
 # asv stuff
-asv_results/*
-asv_env/*
-html/*
+asv_env
+asv_results
+html
+results
