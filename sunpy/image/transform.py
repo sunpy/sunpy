@@ -47,12 +47,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Defaults to `True` i.e., recenter to the center of the array.
     missing : `float`, optional
         The value to replace any missing data after the transformation.
-    method : `string` or function(), optional
-        1. If `string`: `skimage`, `scipy`, or `cv2'
+    method : `str` or function(), optional
+        1. If a string:  one of ``'skimage'``, ``'scipy'``, or ``'cv2'``
         If `skimage`, uses :func:`skimage.transform.warp`.
         If `scipy`, uses :func:`scipy.ndimage.interpolation.affine_transform`.
         If `cv2`, uses :func:`cv2.warpAffine`.
-        2. Elif function, uses user-defined function to perform affine transform.
+        2. If a function, uses the user-defined function to perform affine transform.
         See `notes` for function requirements.
         Default: `skimage`: Will attempt to use :func:`skimage.transform.warp`;
         on ImportError, will use :func:`scipy.ndimage.interpolation.affine_transform`.
@@ -93,7 +93,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     Method
     ------
     If a custom transform function is passed to `method`, it must have the function signature:
-    `custom_transform(image,rmatrix,order,scale,missing,image_center,recenter)`
+    ``custom_transform(image, rmatrix, order, scale, missing, image_center, recenter)``
     (identical to the parent affine_transform, without the `method` argument),
     and it must return the new rotated, scaled, translated image.
 

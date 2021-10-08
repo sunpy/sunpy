@@ -5,7 +5,7 @@ Using a Custom Affine Transform in the Sunpy Map rotate() function
 
 A demonstration of constructing a custom, drop-in affine transformation routine for
 map.rotate(), using OpenCV as an example.
-(Requires OpenCV (cv2) Python library.)
+This requires the OpenCV (cv2) Python library.
 """
 
 import sunpy.data.sample
@@ -16,15 +16,15 @@ import cv2
 from sunpy.image.transform import _calculate_shift
 
 ##############################################################################
-# Rotating a map in sunpy (via `map.rotate()`) has a choice between three libraries:
-# `scipy`, `skimage`, and `cv2` (OpenCV).
-# However, the `method=` argument in `sunpy.map.rotate` can accept a custom function designed
+# Rotating a map in sunpy (via ``map.rotate()``) has a choice between three libraries:
+# ``scipy``, ``skimage``, and ``cv2`` (OpenCV).
+# However, the ``method=`` argument in :meth:`sunpy.GenericMap.rotate` can accept a custom function designed
 # to use an external library. Here, we illustrate this process by defining a function
-# with the OpenCV library; this will be identical to the built-in `cv2` option.
+# with the OpenCV library; this will be identical to the built-in ``cv2`` option.
 
 ##############################################################################
 # First, our custom method must have a similar function call to
-# `sunpy.image.transform.affine_transform` and return the same output.
+# :func:`sunpy.image.transform.affine_transform` and return the same output.
 
 def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     """
@@ -32,11 +32,9 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     as sunpy's default `skimage.transform.warp`.
     """
 
-    # NOTE: required libraries have already been imported globally
-    # (see above: cv2, np, numbers)
 
     # Flags for converting input order from `integer` to the appropriate interpolation flag
-    # As of Sept. 2020, OpenCV warpAffine does not support order 2,4,5
+    # As of Oct. 2021, OpenCV warpAffine does not support order 2,4,5
     _CV_ORDER_FLAGS = {
         0: cv2.INTER_NEAREST,
         1: cv2.INTER_LINEAR,
