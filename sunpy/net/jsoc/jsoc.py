@@ -703,7 +703,7 @@ class JSOCClient(BaseClient):
         keyword_info = c.keys(series)
         for key, value in keyword.items():
             if key in keyword_info:
-                keys.append(f"{key}={value}")
+                keys.append(f"{key}{value[0]}{value[1]}")
             else:
                 raise ValueError(f"Keyword: {key} is not supported by series: {series}")
         keyword_string = "[? {} ?]".format(" AND ".join(keys))

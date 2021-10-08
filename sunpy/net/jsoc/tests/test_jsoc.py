@@ -460,20 +460,30 @@ def test_row_and_warning(mocker, client, jsoc_response_double):
 def test_check_request_keywords(client):
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'), a.jsoc.Keyword("QUALITY", 1))
-    assert responses == 0
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Keyword("QUALITY", 1))
+    assert len(responses) == 0
 
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'), a.jsoc.Keyword("QUALITY", 0))
-    assert responses == 1
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Keyword("QUALITY", 0))
+    assert len(responses) == 1
 
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'), a.jsoc.Keyword("QUALITY", 2, "<"))
-    assert responses == 1
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Keyword("QUALITY", 2, "<"))
+    assert len(responses) == 1
 
-    with pytest.raises(ValueError, match="Keyword: ABC is not supported by series:"):
+    with pytest.raises(ValueError, match="Keyword: EXPTIME is not supported by series:"):
         client.search(
             a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
-            a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'), a.jsoc.Keyword("ABC", 2, "<"))
+            a.jsoc.Series('hmi.M_45s'), a.jsoc.Keyword("EXPTIME", 2, "<"))
+
+    responses = client.search(
+        a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
+        a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Keyword("QUALITY", 2, "<"), a.jsoc.Keyword("EXPTIME", 2, "<"))
+    assert len(responses) == 0
+
+    responses = client.search(
+        a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
+        a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Keyword("QUALITY", 2, "<"), a.jsoc.Keyword("EXPTIME", 2, ">"))
+    assert len(responses) == 7

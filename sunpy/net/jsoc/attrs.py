@@ -192,9 +192,9 @@ def _apply1(wlk, query, imap):
 def _apply1(wlk, query, imap):
     key = 'keyword'
     if key in imap:
-        imap[key][query.label] = query.value
+        imap[key][query.label] = [query.operator, query.value]
     else:
-        imap[key] = {query.label: query.value}
+        imap[key] = {query.label: [query.operator, query.value]}
 
 
 @walker.add_applier(Segment)

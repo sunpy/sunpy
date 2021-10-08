@@ -62,7 +62,6 @@ class _ParamAttr(_attr.Attr):
         return self.op == other.op and self.name == other.name
 
 
-# XXX: Why is this here but never used.
 class _BoolParamAttr(_ParamAttr):
     def __init__(self, name, value='true'):
         super().__init__(name, '=', value)
