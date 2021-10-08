@@ -62,6 +62,7 @@ stages:
 
         envs:
           - linux: py39
+          - linux: py310
 
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
@@ -161,6 +162,8 @@ stages:
           targets:
             - wheels_cp3[789]-manylinux*x86_64
             - wheels_cp3[789]-macosx*
+            - wheels_cp310-manylinux*x86_64
+            - wheels_cp310-macosx*
             - sdist
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
