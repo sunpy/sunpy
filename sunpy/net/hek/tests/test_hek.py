@@ -38,52 +38,52 @@ def test_eventtype_or():
     assert (attrs.hek.AR | attrs.hek.CE).item == "ar,ce"
 
 
-def test_paramattr():
-    res = hek.attrs.walker.create(hek.attrs._ParamAttr("foo", "=", "bar"), {})
+def test_AttrComparison():
+    res = hek.attrs.walker.create(attr.AttrComparison("foo", "=", "bar"), {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '=', 'param0': 'foo'}
+    assert res[0] == {'value0': 'bar', 'operator0': '=', 'param0': 'foo'}
 
 
 def test_stringwrapper_eq(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap == "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '=', 'param0': 'foo'}
+    assert res[0] == {'value0': 'bar', 'operator0': '=', 'param0': 'foo'}
 
 
 def test_stringwrapper_lt(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap < "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '<', 'param0': 'foo'}
+    assert res[0] == {'value0': 'bar', 'operator0': '<', 'param0': 'foo'}
 
 
 def test_stringwrapper_gt(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap > "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '>', 'param0': 'foo'}
+    assert res[0] == {'value0': 'bar', 'operator0': '>', 'param0': 'foo'}
 
 
 def test_stringwrapper_le(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap <= "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '<=', 'param0': 'foo'}
+    assert res[0] == {'value0': 'bar', 'operator0': '<=', 'param0': 'foo'}
 
 
 def test_stringwrapper_ge(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap >= "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '>=', 'param0': 'foo'}
+    assert res[0] == {'value0': 'bar', 'operator0': '>=', 'param0': 'foo'}
 
 
 def test_stringwrapper_ne(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap != "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '!=', 'param0': 'foo'}
+    assert res[0] == {'value0': 'bar', 'operator0': '!=', 'param0': 'foo'}
 
 
 def test_stringwrapper_like(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap.like("bar"), {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': 'like', 'param0': 'foo'}
+    assert res[0] == {'value0': 'bar', 'operator0': 'like', 'param0': 'foo'}
 
 
 def test_err_dummyattr_create():

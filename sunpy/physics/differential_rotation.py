@@ -294,7 +294,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     # Calculate the interval between the start and end time
     interval = (new_observer.obstime - coordinate.obstime).to(u.s)
 
-    # Ignore some invalid NaN comparisions within astropy
+    # Ignore some invalid NaN comparisons within astropy
     # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
     with np.errstate(invalid='ignore'):
         # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,

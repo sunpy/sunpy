@@ -9,7 +9,7 @@ world coordinates, and SkyCoords respectively when plotting a map with WCSAxes.
 import matplotlib.pyplot as plt
 import numpy as np
 
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.data.sample

@@ -369,31 +369,47 @@ class SimpleAttr(DataAttr):
         return self.__class__.__name__.lower()
 
 
-class ComparisionAttr(DataAttr):
+class AttrComparison(DataAttr):
     """
-    An attribute that stores a comparision to the value.
-
-    Parameters
-    ----------
-    label : str
-    value : str
-    operator : str, optional
-        The comparison operator. Default is "=".
+    Allows a Attr to have a value and a comparison operator.
     """
 
-    def __init__(self, label, value, operator="="):
+    def __init__(self, name, operator, value):
         super().__init__()
-        self.label = label
-        self.value = value
+        self.name = name
         self.operator = operator
-
-    def __repr__(self):
-        return f"{object.__repr__(self)}" + "\n" + f"{self.label}{self.operator}{self.value}"
+        self.value = value
 
     def collides(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return self.operator == other.operator and self.label == other.label
+        return self.operator == other.operator and self.name == other.name
+
+
+class ComparisonParamAttrWrapper:
+    def __init__(self, name):
+        self.name = name
+
+    def __lt__(self, other):
+        return AttrComparison(self.name, '<', other)
+
+    def __le__(self, other):
+        return AttrComparison(self.name, '<=', other)
+
+    def __gt__(self, other):
+        return AttrComparison(self.name, '>', other)
+
+    def __ge__(self, other):
+        return AttrComparison(self.name, '>=', other)
+
+    def __eq__(self, other):
+        return AttrComparison(self.name, '=', other)
+
+    def __ne__(self, other):
+        return AttrComparison(self.name, '!=', other)
+
+    def collides(self, other):
+        return isinstance(other, ComparisonParamAttrWrapper)
 
 
 class Range(DataAttr):

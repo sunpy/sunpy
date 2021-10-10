@@ -13,9 +13,11 @@ The SunPy project is pleased to announce the 3.1 release of the sunpy package.
 On this page, you can read about some of the big changes in this release:
 
 * :ref:`whatsnew-3.1-python`
+* :ref:`whatsnew-3.1-draw-limb`
 * :ref:`whatsnew-3.1-map-datetime`
 * :ref:`whatsnew-3.1-diffrot-context`
 * :ref:`whatsnew-3.1-reproject-to`
+* :ref:`whatsnew-3.1-jsoc-keywords`
 
 SunPy 3.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
@@ -156,7 +158,6 @@ is 12 years earlier.
 
 Propagating solar-surface coordinates in time
 =============================================
-
 There is now an easy-to-use context manager (:func:`~sunpy.coordinates.propagate_with_solar_surface`) to enable coordinate transformations to take solar rotation into account.
 Normally, a coordinate refers to a point in inertial space, so transforming it to a different observation time does not move the point at all.
 Under this context manager, a coordinate will be treated as if it were referring to a point on the solar surface.
@@ -168,12 +169,49 @@ Coordinate transformations with a change in observation time will automatically 
 
 Convenient reprojection of maps
 ===============================
-
 `~sunpy.map.Map` objects now have the :meth:`~sunpy.map.GenericMap.reproject_to` method to easily reproject the map to a new WCS.
 The returned map will be of type `~sunpy.map.GenericMap`, with no metadata preserved from the original map, so copy over any desired metadata from the original map.
 This method requires the optional package `reproject` to be installed.
 
 .. minigallery:: sunpy.map.GenericMap.reproject_to
+
+.. _whatsnew-3.1-jsoc-keywords:
+
+Support of JSOC keywords with FIDO
+==================================
+Support for JSOC keywords was added to ``Fido.search``::
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> import astropy.units as u
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA), a.jsoc.Keyword("EXPTIME")>1)
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe16a5d20d0>
+    Results from 1 Provider:
+
+    301 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+
+        T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+    -------------------- -------- -------- -------- -------
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_4      304    2145
+    2014-01-01T00:00:13Z  SDO/AIA    AIA_4      304    2145
+    2014-01-01T00:00:25Z  SDO/AIA    AIA_4      304    2145
+    2014-01-01T00:00:37Z  SDO/AIA    AIA_4      304    2145
+                    ...      ...      ...      ...     ...
+    2014-01-01T00:59:25Z  SDO/AIA    AIA_4      304    2145
+    2014-01-01T00:59:37Z  SDO/AIA    AIA_4      304    2145
+    2014-01-01T00:59:49Z  SDO/AIA    AIA_4      304    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_4      304    2145
+    Length = 301 rows
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA), a.jsoc.Keyword("EXPTIME")==1)
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe16a5d20d0>
+    Results from 1 Provider:
+
+    0 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+
+Please be aware of two items:
+* We do not validate the input keyword or the value you use for a comparison.
+* Passing in a keyword without a python comparison operator will error.
 
 .. _whatsnew-3.1-contributors:
 

@@ -7,7 +7,6 @@ from pathlib import Path
 
 import drms
 import numpy as np
-from drms import Client
 
 import astropy.table
 import astropy.time
@@ -466,8 +465,8 @@ class JSOCClient(BaseClient):
         downloader : `parfive.Downloader`, optional
             The download manager to use.
         wait : `bool`, optional
-           If `False` ``downloader.download()`` will not be called. Only has
-           any effect if ``downloader`` is not `None`.
+            If `False` ``downloader.download()`` will not be called. Only has
+            any effect if ``downloader`` is not `None`.
 
         Returns
         -------
@@ -564,7 +563,7 @@ class JSOCClient(BaseClient):
         extracts the passed prime-keys and arranges it in the order as it appears in the
         JSOC database.
 
-        `primekeys_isTime` is a Pandas DataFrame, whose index values are the Prime-key names
+        `primekeys_istime` is a Pandas DataFrame, whose index values are the Prime-key names
         and the column stores a boolean value, identifying whether the prime-key is a
         Time-type prime-key or not. Since, time-type prime-keys exist by different names,
         we made it uniform in the above piece of code, by storing the time-type primekey
@@ -574,7 +573,7 @@ class JSOCClient(BaseClient):
         ['HARPNUM', 'T_OBS', 'WAVELNTH'], we will consider three different cases of the
         passed primekeys.
 
-        primekeys_isTime.index.values = ['HARPNUM', 'T_OBS', 'WAVELNTH']
+        primekeys_istime.index.values = ['HARPNUM', 'T_OBS', 'WAVELNTH']
 
         Case 1
         ------
@@ -608,7 +607,7 @@ class JSOCClient(BaseClient):
 
         The idea behind this should be clear. We build up the `pkstr` string
         containing the values of the prime-keys passed in the same order as
-        it occurs in the list `primekeys_isTime.index.values`, i.e. how it is stored
+        it occurs in the list `primekeys_istime.index.values`, i.e. how it is stored
         in the online database. Any missing prime-keys should be compensated by
         an empty {}, if it occurs before any passed prime-key. Any empty curly braces
         that is present at last of the pkstr, can be skipped.
@@ -680,11 +679,11 @@ class JSOCClient(BaseClient):
         primekey_string = ''
         c = drms.Client()
         si = c.info(series)
-        primekeys_isTime = si.keywords.loc[si.primekeys].is_time
-        for pkey in primekeys_isTime.index.values:
+        primekeys_istime = si.keywords.loc[si.primekeys].is_time
+        for pkey in primekeys_istime.index.values:
             # The loop is iterating over the list of prime-keys existing for the given series.
-            if len(pkey) > 0:
-                if primekeys_isTime[pkey]:
+            if len(primekey) > 0:
+                if primekeys_istime[pkey]:
                     primekey_string += '[{}]'.format(primekey.pop('TIME', ''))
                 else:
                     primekey_string += '[{}]'.format(primekey.pop(pkey, ''))
@@ -703,12 +702,11 @@ class JSOCClient(BaseClient):
         keyword_info = c.keys(series)
         for key, value in keyword.items():
             if key in keyword_info:
-                keys.append(f"{key}{value[0]}{value[1]}")
+                keys.append(f"{key}{value['operator']}{value['value']}")
             else:
-                raise ValueError(f"Keyword: {key} is not supported by series: {series}")
-        keyword_string = "[? {} ?]".format(" AND ".join(keys))
-        dataset = f"{series}{primekey_string}{keyword_string}{segment}"
-        return dataset
+                raise ValueError(f"Keyword: '{key}' is not supported by series: {series}")
+        keyword_string = f"[? {' AND '.join(keys)} ?]" if keys else ""
+        return f"{series}{primekey_string}{keyword_string}{segment}"
 
     def _lookup_records(self, iargs):
         """
@@ -725,12 +723,18 @@ class JSOCClient(BaseClient):
             raise TypeError(error_message)
         # Get a set of the PrimeKeys that exist for the given series, and check
         # whether the passed PrimeKeys is a subset of that.
-        primekeys = client.keys(iargs['series'])
+        primekeys = client.pkeys(iargs['series'])
         primekeys_passed = iargs.get('primekey', None)  # primekeys_passes is a dict, with key-value pairs.
         if primekeys_passed is not None:
             if not set(list(primekeys_passed.keys())) <= set(primekeys):
                 error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following Keywords: {primekeys}"
                 raise ValueError(error_message.format(series=iargs['series'], primekeys=primekeys))
+        # Raise special error for wavelength (even though the code would ignore it anyway)
+        wavelength = iargs.get('wavelength', '')
+        if wavelength != '':
+            if 'WAVELNTH' not in primekeys:
+                error_message = f"The series {iargs['series']} does not support wavelength attribute. The following primekeys are supported {primekeys}"
+                raise TypeError(error_message.format(series=iargs['series'], pkeys=primekeys))
         # Raise errors for segments
         # Get a set of the segments that exist for the given series, and check
         # whether the passed segments is a subset of that.
@@ -773,7 +777,7 @@ class JSOCClient(BaseClient):
         optional = {
             a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
             a.jsoc.Segment, a.jsoc.PrimeKey, a.Sample,
-            a.jsoc.Cutout, a.jsoc.Keyword
+            a.jsoc.Cutout, a.jsoc.Keyword, a.jsoc._KeywordComparison,
         }
         return cls.check_attr_types_in_query(query, required, optional)
 
@@ -793,16 +797,16 @@ class JSOCClient(BaseClient):
         We take this list and register all the keywords as corresponding Attrs.
         """
         here = os.path.dirname(os.path.realpath(__file__))
-        c = Client()
+        client = drms.Client()
         # Series we are after
         data_sources = ["hmi", "mdi", "aia"]
         # Now get all the information we want.
         series_store = []
         segments = []
         for series in data_sources:
-            info = c.series(rf'{series}\.')
+            info = client.series(rf'{series}\.')
             for item in info:
-                data = c.info(item)
+                data = client.info(item)
                 series_store.append((data.name, data.note))
                 if not data.segments.empty:
                     for row in data.segments.iterrows():

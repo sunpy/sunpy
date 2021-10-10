@@ -28,60 +28,6 @@ def _makeinstance(f):
     return f()
 
 
-class _ParamAttr(_attr.Attr):
-    """ A _ParamAttr is used to represent equality or inequality checks
-    for certain parameters. It stores the attribute's name, the operator to
-    compare with, and the value to compare to. """
-
-    def __init__(self, name, op, value):
-        super().__init__()
-        self.name = name
-        self.op = op
-        self.value = value
-
-    def collides(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return self.op == other.op and self.name == other.name
-
-
-class _BoolParamAttr(_ParamAttr):
-    def __init__(self, name, value='true'):
-        super().__init__(name, '=', value)
-
-    def __neg__(self):
-        if self.value == 'true':
-            return _BoolParamAttr(self.name, 'false')
-        else:
-            return _BoolParamAttr(self.name)
-
-    def __pos__(self):
-        return _BoolParamAttr(self.name)
-
-
-class _ListAttr(_attr.Attr):
-    """ A _ListAttr is used when the server expects a list of things with
-    the name (GET parameter name) key. By adding the _ListAttr to the query,
-    item is added to that list. """
-
-    def __init__(self, key, item):
-        super().__init__()
-
-        self.key = key
-        self.item = item
-
-    def collides(self, other):
-        return False
-
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return vars(self) == vars(other)
-
-    def __hash__(self):
-        return hash(tuple(vars(self).items()))
-
-
 class EventType(_attr.Attr):
     def __init__(self, item):
         super().__init__()
@@ -137,39 +83,9 @@ class Contains(_attr.Attr):
         return hash(tuple(vars(self).items()))
 
 
-class _ComparisonParamAttrWrapper:
-    def __init__(self, name):
-        self.name = name
-
-    def __lt__(self, other):
-        return _ParamAttr(self.name, '<', other)
-
-    def __le__(self, other):
-        return _ParamAttr(self.name, '<=', other)
-
-    def __gt__(self, other):
-        return _ParamAttr(self.name, '>', other)
-
-    def __ge__(self, other):
-        return _ParamAttr(self.name, '>=', other)
-
-    def __eq__(self, other):
-        return _ParamAttr(self.name, '=', other)
-
-    def __ne__(self, other):
-        return _ParamAttr(self.name, '!=', other)
-
-    def collides(self, other):
-        return isinstance(other, _ComparisonParamAttrWrapper)
-
-
-class _StringParamAttrWrapper(_ComparisonParamAttrWrapper):
+class _StringParamAttrWrapper(_attr.ComparisonParamAttrWrapper):
     def like(self, other):
-        return _ParamAttr(self.name, 'like', other)
-
-
-class _NumberParamAttrWrapper(_ComparisonParamAttrWrapper):
-    pass
+        return _attr.AttrComparison(self.name, 'like', other)
 
 
 # The walker is what traverses the attribute tree and converts it to a format
@@ -193,7 +109,7 @@ def _a(wlk, root, state, dct):
 
 
 @walker.add_creator(
-    _attrs.Time, SpatialRegion, EventType, _ParamAttr, _attr.AttrAnd, Contains)
+    _attrs.Time, SpatialRegion, EventType, _attr.AttrComparison, _attr.AttrAnd, Contains)
 def _c(wlk, root, state):
     value = {}
     wlk.apply(root, state, value)
@@ -225,16 +141,16 @@ def _a(wlk, root, state, dct):
     return dct
 
 
-@walker.add_applier(_ParamAttr)
+@walker.add_applier(_attr.AttrComparison)
 def _a(wlk, root, state, dct):
-    if _ParamAttr not in state:
-        state[_ParamAttr] = 0
+    if _attr.AttrComparison not in state:
+        state[_attr.AttrComparison] = 0
 
-    nid = state[_ParamAttr]
+    nid = state[_attr.AttrComparison]
     dct[f'param{nid:d}'] = root.name
-    dct[f'op{nid:d}'] = root.op
+    dct[f'operator{nid:d}'] = root.operator
     dct[f'value{nid:d}'] = root.value
-    state[_ParamAttr] += 1
+    state[_attr.AttrComparison] += 1
     return dct
 
 

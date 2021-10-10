@@ -59,7 +59,8 @@ class HEKClient(BaseClient):
         """ Download all data, even if paginated. """
         page = 1
         results = []
-
+        # Override the default name of the opeartor
+        data["op0"] = data.pop("operator0")
         while True:
             data['page'] = page
             url = self.url + urllib.parse.urlencode(data)
@@ -73,13 +74,11 @@ class HEKClient(BaseClient):
             finally:
                 fd.close()
             results.extend(result['result'])
-
             if not result['overmax']:
                 if len(results) > 0:
                     return astropy.table.Table(dict_keys_same(results))
                 else:
                     return astropy.table.Table()
-
             page += 1
 
     def search(self, *args, **kwargs):
@@ -107,14 +106,12 @@ class HEKClient(BaseClient):
         <BLANKLINE>
         """
         query = attr.and_(*args)
-
         data = attrs.walker.create(query, {})
         ndata = []
         for elem in data:
             new = self.default.copy()
             new.update(elem)
             ndata.append(new)
-
         if len(ndata) == 1:
             return HEKTable(self._download(ndata[0]), client=self)
         else:
@@ -136,7 +133,7 @@ class HEKClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        required = {core_attrs.Time}
+        required = {core_attrs.Time, attr.AttrComparison}
         optional = {i[1] for i in inspect.getmembers(attrs, inspect.isclass)} - required
         qr = tuple(x for x in query if not isinstance(x, attrs.EventType))
         return cls.check_attr_types_in_query(qr, required, optional)
