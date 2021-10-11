@@ -40,8 +40,8 @@ Coding Style/Conventions
 
 * Classes should either use direct variable access, or Python’s property mechanism for setting object instance variables.
 
-* Classes should use the builtin :func:`super` function when making calls to methods in their super-class(es) unless there are specific reasons not to.
-  :func:`super` should be used consistently in all subclasses since it does not work otherwise.
+* Classes should use the builtin `super` function when making calls to methods in their super-class(es) unless there are specific reasons not to.
+  `super` should be used consistently in all subclasses since it does not work otherwise.
 
 * Multiple inheritance should be avoided in general without good reason.
 
