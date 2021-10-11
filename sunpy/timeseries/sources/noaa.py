@@ -82,19 +82,19 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 
-        if plot_type == 'sunspot SWO':
+        if type == 'sunspot SWO':
             to_plot = ['sunspot SWO', 'sunspot SWO smooth']
             ylabel = 'Sunspot Number'
-        elif plot_type == 'sunspot RI':
+        elif type == 'sunspot RI':
             to_plot = ['sunspot RI', 'sunspot RI smooth']
             ylabel = 'Sunspot Number'
-        elif plot_type == 'sunspot compare':
+        elif type == 'sunspot compare':
             to_plot = ['sunspot RI', 'sunspot SWO']
             ylabel = 'Sunspot Number'
-        elif plot_type == 'radio':
+        elif type == 'radio':
             to_plot = ['radio flux', 'radio flux smooth']
             ylabel = 'Radio Flux [sfu]'
-        elif plot_type == 'geo':
+        elif type == 'geo':
             to_plot = ['geomagnetic ap', 'geomagnetic ap smooth']
             ylabel = 'Geomagnetic AP Index'
         else:
