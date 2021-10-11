@@ -1249,10 +1249,15 @@ class GenericMap(NDData):
         Paramters
         ---------
         crota_key : str, optional
-            If specifed, used as a backup keyword after 'CROTA2'.
+            The key to use for CROTA2. Defaults to 'CROTA2'.
+
+        Notes
+        -----
+        If the specified key isn't present in the metadata, a default rotation
+        of 0deg is returned.
         """
         lam = self.scale[0] / self.scale[1]
-        p = np.deg2rad(self.meta.get('CROTA2', self.meta.get(crota_key, 0)))
+        p = np.deg2rad(self.meta.get(crota_key, 0))
         return self._pc_matrix(lam, p)
 
     @property
