@@ -102,7 +102,7 @@ def test_path(client, tmpdir):
     it is not specified.
     """
     qr = client.search(
-        core_attrs.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
+        core_attrs.Time('2020-06-07 06:33', '2020-06-07 06:33:13'),
         core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
         response_format="table")
     tmp_dir = tmpdir / "{file}"
@@ -113,7 +113,7 @@ def test_path(client, tmpdir):
     # The construction of a VSO filename is bonkers complex, so there is no
     # practical way to determine what it should be in this test, so we just
     # put it here.
-    assert "aia_lev1_171a_2011_06_07t06_33_02_77z_image_lev1.fits" in files[0]
+    assert "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits" in files[0]
 
 
 @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
