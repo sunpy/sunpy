@@ -268,64 +268,63 @@ This can be used to interact with results which are metadata only, i.e. searches
 
 For example if we did a query for some AIA and HMI data::
 
-    >>> results = Fido.search(a.Time("2011/01/01", "2011/01/01 00:10"), a.Instrument.aia | a.Instrument.hmi)  # doctest: +REMOTE_DATA
+    >>> results = Fido.search(a.Time("2020/01/01", "2020/01/01 00:05"), a.Instrument.aia | a.Instrument.hmi)  # doctest: +REMOTE_DATA
     >>> results  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
-    402 Results from the VSOClient:
+    201 Results from the VSOClient:
            Start Time       ...
                             ...
     ----------------------- ...
-    2011-01-01 00:00:00.000 ...
-    2011-01-01 00:00:00.000 ...
-    2011-01-01 00:00:02.000 ...
-    2011-01-01 00:00:03.000 ...
-    2011-01-01 00:00:07.000 ...
-    2011-01-01 00:00:08.000 ...
-    2011-01-01 00:00:08.000 ...
-    2011-01-01 00:00:09.000 ...
-    2011-01-01 00:00:12.000 ...
-    2011-01-01 00:00:12.000 ...
+    2020-01-01 00:00:00.000 ...
+    2020-01-01 00:00:04.000 ...
+    2020-01-01 00:00:05.000 ...
+    2020-01-01 00:00:05.000 ...
+    2020-01-01 00:00:06.000 ...
+    2020-01-01 00:00:09.000 ...
+    2020-01-01 00:00:09.000 ...
+    2020-01-01 00:00:11.000 ...
+    2020-01-01 00:00:12.000 ...
+    2020-01-01 00:00:14.000 ...
                         ... ...
-    2011-01-01 00:09:48.000 ...
-    2011-01-01 00:09:48.000 ...
-    2011-01-01 00:09:50.000 ...
-    2011-01-01 00:09:51.000 ...
-    2011-01-01 00:09:53.000 ...
-    2011-01-01 00:09:55.000 ...
-    2011-01-01 00:09:56.000 ...
-    2011-01-01 00:09:57.000 ...
-    2011-01-01 00:10:00.000 ...
-    2011-01-01 00:10:00.000 ...
-    Length = 402 rows
+    2020-01-01 00:04:47.000 ...
+    2020-01-01 00:04:48.000 ...
+    2020-01-01 00:04:52.000 ...
+    2020-01-01 00:04:52.000 ...
+    2020-01-01 00:04:53.000 ...
+    2020-01-01 00:04:54.000 ...
+    2020-01-01 00:04:57.000 ...
+    2020-01-01 00:04:57.000 ...
+    2020-01-01 00:04:59.000 ...
+    2020-01-01 00:05:00.000 ...
+    Length = 201 rows
     <BLANKLINE>
-    42 Results from the VSOClient:
-           Start Time               End Time        Source ...   Size   Wavetype
-                                                           ...  Mibyte
-    ----------------------- ----------------------- ------ ... -------- --------
-    2011-01-01 00:00:00.000                    None    SDO ...   2.1377     LINE
-    2011-01-01 00:00:00.000                    None    SDO ...  2.14062     LINE
-    2011-01-01 00:00:00.000                    None    SDO ...  0.91797     LINE
-    2011-01-01 00:00:25.000 2011-01-01 00:00:26.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:00:25.000 2011-01-01 00:00:26.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:00:25.000 2011-01-01 00:00:26.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:01:10.000 2011-01-01 00:01:11.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:01:10.000 2011-01-01 00:01:11.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:01:10.000 2011-01-01 00:01:11.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:01:55.000 2011-01-01 00:01:56.000    SDO ... -0.00098   NARROW
-                        ...                     ...    ... ...      ...      ...
-    2011-01-01 00:07:10.000 2011-01-01 00:07:11.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:07:55.000 2011-01-01 00:07:56.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:07:55.000 2011-01-01 00:07:56.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:07:55.000 2011-01-01 00:07:56.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:08:40.000 2011-01-01 00:08:41.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:08:40.000 2011-01-01 00:08:41.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:08:40.000 2011-01-01 00:08:41.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:09:25.000 2011-01-01 00:09:26.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:09:25.000 2011-01-01 00:09:26.000    SDO ... -0.00098   NARROW
-    2011-01-01 00:09:25.000 2011-01-01 00:09:26.000    SDO ... -0.00098   NARROW
-    Length = 42 rows
+    21 Results from the VSOClient:
+           Start Time               End Time        ...            Info
+                                                    ...
+    ----------------------- ----------------------- ... --------------------------
+    2020-01-01 00:00:22.000 2020-01-01 00:00:23.000 ... 45sec. Continuum intensity
+    2020-01-01 00:00:22.000 2020-01-01 00:00:23.000 ...         45sec. Magnetogram
+    2020-01-01 00:00:22.000 2020-01-01 00:00:23.000 ...         45sec. Dopplergram
+    2020-01-01 00:01:07.000 2020-01-01 00:01:08.000 ... 45sec. Continuum intensity
+    2020-01-01 00:01:07.000 2020-01-01 00:01:08.000 ...         45sec. Magnetogram
+    2020-01-01 00:01:07.000 2020-01-01 00:01:08.000 ...         45sec. Dopplergram
+    2020-01-01 00:01:52.000 2020-01-01 00:01:53.000 ... 45sec. Continuum intensity
+    2020-01-01 00:01:52.000 2020-01-01 00:01:53.000 ...         45sec. Magnetogram
+    2020-01-01 00:01:52.000 2020-01-01 00:01:53.000 ...         45sec. Dopplergram
+    2020-01-01 00:02:37.000 2020-01-01 00:02:38.000 ... 45sec. Continuum intensity
+    2020-01-01 00:02:37.000 2020-01-01 00:02:38.000 ...         45sec. Magnetogram
+    2020-01-01 00:02:37.000 2020-01-01 00:02:38.000 ...         45sec. Dopplergram
+    2020-01-01 00:03:22.000 2020-01-01 00:03:23.000 ... 45sec. Continuum intensity
+    2020-01-01 00:03:22.000 2020-01-01 00:03:23.000 ...         45sec. Magnetogram
+    2020-01-01 00:03:22.000 2020-01-01 00:03:23.000 ...         45sec. Dopplergram
+    2020-01-01 00:04:07.000 2020-01-01 00:04:08.000 ... 45sec. Continuum intensity
+    2020-01-01 00:04:07.000 2020-01-01 00:04:08.000 ...         45sec. Magnetogram
+    2020-01-01 00:04:07.000 2020-01-01 00:04:08.000 ...         45sec. Dopplergram
+    2020-01-01 00:04:52.000 2020-01-01 00:04:53.000 ... 45sec. Continuum intensity
+    2020-01-01 00:04:52.000 2020-01-01 00:04:53.000 ...         45sec. Magnetogram
+    2020-01-01 00:04:52.000 2020-01-01 00:04:53.000 ...         45sec. Dopplergram
     <BLANKLINE>
     <BLANKLINE>
 
@@ -341,59 +340,58 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
-    402 Results from the VSOClient:
+    201 Results from the VSOClient:
            Start Time       Instrument  Physobs   Wavelength [2]
                                                      Angstrom
     ----------------------- ---------- --------- ----------------
-    2011-01-01 00:00:00.000        AIA intensity   171.0 .. 171.0
-    2011-01-01 00:00:00.000        AIA intensity   211.0 .. 211.0
-    2011-01-01 00:00:02.000        AIA intensity     94.0 .. 94.0
-    2011-01-01 00:00:03.000        AIA intensity   335.0 .. 335.0
-    2011-01-01 00:00:07.000        AIA intensity   193.0 .. 193.0
-    2011-01-01 00:00:08.000        AIA intensity   304.0 .. 304.0
-    2011-01-01 00:00:08.000        AIA intensity 4500.0 .. 4500.0
-    2011-01-01 00:00:09.000        AIA intensity   131.0 .. 131.0
-    2011-01-01 00:00:12.000        AIA intensity   171.0 .. 171.0
-    2011-01-01 00:00:12.000        AIA intensity   211.0 .. 211.0
+    2020-01-01 00:00:00.000        AIA intensity   335.0 .. 335.0
+    2020-01-01 00:00:04.000        AIA intensity   193.0 .. 193.0
+    2020-01-01 00:00:05.000        AIA intensity   304.0 .. 304.0
+    2020-01-01 00:00:05.000        AIA intensity 4500.0 .. 4500.0
+    2020-01-01 00:00:06.000        AIA intensity   131.0 .. 131.0
+    2020-01-01 00:00:09.000        AIA intensity   171.0 .. 171.0
+    2020-01-01 00:00:09.000        AIA intensity   211.0 .. 211.0
+    2020-01-01 00:00:11.000        AIA intensity     94.0 .. 94.0
+    2020-01-01 00:00:12.000        AIA intensity   335.0 .. 335.0
+    2020-01-01 00:00:14.000        AIA intensity 1600.0 .. 1600.0
                         ...        ...       ...              ...
-    2011-01-01 00:09:48.000        AIA intensity   171.0 .. 171.0
-    2011-01-01 00:09:48.000        AIA intensity   211.0 .. 211.0
-    2011-01-01 00:09:50.000        AIA intensity     94.0 .. 94.0
-    2011-01-01 00:09:51.000        AIA intensity   335.0 .. 335.0
-    2011-01-01 00:09:53.000        AIA intensity 1600.0 .. 1600.0
-    2011-01-01 00:09:55.000        AIA intensity   193.0 .. 193.0
-    2011-01-01 00:09:56.000        AIA intensity   304.0 .. 304.0
-    2011-01-01 00:09:57.000        AIA intensity   131.0 .. 131.0
-    2011-01-01 00:10:00.000        AIA intensity   171.0 .. 171.0
-    2011-01-01 00:10:00.000        AIA intensity   211.0 .. 211.0
-    Length = 402 rows
+    2020-01-01 00:04:47.000        AIA intensity     94.0 .. 94.0
+    2020-01-01 00:04:48.000        AIA intensity   335.0 .. 335.0
+    2020-01-01 00:04:52.000        AIA intensity 1700.0 .. 1700.0
+    2020-01-01 00:04:52.000        AIA intensity   193.0 .. 193.0
+    2020-01-01 00:04:53.000        AIA intensity   304.0 .. 304.0
+    2020-01-01 00:04:54.000        AIA intensity   131.0 .. 131.0
+    2020-01-01 00:04:57.000        AIA intensity   171.0 .. 171.0
+    2020-01-01 00:04:57.000        AIA intensity   211.0 .. 211.0
+    2020-01-01 00:04:59.000        AIA intensity     94.0 .. 94.0
+    2020-01-01 00:05:00.000        AIA intensity   335.0 .. 335.0
+    Length = 201 rows
     <BLANKLINE>
-    42 Results from the VSOClient:
-           Start Time       Instrument        Physobs         Wavelength [2]
-                                                                 Angstrom
-    ----------------------- ---------- --------------------- ----------------
-    2011-01-01 00:00:00.000        HMI VECTOR_MAGNETIC_FIELD 6173.0 .. 6173.0
-    2011-01-01 00:00:00.000        HMI VECTOR_MAGNETIC_FIELD 6173.0 .. 6173.0
-    2011-01-01 00:00:00.000        HMI    LOS_magnetic_field 6173.0 .. 6173.0
-    2011-01-01 00:00:25.000        HMI             intensity 6173.0 .. 6174.0
-    2011-01-01 00:00:25.000        HMI    LOS_magnetic_field 6173.0 .. 6174.0
-    2011-01-01 00:00:25.000        HMI          LOS_velocity 6173.0 .. 6174.0
-    2011-01-01 00:01:10.000        HMI             intensity 6173.0 .. 6174.0
-    2011-01-01 00:01:10.000        HMI    LOS_magnetic_field 6173.0 .. 6174.0
-    2011-01-01 00:01:10.000        HMI          LOS_velocity 6173.0 .. 6174.0
-    2011-01-01 00:01:55.000        HMI             intensity 6173.0 .. 6174.0
-                        ...        ...                   ...              ...
-    2011-01-01 00:07:10.000        HMI          LOS_velocity 6173.0 .. 6174.0
-    2011-01-01 00:07:55.000        HMI             intensity 6173.0 .. 6174.0
-    2011-01-01 00:07:55.000        HMI    LOS_magnetic_field 6173.0 .. 6174.0
-    2011-01-01 00:07:55.000        HMI          LOS_velocity 6173.0 .. 6174.0
-    2011-01-01 00:08:40.000        HMI             intensity 6173.0 .. 6174.0
-    2011-01-01 00:08:40.000        HMI    LOS_magnetic_field 6173.0 .. 6174.0
-    2011-01-01 00:08:40.000        HMI          LOS_velocity 6173.0 .. 6174.0
-    2011-01-01 00:09:25.000        HMI             intensity 6173.0 .. 6174.0
-    2011-01-01 00:09:25.000        HMI    LOS_magnetic_field 6173.0 .. 6174.0
-    2011-01-01 00:09:25.000        HMI          LOS_velocity 6173.0 .. 6174.0
-    Length = 42 rows
+    21 Results from the VSOClient:
+           Start Time       Instrument      Physobs        Wavelength [2]
+                                                              Angstrom
+    ----------------------- ---------- ------------------ ----------------
+    2020-01-01 00:00:22.000        HMI          intensity 6173.0 .. 6174.0
+    2020-01-01 00:00:22.000        HMI LOS_magnetic_field 6173.0 .. 6174.0
+    2020-01-01 00:00:22.000        HMI       LOS_velocity 6173.0 .. 6174.0
+    2020-01-01 00:01:07.000        HMI          intensity 6173.0 .. 6174.0
+    2020-01-01 00:01:07.000        HMI LOS_magnetic_field 6173.0 .. 6174.0
+    2020-01-01 00:01:07.000        HMI       LOS_velocity 6173.0 .. 6174.0
+    2020-01-01 00:01:52.000        HMI          intensity 6173.0 .. 6174.0
+    2020-01-01 00:01:52.000        HMI LOS_magnetic_field 6173.0 .. 6174.0
+    2020-01-01 00:01:52.000        HMI       LOS_velocity 6173.0 .. 6174.0
+    2020-01-01 00:02:37.000        HMI          intensity 6173.0 .. 6174.0
+    2020-01-01 00:02:37.000        HMI LOS_magnetic_field 6173.0 .. 6174.0
+    2020-01-01 00:02:37.000        HMI       LOS_velocity 6173.0 .. 6174.0
+    2020-01-01 00:03:22.000        HMI          intensity 6173.0 .. 6174.0
+    2020-01-01 00:03:22.000        HMI LOS_magnetic_field 6173.0 .. 6174.0
+    2020-01-01 00:03:22.000        HMI       LOS_velocity 6173.0 .. 6174.0
+    2020-01-01 00:04:07.000        HMI          intensity 6173.0 .. 6174.0
+    2020-01-01 00:04:07.000        HMI LOS_magnetic_field 6173.0 .. 6174.0
+    2020-01-01 00:04:07.000        HMI       LOS_velocity 6173.0 .. 6174.0
+    2020-01-01 00:04:52.000        HMI          intensity 6173.0 .. 6174.0
+    2020-01-01 00:04:52.000        HMI LOS_magnetic_field 6173.0 .. 6174.0
+    2020-01-01 00:04:52.000        HMI       LOS_velocity 6173.0 .. 6174.0
     <BLANKLINE>
     <BLANKLINE>
 
@@ -406,57 +404,50 @@ First we split the results in to a table for AIA and a table for HMI::
 
 We can use boolean indexing to match the value of the ``"Physobs"`` column::
 
-   >>> hmi_los = hmi[hmi["Physobs"] == "LOS_magnetic_field"]  # doctest: +REMOTE_DATA
-   >>> hmi_los.show("Start Time", "Instrument", "Wavelength", "Physobs")  # doctest: +REMOTE_DATA
+    >>> hmi_los = hmi[hmi["Physobs"] == "LOS_magnetic_field"]  # doctest: +REMOTE_DATA
+    >>> hmi_los.show("Start Time", "Instrument", "Wavelength", "Physobs")  # doctest: +REMOTE_DATA
     <sunpy.net.vso.table_response.VSOQueryResponseTable object at ...>
            Start Time       Instrument  Wavelength [2]       Physobs
-                                           Angstrom
+                                          Angstrom
     ----------------------- ---------- ---------------- ------------------
-    2011-01-01 00:00:00.000        HMI 6173.0 .. 6173.0 LOS_magnetic_field
-    2011-01-01 00:00:25.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:01:10.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:01:55.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:02:40.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:03:25.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:04:10.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:04:55.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:05:40.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:06:25.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:07:10.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:07:55.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:08:40.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
-    2011-01-01 00:09:25.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
+    2020-01-01 00:00:22.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
+    2020-01-01 00:01:07.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
+    2020-01-01 00:01:52.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
+    2020-01-01 00:02:37.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
+    2020-01-01 00:03:22.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
+    2020-01-01 00:04:07.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
+    2020-01-01 00:04:52.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
 
 To match the ``"Wavelength"`` column we need to account for the fact that VSO results return a wavelength range of ``[min, max]`` so we match the min::
 
-   >>> aia_94 = aia[aia["Wavelength"][:, 0] == 94 * u.AA]  # doctest: +REMOTE_DATA
-   >>> aia_94.show("Start Time", "Instrument", "Wavelength", "Physobs")  # doctest: +REMOTE_DATA
-   <sunpy.net.vso.table_response.VSOQueryResponseTable object at ...>
-          Start Time       Instrument Wavelength [2]  Physobs
-                                         Angstrom
-   ----------------------- ---------- -------------- ---------
-   2011-01-01 00:00:02.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:00:14.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:00:26.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:00:38.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:00:50.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:01:02.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:01:14.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:01:26.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:01:38.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:01:50.000        AIA   94.0 .. 94.0 intensity
-                       ...        ...            ...       ...
-   2011-01-01 00:08:02.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:08:14.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:08:26.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:08:38.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:08:50.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:09:02.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:09:14.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:09:26.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:09:38.000        AIA   94.0 .. 94.0 intensity
-   2011-01-01 00:09:50.000        AIA   94.0 .. 94.0 intensity
-   Length = 50 rows
+    >>> aia_94 = aia[aia["Wavelength"][:, 0] == 94 * u.AA]  # doctest: +REMOTE_DATA
+    >>> aia_94.show("Start Time", "Instrument", "Wavelength", "Physobs")  # doctest: +REMOTE_DATA
+    <sunpy.net.vso.table_response.VSOQueryResponseTable object at ...>
+           Start Time       Instrument Wavelength [2]  Physobs
+                                          Angstrom
+    ----------------------- ---------- -------------- ---------
+    2020-01-01 00:00:11.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:00:23.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:00:35.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:00:47.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:00:59.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:01:11.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:01:23.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:01:35.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:01:47.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:01:59.000        AIA   94.0 .. 94.0 intensity
+                        ...        ...            ...       ...
+    2020-01-01 00:03:11.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:03:23.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:03:35.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:03:47.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:03:59.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:04:11.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:04:23.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:04:35.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:04:47.000        AIA   94.0 .. 94.0 intensity
+    2020-01-01 00:04:59.000        AIA   94.0 .. 94.0 intensity
+    Length = 25 rows
 
 These can then be passed to `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
 
