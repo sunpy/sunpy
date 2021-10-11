@@ -42,7 +42,7 @@ jobs:
       - run: *merge-check
       - run: *apt-install
       - run: pip install --user -U tox tox-pypi-filter
-      - run: tox
+      - run: tox -v
       - run: curl -s https://codecov.io/bash | bash
       - store_artifacts:
           path: .tmp/<< parameters.jobname >>/figure_test_images
