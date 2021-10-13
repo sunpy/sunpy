@@ -1,1 +1,0 @@
-Fixed a bug where rotating a `~sunpy.map.Map` that is missing observation-time metadata could result in an incorrect reference coordinate.

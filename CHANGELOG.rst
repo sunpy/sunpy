@@ -1,3 +1,45 @@
+3.0.2 (2021-10-13)
+==================
+
+Bug Fixes
+---------
+
+- Fixed the incorrect value for the FITS WCS ``LONPOLE`` keyword when using :func:`~sunpy.map.make_fitswcs_header` for certain combinations of WCS projection and reference coordinate. (`#5448 <https://github.com/sunpy/sunpy/pull/5448>`__)
+- The date returned by `~sunpy.map.GenericMap.date` for Solar Orbiter/EUI maps
+  has been adjusted to be taken from the DATE-AVG keyword
+  (the middle of the image acquisition period), instead of the DATE-OBS
+  keyword (the beginning of the image acquisition period). This means the observer
+  coordinate now has the correct date. (`#5462 <https://github.com/sunpy/sunpy/pull/5462>`__)
+- The ``.unit`` attribute for HMI synoptic maps has been fixed. (`#5467 <https://github.com/sunpy/sunpy/pull/5467>`__)
+- When "TAI" is in the date string, `sunpy.map.GenericMap.date`
+  now only raises a warning if the TIMESYS keyword is present
+  and different to "TAI". Previously a warning was raised all the
+  time when "TAI" was in the date string. (`#5468 <https://github.com/sunpy/sunpy/pull/5468>`__)
+- Fixed the unintended insertion of (assumed) observer location information when accessing the property `sunpy.map.GenericMap.wcs` for Stonyhurst heliographic maps. (`#5478 <https://github.com/sunpy/sunpy/pull/5478>`__)
+- Fixed an incorrect value for the FITS WCS ``LONPOLE`` keyword when using :func:`~sunpy.map.make_fitswcs_header` for `~sunpy.coordinates.frames.Helioprojective` maps with certain values of latitude for the reference coordinate. (`#5490 <https://github.com/sunpy/sunpy/pull/5490>`__)
+- The Hinode/XRT map source now corrects the TIMESYS keyword, fixing the ``.wcs``
+  property that was previously broken for Hinode/XRT maps. (`#5508 <https://github.com/sunpy/sunpy/pull/5508>`__)
+- Updated `sunpy.map.CompositeMap.plot` to support the ``linestyles`` and ``colors`` arguments, in addition to the existing ``linewidths`` argument. (`#5521 <https://github.com/sunpy/sunpy/pull/5521>`__)
+- Fixed a bug where rotating a `~sunpy.map.Map` that is missing observation-time metadata could result in an incorrect reference coordinate. (`#5553 <https://github.com/sunpy/sunpy/pull/5553>`__)
+- Fixed a bug where rotating a `~sunpy.map.Map` could result in an extremely small shift (at the numerical-precision level) in the mapping from world coordinates to pixels. (`#5553 <https://github.com/sunpy/sunpy/pull/5553>`__)
+- Fix a bug where saving a helioprojective or heliocentric coordinate to an
+  asdf file didn't work due to a schema version mismatch if the observer
+  location was a fully specified Stonyhurst heliographic coordinate. (`#5584 <https://github.com/sunpy/sunpy/pull/5584>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Added an example to how to save out maps as FITS files and load them back in, :ref:`sphx_glr_generated_gallery_saving_and_loading_data_genericmap_in_fits.py`. (`#5544 <https://github.com/sunpy/sunpy/pull/5544>`__)
+
+
+Documentation Fixes
+-------------------
+
+- Fixed various plotting issues with the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_AIA_limb_STEREO.py`. (`#5534 <https://github.com/sunpy/sunpy/pull/5534>`__)
+- Improved the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_SDO_to_STEREO_Coordinate_Conversion.py` to better illustrate how coordinate transformations interact with submaps and coordinate plotting. (`#5534 <https://github.com/sunpy/sunpy/pull/5534>`__)
+
+
 3.0.1 (2021-07-03)
 ==================
 
