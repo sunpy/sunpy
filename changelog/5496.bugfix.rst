@@ -1,2 +1,0 @@
-The plotting x-limits of :meth:`sunpy.timeseries.sources.NOAAIndicesTimeSeries.plot`
-are now adjusted to only include finite points in the timeseries data.
