@@ -1,17 +1,11 @@
 """Hinode XRT and SOT Map subclass definitions"""
+from sunpy import log
+from sunpy.map import GenericMap
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
 
-from sunpy import log
-from sunpy.map import GenericMap
-
 __all__ = ['XRTMap', 'SOTMap']
-
-# the following values comes from xrt_prep.pro
-# search for saturation in
-# http://darts.jaxa.jp/pub/ssw/hinode/xrt/idl/util/xrt_prep.pro
-# SATURATION_LIMIT = 2500
 
 
 def _lower_list(l):
@@ -46,12 +40,9 @@ class XRTMap(GenericMap):
 
         super().__init__(data, header, **kwargs)
 
-        if self.meta.get('timesys', '') == 'UTC (TBR)':
+        if self.meta.get('timesys', '').upper() == 'UTC (TBR)':
             log.debug('Modifying TIMESYS keyword from "UTC (TBR)" to "UTC"')
             self.meta['timesys'] = 'UTC'
-
-        # converting data array to masked array
-        # self.data = ma.masked_where(self.data > SATURATION_LIMIT, self.data)
 
         fw1 = header.get('EC_FW1_')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
@@ -64,7 +55,6 @@ class XRTMap(GenericMap):
         fw2 = fw2.replace("_", " ")
 
         self.meta['detector'] = "XRT"
-#        self.meta['instrume'] = "XRT"
         self.meta['telescop'] = "Hinode"
         self.plot_settings['cmap'] = 'hinodexrt'
 
