@@ -4,7 +4,6 @@ This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 from pathlib import Path
 from collections import OrderedDict
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pandas.io.parsers import read_csv
@@ -83,38 +82,39 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
 
+        dataframe = self.to_dataframe()
         if type == 'sunspot SWO':
-            to_plot = ['sunspot SWO', 'sunspot SWO smooth']
-            ylabel = 'Sunspot Number'
+            axes = dataframe['sunspot SWO'].plot(**kwargs)
+            dataframe['sunspot SWO smooth'].plot(**kwargs)
+            axes.set_ylabel('Sunspot Number')
         elif type == 'sunspot RI':
-            to_plot = ['sunspot RI', 'sunspot RI smooth']
-            ylabel = 'Sunspot Number'
+            axes = dataframe['sunspot RI'].plot(**kwargs)
+            dataframe['sunspot RI smooth'].plot(**kwargs)
+            axes.set_ylabel('Sunspot Number')
         elif type == 'sunspot compare':
-            to_plot = ['sunspot RI', 'sunspot SWO']
-            ylabel = 'Sunspot Number'
+            axes = dataframe['sunspot RI'].plot(**kwargs)
+            dataframe['sunspot SWO'].plot(**kwargs)
+            axes.set_ylabel('Sunspot Number')
         elif type == 'radio':
-            to_plot = ['radio flux', 'radio flux smooth']
-            ylabel = 'Radio Flux [sfu]'
+            axes = dataframe['radio flux'].plot(**kwargs)
+            dataframe['radio flux smooth'].plot(**kwargs)
+            axes.set_ylabel('Radio Flux [sfu]')
         elif type == 'geo':
-            to_plot = ['geomagnetic ap', 'geomagnetic ap smooth']
-            ylabel = 'Geomagnetic AP Index'
+            axes = dataframe['geomagnetic ap'].plot(**kwargs)
+            dataframe['geomagnetic ap smooth'].plot(**kwargs)
+            axes.set_ylabel('Geomagnetic AP Index')
         else:
             raise ValueError(f'Got unknown plot type "{type}"')
 
-        to_plot = self.to_dataframe()[to_plot]
-        axes = plt.gca()
-        to_plot.plot(axes=axes, **kwargs)
-
-        axes.set_xlim(min(to_plot.dropna(how='all').index),
-                      max(to_plot.dropna(how='all').index))
         axes.set_ylim(0)
-        axes.set_ylabel(ylabel)
         axes.set_title('Solar Cycle Progression')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
-        return axes.get_figure()
+
+        fig = axes.get_figure()
+        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
