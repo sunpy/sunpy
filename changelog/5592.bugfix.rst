@@ -1,0 +1,2 @@
+`~sunpy.map.sources.XRTMap` uppercases the ``TIMESYS`` key before checking if the
+key needs to be fixed.
