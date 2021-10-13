@@ -1,0 +1,3 @@
+Fix a bug where saving a helioprojective or heliocentric coordinate to an
+asdf file didn't work due to a schema version mismatch if the observer
+location was a fully specified Stonyhurst heliographic coordinate.
