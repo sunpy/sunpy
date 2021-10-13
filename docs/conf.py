@@ -55,7 +55,7 @@ is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 
 # Fix the version due to a bug on RTD and sunpy
 if on_rtd:
-    release = "3.0.1"
+    release = "3.0.2"
     is_release = True
 
 # We want to ignore all warnings in a release version.
