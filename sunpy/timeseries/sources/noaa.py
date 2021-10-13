@@ -102,7 +102,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             raise ValueError(f'Got unknown plot type "{type}"')
 
         to_plot = self.to_dataframe()[to_plot]
-        axes = plt.gca()
+        fig, axes = plt.subplots()
         to_plot.plot(axes=axes, **kwargs)
 
         axes.set_xlim(min(to_plot.dropna(how='all').index),
