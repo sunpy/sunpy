@@ -46,6 +46,7 @@ allOf:
           observer:
             anyOf:
               - $ref: "heliographic_stonyhurst-1.0.0"
+              - $ref: "heliographic_stonyhurst-1.1.0"
               - type:
                   string
           rsun:

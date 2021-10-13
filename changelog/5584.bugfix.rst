@@ -1,0 +1,3 @@
+Fix a bug where saving a helioprojective coordinate with a heliographic
+stonyhurst frame as the observer location to an asdf file didn't work due to
+a schema version mismatch.
