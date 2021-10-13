@@ -69,3 +69,31 @@ def test_saveframe(coordframe_scalar, tmpdir):
 def test_saveframe_arr(coordframe_array, tmpdir):
     tree = {'frame': coordframe_array}
     assert_roundtrip_tree(tree, tmpdir)
+
+
+@asdf_entry_points
+def test_hpc_observer_version(tmpdir):
+    """
+    This test verifies that the helioprojective frame has an upto date list of
+    the HGS schema versions by ensuring that a HPC frame with a instantiated
+    HGS frame as the observer round trips correctly.
+    """
+    time = "2021-10-13T11:08"
+    obs = frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=time)
+    coord = frames.Helioprojective(10*u.arcsec, 10*u.arcsec, obstime=time, observer=obs)
+    tree = {'coord': coord}
+    assert_roundtrip_tree(tree, tmpdir)
+
+
+@asdf_entry_points
+def test_hcc_observer_version(tmpdir):
+    """
+    This test verifies that the heliocentric frame has an upto date list of
+    the HGS schema versions by ensuring that a HPC frame with a instantiated
+    HGS frame as the observer round trips correctly.
+    """
+    time = "2021-10-13T11:08"
+    obs = frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=time)
+    coord = frames.Heliocentric(1*u.Mm, 1*u.Mm, 1*u.Mm, obstime=time, observer=obs)
+    tree = {'coord': coord}
+    assert_roundtrip_tree(tree, tmpdir)
