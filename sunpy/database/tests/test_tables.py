@@ -15,7 +15,6 @@ from astropy import conf
 from astropy.utils.exceptions import AstropyUserWarning
 
 from sunpy.data.test import rootdir as testdir
-from sunpy.data.test.waveunit import MQ_IMAGE, waveunitdir
 from sunpy.database import Database
 from sunpy.database.tables import (
     DatabaseEntry,
@@ -34,19 +33,19 @@ from sunpy.net import attrs as net_attrs
 from sunpy.net import vso
 
 RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
-EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')
 GOES_DATA = os.path.join(testdir, 'go1520110607.fits')
 
-"""
-The hsi_image_20101016_191218.fits file and go1520110607.fits file lie in the
-sunpy/data/tests dirctory.
-The efz20040301.000010_s.fits file lies in the sunpy/data/tests/EIT directory.
 
-RHESSI_IMAGE = sunpy/data/test/hsi_image_20101016_191218.fits
-EIT_195_IMAGE = sunpy/data/test/EIT/efz20040301.000010_s.fits
-GOES_DATA = sunpy/data/test/go1520110607.fits
+@pytest.fixture
+def mq_image(waveunit_fits_directory):
+    fits_files = waveunit_fits_directory.glob('*.fits')
+    return os.fspath([f for f in fits_files if f.name == 'mq130812.084253.fits'][0])
 
-"""
+
+@pytest.fixture
+def eit_195_image(eit_fits_directory):
+    fits_files = eit_fits_directory.glob('*.fits')
+    return os.fspath([f for f in fits_files if f.name == 'efz20040301.000010_s.fits'][0])
 
 
 @pytest.fixture
@@ -272,9 +271,8 @@ def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     assert round(entry.wavemax, 7) == 0.0000729
 
 
-def test_entries_from_file():
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        entries = list(entries_from_file(MQ_IMAGE))
+def test_entries_from_file(mq_image):
+    entries = list(entries_from_file(mq_image))
     assert len(entries) == 1
     entry = entries[0]
     assert len(entry.fits_header_entries) == 31
@@ -319,15 +317,15 @@ def test_entries_from_file():
     assert entry.observation_time_end == datetime(2013, 8, 12, 8, 42, 53)
     assert round(entry.wavemin, 1) == 656.3
     assert round(entry.wavemax, 1) == 656.3
-    assert entry.path == MQ_IMAGE
+    assert entry.path == mq_image
 
 
-def test_entries_from_file_withoutwaveunit():
+def test_entries_from_file_withoutwaveunit(eit_195_image):
     # does not raise `WaveunitNotFoundError`, because no wavelength information
     # is present in this file
     next(entries_from_file(RHESSI_IMAGE))
     with pytest.raises(WaveunitNotFoundError):
-        next(entries_from_file(EIT_195_IMAGE))
+        next(entries_from_file(eit_195_image))
 
 
 def test_entries_from_file_time_string_parse_format():
@@ -348,16 +346,14 @@ def test_entries_from_file_time_string_parse_format():
     assert entry.path == GOES_DATA
 
 
-def test_entries_from_dir():
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        entries = list(entries_from_dir(
-            waveunitdir, time_string_parse_format='%d/%m/%Y'))
+def test_entries_from_dir(waveunit_fits_directory):
+    entries = list(entries_from_dir(waveunit_fits_directory, time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 4
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
             break
-    assert entry.path in (os.path.join(waveunitdir, filename), filename)
-    assert filename.startswith(waveunitdir)
+    assert entry.path in (os.path.join(waveunit_fits_directory, filename), filename)
+    assert filename.startswith(os.fspath(waveunit_fits_directory))
     assert len(entry.fits_header_entries) == 42
     assert entry.fits_header_entries == [
         FitsHeaderEntry('SIMPLE', True),

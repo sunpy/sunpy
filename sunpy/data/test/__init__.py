@@ -76,6 +76,56 @@ def test_data_filenames():
     return test_data_filenames_list
 
 
+def bitpix_to_dtype(bitpix):
+    """
+    Lookup table for converting ``BITPIX`` values from FITS headers
+    to `~numpy.dtype` objects
+    """
+    return {
+        8: np.uint8,  # note it is an UNsigned integer
+        16: np.int16,
+        32: np.int32,
+        64: np.int64,
+        -32: np.float32,
+        -64: np.float64,
+    }[int(bitpix)]
+
+
+def write_image_file_from_header_file(header_file, fits_directory):
+    """
+    Given a header-only file ``header_file``, write a dummy FITS file
+    with the same name to ``fits_directory``
+
+    Parameters
+    ----------
+    header_file: `~pathlib.Path`
+    fits_directory: `~pathlib.Path`
+
+    Returns
+    -------
+    fits_file: `~pathlib.Path`
+        Path to dummy FITS file
+    """
+    header = astropy.io.fits.Header.fromtextfile(header_file)
+    shape = [header[f'naxis{i+1}'] for i in range(header['naxis'])]
+    data = np.random.rand(*shape[::-1])
+    if 'BITPIX' in header:
+        data = data.astype(bitpix_to_dtype(header['BITPIX']))
+    hdu = astropy.io.fits.PrimaryHDU(data=data, header=header, do_not_scale_image_data=True, scale_back=True)
+    # Scale back so that the FITS headers preserve the BZERO and BSCALE keys
+    # if 'BSCALE' in header and 'BZERO' in header:
+    #    hdu.scale(bscale=header['BSCALE'], bzero=header['BZERO'])
+    #    # .scale() does not include BSCALE if it is 1 and BZERO if it is 0
+    #    # since they have no effect. However, we still want to preserve them in
+    #    # the header for testing purposes so we add them in manually
+    #    if header['BSCALE'] == 1 and header['BZERO'] == 0:
+    #        hdu.header['BSCALE'] = header['BSCALE']
+    #        hdu.header['BZERO'] = header['BZERO']
+    fits_file = os.fspath(fits_directory.joinpath(header_file.with_suffix('.fits').name))
+    hdu.writeto(fits_file)
+    return fits_file
+
+
 def get_dummy_map_from_header(filename):
     """
     Generate a dummy `~sunpy.map.Map` from header-only test data.
@@ -85,7 +135,9 @@ def get_dummy_map_from_header(filename):
     """
     filepath = get_test_filepath(filename)
     header = astropy.io.fits.Header.fromtextfile(filepath)
-    data = np.random.rand(header['naxis1'], header['naxis2'])
+    data = np.random.rand(header['naxis2'], header['naxis1'])
+    if 'BITPIX' in header:
+        data = data.astype(bitpix_to_dtype(header['BITPIX']))
     # NOTE: by reading straight from the data header pair, we are skipping
     # the fixes that are applied in sunpy.io.fits, e.g. the waveunit fix
     # Would it be better to write this whole map back to a temporary file and then
