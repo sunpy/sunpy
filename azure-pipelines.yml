@@ -18,8 +18,8 @@ resources:
   - repository: OpenAstronomy
     type: github
     endpoint: sunpy
-    name: OpenAstronomy/azure-pipelines-templates
-    ref: master
+    name: ConorMacBride/azure-pipelines-templates
+    ref: upgrade-codecov
 
 trigger:
   branches:
