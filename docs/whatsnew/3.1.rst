@@ -63,31 +63,24 @@ information for the `~sunpy.map.GenericMap.processing_level` and
 
 Changes to map metadata fixes
 =============================
-The `~sunpy.map.GenericMap` map sources are primarily used to
-modify metadata values to either fix known incorrect values in a given data source, or make the metadata
-comply with the FITS standard. There are two ways in which the sunpy map sources can do this:
+The `~sunpy.map.GenericMap` map sources are primarily used to modify metadata values to either fix known incorrect values in a given data source, or make the metadata comply with the FITS standard.
+There are two ways in which the sunpy map sources can do this:
 
 1. Directly edit the values stored in the FITS metadata.
-2. Overload properties (e.g. `sunpy.map.GenericMap.unit`) such that they return
-   the correct information without modifying the underlying metadata.
+2. Overload properties (e.g. `sunpy.map.GenericMap.unit`) such that they return the correct information without modifying the underlying metadata.
 
-In previous versions of sunpy there has been no consistency in which of these
-two approaches is taken.
+In previous versions of sunpy there has been no consistency in which of these two approaches is taken.
 
-As of sunpy 3.1, the second approach is now consistently taken, and **sunpy no longer edits any
-FITS metadata values** when constructing a Map. `~sunpy.map.GenericMap` properties now consistently provide corrected
-information. For details of any corrections applied, the docstrings of different map sources
-(e.g., `~sunpy.map.sources.HMIMap` - see `map-sources` for a list of map sources)
-provide information on any assumptions made beyond the original FITS metadata when
-constructing the map properties.
+As of sunpy 3.1, the second approach is now consistently taken, and **sunpy no longer edits any FITS metadata values** when constructing a Map.
+`~sunpy.map.GenericMap` properties now consistently provide corrected information.
+For details of any corrections applied, the docstrings of different map sources (e.g., `~sunpy.map.sources.HMIMap` - see `map-sources` for a list of map sources) provide information on any assumptions made beyond the original FITS metadata when constructing the map properties.
 
 For all maps, the following fixes are no longer made:
 
 - DATE-OBS is no longer replaced by DATE_OBS as a fallback
 - NAXIS, NAXIS1, NAXIS2, BITPIX are no longer populated if not present
 - BUNIT is no longer corrected to be a FITS compliant unit string
-- WAVEUNIT  is no longer automatically populated from the header comments if it
-  is not present.
+- WAVEUNIT  is no longer automatically populated from the header comments if it is not present.
 
 For specific map sources, the following keywords are no longer modified or added:
 
