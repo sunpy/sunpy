@@ -33,9 +33,9 @@ class CDAWEBClient(BaseClient):
     Results from 1 Provider:
     <BLANKLINE>
     7 Results from the CDAWEBClient:
-    Source: https://cdaweb.gsfc.nasa.gov/index.html/
+    Source: https://cdaweb.gsfc.nasa.gov/index.html
     <BLANKLINE>
-                 Dataset                    Start time               End time
+               Dataset                    Start time               End time
     ------------------------------- ----------------------- -----------------------
     SOLO_L2_MAG-RTN-NORMAL-1-MINUTE 2021-07-01 00:00:29.000 2021-07-01 23:59:30.000
     SOLO_L2_MAG-RTN-NORMAL-1-MINUTE 2021-07-02 00:00:29.000 2021-07-02 23:59:30.000

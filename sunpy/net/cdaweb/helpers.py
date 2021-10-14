@@ -73,22 +73,21 @@ def get_datasets(observatory):
     --------
     >>> from sunpy.net.cdaweb import get_datasets
     >>>
-    >>> datasets = get_datasets('STEREOA') #doctest: +REMOTE_DATA
+    >>> datasets = get_datasets('STEREOB') #doctest: +REMOTE_DATA
     >>> datasets['Id'] #doctest: +REMOTE_DATA
-        <Column name='Id' dtype='str17' length=5>
-         STA_L1_SWEA_SPEC
-               STA_L1_HET
-        STA_L1_IMPACT_HKP
-           STA_LB_MAG_RTN
-            STA_LB_IMPACT
-    >>> datasets.loc['STA_L1_HET']['Label'] #doctest: +REMOTE_DATA
-        'STEREO Ahead IMPACT/HET Level 1 Data. - J. Luhmann (UCB/SSL)'
-    >>> datasets.loc['STA_L1_HET'][['Start', 'End']] #doctest: +REMOTE_DATA
-        <Row index=1>
+    <Column name='Id' dtype='str17' length=4>
+        STB_LB_IMPACT
+    STB_L1_IMPACT_HKP
+           STB_L1_HET
+     STB_L1_SWEA_SPEC
+    >>> datasets.loc['STB_L1_SWEA_SPEC']['Label'] #doctest: +REMOTE_DATA
+    'STEREO Behind IMPACT/SWEA Spectra - J. Luhmann (UCB/SSL)'
+    >>> datasets.loc['STB_L1_SWEA_SPEC'][['Start', 'End']] #doctest: +REMOTE_DATA
+    <Row index=3>
              Start                     End
              str24                    str24
     ------------------------ ------------------------
-    2006-12-01T00:00:53.000Z 2021-07-31T23:59:30.000Z
+    2012-12-01T00:00:03.000Z 2013-12-31T23:59:41.000Z
     """
     # Get a list of files for a given dataset between start and end times
     url = '/'.join([
