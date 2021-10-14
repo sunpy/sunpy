@@ -153,23 +153,25 @@ class TestTimeSeries:
     def test_implicit_goes_satno(self):
         # Test a GOES TimeSeries for satellite number
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
-        assert ts_goes.satellite_number == 15
+        assert ts_goes.observatory == 'GOES-15'
 
     def test_implicit_new_goes15_satno(self):
         # Test a GOES TimeSeries for satellite number
         ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath)
-        assert ts_goes.satellite_number == 15
+        assert ts_goes.observatory == 'GOES-15'
 
     def test_implicit_new_goes17_satno(self):
         # Test a GOES TimeSeries for satellite number
         ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath)
-        assert ts_goes.satellite_number == 17
+        assert ts_goes.observatory == 'GOES-17'
 
     def test_implicit_goes_satno_missing(self):
         # Test a GOES TimeSeries for a missing satellite number
         ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath)
         del ts_goes.meta.metas[0]['id']
-        assert ts_goes.satellite_number is None
+        # Terun the set_obsvervatory since it completed correctly in __init__
+        ts_goes._observatory=ts_goes._set_observatory(ts_goes)
+        assert ts_goes.observatory is None
 
     def test_implicit_lyra(self):
         # Test a LYRA TimeSeries

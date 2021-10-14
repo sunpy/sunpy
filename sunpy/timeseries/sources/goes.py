@@ -116,10 +116,10 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.fmt_xdata = matplotlib.dates.DateFormatter("%H:%M")
         return axes
 
-    @property
-    def satellite_number(self):
+    @staticmethod
+    def _set_observatory(self):
         """
-        Parses the various formats for metafields to extract GOES satellite number.
+        Parses the various formats for GOES metafields to extract satellite number.
         """
         # various pattern matches for the meta fields.
         pattern_old = ("{}go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits{}")
@@ -146,9 +146,9 @@ class XRSTimeSeries(GenericTimeSeries):
                 log.debug('Satellite Number not found in metadata')
                 return
         if parsed is None:
-            log.debug('Satellite Number not found in metadata')
+            print('Satellite Number not found in metadata')
             return
-        return parsed['SatelliteNumber']
+        return 'GOES-'+str(parsed['SatelliteNumber'])
 
     @peek_show
     def peek(self, title="GOES Xray Flux", **kwargs):

@@ -113,6 +113,9 @@ class GenericTimeSeries:
         else:
             self.units = units
 
+        if hasattr(self, '_set_observatory'):
+            self._observatory = self._set_observatory(self)
+
         # TODO: Fix this?
         # Validate input data
         # self._validate_meta()
@@ -139,6 +142,13 @@ class GenericTimeSeries:
         A string/object used to specify the source class of the TimeSeries.
         """
         return self._source
+
+    @property
+    def observatory(self):
+        """
+        A string/object used to specify the observatory for the TimeSeries.
+        """
+        return self._observatory
 
     @property
     def columns(self):
