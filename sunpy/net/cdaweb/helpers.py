@@ -4,6 +4,8 @@ from astropy.table import Table
 
 from .cdaweb import _CDAS_BASEURL, _CDAS_HEADERS, _DATAVIEW
 
+__all__ = ['get_observatory_groups', 'get_datasets']
+
 
 def get_observatory_groups():
     """
@@ -15,7 +17,7 @@ def get_observatory_groups():
 
     Returns
     -------
-    astropy.table.Table
+    `astropy.table.Table`
 
     Examples
     --------
@@ -62,12 +64,12 @@ def get_datasets(observatory):
 
     Parameters
     ----------
-    observatory : str
+    observatory : `str`
         Observatory name.
 
     Returns
     -------
-    astropy.table.Table
+    `astropy.table.Table`
 
     Examples
     --------

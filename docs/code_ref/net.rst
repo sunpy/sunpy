@@ -61,6 +61,13 @@ HEK
 .. automodapi:: sunpy.net.hek2vso
    :headings: ^"
 
+CDAWeb
+------
+
+.. automodapi:: sunpy.net.cdaweb
+   :headings: ^"
+
+
 HELIO
 -----
 
