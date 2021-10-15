@@ -117,7 +117,7 @@ class XRSTimeSeries(GenericTimeSeries):
         return axes
 
     @property
-    def  observatory(self):
+    def observatory(self):
         """
         Retrieves the goes satellite number by parsing the meta dictionary.
         """
