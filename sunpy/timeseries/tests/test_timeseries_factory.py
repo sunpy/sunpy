@@ -169,8 +169,6 @@ class TestTimeSeries:
         # Test a GOES TimeSeries for a missing satellite number
         ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath)
         del ts_goes.meta.metas[0]['id']
-        # Terun the set_obsvervatory since it completed correctly in __init__
-        ts_goes._observatory=ts_goes._set_observatory(ts_goes)
         assert ts_goes.observatory is None
 
     def test_implicit_lyra(self):
