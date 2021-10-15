@@ -73,7 +73,7 @@ In previous versions of sunpy there has been no consistency in which of these tw
 
 As of sunpy 3.1, the second approach is now consistently taken, and **sunpy no longer edits any FITS metadata values** when constructing a Map.
 `~sunpy.map.GenericMap` properties now consistently provide corrected information.
-For details of any corrections applied, the docstrings of different map sources (e.g., `~sunpy.map.sources.HMIMap` - see `map-sources` for a list of map sources) provide information on any assumptions made beyond the original FITS metadata when constructing the map properties.
+For details of any corrections applied, the docstrings of different map sources (e.g., `~sunpy.map.sources.HMIMap` - see :ref:`map-sources` for a list of map sources) provide information on any assumptions made beyond the original FITS metadata when constructing the map properties.
 
 For all maps, the following fixes are no longer made:
 
