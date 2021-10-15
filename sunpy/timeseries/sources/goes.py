@@ -146,7 +146,7 @@ class XRSTimeSeries(GenericTimeSeries):
                 log.debug('Satellite Number not found in metadata')
                 return
         if parsed is None:
-            print('Satellite Number not found in metadata')
+            log.debug('Satellite Number not found in metadata')
             return
         return 'GOES-{}'.format(parsed['SatelliteNumber'])
 
