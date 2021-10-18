@@ -15,7 +15,7 @@ from sunpy.timeseries import TimeSeries
 
 ###############################################################################
 # `sunpy.net.Fido` is the primary interface to search for and download data and
-# will automatically search CDAWeb when the `Dataset` attribute is provided to
+# will automatically search CDAWeb when the ``cdaweb.Dataset`` attribute is provided to
 # the search. To lookup the different dataset IDs available, you can use the
 # form at https://cdaweb.gsfc.nasa.gov/index.html/
 trange = a.Time('2021/07/01', '2021/07/08')
@@ -25,7 +25,6 @@ result = Fido.search(trange, dataset)
 ###############################################################################
 # Let's inspect the results. We can see that there's seven files, one for each
 # day within the query.
-
 print(result)
 
 ###############################################################################

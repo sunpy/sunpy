@@ -47,7 +47,7 @@ New CDAWeb client
 A new Fido client to search the Coordinated Data Analysis Web (CDAWeb) has been added to `sunpy.net`.
 This allows search for and downloading data from many space physics missions that take in-situ data (including Parker Solar Probe and Solar Orbiter).
 In combination with the new CDF reading abilities of `sunpy.timeseries.TimeSeries`, this provides a full workflow for searching for, downloading, and analysing in-situ data contained within CDF files.
-See :ref:`sphx_glr_examples_acquiring_data_search_cdaweb.py` for a full example.
+See :ref:`sphx_glr_generated_gallery_acquiring_data_search_cdaweb.py` for a full example.
 
 .. _whatsnew-3.1-draw-limb:
 
