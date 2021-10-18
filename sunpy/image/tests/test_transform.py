@@ -32,7 +32,7 @@ def compare_results(expect, result, allclose=True):
     t1 = abs(exp.mean() - res.mean()) <= RTOL*exp.mean()
 
     # Don't do the allclose test for scipy as the bicubic algorithm has edge effects
-    # TODO: Develop a way of testing this for scipy
+    # TODO: Develop a way of testing this for scipy and cv2
     if not allclose:
         return t1
     else:
@@ -88,6 +88,28 @@ def test_scipy_rotation(original, angle, k):
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
     derot = affine_transform(rot, rmatrix=derot_matrix, method='scipy')
+    assert compare_results(original, derot, allclose=False)
+
+
+@pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
+                                      (-90.0, 3), (360.0, 0), (-360.0, 0)])
+def test_cv2_rotation(original, angle, k):
+    # Test rotation against expected outcome
+    angle = np.radians(angle)
+    c = np.round(np.cos(angle))
+    s = np.round(np.sin(angle))
+    rmatrix = np.array([[c, -s], [s, c]])
+    expected = np.rot90(original, k=k)
+
+    # As of Oct. 2021, cv2 does not support order=4
+    rot = affine_transform(original, rmatrix=rmatrix, order=3, method='cv2')
+    assert compare_results(expected, rot, allclose=False)
+
+    # TODO: Check incremental 360 degree rotation against original image
+
+    # Check derotated image against original
+    derot_matrix = np.array([[c, s], [-s, c]])
+    derot = affine_transform(rot, rmatrix=derot_matrix, order=3, method='cv2')
     assert compare_results(original, derot, allclose=False)
 
 
