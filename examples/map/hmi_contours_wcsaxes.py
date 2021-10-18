@@ -88,22 +88,11 @@ bounds = ax.axis()
 # We use the map method `~.GenericMap.draw_contours` to simplify this process,
 # but this is a wrapper around `~matplotlib.pyplot.contour`. We set the
 # colormap, line width and transparency of the lines to improve the final
-# appearance, but the key argument is the ``transform=`` keyword.
-# This keyword tells `~astropy.visualisation.wcsaxes` how to transform the
-# pixel positions of the contours in the HMI image to the pixel positions in
-# the AIA image. By specifying the ``.wcs`` attribute of the Map we tell
-# wcsaxes how to transform the contour coordinates into the coordinate frame of
-# the HMI image, and then the ``projection=`` keyword we used when constructing
-# the axis knows how to transform that to the coordinate frame of the AIA image
-# and then to the pixel coordinates of that array.
+# appearance.
 
 # sphinx_gallery_defer_figures
 
-cset = sub_hmi.draw_contours(levels,
-                             axes=ax,
-                             cmap='seismic',
-                             alpha=0.5,
-                             transform=ax.get_transform(sub_hmi.wcs))
+cset = sub_hmi.draw_contours(levels, axes=ax, cmap='seismic', alpha=0.5)
 ax.axis(bounds)
 
 ################################################################################
