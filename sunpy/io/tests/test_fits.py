@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from collections import OrderedDict
 
+import numpy as np
 import pytest
 
 import astropy.io.fits as fits
@@ -81,6 +82,48 @@ def test_simple_write_compressed(tmpdir):
     with fits.open(str(outfile)) as hdul:
         assert len(hdul) == 2
         assert isinstance(hdul[1], fits.CompImageHDU)
+
+
+def test_simple_write_compressed_difftypeinst(tmpdir):
+    # `hdu_type=fits.CompImageHDU` and `hdu_type=fits.CompImageHDU()`
+    # should produce identical FITS files
+    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    outfile_type = str(tmpdir / "test_type.fits")
+    outfile_inst = str(tmpdir / "test_inst.fits")
+    sunpy.io.fits.write(outfile_type, data, header, hdu_type=fits.CompImageHDU)
+    sunpy.io.fits.write(outfile_inst, data, header, hdu_type=fits.CompImageHDU())
+    assert fits.FITSDiff(outfile_type, outfile_inst, ignore_comments=['PCOUNT']).identical
+
+
+@pytest.mark.parametrize(
+    'kwargs, should_fail',
+    [({}, False),
+     ({'quantize_level': -32}, True)]
+)
+def test_simple_write_compressed_instance(tmpdir, kwargs, should_fail):
+    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    outfile = tmpdir / "test.fits"
+
+    # Ensure HDU instance is used correctly
+    hdu = fits.CompImageHDU(data=np.array([0.]), **kwargs)
+    hdu.header['HELLO'] = 'world'  # should be in the written file
+    hdu.header['TELESCOP'] = 'other'  # should be replaced with 'SDO/AIA'
+    hdu.header['NAXIS'] = 5  # should be replaced with 2
+    sunpy.io.fits.write(str(outfile), data, header, hdu_type=hdu)
+    assert outfile.exists()
+    with fits.open(str(outfile)) as hdul:
+        assert len(hdul) == 2
+        assert isinstance(hdul[1], fits.CompImageHDU)
+        assert hdul[1].header['HELLO'] == 'world'
+        assert hdul[1].header['TELESCOP'] == 'SDO/AIA'
+        assert hdul[1].header['NAXIS'] == 2
+        data_preserved = hdul[1].data == pytest.approx(data, abs=10)
+        print(np.abs(hdul[1].data - data).max())
+        print(kwargs)
+        if should_fail:  # high compression setting preserved
+            assert not data_preserved
+        else:
+            assert data_preserved
 
 
 def test_write_with_metadict_header_astropy(tmpdir):

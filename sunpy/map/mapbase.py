@@ -1381,9 +1381,11 @@ class GenericMap(NDData):
             Location to save file to.
         filetype : str
             'auto' or any supported file extension.
-        hdu_type: None, `~astropy.io.fits.CompImageHDU`
-            `None` will return a normal FITS file.
-            `~astropy.io.fits.CompImageHDU` will rice compress the FITS file.
+        hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
+            By default, a FITS file is written with the map in its primary HDU.
+            If a type is given, a new HDU of this type will be created.
+            If a HDU instance is given, its data and header will be updated from the map.
+            Then that HDU instance will be written to the file.
         kwargs :
             Any additional keyword arguments are passed to
             `~sunpy.io.write_file`.
