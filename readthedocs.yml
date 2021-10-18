@@ -4,8 +4,11 @@
 
 version: 2
 
-conda:
-  environment: rtd-environment.yml
+build:
+  image: latest
+  apt_packages:
+    - libopenjp2-7
+    - python3
 
 sphinx:
   builder: html

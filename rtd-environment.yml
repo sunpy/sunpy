@@ -1,9 +1,0 @@
-name: sunpy_rtd
-channels:
-  - conda-forge
-dependencies:
-  - openjpeg
-  - pip
-  - python=3.9
-  - pip:
-      - sphinx-gallery
