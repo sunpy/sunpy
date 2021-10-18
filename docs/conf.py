@@ -27,6 +27,7 @@ if missing_requirements:
 # -- Read the Docs Specific Configuration --------------------------------------
 # This needs to be done before sunpy is imported
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+rtd_latest = os.environ.get('READTHEDOCS_VERSION', None) == 'latest'
 if on_rtd:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
     os.environ['HOME'] = '/home/docs/'
@@ -53,6 +54,23 @@ copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 release = __version__
 sunpy_version = Version(__version__)
 is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
+
+if True:# on_rtd and not rtd_latest:
+    # Fix the version due to a bug on RTD and sunpy
+    release = str(sunpy_version).split('.')
+    if len(release) != 3:
+        # On a dirty version
+        release = release[:3]
+        release = [int(i) for i in release]
+        # Setuptools SCM increments the third version number by one when on
+        # a dirty checkout, so de-increment back
+        release[2] -= 1
+        release = [str(i) for i in release]
+
+    release = '.'.join(release)
+    is_release = True
+
+print(release)
 
 # We want to ignore all warnings in a release version.
 if is_release:
