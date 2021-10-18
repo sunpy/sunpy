@@ -26,6 +26,7 @@ py:obj function
 py:obj iterable
 py:obj parfive
 py:mod parfive
+py:obj astropy.io.fits.hdu.base.ExtensionHDU
 
 # This comes from Map.wcs
 py:class prop

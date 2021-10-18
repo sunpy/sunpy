@@ -1379,8 +1379,8 @@ class GenericMap(NDData):
         ----------
         filepath : str
             Location to save file to.
-        filetype : str
-            'auto' or any supported file extension.
+        filetype : str, optional
+            Any supported file extension, defaults to ``auto"``.
         hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
             By default, a FITS file is written with the map in its primary HDU.
             If a type is given, a new HDU of this type will be created.
