@@ -49,6 +49,14 @@ Coding Style/Conventions
 
 * General utilities necessary for but not specific to the package should be placed in the ``sunpy.utils`` module.
 
+Private code
+============
+It is often useful to designate code as private, which means it is not part of the user facing API, only used internally by sunpy, and can be modified without a deprecation period.
+Any classes, functions, or variables that are private should live in:
+
+- ``sunpy.{subpackage}.utils.py``, if it is only used within that sub-package.
+- ``sunpy.utils`` if it is used across multiple sub-packages.
+
 Formatting
 ==========
 
