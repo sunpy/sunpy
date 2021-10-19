@@ -59,8 +59,9 @@ class HEKClient(BaseClient):
         """ Download all data, even if paginated. """
         page = 1
         results = []
-        # Override the default name of the operator
-        data["op0"] = data.pop("operator0")
+        # Override the default name of the operator, as HEK expects op0
+        if "operator0" in data:
+            data["op0"] = data.pop("operator0")
         while True:
             data['page'] = page
             url = self.url + urllib.parse.urlencode(data)
@@ -133,7 +134,7 @@ class HEKClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        required = {core_attrs.Time, attr.AttrComparison}
+        required = {core_attrs.Time}
         optional = {i[1] for i in inspect.getmembers(attrs, inspect.isclass)} - required
         qr = tuple(x for x in query if not isinstance(x, attrs.EventType))
         return cls.check_attr_types_in_query(qr, required, optional)

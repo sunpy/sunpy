@@ -28,6 +28,38 @@ def _makeinstance(f):
     return f()
 
 
+class HEKAttr(_attr.AttrComparison):
+    """
+    This ensures the attr inspect magic works for registering in the client.
+    """
+
+
+class HEKComparisonParamAttrWrapper:
+    def __init__(self, name):
+        self.name = name
+
+    def __lt__(self, other):
+        return HEKAttr(self.name, '<', other)
+
+    def __le__(self, other):
+        return HEKAttr(self.name, '<=', other)
+
+    def __gt__(self, other):
+        return HEKAttr(self.name, '>', other)
+
+    def __ge__(self, other):
+        return HEKAttr(self.name, '>=', other)
+
+    def __eq__(self, other):
+        return HEKAttr(self.name, '=', other)
+
+    def __ne__(self, other):
+        return HEKAttr(self.name, '!=', other)
+
+    def collides(self, other):
+        return isinstance(other, HEKComparisonParamAttrWrapper)
+
+
 class Time(_attrs.Time):
     f"""
     `sunpy.net.hek.attrs.Time` is deprecated, please use `sunpy.net.attrs.Time`
@@ -100,9 +132,9 @@ class Contains(_attr.Attr):
         return hash(tuple(vars(self).items()))
 
 
-class _StringParamAttrWrapper(_attr.ComparisonParamAttrWrapper):
+class _StringParamAttrWrapper(HEKComparisonParamAttrWrapper):
     def like(self, other):
-        return _attr.AttrComparison(self.name, 'like', other)
+        return HEKAttr(self.name, 'like', other)
 
 
 # The walker is what traverses the attribute tree and converts it to a format
@@ -126,7 +158,7 @@ def _a(wlk, root, state, dct):
 
 
 @walker.add_creator(
-    _attrs.Time, SpatialRegion, EventType, _attr.AttrComparison, _attr.AttrAnd, Contains)
+    _attrs.Time, SpatialRegion, EventType, HEKAttr, _attr.AttrAnd, Contains)
 def _c(wlk, root, state):
     value = {}
     wlk.apply(root, state, value)
@@ -158,16 +190,15 @@ def _a(wlk, root, state, dct):
     return dct
 
 
-@walker.add_applier(_attr.AttrComparison)
+@walker.add_applier(HEKAttr)
 def _a(wlk, root, state, dct):
-    if _attr.AttrComparison not in state:
-        state[_attr.AttrComparison] = 0
-
-    nid = state[_attr.AttrComparison]
+    if HEKAttr not in state:
+        state[HEKAttr] = 0
+    nid = state[HEKAttr]
     dct[f'param{nid:d}'] = root.name
     dct[f'operator{nid:d}'] = root.operator
     dct[f'value{nid:d}'] = root.value
-    state[_attr.AttrComparison] += 1
+    state[HEKAttr] += 1
     return dct
 
 

@@ -10,14 +10,12 @@ def foostrwrap(request):
 
 @pytest.fixture
 @pytest.mark.remote_data
-def hek_client_creator():
+def hek_client():
     startTime = '2011/08/09 07:23:56'
     endTime = '2011/08/09 12:40:29'
     eventType = 'FL'
-
     hekTime = attrs.Time(startTime, endTime)
     hekEvent = attrs.hek.EventType(eventType)
-
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
     return hek_query
@@ -38,8 +36,8 @@ def test_eventtype_or():
     assert (attrs.hek.AR | attrs.hek.CE).item == "ar,ce"
 
 
-def test_AttrComparison():
-    res = hek.attrs.walker.create(attr.AttrComparison("foo", "=", "bar"), {})
+def test_HEKAttr():
+    res = hek.attrs.walker.create(hek.attrs.HEKAttr("foo", "=", "bar"), {})
     assert len(res) == 1
     assert res[0] == {'value0': 'bar', 'operator0': '=', 'param0': 'foo'}
 
@@ -126,40 +124,32 @@ def test_hek_empty_search_result():
 
 
 @pytest.mark.remote_data
-def test_getitem(hek_client_creator):
-    hc = hek_client_creator
-    assert hc.__getitem__(0) == hc[0]
+def test_getitem(hek_client):
+    assert hek_client.__getitem__(0) == hek_client[0]
 
 
 @pytest.mark.remote_data
-def test_get_voevent(hek_client_creator):
-    hc = hek_client_creator
-    ve = hc[0].get_voevent()
+def test_get_voevent(hek_client):
+    ve = hek_client[0].get_voevent()
     assert len(ve['voe:VOEvent']) == 7
 
 
 @pytest.mark.remote_data
-def test_vso_time(hek_client_creator):
-    hc = hek_client_creator
-    ve = hc[0].vso_time
+def test_vso_time(hek_client):
+    ve = hek_client[0].vso_time
     assert type(ve) == attrs.Time
 
 
 @pytest.mark.remote_data
-def test_vso_instrument(hek_client_creator):
-    hc = hek_client_creator
-    try:
-        vc = hc[1].vso_instrument
-        assert type(vc) == attrs.Instrument
-    except ValueError:
-        assert 1
+def test_vso_instrument(hek_client):
+    vc = hek_client[1].vso_instrument
+    assert type(vc) == attrs.Instrument
 
 
 @pytest.mark.remote_data
-def test_HEKRow_get(hek_client_creator):
-    hc = hek_client_creator
-    assert hc[0]['event_peaktime'] == hc[0].get('event_peaktime')
-    assert hc[0].get('') is None
+def test_HEKRow_get(hek_client):
+    assert hek_client[0]['event_peaktime'] == hek_client[0].get('event_peaktime')
+    assert hek_client[0].get('') is None
 
 
 @pytest.mark.remote_data
