@@ -43,7 +43,9 @@ jobs:
       - run: *apt-install
       - run: pip install --user -U tox tox-pypi-filter
       - run: tox -v
-      - run: curl -s https://codecov.io/bash | bash
+      - run:
+          name: Running codecov
+          command: bash -e .circleci/codecov_upload.sh -f ".tmp/${TOXENV}/coverage.xml"
       - store_artifacts:
           path: .tmp/<< parameters.jobname >>/figure_test_images
       - run:
