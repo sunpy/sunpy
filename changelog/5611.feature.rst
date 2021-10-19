@@ -1,0 +1,1 @@
+Added `~sunpy.map.GenericMap.normalize_to_exposure` to normalize image data by exposure time.
