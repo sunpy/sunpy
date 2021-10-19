@@ -148,7 +148,7 @@ class XRSTimeSeries(GenericTimeSeries):
         if parsed is None:
             log.debug('Satellite Number not found in metadata')
             return
-        return 'GOES-{}'.format(parsed['SatelliteNumber'])
+        return f"GOES-{parsed['SatelliteNumber']}"
 
     @peek_show
     def peek(self, title="GOES Xray Flux", **kwargs):
