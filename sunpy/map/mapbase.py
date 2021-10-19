@@ -655,10 +655,10 @@ class GenericMap(NDData):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-        replacements = {'Gauss': 'G',
-                        'DN': 'ct',
-                        'DN/s': 'ct/s'}
-        if unit_str in replacements:
+        replacements = {'gauss': 'G',
+                        'dn': 'ct',
+                        'dn/s': 'ct/s'}
+        if unit_str.lower() in replacements:
             unit_str = replacements[unit_str]
 
         return self._parse_fits_unit(unit_str)
