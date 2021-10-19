@@ -18,6 +18,7 @@ from astropy.time import Time, TimeDelta
 
 import sunpy.io
 from sunpy import log
+from sunpy.extern import parse
 from sunpy.io.file_tools import UnrecognizedFileTypeError
 from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
@@ -114,6 +115,40 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.xaxis.set_major_formatter(formatter)
         axes.fmt_xdata = matplotlib.dates.DateFormatter("%H:%M")
         return axes
+
+    @property
+    def observatory(self):
+        """
+        Retrieves the goes satellite number by parsing the meta dictionary.
+        """
+        # various pattern matches for the meta fields.
+        pattern_old = ("{}go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits{}")
+        pattern_new = ("{}sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc{}")
+        pattern_r = ("{}sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc{}")
+        pattern_telescop = ("GOES {SatelliteNumber:02d}")
+        pattern_inst = ("{}GOES 1-{SatelliteNumber:02d} {}")
+
+        try:
+            id = self.meta.metas[0]['id']
+            parsed = parse(pattern_r, str(id))
+            if parsed is None:
+                parsed = parse(pattern_new, str(id))
+                if parsed is None:
+                    parsed = parse(pattern_old, str(id))
+                    if parsed is None:
+                        id = self.meta.metas[0]['Instrument']
+                        parsed = parse(pattern_inst, str(id))
+        except KeyError:
+            try:
+                id = self.meta.metas[0]['TELESCOP']
+                parsed = parse(pattern_telescop, str(id))
+            except KeyError:
+                log.debug('Satellite Number not found in metadata')
+                return
+        if parsed is None:
+            log.debug('Satellite Number not found in metadata')
+            return
+        return f"GOES-{parsed['SatelliteNumber']}"
 
     @peek_show
     def peek(self, title="GOES Xray Flux", **kwargs):

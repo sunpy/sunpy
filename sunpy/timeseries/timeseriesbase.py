@@ -141,6 +141,13 @@ class GenericTimeSeries:
         return self._source
 
     @property
+    def observatory(self):
+        """
+        A string/object used to specify the observatory for the TimeSeries.
+        """
+        return
+
+    @property
     def columns(self):
         """
         A list of all the names of the columns in the data.
