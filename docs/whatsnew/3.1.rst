@@ -177,13 +177,14 @@ This method requires the optional package `reproject` to be installed.
 
 .. _whatsnew-3.1-jsoc-keywords:
 
-Support of JSOC keywords with FIDO
-==================================
+Support of JSOC keyword filtering with Fido
+===========================================
 Support for JSOC keywords was added to ``Fido.search``::
 
     >>> from sunpy.net import Fido, attrs as a
     >>> import astropy.units as u
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA), a.jsoc.Keyword("EXPTIME")>1)
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA), a.jsoc.Keyword("EXPTIME") > 1)
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe16a5d20d0>
     Results from 1 Provider:
 
@@ -202,7 +203,8 @@ Support for JSOC keywords was added to ``Fido.search``::
     2014-01-01T00:59:49Z  SDO/AIA    AIA_4      304    2145
     2014-01-01T01:00:01Z  SDO/AIA    AIA_4      304    2145
     Length = 301 rows
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA), a.jsoc.Keyword("EXPTIME")==1)
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA), a.jsoc.Keyword("EXPTIME") == 1)
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe16a5d20d0>
     Results from 1 Provider:
 

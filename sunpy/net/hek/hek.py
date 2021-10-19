@@ -59,7 +59,7 @@ class HEKClient(BaseClient):
         """ Download all data, even if paginated. """
         page = 1
         results = []
-        # Override the default name of the opeartor
+        # Override the default name of the operator
         data["op0"] = data.pop("operator0")
         while True:
             data['page'] = page

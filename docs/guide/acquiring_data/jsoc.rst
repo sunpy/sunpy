@@ -343,7 +343,7 @@ If you provide an incorrect keyword name, it will throw a error, but due to the 
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.sharp_720s'),
-    ...             a.jsoc.Keyword('bac')==0)  # doctest: +REMOTE_DATA
+    ...             a.jsoc.Keyword('bac') == 0)  # doctest: +REMOTE_DATA
     Traceback (most recent call last):
     ...
     ValueError: Keyword: 'bac' is not supported by series: hmi.sharp_720s
@@ -351,7 +351,7 @@ If you provide an incorrect keyword name, it will throw a error, but due to the 
 A working example::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-                    a.jsoc.Series('hmi.sharp_720s'),a.jsoc.Keyword('bitmap_bzero')==0)
+    ...             a.jsoc.Series('hmi.sharp_720s'),a.jsoc.Keyword('bitmap_bzero') == 0) # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7f92e7a19fa0>
     Results from 1 Provider:
 
@@ -374,7 +374,7 @@ A working example::
 You can pass multiple keywords and they will be chained together inside the query::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.sharp_720s'),
-                    a.jsoc.Keyword('bitmap_bzero')==0, a.jsoc.Keyword('continuum_bscale')>0)
+    ...             a.jsoc.Keyword('bitmap_bzero') == 0, a.jsoc.Keyword('continuum_bscale') > 0) # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7f92e78b2fd0>
     Results from 1 Provider:
 

@@ -42,7 +42,7 @@ class PrimeKey(DataAttr):
         return False
 
 
-class _KeywordComparison(AttrComparison):
+class KeywordComparison(AttrComparison):
     pass
 
 
@@ -58,22 +58,22 @@ class Keyword(SimpleAttr):
     """
 
     def __lt__(self, other):
-        return _KeywordComparison(self.value, '<', other)
+        return KeywordComparison(self.value, '<', other)
 
     def __le__(self, other):
-        return _KeywordComparison(self.value, '<=', other)
+        return KeywordComparison(self.value, '<=', other)
 
     def __gt__(self, other):
-        return _KeywordComparison(self.value, '>', other)
+        return KeywordComparison(self.value, '>', other)
 
     def __ge__(self, other):
-        return _KeywordComparison(self.value, '>=', other)
+        return KeywordComparison(self.value, '>=', other)
 
     def __eq__(self, other):
-        return _KeywordComparison(self.value, '=', other)
+        return KeywordComparison(self.value, '=', other)
 
     def __ne__(self, other):
-        return _KeywordComparison(self.value, '!=', other)
+        return KeywordComparison(self.value, '!=', other)
 
     def collides(self, other):
         return isinstance(other, Keyword)
@@ -144,13 +144,11 @@ class Cutout(DataAttr):
     --------
     sunpy.coordinates.utils.get_rectangle_coordinates
     """
-    # TODO: Fix so much of all this.
     @u.quantity_input
     def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
                  height: u.arcsec = None, tracking=False, register=False,
                  nan_off_limb=False):
         super().__init__()
-        # TODO: Fix the horrible indentation in the entire library.
         bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width, height=height)
         self.value = {
             't_ref': bl.obstime.isot,
@@ -213,7 +211,7 @@ def _apply1(wlk, query, imap):
     raise ValueError(f"Keyword '{query.value}' needs to have a comparison to a value.")
 
 
-@walker.add_applier(_KeywordComparison)
+@walker.add_applier(KeywordComparison)
 def _apply1(wlk, query, imap):
     key = 'keyword'
     if key in imap:

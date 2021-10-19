@@ -733,7 +733,8 @@ class JSOCClient(BaseClient):
         wavelength = iargs.get('wavelength', '')
         if wavelength != '':
             if 'WAVELNTH' not in primekeys:
-                error_message = f"The series {iargs['series']} does not support wavelength attribute. The following primekeys are supported {primekeys}"
+                error_message = (f"The series {iargs['series']} does not support wavelength attribute. "
+                                 f"The following primekeys are supported {primekeys}")
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=primekeys))
         # Raise errors for segments
         # Get a set of the segments that exist for the given series, and check
@@ -777,7 +778,7 @@ class JSOCClient(BaseClient):
         optional = {
             a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
             a.jsoc.Segment, a.jsoc.PrimeKey, a.Sample,
-            a.jsoc.Cutout, a.jsoc.Keyword, a.jsoc._KeywordComparison,
+            a.jsoc.Cutout, a.jsoc.Keyword, a.jsoc.KeywordComparison,
         }
         return cls.check_attr_types_in_query(query, required, optional)
 
