@@ -762,6 +762,7 @@ class GenericMap(NDData):
 
     @property
     def _date_obs(self):
+        # Get observation date from date-obs, falling back to date_obs
         time = self._get_date('date-obs')
         if is_time(self.meta.get('date_obs', None)):
             time = time or self._get_date('date_obs')
