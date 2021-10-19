@@ -1393,3 +1393,25 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_map = aia_map.superpixel([2, 1] * u.pix, func=np.mean)
     rect_rot_map = rect_map.rotate(30 * u.deg)
     rect_rot_map.peek()
+
+
+def test_normalize_exposure(aia171_test_map):
+    aia171_norm = aia171_test_map.normalize_to_exposure()
+    assert aia171_norm.unit == u.Unit('ct / s')
+    assert np.all(aia171_norm.data == aia171_test_map.data / aia171_test_map.exposure_time.value)
+    assert aia171_norm.exposure_time == 1.0*u.s
+
+
+def test_normalize_exposure_no_exposure_time(aia171_test_map):
+    aia171_test_map.meta.pop('EXPTIME')
+    with pytest.raises(ValueError, match='Exposure time metadata is missing.'):
+        _ = aia171_test_map.normalize_to_exposure()
+
+
+def test_normalize_exposure_warnings(aia171_test_map):
+    aia171_test_map.meta['EXPTIME'] = 0.0
+    with pytest.warns(SunpyUserWarning, match="Exposure time is less than or equal to 0."):
+        _ = aia171_test_map.normalize_to_exposure()
+    aia171_test_map.meta['EXPTIME'] = 1.0
+    with pytest.warns(SunpyUserWarning, match="Exposure time is equal to 1. Image may already have been normalized."):
+        _ = aia171_test_map.normalize_to_exposure()

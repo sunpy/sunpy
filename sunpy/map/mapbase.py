@@ -1395,6 +1395,29 @@ class GenericMap(NDData):
 
 # #### Image processing routines #### #
 
+    def normalize_to_exposure(self):
+        """
+        Divide image data by exposure time.
+
+        This function applies exposure time normalization by dividing the
+        image data by the exposure time as stored in the ``.exposure_time``
+        attribute. The units on the image data are adjusted appropriately
+        and the exposure time keyword is reset to 1. Subsequent calls of
+        this method will thus not affect the value of the data, but will
+        continue to alter the units.
+        """
+        if self.exposure_time is None:
+            raise ValueError("Exposure time metadata is missing.")
+        if self.exposure_time <= 0:
+            warn_user("Exposure time is less than or equal to 0.")
+        if self.exposure_time.to('s').value == 1:
+            warn_user("Exposure time is equal to 1. Image may already have been normalized.")
+        new_data = self.data / self.exposure_time.value
+        new_meta = copy.deepcopy(self.meta)
+        new_meta['exptime'] = 1.0
+        new_meta['bunit'] = (self.unit / self.exposure_time.unit).to_string()
+        return self._new_instance(new_data, new_meta)
+
     @u.quantity_input
     def resample(self, dimensions: u.pixel, method='linear'):
         """
