@@ -73,7 +73,7 @@ int ck_synch_hd(FILE *fin,fzhead_t *fh,int t_endian)
   if(fh->nhb>1){                     // if the header is long, read in the rest now
     if(fh->nhb>15){
       fclose(fin);
-      fprintf(stderr,"ck_synch_hd: error: annot handle header more than 16 blocks!\n");
+      fprintf(stderr,"ck_synch_hd: error: cannot handle header more than 16 blocks!\n");
       return -1;
     }
     int size=(fh->nhb-1)*sizeof(fzhead_t);
