@@ -79,10 +79,6 @@ class AIAMap(GenericMap):
         if unit_str is None:
             return
 
-        # AIA Uses a non-standard unit for counts
-        if unit_str == "DN":
-            unit_str = "ct"
-
         return self._parse_fits_unit(unit_str)
 
     @classmethod
