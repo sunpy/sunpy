@@ -1,0 +1,3 @@
+Fix a misspelling (`cannot`) in the fprintf call in `sunpy/io/src/ana/anarw.c#76`. The misspelling is here:
+
+> 76: k_synch_hd: error: annot handle header more than 16 blocks!\n"
