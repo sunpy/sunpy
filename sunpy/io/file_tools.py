@@ -77,8 +77,7 @@ def read_file(filepath, filetype=None, **kwargs):
     -----
     Other keyword arguments are passed to the reader used.
     """
-    # Convert Path objects to strings
-    # filepath can also be a URL
+    # Convert Path objects to strings as the filepath can also be a URL
     filepath = str(filepath)
     # Use the explicitly passed filetype
     if filetype is not None:
