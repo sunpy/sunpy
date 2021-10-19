@@ -642,7 +642,7 @@ def entries_from_file(file, default_waveunit=None,
     >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
     (17.400000000000002, 17.400000000000002)
     >>> len(entry.fits_header_entries)  # doctest: +REMOTE_DATA
-    111
+    110
 
     """
     headers = fits.get_header(file)

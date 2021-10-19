@@ -94,9 +94,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
 
 def get_header(afile):
     """
-    Read a fits file and return just the headers for all HDU's. In each header,
-    the key WAVEUNIT denotes the wavelength unit which is used to describe the
-    value of the key "WAVELNTH".
+    Read a fits file and return just the headers for all HDU's.
 
     Parameters
     ----------
@@ -138,9 +136,6 @@ def get_header(afile):
                 if card.comment != '':
                     keydict.update({card.keyword: card.comment})
             header['KEYCOMMENTS'] = keydict
-            waveunit = extract_waveunit(header)
-            if waveunit is not None:
-                header['WAVEUNIT'] = waveunit
 
             headers.append(header)
     finally:
@@ -308,6 +303,8 @@ def extract_waveunit(header):
         if waveunit_comment == 'in meters':
             return 'm'
 
+    if 'KEYCOMMENTS' not in header:
+        return None
     waveunit_comment = header['KEYCOMMENTS'].get('WAVEUNIT')
     wavelnth_comment = header['KEYCOMMENTS'].get('WAVELNTH')
     waveunit = header.get('WAVEUNIT')

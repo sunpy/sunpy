@@ -5,7 +5,6 @@ import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import ImageNormalize, LinearStretch
 
-from sunpy import log
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
@@ -39,9 +38,9 @@ class EUIMap(GenericMap):
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LinearStretch()), clip=False)
 
-        if 'CROTA' in self.meta and 'CROTA2' not in self.meta:
-            log.debug("Renaming 'CROTA' to 'CROTA2'")
-            self.meta['CROTA2'] = self.meta.pop('CROTA')
+    @property
+    def _rotation_matrix_from_crota(self):
+        return super()._rotation_matrix_from_crota(crota_key='CROTA')
 
     @property
     def processing_level(self):

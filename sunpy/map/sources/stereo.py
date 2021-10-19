@@ -8,7 +8,6 @@ import astropy.units as u
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy import log
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
@@ -37,38 +36,22 @@ class EUVIMap(GenericMap):
         self.plot_settings['cmap'] = 'euvi{wl:d}'.format(wl=int(self.wavelength.value))
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
-        self.meta['waveunit'] = self.meta.get('waveunit', 'Angstrom')
 
-        # Try to identify when the FITS meta data does not have the correct
-        # date FITS keyword
-        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
-            self.meta['date-obs'] = self.meta['date_obs']
-        # fix CROTA to CROTAn
-        if "crota" in self.meta and "crota2" not in self.meta:
-            log.debug("EUVIMap: Changing the CROTA keyword to CROTA2")
-            self.meta["crota2"] = self.meta.pop("crota")
+    def _rotation_matrix_from_crota(self):
+        return super()._rotation_matrix_from_crota('CROTA')
+
+    @property
+    def waveunit(self):
+        unit = self.meta.get("waveunit", "Angstrom")
+        return u.Unit(unit)
 
     @property
     def rsun_arcseconds(self):
-        """
-        Radius of the sun in arcseconds.
-
-        References
-        ----------
-        https://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
-        """
         return self.meta.get('rsun', None)
 
     @property
     def rsun_obs(self):
-        """
-        Radius of the sun in arcseconds as a quantity.
-
-        References
-        ----------
-        https://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
-        """
-        rsun_arcseconds = self.meta.get('rsun', None)
+        rsun_arcseconds = self.rsun_arcseconds
 
         if rsun_arcseconds is None:
             rsun_arcseconds = super().rsun_obs
@@ -108,16 +91,8 @@ class CORMap(GenericMap):
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
-        # Try to identify when the FITS meta data does not have the correct
-        # date FITS keyword
-        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
-            self.meta['date-obs'] = self.meta['date_obs']
-
     @property
     def measurement(self):
-        """
-        Returns the type of data observed.
-        """
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
 
@@ -154,16 +129,8 @@ class HIMap(GenericMap):
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
 
-        # Try to identify when the FITS meta data does not have the correct
-        # date FITS keyword
-        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
-            self.meta['date-obs'] = self.meta['date_obs']
-
     @property
     def measurement(self):
-        """
-        Returns the type of data observed.
-        """
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
 

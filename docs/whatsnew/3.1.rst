@@ -50,12 +50,61 @@ Axes using the :func:`sunpy.visualization.draw_limb` function.
 .. minigallery:: sunpy.visualization.draw_limb
 
 
+.. _whatsnew-3.1-wispr-map-source:
+
 New WISPR map source
 ====================
 A new map source for the WISPR instrument on Parker Solar Probe has been added.
 This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
 information for the `~sunpy.map.GenericMap.processing_level` and
 `~sunpy.map.GenericMap.exposure_time`.
+
+.. _whatsnew-3.1-fits-metadata:
+
+Changes to map metadata fixes
+=============================
+The `~sunpy.map.GenericMap` map sources are primarily used to modify metadata values to either fix known incorrect values in a given data source, or make the metadata comply with the FITS standard.
+There are two ways in which the sunpy map sources can do this:
+
+1. Directly edit the values stored in the FITS metadata.
+2. Overload properties (e.g. `sunpy.map.GenericMap.unit`) such that they return the correct information without modifying the underlying metadata.
+
+In previous versions of sunpy there has been no consistency in which of these two approaches is taken.
+
+As of sunpy 3.1, the second approach is now consistently taken, and **sunpy no longer edits any FITS metadata values** when constructing a Map.
+`~sunpy.map.GenericMap` properties now consistently provide corrected information.
+For details of any corrections applied, the docstrings of different map sources (e.g., `~sunpy.map.sources.HMIMap` - see :ref:`map-sources` for a list of map sources) provide information on any assumptions made beyond the original FITS metadata when constructing the map properties.
+
+For all maps, the following fixes are no longer made:
+
+- DATE-OBS is no longer replaced by DATE_OBS as a fallback
+- NAXIS, NAXIS1, NAXIS2, BITPIX are no longer populated if not present
+- BUNIT is no longer corrected to be a FITS compliant unit string
+- WAVEUNIT  is no longer automatically populated from the header comments if it is not present.
+
+For specific map sources, the following keywords are no longer modified or added:
+
+- `~sunpy.map.sources.KCorMap`: OBSERVATORY, DETECTOR, WAVEUNIT, DSUN_OBS, HGLN_OBS
+- `~sunpy.map.sources.SWAPMap`: OBSRVTRY, DETECTOR
+- `~sunpy.map.sources.RHESSIMap`: CUNIT1, CUNIT2, CTYPE1, CTYPE2, WAVEUNIT, WAVELNTH
+- `~sunpy.map.sources.AIAMap`: BUNIT, DETECTOR
+- `~sunpy.map.sources.HMIMap`: DETECTOR, CRDER1, CRDER2
+- `~sunpy.map.sources.HMISynopticMap`: CUNIT1, CUNIT2, CDELT1, CDELT2, DATE-OBS
+- `~sunpy.map.sources.EITMap`: WAVEUNIT, CUNIT1, CUNIT2
+- `~sunpy.map.sources.LASCOMap`: DATE-OBS, DATE_OBS, CROTA, CROTA1, CROTA2, CUNIT1, CUNIT2
+- `~sunpy.map.sources.MDIMap`: CUNIT1, CUNIT2
+- `~sunpy.map.sources.MDISynopticMap`: CUNIT1, CUNIT2, CDELT2, DATE-OBS, CRDER1, CRDER2
+- `~sunpy.map.sources.EUVIMap`: WAVEUNIT, DATE-OBS, CROTA, CROTA2
+- `~sunpy.map.sources.CORMap`: DATE-OBS
+- `~sunpy.map.sources.HIMap`: DATE-OBS
+- `~sunpy.map.sources.SUVIMap`: DETECTOR, TELESCOP
+- `~sunpy.map.sources.TRACEMap`: DETECTOR, OBSRVTRY, CUNIT1, CUNIT2
+- `~sunpy.map.sources.SXTMap`: DETECTOR, TELESCOP, DSUN_APPARENT
+- `~sunpy.map.sources.XRTMap`: DETECTOR, TELESCOP, TIMESYS
+- `~sunpy.map.sources.SOTMap`: DETECTOR, TELESCOP
+- `~sunpy.map.sources.SJIMap`: DETECTOR, WAVEUNIT, WAVELNTH, CUNIT1, CUNIT2
+- `~sunpy.map.sources.EUIMap`: CROTA, CROTA2
+
 
 .. _whatsnew-3.1-map-datetime:
 
