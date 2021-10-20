@@ -841,8 +841,8 @@ class JSOCClient(BaseClient):
         segments = list(set(segments))
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
             keyword_info = {}
-            keyword_info["series_store"] = series_store
-            keyword_info["segments"] = segments
+            keyword_info["series_store"] = sorted(series_store)
+            keyword_info["segments"] = sorted(segments)
             json.dump(keyword_info, attrs_file, indent=2)
 
     @staticmethod

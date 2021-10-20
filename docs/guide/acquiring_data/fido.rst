@@ -49,14 +49,13 @@ Using ``Instrument`` as the first example, if you print the object::
            Attribute Name          Client          Full Name                                           Description
     --------------------------- ----------- ------------------------ --------------------------------------------------------------------------------
     aia                         VSO         AIA                      Atmospheric Imaging Assembly
-    bbi                         VSO         BBI                      None
     bcs                         VSO         BCS                      Bragg Crystal Spectrometer
     be_continuum                VSO         BE-Continuum             INAF-OACT Barra Equatoriale Continuum Instrument
     be_halpha                   VSO         BE-Halpha                INAF-OACT Barra Equatoriale Hα Instrument
-    bic_hifi                    VSO         BIC-HIFI                 None
     bigbear                     VSO         Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
     caii                        VSO         CAII                     Kanzelhöhe Ca II k Instrument
     cds                         VSO         CDS                      Coronal Diagnostic Spectrometer
+    celias                      VSO         CELIAS                   Charge, Element, and Isotope Analysis System
     ...
 
 You get a full list of known values, a description and what "Clients" support those values (if you want to use a specific data source).
