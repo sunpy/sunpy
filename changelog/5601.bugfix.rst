@@ -1,0 +1,1 @@
+Fixed passing a URL to :func:`sunpy.io.read_file` on windows.
