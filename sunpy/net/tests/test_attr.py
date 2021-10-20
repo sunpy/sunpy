@@ -373,3 +373,29 @@ def test_asterisk_attrs_time():
     # This checks we can submit * for time/wavelength (both are ranges)
     attr.Attr.update_values({GenericClient: {Time: [('*')]}})
     assert "all       All values of this type are supported." in repr(Time)
+
+
+def test_AttrComparison():
+    attr_comp = attr.AttrComparison("foo", "<", "bar")
+    attr_wrapper = attr.ComparisonParamAttrWrapper("foo") < "bar"
+    assert attr_comp == attr_wrapper
+
+    attr_comp = attr.AttrComparison("foo", "<=", "bar")
+    attr_wrapper = attr.ComparisonParamAttrWrapper("foo") <= "bar"
+    assert attr_comp == attr_wrapper
+
+    attr_comp = attr.AttrComparison("foo", ">", "bar")
+    attr_wrapper = attr.ComparisonParamAttrWrapper("foo") > "bar"
+    assert attr_comp == attr_wrapper
+
+    attr_comp = attr.AttrComparison("foo", ">=", "bar")
+    attr_wrapper = attr.ComparisonParamAttrWrapper("foo") >= "bar"
+    assert attr_comp == attr_wrapper
+
+    attr_comp = attr.AttrComparison("foo", "=", "bar")
+    attr_wrapper = attr.ComparisonParamAttrWrapper("foo") == "bar"
+    assert attr_comp == attr_wrapper
+
+    attr_comp = attr.AttrComparison("foo", "!=", "bar")
+    attr_wrapper = attr.ComparisonParamAttrWrapper("foo") != "bar"
+    assert attr_comp == attr_wrapper
