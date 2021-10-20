@@ -121,34 +121,29 @@ class XRSTimeSeries(GenericTimeSeries):
         """
         Retrieves the goes satellite number by parsing the meta dictionary.
         """
-        # various pattern matches for the meta fields.
-        pattern_old = ("{}go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits{}")
+        # Various pattern matches for the meta fields.
+        pattern_inst = ("{}GOES 1-{SatelliteNumber:02d} {}")
         pattern_new = ("{}sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc{}")
+        pattern_old = ("{}go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits{}")
         pattern_r = ("{}sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc{}")
         pattern_telescop = ("GOES {SatelliteNumber:02d}")
-        pattern_inst = ("{}GOES 1-{SatelliteNumber:02d} {}")
-
-        try:
-            id = self.meta.metas[0]['id']
-            parsed = parse(pattern_r, str(id))
-            if parsed is None:
-                parsed = parse(pattern_new, str(id))
-                if parsed is None:
-                    parsed = parse(pattern_old, str(id))
-                    if parsed is None:
-                        id = self.meta.metas[0]['Instrument']
-                        parsed = parse(pattern_inst, str(id))
-        except KeyError:
-            try:
-                id = self.meta.metas[0]['TELESCOP']
-                parsed = parse(pattern_telescop, str(id))
-            except KeyError:
-                log.debug('Satellite Number not found in metadata')
-                return
-        if parsed is None:
-            log.debug('Satellite Number not found in metadata')
-            return
-        return f"GOES-{parsed['SatelliteNumber']}"
+        # The ordering of where we get the metadata from is important.
+        # We alway want to check ID first as that will most likely have the correct information.
+        # The other fields are fallback and sometimes have data in them that is "useless".
+        id = (
+            self.meta.metas[0].get("id", "").strip()
+            or self.meta.metas[0].get("TELESCOP", "").strip()
+            or self.meta.metas[0].get("Instrument", "").strip()
+        )
+        if id is None:
+            log.debug("Unable to get a satellite number from 'Instrument', 'TELESCOP' or 'id' ")
+            return None
+        for pattern in [pattern_inst, pattern_new, pattern_old, pattern_r, pattern_telescop]:
+            parsed = parse(pattern, str(id))
+            if parsed is not None:
+                return f"GOES-{parsed['SatelliteNumber']}"
+        log.debug('Satellite Number not found in metadata')
+        return None
 
     @peek_show
     def peek(self, title="GOES Xray Flux", **kwargs):
@@ -191,7 +186,8 @@ class XRSTimeSeries(GenericTimeSeries):
         try:
             hdus = sunpy.io.read_file(filepath)
         except UnrecognizedFileTypeError:
-            raise ValueError(f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
+            raise ValueError(
+                f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
         else:
             return cls._parse_hdus(hdus)
 
