@@ -500,6 +500,48 @@ class GenericMap(NDData):
     def _meta_hash(self):
         return self.meta.item_hash()
 
+    def __neg__(self):
+        return self._new_instance(-self.data, self.meta)
+
+    def __add__(self, value):
+        if self.unit is None:
+            return self._new_instance(self.data + value, self.meta)
+        new_meta = copy.deepcopy(self.meta)
+        new_data = (self.data * self.unit) + value
+        new_meta['bunit'] = new_data.unit.to_string()
+        return self._new_instance(new_data.value, new_meta)
+
+    def __radd__(self, value):
+        return self.__add__(value)
+
+    def __sub__(self, value):
+        return self.__add__(-value)
+
+    def __rsub__(self, value):
+        return self.__neg__().__add__(value)
+
+    def __mul__(self, value):
+        if self.unit is None:
+            return self._new_instance(self.data * value, self.meta)
+        new_meta = copy.deepcopy(self.meta)
+        new_data = (self.data * self.unit) * value
+        new_meta['bunit'] = new_data.unit.to_string()
+        return self._new_instance(new_data.value, new_meta)
+
+    def __rmul__(self, value):
+        return self.__mul__(value)
+
+    def __truediv__(self, value):
+        return self.__mul__(1/value)
+
+    def __rtruediv__(self, value):
+        if self.unit is None:
+            return self._new_instance(value / self.data, self.meta)
+        new_meta = copy.deepcopy(self.meta)
+        new_data = value / (self.data * self.unit)
+        new_meta['bunit'] = new_data.unit.to_string()
+        return self._new_instance(new_data.value, new_meta)
+
     @property
     @cached_property_based_on('_meta_hash')
     def wcs(self):
