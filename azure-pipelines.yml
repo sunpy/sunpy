@@ -20,6 +20,7 @@ resources:
     endpoint: sunpy
     name: ConorMacBride/azure-pipelines-templates
     ref: upgrade-codecov
+# (trigger ci)
 
 trigger:
   branches:
