@@ -11,6 +11,7 @@ import astropy.units as u
 
 from sunpy.map import GenericMap
 from sunpy.util import expand_list, get_keywords, get_set_methods
+from sunpy.util.decorators import add_common_docstring
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 __all__ = ['CompositeMap']
@@ -356,6 +357,11 @@ class CompositeMap:
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
         return ax
 
+    @add_common_docstring(
+        ACCEPTED_IMSHOW_KWARGS=sorted(ACCEPTED_IMSHOW_KWARGS),
+        ACCEPTED_PCOLORMESH_KWARGS=sorted(ACCEPTED_PCOLORMESH_KWARGS),
+        ACCEPTED_CONTOUR_KWARGS=sorted(ACCEPTED_CONTOUR_KWARGS)
+    )
     def plot(self, axes=None, annotate=True,
              title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object by calling :meth:`~sunpy.map.GenericMap.plot`
@@ -402,12 +408,12 @@ class CompositeMap:
         full set of arguments passed to each plotting method. These are:
 
         >>> import sunpy.map.compositemap
-        >>> sunpy.map.compositemap.ACCEPTED_IMSHOW_KWARGS
-        %%ACCEPTED_IMSHOW_KWARGS%%
-        >>> sunpy.map.compositemap.ACCEPTED_PCOLORMESH_KWARGS
-        %%ACCEPTED_PCOLORMESH_KWARGS%%
-        >>> sunpy.map.compositemap.ACCEPTED_CONTOUR_KWARGS
-        %%ACCEPTED_CONTOUR_KWARGS%%
+        >>> sorted(sunpy.map.compositemap.ACCEPTED_IMSHOW_KWARGS)
+        {ACCEPTED_IMSHOW_KWARGS}
+        >>> sorted(sunpy.map.compositemap.ACCEPTED_PCOLORMESH_KWARGS)
+        {ACCEPTED_PCOLORMESH_KWARGS}
+        >>> sorted(sunpy.map.compositemap.ACCEPTED_CONTOUR_KWARGS)
+        {ACCEPTED_CONTOUR_KWARGS}
 
         If a transformation is required to overlay the maps with the correct
         alignment, the plot limits may need to be manually set because
@@ -536,7 +542,3 @@ class OutOfRangeAlphaValue(ValueError):
     """Exception to raise when an alpha value outside of the range 0-1 is
     requested.
     """
-
-
-for n in ('ACCEPTED_IMSHOW_KWARGS', 'ACCEPTED_PCOLORMESH_KWARGS', 'ACCEPTED_CONTOUR_KWARGS'):
-    CompositeMap.plot.__doc__ = CompositeMap.plot.__doc__.replace(f'%%{n}%%', str(locals()[n]))
