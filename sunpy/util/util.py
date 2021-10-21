@@ -226,7 +226,7 @@ def get_keywords(func):
 
     Parameters
     ----------
-    func : `function` or `method` or `list`
+    func : function or method or `list`
         Function or method (or list of those) to extract a
         set of accepted keyword arguments for.
 
