@@ -3,13 +3,14 @@ This module provides a way to animate `~sunpy.map.MapSequence`.
 """
 from copy import deepcopy
 
-from sunpy.visualization import animator as imageanimator
+from mpl_animators import BaseFuncAnimator
+
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
 
 __all__ = ['MapSequenceAnimator']
 
 
-class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
+class MapSequenceAnimator(BaseFuncAnimator):
     """
     Create an interactive viewer for a `~sunpy.map.MapSequence`.
 
@@ -57,8 +58,7 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         slider_functions = [self.updatefig]
         slider_ranges = [[0, len(mapsequence.maps)]]
 
-        imageanimator.BaseFuncAnimator.__init__(
-            self, mapsequence.maps, slider_functions, slider_ranges, **kwargs)
+        super().__init__(mapsequence.maps, slider_functions, slider_ranges, **kwargs)
 
         if annotate:
             self._annotate_plot(0)

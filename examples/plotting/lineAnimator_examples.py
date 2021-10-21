@@ -8,8 +8,7 @@ LineAnimator object to animate line plots.
 """
 import matplotlib.pyplot as plt
 import numpy as np
-
-from sunpy.visualization.animator import LineAnimator
+from mpl_animators import LineAnimator
 
 ###############################################################################
 # Animate a 2D cube of random data as a line plot along an

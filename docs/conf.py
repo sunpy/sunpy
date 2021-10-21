@@ -182,6 +182,7 @@ intersphinx_mapping = {
     "astropy": ("https://docs.astropy.org/en/stable/", None),
     "astroquery": ("https://astroquery.readthedocs.io/en/latest/", None),
     "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
+    "mpl_animators": ("https://docs.sunpy.org/projects/mpl-animators/en/stable/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
