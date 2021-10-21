@@ -3,17 +3,37 @@
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 import matplotlib.pyplot as plt
+from matplotlib.collections import Collection, QuadMesh
+from matplotlib.contour import ContourSet, QuadContourSet
+from matplotlib.image import AxesImage, _ImageBase
 
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.util import expand_list
+from sunpy.util import expand_list, get_keywords, get_set_methods
+from sunpy.util.decorators import add_common_docstring
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 __all__ = ['CompositeMap']
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
+
+# Valid keyword arguments for each plotting method
+ACCEPTED_IMSHOW_KWARGS = get_keywords(
+    [GenericMap.plot, plt.Axes.imshow, AxesImage.__init__, _ImageBase.__init__]
+) | get_set_methods(AxesImage)
+
+ACCEPTED_PCOLORMESH_KWARGS = (get_keywords(
+    [GenericMap.plot, plt.Axes.pcolormesh, QuadMesh.__init__, Collection.__init__]
+) | get_set_methods(QuadMesh)) - {
+    'color', 'ec', 'edgecolor', 'facecolor', 'linestyle', 'linestyles',
+    'linewidth', 'linewidths', 'ls', 'lw'
+}
+
+ACCEPTED_CONTOUR_KWARGS = get_keywords(
+    [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args]
+)
 
 
 class CompositeMap:
@@ -337,6 +357,11 @@ class CompositeMap:
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
         return ax
 
+    @add_common_docstring(
+        ACCEPTED_IMSHOW_KWARGS=sorted(ACCEPTED_IMSHOW_KWARGS),
+        ACCEPTED_PCOLORMESH_KWARGS=sorted(ACCEPTED_PCOLORMESH_KWARGS),
+        ACCEPTED_CONTOUR_KWARGS=sorted(ACCEPTED_CONTOUR_KWARGS)
+    )
     def plot(self, axes=None, annotate=True,
              title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object by calling :meth:`~sunpy.map.GenericMap.plot`
@@ -371,11 +396,24 @@ class CompositeMap:
 
         Notes
         -----
-        Matplotlib arguments for setting the line width (``linewidths``), line style
-        (``linestyles``) or line color (``colors``) will apply only to those maps
-        that are plotted as contours. Similar arguments (i.e., ``linewidth``,
-        ``lw``, ``color``, ``c``, ``linestyle`` and ``ls``) will also be ignored
-        for maps plotted as images.
+        Images are plotted using either `~matplotlib.axes.Axes.imshow` or
+        `~matplotlib.axes.Axes.pcolormesh`, and contours are plotted using
+        `~matplotlib.axes.Axes.contour`.
+        The Matplotlib arguments accepted by the plotting method are passed to it.
+        (For compatability reasons, we enforce a more restrictive set of
+        accepted `~matplotlib.axes.Axes.pcolormesh` arguments.)
+        If any Matplotlib arguments are not used by any plotting method,
+        a ``TypeError`` will be raised.
+        The ``sunpy.map.compositemap`` module includes variables which list the
+        full set of arguments passed to each plotting method. These are:
+
+        >>> import sunpy.map.compositemap
+        >>> sorted(sunpy.map.compositemap.ACCEPTED_IMSHOW_KWARGS)
+        {ACCEPTED_IMSHOW_KWARGS}
+        >>> sorted(sunpy.map.compositemap.ACCEPTED_PCOLORMESH_KWARGS)
+        {ACCEPTED_PCOLORMESH_KWARGS}
+        >>> sorted(sunpy.map.compositemap.ACCEPTED_CONTOUR_KWARGS)
+        {ACCEPTED_CONTOUR_KWARGS}
 
         If a transformation is required to overlay the maps with the correct
         alignment, the plot limits may need to be manually set because
@@ -393,6 +431,9 @@ class CompositeMap:
                                                    self._maps[0].spatial_units[1]))
             axes.set_title(title)
 
+        # Checklist to determine unused keywords in `matplot_args`
+        unused_kwargs = set(matplot_args.keys())
+
         # Define a list of plotted objects
         ret = []
         # Plot layers of composite map
@@ -407,25 +448,38 @@ class CompositeMap:
             # The request to show a map layer rendered as a contour is indicated by a
             # non False levels property.
             if m.levels is False:
-                # Check if any linewidth, color, or linestyle arguments are provided,
-                # if so, then delete them from params.
-                for item in ['linewidth', 'linewidths', 'lw',
-                             'color', 'colors', 'c',
-                             'linestyle', 'linestyles', 'ls']:
-                    if item in matplot_args:
-                        del params[item]
-
                 # We tell GenericMap.plot() that we need to autoalign the map
                 if wcsaxes_compat.is_wcsaxes(axes):
                     params['autoalign'] = True
 
+                # Filter `matplot_args`
+                if params.get('autoalign', None) in (True, 'pcolormesh'):
+                    accepted_kwargs = ACCEPTED_PCOLORMESH_KWARGS
+                else:
+                    accepted_kwargs = ACCEPTED_IMSHOW_KWARGS
+                for item in matplot_args.keys():
+                    if item not in accepted_kwargs:
+                        del params[item]
+                    else:  # mark as used
+                        unused_kwargs -= {item}
+
                 params['annotate'] = False
                 ret.append(m.plot(**params))
             else:
+                # Filter `matplot_args`
+                for item in matplot_args.keys():
+                    if item not in ACCEPTED_CONTOUR_KWARGS:
+                        del params[item]
+                    else:  # mark as used
+                        unused_kwargs -= {item}
+
                 ret.append(m.draw_contours(m.levels, **params))
 
                 # Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
+
+        if len(unused_kwargs) > 0:
+            raise TypeError(f'plot() got unexpected keyword arguments {unused_kwargs}')
 
         # Adjust axes extents to include all data
         axes.axis('image')

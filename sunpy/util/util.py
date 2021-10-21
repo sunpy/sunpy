@@ -3,12 +3,14 @@ This module provides general utility functions.
 """
 import os
 import hashlib
+import inspect
 from shutil import get_terminal_size
 from itertools import chain, count
 from collections import UserList
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
-           'expand_list_generator', 'dict_keys_same', 'hash_file', "get_width"]
+           'expand_list_generator', 'dict_keys_same', 'hash_file', 'get_width',
+           'get_keywords', 'get_set_methods']
 
 
 def unique(itr, key=None):
@@ -215,3 +217,57 @@ def get_width():
     else:
         width, _ = get_terminal_size()
     return width
+
+
+def get_keywords(func):
+    """
+    Returns a set of keyword names from ``func``'s signature.
+    Recursive if ``func`` is a list of functions and methods.
+
+    Parameters
+    ----------
+    func : function or method or `list`
+        Function or method (or list of those) to extract a
+        set of accepted keyword arguments for.
+
+    Returns
+    -------
+    keywords : `set`
+        A set of accepted keyword arguments.
+    """
+    if isinstance(func, list):
+        keywords = set()
+        for f in func:
+            keywords.update(get_keywords(f))
+        return keywords
+    sig = inspect.signature(func)
+    keywords = {param.name for param in sig.parameters.values()
+                if param.default is not inspect.Parameter.empty}
+    return keywords
+
+
+def get_set_methods(obj):
+    """
+    Returns a set of keyword names that can be handled by
+    an object's ``set_...`` methods.
+
+    Parameters
+    ----------
+    obj : `object`
+        Matplotlib object such as `~matplotlib.image.AxesImage`
+        to extract handled keyword arguments for.
+
+    Returns
+    -------
+    keywords : `set`
+        A set of accepted keyword arguments.
+
+    Notes
+    -----
+    See :meth:`matplotlib.artist.Artist.update` for an example
+    of Matplotlib relying on this capability.
+    """
+    return {
+        m[4:] for m in dir(obj)
+        if m.startswith('set_') and callable(getattr(obj, m, None))
+    }
