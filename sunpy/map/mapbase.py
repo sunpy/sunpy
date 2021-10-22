@@ -514,12 +514,12 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility()
     def __pow__(self, value):
-        new_data = u.Quantity(self.data, self.unit) ** value
+        new_data = u.Quantity(self.data, self.unit, copy=False) ** value
         return self._new_instance_from_op(new_data)
 
     @check_arithmetic_compatibility()
     def __add__(self, value):
-        new_data = u.Quantity(self.data, self.unit) + value
+        new_data = u.Quantity(self.data, self.unit, copy=False) + value
         return self._new_instance_from_op(new_data)
 
     def __radd__(self, _):
@@ -535,7 +535,7 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility()
     def __mul__(self, value):
-        new_data = u.Quantity(self.data, self.unit) * value
+        new_data = u.Quantity(self.data, self.unit, copy=False) * value
         return self._new_instance_from_op(new_data)
 
     def __rmul__(self, value):
@@ -546,7 +546,7 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility()
     def __rtruediv__(self, value):
-        new_data = value / u.Quantity(self.data, self.unit)
+        new_data = value / u.Quantity(self.data, self.unit, copy=False)
         return self._new_instance_from_op(new_data)
 
     @property
