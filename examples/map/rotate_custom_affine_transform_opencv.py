@@ -8,12 +8,15 @@ map.rotate(), using OpenCV as an example.
 This requires the OpenCV (cv2) Python library.
 """
 
+import numbers
+
+import cv2
+import numpy as np
+
 import sunpy.data.sample
 import sunpy.map
-import numbers
-import numpy as np
-import cv2
 from sunpy.image.transform import _calculate_shift
+
 
 ##############################################################################
 # Rotating a map in sunpy (via ``map.rotate()``) has a choice between three libraries:
@@ -21,18 +24,14 @@ from sunpy.image.transform import _calculate_shift
 # However, the ``method=`` argument in :meth:`sunpy.GenericMap.rotate` can accept a custom function designed
 # to use an external library. Here, we illustrate this process by defining a function
 # with the OpenCV library; this will be identical to the built-in ``cv2`` option.
-
 ##############################################################################
 # First, our custom method must have a similar function call to
 # :func:`sunpy.image.transform.affine_transform` and return the same output.
-
 def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     """
     Uses `cv2.warpAffine` to do the affine transform on input `image` in same manner
     as sunpy's default `skimage.transform.warp`.
     """
-
-
     # Flags for converting input order from `integer` to the appropriate interpolation flag
     # As of Oct. 2021, OpenCV warpAffine does not support order 2,4,5
     _CV_ORDER_FLAGS = {
@@ -44,8 +43,8 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     try:
         order = _CV_ORDER_FLAGS[order]
     except KeyError:
-        raise ValueError("Input order={} not supported in openCV.".format(order),
-                      " Please use order = 0, 1, or 3.")
+        raise ValueError("Input order={} not supported in openCV. ".format(order),
+                         "Please use order = 0, 1, or 3.")
 
     # needed to convert `missing` from potentially a np.dtype
     # to the native `int` type required for cv2.warpAffine
@@ -58,9 +57,9 @@ def cv_rotate(image, rmatrix, order, scale, missing, image_center, recenter):
     # translation using `rmatrix/scale`, but scale+rotation with `rmatrix*scale`
     # in order to match what skimage/scipy do
 
-    shift = _calculate_shift(image, rmatrix/scale, image_center, recenter)
+    shift = _calculate_shift(image, rmatrix / scale, image_center, recenter)
 
-    rmatrix = rmatrix*scale
+    rmatrix = rmatrix * scale
 
     trans = np.eye(3, 3)
     rot_scale = np.eye(3, 3)

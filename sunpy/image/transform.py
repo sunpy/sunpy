@@ -1,15 +1,15 @@
 """
 Functions for geometrical image transformation and warping.
 """
-import numbers
-import warnings
 import types
+import numbers
 
 import numpy as np
 
-from sunpy.util.exceptions import warn_user, warn_deprecated
+from sunpy.util.exceptions import warn_deprecated, warn_user
 
 __all__ = ['affine_transform']
+
 
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                      recenter=False, missing=0.0, method='skimage', use_scipy=False):
@@ -117,11 +117,11 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     if method == 'skimage':
         try:
-            import skimage
+            import skimage  # NoQA
         except ImportError:
             warn_user('`skimage` could not be imported. Using `scipy` instead')
             warn_deprecated('This fallback behavior will be deprecated. '
-                          'Future versions will throw an ImportError and cease execution.')
+                            'Future versions will throw an ImportError and cease execution.')
             method = 'scipy'
 
     if isinstance(method, str):
@@ -183,7 +183,7 @@ def _skimage_affine_transform(image, rmatrix, order, scale, missing, image_cente
 
     if issubclass(image.dtype.type, numbers.Integral):
         warn_user("Integer input data has been cast to float64, "
-                      "which is required for the scikit-image transform.")
+                  "which is required for the scikit-image transform.")
         adjusted_image = image.astype(np.float64)
     else:
         adjusted_image = image.copy()
@@ -294,8 +294,8 @@ def _opencv_affine_transform(image, rmatrix, order, scale, missing, image_center
     try:
         order = _CV_ORDER_FLAGS[order]
     except KeyError:
-        raise ValueError("Input order={} not supported in openCV.".format(order),
-                      " Please use order = 0, 1, or 3.")
+        raise ValueError("Input order={} not supported in openCV. ".format(order),
+                         "Please use order=0, 1, or 3.")
 
     # needed to convert ``missing`` from potentially a np.dtype
     # to the native `int` type required for :func:`cv2.warpAffine`
@@ -307,11 +307,11 @@ def _opencv_affine_transform(image, rmatrix, order, scale, missing, image_center
     # OpenCV applies the shift+rotation operations in a different order; we need to calculate
     # translation using ``rmatrix/scale``, but scale+rotation with ``rmatrix*scale``
     # in order to match what skimage/scipy do
-    shift = _calculate_shift(image, rmatrix/scale, image_center, recenter)
+    shift = _calculate_shift(image, rmatrix / scale, image_center, recenter)
 
     # get appropriate cv transform matrix
     # (with a slight amount of voodoo to adjust for different coordinate systems)
-    rmatrix = rmatrix*scale
+    rmatrix = rmatrix * scale
 
     trans = np.eye(3, 3)
     rot_scale = np.eye(3, 3)
@@ -321,7 +321,7 @@ def _opencv_affine_transform(image, rmatrix, order, scale, missing, image_center
 
     if issubclass(image.dtype.type, numbers.Integral):
         warn_user("Integer input data has been cast to float64, "
-                      "for the openCV transform.")
+                  "for the openCV transform.")
         adjusted_image = image.astype(np.float64)
     else:
         adjusted_image = image.copy()
