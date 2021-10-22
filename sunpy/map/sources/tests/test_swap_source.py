@@ -8,6 +8,8 @@ import glob
 
 import pytest
 
+import astropy.units as u
+
 import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.proba2 import SWAPMap
@@ -44,3 +46,8 @@ def test_observatory(createSWAP):
 def test_measurement(createSWAP):
     """Tests the measurement property of the SWAPMap object."""
     assert createSWAP.measurement.value == 174
+
+
+def test_wcs(createSWAP):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    createSWAP.pixel_to_world(0*u.pix, 0*u.pix)
