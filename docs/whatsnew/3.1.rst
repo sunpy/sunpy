@@ -177,9 +177,9 @@ This method requires the optional package `reproject` to be installed.
 
 .. _whatsnew-3.1-jsoc-keywords:
 
-Support of JSOC keyword filtering with Fido
-===========================================
-Support for JSOC keywords was added to ``Fido.search``::
+JSOC keyword filtering with Fido
+================================
+Support for filtering searches with JSOC keywords has been added to ``Fido.search``::
 
     >>> from sunpy.net import Fido, attrs as a
     >>> import astropy.units as u
@@ -212,8 +212,8 @@ Support for JSOC keywords was added to ``Fido.search``::
     Source: http://jsoc.stanford.edu
 
 Please be aware of two items:
-* We do not validate the input keyword or the value you use for a comparison.
-* Passing in a keyword without a python comparison operator will error.
+* We do not validate the input keyword or the value used for comparison.
+* Passing in a keyword without comparison to a value (e.g. ``==0``, ``< 10``) will error.
 
 .. _whatsnew-3.1-contributors:
 

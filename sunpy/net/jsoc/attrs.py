@@ -43,14 +43,20 @@ class PrimeKey(DataAttr):
 
 
 class KeywordComparison(AttrComparison):
-    pass
+    """
+    Allows comparison filtering of the JSOC Keywords with the ability to specify the comparison operator.
+
+    Parameters
+    ----------
+    name : str
+    operator : str
+    value : Numeric
+    """
 
 
 class Keyword(SimpleAttr):
     """
-    JSOC Keywords.
-
-    Supports inequality comparisons.
+    Allows comparison filtering of the JSOC Keywords.
 
     Parameters
     ----------

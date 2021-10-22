@@ -319,7 +319,7 @@ To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`
 
 Using Keywords
 ==============
-In some cases, you might want to filter out files based  on key metadata, called keywords.
+In some cases, you might want to filter out files based on key metadata, also called keywords.
 
 A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained by::
 
@@ -330,25 +330,8 @@ A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained
     ['cparms_sg000', 'magnetogram_bzero', 'magnetogram_bscale', 'cparms_sg001', 'bitmap_bzero', 'bitmap_bscale', 'cparms_sg002', 'Dopplergram_bzero', 'Dopplergram_bscale', 'cparms_sg003', 'continuum_bzero', 'continuum_bscale', 'cparms_sg004', 'inclination_bzero', 'inclination_bscale', 'cparms_sg005', 'azimuth_bzero', 'azimuth_bscale', 'cparms_sg006', 'field_bzero', 'field_bscale', 'cparms_sg007', ... 'ERRJHT', 'ERRVF']
 
 Each keyword needs to be compared to a value, e.g., ``a.jsoc.Keyword("bitmap_bzero") == 0`` or ``a.jsoc.Keyword("bitmap_bzero") > 1``.
-If you provide a keyword without one it will throw a meaningful error::
 
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.sharp_720s'),
-    ...             a.jsoc.Keyword('bitmap_bzero'))  # doctest: +REMOTE_DATA
-    Traceback (most recent call last):
-    ...
-    ValueError: Keyword 'bitmap_bzero' needs to have a comparison to a value.
-
-If you provide an incorrect keyword name, it will throw a error, but due to the length of keywords supported, it will not tell you them::
-
-    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.sharp_720s'),
-    ...             a.jsoc.Keyword('bac') == 0)  # doctest: +REMOTE_DATA
-    Traceback (most recent call last):
-    ...
-    ValueError: Keyword: 'bac' is not supported by series: hmi.sharp_720s
-
-A working example::
+An example is::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.sharp_720s'),a.jsoc.Keyword('bitmap_bzero') == 0) # doctest: +REMOTE_DATA
@@ -393,6 +376,25 @@ You can pass multiple keywords and they will be chained together inside the quer
     2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     Length = 61 rows
+
+
+If you provide a keyword without a comparison it will raise an error::
+
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Keyword('bitmap_bzero'))  # doctest: +REMOTE_DATA
+    Traceback (most recent call last):
+    ...
+    ValueError: Keyword 'bitmap_bzero' needs to have a comparison to a value.
+
+If you provide an incorrect keyword name it will also raise a error::
+
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Keyword('bac') == 0)  # doctest: +REMOTE_DATA
+    Traceback (most recent call last):
+    ...
+    ValueError: Keyword: 'bac' is not supported by series: hmi.sharp_720s
 
 Using Sample
 ============
