@@ -32,7 +32,7 @@ _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 NUMBER_REGEX = re.compile(r"^(\d+$|\d(?:\.\d+)?)")
 
 __all__ = ['Attr', 'DataAttr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
-           'ValueAttr', 'and_', 'or_', 'AttrWalker']
+           'ValueAttr', 'and_', 'or_', 'AttrWalker', 'AttrComparison', 'ComparisonParamAttrWrapper']
 
 
 def make_tuple():

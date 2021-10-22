@@ -115,7 +115,7 @@ def test_post_notify_fail(client):
 
 @pytest.mark.remote_data()
 def test_post_wave_series(client):
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError, match="The series hmi.M_45s does not support wavelength attribute."):
         client.search(
             a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
             a.jsoc.Series('hmi.M_45s') | a.jsoc.Series('aia.lev1_euv_12s'),

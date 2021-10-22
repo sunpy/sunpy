@@ -335,48 +335,78 @@ An example is::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.sharp_720s'),a.jsoc.Keyword('bitmap_bzero') == 0) # doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7f92e7a19fa0>
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
-
+    <BLANKLINE>
     61 Results from the JSOCClient:
     Source: http://jsoc.stanford.edu
-
-            T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
+    <BLANKLINE>
+             T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
     ----------------------- -------- --------- -------- -------
     2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
                         ...      ...       ...      ...     ...
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     Length = 61 rows
+    <BLANKLINE>
+    <BLANKLINE>
+
 
 You can pass multiple keywords and they will be chained together inside the query::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.sharp_720s'),
     ...             a.jsoc.Keyword('bitmap_bzero') == 0, a.jsoc.Keyword('continuum_bscale') > 0) # doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7f92e78b2fd0>
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
-
+    <BLANKLINE>
     61 Results from the JSOCClient:
     Source: http://jsoc.stanford.edu
-
-            T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
+    <BLANKLINE>
+             T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
     ----------------------- -------- --------- -------- -------
     2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
                         ...      ...       ...      ...     ...
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     Length = 61 rows
-
+    <BLANKLINE>
+    <BLANKLINE>
 
 If you provide a keyword without a comparison it will raise an error::
 
