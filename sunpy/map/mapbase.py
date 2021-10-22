@@ -40,7 +40,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import cached_property_based_on
+from sunpy.util.decorators import cached_property_based_on, check_arithmetic_compatibility
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -503,30 +503,40 @@ class GenericMap(NDData):
     def __neg__(self):
         return self._new_instance(-self.data, self.meta)
 
-    def __add__(self, value):
-        if self.unit is None:
-            return self._new_instance(self.data + value, self.meta)
+    def _new_instance_from_op(self, new_data):
+        """
+        Helper function for creating new map instances after arithmetic
+        operations.
+        """
         new_meta = copy.deepcopy(self.meta)
-        new_data = (self.data * self.unit) + value
         new_meta['bunit'] = new_data.unit.to_string()
         return self._new_instance(new_data.value, new_meta)
 
-    def __radd__(self, value):
-        return self.__add__(value)
+    @check_arithmetic_compatibility()
+    def __pow__(self, value):
+        new_data = u.Quantity(self.data, self.unit) ** value
+        return self._new_instance_from_op(new_data)
+
+    @check_arithmetic_compatibility()
+    def __add__(self, value):
+        new_data = u.Quantity(self.data, self.unit) + value
+        return self._new_instance_from_op(new_data)
+
+    def __radd__(self, _):
+        raise ValueError(
+            'Addition operator should be placed to the right of the map, e.g. map + 1*m.unit')
 
     def __sub__(self, value):
         return self.__add__(-value)
 
-    def __rsub__(self, value):
-        return self.__neg__().__add__(value)
+    def __rsub__(self, _):
+        raise ValueError(
+            'Addition operator should be placed to the right of the map, e.g. -map + 1*m.unit')
 
+    @check_arithmetic_compatibility()
     def __mul__(self, value):
-        if self.unit is None:
-            return self._new_instance(self.data * value, self.meta)
-        new_meta = copy.deepcopy(self.meta)
-        new_data = (self.data * self.unit) * value
-        new_meta['bunit'] = new_data.unit.to_string()
-        return self._new_instance(new_data.value, new_meta)
+        new_data = u.Quantity(self.data, self.unit) * value
+        return self._new_instance_from_op(new_data)
 
     def __rmul__(self, value):
         return self.__mul__(value)
@@ -534,13 +544,10 @@ class GenericMap(NDData):
     def __truediv__(self, value):
         return self.__mul__(1/value)
 
+    @check_arithmetic_compatibility()
     def __rtruediv__(self, value):
-        if self.unit is None:
-            return self._new_instance(value / self.data, self.meta)
-        new_meta = copy.deepcopy(self.meta)
-        new_data = value / (self.data * self.unit)
-        new_meta['bunit'] = new_data.unit.to_string()
-        return self._new_instance(new_data.value, new_meta)
+        new_data = value / u.Quantity(self.data, self.unit)
+        return self._new_instance_from_op(new_data)
 
     @property
     @cached_property_based_on('_meta_hash')
