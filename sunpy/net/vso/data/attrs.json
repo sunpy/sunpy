@@ -17,6 +17,10 @@
       ""
     ],
     [
+      "FSI-174",
+      "None"
+    ],
+    [
       "SHORTWAVE-LOBE",
       "None"
     ],
@@ -51,10 +55,6 @@
     [
       "C1",
       "Coronograph 1"
-    ],
-    [
-      "XRT",
-      "None"
     ],
     [
       "INNER",
@@ -145,20 +145,12 @@
       "Coronado solar telescope L2"
     ],
     [
-      "GFPI",
-      "None"
-    ],
-    [
       "VAULT-2014",
       "None"
     ],
     [
       "MEGS-B",
       "Multiple EUV Grating Spectrograph-B"
-    ],
-    [
-      "GRIS",
-      "None"
     ],
     [
       "NB",
@@ -205,19 +197,11 @@
       ""
     ],
     [
-      "BBI",
-      "None"
-    ],
-    [
       "LED",
       "Low Energy Detector"
     ],
     [
       "WB",
-      "None"
-    ],
-    [
-      "BIC0HIFI",
       "None"
     ],
     [
@@ -293,6 +277,10 @@
       "None"
     ],
     [
+      "HRI_EUV",
+      "None"
+    ],
+    [
       "SP",
       "None"
     ],
@@ -301,12 +289,12 @@
       ""
     ],
     [
-      "IMaX",
-      "None"
-    ],
-    [
       "SEPT",
       "Solar Electron Proton Telescope"
+    ],
+    [
+      "FSI-304",
+      "None"
     ],
     [
       "TM4200-5",
@@ -401,7 +389,7 @@
       "Coronograph 3"
     ],
     [
-      "ZIMPOL",
+      "HRI_LYA",
       "None"
     ],
     [
@@ -435,10 +423,6 @@
       "High Resolution Coronal Imager 2.1 (172 A)"
     ],
     [
-      "XRT",
-      "X-Ray Telescope"
-    ],
-    [
       "CAII",
       "Kanzelh\u00f6he Ca II k Instrument"
     ],
@@ -463,10 +447,6 @@
       "Shortwave EUV observation of Sun with EUNIS (2006 flight)"
     ],
     [
-      "dpm",
-      "Digital Prominence Monitor"
-    ],
-    [
       "LASCO",
       "Large Angle and Spectrometric Coronagraph"
     ],
@@ -487,20 +467,12 @@
       "Improved Solar Observing Optical Network"
     ],
     [
-      "chp",
-      "Chromospheric Helium-I Imaging Photometer"
-    ],
-    [
       "60-ft SHG",
       "60-foot Tower Spectroheliograph"
     ],
     [
       "HMI",
       "Helioseismic and Magnetic Imager"
-    ],
-    [
-      "SXI-0",
-      "Solar X-ray Imager"
     ],
     [
       "Cooke",
@@ -535,10 +507,6 @@
       "Extreme Ultraviolet Variability Experiment"
     ],
     [
-      "GFPI",
-      "None"
-    ],
-    [
       "spectromagnetograph",
       "SpectroMagnetograph"
     ],
@@ -547,20 +515,20 @@
       "Very High Angular Resolution Ultraviolet Telescope (2014 flight)"
     ],
     [
-      "vsm",
-      "Vector SpecroMagnetograph"
-    ],
-    [
       "IVM",
       "None"
     ],
     [
-      "GRIS",
-      "None"
+      "vsm",
+      "Vector SpecroMagnetograph"
     ],
     [
       "SECCHI",
       "Sun Earth Connection Coronal and Heliospheric Investigation"
+    ],
+    [
+      "EUI",
+      "Extreme Ultravoilet Imager"
     ],
     [
       "CLIMSO",
@@ -583,20 +551,12 @@
       "X123 SXR Spectometer"
     ],
     [
-      "OVSA",
-      "Owens Valley Solar Array"
-    ],
-    [
       "SHORTWAVE-SLIT-07",
       "Shortwave EUV observation of Sun with EUNIS (trimmed/2007 flight)"
     ],
     [
       "Udaipur",
       "Indian GONG+ site"
-    ],
-    [
-      "BBI",
-      "None"
     ],
     [
       "SUVI",
@@ -625,10 +585,6 @@
     [
       "MDI",
       "Michelson Doppler Imager"
-    ],
-    [
-      "mk4",
-      "Mk. IV coronagraph"
     ],
     [
       "IRIS",
@@ -663,10 +619,6 @@
       "Ultraviolet Coronagraph Spectrometer"
     ],
     [
-      "K-Cor",
-      "None"
-    ],
-    [
       "SXT",
       "Soft X-Ray Telescope"
     ],
@@ -697,10 +649,6 @@
     [
       "SOT",
       "Solar Optical Telescope"
-    ],
-    [
-      "IMaX",
-      "None"
     ],
     [
       "El Teide",
@@ -751,10 +699,6 @@
       "Sun Watcher using Active pixel system detector and image Processing"
     ],
     [
-      "BIC-HIFI",
-      "None"
-    ],
-    [
       "HA2",
       "Kanzelh\u00f6he H\u03b1 Patrol Instrument"
     ],
@@ -779,10 +723,6 @@
       "Comprehensive Suprathermal and Energetic Particle Analyzer"
     ],
     [
-      "ZIMPOL",
-      "None"
-    ],
-    [
       "KPDC",
       "Kanzelh\u00f6he Photosphere Digital Camera"
     ],
@@ -795,284 +735,38 @@
       "Australian GONG+ site"
     ]
   ],
-  "source": [
+  "level": [
     [
-      "VAULT",
-      "Upgraded Very High Angular Resolution Ultraviolet Telescope (VAULT2.0)"
+      "3",
+      "3"
     ],
     [
-      "GOES17",
-      "Geostationary Operational Environmental Satellite (GOES-R) Series 17 "
+      "0C",
+      "0C"
     ],
     [
-      "MINXSS1",
-      "Miniature X-Ray Solar Spectrometer Cubesat #1"
+      "2",
+      "2"
     ],
     [
-      "STEREO",
-      "None"
+      "1b",
+      "1b"
     ],
     [
-      "MLSO",
-      "Mauna Loa Solar Observatory"
+      "1",
+      "1"
     ],
     [
-      "SMM",
-      "Solar Maximum Mission"
+      "1.5",
+      "1.5"
     ],
     [
-      "Hi-C21",
-      "High Resolution Coronal Imager Experimental Rocket 3rd Flight"
+      "1.0",
+      "1.0"
     ],
     [
-      "SOHO",
-      "Solar and Heliospheric Observatory"
-    ],
-    [
-      "SUNRISE2",
-      "None"
-    ],
-    [
-      "Hinode",
-      "Hinode Satellite, Japan"
-    ],
-    [
-      "HXECLIPSE",
-      "UCAR HAO Historical Eclipse Archive"
-    ],
-    [
-      "GONG",
-      "Global Oscillations Network Group"
-    ],
-    [
-      "Evans",
-      "Evans Solar Telescope, Sacramento Peak"
-    ],
-    [
-      "ChroTel",
-      "Chromospheric Telescope, Observatorio del Teide, Tenerife, Canary Islands"
-    ],
-    [
-      "McMath",
-      "McMath Solar Telescope, Kitt Peak"
-    ],
-    [
-      "TRACE",
-      "Transition Region And Coronal Explorer"
-    ],
-    [
-      "FOXSI1",
-      "Focusing Optics X-ray Solar Imager (flight #1:  11/02/12)"
-    ],
-    [
-      "EUNIS2",
-      "None"
-    ],
-    [
-      "EUNIS",
-      "Extreme Ultraviolet Normal-incidence Spectrograph"
-    ],
-    [
-      "KSO",
-      "Kanzelh\u00f6he Solar Observatory, Karl-Franzens-Universit\u00e4t, Graz, Austria"
-    ],
-    [
-      "SOLIS",
-      "Synoptic Optical Long-term Investigations of the Sun"
-    ],
-    [
-      "GOES-12",
-      "Geosyncronous Operational Environmental Satellite - 12"
-    ],
-    [
-      "RHESSI",
-      "Reuven Ramaty High Energy Solar Spectroscopic Imager"
-    ],
-    [
-      "ISOON",
-      "Improved Solar Observing Optical Network"
-    ],
-    [
-      "PSP",
-      "Parker Solar Probe"
-    ],
-    [
-      "KPVT",
-      "Kitt Peak Vacuum Tower Telescope"
-    ],
-    [
-      "GREGOR",
-      "None"
-    ],
-    [
-      "PTMC",
-      "None"
-    ],
-    [
-      "FOXSI2",
-      "Focusing Optics X-ray Solar Imager (flight #2:  12/11/14)"
-    ],
-    [
-      "OACT",
-      "Osservatorio Astrofisico di Catania, Via S.Sofia 78, 95123 Catania ITALY"
-    ],
-    [
-      "Hi-C",
-      "High Resolution Coronal Imager Experimental Rocket"
-    ],
-    [
-      "IVM",
-      "None"
-    ],
-    [
-      "SUNRISE1",
-      "None"
-    ],
-    [
-      "OVRO",
-      "Owens Valley Radio Observatory"
-    ],
-    [
-      "FOXSI3",
-      "Focusing Optics X-ray Solar Imager (flight #3:  09/07/18)"
-    ],
-    [
-      "CLASP2",
-      "Chromospheric LAyer SpectroPolarimeter 2"
-    ],
-    [
-      "OMP",
-      "Pic-du-Midi, France"
-    ],
-    [
-      "MCCD",
-      "Mees CCD Imaging Spectrograph"
-    ],
-    [
-      "SDO",
-      "Solar Dynamics Observatory"
-    ],
-    [
-      "OBSPM",
-      "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris, Paris, France"
-    ],
-    [
-      "YOHKOH",
-      "Yohkoh Satellite, Japan"
-    ],
-    [
-      "MtWilson",
-      "Mt Wilson Solar Observatory"
-    ],
-    [
-      "PROBA2",
-      "PRoject for Onboard Autonomy"
-    ],
-    [
-      "IRIS",
-      "Interface Region Imaging Spectrograph"
-    ]
-  ],
-  "provider": [
-    [
-      "NSO",
-      "National Solar Observatory"
-    ],
-    [
-      "NGDC",
-      "National Geophysical Data Center, NOAA"
-    ],
-    [
-      "KIS",
-      "Kiepenheuer-Institut f\u00fcr Sonnenphysik"
-    ],
-    [
-      "SAO",
-      "Smithsonian Astrophysical Observatory"
-    ],
-    [
-      "ROB",
-      "Royal Observatory of Belgium Solar Influences Data Center"
-    ],
-    [
-      "SSC",
-      "STEREO Science Center, NASA/Goddard"
-    ],
-    [
-      "SDAC",
-      "Solar Data Analysis Center, NASA/Goddard"
-    ],
-    [
-      "MSFC",
-      "Marshall Space Flight Center"
-    ],
-    [
-      "JSOC",
-      "SDO Joint Science Operations Center"
-    ],
-    [
-      "OVRO",
-      "Owens Valley Radio Observatory"
-    ],
-    [
-      "HAO",
-      "High Altitude Observatory, NCAR"
-    ],
-    [
-      "SHA",
-      "Stanford Helioseismology Archive, Stanford U."
-    ],
-    [
-      "OMP",
-      "Observatoire Midi-Pyr\u00e9n\u00e9es"
-    ],
-    [
-      "LASP",
-      "Laboratory for Atmospheric and Space Physics (University of Colorado at Boulder)"
-    ],
-    [
-      "LSSP",
-      "Laboratory for Space and Solar Physics, NASA/Goddard"
-    ],
-    [
-      "KSO",
-      "Kanzelh\u00f6he Solar Observatory"
-    ],
-    [
-      "NRL",
-      "U.S. Naval Research Laboratory"
-    ],
-    [
-      "OBSPM",
-      "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris"
-    ],
-    [
-      "INAF-OACT",
-      "Istituto Nazionale di Astrofisica, Osservatorio Astrofisico di Catania"
-    ],
-    [
-      "MPS",
-      "None"
-    ],
-    [
-      "MWSPADP",
-      "Mount Wilson Solar Archive Digitization Project"
-    ],
-    [
-      "NOAA",
-      "None"
-    ],
-    [
-      "MSU",
-      "Montana State University"
-    ],
-    [
-      "LMSAL",
-      "Lockheed-Martin Solar and Astrophysics Laboratory"
-    ],
-    [
-      "NWRA",
-      "Northwest Research Associates"
+      "0D",
+      "0D"
     ]
   ],
   "physobs": [
@@ -1145,38 +839,252 @@
       "the direct intensity, either integrated over the spectral observing range or as a function of wavelength (spectral density)"
     ]
   ],
-  "level": [
+  "provider": [
     [
-      "3",
-      "3"
+      "NSO",
+      "National Solar Observatory"
     ],
     [
-      "0C",
-      "0C"
+      "KIS",
+      "Kiepenheuer-Institut f\u00fcr Sonnenphysik"
     ],
     [
-      "2",
-      "2"
+      "ROB",
+      "Royal Observatory of Belgium Solar Influences Data Center"
     ],
     [
-      "1b",
-      "1b"
+      "SSC",
+      "STEREO Science Center, NASA/Goddard"
     ],
     [
-      "1",
-      "1"
+      "SDAC",
+      "Solar Data Analysis Center, NASA/Goddard"
     ],
     [
-      "1.5",
-      "1.5"
+      "JSOC",
+      "SDO Joint Science Operations Center"
     ],
     [
-      "1.0",
-      "1.0"
+      "MSFC",
+      "Marshall Space Flight Center"
     ],
     [
-      "0D",
-      "0D"
+      "HAO",
+      "High Altitude Observatory, NCAR"
+    ],
+    [
+      "SHA",
+      "Stanford Helioseismology Archive, Stanford U."
+    ],
+    [
+      "OMP",
+      "Observatoire Midi-Pyr\u00e9n\u00e9es"
+    ],
+    [
+      "LASP",
+      "Laboratory for Atmospheric and Space Physics (University of Colorado at Boulder)"
+    ],
+    [
+      "LSSP",
+      "Laboratory for Space and Solar Physics, NASA/Goddard"
+    ],
+    [
+      "KSO",
+      "Kanzelh\u00f6he Solar Observatory"
+    ],
+    [
+      "NRL",
+      "U.S. Naval Research Laboratory"
+    ],
+    [
+      "MWSPADP",
+      "Mount Wilson Solar Archive Digitization Project"
+    ],
+    [
+      "INAF-OACT",
+      "Istituto Nazionale di Astrofisica, Osservatorio Astrofisico di Catania"
+    ],
+    [
+      "OBSPM",
+      "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris"
+    ],
+    [
+      "NOAA",
+      "None"
+    ],
+    [
+      "MSU",
+      "Montana State University"
+    ],
+    [
+      "LMSAL",
+      "Lockheed-Martin Solar and Astrophysics Laboratory"
+    ],
+    [
+      "NWRA",
+      "Northwest Research Associates"
+    ]
+  ],
+  "source": [
+    [
+      "GOES16",
+      "Geostationary Operational Environmental Satellite (GOES-R) Series 16"
+    ],
+    [
+      "VAULT",
+      "Upgraded Very High Angular Resolution Ultraviolet Telescope (VAULT2.0)"
+    ],
+    [
+      "GOES17",
+      "Geostationary Operational Environmental Satellite (GOES-R) Series 17 "
+    ],
+    [
+      "MINXSS1",
+      "Miniature X-Ray Solar Spectrometer Cubesat #1"
+    ],
+    [
+      "STEREO",
+      "None"
+    ],
+    [
+      "SMM",
+      "Solar Maximum Mission"
+    ],
+    [
+      "Hi-C21",
+      "High Resolution Coronal Imager Experimental Rocket 3rd Flight"
+    ],
+    [
+      "SOHO",
+      "Solar and Heliospheric Observatory"
+    ],
+    [
+      "Hinode",
+      "Hinode Satellite, Japan"
+    ],
+    [
+      "HXECLIPSE",
+      "UCAR HAO Historical Eclipse Archive"
+    ],
+    [
+      "GONG",
+      "Global Oscillations Network Group"
+    ],
+    [
+      "Evans",
+      "Evans Solar Telescope, Sacramento Peak"
+    ],
+    [
+      "ChroTel",
+      "Chromospheric Telescope, Observatorio del Teide, Tenerife, Canary Islands"
+    ],
+    [
+      "McMath",
+      "McMath Solar Telescope, Kitt Peak"
+    ],
+    [
+      "TRACE",
+      "Transition Region And Coronal Explorer"
+    ],
+    [
+      "FOXSI1",
+      "Focusing Optics X-ray Solar Imager (flight #1:  11/02/12)"
+    ],
+    [
+      "EUNIS2",
+      "None"
+    ],
+    [
+      "EUNIS",
+      "Extreme Ultraviolet Normal-incidence Spectrograph"
+    ],
+    [
+      "KSO",
+      "Kanzelh\u00f6he Solar Observatory, Karl-Franzens-Universit\u00e4t, Graz, Austria"
+    ],
+    [
+      "SOLIS",
+      "Synoptic Optical Long-term Investigations of the Sun"
+    ],
+    [
+      "RHESSI",
+      "Reuven Ramaty High Energy Solar Spectroscopic Imager"
+    ],
+    [
+      "ISOON",
+      "Improved Solar Observing Optical Network"
+    ],
+    [
+      "PSP",
+      "Parker Solar Probe"
+    ],
+    [
+      "KPVT",
+      "Kitt Peak Vacuum Tower Telescope"
+    ],
+    [
+      "PTMC",
+      "None"
+    ],
+    [
+      "FOXSI2",
+      "Focusing Optics X-ray Solar Imager (flight #2:  12/11/14)"
+    ],
+    [
+      "OACT",
+      "Osservatorio Astrofisico di Catania, Via S.Sofia 78, 95123 Catania ITALY"
+    ],
+    [
+      "Hi-C",
+      "High Resolution Coronal Imager Experimental Rocket"
+    ],
+    [
+      "IVM",
+      "None"
+    ],
+    [
+      "FOXSI3",
+      "Focusing Optics X-ray Solar Imager (flight #3:  09/07/18)"
+    ],
+    [
+      "CLASP2",
+      "Chromospheric LAyer SpectroPolarimeter 2"
+    ],
+    [
+      "OMP",
+      "Pic-du-Midi, France"
+    ],
+    [
+      "MCCD",
+      "Mees CCD Imaging Spectrograph"
+    ],
+    [
+      "SDO",
+      "Solar Dynamics Observatory"
+    ],
+    [
+      "OBSPM",
+      "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris, Paris, France"
+    ],
+    [
+      "YOHKOH",
+      "Yohkoh Satellite, Japan"
+    ],
+    [
+      "SO",
+      "Solar Orbiter"
+    ],
+    [
+      "MtWilson",
+      "Mt Wilson Solar Observatory"
+    ],
+    [
+      "IRIS",
+      "Interface Region Imaging Spectrograph"
+    ],
+    [
+      "PROBA2",
+      "PRoject for Onboard Autonomy"
     ]
   ]
 }
