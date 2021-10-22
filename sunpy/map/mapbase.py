@@ -26,6 +26,7 @@ from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
+from astropy.wcs.wcsapi import BaseHighLevelWCS, BaseLowLevelWCS, HighLevelWCSWrapper
 
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
@@ -507,7 +508,6 @@ class GenericMap(NDData):
         The `~astropy.wcs.WCS` property of the map.
         """
         w2 = astropy.wcs.WCS(naxis=2)
-
         # Add one to go from zero-based to one-based indexing
         w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
         # Make these a quantity array to prevent the numpy setting element of
@@ -522,7 +522,6 @@ class GenericMap(NDData):
         w2.wcs.cunit = self.spatial_units
         w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
-
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
@@ -534,17 +533,25 @@ class GenericMap(NDData):
             for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
                 header.pop(kw, None)
             w2 = astropy.wcs.WCS(header)
-
             # Get observer coord, and set the aux information
             obs_coord = self.observer_coordinate
             sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
-
         # Set the shape of the data array
         w2.array_shape = self.data.shape
-
         # Validate the WCS here.
         w2.wcs.set()
         return w2
+
+    @wcs.setter
+    def wcs(self, wcs):
+        if self._wcs is not None and wcs is not None:
+            raise ValueError("You can only set the wcs attribute with a WCS if no WCS is present.")
+        if wcs is None or isinstance(wcs, BaseHighLevelWCS):
+            self._wcs = wcs
+        elif isinstance(wcs, BaseLowLevelWCS):
+            self._wcs = HighLevelWCSWrapper(wcs)
+        else:
+            raise TypeError("The wcs argument must implement either the high or low level WCS API.")
 
     @property
     def coordinate_frame(self):
