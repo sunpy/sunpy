@@ -994,6 +994,14 @@ def test_validate_meta(generic_map):
     assert 'waveunit'.upper() in str(w[0].message)
 
 
+def test_validate_non_spatial(generic_map):
+    generic_map.meta['cunit2'] = 'Angstrom'
+    err_msg = ("Map only supports spherical coordinate systems with angular units "
+               "(ie. equivalent to arcsec), but this map has units ['arcsec', 'Angstrom']")
+    with pytest.raises(sunpy.map.MapMetaValidationError, match=re.escape(err_msg)):
+        sunpy.map.Map(generic_map.data, generic_map.meta)
+
+
 # Heliographic Map Tests
 
 
@@ -1018,38 +1026,6 @@ def test_hg_data_to_pix(heliographic_test_map):
             0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
     assert_quantity_allclose(out[0], 180 * u.pix)
     assert_quantity_allclose(out[1], 90 * u.pix)
-
-# Heliocentric Map Tests
-
-
-def test_hc_warn():
-    data = np.ones([6, 6], dtype=np.float64)
-    header = {
-        'CRVAL1': 0,
-        'CRVAL2': 0,
-        'CRPIX1': 5,
-        'CRPIX2': 5,
-        'CDELT1': 10,
-        'CDELT2': 10,
-        'CUNIT1': 'km',
-        'CUNIT2': 'km',
-        'CTYPE1': 'SOLX    ',
-        'CTYPE2': 'SOLY    ',
-        'PC1_1': 0,
-        'PC1_2': -1,
-        'PC2_1': 1,
-        'PC2_2': 0,
-        'NAXIS1': 6,
-        'NAXIS2': 6,
-        'date-obs': '1970/01/01T00:00:00',
-        'obsrvtry': 'Foo',
-        'detector': 'bar',
-        'wavelnth': 10,
-        'waveunit': 'm'
-    }
-
-    with pytest.warns(UserWarning):
-        sunpy.map.Map((data, header))
 
 # Dimension testing
 
