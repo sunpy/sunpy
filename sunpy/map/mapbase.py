@@ -110,7 +110,7 @@ Within this scope it also makes some other assumptions.
     rest will be discarded.
 """
 
-__all__ = ['GenericMap']
+__all__ = ['GenericMap', 'MapMetaValidationError']
 
 
 class MapMetaValidationError(AttributeError):
@@ -1321,8 +1321,13 @@ class GenericMap(NDData):
             warn_user("sunpy Map does not support three dimensional data "
                       "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.")
 
-# #### Data conversion routines #### #
+        if not all(su.is_equivalent(u.arcsec) for su in self.spatial_units):
+            units = [su.to_string() for su in self.spatial_units]
+            raise MapMetaValidationError(
+                'Map only supports spherical coordinate systems with angular units '
+                f'(ie. equivalent to arcsec), but this map has units {units}')
 
+# #### Data conversion routines #### #
     def world_to_pixel(self, coordinate):
         """
         Convert a world (data) coordinate to a pixel coordinate.

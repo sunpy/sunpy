@@ -1,0 +1,2 @@
+`sunpy.map.Map` now raises a clear error when the map is constructed if units
+of either two axes are not angular units.
