@@ -2681,7 +2681,7 @@ class engine:
                             + lowered_split[numword]
                             + "-"
                         ]
-                    ) + " ".join(lowered_split[(numword + 1) :])
+                    ) + " ".join(lowered_split[(numword + 1):])
 
         # HANDLE PRONOUNS
 
@@ -3116,7 +3116,7 @@ class engine:
                     sinoun_box = [f"{sinoun}-{dash_split[numword]}-"]
 
                     return " ".join(dash_split[: numword - 1] + sinoun_box) + " ".join(
-                        dash_split[(numword + 1) :]
+                        dash_split[(numword + 1):]
                     )
 
         # HANDLE PRONOUNS

@@ -63,19 +63,29 @@ repos:
     rev: 3.9.2
     hooks:
       - id: flake8
-        args: ['--count', '--select', 'E101,E11,E111,E112,E113,E121,E122,E123,E124,E125,E126,E127,E128,E129,E131,E133,E20,E211,E231,E241,E242,E251,E252,E26,E265,E266,E27,E301,E302,E303,E304,E305,E306,E401,E402,E502,E701,E711,E712,E713,E714,E722,E731,E901,E902,F822,F823,W191,W291,W292,W293,W391,W601,W602,W603,W604,W605,W690']
+        args:
+          [
+            "--count",
+            "--select",
+            "E101,E11,E111,E112,E113,E121,E122,E123,E124,E125,E126,E127,E128,E129,E131,E133,E20,E211,E231,E241,E242,E251,E252,E26,E265,E266,E27,E301,E302,E303,E304,E305,E306,E401,E402,E502,E701,E711,E712,E713,E714,E722,E731,E901,E902,F822,F823,W191,W291,W292,W293,W391,W601,W602,W603,W604,W605,W690",
+          ]
         exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|sunpy/visualization/colormaps/color_tables.py)$"
   - repo: https://github.com/myint/autoflake
     rev: v1.4
     hooks:
       - id: autoflake
-        args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
+        args:
+          [
+            "--in-place",
+            "--remove-all-unused-imports",
+            "--remove-unused-variable",
+          ]
         exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/timothycrosley/isort
     rev: 5.9.3
     hooks:
       - id: isort
-        args: ['--sp','setup.cfg']
+        args: ["--sp", "setup.cfg"]
         exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
@@ -96,4 +106,4 @@ repos:
     hooks:
       - id: prohibit-string
         args: [--prohibit-string, "from warnings import warn,warnings.warn"]
-        exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py"
+        exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py|sunpy/extern/"

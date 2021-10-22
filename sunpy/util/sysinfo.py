@@ -5,7 +5,7 @@ import platform
 
 from pkg_resources import get_distribution
 
-from sunpy.extern.distro import linux_distribution
+import sunpy.extern.distro as distro
 
 __all__ = ['system_info', 'find_dependencies', 'missing_dependencies_by_extra']
 
@@ -73,8 +73,7 @@ def system_info():
     print("General")
     print("#######")
     if sys_prop['System'] == "Linux":
-        distro = " ".join(linux_distribution())
-        print(f"OS: {distro} (Linux {platform.release()})")
+        print(f"OS: {distro.name()} ({distro.version()}, Linux {platform.release()})")
     elif sys_prop['System'] == "Darwin":
         print(f"OS: Mac OS {platform.mac_ver()[0]}")
     elif sys_prop['System'] == "Windows":
