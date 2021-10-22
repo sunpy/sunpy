@@ -3,10 +3,12 @@ from textwrap import dedent
 import numpy as np
 import pytest
 
+import astropy.units as u
 from astropy.io import fits
 
 from sunpy.map import Map
 from sunpy.map.sources.hinode import SOTMap
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 
 @pytest.fixture
@@ -227,3 +229,9 @@ def test_obstype(sot):
                                      'FG focus scan', 'FG shuttered I and V',
                                      'FG shutterless I and V', 'FG shutterless I and V with 0.2s intervals',
                                      'FG shutterless Stokes', 'SP IQUV 4D array'])
+
+
+def test_wcs(sot):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    with pytest.warns(SunpyMetadataWarning, match='assuming Earth-based observer'):
+        sot.pixel_to_world(0*u.pix, 0*u.pix)
