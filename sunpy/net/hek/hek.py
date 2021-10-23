@@ -59,12 +59,14 @@ class HEKClient(BaseClient):
         """ Download all data, even if paginated. """
         page = 1
         results = []
-        # Override the default name of the operator, as HEK expects op0
-        if "operator0" in data:
-            data["op0"] = data.pop("operator0")
+        new_data = data.copy()
+        # Override the default name of the operatorX, where X is a number.
+        for key in data.keys():
+            if "operator" in key:
+                new_data[f"op{key.split('operator')[-1]}"] = new_data.pop(key)
         while True:
-            data['page'] = page
-            url = self.url + urllib.parse.urlencode(data)
+            new_data['page'] = page
+            url = self.url + urllib.parse.urlencode(new_data)
             log.debug(f'Opening {url}')
             fd = urllib.request.urlopen(url)
             try:

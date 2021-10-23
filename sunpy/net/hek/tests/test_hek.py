@@ -187,3 +187,16 @@ def test_mixed_results_get_angstrom():
     result = client.search(attrs.Time(tstart, tend), attrs.hek.EventType(event_type))
     assert len(result) == 13
     assert result[0]["SOL_standard"] == 'SOL2014-10-24T20:53:46L247C106'
+
+
+@pytest.mark.remote_data
+def test_query_multiple_operators():
+    event_type = "FL"
+    tstart = "2013/10/28"
+    tend = "2013/10/29"
+    client = hek.HEKClient()
+    results = client.search(attrs.Time(tstart, tend),
+                            attrs.hek.EventType(event_type),
+                            attrs.hek.FL.GOESCls > "M1.0",
+                            attrs.hek.OBS.Observatory == "GOES")
+    assert len(results) == 7
