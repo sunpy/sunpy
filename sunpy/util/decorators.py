@@ -401,7 +401,7 @@ def check_arithmetic_compatibility():
                 # a proxy for these possible inputs. If it can be cast to a unitful quantity, we can
                 # do arithmetic with it. Broadcasting or unit mismatches are handled later in the
                 # actual operations by numpy and astropy respectively.
-                _ = value * u.Unit('')
+                _ = u.Quantity(value, '', copy=False)
             except TypeError:
                 # Purposefully raise a different more informative error here.
                 raise TypeError(f'Arithmetic operations between map and {value} with type '
