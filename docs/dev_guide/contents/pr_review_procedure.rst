@@ -52,7 +52,7 @@ or at the top under the "Checks" tab:
    :width: 600
    :alt: PR checks tab
 
-* `figure-tests (CircleCi) <https://circleci.com/gh/sunpy/sunpy/>`_: Runs two figure tests environments ("py38-figure", "py37-figure-devdeps").
+* `figure-tests (CircleCi) <https://circleci.com/gh/sunpy/sunpy/>`_: Runs two figure tests environments ("py39-figure", "py38-figure-devdeps").
 
 * figure_report/figure_tests (Giles): Show the final results of the figure tests.
 
@@ -70,6 +70,8 @@ or at the top under the "Checks" tab:
 * `codecov/patch (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage for the submitted code in the pull request.
 
 * `codecov/project (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage in sunpy overall.
+
+* `pre-commit - pr <https://pre-commit.ci>`__: Checks the code style checks have passed. This CI will automatically fix style issues by commenting ``pre-commit.ci autofix`` on it's own line in a comment on the PR.
 
 It is common to see some of these checks fail.
 This can be happen due to a change that has broken a test (should be fixed) or a remote server has failed (might have to wait for it to come back).
