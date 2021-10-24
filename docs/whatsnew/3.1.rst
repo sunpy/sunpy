@@ -228,7 +228,7 @@ Please be aware of two caveats::
 Arithmetic operations with maps
 ===============================
 
-`~sunpy.map.GenericMap` objects now support arithmetic operations (i.e. addition, subtraction,multiplication, division) with array-like quantities.
+`~sunpy.map.GenericMap` objects now support arithmetic operations (i.e. addition, subtraction, multiplication, division) with array-like quantities.
 This includes scalar quantities as well as Numpy arrays.
 Notably, arithmetic operations between two `~sunpy.map.GenericMap` is not supported.
 
