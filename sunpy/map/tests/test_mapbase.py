@@ -1371,7 +1371,7 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     u.Quantity(np.random.rand(128), u.ct),
     u.Quantity(np.random.rand(128, 128), u.ct),
 ])
-def test_map_addition_subtraction(aia171_test_map, value):
+def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
     new_map = aia171_test_map + value
     assert np.all(new_map.data == (aia171_test_map.data + value.value))
     assert new_map.unit == aia171_test_map.unit
@@ -1389,7 +1389,7 @@ def test_map_addition_subtraction(aia171_test_map, value):
     np.random.rand(128),
     np.random.rand(128, 128),
 ])
-def test_map_multiplication_division(aia171_test_map, value):
+def test_map_arithmetic_multiplication_division(aia171_test_map, value):
     value_unit = u.Quantity(value).unit
     new_map = aia171_test_map * value
     new_data = u.Quantity(aia171_test_map.data * value)
@@ -1401,14 +1401,14 @@ def test_map_multiplication_division(aia171_test_map, value):
     assert new_map.unit == aia171_test_map.unit / value_unit
 
 
-def test_map_pow(aia171_test_map):
+def test_map_arithmetic_pow(aia171_test_map):
     new_map = aia171_test_map ** 2
     new_data = u.Quantity(aia171_test_map.data ** 2)
     assert np.allclose(new_map.data, new_data.value)
     assert new_map.unit == aia171_test_map.unit ** 2
 
 
-def test_radd_rsub_raise_exception(aia171_test_map):
+def test_map_arithmetic_radd_rsub_raise_exception(aia171_test_map):
     with pytest.raises(ValueError,
                        match='Addition operator should be placed to the right of the map'):
         _ = 1*aia171_test_map.unit + aia171_test_map
@@ -1423,7 +1423,7 @@ def test_radd_rsub_raise_exception(aia171_test_map):
     (None, TypeError, contextlib.nullcontext()),
     (['foo', 'bar'], TypeError, contextlib.nullcontext()),
 ])
-def test_arithmetic_operations_raise_exceptions(aia171_test_map, value, exception, warn_context):
+def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, exception, warn_context):
     value = aia171_test_map if value == 'map' else value
     with pytest.raises(exception):
         _ = aia171_test_map + value

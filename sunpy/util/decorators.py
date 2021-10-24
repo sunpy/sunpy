@@ -390,10 +390,13 @@ def check_arithmetic_compatibility():
         """
         @wraps(func)
         def inner(instance, value):
+            # Import here to avoid circular imports
+            from sunpy.map import GenericMap
+
             # This is explicit because it is expected that users will try to do this. This raises
             # a different error because it is expected that this type of operation will be supported
             # in future releases.
-            if isinstance(value, type(instance)):
+            if isinstance(value, GenericMap):
                 raise NotImplementedError('Arithmetic operations between maps are not supported.')
             try:
                 # We want to support operations between numbers and array-like objects. This includes
@@ -401,7 +404,7 @@ def check_arithmetic_compatibility():
                 # a proxy for these possible inputs. If it can be cast to a unitful quantity, we can
                 # do arithmetic with it. Broadcasting or unit mismatches are handled later in the
                 # actual operations by numpy and astropy respectively.
-                _ = u.Quantity(value, '', copy=False)
+                _ = u.Quantity(value, copy=False)
             except TypeError:
                 # Purposefully raise a different more informative error here.
                 raise TypeError(f'Arithmetic operations between map and {value} with type '
