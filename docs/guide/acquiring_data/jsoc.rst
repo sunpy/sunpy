@@ -8,15 +8,15 @@ These data are available from the JSOC database, which can be directly accessed 
 sunpy's JSOC Client provides an easier interface to query for JSOC data and make export requests.
 It uses `drms module <https://docs.sunpy.org/projects/drms>`_ as its backend, and exposes a similar API as the VSO Client.
 
-There are two ways of downloading JSOC data. One way is using Sunpy's unified search interface, known as ``Fido``.
+There are two ways of downloading JSOC data. One way is using sunpy's unified search interface, known as ``Fido``.
 ``Fido`` supplies a single, easy and consistent way to to obtain most forms of solar physics data.
 An alternative way to fetch data from JSOC is by using the underlying JSOC Client.
-This option can be preferred when the complex searches are to be made, or when you need to separate the staging and downloading steps, which is not supported by Fido.
+This option can be preferred when you need to separate the staging and downloading steps, which is not supported by Fido.
 
 The JSOC stages data before you can download it, so a JSOC query is a three stage process.
 First you query the JSOC for records and a table of these records is returned.
 Then you can request these records to be staged for download and then you can download them.
-Fido combines the stages into 2, `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search` and `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`.
+Fido combines the last two stages into a single call to `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`.
 
 Setup
 *****
@@ -321,7 +321,8 @@ Using Keywords
 ==============
 In some cases, you might want to filter out files based on key metadata, also called keywords.
 
-A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained by::
+A list of supported keywords of a series, say ``hmi.sharp_720s`` can be obtained by::
+
 
     >>> import drms
     >>> c = drms.Client()  # doctest: +REMOTE_DATA
@@ -331,7 +332,7 @@ A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained
 
 Each keyword needs to be compared to a value, e.g., ``a.jsoc.Keyword("bitmap_bzero") == 0`` or ``a.jsoc.Keyword("bitmap_bzero") > 1``.
 
-An example is::
+An of this example is::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.sharp_720s'),a.jsoc.Keyword('bitmap_bzero') == 0) # doctest: +REMOTE_DATA
