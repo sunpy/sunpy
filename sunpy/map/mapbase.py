@@ -509,7 +509,7 @@ class GenericMap(NDData):
         operations.
         """
         new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string()
+        new_meta['bunit'] = new_data.unit.to_string('fits')
         return self._new_instance(new_data.value, new_meta)
 
     @check_arithmetic_compatibility
