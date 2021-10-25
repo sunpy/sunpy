@@ -1,3 +1,5 @@
+.. _guide:
+
 ************
 User's Guide
 ************
@@ -9,7 +11,7 @@ This guide provides a walkthrough of the major features in sunpy.
 For more details checkout the :ref:`reference`.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    installation
    Brief Tour <tour>

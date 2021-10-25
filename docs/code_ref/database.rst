@@ -1,5 +1,5 @@
-sunpy database
-**************
+Database (`sunpy.database`)
+***************************
 
 ``sunpy.database`` can be used to provide a local cache of the files and
 records retrieved from various remote services. For an introduction to the

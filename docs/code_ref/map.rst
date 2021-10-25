@@ -1,8 +1,7 @@
 .. _map:
 
-*********
-sunpy map
-*********
+Maps (`sunpy.map`)
+******************
 
 .. module:: sunpy.map
 
