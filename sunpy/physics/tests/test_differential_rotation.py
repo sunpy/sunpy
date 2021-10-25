@@ -241,7 +241,7 @@ def test_differential_rotate_observer_straddles_limb(straddles_limb_map):
     # Test a map that straddles the limb - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_observer = get_earth(straddles_limb_map.date + 48*u.hr)
-    # Ignore some invalid NaN comparisions within astropy
+    # Ignore some invalid NaN comparisons within astropy
     # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
     with np.errstate(invalid='ignore'):
         dmap = differential_rotate(straddles_limb_map, observer=new_observer)
@@ -283,7 +283,7 @@ def test_differential_rotate_time_straddles_limb(straddles_limb_map):
     # Test a map that straddles the limb - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_time = straddles_limb_map.date + 48*u.hr
-    # Ignore some invalid NaN comparisions within astropy
+    # Ignore some invalid NaN comparisons within astropy
     # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
     with np.errstate(invalid='ignore'):
         with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
@@ -380,7 +380,7 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
     for this_edge in (1, 2):  # Bottom and left edges do move
         pixels = edges[this_edge]
         res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
-        # Ignore some invalid NaN comparisions within astropy
+        # Ignore some invalid NaN comparisons within astropy
         # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
         with np.errstate(invalid='ignore'):
             assert all(res.Tx != (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
@@ -388,7 +388,7 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
 
 
 def test_get_extreme_position():
-    # Ignore some invalid NaN comparisions within astropy
+    # Ignore some invalid NaN comparisons within astropy
     # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
     with np.errstate(invalid='ignore'):
         coords = SkyCoord([-1, 0, 1, np.nan]*u.arcsec, [-2, 0, 2, -np.nan]

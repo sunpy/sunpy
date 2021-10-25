@@ -9,7 +9,7 @@ Map with WCSAxes.
 """
 import matplotlib.pyplot as plt
 
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.data.sample

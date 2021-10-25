@@ -115,7 +115,7 @@ def test_post_notify_fail(client):
 
 @pytest.mark.remote_data()
 def test_post_wave_series(client):
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="The series hmi.M_45s does not support wavelength attribute."):
         client.search(
             a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
             a.jsoc.Series('hmi.M_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
@@ -454,3 +454,36 @@ def test_row_and_warning(mocker, client, jsoc_response_double):
         client.fetch(jsoc_response_double[0], sleep=0)
 
     assert request_data.called_once_with(jsoc_response_double[0].as_table())
+
+
+@pytest.mark.remote_data
+def test_check_request_keywords(client):
+    responses = client.search(
+        a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Keyword("QUALITY") == 1)
+    assert len(responses) == 0
+
+    responses = client.search(
+        a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Keyword("QUALITY") == 0)
+    assert len(responses) == 1
+
+    responses = client.search(
+        a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Keyword("QUALITY") < 2)
+    assert len(responses) == 1
+
+    with pytest.raises(ValueError, match="Keyword: 'EXPTIME' is not supported by series:"):
+        client.search(
+            a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
+            a.jsoc.Series('hmi.M_45s'), a.jsoc.Keyword("EXPTIME") < 2)
+
+    responses = client.search(
+        a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
+        a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Keyword("QUALITY") < 2, a.jsoc.Keyword("EXPTIME") < 2)
+    assert len(responses) == 0
+
+    responses = client.search(
+        a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
+        a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Keyword("QUALITY") < 2, a.jsoc.Keyword("EXPTIME") > 2)
+    assert len(responses) == 7

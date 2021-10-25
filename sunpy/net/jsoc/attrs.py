@@ -2,9 +2,9 @@ import astropy.units as u
 
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.net._attrs import Time, Wavelength
-from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
+from sunpy.net.attr import AttrAnd, AttrComparison, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'PrimeKey', 'Cutout']
+__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'PrimeKey', 'Cutout', "Keyword"]
 
 
 # Define a custom __dir__ to restrict tab-completion to __all__
@@ -40,6 +40,49 @@ class PrimeKey(DataAttr):
 
     def collides(self, other):
         return False
+
+
+class KeywordComparison(AttrComparison):
+    """
+    Allows comparison filtering of the JSOC Keywords with the ability to specify the comparison operator.
+
+    Parameters
+    ----------
+    name : str
+    operator : str
+    value : Numeric
+    """
+
+
+class Keyword(SimpleAttr):
+    """
+    Allows comparison filtering of the JSOC Keywords.
+
+    Parameters
+    ----------
+    value : str
+    """
+
+    def __lt__(self, other):
+        return KeywordComparison(self.value, '<', other)
+
+    def __le__(self, other):
+        return KeywordComparison(self.value, '<=', other)
+
+    def __gt__(self, other):
+        return KeywordComparison(self.value, '>', other)
+
+    def __ge__(self, other):
+        return KeywordComparison(self.value, '>=', other)
+
+    def __eq__(self, other):
+        return KeywordComparison(self.value, '=', other)
+
+    def __ne__(self, other):
+        return KeywordComparison(self.value, '!=', other)
+
+    def collides(self, other):
+        return isinstance(other, Keyword)
 
 
 class Segment(SimpleAttr):
@@ -107,14 +150,12 @@ class Cutout(DataAttr):
     --------
     sunpy.coordinates.utils.get_rectangle_coordinates
     """
-
     @u.quantity_input
     def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
                  height: u.arcsec = None, tracking=False, register=False,
                  nan_off_limb=False):
         super().__init__()
-        bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width,
-                                           height=height)
+        bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width, height=height)
         self.value = {
             't_ref': bl.obstime.isot,
             # JSOC input is disable tracking so take the negative
@@ -138,17 +179,14 @@ walker = AttrWalker()
 
 @walker.add_creator(AttrOr)
 def _create1(wlk, query):
-
     qblocks = []
     for iattr in query.attrs:
         qblocks.extend(wlk.create(iattr))
-
     return qblocks
 
 
 @walker.add_creator(AttrAnd, DataAttr)
 def _create(wlk, query):
-
     map_ = {}
     wlk.apply(query, map_)
     return [map_]
@@ -156,20 +194,17 @@ def _create(wlk, query):
 
 @walker.add_applier(AttrAnd)
 def _apply(wlk, query, imap):
-
     for iattr in query.attrs:
         wlk.apply(iattr, imap)
 
 
 @walker.add_applier(SimpleAttr)
 def _apply1(wlk, query, imap):
-
     imap[query.__class__.__name__.lower()] = query.value
 
 
 @walker.add_applier(PrimeKey)
 def _apply1(wlk, query, imap):
-
     key = 'primekey'
     if key in imap:
         imap[key][query.label] = query.value
@@ -177,9 +212,22 @@ def _apply1(wlk, query, imap):
         imap[key] = {query.label: query.value}
 
 
+@walker.add_applier(Keyword)
+def _apply1(wlk, query, imap):
+    raise ValueError(f"Keyword '{query.value}' needs to have a comparison to a value.")
+
+
+@walker.add_applier(KeywordComparison)
+def _apply1(wlk, query, imap):
+    key = 'keyword'
+    if key in imap:
+        imap[key][query.name] = {"operator": query.operator, "value": query.value}
+    else:
+        imap[key] = {f"{query.name}": {"operator": query.operator, "value": query.value}}
+
+
 @walker.add_applier(Segment)
 def _apply1(wlk, query, imap):
-
     key = 'segment'
     if key in imap:
         imap[key].append(query.value)

@@ -2,7 +2,7 @@
 Coordinate frames that are defined relative to other frames
 """
 
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates.attributes import Attribute, QuantityAttribute
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform

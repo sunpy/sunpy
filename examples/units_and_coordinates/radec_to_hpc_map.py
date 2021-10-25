@@ -24,7 +24,7 @@ to create a new header and generate a `~sunpy.map.Map`.
 import matplotlib.pyplot as plt
 import numpy as np
 
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates import EarthLocation, SkyCoord
 from astropy.io import fits
 from astropy.time import Time

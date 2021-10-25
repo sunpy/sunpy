@@ -106,8 +106,8 @@ For example::
     >>> parse_time(np.arange('2007-05-03', '2007-05-04', dtype='datetime64[D]'))  # np.ndarray
     <Time object: scale='utc' format='isot' value=['2007-05-03T00:00:00.000']>
 
-`astropy.time.Time` API comparision
------------------------------------
+`astropy.time.Time` API comparison
+----------------------------------
 
 `sunpy.time.parse_time` is a wrapper around `astropy.time.Time`. The API is
 nearly identical as `~astropy.time.Time` but supports more time input formats.

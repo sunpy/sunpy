@@ -17,12 +17,12 @@ joined together so that only one query is sent to the query. They may not
 be ANDed together because an event cannot be of multiple types.
 
 Events also have attributes which are _StringParamAttrWrapper, that means that
-they overload the Python operators for strings and return a _ParamAttr for
-them. _ParamAttrs are used to specify the values of parameters of the event.
-So, AR.NumSpots == 1 returns a _ParamAttr that when encountered in a query
+they overload the Python operators for strings and return a AttrComparison for
+them. AttrComparison are used to specify the values of parameters of the event.
+So, AR.NumSpots == 1 returns a AttrComparison that when encountered in a query
 sets the GET parameters in a way that only active regions with only one spot
 are returned. _StringParamAttrWrapper support <, <= ,>, >=, ==, != and like.
-_ComparisonParamAttrWrapper support all the operations mentioned above
+ComparisonParamAttrWrapper support all the operations mentioned above
 barring like.
 """
 

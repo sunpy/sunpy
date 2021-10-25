@@ -32,7 +32,7 @@ _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 NUMBER_REGEX = re.compile(r"^(\d+$|\d(?:\.\d+)?)")
 
 __all__ = ['Attr', 'DataAttr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
-           'ValueAttr', 'and_', 'or_', 'AttrWalker']
+           'ValueAttr', 'and_', 'or_', 'AttrWalker', 'AttrComparison', 'ComparisonParamAttrWrapper']
 
 
 def make_tuple():
@@ -280,12 +280,10 @@ class DataAttr(Attr):
     def __new__(cls, *args, **kwargs):
         if cls is DataAttr:
             raise TypeError("You should not directly instantiate DataAttr, only it's subclasses.")
-
         return super().__new__(cls)
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-
         # Because __new__() is defined, this will block natural introspection of the arguments for
         # __init__() in all subclasses because the signature of __new__() takes precedence over the
         # signature of __init__().  We add a __new__() to all subclasses that do not explicitly
@@ -295,9 +293,7 @@ class DataAttr(Attr):
 
             def signed_new(cls, *args, **kwargs):
                 return unsigned_new(cls, *args, **kwargs)
-
             signed_new.__signature__ = inspect.signature(cls.__init__)
-
             cls.__new__ = signed_new
 
 
@@ -371,6 +367,49 @@ class SimpleAttr(DataAttr):
     @property
     def type_name(self):
         return self.__class__.__name__.lower()
+
+
+class AttrComparison(DataAttr):
+    """
+    Allows a Attr to have a value and a comparison operator.
+    """
+
+    def __init__(self, name, operator, value):
+        super().__init__()
+        self.name = name
+        self.operator = operator
+        self.value = value
+
+    def collides(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.operator == other.operator and self.name == other.name
+
+
+class ComparisonParamAttrWrapper:
+    def __init__(self, name):
+        self.name = name
+
+    def __lt__(self, other):
+        return AttrComparison(self.name, '<', other)
+
+    def __le__(self, other):
+        return AttrComparison(self.name, '<=', other)
+
+    def __gt__(self, other):
+        return AttrComparison(self.name, '>', other)
+
+    def __ge__(self, other):
+        return AttrComparison(self.name, '>=', other)
+
+    def __eq__(self, other):
+        return AttrComparison(self.name, '=', other)
+
+    def __ne__(self, other):
+        return AttrComparison(self.name, '!=', other)
+
+    def collides(self, other):
+        return isinstance(other, ComparisonParamAttrWrapper)
 
 
 class Range(DataAttr):

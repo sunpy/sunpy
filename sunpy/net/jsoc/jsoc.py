@@ -23,8 +23,8 @@ from sunpy.util.parfive_helpers import Downloader, Results
 __all__ = ['JSOCClient', 'JSOCResponse']
 
 
-PKEY_LIST_TIME = {'T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
-                  'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime'}
+PRIMEKEY_LIST_TIME = {'T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
+                      'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime'}
 
 
 class NotExportedError(Exception):
@@ -294,7 +294,6 @@ class JSOCClient(BaseClient):
             2014-01-01T00:01:01Z  SDO/AIA    AIA_3      171    2145
 
         """
-
         return_results = JSOCResponse(client=self)
         query = and_(*query)
         blocks = []
@@ -466,8 +465,8 @@ class JSOCClient(BaseClient):
         downloader : `parfive.Downloader`, optional
             The download manager to use.
         wait : `bool`, optional
-           If `False` ``downloader.download()`` will not be called. Only has
-           any effect if ``downloader`` is not `None`.
+            If `False` ``downloader.download()`` will not be called. Only has
+            any effect if ``downloader`` is not `None`.
 
         Returns
         -------
@@ -555,7 +554,7 @@ class JSOCClient(BaseClient):
         return results
 
     def _make_recordset(self, series, start_time='', end_time='', wavelength='',
-                        segment='', primekey={}, **kwargs):
+                        segment='', primekey={}, keyword={}, **kwargs):
         """
         Take the query arguments and build a record string.
 
@@ -564,7 +563,7 @@ class JSOCClient(BaseClient):
         extracts the passed prime-keys and arranges it in the order as it appears in the
         JSOC database.
 
-        `pkeys_isTime` is a Pandas DataFrame, whose index values are the Prime-key names
+        `primekeys_istime` is a Pandas DataFrame, whose index values are the Prime-key names
         and the column stores a boolean value, identifying whether the prime-key is a
         Time-type prime-key or not. Since, time-type prime-keys exist by different names,
         we made it uniform in the above piece of code, by storing the time-type primekey
@@ -574,7 +573,7 @@ class JSOCClient(BaseClient):
         ['HARPNUM', 'T_OBS', 'WAVELNTH'], we will consider three different cases of the
         passed primekeys.
 
-        pkeys_isTime.index.values = ['HARPNUM', 'T_OBS', 'WAVELNTH']
+        primekeys_istime.index.values = ['HARPNUM', 'T_OBS', 'WAVELNTH']
 
         Case 1
         ------
@@ -608,31 +607,27 @@ class JSOCClient(BaseClient):
 
         The idea behind this should be clear. We build up the `pkstr` string
         containing the values of the prime-keys passed in the same order as
-        it occurs in the list `pkeys_isTime.index.values`, i.e. how it is stored
+        it occurs in the list `primekeys_istime.index.values`, i.e. how it is stored
         in the online database. Any missing prime-keys should be compensated by
         an empty {}, if it occurs before any passed prime-key. Any empty curly braces
         that is present at last of the pkstr, can be skipped.
-
         """
-
         # Extract and format segment
         # Convert list of segments into a comma-separated string
         if segment:
             if isinstance(segment, list):
                 segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
             segment = f'{{{segment}}}'
-
         # Extract and format sample
         sample = kwargs.get('sample', '')
         if sample:
             sample = f'@{sample}s'
-
         # Populate primekeys dict with Time and Wavelength values
         if start_time and end_time:
-            # Check whether any primekey listed in PKEY_LIST_TIME has been passed through
+            # Check whether any primekey listed in PRIMEKEY_LIST_TIME has been passed through
             # PrimeKey() attribute. If yes, raise an error, since Time can only be passed
             # either through PrimeKey() attribute or Time() attribute.
-            if not any(x in PKEY_LIST_TIME for x in primekey):
+            if not any(x in PRIMEKEY_LIST_TIME for x in primekey):
                 timestr = '{start}-{end}{sample}'.format(
                     start=start_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                     end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
@@ -643,24 +638,21 @@ class JSOCClient(BaseClient):
                                  " or separate them by OR operator."
                                  )
                 raise ValueError(error_message)
-
         else:
             # This is executed when Time has not been passed through Time() attribute.
             # `match` stores all the time-type prime-keys that has been passed through
             # PrimeKey() attribute. The length of `match` won't ever be greater than 1,
             # but it is a good idea to keep a check.
-            match = set(primekey.keys()) & PKEY_LIST_TIME
+            match = set(primekey.keys()) & PRIMEKEY_LIST_TIME
             if len(match) > 1:
                 error_message = ("Querying of series, having more than 1 Time-type "
                                  "prime-keys is not yet supported. Alternative is to "
                                  "use only one of the primekey to query for series data.")
                 raise ValueError(error_message)
-
             if match:
                 timestr = '{}'.format(primekey.pop(list(match)[0], ''))
             else:
                 timestr = ''
-
         if wavelength != '':
             if not primekey.get('WAVELNTH', ''):
                 if isinstance(wavelength, list):
@@ -668,7 +660,6 @@ class JSOCClient(BaseClient):
                     wavelength = str(wavelength)
                 else:
                     wavelength = '{}'.format(int(np.ceil(wavelength.to(u.AA).value)))
-
             else:
                 # This is executed when wavelength has been passed both through PrimeKey()
                 # and Wavelength().
@@ -676,47 +667,46 @@ class JSOCClient(BaseClient):
                                  " and PrimeKey(). Please provide any one of them"
                                  " or separate them by OR operator.")
                 raise ValueError(error_message)
-
         else:
             # This is executed when wavelength has been passed through PrimeKey().
             wavelength = '{}'.format(primekey.pop('WAVELNTH', ''))
-
         # Populate primekey dict with formatted Time and Wavlength.
         if timestr:
             primekey['TIME'] = timestr
         if wavelength != '':
             primekey['WAVELNTH'] = wavelength
-
         # Extract and format primekeys
-        pkstr = ''
+        primekey_string = ''
         c = drms.Client()
         si = c.info(series)
-        pkeys_isTime = si.keywords.loc[si.primekeys].is_time
-        for pkey in pkeys_isTime.index.values:
+        primekeys_istime = si.keywords.loc[si.primekeys].is_time
+        for pkey in primekeys_istime.index.values:
             # The loop is iterating over the list of prime-keys existing for the given series.
             if len(primekey) > 0:
-                if pkeys_isTime[pkey]:
-                    pkstr += '[{}]'.format(primekey.pop('TIME', ''))
+                if primekeys_istime[pkey]:
+                    primekey_string += '[{}]'.format(primekey.pop('TIME', ''))
                 else:
-                    pkstr += '[{}]'.format(primekey.pop(pkey, ''))
+                    primekey_string += '[{}]'.format(primekey.pop(pkey, ''))
             else:
                 break
-                # break because we can skip adding {} at the end of pkstr, if the primekey
+                # break because we can skip adding {} at the end of primekey_string, if the primekey
                 # dict is empty.
-
-        if not pkstr:
-            # pkstr cannot be totally empty
+        if not primekey_string:
+            # primekey_string cannot be totally empty
             #
-            # Note that whilst it is technically posisble to just search by series,
+            # Note that whilst it is technically possible to just search by series,
             # this is not allowed here, because some of these would be very large
             # searches that would make JSOC sad
             raise ValueError("Time, Wavelength or an explicit PrimeKey must be specified.")
-
-        dataset = '{series}{primekey}{segment}'.format(series=series,
-                                                       primekey=pkstr,
-                                                       segment=segment)
-
-        return dataset
+        keys = []
+        keyword_info = c.keys(series)
+        for key, value in keyword.items():
+            if key in keyword_info:
+                keys.append(f"{key}{value['operator']}{value['value']}")
+            else:
+                raise ValueError(f"Keyword: '{key}' is not supported by series: {series}")
+        keyword_string = f"[? {' AND '.join(keys)} ?]" if keys else ""
+        return f"{series}{primekey_string}{keyword_string}{segment}"
 
     def _lookup_records(self, iargs):
         """
@@ -724,73 +714,60 @@ class JSOCClient(BaseClient):
         """
         isMeta = iargs.get('meta', False)
         keywords = iargs.get('keys', '**ALL**')
-        c = drms.Client()
-
+        client = drms.Client()
         if 'series' not in iargs:
             error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
-
         if not isinstance(keywords, list) and not isinstance(keywords, str):
             error_message = "Keywords can only be passed as a list or comma-separated strings."
             raise TypeError(error_message)
-
         # Get a set of the PrimeKeys that exist for the given series, and check
         # whether the passed PrimeKeys is a subset of that.
-        pkeys = c.pkeys(iargs['series'])
-        pkeys_passed = iargs.get('primekey', None)  # pkeys_passes is a dict, with key-value pairs.
-        if pkeys_passed is not None:
-            if not set(list(pkeys_passed.keys())) <= set(pkeys):
-                error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following PrimeKeys: {pkeys}"
-                raise ValueError(error_message.format(series=iargs['series'], pkeys=pkeys))
-
-        # Raise errors for wavelength
+        primekeys = client.pkeys(iargs['series'])
+        primekeys_passed = iargs.get('primekey', None)  # primekeys_passes is a dict, with key-value pairs.
+        if primekeys_passed is not None:
+            if not set(list(primekeys_passed.keys())) <= set(primekeys):
+                error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following Keywords: {primekeys}"
+                raise ValueError(error_message.format(series=iargs['series'], primekeys=primekeys))
+        # Raise special error for wavelength (even though the code would ignore it anyway)
         wavelength = iargs.get('wavelength', '')
         if wavelength != '':
-            if 'WAVELNTH' not in pkeys:
-                error_message = f"The series {iargs['series']} does not support wavelength attribute. The following primekeys are supported {pkeys}"
-                raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
-
+            if 'WAVELNTH' not in primekeys:
+                error_message = (f"The series {iargs['series']} does not support wavelength attribute. "
+                                 f"The following primekeys are supported {primekeys}")
+                raise TypeError(error_message.format(series=iargs['series'], pkeys=primekeys))
         # Raise errors for segments
         # Get a set of the segments that exist for the given series, and check
         # whether the passed segments is a subset of that.
-        si = c.info(iargs['series'])
+        series = client.info(iargs['series'])
         # Fetches all valid segment names
-        segs = list(si.segments.index.values)
-        segs_passed = iargs.get('segment', None)
-        if segs_passed is not None:
-
-            if not isinstance(segs_passed, list) and not isinstance(segs_passed, str):
+        segments = list(series.segments.index.values)
+        segments_passed = iargs.get('segment', None)
+        if segments_passed is not None:
+            if not isinstance(segments_passed, list) and not isinstance(segments_passed, str):
                 error_message = "Segments can only be passed as a comma-separated string or a list of strings."
                 raise TypeError(error_message)
-
-            elif isinstance(segs_passed, str):
-                segs_passed = segs_passed.replace(' ', '').split(',')
-
-            if not set(segs_passed) <= set(segs):
-                error_message = f"Unexpected Segments were passed. The series {iargs['series']} contains the following Segments {segs}"
-                raise ValueError(error_message.format(series=iargs['series'], segs=segs))
-
-            iargs['segment'] = segs_passed
-
+            elif isinstance(segments_passed, str):
+                segments_passed = segments_passed.replace(' ', '').split(',')
+            if not set(segments_passed) <= set(segments):
+                error_message = f"Unexpected Segments were passed. The series {iargs['series']} contains the following Segments {segments}"
+                raise ValueError(error_message.format(series=iargs['series'], segs=segments))
+            iargs['segment'] = segments_passed
         # If Time has been passed as a PrimeKey, convert the Time object into TAI time scale,
         # and then, convert it to datetime object.
-
         ds = self._make_recordset(**iargs)
-
         # Convert the list of keywords into comma-separated string.
         if isinstance(keywords, list):
             key = str(keywords)[1:-1].replace(' ', '').replace("'", '')
         else:
             key = keywords
-
         log.debug(f"Running following query: {ds}")
         log.debug(f"Requesting following keywords: {key}")
-        r = c.query(ds, key=key, rec_index=isMeta)
-
-        if r is None or r.empty:
+        result = client.query(ds, key=key, rec_index=isMeta)
+        if result is None or result.empty:
             return astropy.table.Table()
         else:
-            return astropy.table.Table.from_pandas(r)
+            return astropy.table.Table.from_pandas(result)
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -798,9 +775,11 @@ class JSOCClient(BaseClient):
         from sunpy.net import attrs as a
 
         required = {a.jsoc.Series}
-        optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
-                    a.jsoc.Segment, a.jsoc.PrimeKey, a.Sample,
-                    a.jsoc.Cutout}
+        optional = {
+            a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
+            a.jsoc.Segment, a.jsoc.PrimeKey, a.Sample,
+            a.jsoc.Cutout, a.jsoc.Keyword, a.jsoc.KeywordComparison,
+        }
         return cls.check_attr_types_in_query(query, required, optional)
 
     @classmethod
@@ -818,21 +797,17 @@ class JSOCClient(BaseClient):
         Makes a network call to the VSO API that returns what keywords they support.
         We take this list and register all the keywords as corresponding Attrs.
         """
-        from drms import Client
-
         here = os.path.dirname(os.path.realpath(__file__))
-
-        c = Client()
+        client = drms.Client()
         # Series we are after
         data_sources = ["hmi", "mdi", "aia"]
-
         # Now get all the information we want.
         series_store = []
         segments = []
         for series in data_sources:
-            info = c.series(rf'{series}\.')
+            info = client.series(rf'{series}\.')
             for item in info:
-                data = c.info(item)
+                data = client.info(item)
                 series_store.append((data.name, data.note))
                 if not data.segments.empty:
                     for row in data.segments.iterrows():
@@ -855,15 +830,14 @@ class JSOCClient(BaseClient):
         dict
             The constructed Attrs dictionary ready to be passed into Attr registry.
         """
+        # Import here to prevent circular imports
         from sunpy.net import attrs as a
 
         here = os.path.dirname(os.path.realpath(__file__))
         with open(os.path.join(here, 'data', 'attrs.json'), 'r') as attrs_file:
             keyword_info = json.load(attrs_file)
-
         # Create attrs out of them.
         series_dict = {a.jsoc.Series: keyword_info["series_store"]}
         segments_dict = {a.jsoc.Segment: keyword_info["segments"]}
         attrs = {**series_dict, **segments_dict}
-
         return attrs

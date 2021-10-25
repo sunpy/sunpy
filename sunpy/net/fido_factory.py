@@ -457,7 +457,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Returns
         -------
         results : `list`
-
         client : `object`
             Instance of client class
         """

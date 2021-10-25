@@ -59,10 +59,14 @@ class HEKClient(BaseClient):
         """ Download all data, even if paginated. """
         page = 1
         results = []
-
+        new_data = data.copy()
+        # Override the default name of the operatorX, where X is a number.
+        for key in data.keys():
+            if "operator" in key:
+                new_data[f"op{key.split('operator')[-1]}"] = new_data.pop(key)
         while True:
-            data['page'] = page
-            url = self.url + urllib.parse.urlencode(data)
+            new_data['page'] = page
+            url = self.url + urllib.parse.urlencode(new_data)
             log.debug(f'Opening {url}')
             fd = urllib.request.urlopen(url)
             try:
@@ -73,13 +77,11 @@ class HEKClient(BaseClient):
             finally:
                 fd.close()
             results.extend(result['result'])
-
             if not result['overmax']:
                 if len(results) > 0:
                     return astropy.table.Table(dict_keys_same(results))
                 else:
                     return astropy.table.Table()
-
             page += 1
 
     def search(self, *args, **kwargs):
@@ -107,14 +109,12 @@ class HEKClient(BaseClient):
         <BLANKLINE>
         """
         query = attr.and_(*args)
-
         data = attrs.walker.create(query, {})
         ndata = []
         for elem in data:
             new = self.default.copy()
             new.update(elem)
             ndata.append(new)
-
         if len(ndata) == 1:
             return HEKTable(self._download(ndata[0]), client=self)
         else:
