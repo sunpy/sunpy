@@ -1488,8 +1488,6 @@ class GenericMap(NDData):
             :func:`scipy.ndimage.affine_transform` where it
             controls the order of the spline. Faster performance may be
             obtained at the cost of accuracy by using lower values.
-            When using cv2, only order=0,1,3 are supported. Other values of `order`
-            will raise an error.
             Default: 4
         scale : float
             A scale factor for the image, default is no scaling
@@ -1500,10 +1498,9 @@ class GenericMap(NDData):
             The numerical value to fill any missing points after rotation.
             Default: 0.0
         method : `str` or function(), optional
-            1. If `str`: ``'skimage'``, ``'scipy'``, or ``'cv2'``
-            If ``'skimage'``, uses :func:`skimage.transform.warp`.
-            If ``'scipy'``, uses :func:`scipy.ndimage.interpolation.affine_transform`.
-            If ``'cv2'``, uses :func:`cv2.warpAffine`.
+            1. If `str`: ``'skimage'`` or ``'scipy'``.
+               If ``'skimage'``, uses :func:`skimage.transform.warp`.
+               If ``'scipy'``, uses :func:`scipy.ndimage.interpolation.affine_transform`.
             2. Elif function, uses user-defined function to perform affine transform.
             See `notes` for function requirements.
             Default: ``'skimage'``: Will attempt to use :func:`skimage.transform.warp`;
@@ -1527,7 +1524,7 @@ class GenericMap(NDData):
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
         See :func:`sunpy.image.transform.affine_transform` for details on the
-        ``scipy``, ``skimage`` and ``cv2`` transformations, situations when the underlying data
+        ``scipy`` and ``skimage`` transformations, situations when the underlying data
         is modified prior to rotation, and differences from IDL's rot().
 
         If a custom function is passed to ``method``, it must accept the same arguments

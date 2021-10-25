@@ -6,15 +6,15 @@ Comparing Map Rotation Functions
 Comparing between library implementations for `map.rotate`.
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
-import pylab as plt
 
 import sunpy.data.sample
 import sunpy.map
 
 
 ###############################################################################
-# Rotating a map in sunpy has a choice between three libraries: `skimage', `scipy`, and `cv2`.
+# Rotating a map in sunpy has a choice between two libraries: `skimage' and `scipy`
 # One can also create a custom rotation function and drop it into `map.rotate`.
 # Since all these options use different algorithms, we need a basis for comparison:
 # what is an acceptable margin of difference in the final, rotated data product?
@@ -39,18 +39,13 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 map_r_sk = aia_map.rotate(order=3, recenter=True, method='skimage')
 map_r_sci = aia_map.rotate(order=3, recenter=True, method='scipy')
-map_r_cv = aia_map.rotate(order=3, recenter=True, method='cv2')
 
 ###############################################################################
 # Calculate Symmetric Mean Percentage Error
 print("sk vs. sci", smape(map_r_sk.data, map_r_sci.data))
-print("sci vs. cv", smape(map_r_sci.data, map_r_cv.data))
-print("sk vs. cv", smape(map_r_sk.data, map_r_cv.data))
 
 # This essentially means that the average difference between every pixel in the ``skimage`` and
-# ``scipy`` images is about 1.9\%, and the ``cv2`` implementation results in about a 1.3-1.4\%
-# average difference in the final rotated image. So, the ``openCV`` implementation is at least within
-# the accepted difference between ``scipy`` and ``skimage``.
+# ``scipy`` images is about 1.9\%.
 
 ###############################################################################
 # Make some plots to compare the rotated images.
@@ -58,21 +53,10 @@ print("sk vs. cv", smape(map_r_sk.data, map_r_cv.data))
 
 map_r_sk.peek()
 map_r_sci.peek()
-map_r_cv.peek()
 
 # Comparing raw differences:
 
-fig0, ax0 = plt.subplots()
-img0 = ax0.imshow(map_r_sk.data - map_r_sci.data, vmin=-150, vmax=150, cmap=plt.cm.seismic)
-fig0.colorbar(img0)
-ax0.set_title("Raw Difference: Sklearn vs. Scipy")
-
-fig1, ax1 = plt.subplots()
-img1 = ax1.imshow(map_r_sci.data - map_r_cv.data, vmin=-150, vmax=150, cmap=plt.cm.seismic)
-fig1.colorbar(img1)
-ax1.set_title("Raw Difference: Scipy vs. OpenCV")
-
-fig2, ax2 = plt.subplots()
-img2 = ax2.imshow(map_r_sk.data - map_r_cv.data, vmin=-150, vmax=150, cmap=plt.cm.seismic)
-fig2.colorbar(img2)
-ax2.set_title("Raw Difference: Sklearn vs. OpenCV")
+fig, ax = plt.subplots()
+img = ax.imshow(map_r_sk.data - map_r_sci.data, vmin=-150, vmax=150, cmap=plt.cm.seismic)
+fig.colorbar(img)
+ax.set_title("Raw Difference: Sklearn vs. Scipy")

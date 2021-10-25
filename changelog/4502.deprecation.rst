@@ -1,0 +1,2 @@
+The ``use_scipy`` argument in :func:`image.transform.affine_transform` has been
+deprecated in favour of ``method``.

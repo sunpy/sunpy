@@ -1351,19 +1351,15 @@ def test_rotation_methods(aia171_test_map):
     aia_map = sunpy.map.Map(aia171_test_map)
     map_r_sk = aia_map.rotate(angle=30*u.deg, order=3, recenter=True, method='skimage')
     map_r_sci = aia_map.rotate(angle=30*u.deg, order=3, recenter=True, method='scipy')
-    map_r_cv = aia_map.rotate(angle=30*u.deg, order=3, recenter=True, method='cv2')
 
     import matplotlib.pyplot as plt
 
     from sunpy.visualization.colormaps import cm as sunpy_cm
 
-    fig, axs = plt.subplots(1, 3)
+    fig, axs = plt.subplots(1, 2)
 
-    img0 = axs[0].imshow(map_r_sk.data, vmin=0, vmax=3000, cmap=sunpy_cm.cmap)
+    axs[0].imshow(map_r_sk.data, vmin=0, vmax=3000, cmap=sunpy_cm.cmap)
     axs[0].set_title("Sklearn")
 
-    img1 = axs[1].imshow(map_r_sci.data, vmin=0, vmax=3000, cmap=sunpy_cm.cmap)
+    axs[1].imshow(map_r_sci.data, vmin=0, vmax=3000, cmap=sunpy_cm.cmap)
     axs[1].set_title("Scipy")
-
-    img2 = axs[2].imshow(map_r_cv.data, vmin=0, vmax=3000, cmap=sunpy_cm.cmap)
-    axs[2].set_title("OpenCV")
