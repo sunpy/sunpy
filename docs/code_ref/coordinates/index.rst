@@ -1,7 +1,7 @@
 .. _sunpy-coordinates:
 
-SunPy coordinates
-*****************
+Coordinates (`sunpy.coordinates`)
+*********************************
 
 This sub-package contains:
 

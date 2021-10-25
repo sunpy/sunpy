@@ -1,7 +1,7 @@
 .. _timeseries_code_ref:
 
-sunpy timeseries
-****************
+Timeseries (`sunpy.timeseries`)
+*******************************
 
 Overview
 ========
