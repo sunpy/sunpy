@@ -512,28 +512,26 @@ class GenericMap(NDData):
         new_meta['bunit'] = new_data.unit.to_string()
         return self._new_instance(new_data.value, new_meta)
 
-    @check_arithmetic_compatibility()
+    @check_arithmetic_compatibility
     def __pow__(self, value):
         new_data = u.Quantity(self.data, self.unit, copy=False) ** value
         return self._new_instance_from_op(new_data)
 
-    @check_arithmetic_compatibility()
+    @check_arithmetic_compatibility
     def __add__(self, value):
         new_data = u.Quantity(self.data, self.unit, copy=False) + value
         return self._new_instance_from_op(new_data)
 
     def __radd__(self, _):
-        raise ValueError(
-            'Addition operator should be placed to the right of the map, e.g. map + 1*m.unit')
+        return NotImplemented
 
     def __sub__(self, value):
         return self.__add__(-value)
 
     def __rsub__(self, _):
-        raise ValueError(
-            'Addition operator should be placed to the right of the map, e.g. -map + 1*m.unit')
+        return NotImplemented
 
-    @check_arithmetic_compatibility()
+    @check_arithmetic_compatibility
     def __mul__(self, value):
         new_data = u.Quantity(self.data, self.unit, copy=False) * value
         return self._new_instance_from_op(new_data)
@@ -544,7 +542,7 @@ class GenericMap(NDData):
     def __truediv__(self, value):
         return self.__mul__(1/value)
 
-    @check_arithmetic_compatibility()
+    @check_arithmetic_compatibility
     def __rtruediv__(self, value):
         new_data = value / u.Quantity(self.data, self.unit, copy=False)
         return self._new_instance_from_op(new_data)

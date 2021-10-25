@@ -379,36 +379,31 @@ def cached_property_based_on(attr_name):
     return outer
 
 
-def check_arithmetic_compatibility():
+def check_arithmetic_compatibility(func):
     """
     A decorator to check if an arithmetic operation can
     be performed between a map instance and some other operation.
     """
-    def outer(func):
-        """
-        func is an overloaded arithmetic operation on `~sunpy.map.GenericMap`
-        """
-        @wraps(func)
-        def inner(instance, value):
-            # Import here to avoid circular imports
-            from sunpy.map import GenericMap
+    @wraps(func)
+    def inner(instance, value):
+        # Import here to avoid circular imports
+        from sunpy.map import GenericMap
 
-            # This is explicit because it is expected that users will try to do this. This raises
-            # a different error because it is expected that this type of operation will be supported
-            # in future releases.
-            if isinstance(value, GenericMap):
-                raise NotImplementedError('Arithmetic operations between maps are not supported.')
-            try:
-                # We want to support operations between numbers and array-like objects. This includes
-                # floats, ints, lists (of the aforementioned), arrays, quantities. This test acts as
-                # a proxy for these possible inputs. If it can be cast to a unitful quantity, we can
-                # do arithmetic with it. Broadcasting or unit mismatches are handled later in the
-                # actual operations by numpy and astropy respectively.
-                _ = u.Quantity(value, copy=False)
-            except TypeError:
-                # Purposefully raise a different more informative error here.
-                raise TypeError(f'Arithmetic operations between map and {value} with type '
-                                f'{type(value)} are not supported')
-            return func(instance, value)
-        return inner
-    return outer
+        # This is explicit because it is expected that users will try to do this. This raises
+        # a different error because it is expected that this type of operation will be supported
+        # in future releases.
+        if isinstance(value, GenericMap):
+            raise NotImplementedError('Arithmetic operations between maps are not supported.')
+        try:
+            # We want to support operations between numbers and array-like objects. This includes
+            # floats, ints, lists (of the aforementioned), arrays, quantities. This test acts as
+            # a proxy for these possible inputs. If it can be cast to a unitful quantity, we can
+            # do arithmetic with it. Broadcasting or unit mismatches are handled later in the
+            # actual operations by numpy and astropy respectively.
+            _ = u.Quantity(value, copy=False)
+        except TypeError:
+            # Purposefully raise a different more informative error here.
+            raise TypeError(f'Arithmetic operations between map and {value} with type '
+                            f'{type(value)} are not supported')
+        return func(instance, value)
+    return inner

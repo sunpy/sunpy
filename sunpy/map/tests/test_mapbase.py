@@ -1409,11 +1409,11 @@ def test_map_arithmetic_pow(aia171_test_map):
 
 
 def test_map_arithmetic_radd_rsub_raise_exception(aia171_test_map):
-    with pytest.raises(ValueError,
-                       match='Addition operator should be placed to the right of the map'):
+    with pytest.raises(TypeError,
+                       match=r"for \+: 'float' and 'AIAMap'"):
         _ = 1*aia171_test_map.unit + aia171_test_map
-    with pytest.raises(ValueError,
-                       match='Addition operator should be placed to the right of the map'):
+    with pytest.raises(TypeError,
+                       match=r"for \-: 'float' and 'AIAMap'"):
         _ = 1*aia171_test_map.unit - aia171_test_map
 
 
