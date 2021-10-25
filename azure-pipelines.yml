@@ -53,10 +53,6 @@ stages:
           apt:
             - libopenjp2-7
         envs:
-          - linux: codestyle
-            name: style_check
-            pytest: false
-            libraries: {}
           - linux: py39
 
   - stage: SecondPhaseTests
