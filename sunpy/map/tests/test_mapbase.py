@@ -1408,12 +1408,16 @@ def test_map_arithmetic_pow(aia171_test_map):
     assert new_map.unit == aia171_test_map.unit ** 2
 
 
+def test_map_arithmetic_neg(aia171_test_map):
+    new_map = -aia171_test_map
+    assert np.allclose(-aia171_test_map.data, new_map.data)
+    assert new_map.unit == aia171_test_map.unit
+
+
 def test_map_arithmetic_radd_rsub_raise_exception(aia171_test_map):
-    with pytest.raises(TypeError,
-                       match=r"for \+: 'float' and 'AIAMap'"):
+    with pytest.raises(TypeError, match=r"for \+: 'float' and 'AIAMap'"):
         _ = 1*aia171_test_map.unit + aia171_test_map
-    with pytest.raises(TypeError,
-                       match=r"for \-: 'float' and 'AIAMap'"):
+    with pytest.raises(TypeError, match=r"for \-: 'float' and 'AIAMap'"):
         _ = 1*aia171_test_map.unit - aia171_test_map
 
 

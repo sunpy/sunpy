@@ -497,8 +497,8 @@ class GenericMap(NDData):
         return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
 
     @property
-    def _meta_hash(self):
-        return self.meta.item_hash()
+    def _data_as_quantity(self):
+        return u.Quantity(self.data, self.unit, copy=False)
 
     def __neg__(self):
         return self._new_instance(-self.data, self.meta)
@@ -514,12 +514,12 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility
     def __pow__(self, value):
-        new_data = u.Quantity(self.data, self.unit, copy=False) ** value
+        new_data = self._data_as_quantity ** value
         return self._new_instance_from_op(new_data)
 
     @check_arithmetic_compatibility
     def __add__(self, value):
-        new_data = u.Quantity(self.data, self.unit, copy=False) + value
+        new_data = self._data_as_quantity + value
         return self._new_instance_from_op(new_data)
 
     def __radd__(self, _):
@@ -533,7 +533,7 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility
     def __mul__(self, value):
-        new_data = u.Quantity(self.data, self.unit, copy=False) * value
+        new_data = self._data_as_quantity * value
         return self._new_instance_from_op(new_data)
 
     def __rmul__(self, value):
@@ -544,8 +544,12 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility
     def __rtruediv__(self, value):
-        new_data = value / u.Quantity(self.data, self.unit, copy=False)
+        new_data = value / self._data_as_quantity
         return self._new_instance_from_op(new_data)
+
+    @property
+    def _meta_hash(self):
+        return self.meta.item_hash()
 
     @property
     @cached_property_based_on('_meta_hash')
