@@ -1365,6 +1365,12 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map.peek()
 
 
+# This function is used in the arithmetic tests below
+def check_arithmetic_value_and_units(map_new, data_expected):
+    assert u.allclose(map_new._data_as_quantity, data_expected)
+    assert map_new.unit.is_equivalent(data_expected.unit)
+
+
 @pytest.mark.parametrize('value', [
     10 * u.ct,
     10 * u.mct,
@@ -1375,11 +1381,13 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
 ])
 def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
     new_map = aia171_test_map + value
-    assert u.allclose(new_map._data_as_quantity, aia171_test_map._data_as_quantity + value)
-    assert new_map.unit.is_equivalent(aia171_test_map.unit)
+    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity + value)
+    new_map = value + aia171_test_map
+    check_arithmetic_value_and_units(new_map, value + aia171_test_map._data_as_quantity)
     new_map = aia171_test_map - value
-    assert u.allclose(new_map._data_as_quantity, aia171_test_map._data_as_quantity - value)
-    assert new_map.unit.is_equivalent(aia171_test_map.unit)
+    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity - value)
+    new_map = value - aia171_test_map
+    check_arithmetic_value_and_units(new_map, value - aia171_test_map._data_as_quantity)
 
 
 @pytest.mark.parametrize('value', [
@@ -1392,37 +1400,25 @@ def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
     np.random.rand(128, 128),
 ])
 def test_map_arithmetic_multiplication_division(aia171_test_map, value):
-    value_unit = u.Quantity(value).unit
     new_map = aia171_test_map * value
-    new_data = u.Quantity(aia171_test_map.data * value)
-    assert np.allclose(new_map.data, new_data.value)
-    assert new_map.unit == aia171_test_map.unit * value_unit
+    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity * value)
+    new_map = value * aia171_test_map
+    check_arithmetic_value_and_units(new_map, value * aia171_test_map._data_as_quantity)
     new_map = aia171_test_map / value
-    new_data = u.Quantity(aia171_test_map.data / value)
-    assert np.allclose(new_map.data, new_data.value)
-    assert new_map.unit == aia171_test_map.unit / value_unit
+    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity / value)
+    with pytest.warns(RuntimeWarning, match='divide by zero encountered in true_divide'):
+        new_map = value / aia171_test_map
+        check_arithmetic_value_and_units(new_map, value / aia171_test_map._data_as_quantity)
 
 
 def test_map_arithmetic_pow(aia171_test_map):
     new_map = aia171_test_map ** 2
-    new_data = u.Quantity(aia171_test_map.data ** 2)
-    assert np.allclose(new_map.data, new_data.value)
-    assert new_map.unit == aia171_test_map.unit ** 2
+    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity ** 2)
 
 
 def test_map_arithmetic_neg(aia171_test_map):
     new_map = -aia171_test_map
-    assert np.allclose(-aia171_test_map.data, new_map.data)
-    assert new_map.unit == aia171_test_map.unit
-
-
-def test_map_arithmetic_radd_rsub_raise_exception(aia171_test_map):
-    # Once this is supported, this test can be removed and these caes
-    # can be added to the add/subtract tests above.
-    with pytest.raises(TypeError, match=r"for \+: 'float' and 'AIAMap'"):
-        _ = 1*aia171_test_map.unit + aia171_test_map
-    with pytest.raises(TypeError, match=r"for \-: 'float' and 'AIAMap'"):
-        _ = 1*aia171_test_map.unit - aia171_test_map
+    check_arithmetic_value_and_units(new_map, -aia171_test_map._data_as_quantity)
 
 
 @pytest.mark.parametrize('value,exception,warn_context', [

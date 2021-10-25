@@ -178,6 +178,10 @@ class GenericMap(NDData):
     _registry = dict()
     # This overrides the default doc for the meta attribute
     meta = MetaData(doc=_meta_doc, copy=False)
+    # This is set so that the Quantity non-reflected operators will return
+    # NotImplemented instead of an error, which allows the GenericMap reflected
+    # operators to be called.
+    __array_ufunc__ = None
 
     def __init_subclass__(cls, **kwargs):
         """
@@ -522,14 +526,14 @@ class GenericMap(NDData):
         new_data = self._data_as_quantity + value
         return self._new_instance_from_op(new_data)
 
-    def __radd__(self, _):
-        return NotImplemented
+    def __radd__(self, value):
+        return self.__add__(value)
 
     def __sub__(self, value):
         return self.__add__(-value)
 
-    def __rsub__(self, _):
-        return NotImplemented
+    def __rsub__(self, value):
+        return self.__neg__().__add__(value)
 
     @check_arithmetic_compatibility
     def __mul__(self, value):
