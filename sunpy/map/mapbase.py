@@ -504,7 +504,8 @@ class GenericMap(NDData):
         return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
 
     @property
-    def _data_as_quantity(self):
+    def quantity(self):
+        """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=False)
 
     def _new_instance_from_op(self, new_data):
@@ -521,12 +522,12 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility
     def __pow__(self, value):
-        new_data = self._data_as_quantity ** value
+        new_data = self.quantity ** value
         return self._new_instance_from_op(new_data)
 
     @check_arithmetic_compatibility
     def __add__(self, value):
-        new_data = self._data_as_quantity + value
+        new_data = self.quantity + value
         return self._new_instance_from_op(new_data)
 
     def __radd__(self, value):
@@ -540,7 +541,7 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility
     def __mul__(self, value):
-        new_data = self._data_as_quantity * value
+        new_data = self.quantity * value
         return self._new_instance_from_op(new_data)
 
     def __rmul__(self, value):
@@ -551,7 +552,7 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility
     def __rtruediv__(self, value):
-        new_data = value / self._data_as_quantity
+        new_data = value / self.quantity
         return self._new_instance_from_op(new_data)
 
     @property

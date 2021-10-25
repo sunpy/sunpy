@@ -1,0 +1,2 @@
+Added ``quantity`` attribute to `~sunpy.map.GernicMap` to expose the ``data``
+attribute as a `~astropy.units.Quantity` using the ``unit`` attribute.

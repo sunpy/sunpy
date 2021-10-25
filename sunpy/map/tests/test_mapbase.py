@@ -1367,7 +1367,7 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
 
 # This function is used in the arithmetic tests below
 def check_arithmetic_value_and_units(map_new, data_expected):
-    assert u.allclose(map_new._data_as_quantity, data_expected)
+    assert u.allclose(map_new.quantity, data_expected)
     assert map_new.unit.is_equivalent(data_expected.unit)
 
 
@@ -1381,13 +1381,13 @@ def check_arithmetic_value_and_units(map_new, data_expected):
 ])
 def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
     new_map = aia171_test_map + value
-    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity + value)
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity + value)
     new_map = value + aia171_test_map
-    check_arithmetic_value_and_units(new_map, value + aia171_test_map._data_as_quantity)
+    check_arithmetic_value_and_units(new_map, value + aia171_test_map.quantity)
     new_map = aia171_test_map - value
-    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity - value)
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity - value)
     new_map = value - aia171_test_map
-    check_arithmetic_value_and_units(new_map, value - aia171_test_map._data_as_quantity)
+    check_arithmetic_value_and_units(new_map, value - aia171_test_map.quantity)
 
 
 @pytest.mark.parametrize('value', [
@@ -1401,24 +1401,24 @@ def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
 ])
 def test_map_arithmetic_multiplication_division(aia171_test_map, value):
     new_map = aia171_test_map * value
-    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity * value)
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity * value)
     new_map = value * aia171_test_map
-    check_arithmetic_value_and_units(new_map, value * aia171_test_map._data_as_quantity)
+    check_arithmetic_value_and_units(new_map, value * aia171_test_map.quantity)
     new_map = aia171_test_map / value
-    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity / value)
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity / value)
     with pytest.warns(RuntimeWarning, match='divide by zero encountered in true_divide'):
         new_map = value / aia171_test_map
-        check_arithmetic_value_and_units(new_map, value / aia171_test_map._data_as_quantity)
+        check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
 
 
 def test_map_arithmetic_pow(aia171_test_map):
     new_map = aia171_test_map ** 2
-    check_arithmetic_value_and_units(new_map, aia171_test_map._data_as_quantity ** 2)
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity ** 2)
 
 
 def test_map_arithmetic_neg(aia171_test_map):
     new_map = -aia171_test_map
-    check_arithmetic_value_and_units(new_map, -aia171_test_map._data_as_quantity)
+    check_arithmetic_value_and_units(new_map, -aia171_test_map.quantity)
 
 
 @pytest.mark.parametrize('value,warn_context', [
