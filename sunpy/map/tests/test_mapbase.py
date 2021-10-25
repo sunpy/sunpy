@@ -1367,17 +1367,19 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
 
 @pytest.mark.parametrize('value', [
     10 * u.ct,
+    10 * u.mct,
     u.Quantity([10], u.ct),
     u.Quantity(np.random.rand(128), u.ct),
     u.Quantity(np.random.rand(128, 128), u.ct),
+    u.Quantity(np.random.rand(128, 128), u.mct),
 ])
 def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
     new_map = aia171_test_map + value
-    assert np.all(new_map.data == (aia171_test_map.data + value.value))
-    assert new_map.unit == aia171_test_map.unit
+    assert u.allclose(new_map._data_as_quantity, aia171_test_map._data_as_quantity + value)
+    assert new_map.unit.is_equivalent(aia171_test_map.unit)
     new_map = aia171_test_map - value
-    assert np.all(new_map.data == (aia171_test_map.data - value.value))
-    assert new_map.unit == aia171_test_map.unit
+    assert u.allclose(new_map._data_as_quantity, aia171_test_map._data_as_quantity - value)
+    assert new_map.unit.is_equivalent(aia171_test_map.unit)
 
 
 @pytest.mark.parametrize('value', [
@@ -1415,6 +1417,8 @@ def test_map_arithmetic_neg(aia171_test_map):
 
 
 def test_map_arithmetic_radd_rsub_raise_exception(aia171_test_map):
+    # Once this is supported, this test can be removed and these caes
+    # can be added to the add/subtract tests above.
     with pytest.raises(TypeError, match=r"for \+: 'float' and 'AIAMap'"):
         _ = 1*aia171_test_map.unit + aia171_test_map
     with pytest.raises(TypeError, match=r"for \-: 'float' and 'AIAMap'"):
