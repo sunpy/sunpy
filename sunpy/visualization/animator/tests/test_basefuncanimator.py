@@ -7,9 +7,12 @@ import matplotlib.figure as mfigure
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from mpl_animators import base
 
 from sunpy.tests.helpers import figure_test
-from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, base
+from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator
+
+pytestmark = pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 
 
 class FuncAnimatorTest(BaseFuncAnimator):

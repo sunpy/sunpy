@@ -76,7 +76,7 @@ Features
   A quadrangle has edges that are aligned with lines of constant latitude and longitude, but these can be in a different coordinate system than that of the map. (`#4809 <https://github.com/sunpy/sunpy/pull/4809>`__)
 - Added a ``longitude`` keyword argument to :func:`~sunpy.coordinates.sun.carrington_rotation_time` as an alternate way to specify a fractional Carrington rotation. (`#4879 <https://github.com/sunpy/sunpy/pull/4879>`__)
 - Colorbar in `sunpy.map.GenericMap.peek` now has a unit label. (`#4930 <https://github.com/sunpy/sunpy/pull/4930>`__)
-- The default axes used by :meth:`sunpy.visualization.animator.base.BaseFuncAnimator.get_animation`
+- The default axes used by ``BaseFuncAnimator.get_animation()``
   is now ``BaseFuncAnimator.axes``, instead of the currently active axes (accessed via.
   :func:`matplotlib.pyplot.gca`). The allows animations to be created on figures
   created directly using `matplotlib.figure.Figure`.
@@ -328,7 +328,7 @@ Removals
     at ``http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db``, which can be done manually.
   - ``sunpy.util.net.check_download_file``, no alternative.
   - ``sunpy.visualization.animator.ImageAnimatorWCS``, alternative is
-    `sunpy.visualization.animator.ArrayAnimatorWCS`. (`#4350 <https://github.com/sunpy/sunpy/pull/4350>`__)
+    ``sunpy.visualization.animator.ArrayAnimatorWCS``. (`#4350 <https://github.com/sunpy/sunpy/pull/4350>`__)
 
 - Removed deprecated function ``sunpy.instr.aia.aiaprep``.
   Alternative is `~aiapy.calibrate.register` for converting AIA
@@ -397,7 +397,7 @@ Features
 - All coordinate frames will now show the velocity if it exists in the underlying data. (`#4102 <https://github.com/sunpy/sunpy/pull/4102>`__)
 - The ephemeris functions :func:`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst()`, :func:`~sunpy.coordinates.ephemeris.get_earth()`, and :func:`~sunpy.coordinates.ephemeris.get_horizons_coord()` can now optionally return the body's velocity as part of the output coordinate. (`#4102 <https://github.com/sunpy/sunpy/pull/4102>`__)
 - `~sunpy.util.metadata.MetaDict` now maintains coherence between its keys and their corresponding keycomments. Calling ``del`` on a ``MetaDict`` object key is now case-insensitive. (`#4129 <https://github.com/sunpy/sunpy/pull/4129>`__)
-- Allow `sunpy.visualization.animator.ArrayAnimatorWCS` to disable ticks for
+- Allow ``sunpy.visualization.animator.ArrayAnimatorWCS`` to disable ticks for
   a coordinate, by setting ``ticks: False`` in the ``coord_params`` dictionary. (`#4270 <https://github.com/sunpy/sunpy/pull/4270>`__)
 - Added a ``show()`` method for `~sunpy.net.base_client.BaseQueryResponse` which returns `~astropy.table.Table` with specified columns for the Query Response. (`#4309 <https://github.com/sunpy/sunpy/pull/4309>`__)
 - Added ``_extract_files_meta`` method in ``sunpy.util.scraper.Scraper`` which allows scraper to extract metadata from the file URLs retrieved for a given time range. (`#4313 <https://github.com/sunpy/sunpy/pull/4313>`__)
@@ -524,7 +524,7 @@ Bug Fixes
   The previous inaccuracy was a relative error of ~0.001% (0.01 arcseconds) for an observer at 1 AU, but could be as large as ~0.5% for Parker Solar Probe perihelia. (`#4524 <https://github.com/sunpy/sunpy/pull/4524>`__)
 - Fixed an issue in :meth:`sunpy.time.TimeRange.get_dates` where the function would return the wrong number of days if less than 24 hours had passed (`#4529 <https://github.com/sunpy/sunpy/pull/4529>`__)
 - Several functions in `sunpy.map` now properly check if the provided coordinate is in the expected `~sunpy.coordinates.frames.Helioprojective` frame. (`#4552 <https://github.com/sunpy/sunpy/pull/4552>`__)
-- Fixes a bug which occurs in setting the ``ylims`` by `sunpy.visualization.animator.line.LineAnimator` when there are non-finite values in the data array to be animated. (`#4554 <https://github.com/sunpy/sunpy/pull/4554>`__)
+- Fixes a bug which occurs in setting the ``ylims`` by ``sunpy.visualization.animator.line.LineAnimator`` when there are non-finite values in the data array to be animated. (`#4554 <https://github.com/sunpy/sunpy/pull/4554>`__)
 - Clear rotation metadata for SOHO/LASCO Helioviewer JPEG2000 images, as they are already rotated correctly. (`#4561 <https://github.com/sunpy/sunpy/pull/4561>`__)
 - The ``max_conn`` argument to ``Fido.fetch()`` is now correctly respected by
   the JSOC client. Previously the JSOC client would default to 4 connections no
@@ -765,10 +765,10 @@ Bug Fixes
   mention of the removal version. Additionally, a ``pending`` keyword argument is
   provided to denote functions/classes that are pending deprecation. (`#3982 <https://github.com/sunpy/sunpy/pull/3982>`__)
 - Correctly generate labels for sliders in
-  `~sunpy.visualization.animator.ArrayAnimatorWCS` when the number of pixel
+  ``~sunpy.visualization.animator.ArrayAnimatorWCS`` when the number of pixel
   dimensions and the number of world dimensions are not the same in the WCS. (`#3990 <https://github.com/sunpy/sunpy/pull/3990>`__)
 - Updated VSOClient.response_block_properties to check if "None" is in the return. (`#3993 <https://github.com/sunpy/sunpy/pull/3993>`__)
-- Fix a bug with `sunpy.visualization.animator.ArrayAnimatorWCS` where animating
+- Fix a bug with ``sunpy.visualization.animator.ArrayAnimatorWCS`` where animating
   a line with a masked array with the whole of the initial line masked out the
   axes limits for the x axis were not correctly set. (`#4001 <https://github.com/sunpy/sunpy/pull/4001>`__)
 - Fixed passing in a list of URLs into `sunpy.map.GenericMap`, before it caused an error due to the wrong type being returned. (`#4007 <https://github.com/sunpy/sunpy/pull/4007>`__)
@@ -884,7 +884,7 @@ Backwards Incompatible Changes
   valid string, and raises a `ValueError` if it isn't. (`#3378 <https://github.com/sunpy/sunpy/pull/3378>`__)
 - Observer-based coordinate frames (`~sunpy.coordinates.frames.Heliocentric` and `~sunpy.coordinates.frames.Helioprojective`) no longer assume a default observer (Earth) if no observer is specified.  These frames can now be used with no observer specified, but most transformations cannot be performed for such frames.  This removal of a default observer only affects `sunpy.coordinates`, and has no impact on the default observer in `sunpy.map`. (`#3388 <https://github.com/sunpy/sunpy/pull/3388>`__)
 - The callback functions provided to
-  `~sunpy.visualization.animator.BaseFuncAnimator` ``button_func`` keyword
+  ``BaseFuncAnimator`` ``button_func`` keyword
   argument now take two positional arguments rather than one. The function
   signature is now ``(animator, event)`` where the first arg is the animator
   object, and the second is the matplotlib mouse event. (`#3407 <https://github.com/sunpy/sunpy/pull/3407>`__)
@@ -905,7 +905,7 @@ Deprecations and Removals
   The function ``sunpy.image.coalignment.repair_image_nonfinite`` is deprecated. (`#3287 <https://github.com/sunpy/sunpy/pull/3287>`__)
 - The method to convert a `~sunpy.coordinates.frames.Helioprojective` frame from 2D to 3D has been renamed from ``calculate_distance`` to `~sunpy.coordinates.frames.Helioprojective.make_3d`.  This method is not typically directly called by users. (`#3389 <https://github.com/sunpy/sunpy/pull/3389>`__)
 - ``sunpy.visualization.animator.ImageAnimatorWCS`` is now deprecated in favour of
-  `~sunpy.visualization.animator.ArrayAnimatorWCS`. (`#3407 <https://github.com/sunpy/sunpy/pull/3407>`__)
+  ``ArrayAnimatorWCS``. (`#3407 <https://github.com/sunpy/sunpy/pull/3407>`__)
 - ``sunpy.cm`` has been moved to `sunpy.visualization.colormaps` and will be
   removed in a future version. (`#3410 <https://github.com/sunpy/sunpy/pull/3410>`__)
 
@@ -929,7 +929,7 @@ Features
   `sunpy.timeseries.GenericTimeSeries`. (`#3361 <https://github.com/sunpy/sunpy/pull/3361>`__)
 - Add ``shape`` property to TimeSeries. (`#3380 <https://github.com/sunpy/sunpy/pull/3380>`__)
 - Added ASDF schemas for the new coordinate frames (`~sunpy.coordinates.frames.GeocentricEarthEquatorial`, `~sunpy.coordinates.frames.GeocentricSolarEcliptic`, `~sunpy.coordinates.frames.HeliocentricEarthEcliptic`, `~sunpy.coordinates.frames.HeliocentricInertial`).  See the gallery for an example of using ``asdf`` to save and load a coordinate frame. (`#3398 <https://github.com/sunpy/sunpy/pull/3398>`__)
-- `sunpy.visualization.animator.ArrayAnimatorWCS` was added which uses the WCS
+- ``sunpy.visualization.animator.ArrayAnimatorWCS`` was added which uses the WCS
   object to get the coordinates of all axes, including the slider labels. It also provides the
   ability to customise the plot by specifying arguments to
   `~astropy.visualization.wcsaxes.WCSAxes` methods and supports animation of
@@ -951,7 +951,7 @@ Features
   however does mean that Map will be more sensitive to incorrect or invalid FITS
   headers. If you are using custom headers with SunPy Map you might encounter
   issues relating to this change. (`#3501 <https://github.com/sunpy/sunpy/pull/3501>`__)
-- `sunpy.visualization.animator.BaseFuncAnimator` now takes an optional
+- ``sunpy.visualization.animator.BaseFuncAnimator`` now takes an optional
   ``slider_labels`` keyword argument which draws text labels in the center of the
   sliders. (`#3504 <https://github.com/sunpy/sunpy/pull/3504>`__)
 - Added a more helpful error message when trying to load a file or directory
@@ -1097,7 +1097,7 @@ Backwards Incompatible Changes
 - Maps no longer assume that the pixel units are arcseconds if the units aren't
   explicitly set. In addition to this if critical metadata is missing from when
   creating a map, the map will fail to initialize and will raise an error. (`#2847 <https://github.com/sunpy/sunpy/pull/2847>`__)
-- axis_ranges kwarg of `sunpy.visualization.animator.base.ArrayAnimator`, `sunpy.visualization.animator.image.ImageAnimator` and `sunpy.visualization.animator.line.LineAnimator` now must be entered as None, [min, max] or pixel edges of each array element. Previously, pixel centers were expected.  This change removes ambiguity in interpretation and ensures the extent of the plot can always be accurately derived. (`#2867 <https://github.com/sunpy/sunpy/pull/2867>`__)
+- axis_ranges kwarg of ``sunpy.visualization.animator.base.ArrayAnimator``, ``sunpy.visualization.animator.image.ImageAnimator`` and ``sunpy.visualization.animator.line.LineAnimator`` now must be entered as None, [min, max] or pixel edges of each array element. Previously, pixel centers were expected.  This change removes ambiguity in interpretation and ensures the extent of the plot can always be accurately derived. (`#2867 <https://github.com/sunpy/sunpy/pull/2867>`__)
 - All keywords have been added (with defaults) to each `~sunpy.net.helioviewer.HelioviewerClient` function.
   This means that there will be some changes to the style of the PNG screenshot that is returned.
   Returns for the JPEG 2000 and the other functions should be the same but not guaranteed. (`#2883 <https://github.com/sunpy/sunpy/pull/2883>`__)

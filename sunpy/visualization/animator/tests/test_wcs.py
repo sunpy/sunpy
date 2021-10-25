@@ -9,11 +9,12 @@ from astropy.visualization.wcsaxes import WCSAxes
 from astropy.wcs import WCS
 
 from sunpy.tests.helpers import figure_test
-from sunpy.visualization.animator.wcs import ArrayAnimatorWCS
+from sunpy.visualization.animator import ArrayAnimatorWCS
 
 # See https://github.com/astropy/astropy/pull/10400
-pytestmark = pytest.mark.filterwarnings('ignore:target cannot be converted to ICRS, so will not be '
-                                        'set on SpectralCoord')
+pytestmark = pytest.mark.filterwarnings("ignore:target cannot be converted to ICRS, so will not be "
+                                        "set on SpectralCoord",
+                                        "ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 
 
 @pytest.fixture

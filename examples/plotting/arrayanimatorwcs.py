@@ -4,9 +4,10 @@ Creating a visualization with ArrayAnimatorWCS
 ==============================================
 
 This example shows how to create a simple visualization using
-`~sunpy.visualization.animator.ArrayAnimatorWCS`.
+`~mpl_animators.ArrayAnimatorWCS`.
 """
 import matplotlib.pyplot as plt
+from mpl_animators import ArrayAnimatorWCS
 
 import astropy.units as u
 import astropy.wcs
@@ -14,11 +15,10 @@ import astropy.wcs
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE, AIA_193_IMAGE
 from sunpy.time import parse_time
-from sunpy.visualization.animator import ArrayAnimatorWCS
 
 ################################################################################
 # To showcase how to visualize a sequence of 2D images using
-# `~sunpy.visualization.animator.ArrayAnimatorWCS`, we will use images from
+# `~mpl_animators.ArrayAnimatorWCS`, we will use images from
 # our sample data. The problem with this is that they are not part of
 # a continuous dataset. To overcome this we will do two things.
 # Create a stacked array of the images and create a `~astropy.wcs.WCS` header.
@@ -32,7 +32,7 @@ sequence_array = map_sequence.as_array()
 
 ###############################################################################
 # Now we need to create the `~astropy.wcs.WCS` header that
-# `~sunpy.visualization.animator.ArrayAnimatorWCS` will need.
+# `~mpl_animators.ArrayAnimatorWCS` will need.
 # To create the new header we can use the stored meta information from the
 # ``map_sequence``.
 
@@ -55,7 +55,7 @@ print(wcs)
 
 ###############################################################################
 # Now we can create the animation.
-# `~sunpy.visualization.animator.ArrayAnimatorWCS` requires you to select which
+# `~mpl_animators.ArrayAnimatorWCS` requires you to select which
 # axes you want to plot on the image. All other axes should have a ``0`` and
 # sliders will be created to control the value for this axis.
 
@@ -65,7 +65,7 @@ plt.show()
 
 ###############################################################################
 # You might notice that the animation could do with having the axes look
-# neater. `~sunpy.visualization.animator.ArrayAnimatorWCS` provides a way of setting
+# neater. `~mpl_animators.ArrayAnimatorWCS` provides a way of setting
 # some display properties of the `~astropy.visualization.wcsaxes.WCSAxes`
 # object on every frame of the animation via use of the ``coord_params`` dict.
 # They keys of the ``coord_params`` dict are either the first half of the
