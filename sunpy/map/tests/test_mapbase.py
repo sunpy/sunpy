@@ -1421,19 +1421,19 @@ def test_map_arithmetic_neg(aia171_test_map):
     check_arithmetic_value_and_units(new_map, -aia171_test_map._data_as_quantity)
 
 
-@pytest.mark.parametrize('value,exception,warn_context', [
-    ('map', NotImplementedError, pytest.warns(RuntimeWarning)),
-    ('foobar', TypeError, contextlib.nullcontext()),
-    (None, TypeError, contextlib.nullcontext()),
-    (['foo', 'bar'], TypeError, contextlib.nullcontext()),
+@pytest.mark.parametrize('value,warn_context', [
+    ('map', pytest.warns(RuntimeWarning)),
+    ('foobar', contextlib.nullcontext()),
+    (None, contextlib.nullcontext()),
+    (['foo', 'bar'], contextlib.nullcontext()),
 ])
-def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, exception, warn_context):
+def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn_context):
     value = aia171_test_map if value == 'map' else value
-    with pytest.raises(exception):
+    with pytest.raises(TypeError):
         _ = aia171_test_map + value
-    with pytest.raises(exception):
+    with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(exception):
+    with pytest.raises(TypeError):
         # A runtime warning is thrown when dividing by zero in the case of
         # the map test
         with warn_context:

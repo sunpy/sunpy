@@ -180,7 +180,10 @@ class GenericMap(NDData):
     meta = MetaData(doc=_meta_doc, copy=False)
     # This is set so that the Quantity non-reflected operators will return
     # NotImplemented instead of an error, which allows the GenericMap reflected
-    # operators to be called.
+    # operators to be called. NumPy tries to proceed if at least one argument has
+    # __array_ufunc__ and none of the arguments have __array_ufunc__ = None.
+    # Quantity has __array_ufunc__ and GenericMap did not have __array_ufunc__,
+    # so NumPy would try to go ahead with the addition and would hit the TypeError.
     __array_ufunc__ = None
 
     def __init_subclass__(cls, **kwargs):

@@ -393,7 +393,7 @@ def check_arithmetic_compatibility(func):
         # a different error because it is expected that this type of operation will be supported
         # in future releases.
         if isinstance(value, GenericMap):
-            raise NotImplementedError('Arithmetic operations between maps are not supported.')
+            return NotImplemented
         try:
             # We want to support operations between numbers and array-like objects. This includes
             # floats, ints, lists (of the aforementioned), arrays, quantities. This test acts as
@@ -402,8 +402,6 @@ def check_arithmetic_compatibility(func):
             # actual operations by numpy and astropy respectively.
             _ = u.Quantity(value, copy=False)
         except TypeError:
-            # Purposefully raise a different more informative error here.
-            raise TypeError(f'Arithmetic operations between map and {value} with type '
-                            f'{type(value)} are not supported')
+            return NotImplemented
         return func(instance, value)
     return inner
