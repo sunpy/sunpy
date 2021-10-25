@@ -5,19 +5,13 @@
 ************************
 What's New in SunPy 3.1?
 ************************
+The SunPy project is pleased to announce the 3.1 release of the sunpy core package.
 
-Overview
-========
-The SunPy project is pleased to announce the 3.1 release of the sunpy package.
+On this page, you can read about some of the big changes in this release.
 
-On this page, you can read about some of the big changes in this release:
-
-* :ref:`whatsnew-3.1-python`
-* :ref:`whatsnew-3.1-draw-limb`
-* :ref:`whatsnew-3.1-map-datetime`
-* :ref:`whatsnew-3.1-diffrot-context`
-* :ref:`whatsnew-3.1-reproject-to`
-* :ref:`whatsnew-3.1-jsoc-keywords`
+.. contents::
+    :local:
+    :depth: 1
 
 SunPy 3.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
@@ -29,9 +23,6 @@ By the numbers:
 * X people have contributed since 3.0
 * X of which are new contributors
 
-Please find below a selection of what we consider to be the biggest changes or features with this release.
-
-.. _whatsnew-3.1-python:
 
 Increase in required package versions
 =====================================
@@ -42,16 +33,21 @@ We have bumped the minimum version of several packages we depend on; these are t
 - numpy >= 1.17.0
 - pandas >= 1.0.0
 
-.. _whatsnew-3.1-cdaweb:
+
+Increased in-situ data support
+==============================
+Two new features have significantly increased support for in-situ data returned by heliospheric missions.
+See :ref:`sphx_glr_generated_gallery_acquiring_data_search_cdaweb.py` for a full example of searching for, downloading, and loading a CDF file into sunpy.
 
 New CDAWeb client
-=================
+-----------------
 A new Fido client to search the Coordinated Data Analysis Web (CDAWeb) has been added to `sunpy.net`.
 This allows one to search for and download data from many space physics missions that take in-situ data (including Parker Solar Probe and Solar Orbiter).
 In combination with the new CDF reading abilities of `sunpy.timeseries.TimeSeries`, this provides a full workflow for searching for, downloading, and analysing in-situ data contained within CDF files.
-See :ref:`sphx_glr_generated_gallery_acquiring_data_search_cdaweb.py` for a full example.
 
-.. _whatsnew-3.1-draw-limb:
+Support for .cdf files
+----------------------
+`sunpy.timeseries.TimeSeries` now supports loading CDF files if the external library ``cdflib`` is installed.
 
 New limb drawing function
 =========================
@@ -61,16 +57,12 @@ Axes using the :func:`sunpy.visualization.draw_limb` function.
 .. minigallery:: sunpy.visualization.draw_limb
 
 
-.. _whatsnew-3.1-wispr-map-source:
-
 New WISPR map source
 ====================
 A new map source for the WISPR instrument on Parker Solar Probe has been added.
 This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
 information for the `~sunpy.map.GenericMap.processing_level` and
 `~sunpy.map.GenericMap.exposure_time`.
-
-.. _whatsnew-3.1-fits-metadata:
 
 Changes to map metadata fixes
 =============================
@@ -116,9 +108,6 @@ For specific map sources, the following keywords are no longer modified or added
 - `~sunpy.map.sources.SJIMap`: DETECTOR, WAVEUNIT, WAVELNTH, CUNIT1, CUNIT2
 - `~sunpy.map.sources.EUIMap`: CROTA, CROTA2
 
-
-.. _whatsnew-3.1-map-datetime:
-
 Changes to map date/time handling
 =================================
 
@@ -163,8 +152,6 @@ are not written to provide valid results for times before 1972-01-01.
 This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch
 is 12 years earlier.
 
-.. _whatsnew-3.1-diffrot-context:
-
 Propagating solar-surface coordinates in time
 =============================================
 There is now an easy-to-use context manager (:func:`~sunpy.coordinates.propagate_with_solar_surface`) to enable coordinate transformations to take solar rotation into account.
@@ -174,7 +161,6 @@ Coordinate transformations with a change in observation time will automatically 
 
 .. minigallery:: sunpy.coordinates.propagate_with_solar_surface
 
-.. _whatsnew-3.1-reproject-to:
 
 Convenient reprojection of maps
 ===============================
@@ -183,8 +169,6 @@ The returned map will be of type `~sunpy.map.GenericMap`, with no metadata prese
 This method requires the optional package `reproject` to be installed.
 
 .. minigallery:: sunpy.map.GenericMap.reproject_to
-
-.. _whatsnew-3.1-jsoc-keywords:
 
 JSOC keyword filtering with Fido
 ================================
@@ -220,9 +204,10 @@ Support for filtering searches with JSOC keywords has been added to ``Fido.searc
     0 Results from the JSOCClient:
     Source: http://jsoc.stanford.edu
 
-Please be aware of two caveats::
-* We do not validate the value used for comparison.
-* Passing in a keyword without comparison to a value (e.g. ``==0``, ``< 10``) will error.
+Please be aware of two caveats:
+
+- We do not validate the value used for comparison.
+- Passing in a keyword without comparison to a value (e.g. ``==0``, ``< 10``) will error.
 
 
 Arithmetic operations with maps
@@ -231,8 +216,6 @@ Arithmetic operations with maps
 `~sunpy.map.GenericMap` objects now support arithmetic operations (i.e. addition, subtraction, multiplication, division) with array-like quantities.
 This includes scalar quantities as well as Numpy arrays.
 Notably, arithmetic operations between two `~sunpy.map.GenericMap`s are not supported.
-
-.. _whatsnew-3.1-contributors:
 
 Contributors to this Release
 ============================
