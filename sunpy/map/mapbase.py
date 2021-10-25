@@ -500,9 +500,6 @@ class GenericMap(NDData):
     def _data_as_quantity(self):
         return u.Quantity(self.data, self.unit, copy=False)
 
-    def __neg__(self):
-        return self._new_instance(-self.data, self.meta)
-
     def _new_instance_from_op(self, new_data):
         """
         Helper function for creating new map instances after arithmetic
@@ -511,6 +508,9 @@ class GenericMap(NDData):
         new_meta = copy.deepcopy(self.meta)
         new_meta['bunit'] = new_data.unit.to_string('fits')
         return self._new_instance(new_data.value, new_meta)
+
+    def __neg__(self):
+        return self._new_instance(-self.data, self.meta)
 
     @check_arithmetic_compatibility
     def __pow__(self, value):
