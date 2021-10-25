@@ -1,3 +1,5 @@
+import json
+import pathlib
 
 import requests
 
@@ -25,6 +27,21 @@ class CDAWEBClient(BaseClient):
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
+    >>> print(a.cdaweb.Dataset)
+    sunpy.net.cdaweb.attrs.Dataset
+    <BLANKLINE>
+    Dataset ID.
+    <BLANKLINE>
+    <BLANKLINE>
+                        Attribute Name                    Client ...                                   Description
+    ----------------------------------------------------- ------ ... --------------------------------------------------------------------------------
+    a1_k0_mpa                                             CDAWEB ... LANL 2001 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
+    a2_k0_mpa                                             CDAWEB ... LANL 2002 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
+    ac_at_def                                             CDAWEB ... ACE Hourly RTN, GSE and J2000 GCI Attitude direction cosines - E. C. Stone (C...
+    ...
+    wi_strahl0_swe                                        CDAWEB ... Wind Solar Wind Experiment (SWE) strahl detector, ~1/2 sec solar wind electro...
+    wi_sw_ion_dist_swe_faraday                            CDAWEB ... Faraday Cup orientation and charge flux - Keith Ogilvie (NASA GSFC)
+    wild2_helio1day_position                              CDAWEB ... Position in heliocentric coordinates from SPDF Helioweb - Natalia Papitashvil...
     >>>
     >>> res = Fido.search(a.Time('2021/07/01', '2021/07/08'),
     ...                   a.cdaweb.Dataset('SOLO_L2_MAG-RTN-NORMAL-1-MINUTE')) #doctest: +REMOTE_DATA
@@ -118,3 +135,19 @@ class CDAWEBClient(BaseClient):
     @classmethod
     def _attrs_module(cls):
         return 'cdaweb', 'sunpy.net.cdaweb.attrs'
+
+    @classmethod
+    def register_values(cls):
+        return cls.load_dataset_values()
+
+    @staticmethod
+    def load_dataset_values():
+        from sunpy.net import attrs as a
+
+        attrs_path = pathlib.Path(__file__).parent / 'data' / 'attrs.json'
+        with open(attrs_path, 'r') as attrs_file:
+            all_datasets = json.load(attrs_file)
+
+        # Convert from dict to list of tuples
+        all_datasets = [(id, desc) for id, desc in all_datasets.items()]
+        return {a.cdaweb.Dataset: all_datasets}

@@ -1,3 +1,6 @@
+import json
+import pathlib
+
 import requests
 
 from astropy.table import Table
@@ -110,3 +113,26 @@ def get_datasets(observatory):
               names=['Id', 'Instruments', 'Label', 'Start', 'End'])
     t.add_index('Id')
     return t
+
+
+def _update_cdaweb_dataset_data():
+    all_obs = get_observatory_groups()
+    url = '/'.join([
+        _CDAS_BASEURL,
+        'dataviews', _DATAVIEW,
+        'datasets'
+    ])
+    # Mapping from dataset ID to description
+    all_datasets = {}
+    for group in all_obs['Group']:
+        print(f'🛰 Getting datasets for {group}')
+        group_url = url + f'?observatoryGroup={group}'
+        response = requests.get(group_url, headers=_CDAS_HEADERS)
+
+        datasets = response.json()['DatasetDescription']
+        dataset_ids = {ds['Id']: ds['Label'] for ds in datasets}
+        all_datasets.update(dataset_ids)
+
+    attr_file = pathlib.Path(__file__).parent / 'data' / 'attrs.json'
+    with open(attr_file, 'w') as attrs_file:
+        json.dump(dict(sorted(all_datasets.items())), attrs_file, indent=2)
