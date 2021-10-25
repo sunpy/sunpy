@@ -59,8 +59,8 @@ repos:
   # W604 - Use "repr()" instead of backticks.
   # W605 - Fix invalid escape sequence 'x'.
   # W690 - Fix various deprecated code (via lib2to3).
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
     hooks:
       - id: flake8
         args:
@@ -81,7 +81,7 @@ repos:
             "--remove-unused-variable",
           ]
         exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|__init__.py|sunpy/extern|docs/conf.py)$"
-  - repo: https://github.com/timothycrosley/isort
+  - repo: https://github.com/PyCQA/isort
     rev: 5.9.3
     hooks:
       - id: isort
