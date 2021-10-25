@@ -1,0 +1,6 @@
+The `sunpy.visualization.animator` subpackge has been spun out into the
+standalone `mpl-animators <https://pypi.org/project/mpl-animators>`_ package,
+with the exception of `~sunpy.visualization.animator.MapSequenceAnimator`.
+
+This is primarily because the `ndcube` package now relies on the animator
+classes as well as `sunpy`.
