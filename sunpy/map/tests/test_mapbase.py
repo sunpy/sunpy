@@ -656,7 +656,7 @@ def test_resample(simple_map, shape):
 
 
 resample_test_data = [('linear', (100, 200) * u.pixel, contextlib.nullcontext()),
-                      ('neighbor', (128, 256) * u.pixel, pytest.raises(SunpyDeprecationWarning)),
+                      ('neighbor', (128, 256) * u.pixel, pytest.warns(SunpyDeprecationWarning)),
                       ('nearest', (512, 128) * u.pixel, contextlib.nullcontext()),
                       ('spline', (200, 200) * u.pixel, contextlib.nullcontext())]
 
