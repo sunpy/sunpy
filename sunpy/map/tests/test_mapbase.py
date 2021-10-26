@@ -1363,3 +1363,78 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_map = aia_map.superpixel([2, 1] * u.pix, func=np.mean)
     rect_rot_map = rect_map.rotate(30 * u.deg)
     rect_rot_map.peek()
+
+
+# This function is used in the arithmetic tests below
+def check_arithmetic_value_and_units(map_new, data_expected):
+    assert u.allclose(map_new.quantity, data_expected)
+    assert map_new.unit.is_equivalent(data_expected.unit)
+
+
+@pytest.mark.parametrize('value', [
+    10 * u.ct,
+    10 * u.mct,
+    u.Quantity([10], u.ct),
+    u.Quantity(np.random.rand(128), u.ct),
+    u.Quantity(np.random.rand(128, 128), u.ct),
+    u.Quantity(np.random.rand(128, 128), u.mct),
+])
+def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
+    new_map = aia171_test_map + value
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity + value)
+    new_map = value + aia171_test_map
+    check_arithmetic_value_and_units(new_map, value + aia171_test_map.quantity)
+    new_map = aia171_test_map - value
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity - value)
+    new_map = value - aia171_test_map
+    check_arithmetic_value_and_units(new_map, value - aia171_test_map.quantity)
+
+
+@pytest.mark.parametrize('value', [
+    10 * u.ct,
+    u.Quantity([10], u.ct),
+    u.Quantity(np.random.rand(128), u.ct),
+    u.Quantity(np.random.rand(128, 128), u.ct),
+    10.0,
+    np.random.rand(128),
+    np.random.rand(128, 128),
+])
+def test_map_arithmetic_multiplication_division(aia171_test_map, value):
+    new_map = aia171_test_map * value
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity * value)
+    new_map = value * aia171_test_map
+    check_arithmetic_value_and_units(new_map, value * aia171_test_map.quantity)
+    new_map = aia171_test_map / value
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity / value)
+    with pytest.warns(RuntimeWarning, match='divide by zero encountered in true_divide'):
+        new_map = value / aia171_test_map
+        check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
+
+
+def test_map_arithmetic_pow(aia171_test_map):
+    new_map = aia171_test_map ** 2
+    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity ** 2)
+
+
+def test_map_arithmetic_neg(aia171_test_map):
+    new_map = -aia171_test_map
+    check_arithmetic_value_and_units(new_map, -aia171_test_map.quantity)
+
+
+@pytest.mark.parametrize('value,warn_context', [
+    ('map', pytest.warns(RuntimeWarning)),
+    ('foobar', contextlib.nullcontext()),
+    (None, contextlib.nullcontext()),
+    (['foo', 'bar'], contextlib.nullcontext()),
+])
+def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn_context):
+    value = aia171_test_map if value == 'map' else value
+    with pytest.raises(TypeError):
+        _ = aia171_test_map + value
+    with pytest.raises(TypeError):
+        _ = aia171_test_map * value
+    with pytest.raises(TypeError):
+        # A runtime warning is thrown when dividing by zero in the case of
+        # the map test
+        with warn_context:
+            _ = value / aia171_test_map

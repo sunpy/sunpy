@@ -40,7 +40,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import cached_property_based_on
+from sunpy.util.decorators import cached_property_based_on, check_arithmetic_compatibility
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -178,6 +178,14 @@ class GenericMap(NDData):
     _registry = dict()
     # This overrides the default doc for the meta attribute
     meta = MetaData(doc=_meta_doc, copy=False)
+    # Enabling the GenericMap reflected operators is a bit subtle.  The GenericMap
+    # reflected operator will be used only if the Quantity non-reflected operator
+    # returns NotImplemented.  The Quantity operator strips the unit from the
+    # Quantity and tries to combine the value with the GenericMap using NumPy's
+    # __array_ufunc__().  If NumPy believes that it can proceed, this will result
+    # in an error.  We explicitly set __array_ufunc__ = None so that the NumPy
+    # call, and consequently the Quantity operator, will return NotImplemented.
+    __array_ufunc__ = None
 
     def __init_subclass__(cls, **kwargs):
         """
@@ -495,6 +503,58 @@ class GenericMap(NDData):
         """
         r = frame.represent_as(UnitSphericalRepresentation)
         return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
+
+    @property
+    def quantity(self):
+        """Unitful representation of the map data."""
+        return u.Quantity(self.data, self.unit, copy=False)
+
+    def _new_instance_from_op(self, new_data):
+        """
+        Helper function for creating new map instances after arithmetic
+        operations.
+        """
+        new_meta = copy.deepcopy(self.meta)
+        new_meta['bunit'] = new_data.unit.to_string('fits')
+        return self._new_instance(new_data.value, new_meta)
+
+    def __neg__(self):
+        return self._new_instance(-self.data, self.meta)
+
+    @check_arithmetic_compatibility
+    def __pow__(self, value):
+        new_data = self.quantity ** value
+        return self._new_instance_from_op(new_data)
+
+    @check_arithmetic_compatibility
+    def __add__(self, value):
+        new_data = self.quantity + value
+        return self._new_instance_from_op(new_data)
+
+    def __radd__(self, value):
+        return self.__add__(value)
+
+    def __sub__(self, value):
+        return self.__add__(-value)
+
+    def __rsub__(self, value):
+        return self.__neg__().__add__(value)
+
+    @check_arithmetic_compatibility
+    def __mul__(self, value):
+        new_data = self.quantity * value
+        return self._new_instance_from_op(new_data)
+
+    def __rmul__(self, value):
+        return self.__mul__(value)
+
+    def __truediv__(self, value):
+        return self.__mul__(1/value)
+
+    @check_arithmetic_compatibility
+    def __rtruediv__(self, value):
+        new_data = value / self.quantity
+        return self._new_instance_from_op(new_data)
 
     @property
     def _meta_hash(self):

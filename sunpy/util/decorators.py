@@ -9,6 +9,8 @@ import functools
 from inspect import Parameter, signature
 from functools import wraps
 
+import astropy.units as u
+
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
 
 __all__ = ['deprecated']
@@ -375,3 +377,31 @@ def cached_property_based_on(attr_name):
             return cache[prop_key]
         return inner
     return outer
+
+
+def check_arithmetic_compatibility(func):
+    """
+    A decorator to check if an arithmetic operation can
+    be performed between a map instance and some other operation.
+    """
+    @wraps(func)
+    def inner(instance, value):
+        # Import here to avoid circular imports
+        from sunpy.map import GenericMap
+
+        # This is explicit because it is expected that users will try to do this. This raises
+        # a different error because it is expected that this type of operation will be supported
+        # in future releases.
+        if isinstance(value, GenericMap):
+            return NotImplemented
+        try:
+            # We want to support operations between numbers and array-like objects. This includes
+            # floats, ints, lists (of the aforementioned), arrays, quantities. This test acts as
+            # a proxy for these possible inputs. If it can be cast to a unitful quantity, we can
+            # do arithmetic with it. Broadcasting or unit mismatches are handled later in the
+            # actual operations by numpy and astropy respectively.
+            _ = u.Quantity(value, copy=False)
+        except TypeError:
+            return NotImplemented
+        return func(instance, value)
+    return inner
