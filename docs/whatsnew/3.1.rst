@@ -17,12 +17,11 @@ SunPy 3.1 also includes a large number of smaller improvements and bug fixes, wh
 
 By the numbers:
 
-* X commits have been added since 3.0
-* X issues have been closed since 3.0
-* X pull requests have been merged since 3.0
-* X people have contributed since 3.0
-* X of which are new contributors
-
+* 610 commits have been added since 3.0
+* 56 issues have been closed since 3.0
+* 145 pull requests have been merged since 3.0
+* 16 people have contributed since 3.0
+* 8 of which are new contributors
 
 Increase in required package versions
 =====================================
@@ -219,3 +218,23 @@ Notably, arithmetic operations between two `~sunpy.map.GenericMap`s are not supp
 
 Contributors to this Release
 ============================
+
+The people who have contributed to the code for this release are:
+
+-  Alasdair Wilson  *
+-  Albert Y. Shih
+-  Anubhav Sinha  *
+-  Conor MacBride
+-  David Stansby
+-  Devansh Shukla  *
+-  Jeffrey Aaron Paul
+-  Nabil Freij
+-  Noah Altunian  *
+-  Rohan Sharma  *
+-  Samriddhi Agarwal
+-  Stuart Mumford
+-  Thomas Braccia  *
+-  Tim Gates  *
+-  Will Barnes
+
+Where a * indicates that this release contains their first contribution to SunPy.
