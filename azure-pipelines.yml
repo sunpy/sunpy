@@ -49,9 +49,11 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
+
         libraries:
           apt:
             - libopenjp2-7
+
         envs:
           - linux: codestyle
             name: style_check
@@ -70,22 +72,47 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
+
         libraries:
           apt:
             - libopenjp2-7
             - graphviz
           brew:
             - openjpeg
+
         envs:
           - macos: py37
           - windows: py38
-          - linux: build_docs
-            posargs: " "
-            pytest: false
-          - linux: py38-online
           - linux: py37-oldestdeps
           - linux: py38-conda
             libraries: {}
+
+  - stage: SecondPhaseTestsAllowedFail
+    displayName: Stage 2 Tests (Allowed Fail)
+    dependsOn: FirstPhaseTests
+    jobs:
+    - template: run-tox-env.yml@OpenAstronomy
+      parameters:
+        default_python: '3.8'
+        submodules: false
+        coverage: codecov
+        toxdeps: tox-pypi-filter
+        posargs: -n=4
+
+        libraries:
+          apt:
+            - libopenjp2-7
+            - graphviz
+          brew:
+            - openjpeg
+
+        envs:
+          - linux: build_docs
+            name: build_docs
+            posargs: " "
+            pytest: false
+          - linux: py38-online
+            name: py38_online
 
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
@@ -100,6 +127,7 @@ stages:
           coverage: codecov
           toxdeps: tox-pypi-filter
           posargs: -n=4
+
           libraries:
             apt:
               - libopenjp2-7
@@ -109,16 +137,51 @@ stages:
               - freetype-devel
               - libpng-devel
               - hdf5-devel
+
           envs:
-            - linux: base_deps
-            - linux: py38-devdeps
             - linux: py38-hypothesis
-            - linux: pyinstaller
+            - linux: py38-devdeps
+            - linux: base_deps
 
   # On branches which aren't main, and not Pull Requests, build the wheels but only upload them on tags
   - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
+    # If we are building a tag, then stop here and make a human check that the
+    # any allowed fails are ok to continue the release.
+    # Ideally this would happen right before the publish step, but I can't work
+    # out how to make that happen.
+    - stage: ApprovalOfReleaseWithFailingTests
+      displayName: Approve Release with Failing Tests
+      dependsOn: SecondPhaseTestsAllowedFail
+      condition: always()
+      jobs:
+      # We always need to specify a job, so always run a do nothing.
+      #- ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/tags/')) }}:
+      - job: skipping
+        displayName: Manual approval not required
+        steps:
+          - checkout: none
+      #- ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
+      - job: waitForValidation
+        displayName: Wait for external validation
+        dependsOn:
+          - build_docs
+          - py38_online
+        condition: failed()
+        pool: server
+        timeoutInMinutes: 4320 # job times out in 3 days
+        steps:
+        - task: ManualValidation@0
+          timeoutInMinutes: 1440 # task times out in 1 day
+          inputs:
+            instructions: |
+              Please check that the fails in these jobs are the result of online server failures
+              and that the release can be published despite them.
+            onTimeout: 'reject'
+
     - stage: Release
-      dependsOn: SecondPhaseTests
+      dependsOn:
+        - SecondPhaseTests
+        - ApprovalOfReleaseWithFailingTests
       jobs:
       - template: publish.yml@OpenAstronomy
         parameters:
@@ -137,6 +200,7 @@ stages:
     - stage: CronNotifier_OK
       condition: succeeded()
       dependsOn:
+        - SecondPhaseTestsAllowedFail
         - SecondPhaseTests
         - CronTests
         - Release
@@ -161,6 +225,7 @@ stages:
     - stage: CronNotifier_Fail
       condition: failed()
       dependsOn:
+        - SecondPhaseTestsAllowedFail
         - SecondPhaseTests
         - CronTests
         - Release
