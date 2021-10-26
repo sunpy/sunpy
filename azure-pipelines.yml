@@ -49,9 +49,11 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
+
         libraries:
           apt:
             - libopenjp2-7
+
         envs:
           - linux: py39
 
@@ -66,22 +68,46 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
+
         libraries:
           apt:
             - libopenjp2-7
             - graphviz
           brew:
             - openjpeg
+
         envs:
           - macos: py37
           - windows: py38
-          - linux: build_docs
-            posargs: " "
-            pytest: false
-          - linux: py38-online
           - linux: py37-oldestdeps
           - linux: py38-conda
             libraries: {}
+
+  - stage: SecondPhaseTestsAllowedFail
+    displayName: Stage 2 Tests (Allowed Fail)
+    dependsOn: FirstPhaseTests
+    jobs:
+    - template: run-tox-env.yml@OpenAstronomy
+      parameters:
+        default_python: '3.8'
+        submodules: false
+        coverage: codecov
+        toxdeps: tox-pypi-filter
+        posargs: -n=4
+
+        libraries:
+          apt:
+            - libopenjp2-7
+            - graphviz
+          brew:
+            - openjpeg
+
+        envs:
+          - linux: build_docs
+            posargs: " "
+            pytest: false
+
+          - linux: py38-online
 
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
@@ -96,6 +122,7 @@ stages:
           coverage: codecov
           toxdeps: tox-pypi-filter
           posargs: -n=4
+
           libraries:
             apt:
               - libopenjp2-7
@@ -105,14 +132,15 @@ stages:
               - freetype-devel
               - libpng-devel
               - hdf5-devel
+
           envs:
             - linux: base_deps
             - linux: py38-devdeps
             - linux: py38-hypothesis
             - linux: pyinstaller
 
-  # On branches which aren't main, and not Pull Requests, build the wheels but only upload them on tags
-  - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
+  # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
+  - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'master'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
     - stage: Release
       dependsOn: SecondPhaseTests
       jobs:
@@ -133,6 +161,7 @@ stages:
     - stage: CronNotifier_OK
       condition: succeeded()
       dependsOn:
+        - SecondPhaseTestsAllowedFail
         - SecondPhaseTests
         - CronTests
         - Release
@@ -157,6 +186,7 @@ stages:
     - stage: CronNotifier_Fail
       condition: failed()
       dependsOn:
+        - SecondPhaseTestsAllowedFail
         - SecondPhaseTests
         - CronTests
         - Release
