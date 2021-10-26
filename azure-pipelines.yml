@@ -11,6 +11,7 @@ schedules:
       include:
       - main
       - 3.0
+      - 3.1
     always: true
 
 resources:
@@ -84,7 +85,7 @@ stages:
             libraries: {}
 
   - stage: SecondPhaseTestsAllowedFail
-    displayName: Stage 2 Tests (Allowed Fail)
+    displayName: Stage 2 Tests - Online
     dependsOn: FirstPhaseTests
     jobs:
     - template: run-tox-env.yml@OpenAstronomy
@@ -103,7 +104,7 @@ stages:
             - openjpeg
 
         envs:
-          - linux: build_docs
+          - linux: build_docs_ci
             posargs: " "
             pytest: false
 
