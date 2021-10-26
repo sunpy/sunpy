@@ -7,8 +7,6 @@ API Reference
 .. toctree::
    :maxdepth: 2
 
-   known_issues
-   stability
    coordinates/index
    data
    database
