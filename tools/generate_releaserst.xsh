@@ -40,7 +40,7 @@ def do_graphql_query(owner, repository, etype, token):
         query_template = """
 {{
   repository(owner: "{owner}", name: "{repository}") {{
-    pullRequests(first:100, orderBy: {{direction: ASC, field: CREATED_AT}}, baseRefName: "master", states: MERGED{after}) {{
+    pullRequests(first:100, orderBy: {{direction: ASC, field: CREATED_AT}}, baseRefName: "main", states: MERGED{after}) {{
       edges {{
         node {{
           title
@@ -215,6 +215,12 @@ pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-na
 
 print()
 print(f"This release of {pretty_project_name} contains {ncommits} commits in {prcnt} merged pull requests closing {icnt} issues from {npeople} people, {nnew} of which are first-time contributors to {pretty_project_name}.")
+print()
+print(f"* {ncommits} commits have been added since {prev_version[:3]}")
+print(f"* {icnt} issues have been closed since {prev_version[:3]}")
+print(f"* {prcnt} pull requests have been merged since {prev_version[:3]}")
+print(f"* {npeople} people have contributed since {prev_version[:3]}")
+print(f"* {nnew} of which are new contributors")
 print()
 print("The people who have contributed to the code for this release are:")
 print()
