@@ -16,7 +16,6 @@ from sunpy.map import GenericMap
 from sunpy.util import expand_list
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
-from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
 __all__ = ['MapSequence']
 
@@ -452,7 +451,12 @@ class MapSequence:
         >>> sequence = Map(files, sequence=True)   # doctest: +SKIP
         >>> ani = sequence.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
         >>> mplani = ani.get_animation()   # doctest: +SKIP
+
+        Notes
+        -----
+        Requires the ``mpl-animators`` package to be installed.
         """
+        from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
         if resample:
             if self.all_maps_same_shape():
