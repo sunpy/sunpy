@@ -33,7 +33,7 @@ timeseries:
   comments: Any future changes should largely maintain backwards compatibility.
 util:
   status: dev
-  comments: This sub-module is not user facing and can and will change between versions.
+  comments: This sub-module is not user facing, but any changes will still undergo a deprecation period.
 visualization:
   status: stable
   comments: Any future changes should largely maintain backwards compatibility.
