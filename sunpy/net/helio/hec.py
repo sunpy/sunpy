@@ -42,6 +42,9 @@ def votable_handler(xml_table):
         A properly formatted VOtable object
 
     """
+    if xml_table.endswith(b"</helio:queryResponse></S:Body></S:Envelope>\n"):
+        # remove dangling tags
+        xml_table = xml_table.replace(b"</helio:queryResponse></S:Body></S:Envelope>\n", b"")
     fake_file = io.BytesIO()
     fake_file.write(xml_table)
     votable = parse_single_table(fake_file)
