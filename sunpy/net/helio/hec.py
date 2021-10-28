@@ -21,6 +21,23 @@ from sunpy.util.exceptions import warn_deprecated
 __all__ = ['HECClient', 'HECResponse']
 
 
+def attempt_repair(response: bytes) -> bytes:
+    """
+    Attempt to repair the HEC response by removing the potentially unopened tags
+    """
+    # remove dangling tags
+    response = response.replace(b"</helio:queryResponse></S:Body></S:Envelope>\n", b"")
+    return response
+
+
+def validate_response(response: bytes) -> bool:
+    """
+    Determine if the HEC response includes unopened XML tags
+    """
+    return response.startswith(b"<VOTABLE ") and response.endswith(b"</VOTABLE>\n")
+
+
+
 def votable_handler(xml_table):
     """
     Returns a VOtable object from a VOtable style xml string
@@ -42,9 +59,8 @@ def votable_handler(xml_table):
         A properly formatted VOtable object
 
     """
-    if xml_table.endswith(b"</helio:queryResponse></S:Body></S:Envelope>\n"):
-        # remove dangling tags
-        xml_table = xml_table.replace(b"</helio:queryResponse></S:Body></S:Envelope>\n", b"")
+    if not validate_response(xml_table):
+        xml_table = attempt_repair(xml_table)
     fake_file = io.BytesIO()
     fake_file.write(xml_table)
     votable = parse_single_table(fake_file)
