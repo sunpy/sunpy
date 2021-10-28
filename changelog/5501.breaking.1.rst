@@ -1,7 +1,7 @@
-`sunpy.map.GenericMap.wcs` no longer automatically sets the WCS header
-information using `astropy.wcs.WCS`. Instead each metadata value is manually
-taken from various map properties, which allows fixes to be made to the WCS
-without modifying the original map header. We think that
+`sunpy.map.GenericMap.wcs` no longer passes the whole ``.meta`` dictionary to
+`astropy.wcs.WCS` when constructing ``.wcs``. Instead each metadata value is
+manually taken from various map properties, which allows fixes to be made to
+the WCS without modifying the original map header. We think that
 `~sunpy.map.GenericMap.wcs` correctly sets all the keys needed for a full WCS
 header, but if you find anything missing please open an issue on the sunpy
 issue tracker.
