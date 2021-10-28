@@ -59,8 +59,10 @@ TIME_FORMAT_LIST = [
     "%Y%m%d_%H%M%S",  # Example 20070504_210812
     "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",  # Example 2012:124:21:08:12.999999
-    "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC / VSO)
-    "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI
+    "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC/VSO Export/Downloads)
+    "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI - JSOC
+    "%Y.%m.%d_%H:%M:%S_UTC",  # Example 2016.05.04_21:08:12_UTC - JSOC
+    "%Y.%m.%d_%H:%M:%S",  # Example 2016.05.04_21:08:12 - JSOC
     "%Y/%m/%dT%H:%M",  # Example 2007/05/04T21:08
 ]
 
