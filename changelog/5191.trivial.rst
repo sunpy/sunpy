@@ -1,1 +1,0 @@
-The `~sunpy.coordinates.frames.Helioprojective` frame now has the convenience property ``angular_radius`` to return the angular radius of the Sun as seen by the observer.

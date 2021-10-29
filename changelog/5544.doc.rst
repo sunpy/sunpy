@@ -1,1 +1,0 @@
-Added an example to how to save out maps as FITS files and load them back in, :ref:`sphx_glr_generated_gallery_saving_and_loading_data_genericmap_in_fits.py`.

@@ -1,2 +1,0 @@
-Registered the time format ``tai_seconds`` for `astropy.time.Time` (via `~sunpy.time.TimeTaiSeconds`) to support parsing the numerical time format of TAI seconds since 1958-01-01 00:00:00.
-This format includes UTC leap seconds, and enables equivalent functionality to the ``anytim2tai`` routine in SSW.

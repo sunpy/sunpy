@@ -1,1 +1,0 @@
-The `~astropy.wcs.WCS` instance returned by the `sunpy.map.GenericMap.wcs` property now includes the shape of the data array.

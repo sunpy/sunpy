@@ -1,1 +1,0 @@
-The deprecated ``sunpy.roi.roi`` was removed, there is no direct replacement but `astropy-regions <https://astropy-regions.readthedocs.io/en/latest/>`__ is something to consider.

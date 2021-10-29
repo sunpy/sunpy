@@ -1,2 +1,0 @@
-The Hinode/XRT map source now corrects the TIMESYS keyword, fixing the ``.wcs``
-property that was previously broken for Hinode/XRT maps.

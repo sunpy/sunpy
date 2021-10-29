@@ -1,1 +1,0 @@
-Added a new CDAWeb client, along with helper utilities to `sunpy.net.cdaweb`.

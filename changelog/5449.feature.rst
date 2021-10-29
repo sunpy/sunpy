@@ -1,4 +1,0 @@
-The properties `~sunpy.map.GenericMap.date_start`,
-`~sunpy.map.GenericMap.date_end`, and `~sunpy.map.GenericMap.date_average` have
-been added to be drawn from the relevant FITS metadata, if present in the map
-header.

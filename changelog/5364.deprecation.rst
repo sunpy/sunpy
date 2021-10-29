@@ -1,1 +1,0 @@
-``sunpy.util.scraper.Scraper`` has been moved into `sunpy.net`, please update your imports to be ``from sunpy.net import Scraper``.

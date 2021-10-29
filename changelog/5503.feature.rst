@@ -1,1 +1,0 @@
-:func:`sunpy.io.fits.write` can now update the ``data`` and ``header`` of an existing HDU instance, as an alternative to creating a new instance of a specified HDU type. This adds support for writing a HDU (such as :class:`~astropy.io.fits.CompImageHDU`) initialised with non-default keyword arguments.

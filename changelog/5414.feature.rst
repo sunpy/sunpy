@@ -1,3 +1,0 @@
-Added a new function, :meth:`sunpy.visualization.draw_limb`, that draws
-the solar limb as seen from an arbitrary observer coordinate on a world
-coordinate system aware Axes.
