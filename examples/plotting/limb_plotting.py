@@ -34,8 +34,8 @@ ax = plt.subplot(projection=syn_map)
 im = syn_map.plot()
 
 visible_limbs = []
-for (body, coord), color in zip(coords.items(), ['tab:green', 'tab:red']):
-    v, _ = draw_limb(ax, coord, color=color, label=f'Limb seen from {body}')
+for (body, coord), color in zip(coords.items(), ['tab:blue', 'tab:red']):
+    v, _ = draw_limb(ax, coord, color=color, label=f'Limb seen from {body}', linewidth=2)
     visible_limbs.append(v)
 
 ax.legend(handles=visible_limbs)
