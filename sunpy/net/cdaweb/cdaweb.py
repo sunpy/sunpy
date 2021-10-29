@@ -124,7 +124,8 @@ class CDAWEBClient(BaseClient):
         for row in query_results:
             fname = row['URL'].split('/')[-1]
             filepath = str(path).format(file=fname)
-            downloader.enqueue_file(row['URL'], filename=filepath)
+            # Manually cap max_splits at 3 to make CDAWeb happy
+            downloader.enqueue_file(row['URL'], filename=filepath, max_splits=3)
 
     @classmethod
     def _can_handle_query(cls, *query):
