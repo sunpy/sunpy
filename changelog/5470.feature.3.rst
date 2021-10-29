@@ -1,2 +1,0 @@
-Added the method :meth:`sunpy.map.GenericMap.reproject_to` for reprojecting a `~sunpy.map.Map` to a different WCS.
-This method requires the optional package `reproject` to be installed.

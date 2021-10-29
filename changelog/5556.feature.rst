@@ -1,1 +1,0 @@
-Added `~sunpy.timeseries.GenericTimeSeries.observatory` to provide observatory information for the timeseries e.g. specific goes satellite number.

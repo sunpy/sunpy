@@ -1,1 +1,0 @@
-Added the gallery example :ref:`sphx_glr_generated_gallery_differential_rotation_comparing_rotation_models.py` to visualize the differences between models of solar differential rotation.

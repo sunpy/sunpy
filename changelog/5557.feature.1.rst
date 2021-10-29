@@ -1,3 +1,0 @@
-:meth:`sunpy.timeseries.GenericTimeSeries.plot` and
-:meth:`sunpy.timeseries.GenericTimeSeries.peek` will now automatically label
-the y-axis if all the columns being plotted have the same units.

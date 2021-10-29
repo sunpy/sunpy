@@ -1,1 +1,0 @@
-Fixed the incorrect value for the FITS WCS ``LONPOLE`` keyword when using :func:`~sunpy.map.make_fitswcs_header` for certain combinations of WCS projection and reference coordinate.

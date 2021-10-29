@@ -1,1 +1,0 @@
-The deprecated ``sunpy.map.GenericMap.size`` has been removed, please use ``sunpy.map.GenericMap.data.size``.

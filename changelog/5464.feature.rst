@@ -1,3 +1,0 @@
-Add default color map and normalization for `~sunpy.map.sources.HMISynopticMap`
-The default color map is 'hmimag' and the default normalization is linear between
--1.5e-3 and +1.5e3, the expected normalization for this particular color map.

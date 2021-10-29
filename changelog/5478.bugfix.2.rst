@@ -1,2 +1,0 @@
-Fixed a bug where the property `sunpy.map.GenericMap.rsun_meters` would always internally determine the observer location, even when it is not needed, particularly for Stonyhurst heliographic maps, which have no notion of an observer.
-Thus, when working with a Stonyhurst heliographic map, a user could get an irrelevant warning message about having to assume an observer location (Earth center).

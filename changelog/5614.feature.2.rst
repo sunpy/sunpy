@@ -1,2 +1,0 @@
-Added ``quantity`` attribute to `~sunpy.map.GenericMap` to expose the ``data``
-attribute as a `~astropy.units.Quantity` using the ``unit`` attribute.

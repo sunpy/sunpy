@@ -1,1 +1,0 @@
-Online tests can now report back status of remote urls and will XFAIL if the remote server is unreachable.

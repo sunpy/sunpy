@@ -1,2 +1,0 @@
-Added :func:`sunpy.coordinates.utils.get_limb_coordinates` to get the solar
-limb coordinates as seen from a given observer.

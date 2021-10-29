@@ -1,2 +1,0 @@
-The `~sunpy.timeseries.TimeSeries` factory has been refactored to
-improve readability and maintainability of the internal code.

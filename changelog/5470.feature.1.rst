@@ -1,1 +1,0 @@
-The headers produced by :func:`~sunpy.map.make_fitswcs_header` now include ``NAXIS``, ``NAXIS1``, and ``NAXIS2`` keywords.

@@ -1,3 +1,0 @@
-Nearest-neighbour and linear
-(the default for :meth:`sunpy.map.GenericMap.resample`)
-resampling have been significantly sped up.
