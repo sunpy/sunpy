@@ -28,14 +28,14 @@ result = Fido.search(trange, dataset)
 print(result)
 
 ###############################################################################
-# Let's download one of the files.
-downloaded_files = Fido.fetch(result[0, 0])
+# Let's download the first two files
+downloaded_files = Fido.fetch(result[0, 0:2])
 print(downloaded_files)
 
 ###############################################################################
 # Finally we can load and take a look at the data using
 # `~sunpy.timeseries.TimeSeries` This requires an installation of the cdflib
 # Python library to read the CDF file.
-solo_mag = TimeSeries(downloaded_files)
+solo_mag = TimeSeries(downloaded_files, concatenate=True)
 print(solo_mag.columns)
 solo_mag.peek(['B_RTN_0', 'B_RTN_1', 'B_RTN_2'])
