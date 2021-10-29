@@ -1,5 +1,0 @@
-The date returned by `~sunpy.map.GenericMap.date` for Solar Orbiter/EUI maps
-has been adjusted to be taken from the DATE-AVG keyword
-(the middle of the image acquisition period), instead of the DATE-OBS
-keyword (the beginning of the image acquisition period). This means the observer
-coordinate now has the correct date.

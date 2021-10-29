@@ -1,1 +1,0 @@
-Ensured that ``plot`` and ``peek`` will output the same figures for all `sunpy.timeseries.TimeSeries` sources.

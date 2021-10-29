@@ -1,1 +1,0 @@
-The ``.unit`` attribute for HMI synoptic maps has been fixed.

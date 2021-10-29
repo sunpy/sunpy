@@ -1,4 +1,0 @@
-:meth:`sunpy.map.GenericMap.resample` now keeps the reference coordinate of the
-WCS projection the same as the input map, and updates the reference pixel accordingly.
-This fixes inconsistencies in the input and output world coordinate systems when a
-non-linear projection is used.

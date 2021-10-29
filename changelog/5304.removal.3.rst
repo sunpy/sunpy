@@ -1,1 +1,0 @@
-The deprecated ``sunpy.instr`` has been removed, please use `sunkit_instruments <https://docs.sunpy.org/projects/sunkit-instruments/en/stable/>`__.

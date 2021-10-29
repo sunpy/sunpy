@@ -1,1 +1,0 @@
-Allows :meth:`sunpy.map.GenericMap.draw_quadrangle` to accept pixel units as input to enable plotting boxes in the pixel space of the map, which can be different from the plot axes.

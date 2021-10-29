@@ -1,3 +1,0 @@
-Using "neighbour" as a resampling method in
-:func:`sunpy.image.resample.resample` is deprecated. Use "nearest" instead,
-which has the same effect.

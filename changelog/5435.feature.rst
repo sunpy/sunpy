@@ -1,2 +1,0 @@
-`~sunpy.timeseries.TimeSeries` can now read CDF files that conform to the
- ISTP/IACG guidelines (https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html).

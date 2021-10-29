@@ -1,1 +1,0 @@
-Support for filtering searches with JSOC keywords has been added to ``Fido.search``.

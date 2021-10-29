@@ -1,2 +1,0 @@
-sunpy now errors if the unused ``.rsun`` or ``.heliographic_observer``
-attributes are set on a `~astropy.wcs.WCS`.

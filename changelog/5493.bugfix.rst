@@ -1,1 +1,0 @@
-A non-standard ``CROTA`` keyword included in a `sunpy.map.sources.EUIMap` FITS header is now renamed to the recommended ``CROTA2`` so a warning is no longer raised.
