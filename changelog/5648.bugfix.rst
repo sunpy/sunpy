@@ -1,0 +1,2 @@
+Fixed a bug where the ``date`` property on `~sunpy.map.sources.HMISynopticMap` returned ``None``
+if the ``DATE-OBS`` key was present.
