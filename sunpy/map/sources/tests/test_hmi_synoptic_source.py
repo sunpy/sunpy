@@ -128,6 +128,12 @@ def test_date(hmi_synoptic):
     hmi_synoptic.date
 
 
+def test_date_uses_date_obs(hmi_synoptic):
+    """Check that the date uses the date-obs key as well."""
+    hmi_synoptic.meta['date-obs'] = hmi_synoptic.meta.pop('t_obs')
+    assert hmi_synoptic.date is not None
+
+
 def test_unit(hmi_synoptic):
     # Check that the default unit of Mx/cm**2 is correctly replaced with a
     # FITS standard unit

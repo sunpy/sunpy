@@ -186,6 +186,8 @@ class HMISynopticMap(HMIMap):
         date = self._get_date('DATE-OBS')
         if date is None:
             return self._get_date('T_OBS')
+        else:
+            return date
 
     @property
     def unit(self):
