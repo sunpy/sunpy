@@ -1,5 +1,5 @@
 import sunpy.net.attrs as a
-from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, SimpleAttr
+from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
 
 class Identifier(SimpleAttr):
@@ -19,7 +19,7 @@ def create_or(wlk, tree):
     return results
 
 
-@walker.add_creator(AttrAnd)
+@walker.add_creator(AttrAnd, DataAttr)
 def create_and(wlk, tree):
     result = []
     wlk.apply(tree, result)
