@@ -41,3 +41,10 @@ def test_no_results():
 
     res = SOARClient().search(query)
     assert len(res) == 0
+
+
+def test_no_instrument():
+    # Check that a time only search returns results
+    time = a.Time('2020-04-16', '2020-04-17')
+    res = SOARClient().search(time)
+    assert len(res) == 50
