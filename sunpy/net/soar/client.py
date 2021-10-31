@@ -35,7 +35,17 @@ class SOARClient(BaseClient):
     @staticmethod
     def _do_search(query):
         """
-        Carry out a search with a single query.
+        Query the SOAR server with a single query.
+
+        Parameters
+        ----------
+        query : list[str]
+            List of query items.
+
+        Returns
+        -------
+        astropy.table.QTable
+            Query results.
         """
         base_url = ('http://soar.esac.esa.int/soar-sl-tap/tap/'
                     'sync?REQUEST=doQuery&')
@@ -83,6 +93,22 @@ class SOARClient(BaseClient):
                                      })
 
     def fetch(self, query_results, *, path, downloader, **kwargs):
+        """
+        Queue a set of results to be downloaded. `BaseClient` does the actual
+        downloading, so we just have to queue up the ``downloader``.
+
+        Parameters
+        ----------
+        query_results : sunpy.net.fido_factory.UnifiedResponse
+            Results from a Fido search.
+        path : str
+            Path to download files to. Must be a format string with a ``file``
+            field for the filename.
+        downloader : parfive.Downloader
+            Downloader instance used to download data.
+        kwargs :
+            Keyword arguments aren't used by this client.
+        """
         base_url = ('http://soar.esac.esa.int/soar-sl-tap/data?'
                     f'retrieval_type=LAST_PRODUCT&product_type=SCIENCE&'
                     'data_item_id=')
@@ -95,7 +121,14 @@ class SOARClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
+        """
+        Check if this client can handle a given Fido query.
 
+        Returns
+        -------
+        bool
+            True if this client can handle the given query.
+        """
         required = {a.Time}
         optional = {a.Instrument, a.Level, Identifier}
         return cls.check_attr_types_in_query(query, required, optional)
