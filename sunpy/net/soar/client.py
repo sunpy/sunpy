@@ -99,3 +99,8 @@ class SOARClient(BaseClient):
         required = {a.Time}
         optional = {a.Instrument, a.Level, Identifier}
         return cls.check_attr_types_in_query(query, required, optional)
+
+    @classmethod
+    def _attrs_module(cls):
+        # Register SOAR specific attributes with Fido
+        return 'soar', 'sunpy.net.soar.attrs'

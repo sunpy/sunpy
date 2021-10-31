@@ -2,6 +2,9 @@ import sunpy.net.attrs as a
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
 
+__all__ = ['Identifier']
+
+
 class Identifier(SimpleAttr):
     """
     The data product identifier to search for.

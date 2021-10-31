@@ -1,7 +1,6 @@
 import sunpy.map
 from sunpy.net import Fido, attrs as a
 
-from sunpy.net.soar import Identifier
 from sunpy.net.soar.client import SOARClient
 
 
@@ -9,7 +8,7 @@ def test_search():
     id = a.Instrument('EUI')
     time = a.Time('2021-02-01', '2021-02-02')
     level = a.Level(1)
-    identifier = Identifier('EUI-FSI174-IMAGE')
+    identifier = a.soar.Identifier('EUI-FSI174-IMAGE')
 
     res = Fido.search(id, time, level, identifier)
     assert len(res) == 1
@@ -24,7 +23,7 @@ def test_search():
 def test_insitu_search():
     id = a.Instrument('MAG')
     time = a.Time('2020-04-16', '2020-04-17')
-    identifier = Identifier('MAG-RTN-NORMAL-1-MINUTE')
+    identifier = a.soar.Identifier('MAG-RTN-NORMAL-1-MINUTE')
 
     res = Fido.search(id, time, identifier)
     assert len(res) == 1
