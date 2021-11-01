@@ -16,6 +16,10 @@ walker = AttrWalker()
 
 @walker.add_creator(AttrOr)
 def create_or(wlk, tree):
+    """
+    Creator for OR. Loops through the next level down in the tree and appends
+    the individual results to a list.
+    """
     results = []
     for sub in tree.attrs:
         results.append(wlk.create(sub))
@@ -24,6 +28,10 @@ def create_or(wlk, tree):
 
 @walker.add_creator(AttrAnd, DataAttr)
 def create_and(wlk, tree):
+    """
+    Creator for And and other simple attributes. No walking needs to be done,
+    so simply call the applier function.
+    """
     result = []
     wlk.apply(tree, result)
     return [result]
@@ -31,8 +39,37 @@ def create_and(wlk, tree):
 
 @walker.add_applier(AttrAnd)
 def apply_and(wlk, and_attr, params):
+    """
+    Applier for And.
+
+    Parameters
+    ----------
+    wlk : AttrWalker
+    and_attr : AttrAnd
+        The AND attribute being applied. The individual attributes being
+        AND'ed together are accesible with ``and_attr.attrs``.
+    params : list[str]
+        List of search parameters.
+    """
     for iattr in and_attr.attrs:
         wlk.apply(iattr, params)
+
+
+"""
+Below are appliers for individual attributes.
+
+The all convert the attribute object into a query string, that will eventually
+be passed as a query to the SOAR server. They all have the signature:
+
+Parameters
+----------
+wlk : AttrWalker
+    The attribute walker.
+attr :
+    The attribute being applied.
+params : list[str]
+    List of search parameters.
+"""
 
 
 @walker.add_applier(a.Time)
