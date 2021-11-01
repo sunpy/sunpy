@@ -82,9 +82,6 @@ def _(wlk, attr, params):
 @walker.add_applier(a.Level)
 def _(wlk, attr, params):
     level = int(attr.value)
-    valid_levels = [0, 1, 2, 3]
-    if int(level) not in valid_levels:
-        raise ValueError(f'Valid Solar Orbiter data levels are {valid_levels}')
     params.append(f"level='L{level}'")
 
 
