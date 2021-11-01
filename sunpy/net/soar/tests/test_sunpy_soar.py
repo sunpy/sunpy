@@ -1,8 +1,11 @@
 import os
 
 import astropy.units as u
+import pytest
+
 import sunpy.map
 from sunpy.net import Fido, attrs as a
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 from sunpy.net.soar.client import SOARClient
 
@@ -11,9 +14,9 @@ def test_search():
     id = a.Instrument('EUI')
     time = a.Time('2021-02-01', '2021-02-02')
     level = a.Level(1)
-    identifier = a.soar.Identifier('EUI-FSI174-IMAGE')
+    product = a.soar.Product('EUI-FSI174-IMAGE')
 
-    res = Fido.search(id, time, level, identifier)
+    res = Fido.search(id, time, level, product)
     assert len(res) == 1
     assert len(res[0]) == 43
     assert u.allclose(res[0, 0]['Filesize'], 4.74048*u.Mbyte)
@@ -27,10 +30,23 @@ def test_search():
     eui_map = sunpy.map.Map(fname)
 
 
+def test_deprecated_identifier():
+    id = a.Instrument('EUI')
+    time = a.Time('2021-02-01', '2021-02-02')
+    level = a.Level(1)
+    with pytest.warns(SunpyDeprecationWarning):
+        identifier = a.soar.Identifier('EUI-FSI174-IMAGE')
+    product = a.soar.Product('EUI-FSI174-IMAGE')
+    res1 = Fido.search(id, time, level, identifier)
+    res2 = Fido.search(id, time, level, product)
+
+    assert res1.__str__() == res2.__str__()
+
+
 def test_insitu_search():
     id = a.Instrument('MAG')
     time = a.Time('2020-04-16', '2020-04-17')
-    identifier = a.soar.Identifier('MAG-RTN-NORMAL-1-MINUTE')
+    identifier = a.soar.Product('MAG-RTN-NORMAL-1-MINUTE')
 
     res = Fido.search(id, time, identifier)
     assert len(res) == 1
