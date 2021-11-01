@@ -9,7 +9,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.time import parse_time
 
-from sunpy.net.soar.attrs import Identifier, walker
+from sunpy.net.soar.attrs import Identifier, Product, walker
 
 
 __all__ = ['SOARClient']
@@ -130,7 +130,7 @@ class SOARClient(BaseClient):
             True if this client can handle the given query.
         """
         required = {a.Time}
-        optional = {a.Instrument, a.Level, Identifier}
+        optional = {a.Instrument, a.Level, Product, Identifier}
         return cls.check_attr_types_in_query(query, required, optional)
 
     @classmethod

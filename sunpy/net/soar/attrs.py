@@ -1,14 +1,27 @@
+import warnings
+
 import sunpy.net.attrs as a
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
+from sunpy.util.exceptions import SunpyDeprecationWarning
+
+__all__ = ['Product']
 
 
-__all__ = ['Identifier']
-
-
-class Identifier(SimpleAttr):
+class Product(SimpleAttr):
     """
     The data product identifier to search for.
     """
+
+
+class Identifier(Product):
+    """
+    The data product identifier to search for.
+    """
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            "'a.soar.Identifier' is deprecated; use 'a.soar.Product' instead.",
+            SunpyDeprecationWarning)
+        super().__init__(*args, **kwargs)
 
 
 walker = AttrWalker()
@@ -93,6 +106,6 @@ def _(wlk, attr, params):
     params.append(f"instrument='{attr.value}'")
 
 
-@walker.add_applier(Identifier)
+@walker.add_applier(Product, Identifier)
 def _(wlk, attr, params):
     params.append(f"descriptor='{attr.value}'")
