@@ -109,6 +109,11 @@ stages:
             pytest: false
 
           - linux: py38-online
+            cache_dirs:
+            - key: 'sample_data'
+              path: .tox/py38-online/sample_data
+            - key: 'working_dir'
+              path: .tox/py38-online/tmp/sunpy
 
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
