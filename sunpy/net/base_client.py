@@ -172,15 +172,6 @@ class QueryResponseTable(QTable):
     display_keys = TableAttribute(default=slice(None))
     hide_keys = TableAttribute()
 
-    # This is a work around for https://github.com/astropy/astropy/pull/11217
-    # TODO Remove when min astropy version is > 4.2.1
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for attr in list(kwargs):
-            descr = getattr(self.__class__, attr, None)
-            if isinstance(descr, TableAttribute):
-                setattr(self, attr, kwargs.pop(attr))
-
     def unhide_columns(self):
         """
         Modify this table so that all columns are displayed.
