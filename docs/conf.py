@@ -113,6 +113,9 @@ extensions = [
     "sphinxext.opengraph",
 ]
 
+# Set automodapi to generate files inside the generated directory
+automodapi_toctreedirnm = "generated/api"
+
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
 

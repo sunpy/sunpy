@@ -211,7 +211,6 @@ sunpy/cython_version.py
 sunpy/_version.py
 docs/_build
 docs/generated
-docs/api/
 docs/whatsnew/latest_changelog.txt
 examples/**/*.asdf
 examples/**/*.csv
