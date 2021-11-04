@@ -149,7 +149,7 @@ def use_DE440s():
 
 @pytest.mark.remote_data
 @given(obstime=times())
-@settings(deadline=5000, max_examples=10, suppress_health_check=[HealthCheck.function_scoped_fixture])
+@settings(deadline=5000, max_examples=5, suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_consistency_with_horizons(use_DE440s, obstime):
     # Check that the high-accuracy Astropy ephemeris has been set
     assert solar_system_ephemeris.get() == 'de440s'
