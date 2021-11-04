@@ -107,6 +107,15 @@ stages:
           - linux: build_docs_ci
             posargs: " "
             pytest: false
+            cache_dirs:
+            - key: 'sample_data'
+              path: .tox/build_docs_ci/sample_data
+            - key: 'working_dir'
+              path: .tox/build_docs_ci/tmp/sunpy
+            - key: 'build'
+              path: docs/_build
+            - key: 'generated'
+              path: docs/generated
 
           - linux: py38-online
             cache_dirs:
