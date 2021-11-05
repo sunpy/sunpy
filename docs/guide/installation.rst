@@ -70,7 +70,7 @@ This is for installing sunpy within a scientific Python distribution or environm
 
 To acquire a fully working sunpy installation, simply run::
 
-    pip install sunpy[all]
+    pip install "sunpy[all]"
 
 .. note::
     If this does not work, it could be due to a missing C compiler (e.g., ``gcc`` or ``clang``) that is required to build sunpy at install.
@@ -78,11 +78,11 @@ To acquire a fully working sunpy installation, simply run::
 
 If you have a reason to want a more minimal installation, you can install sunpy with no optional dependencies, however this means a lot of submodules will not import::
 
-    pip install sunpy
+    pip install "sunpy"
 
 It is possible to select which "extra" dependencies you want to install, if you know you only need certain submodules::
 
-    pip install sunpy[map,timeseries]
+    pip install "sunpy[map,timeseries]"
 
 The available options are: ``[asdf]``, ``[dask]``, ``[database]``, ``[image]``, ``[jpeg2000]``, ``[map]``, ``[net]``, ``[timeseries]``, ``[visualization]``.
 
@@ -125,7 +125,7 @@ It is possible to run this command in a situation where not all packages are ins
     * sqlalchemy
     ...
     You do not have all the required dependencies installed to run the sunpy test suite.
-    If you want to run the sunpy tests install the 'tests' extra with `pip install sunpy[all,tests]`
+    If you want to run the sunpy tests install the 'tests' extra with `pip install "sunpy[all,tests]"`
 
 This does not mean sunpy is broken, but you will need to install the extra packages to ensure a "complete" installation of sunpy and run the entire test suite.
 It is quite likely that you will run into not having the tests dependencies installed.
