@@ -87,10 +87,10 @@ class XRSTimeSeries(GenericTimeSeries):
         self._validate_data_for_plotting()
         dates = matplotlib.dates.date2num(parse_time(self.to_dataframe().index).datetime)
         axes.plot_date(
-            dates, self.to_dataframe()["xrsa"], "-", label=r"0.5--4.0 $\AA$", color="blue", lw=2, **kwargs
+            dates, self.to_dataframe()["xrsa"], "-", label=r"0.5--4.0 $\AA$", lw=2, **kwargs
         )
         axes.plot_date(
-            dates, self.to_dataframe()["xrsb"], "-", label=r"1.0--8.0 $\AA$", color="red", lw=2, **kwargs
+            dates, self.to_dataframe()["xrsb"], "-", label=r"1.0--8.0 $\AA$", lw=2, **kwargs
         )
 
         axes.set_yscale("log")
