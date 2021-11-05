@@ -508,8 +508,8 @@ Backwards Incompatible Changes
   strings and not bytes for :meth:`~sunpy.net.helio.HECClient.get_table_names`. (`#4643 <https://github.com/sunpy/sunpy/pull/4643>`__)
 - Reduced the selection of dependent packages installed by default via ``pip``,
   which means that some of our sub-packages will not fully import when sunpy is installed with
-  ``pip install sunpy``.
-  You can install all dependencies by specifying ``pip install sunpy[all]``,
+  ``pip install "sunpy"``.
+  You can install all dependencies by specifying ``pip install "sunpy[all]"``,
   or you can install sub-package-specific dependencies by specifying, e.g.,
   ``[map]`` or ``[timeseries]``. (`#4662 <https://github.com/sunpy/sunpy/pull/4662>`__)
 - The class inheritance for `~sunpy.coordinates.metaframes.RotatedSunFrame` and the frames it
