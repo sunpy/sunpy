@@ -12,6 +12,7 @@ from pathlib import Path
 from textwrap import dedent
 from collections.abc import Sequence
 
+import numpy as np
 import parfive
 
 from astropy.table import Table
@@ -183,7 +184,11 @@ class UnifiedResponse(Sequence):
         for block in self:
             ret += f"{len(block)} Results from the {block.client.__class__.__name__}:\n"
             if block.client.info_url is not None:
-                ret += f'Source: {block.client.info_url}\n\n'
+                ret += f'Source: {block.client.info_url}\n'
+            size = block.total_size()
+            if np.isfinite(size):
+                ret += f'Total estimated size: {size}\n'
+            ret += '\n'
             lines = repr(block).split('\n')
             ret += '\n'.join(lines[1:])
             ret += '\n\n'

@@ -4,7 +4,6 @@ Classes and helper functions for VSO responses.
 from collections import defaultdict
 from collections.abc import Mapping
 
-import numpy as np
 from zeep.helpers import serialize_object
 
 import astropy.units as u
@@ -51,6 +50,7 @@ def iter_sort_response(response):
 class VSOQueryResponseTable(QueryResponseTable):
     hide_keys = ['fileid', 'fileurl']
     errors = TableAttribute(default=[])
+    size_column = 'Size'
 
     @classmethod
     def from_zeep_response(cls, response, *, client, _sort=True):
@@ -105,11 +105,6 @@ class VSOQueryResponseTable(QueryResponseTable):
         return data._reorder_columns(['Start Time', 'End Time', 'Source',
                                       'Instrument', 'Type', 'Wavelength'],
                                      remove_empty=True)
-
-    def total_size(self):
-        if 'size' not in self.colnames:
-            return np.nan
-        return np.nansum(self['size'])
 
     def add_error(self, exception):
         self.errors.append(exception)

@@ -143,6 +143,7 @@ To search for data at a given cadence use the `a.Sample <sunpy.net.attrs.Sample>
     <BLANKLINE>
     289 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
+    Total estimated size: 19.591 Gbyte
     <BLANKLINE>
            Start Time       ...
                             ...
@@ -290,6 +291,7 @@ For example if we did a query for some AIA and HMI data::
     <BLANKLINE>
     201 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
+    Total estimated size: 13.626 Gbyte
     <BLANKLINE>
            Start Time       ...
                             ...

@@ -319,6 +319,12 @@ We also pretend that the response is a json object in the form of a Python dicti
 In reality, you probably want to post-process the results from your API before you put them in the table, they should be human readable first, with spaces and capitalisation as appropriate.
 
 
+Supporting filesize estimates
+#############################
+The base client has a method for automatically estimating the total size of files in a given query: :meth:`~sunpy.net.base_client.QueryResponseTable.total_size`.
+To enable to support for this, make sure the table returned by ``search`` has a column that contains filesizes as astropy quantities convertible to ``u.byte``, and set the ``size_column`` class attribute to the name of this column.
+
+
 The ``_can_handle_query`` method
 ---------------------------------
 
@@ -431,7 +437,6 @@ If your filepath is a callback function, pass this to the ``filename=`` argument
 
 Your fetch method does not need to return anything, as long as ``enqueue_file`` is called for every file you want ``Fido`` to download.
 
-
 Putting it all Together
 -----------------------
 
@@ -475,6 +480,8 @@ An example client class may look something like::
 
 
   class ExampleClient(BaseClient):
+      size_column = 'Filesize'
+
       def search(self, query):
           queries = walker.create(query)
 

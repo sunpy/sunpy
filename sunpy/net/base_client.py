@@ -6,6 +6,9 @@ from textwrap import dedent
 from functools import wraps
 from collections.abc import Sequence
 
+import numpy as np
+
+import astropy.units as u
 from astropy.table import Column, QTable, Row, Table, TableAttribute
 
 from sunpy.util.util import get_width
@@ -172,6 +175,8 @@ class QueryResponseTable(QTable):
     display_keys = TableAttribute(default=slice(None))
     hide_keys = TableAttribute()
 
+    size_column = None
+
     def unhide_columns(self):
         """
         Modify this table so that all columns are displayed.
@@ -282,6 +287,27 @@ class QueryResponseTable(QTable):
         for row in self[1:]:
             rbp.intersection(row.response_block_map.keys())
         return rbp
+
+    def total_size(self):
+        """
+        Returns the total size of all files in a query.
+
+        Derived classes must set the 'size_column' class attribute to make use
+        of this.
+        """
+        if self.size_column not in self.colnames:
+            return np.nan * u.byte
+        sizes = self[self.size_column]
+        # Strip negative filesizes
+        total = np.nansum(sizes[sizes > 0])
+        if not (total > 0 * u.byte):
+            return np.nan * u.byte
+        # Find the first power of 3 below the total filesize
+        power = 10**(np.floor(np.log10(total.to_value(u.byte)) // 3) * 3)
+        # Create mapping from prefix value to prefix name
+        prefix_dict = {p[2]: p[0][0] for p in u.si_prefixes}
+        prefix_unit = u.Unit(f'{prefix_dict[power]}byte')
+        return total.to(prefix_unit).round(3)
 
 
 BaseQueryResponse.register(QueryResponseTable)
