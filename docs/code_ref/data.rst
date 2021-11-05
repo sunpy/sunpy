@@ -1,5 +1,5 @@
-sunpy data
-**********
+Data (`sunpy.data`)
+*******************
 
 ``sunpy.data`` contains ways to access sample data and small test files for
 running the sunpy test suite.

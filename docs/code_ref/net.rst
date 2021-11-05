@@ -1,6 +1,5 @@
-*********
-sunpy net
-*********
+Remote data (`sunpy.net`)
+*************************
 
 ``sunpy.net`` contains a lot of different code for accessing various solar
 physics related web services. This submodule contains many layers. Most users

@@ -1,5 +1,5 @@
-sunpy IO
-********
+Input/output (`sunpy.io`)
+*************************
 
 ``sunpy.io`` contains two types of routines, the first reads (data, header)
 pairs from files in a way similar to FITS files. The other is special readers

@@ -1,5 +1,5 @@
-sunpy time
-**********
+Time (`sunpy.time`)
+*******************
 
 ``sunpy.time`` contains helpers for converting strings to `astropy.time.Time`
 objects and handling common operations on these objects. As well as this a

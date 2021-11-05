@@ -111,6 +111,7 @@ extensions = [
     'sunpy.util.sphinx.doctest',
     'sunpy.util.sphinx.generate',
     "sphinxext.opengraph",
+    'sphinx_panels',
 ]
 
 # Set automodapi to generate files inside the generated directory
