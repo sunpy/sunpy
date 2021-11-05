@@ -51,11 +51,26 @@ Coding Style/Conventions
 
 Private code
 ============
+
 It is often useful to designate code as private, which means it is not part of the user facing API, only used internally by sunpy, and can be modified without a deprecation period.
-Any classes, functions, or variables that are private should live in:
+Any classes, functions, or variables that are private should either:
+
+- Have an underscore as the first character of their name, e.g., ``_my_private_function``.
+- If you want to do that to entire set of functions in a file, name the file with a underscore as the first character, e.g., ``_my_private_file.py``.
+
+If these might be useful for other packages within the sunpy ecosphere, they should be made public.
+
+Utilities in sunpy
+==================
+
+Within ``sunpy``, it might be useful to have a set of utility classes or functions that are used by internally to help with certain tasks or to provide a certain level of abstraction.
+These should be placed either:
 
 - ``sunpy.{subpackage}.utils.py``, if it is only used within that sub-package.
-- ``sunpy.utils`` if it is used across multiple sub-packages.
+- ``sunpy.util`` if it is used across multiple sub-packages.
+
+These can be private (see section above) or public.
+The decision is up to the developer, but if these might be useful for other packages within the sunpy ecosphere, they should be made public.
 
 Formatting
 ==========
