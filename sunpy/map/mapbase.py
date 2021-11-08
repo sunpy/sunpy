@@ -572,7 +572,9 @@ class GenericMap(NDData):
         w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
         # Make these a quantity array to prevent the numpy setting element of
         # array with sequence error.
-        w2.wcs.cdelt = u.Quantity(self.scale)
+        # Explicityly call ``.to()`` to check that scale is in the correct units
+        w2.wcs.cdelt = u.Quantity([self.scale[0].to(self.spatial_units[0] / u.pix),
+                                   self.scale[1].to(self.spatial_units[1] / u.pix)])
         w2.wcs.crval = u.Quantity([self._reference_longitude, self._reference_latitude])
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
