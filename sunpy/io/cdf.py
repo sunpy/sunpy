@@ -4,6 +4,7 @@ from cdflib.epochs import CDFepoch
 
 import astropy.units as u
 
+from sunpy import log
 from sunpy.timeseries import GenericTimeSeries
 
 __all__ = ['read_cdf']
@@ -56,6 +57,10 @@ def read_cdf(fname):
                 continue
 
             # Get data
+            if cdf.varinq(var_key)['Last_Rec'] == -1:
+                log.debug(f'Skipping {var_key} in {fname} as it has zero elements')
+                continue
+
             data = cdf.varget(var_key)
             # Get units
             unit = attrs['UNITS']

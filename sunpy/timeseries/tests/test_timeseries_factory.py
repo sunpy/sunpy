@@ -15,7 +15,9 @@ from astropy.time import TimeDelta
 
 import sunpy.data.test
 import sunpy.io
+import sunpy.net.attrs as a
 import sunpy.timeseries
+from sunpy.net import Fido
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -115,6 +117,17 @@ class TestTimeSeries:
         assert ts.columns == ['psp_fld_l2_quality_flags']
         assert ts.quantity('psp_fld_l2_quality_flags').unit == u.dimensionless_unscaled
         assert len(ts.quantity('psp_fld_l2_quality_flags')) == 1440
+
+    @pytest.mark.remote_data
+    def test_read_cdf_empty_variable(self):
+        # Check that a CDF with an empty column can be correctly read
+        result = sunpy.net.Fido.search(a.Time('2020-01-01', '2020-01-02'),
+                                       a.cdaweb.Dataset('AC_H6_SWI'))
+        filename = Fido.fetch(result[0, 0])
+
+        density = u.def_unit('#/cm^3', represents=1 / u.cm**3)
+        u.add_enabled_units(density)
+        sunpy.timeseries.TimeSeries(filename)
 
 # =============================================================================
 # Individual Implicit Source Tests
