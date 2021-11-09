@@ -19,13 +19,13 @@ def test_search():
     res = Fido.search(id, time, level, product)
     assert len(res) == 1
     assert len(res[0]) == 43
-    assert u.allclose(res[0, 0]['Filesize'], 4.74048*u.Mbyte)
+    assert u.allclose(res[0, 0]['Filesize'], 4.740*u.Mbyte)
 
     files = Fido.fetch(res[0, 0])
     assert len(files) == 1
     fname = files[0]
     assert u.allclose(os.path.getsize(fname) * u.byte,
-                      res[0, 0]['Filesize'])
+                      res[0, 0]['Filesize'], atol=1e-3*u.Mbyte)
     # Smoke test that we can read this into a map
     eui_map = sunpy.map.Map(fname)
 

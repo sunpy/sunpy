@@ -28,7 +28,7 @@ class SOARClient(BaseClient):
             results.append(self._do_search(query_parameters))
         table = astropy.table.vstack(results)
         qrt = QueryResponseTable(table, client=self)
-        qrt['Filesize'] = (qrt['Filesize'] * u.byte).to(u.Mbyte)
+        qrt['Filesize'] = (qrt['Filesize'] * u.byte).to(u.Mbyte).round(3)
         qrt.hide_keys = ['Data item ID', 'Filename']
         return qrt
 
