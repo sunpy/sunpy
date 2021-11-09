@@ -281,7 +281,8 @@ class MDISynopticMap(MDIMap):
             # Since, this map uses the cylindrical equal-area (CEA) projection,
             # the spacing should be modified to 180/pi times the original value
             # Reference: Section 5.5, Thompson 2006
-            return SpatialPair(self.meta['cdelt1'], 180 / np.pi * self.meta['cdelt2'])
+            return SpatialPair(np.abs(self.meta['cdelt1']) * self.spatial_units[0] / u.pixel,
+                               180 / np.pi * self.meta['cdelt2'] * u.deg / u.pixel)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
