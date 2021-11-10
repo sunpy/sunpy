@@ -14,23 +14,15 @@ import matplotlib.pyplot as plt
 
 import astropy.units as u
 
+import sunpy.data.sample
 import sunpy.map
-from sunpy.net import Fido
-from sunpy.net import attrs as a
 
 ###########################################################################
-# First we'll download a couple images and store them in a
-# `sunpy.map.MapSequence`. This could be from any channel of any imager.
-# Here, we use SDO/AIA 304 Å.
-
-instrument = a.Instrument.aia
-wave = a.Wavelength(30 * u.nm, 31 * u.nm)
-result = Fido.search(a.Time('2015-06-18T00:00:00', '2015-06-18T00:00:10') |
-                     a.Time('2015-06-18T01:03:30', '2015-06-18T01:03:35'),
-                     instrument,
-                     wave)
-downloaded_files = Fido.fetch(result)
-maps = sunpy.map.Map(downloaded_files, sequence=True)
+# First load a couple of images taken from the sample dataset. These are
+# two cutouts taken during a flare.
+maps = sunpy.map.Map([sunpy.data.sample.AIA_193_CUTOUT03_IMAGE,
+                      sunpy.data.sample.AIA_193_CUTOUT04_IMAGE],
+                     sequence=True)
 
 ###########################################################################
 # Now we'll do a standard plot of the second image just to see it.
@@ -59,8 +51,8 @@ diff_map = sunpy.map.Map(diff, meta)
 # intensity so that it shows up well.
 
 plt.figure()
-ax_diff = plt.subplot(projection=diff_map)
+plt.subplot(projection=diff_map)
 diff_map.plot(cmap='Greys_r',
-              norm=colors.Normalize(vmin=-50, vmax=50))
-
+              norm=colors.Normalize(vmin=-200, vmax=200))
+plt.colorbar(extend='both', label=maps[1].unit.to_string())
 plt.show()
