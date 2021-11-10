@@ -8,6 +8,7 @@ import glob
 import pytest
 
 import astropy.units as u
+from astropy.visualization.mpl_normalize import ImageNormalize
 
 import sunpy.data.test
 from sunpy.map import Map
@@ -61,6 +62,27 @@ def test_measurement(createAIAMap):
 def test_norm_clip(createAIAMap):
     # Tests that the default normalizer has clipping disabled
     assert not createAIAMap.plot_settings['norm'].clip
+
+
+def test_new_instance_preserves_plot_settings(createAIAMap):
+    # Tests that the _new_instance method preserves the plot_settings
+    # of the old instance. This is done on the AIA source as the AIAMap
+    # constructor explicitly sets the cmap and norm and we want to test
+    # that _new_instance persists the old custom plot_settings
+    createAIAMap.plot_settings['norm'] = ImageNormalize(vmin=0.1, vmax=42)
+    createAIAMap.plot_settings['cmap'] = 'inferno'
+    new_aia_map = createAIAMap._new_instance(createAIAMap.data,
+                                             createAIAMap.meta,
+                                             plot_settings=createAIAMap.plot_settings)
+    assert new_aia_map.plot_settings['norm'].vmin == createAIAMap.plot_settings['norm'].vmin
+    assert new_aia_map.plot_settings['norm'].vmax == createAIAMap.plot_settings['norm'].vmax
+    assert new_aia_map.plot_settings['cmap'] == createAIAMap.plot_settings['cmap']
+    # If no plot settings are explicitly passed, the plot_settings should fall back to those
+    # in the constructor
+    new_aia_map = createAIAMap._new_instance(createAIAMap.data, createAIAMap.meta)
+    assert new_aia_map.plot_settings['norm'].vmin is None
+    assert new_aia_map.plot_settings['norm'].vmax is None
+    assert new_aia_map.plot_settings['cmap'] == new_aia_map._get_cmap_name()
 
 
 def test_wcs(createAIAMap):
