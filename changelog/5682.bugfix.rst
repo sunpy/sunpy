@@ -1,2 +1,0 @@
-Fixed the units of `sunpy.map.sources.HMISynopticMap.scale` and
-`sunpy.map.sources.MDISynopticMap.scale`.

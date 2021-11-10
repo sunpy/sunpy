@@ -1,3 +1,31 @@
+3.1.1 (2021-11-10)
+==================
+
+Bug Fixes
+---------
+
+- Fixed reading CDF files when a column has no entries. If this is the case the
+  column will be ignored, and a message logged at DEBUG level. (`#5664 <https://github.com/sunpy/sunpy/pull/5664>`__)
+- Fixed the units of `sunpy.map.sources.HMISynopticMap.scale` and
+  `sunpy.map.sources.MDISynopticMap.scale`. (`#5682 <https://github.com/sunpy/sunpy/pull/5682>`__)
+- Fixed a bug where custom values in the ``plot_settings`` dictionary were not being propagated
+  to new map instances created when calling map methods (e.g. ``.submap``). (`#5687 <https://github.com/sunpy/sunpy/pull/5687>`__)
+
+
+Documentation
+-------------
+
+- Tidy the API Reference section of the documentation and improve the landing
+  page for the docs. (`#5623 <https://github.com/sunpy/sunpy/pull/5623>`__)
+
+
+Internal Changes
+----------------
+
+- `sunpy.map.GenericMap.wcs` now checks that the scale property has the correct
+  units whilst constructing the WCS. (`#5682 <https://github.com/sunpy/sunpy/pull/5682>`__)
+
+
 3.1.0 (2021-10-29)
 ==================
 
