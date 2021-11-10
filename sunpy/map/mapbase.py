@@ -494,7 +494,14 @@ class GenericMap(NDData):
         Instantiate a new instance of this class using given data.
         This is a shortcut for ``type(self)(data, meta, plot_settings)``.
         """
-        return cls(data, meta, plot_settings=plot_settings, **kwargs)
+        new_map = cls(data, meta, **kwargs)
+        # plot_settings are set explicitly here as some map sources
+        # explicitly set some of the plot_settings in the constructor
+        # and we want to preserve the plot_settings of the previous
+        # instance.
+        if plot_settings is not None:
+            new_map.plot_settings.update(plot_settings)
+        return new_map
 
     def _get_lon_lat(self, frame):
         """
@@ -516,10 +523,10 @@ class GenericMap(NDData):
         """
         new_meta = copy.deepcopy(self.meta)
         new_meta['bunit'] = new_data.unit.to_string('fits')
-        return self._new_instance(new_data.value, new_meta)
+        return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
 
     def __neg__(self):
-        return self._new_instance(-self.data, self.meta)
+        return self._new_instance(-self.data, self.meta, plot_settings=self.plot_settings)
 
     @check_arithmetic_compatibility
     def __pow__(self, value):
