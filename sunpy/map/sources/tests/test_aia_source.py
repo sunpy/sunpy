@@ -7,7 +7,6 @@ import glob
 
 import pytest
 
-import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 import sunpy.data.test
