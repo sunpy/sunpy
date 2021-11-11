@@ -9,7 +9,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth, get_horizons_coord
-from .strategies import times
+from sunpy.coordinates.tests.strategies import times
 
 
 def test_get_body_heliographic_stonyhurst():
