@@ -7,15 +7,11 @@ import pytest
 
 # Skipping these tests that take check the name of the current module
 # (which ends up starting with sunpy_tests rather than sunpy).
-# asdf path issue with PyInstaller as well.
+# asdf/cdf path issue with PyInstaller as well.
 SKIP_TESTS = [
     "test_attr_metamagic",
     "test_basic",
-    "test_coordinate_frames",
-    "test_data_manager",
     "test_download_cache",
-    "test_esp_plot",
-    "test_eve_plot",
     "test_file_tampered",
     "test_find_dependencies",
     "test_genericmap_basic",
@@ -23,12 +19,8 @@ SKIP_TESTS = [
     "test_hcc_observer_version",
     "test_hgc_100",
     "test_hpc_observer_version",
-    "test_lyra_plot",
     "test_main_nonexisting_module",
     "test_main_stdlib_module",
-    "test_missing_dependencies_by_extra",
-    "test_noaa_json_ind_plot",
-    "test_noaa_json_pre_plot",
     "test_origin",
     "test_override_file",
     "test_read_cdf",

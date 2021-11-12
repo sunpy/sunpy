@@ -61,7 +61,7 @@ stages:
             - libopenjp2-7
 
         envs:
-          - linux: pyinstaller
+          - linux: py39
 
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
