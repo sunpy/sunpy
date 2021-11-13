@@ -234,10 +234,9 @@ aia_map.fits
 .tmp
 
 # PyInstaller Files
-.pyinstaller/run_sunpy_tests
+.pyinstaller/run_tests
+.pyinstaller/run_tests.spec
 .pyinstaller/sunpy_tests
-.pyinstaller/run_sunpy_tests.spec
-sunpy_tests/
 
 ### Vagrant: https://www.toptal.com/developers/gitignore/api/vagrant
 # General

@@ -7,8 +7,8 @@ from astropy.coordinates import SkyCoord, SkyOffsetFrame
 from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates import NorthOffsetFrame
-from .helpers import assert_longitude_allclose
-from .strategies import latitudes, longitudes
+from sunpy.coordinates.tests.helpers import assert_longitude_allclose
+from sunpy.coordinates.tests.strategies import latitudes, longitudes
 
 
 def test_null():
