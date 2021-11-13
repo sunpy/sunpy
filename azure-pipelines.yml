@@ -5,8 +5,13 @@ variables:
   JSOC_EMAIL: "jsoc@cadair.com"  # For the example gallery on the dev deps build
 
 schedules:
-  - cron: "0 0 * * *"
-    displayName: Daily midnight build
+  - cron: "0 9 * * *"
+         # \ \ \ \ \______ Days of week
+         #  \ \ \ \_______ Months
+         #   \ \ \________ Days
+         #    \ \__________Hours
+         #     \__________ Minutes
+    displayName: Daily 9am UTC build
     branches:
       include:
       - main
@@ -136,8 +141,8 @@ stages:
 
           envs:
             - linux: base_deps
-            - linux: py38-devdeps
-            - linux: py38-hypothesis
+            - linux: py39-devdeps
+            - linux: py39-hypothesis
             - linux: pyinstaller
 
   # On branches which aren't main, and not Pull Requests, build the wheels but only upload them on tags
