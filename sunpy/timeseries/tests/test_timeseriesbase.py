@@ -7,7 +7,6 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 import pytest
-from erfa.core import ErfaWarning
 from pandas import DataFrame
 from pandas.testing import assert_frame_equal
 
@@ -15,6 +14,11 @@ import astropy.units as u
 from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
+
+try:
+    from erfa.core import ErfaWarning
+except ModuleNotFoundError:
+    from astropy._erfa.core import ErfaWarning
 
 import sunpy
 import sunpy.data.test
