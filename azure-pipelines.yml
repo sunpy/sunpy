@@ -27,6 +27,7 @@ resources:
     name: ConorMacBride/azure-pipelines-templates
     ref: fix-fork-skipping
 
+
 trigger:
   branches:
     include:
