@@ -229,7 +229,7 @@ def _get_wcs_meta(coordinate, projection_code):
 
 
 @u.quantity_input
-def get_observer_meta(observer, rsun: (u.Mm, None)):
+def get_observer_meta(observer, rsun: (u.Mm, None) = None):
     """
     Function to get observer meta from coordinate frame.
 
@@ -238,17 +238,15 @@ def get_observer_meta(observer, rsun: (u.Mm, None)):
     coordinate : `~astropy.coordinates.BaseCoordinateFrame`
         The coordinate of the observer, must be transformable to Heliographic
         Stonyhurst.
-    rsun : `astropy.units.Quantity`
-        The radius of the Sun.
+    rsun : `astropy.units.Quantity`, optional
+        The radius of the Sun. If ``None``, the RSUN_OBS and RSUN_REF keys are
+        not set.
 
     Returns
     -------
-    `dict`
-        Containing the WCS meta information
-            * hgln_obs, hglt_obs
-            * dsun_obs
-            * rsun_obs
-            * rsun_ref
+    coord_meta : `dict`
+        WCS metadata, with the keys ``['hgln_obs', 'hglt_obs', 'dsun_obs']``,
+        and additionally if ``rsun`` is given ``['rsun_obs', 'rsun_ref']``.
     """
     observer = observer.transform_to(frames.HeliographicStonyhurst(obstime=observer.obstime))
     coord_meta = {}
