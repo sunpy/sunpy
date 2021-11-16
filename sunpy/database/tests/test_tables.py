@@ -462,7 +462,6 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    assert len(entries) == 10
     expected = [
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
@@ -501,34 +500,6 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             wavemax=None),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_blue_intensity_series.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0),
-            observation_time_end=datetime(2014, 3, 30, 23, 59),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_green_intensity_series.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0),
-            observation_time_end=datetime(2014, 3, 30, 23, 59),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_red_intensity_series.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0),
-            observation_time_end=datetime(2014, 3, 30, 23, 59),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/DIARAD/121222_1.D01',
-            observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
-            observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
-            instrument='VIRGO', size=14.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_hourly.dat.tar.gz',
             observation_time_start=datetime(1995, 12, 2, 0, 0),
             observation_time_end=datetime(2020, 1, 1, 0, 0),
@@ -564,13 +535,14 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             wavemax=None),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/sph/VIRGO_D4.2_SPH_960411_120914.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0),
-            observation_time_end=datetime(2012, 9, 14, 0, 0),
-            instrument='VIRGO', size=512000.0, wavemin=None,
-            wavemax=None)
+            fileid='/archive/soho/private/data/processed/virgo/loi/1717986918',
+            observation_time_start=datetime(1996, 4, 1, 0, 0),
+            observation_time_end=datetime(2021, 4, 30, 23, 59),
+            instrument='VIRGO', size=1677722.0, wavemin=None,
+            wavemax=None),
     ]
 
+    assert len(entries) == len(expected)
     for e in entries:
         assert e in expected
 
