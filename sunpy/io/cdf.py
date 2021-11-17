@@ -6,6 +6,7 @@ import astropy.units as u
 
 from sunpy import log
 from sunpy.timeseries import GenericTimeSeries
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['read_cdf']
 
@@ -63,11 +64,18 @@ def read_cdf(fname):
 
             data = cdf.varget(var_key)
             # Get units
-            unit = attrs['UNITS']
-            if unit in ['None', '', 'unitless']:
-                unit = u.dimensionless_unscaled
-            else:
-                unit = u.Unit(unit)
+            unit_str = attrs['UNITS']
+            try:
+                unit = u.Unit(unit_str)
+            except ValueError:
+                if unit_str in _known_units:
+                    unit = _known_units[unit_str]
+                else:
+                    warn_user(f'astropy did not recognize units of "{unit_str}". '
+                              'Assigning dimensionless units. '
+                              'If you think this unit should not be dimensionless, '
+                              'please raise an issue at https://github.com/sunpy/sunpy/issues')
+                    unit = u.dimensionless_unscaled
 
             if data.ndim == 2:
                 # Multiple columns, give each column a unique label
@@ -82,3 +90,82 @@ def read_cdf(fname):
         all_ts.append(GenericTimeSeries(data=df, units=units, meta=meta))
 
     return all_ts
+
+
+_known_units = {'ratio': u.dimensionless_unscaled,
+                'NOTEXIST': u.dimensionless_unscaled,
+                'Unitless': u.dimensionless_unscaled,
+                'unitless': u.dimensionless_unscaled,
+                'Quality_Flag': u.dimensionless_unscaled,
+                'None': u.dimensionless_unscaled,
+                'none': u.dimensionless_unscaled,
+                ' none': u.dimensionless_unscaled,
+
+                'microW m^-2': u.mW * u.m**-2,
+
+                'years': u.yr,
+                'days': u.d,
+
+                '#/cc': u.cm**-3,
+                '#/cm^3': u.cm**-3,
+                'cm^{-3}': u.cm**-3,
+                'particles cm^-3': u.cm**-3,
+                'n/cc (from moments)': u.cm**-3,
+                'n/cc (from fits)': u.cm**-3,
+                'Per cc': u.cm**-3,
+                '#/cm3': u.cm**-3,
+                'n/cc': u.cm**-3,
+
+                'km/sec': u.km / u.s,
+                'km/sec (from fits)': u.km / u.s,
+                'km/sec (from moments)': u.km / u.s,
+                'Km/s': u.km / u.s,
+
+                'Volts': u.V,
+
+                'earth radii': u.earthRad,
+                'Re': u.earthRad,
+                'Earth Radii': u.earthRad,
+                'Re (1min)': u.earthRad,
+                'Re (1hr)': u.earthRad,
+
+                'Degrees': u.deg,
+                'degrees': u.deg,
+                'Deg': u.deg,
+                'deg (from fits)': u.deg,
+                'deg (from moments)': u.deg,
+                'deg (>200)': u.deg,
+
+                'Deg K': u.K,
+                'deg_K': u.K,
+                '#/{cc*(cm/s)^3}': (u.cm**3 * (u.cm / u.s)**3)**-1,
+                'sec': u.s,
+                'Samples/s': 1 / u.s,
+
+                'seconds': u.s,
+                'nT GSE': u.nT,
+                'nT GSM': u.nT,
+                'nT DSL': u.nT,
+                'nT SSL': u.nT,
+                'nT (1min)': u.nT,
+                'nT (3sec)': u.nT,
+                'nT (1hr)': u.nT,
+                'nT (>200)': u.nT,
+
+                'msec': u.ms,
+                'milliseconds': u.ms,
+
+                '#/cm2-ster-eV-sec': 1 / (u.cm**2 * u.sr * u.eV * u.s),
+                '1/(cm2 Sr sec MeV/nucleon)': 1 / (u.cm**2 * u.sr * u.s * u.MeV),
+                '1/(cm**2-s-sr-MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                '1/(cm**2-s-sr-MeV/nuc.)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                '1/(cm^2 sec ster MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+
+                '1/(cm**2-s-sr)': 1 / (u.cm**2 * u.s * u.sr),
+                '1/(SQcm-ster-s)': 1 / (u.cm**2 * u.s * u.sr),
+                '1/(SQcm-ster-s)..': 1 / (u.cm**2 * u.s * u.sr),
+
+                'Counts/256sec': 1 / (256 * u.s),
+                'Counts/hour': 1 / u.hr,
+                'counts / s': 1/u.s,
+                }

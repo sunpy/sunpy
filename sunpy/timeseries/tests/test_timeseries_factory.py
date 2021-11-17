@@ -124,9 +124,6 @@ class TestTimeSeries:
         result = sunpy.net.Fido.search(a.Time('2020-01-01', '2020-01-02'),
                                        a.cdaweb.Dataset('AC_H6_SWI'))
         filename = Fido.fetch(result[0, 0])
-
-        density = u.def_unit('#/cm^3', represents=1 / u.cm**3)
-        u.add_enabled_units(density)
         sunpy.timeseries.TimeSeries(filename)
 
 # =============================================================================
