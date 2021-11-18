@@ -49,6 +49,11 @@ project = 'SunPy'
 author = 'The SunPy Community'
 copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
+
+# Register remote data option with doctest
+import doctest  # NOQA
+REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
+
 # The full version, including alpha/beta/rc tags
 release = __version__
 sunpy_version = Version(__version__)
