@@ -28,22 +28,15 @@ srs_table = srs.read_srs(sunpy.data.sample.SRS_TABLE)
 # Some tables do not have these columns, so we exit the script if they are not
 # present.
 
-if 'I' in srs_table['ID'] or 'IA' in srs_table['ID']:
-    srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I',
-                                        srs_table['ID'] == 'IA')]
-else:
-    raise ValueError("No I or IA entries for this date.")
+srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I', srs_table['ID'] == 'IA')]
 
 ##############################################################################
 # Now we extract the latitudes, longitudes and the region numbers. We make an
 # empty list if there are no ARs.
 
-if srs_table is not None:
-    lats = srs_table['Latitude']
-    lngs = srs_table['Longitude']
-    numbers = srs_table['Number']
-else:
-    lats = lngs = numbers = []
+lats = srs_table['Latitude']
+lngs = srs_table['Longitude']
+numbers = srs_table['Number']
 
 ##############################################################################
 # Let's plot the results by defining coordinates for each location.
@@ -52,16 +45,14 @@ ax = plt.subplot(projection=smap)
 smap.plot(vmin=-120, vmax=120)
 smap.draw_limb()
 ax.set_autoscale_on(False)
-
-if len(lats) > 0:
-    c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
-    ax.plot_coord(c, 'o')
-
-    for i, num in enumerate(numbers):
-        ax.annotate(num, (lngs[i].value, lats[i].value),
-                    xycoords=ax.get_transform('heliographic_stonyhurst'),
-                    color='red',
-                    fontweight='bold',
-                    )
+# As the values are masked arrays, we need to work around that.
+c = SkyCoord(lngs.data * lngs.unit, lats.data * lats.unit, frame="heliographic_stonyhurst")
+ax.plot_coord(c, 'o')
+for i, num in enumerate(numbers):
+    ax.annotate(num, (lngs[i].value, lats[i].value),
+                xycoords=ax.get_transform('heliographic_stonyhurst'),
+                color='red',
+                fontweight='bold',
+                )
 
 plt.show()
