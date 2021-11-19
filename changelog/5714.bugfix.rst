@@ -1,0 +1,1 @@
+Only open one connection to the JSOC for any download.
