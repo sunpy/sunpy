@@ -70,7 +70,6 @@ py:class xmlrpclib.Fault
 py:obj aiohttp.ClientResponse
 py:obj astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap.grid
 py:obj data
-py:obj distutils.version.LooseVersion
 py:obj numpy.ma.core.MaskedArray
 py:obj pkg_resources.parse_version
 py:obj sunpy.extern.parse.parse
