@@ -1,3 +1,4 @@
+import sys
 import platform
 import warnings
 from pathlib import Path
@@ -5,7 +6,6 @@ from functools import wraps
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy.distutils.system_info as sysinfo
 import pkg_resources
 import pytest
 
@@ -37,7 +37,7 @@ except ImportError:
 else:
     SKIP_ANA = False
 
-if sysinfo.platform_bits == 64:
+if sys.maxsize > 2**32:
     SKIP_32 = False
 else:
     SKIP_32 = True

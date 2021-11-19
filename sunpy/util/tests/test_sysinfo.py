@@ -4,7 +4,7 @@ from sunpy.util.sysinfo import find_dependencies, missing_dependencies_by_extra,
 def test_find_dependencies():
     missing, installed = find_dependencies()
     assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "parfive"])
+    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging", "parfive"])
 
 
 def test_missing_dependencies_by_extra():
