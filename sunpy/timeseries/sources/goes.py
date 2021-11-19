@@ -4,12 +4,12 @@ This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
 import datetime
 from pathlib import Path
 from collections import OrderedDict
-from distutils.version import LooseVersion
 
 import h5netcdf
 import matplotlib.dates
 import matplotlib.ticker as mticker
 import numpy as np
+import packaging.version
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
@@ -59,9 +59,10 @@ class XRSTimeSeries(GenericTimeSeries):
     _source = 'xrs'
 
     _netcdf_read_kw = {}
-    if h5netcdf.__version__ == LooseVersion("0.9"):
+    h5netcdf_version = packaging.version.parse(h5netcdf.__version__)
+    if h5netcdf_version == packaging.version.parse("0.9"):
         _netcdf_read_kw['decode_strings'] = True
-    if h5netcdf.__version__ >= LooseVersion("0.10"):
+    if h5netcdf_version >= packaging.version.parse("0.10"):
         _netcdf_read_kw['decode_vlen_strings'] = True
 
     @peek_show
