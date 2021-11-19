@@ -1,10 +1,10 @@
 import os
 from glob import glob
 from collections import defaultdict
-from distutils.core import Extension
 
 import numpy
 from extension_helpers import get_compiler
+from setuptools import Extension
 
 
 def get_extensions():
