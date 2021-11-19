@@ -2,6 +2,7 @@
 Ephemeris calculations using SunPy coordinate frames
 """
 import numpy as np
+from packaging import version
 
 import astropy.units as u
 from astropy.constants import c as speed_of_light
@@ -197,7 +198,7 @@ def get_earth(time='now', *, include_velocity=False):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocity=False):
+def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False):
     """
     Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
     solar-system body at a specified time.  This location is the instantaneous or "true" location,
@@ -212,10 +213,9 @@ def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocit
     body : `str`
         The solar-system body for which to calculate positions.  One can also use the search form
         linked below to find valid names or ID numbers.
-    id_type : `str`
-        If 'majorbody', search by name for planets, satellites, or other major bodies.
-        If 'smallbody', search by name for asteroids or comets.
-        If 'id', search by ID number.
+    id_type : `None`, `str`
+        See the astroquery documentation for information on id_types: :ref:`astroquery.jplhorizons`.
+        If the installed astroquery version is less than 0.4.4, defaults to ``'majorbody'``.
     time : {parse_time_types}, `dict`
         Time to use in a parse_time-compatible format.
 
@@ -270,7 +270,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocit
 
     Query the location of the SOHO spacecraft via its ID number (-21)
 
-    >>> get_horizons_coord(-21, '2004-05-06 11:22:33', 'id')  # doctest: +REMOTE_DATA
+    >>> get_horizons_coord(-21, '2004-05-06 11:22:33')  # doctest: +REMOTE_DATA
     INFO: Obtained JPL HORIZONS location for SOHO (spacecraft) (-21) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0.25234902, -3.55863633, 0.99923086)>
@@ -293,6 +293,15 @@ def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocit
     INFO: Obtained JPL HORIZONS location for Solar Orbiter (spacecraft) (-144 [sunpy.coordinates.ephemeris]
     ...
     """
+    # Import here so that astroquery is not a module-level dependency
+    import astroquery
+    from astroquery.jplhorizons import Horizons
+
+    if id_type is None and version.parse(astroquery.__version__) < version.parse('0.4.4'):
+        # For older versions of astroquery retain default behaviour of this function
+        # if id_type isn't manually specified.
+        id_type = 'majorbody'
+
     if isinstance(time, dict):
         if set(time.keys()) != set(['start', 'stop', 'step']):
             raise ValueError('time dictionary must have the keys ["start", "stop", "step"]')
@@ -305,8 +314,6 @@ def get_horizons_coord(body, time='now', id_type='majorbody', *, include_velocit
         array_time = np.reshape(obstime, (-1,))  # Convert to an array, even if scalar
         epochs = array_time.tdb.jd.tolist()  # Time must be provided in JD TDB
 
-    # Import here so that astroquery is not a module-level dependency
-    from astroquery.jplhorizons import Horizons
     query = Horizons(id=body, id_type=id_type,
                      location='500@10',      # Heliocentric (mean ecliptic)
                      epochs=epochs)
