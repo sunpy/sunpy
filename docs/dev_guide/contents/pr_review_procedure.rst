@@ -179,4 +179,4 @@ sunpy Developers
 
 The members of this group have "read" access to the sunpy repository.
 As all these repository are open anyway, what this effectively means is that these people can be assigned to issues.
-The members of this group are people who are involved in the development of sunpy at a good frequency, they are people who’s opinions have been demonstrated to be constructive and informative.
+The members of this group are people who are involved in the development of sunpy at a good frequency, they are people who's opinions have been demonstrated to be constructive and informative.

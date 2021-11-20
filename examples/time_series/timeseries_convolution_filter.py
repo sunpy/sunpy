@@ -23,7 +23,7 @@ goes_lc = TimeSeries(GOES_XRS_TIMESERIES).truncate('2011/06/07 06:10', '2011/06/
 # Now we will extract data values from the TimeSeries and apply a BoxCar filter
 # to get smooth data. Boxcar smoothing is equivalent to taking our signal and
 # using it to make a new signal where each element is the average of w adjacent
-# elements. Here we will use AstroPy’s convolve function with a “boxcar” kernel
+# elements. Here we will use astropy's convolve function with a "boxcar" kernel
 # of width w = 10.
 
 goes_lc = goes_lc.add_column(
