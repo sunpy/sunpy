@@ -214,14 +214,14 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         The solar-system body for which to calculate positions.  One can also use the search form
         linked below to find valid names or ID numbers.
     id_type : `None`, `str`
-        See the astroquery documentation for information on id_types: :ref:`astroquery.jplhorizons`.
+        See the astroquery documentation for information on id_types: `astroquery.jplhorizons`.
         If the installed astroquery version is less than 0.4.4, defaults to ``'majorbody'``.
     time : {parse_time_types}, `dict`
         Time to use in a parse_time-compatible format.
 
         Alternatively, this can be a dictionary defining a range of times and
         dates; the range dictionary has to be of the form
-        {{'start': start_time, 'stop': stop_time, 'step':’n[y|d|m|s]’}}.
+        {{'start': start_time, 'stop': stop_time, 'step':'n[y|d|m|s]'}}.
         ``start_time`` and ``stop_time`` must be in a parse_time-compatible format,
         and are interpreted as UTC time. ``step`` must be a string with either a
         number and interval length (e.g. for every 10 seconds, ``'10s'``), or a
