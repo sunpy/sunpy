@@ -1,6 +1,5 @@
 import os
 import tempfile
-from unittest import mock
 
 import pytest
 from parfive import Results
@@ -388,23 +387,6 @@ def test_can_handle_query_no_series(client):
     assert not client._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
     assert not client._can_handle_query(a.Wavelength(17.1*u.nm))
     assert client._can_handle_query(a.jsoc.Series("hmi.M_45s"))
-
-
-@pytest.mark.remote_data
-def test_max_parallel_connections(client):
-    responses = client.search(
-        a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:36'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
-        a.jsoc.Protocol("as-is"))
-    path = tempfile.mkdtemp()
-    with mock.patch(
-        "parfive.Downloader.download",
-        new_callable=mock.MagicMock
-    ) as download:
-        download.side_effect = ["Mocked Downloader"]
-        with pytest.warns(SunpyUserWarning, match="JSOC does not support more than 1 parallel connection, changing the number to 1."):
-            client.fetch(responses, path=path, max_conn=5, max_splits=5)
-    assert download.called
 
 
 def test_jsoc_attrs(client):

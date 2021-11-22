@@ -1,1 +1,2 @@
-Only open one connection to the JSOC for any download.
+Due to consultation with JSOC, we will now limit all downloads to the JSOC to one connection.
+This will override all user settings passed to the downloader.

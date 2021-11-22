@@ -421,7 +421,7 @@ class JSOCClient(BaseClient):
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
 
-        defaults = {'max_splits': 2}
+        defaults = {'max_splits': 1}
         defaults.update(kwargs)
 
         # Make response iterable
@@ -437,7 +437,7 @@ class JSOCClient(BaseClient):
 
         return self.get_request(responses, path=path, overwrite=overwrite,
                                 progress=progress, downloader=downloader,
-                                wait=wait, max_conn=max_conn, **defaults)
+                                wait=wait, max_conn=1, **defaults)
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
                     downloader=None, wait=True, max_conn=default_max_conn, **kwargs):
@@ -475,7 +475,8 @@ class JSOCClient(BaseClient):
         """
         c = drms.Client()
 
-        kwargs['max_splits'] = kwargs.get('max_splits', 1)
+        # Private communication from JSOC say we should not use more than one connection.
+        kwargs['max_splits'] = 1
 
         # Convert Responses to a list if not already
         if isinstance(requests, str) or not isiterable(requests):
@@ -522,15 +523,8 @@ class JSOCClient(BaseClient):
         dl_set = True
         if not downloader:
             dl_set = False
-            downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=max_conn)
-
-        # Private communication from JSOC say we should not use more than one connection.
-        if downloader.max_conn * kwargs['max_splits'] > 1:
-            warn_user(
-                "JSOC does not support more than 1 parallel connection, changing the number to 1."
-            )
-            kwargs['max_splits'] = 1
-            downloader.max_conn = 1
+            # Private communication from JSOC say we should not use more than one connection.
+            downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=1)
 
         urls = []
         for request in requests:
