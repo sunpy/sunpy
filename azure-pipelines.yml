@@ -24,8 +24,7 @@ resources:
   - repository: OpenAstronomy
     type: github
     endpoint: sunpy
-    name: ConorMacBride/azure-pipelines-templates
-    ref: fix-fork-skipping
+    name: OpenAstronomy/azure-pipelines-templates
 
 trigger:
   branches:
