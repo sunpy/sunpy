@@ -437,7 +437,7 @@ class JSOCClient(BaseClient):
 
         return self.get_request(responses, path=path, overwrite=overwrite,
                                 progress=progress, downloader=downloader,
-                                wait=wait, max_conn=1, **defaults)
+                                wait=wait, max_conn=max_conn, **defaults)
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
                     downloader=None, wait=True, max_conn=default_max_conn, **kwargs):
