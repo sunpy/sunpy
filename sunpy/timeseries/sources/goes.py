@@ -1,12 +1,11 @@
 """
 This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
 """
-import datetime
 from pathlib import Path
 from collections import OrderedDict
 
 import h5netcdf
-import matplotlib.dates
+import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
 import numpy as np
 import packaging.version
@@ -86,7 +85,7 @@ class XRSTimeSeries(GenericTimeSeries):
         if not axes:
             axes = plt.gca()
         self._validate_data_for_plotting()
-        dates = matplotlib.dates.date2num(parse_time(self.to_dataframe().index).datetime)
+        dates = mdates.date2num(parse_time(self.to_dataframe().index).datetime)
         axes.plot_date(
             dates, self.to_dataframe()["xrsa"], "-", label=r"0.5--4.0 $\AA$", color="blue", lw=2, **kwargs
         )
@@ -97,7 +96,6 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
         axes.set_ylabel("Watts m$^{-2}$")
-        axes.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
 
         ax2 = axes.twinx()
         ax2.set_yscale("log")
@@ -111,10 +109,12 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(False, "major")
         axes.legend()
 
-        # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter("%H:%M")
+        # TODO: Work out a way to set this based on the timespan of the data.
+        locator = mdates.AutoDateLocator(minticks=5, maxticks=25)
+        formatter = mdates.ConciseDateFormatter(locator)
+        axes.xaxis.set_major_locator(locator)
         axes.xaxis.set_major_formatter(formatter)
-        axes.fmt_xdata = matplotlib.dates.DateFormatter("%H:%M")
+
         return axes
 
     @property
