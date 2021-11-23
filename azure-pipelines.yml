@@ -25,7 +25,6 @@ resources:
     type: github
     endpoint: sunpy
     name: OpenAstronomy/azure-pipelines-templates
-    ref: master
 
 trigger:
   branches:
@@ -48,6 +47,7 @@ stages:
   - stage: FirstPhaseTests
     displayName: Core Tests
     jobs:
+    - template: check-skip.yml@OpenAstronomy
     - template: run-tox-env.yml@OpenAstronomy
       parameters:
         default_python: '3.8'
@@ -66,6 +66,7 @@ stages:
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
     dependsOn: FirstPhaseTests
+    condition: and(succeeded(), ne(dependencies.FirstPhaseTests.outputs['check_skip.search.found'], 'true'))
     jobs:
     - template: run-tox-env.yml@OpenAstronomy
       parameters:
@@ -92,6 +93,7 @@ stages:
   - stage: SecondPhaseTestsAllowedFail
     displayName: Stage 2 Tests - Online
     dependsOn: FirstPhaseTests
+    condition: and(succeeded(), ne(dependencies.FirstPhaseTests.outputs['check_skip.search.found'], 'true'))
     jobs:
     - template: run-tox-env.yml@OpenAstronomy
       parameters:
