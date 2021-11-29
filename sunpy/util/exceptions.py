@@ -38,7 +38,7 @@ class SunpyUserWarning(UserWarning, SunpyWarning):
     """
 
 
-class SunpyMetadataWarning(UserWarning):
+class SunpyMetadataWarning(UserWarning, SunpyWarning):
     """
     Warning class for cases metadata is missing.
 

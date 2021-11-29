@@ -2,9 +2,8 @@
 import logging
 import os.path
 
-from astropy.logger import AstropyLogger
-
 from sunpy import config, log
+from sunpy.util.logger import SunpyLogger
 
 level_to_numeric = {'CRITICAL': 50, 'ERROR': 40,
                     'WARNING': 30, 'INFO': 20, 'DEBUG': 10, 'NOTSET': 0}
@@ -16,7 +15,7 @@ def test_logger_name():
 
 def test_is_the_logger_there():
     assert isinstance(log, logging.Logger)
-    assert isinstance(log, AstropyLogger)
+    assert isinstance(log, SunpyLogger)
 
 
 def test_is_level_configed():
