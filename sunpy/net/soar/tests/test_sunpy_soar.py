@@ -19,7 +19,7 @@ def test_search():
     res = Fido.search(id, time, level, product)
     assert len(res) == 1
     assert len(res[0]) == 43
-    assert u.allclose(res[0, 0]['Filesize'], 4.740*u.Mbyte)
+    assert u.allclose(res[0, 0]['Filesize'], 18.896*u.Mbyte)
 
     files = Fido.fetch(res[0, 0])
     assert len(files) == 1
