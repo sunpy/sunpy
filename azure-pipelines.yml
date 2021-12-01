@@ -88,9 +88,7 @@ stages:
 
         envs:
           - macos: py37
-
-          - windows: py38
-
+          - windows: py310
           - linux: py37-oldestdeps
 
           - linux: py38-conda
@@ -167,6 +165,8 @@ stages:
           targets:
             - wheels_cp3[789]-manylinux*x86_64
             - wheels_cp3[789]-macosx*
+            - wheels_cp310-manylinux*x86_64
+            - wheels_cp310-macosx*
             - sdist
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
