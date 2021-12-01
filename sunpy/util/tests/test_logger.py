@@ -1,8 +1,14 @@
 
 import logging
 import os.path
+import warnings
+
+import pytest
+
+from astropy.utils.exceptions import AstropyUserWarning
 
 from sunpy import config, log
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.logger import SunpyLogger
 
 level_to_numeric = {'CRITICAL': 50, 'ERROR': 40,
@@ -75,3 +81,36 @@ def send_to_log(message, kind='INFO'):
 
 # no obvious way to do the following
 # TODO: test for the following configs  use_color, log_warnings, log_exceptions, log_file_format
+
+
+# Most of the logging functionality is tested in Astropy's tests for AstropyLogger
+
+def test_sunpy_warnings_logging():
+    # Test that our logger intercepts our warnings but not Astropy warnings
+
+    # First, disable our warnings logging
+    # We need to do this manually because pytest has overwritten warnings.showwarning()
+    log._showwarning_orig, previous = None, log._showwarning_orig
+
+    # Without warnings logging
+    with pytest.warns(SunpyUserWarning, match="This warning should not be captured") as warn_list:
+        with log.log_to_list() as log_list:
+            warnings.warn("This warning should not be captured", SunpyUserWarning)
+    assert len(log_list) == 0
+    assert len(warn_list) == 1
+
+    # With warnings logging, making sure that Astropy warnings are not intercepted
+    with pytest.warns(AstropyUserWarning, match="This warning should not be captured") as warn_list:
+        log.enable_warnings_logging()
+        with log.log_to_list() as log_list:
+            warnings.warn("This warning should be captured", SunpyUserWarning)
+            warnings.warn("This warning should not be captured", AstropyUserWarning)
+        log.disable_warnings_logging()
+    assert len(log_list) == 1
+    assert len(warn_list) == 1
+    assert log_list[0].levelname == 'WARNING'
+    assert log_list[0].message.startswith("SunpyUserWarning: This warning should be captured")
+    assert log_list[0].origin == "sunpy.util.tests.test_logger"
+
+    # Restore the state of warnings logging prior to this test
+    log._showwarning_orig = previous
