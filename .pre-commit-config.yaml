@@ -106,7 +106,7 @@ repos:
     hooks:
       - id: prohibit-string
         args: [--prohibit-string, "from warnings import warn,warnings.warn"]
-        exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py|sunpy/extern/"
+        exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py|sunpy/extern/|sunpy/util/tests/test_logger.py"
 
 ci:
   autofix_prs: false

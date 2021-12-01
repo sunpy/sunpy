@@ -6,8 +6,6 @@ but rather in the particular package.
 """
 import warnings
 
-from astropy.utils.exceptions import AstropyWarning
-
 __all__ = ["NoMapsInFileError",
            "SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
            "SunpyPendingDeprecationWarning", "SunpyMetadataWarning",
@@ -20,7 +18,7 @@ class NoMapsInFileError(Exception):
     """
 
 
-class SunpyWarning(AstropyWarning):
+class SunpyWarning(Warning):
     """
     The base warning class from which all Sunpy warnings should inherit.
 
@@ -38,7 +36,7 @@ class SunpyUserWarning(UserWarning, SunpyWarning):
     """
 
 
-class SunpyMetadataWarning(UserWarning):
+class SunpyMetadataWarning(UserWarning, SunpyWarning):
     """
     Warning class for cases metadata is missing.
 
