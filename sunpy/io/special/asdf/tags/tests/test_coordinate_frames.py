@@ -1,4 +1,5 @@
 import os
+import sys
 import platform
 from distutils.version import LooseVersion
 
@@ -17,6 +18,10 @@ from asdf.tests.helpers import assert_roundtrip_tree  # NOQA isort:skip
 sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
 # Don't test the two base frames
 sunpy_frames = [frame for frame in sunpy_frames if 'base' not in frame.name]
+
+# TODO: Delete after a major pytest release
+if sys.version_info > (3, 9):
+    pytest.skip("pytest + asdf do not play well", allow_module_level=True)
 
 
 @pytest.fixture(params=sunpy_frames)
