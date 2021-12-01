@@ -27,7 +27,6 @@ returns all available GOES data for the specific timerange queried. For
 example, there are times when GOES 13, 14 and 15 overlap and such data is
 available from each satellite. Similarly there are times when GOES 16 and 17 overlap.
 """
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -73,10 +72,7 @@ goes_15.peek()
 # channel is known as the "xrsa" channel and the 1-8 angstrom channel is known
 # as the "xrsb" channel.
 
-fig, ax = plt.subplots()
-ax.plot(goes_15.index, goes_15.quantity("xrsb"))
-ax.set_ylabel("Flux (Wm$^{-2}$)")
-fig.autofmt_xdate()
+goes_15.plot(columns=["xrsb"])
 plt.show()
 
 ###############################################################
@@ -89,12 +85,6 @@ goes_flare = goes_15.truncate("2015-06-21 09:35", "2015-06-21 10:30")
 fig, ax = plt.subplots()
 ax.plot(goes_flare.index, np.gradient(goes_flare.quantity("xrsb")))
 ax.set_ylabel("Flux (Wm$^{-2}$$s^{-1}$)")
-# You may notice that the time axis in the above example is not really well laid out.
-# We can do the following to fix that, this is done by the ``plot`` method.
-locator = mdates.AutoDateLocator(minticks=10, maxticks=10)
-formatter = mdates.ConciseDateFormatter(locator)
-ax.xaxis.set_major_locator(locator)
-ax.xaxis.set_major_formatter(formatter)
 fig.autofmt_xdate()
 plt.show()
 

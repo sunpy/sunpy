@@ -91,8 +91,7 @@ class ESPTimeSeries(GenericTimeSeries):
             ax.set_ylabel(names[i])
             ax.legend(loc="upper right")
         axes[-1].set_xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
-        # TODO: Work out a way to set this based on the timespan of the data.
-        locator = mdates.AutoDateLocator(minticks=5, maxticks=25)
+        locator = mdates.AutoDateLocator()
         formatter = mdates.ConciseDateFormatter(locator)
         axes[-1].xaxis.set_major_locator(locator)
         axes[-1].xaxis.set_major_formatter(formatter)

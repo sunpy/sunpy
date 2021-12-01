@@ -160,20 +160,16 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
                           'tab:olive', 'tab:red', 'tab:blue', 'tab:orange',
                           'tab:brown')
         colors = kwargs.pop('colors', default_colors)
-
         for color, (item, frame) in zip(itertools.cycle(colors),
                                         self.to_dataframe().items()):
-
             axes.plot(self.to_dataframe().index, frame.values,
                       color=color, label=item, **kwargs)
-
         axes.set_yscale("log")
         axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
         axes.legend()
-        # TODO: Work out a way to set this based on the timespan of the data.
-        locator = mdates.AutoDateLocator(minticks=5, maxticks=25)
+        locator = mdates.AutoDateLocator()
         formatter = mdates.ConciseDateFormatter(locator)
         axes.xaxis.set_major_locator(locator)
         axes.xaxis.set_major_formatter(formatter)

@@ -87,8 +87,9 @@ class LYRATimeSeries(GenericTimeSeries):
             axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
         for i, name in enumerate(self.to_dataframe().columns):
             if predefined_axes:
-                axes[i].plot(self._data[self._data.columns[i]], color=colors[i %
-                             len(colors)], label=self._data.columns[i])
+                axes[i].plot(self._data[self._data.columns[i]],
+                             color=colors[i % len(colors)],
+                             label=self._data.columns[i])
                 axes[i].legend(loc="upper right")
                 plt.xticks(rotation=30)
             if names < 3:
@@ -97,8 +98,7 @@ class LYRATimeSeries(GenericTimeSeries):
                 name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
             axes[i].locator_params(axis='y', nbins=6)
             axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
-        # TODO: Work out a way to set this based on the timespan of the data.
-        locator = mdates.AutoDateLocator(minticks=5, maxticks=25)
+        locator = mdates.AutoDateLocator()
         formatter = mdates.ConciseDateFormatter(locator)
         axes[-1].xaxis.set_major_locator(locator)
         axes[-1].xaxis.set_major_formatter(formatter)
