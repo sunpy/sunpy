@@ -62,7 +62,6 @@ stages:
 
         envs:
           - linux: py39
-          - linux: py310
 
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
@@ -86,7 +85,7 @@ stages:
 
         envs:
           - macos: py37
-          - windows: py38
+          - windows: py310
           - linux: py37-oldestdeps
           - linux: py38-conda
             libraries: {}
