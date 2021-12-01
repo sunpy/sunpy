@@ -1,9 +1,9 @@
 """
 isort:skip_file.
 """
-# flake8: noqa: E402
 import numpy as np
 import pytest
+import sys
 
 import astropy.units as u
 from asdf.tests.helpers import assert_roundtrip_tree
@@ -12,6 +12,10 @@ import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import asdf_entry_points
 from sunpy.io.special.asdf.extension import SunpyExtension
+
+# TODO: Delete after a major pytest release
+if sys.version_info > (3, 9):
+    pytest.skip("pytest + asdf do not play well", allow_module_level=True)
 
 
 @pytest.fixture
