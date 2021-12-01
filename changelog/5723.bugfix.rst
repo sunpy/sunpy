@@ -1,0 +1,2 @@
+Update asdf schemas so that references use URIs not tags as this is not
+supported by the new asdf extensions API.
