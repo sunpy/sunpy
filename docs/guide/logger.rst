@@ -7,7 +7,7 @@ Logging system
 Overview
 ========
 
-The sunpy logging system makes use of the `~astropy.logger.AstropyLogger`.
+The sunpy logging system is an adapted version of `~astropy.logger.AstropyLogger`.
 Its purpose is to provide users the ability to decide which log and warning messages to show,
 to capture them, and to send them to a file.
 
