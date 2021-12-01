@@ -535,7 +535,7 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             wavemax=None),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/loi/1717986918',
+            fileid='/archive/soho/private/data/processed/virgo/loi/VIRGO-LOI-ALL-PIXELS-LEVEL2-19960401-20210430_V01.fits',
             observation_time_start=datetime(1996, 4, 1, 0, 0),
             observation_time_end=datetime(2021, 4, 30, 23, 59),
             instrument='VIRGO', size=1677722.0, wavemin=None,
