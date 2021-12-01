@@ -38,6 +38,6 @@ This goes over the basics and has links to useful tutorials on git.
 
 {%else%}
 
-Please go `here <https://docs.sunpy.org/en/latest/dev_guide/index.html>`__ for our up to date developer’s guide.
+Please go `here <https://docs.sunpy.org/en/latest/dev_guide/index.html>`__ for our up to date developer's guide.
 
 {%endif%}

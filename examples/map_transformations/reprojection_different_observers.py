@@ -30,7 +30,7 @@ from sunpy.net import attrs as a
 plt.rcParams['figure.figsize'] = (16, 8)
 
 ######################################################################
-# Let’s download an EUV image from both AIA and EUVI A, when the
+# Let's download an EUV image from both AIA and EUVI A, when the
 # two spacecraft were separated by approximately 120 degrees.
 
 euvi = (a.Source('STEREO_A') &

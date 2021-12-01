@@ -75,7 +75,8 @@ class ESPTimeSeries(GenericTimeSeries):
         """
         self._validate_data_for_plotting()
         names = ("Flux \n 0.1-7nm", "Flux \n 18nm", "Flux \n 26nm", "Flux \n 30nm", "Flux \n 36nm")
-        colors = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan')
+        colors = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple',
+                  'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan')
         predefined_axes = False
         if isinstance(axes, np.ndarray):
             predefined_axes = True
@@ -83,7 +84,9 @@ class ESPTimeSeries(GenericTimeSeries):
             axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
         for i, ax in enumerate(axes):
             if predefined_axes:
-                ax.plot(self._data[self._data.columns[i]], color=colors[i%len(colors)], label=self._data.columns[i])
+                ax.plot(self._data[self._data.columns[i]],
+                        color=colors[i % len(colors)],
+                        label=self._data.columns[i])
                 plt.xticks(rotation=30)
             ax.set_ylabel(names[i])
             ax.legend(loc="upper right")
@@ -162,7 +165,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     The Extreme Ultraviolet Variability Experiment (EVE) is an instrument on board the Solar Dynamics Observatory (SDO).
     The EVE instrument is designed to measure the solar extreme ultraviolet (EUV) irradiance.
     The EUV radiation includes the 0.1-105 nm range, which provides the majority
-    of the energy for heating Earth’s thermosphere and creating Earth’s ionosphere (charged plasma).
+    of the energy for heating Earth's thermosphere and creating Earth's ionosphere (charged plasma).
 
     EVE includes several irradiance instruments:
 

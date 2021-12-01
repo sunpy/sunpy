@@ -38,7 +38,7 @@ Coding Style/Conventions
 * The ``import numpy as np``, ``import matplotlib as mpl``, and ``import matplotlib.pyplot as plt`` naming conventions should be used wherever relevant.
   ``from packagename import *`` should never be used (except in ``__init__.py``)
 
-* Classes should either use direct variable access, or Python’s property mechanism for setting object instance variables.
+* Classes should either use direct variable access, or Python's property mechanism for setting object instance variables.
 
 * Classes should use the builtin `super` function when making calls to methods in their super-class(es) unless there are specific reasons not to.
   `super` should be used consistently in all subclasses since it does not work otherwise.
