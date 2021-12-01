@@ -84,8 +84,9 @@ class ESPTimeSeries(GenericTimeSeries):
             axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
         for i, ax in enumerate(axes):
             if predefined_axes:
-                ax.plot(self._data[self._data.columns[i]], color=colors[i %
-                        len(colors)], label=self._data.columns[i])
+                ax.plot(self._data[self._data.columns[i]],
+                        color=colors[i % len(colors)],
+                        label=self._data.columns[i])
                 plt.xticks(rotation=30)
             ax.set_ylabel(names[i])
             ax.legend(loc="upper right")
