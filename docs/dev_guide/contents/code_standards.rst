@@ -47,7 +47,7 @@ Coding Style/Conventions
 
 * ``__init__.py`` files for modules should not contain any significant implementation code. ``__init__.py`` can contain docstrings and code for organizing the module layout.
 
-* General utilities necessary for but not specific to the package should be placed in the ``sunpy.utils`` module.
+* General utilities necessary for but not specific to the package should be placed in the ``sunpy.util`` module.
 
 Private code
 ============
