@@ -476,6 +476,8 @@ class JSOCClient(BaseClient):
         c = drms.Client()
 
         # Private communication from JSOC say we should not use more than one connection.
+        if kwargs.get('max_splits'):
+            log.info(f"max_splits keyword was passed and set to 1.")
         kwargs['max_splits'] = 1
 
         # Convert Responses to a list if not already
@@ -524,6 +526,8 @@ class JSOCClient(BaseClient):
         if not downloader:
             dl_set = False
             # Private communication from JSOC say we should not use more than one connection.
+            if max_conn != self.default_max_conn:
+                log.info(f"max_conn keyword was passed and set to 1.")
             downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=1)
 
         urls = []

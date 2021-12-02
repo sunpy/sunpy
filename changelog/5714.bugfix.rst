@@ -1,2 +1,2 @@
-Due to consultation with JSOC, we will now limit all downloads to the JSOC to one connection.
-This will override all user settings passed to the downloader.
+In consultation with JSOC, we now limit all JSOC downloads to one connection.
+This will override all connection user settings passed to the downloader.

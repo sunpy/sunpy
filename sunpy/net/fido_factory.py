@@ -385,16 +385,16 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if "wait" in kwargs:
             raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
 
-        # TODO: Hack for JSOC to avoid more than one connection.
-        # Remove when parfive allows us to special case URLS.
+        # TODO: Remove when parfive allows us to special case URLS.
+        # Avoid more than one connection for JSOC only requests.
+        from sunpy.net.jsoc import JSOCClient
+
         is_jsoc_only = False
         for query_result in query_results:
             if isinstance(query_result, UnifiedResponse):
-                is_jsoc_only = all([result.client.__class__.__name__ ==
-                                    "JSOCClient" for result in query_result])
+                is_jsoc_only = all([isinstance(result.client, JSOCClient) for result in query_result])
             elif isinstance(query_result, QueryResponseTable):
-                is_jsoc_only = all([result.table.client.__class__.__name__ ==
-                                    "JSOCClient" for result in query_result])
+                is_jsoc_only = all([isinstance(result.table.client, JSOCClient) for result in query_result])
         if downloader is None:
             if is_jsoc_only:
                 max_conn = 1
