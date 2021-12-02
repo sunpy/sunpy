@@ -11,6 +11,7 @@ from zeep.transports import Transport
 
 from astropy.io.votable.table import parse_single_table
 
+from sunpy import log
 from sunpy.net import attrs as a
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.helio import attrs as ha
@@ -106,6 +107,10 @@ class HECClient(BaseClient):
         Used to utilize the service's TimeQuery() method, this is a simple
         interface between the sunpy module library and the web-service's API.
 
+        .. note::
+            Default records returned by the service are limited to 50.
+            You have to set ``a.helio.MaxRecords`` to a higher value.
+
         Examples
         --------
         >>> from sunpy.net.helio import attrs as ha
@@ -152,7 +157,10 @@ class HECClient(BaseClient):
             table = str.encode(table)
         start_time = qrdict['Time'].start
         end_time = qrdict['Time'].end
-        max_records = qrdict.get('max_records', 10)
+        max_records = qrdict.get('max_records', 50)
+        if max_records == 50:
+            log.info("Using default `max_records` of 50, this means you could up with fewer results than the "
+                     "web query. If you want to change this, set `a.helio.MaxRecords`")
         while table is None:
             table = self.select_table()
         start_time = parse_time(start_time)
