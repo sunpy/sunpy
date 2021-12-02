@@ -1,0 +1,2 @@
+Increased the default amount of records returned from HEC to 50 from 10.
+Will emit a message if the default value is used.
