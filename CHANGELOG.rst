@@ -1,3 +1,39 @@
+3.1.2 (2021-12-02)
+==================
+
+New Features
+------------
+
+- Added support for Python 3.10 (`#5568 <https://github.com/sunpy/sunpy/pull/5568>`__)
+
+
+Bug Fixes
+---------
+
+- The default ``id_type`` in :func:`sunpy.coordinates.get_horizons_coord` is now
+  `None` to match the deafult ``id_type`` in astroquery 0.4.4, which will search
+  major bodies first, and if no major bodies are found, then search small bodies.
+  For older versions of astroquery the default ``id_type`` used by
+  :func:`~sunpy.coordinates.get_horizons_coord` is still ``'majorbody'``. (`#5707 <https://github.com/sunpy/sunpy/pull/5707>`__)
+- Fixed a long-standing bug where our logger could intercept Astropy warnings in addition to SunPy warnings, and thus could conflict with Astropy's logger. (`#5722 <https://github.com/sunpy/sunpy/pull/5722>`__)
+- Updated asdf schemas so that references use URIs, as tags are not
+  supported by the new asdf extensions API. (`#5723 <https://github.com/sunpy/sunpy/pull/5723>`__)
+
+
+Documentation
+-------------
+
+- Fixed various plotting issues with the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_AIA_limb_STEREO.py`. (`#5534 <https://github.com/sunpy/sunpy/pull/5534>`__)
+- Improved the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_SDO_to_STEREO_Coordinate_Conversion.py` to better illustrate how coordinate transformations interact with submaps and coordinate plotting. (`#5534 <https://github.com/sunpy/sunpy/pull/5534>`__)
+
+
+Internal Changes
+----------------
+
+- Added `packaging <https://pypi.org/project/packaging/>`__ as a core dependency as distutils is now deprecated. (`#5713 <https://github.com/sunpy/sunpy/pull/5713>`__)
+- `~sunpy.util.exceptions.SunpyWarning` is no longer a subclass of `~astropy.utils.exceptions.AstropyWarning`. (`#5722 <https://github.com/sunpy/sunpy/pull/5722>`__)
+
+
 3.1.1 (2021-11-10)
 ==================
 
