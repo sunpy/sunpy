@@ -1,3 +1,35 @@
+3.0.3 (2021-12-02)
+==================
+
+Features
+--------
+
+- Added support for Python 3.10 (`#5568 <https://github.com/sunpy/sunpy/pull/5568>`__)
+
+
+Bug Fixes
+---------
+
+- `~sunpy.map.sources.XRTMap` uppercases the ``TIMESYS`` key before checking if the
+  key needs to be fixed. (`#5592 <https://github.com/sunpy/sunpy/pull/5592>`__)
+- Fixed passing a URL to :func:`sunpy.io.read_file` on windows. (`#5601 <https://github.com/sunpy/sunpy/pull/5601>`__)
+- Fixed a bug where custom values in the ``plot_settings`` dictionary were not being propagated
+  to new map instances created when calling map methods (e.g. ``.submap``). (`#5687 <https://github.com/sunpy/sunpy/pull/5687>`__)
+- The default ``id_type`` in :func:`sunpy.coordinates.get_horizons_coord` is now
+  `None` to match the default ``id_type`` in astroquery 0.4.4, which will search
+  major bodies first, and if no major bodies are found, then search small bodies.
+  For older versions of astroquery the default ``id_type`` used by
+  :func:`~sunpy.coordinates.get_horizons_coord` is still ``'majorbody'``. (`#5707 <https://github.com/sunpy/sunpy/pull/5707>`__)
+- Updated asdf schemas so that references use URIs, as tags are not
+  supported by the new asdf extensions API. (`#5723 <https://github.com/sunpy/sunpy/pull/5723>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Added `packaging <https://pypi.org/project/packaging/>`__ as a core depedency as distutils is now deprecated. (`#5713 <https://github.com/sunpy/sunpy/pull/5713>`__)
+
+
 3.0.2 (2021-10-13)
 ==================
 
