@@ -127,7 +127,7 @@ def test_scale(original, scale_factor):
 
     # Check a scaled image against the expected outcome
     newim = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
+                       mode='constant', anti_aliasing=False) * original.max()
     # Old width and new center of image
     w = original.shape[0] / 2.0 - 0.5
     new_c = (newim.shape[0] / 2.0) - 0.5
@@ -160,7 +160,7 @@ def test_all(original, angle, dx, dy, scale_factor):
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     scale = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
+                       mode='constant', anti_aliasing=False) * original.max()
     new = np.zeros(original.shape)
 
     disp = np.array([dx, dy])
