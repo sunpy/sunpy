@@ -120,11 +120,35 @@ class TestTimeSeries:
 
     @pytest.mark.remote_data
     def test_read_cdf_empty_variable(self):
-        # Check that a CDF with an empty column can be correctly read
+        # This tests that:
+        # - A CDF file with an empty column can be read
+        # - Unknown unit handling works as expected
         result = sunpy.net.Fido.search(a.Time('2020-01-01', '2020-01-02'),
                                        a.cdaweb.Dataset('AC_H6_SWI'))
         filename = Fido.fetch(result[0, 0])
-        sunpy.timeseries.TimeSeries(filename)
+
+        # Temporarily reset sunpy.io.cdf registry of known unit conversions
+        import sunpy.io.cdf as sunpy_cdf
+        known_units = sunpy_cdf._known_units
+        sunpy_cdf._known_units = {}
+
+        with pytest.warns(SunpyUserWarning, match='Assigning dimensionless units'):
+            ts = sunpy.timeseries.TimeSeries(filename)
+
+        assert ts.quantity('nH').unit == u.dimensionless_unscaled
+
+        # Put back known unit registry, and check that units are recognised
+        sunpy_cdf._known_units = known_units
+        ts = sunpy.timeseries.TimeSeries(filename)
+        assert ts.quantity('nH').unit == u.cm**-3
+
+        # Reset again to check that registring units via. astropy works too
+        sunpy_cdf._known_units = {}
+        u.add_enabled_units([u.def_unit('#/cm^3', represents=u.cm**-3)])
+        ts = sunpy.timeseries.TimeSeries(filename)
+        assert ts.quantity('nH').unit == u.cm**-3
+
+        sunpy_cdf._known_units = known_units
 
 # =============================================================================
 # Individual Implicit Source Tests
