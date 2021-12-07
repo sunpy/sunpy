@@ -93,7 +93,6 @@ def figure_test(test_function):
     hash_library_name = get_hash_library_name()
     hash_library_file = Path(__file__).parent / hash_library_name
 
-    @pytest.mark.remote_data
     @pytest.mark.mpl_image_compare(hash_library=hash_library_file,
                                    savefig_kwargs={'metadata': {'Software': None}},
                                    style='default')
