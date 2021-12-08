@@ -47,6 +47,8 @@ def read_cdf(fname):
     # For each time index, construct a GenericTimeSeries
     for index_key in time_index_keys:
         index = cdf.varget(index_key)
+        if index is None:
+            continue
         # TODO: use to_astropy_time() instead here when we drop pandas in timeseries
         index = CDFepoch.to_datetime(index)
         df = pd.DataFrame(index=pd.DatetimeIndex(name=index_key, data=index))
@@ -89,6 +91,8 @@ def read_cdf(fname):
 
         all_ts.append(GenericTimeSeries(data=df, units=units, meta=meta))
 
+    if not len(all_ts):
+        log.debug(f'No data found in file {fname}')
     return all_ts
 
 
