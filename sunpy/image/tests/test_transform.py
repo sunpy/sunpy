@@ -50,10 +50,12 @@ def compare_results(expect, result, allclose=True):
 
         # Print out every mismatch
         if not t2:
-            mismatches = np.stack([*notclose.nonzero(), exp[notclose], res[notclose]]).T
-            for row in mismatches:
-                print(f"i={int(row[0]+1)}, j={int(row[1]+1)}: expected={row[2]}, result={row[3]}, "
-                      f"adiff={row[2]-row[3]}, rdiff={(row[2]-row[3])/row[2]}")
+            with np.errstate(divide='ignore'):
+                mismatches = np.stack([*notclose.nonzero(), exp[notclose], res[notclose]]).T
+                for row in mismatches:
+                    print(f"i={int(row[0]+1)}, j={int(row[1]+1)}: ",
+                          f"expected={row[2]}, result={row[3]}, "
+                          f"adiff={row[2]-row[3]}, rdiff={(row[2]-row[3])/row[2]}")
 
     return t1 and t2
 
