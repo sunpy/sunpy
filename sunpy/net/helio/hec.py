@@ -11,13 +11,12 @@ from zeep.transports import Transport
 
 from astropy.io.votable.table import parse_single_table
 
-from sunpy import log
 from sunpy.net import attrs as a
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.helio import attrs as ha
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
-from sunpy.util.exceptions import warn_deprecated
+from sunpy.util.exceptions import warn_deprecated, warn_user
 
 __all__ = ['HECClient', 'HECResponse']
 
@@ -108,7 +107,7 @@ class HECClient(BaseClient):
         interface between the sunpy module library and the web-service's API.
 
         .. note::
-            Default records returned by the service are limited to 50.
+            Default records returned by the service are limited to 500.
             You have to set ``a.helio.MaxRecords`` to a higher value.
 
         Examples
@@ -157,10 +156,7 @@ class HECClient(BaseClient):
             table = str.encode(table)
         start_time = qrdict['Time'].start
         end_time = qrdict['Time'].end
-        max_records = qrdict.get('max_records', 50)
-        if max_records == 50:
-            log.info("Using default `max_records` of 50, this means you could up with fewer results than the "
-                     "web query. If you want to change this, set `a.helio.MaxRecords`")
+        max_records = qrdict.get('max_records', 500)
         while table is None:
             table = self.select_table()
         start_time = parse_time(start_time)
@@ -170,7 +166,12 @@ class HECClient(BaseClient):
                                                     FROM=table,
                                                     MAXRECORDS=max_records)
         results = votable_handler(etree.tostring(results))
-        return HECResponse(results.to_table(), client=self)
+        table = HECResponse(results.to_table(), client=self)
+        if len(table) == 500:
+            warn_user("Number of results is the same as the default `max_records` of 500. "
+                      "It is possible your query has been truncated. "
+                      "If you want to change this, set `a.helio.MaxRecords` to a higher value.")
+        return table
 
     def get_table_names(self):
         """

@@ -1,0 +1,2 @@
+Increased the default amount of records returned from HEC to 500 from 10.
+Will emit a user warning if the default value is used and the returned results are the same length.
