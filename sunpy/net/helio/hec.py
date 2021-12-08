@@ -108,7 +108,7 @@ class HECClient(BaseClient):
 
         .. note::
             Default records returned by the service are limited to 500.
-            You have to set ``a.helio.MaxRecords`` to a higher value.
+           To obtain more results ``a.helio.MaxRecords`` must be set to a higher value.
 
         Examples
         --------
