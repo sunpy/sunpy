@@ -14,8 +14,7 @@ from astropy.wcs.wcs import FITSFixedWarning
 
 import sunpy.map
 
-__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_32bit',
-           'warnings_as_errors', 'asdf_entry_points']
+__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors', 'asdf_entry_points']
 
 # SunPy's JPEG2000 capabilities rely on the glymur library.
 # First we check to make sure that glymur imports correctly before proceeding.
@@ -45,9 +44,6 @@ else:
 skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows.")
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
-skip_32bit = pytest.mark.skipif(SKIP_32, reason="Fails on a 32 bit system.")
-
-
 # Skip if the SunPy ASDF entry points are missing.
 asdf_entry_points = pytest.mark.skipif(not list(pkg_resources.iter_entry_points('asdf_extensions', 'sunpy')),
                                        reason="No SunPy ASDF entry points.")
@@ -68,7 +64,8 @@ def get_hash_library_name():
     Generate the hash library name for this env.
     """
     import mpl_animators
-    animators_version = "dev" if "+" in mpl_animators.__version__ else mpl_animators.__version__.replace('.', '')
+    version = mpl_animators.__version__
+    animators_version = "dev" if "+" in version else version.replace('.', '')
     ft2_version = f"{mpl.ft2font.__freetype_version__.replace('.', '')}"
     mpl_version = "dev" if "+" in mpl.__version__ else mpl.__version__.replace('.', '')
     astropy_version = "dev" if "dev" in astropy.__version__ else astropy.__version__.replace('.', '')
