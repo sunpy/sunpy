@@ -4,10 +4,12 @@ Classes and helper functions for VSO responses.
 from collections import defaultdict
 from collections.abc import Mapping
 
+import numpy as np
 from zeep.helpers import serialize_object
 
 import astropy.units as u
 from astropy.table import TableAttribute
+from astropy.time import Time
 
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.time import parse_time
@@ -91,17 +93,38 @@ class VSOQueryResponseTable(QueryResponseTable):
                         row["Wavetype"] = value['wavetype']
                         continue
                     for subkey, subvalue in value.items():
-                        key_template = f"{key.capitalize()} {subkey.capitalize()}"
                         if key == "time" and subvalue is not None:
                             key_template = f"{subkey.capitalize()} {key.capitalize()}"
-                            subvalue = parse_time(subvalue)
-                            # Change the display to the 'T'-less version
-                            subvalue.format = 'iso'
+                        else:
+                            key_template = f"{key.capitalize()} {subkey.capitalize()}"
                         row[key_template] = subvalue
             data.append(row)
 
-        # Reorder the columns to put the most useful ones first.
         data = cls(data, client=client)
+        # Parse times
+        for col in data.colnames:
+            if col.endswith('Time'):
+                try:
+                    # Try to use a vectorised call to parse_time
+                    data[col] = parse_time(data[col])
+                except Exception:
+                    # If that fails, parse dates one by one. This is needed if
+                    # VSO returns a variety of different date format strings
+                    times = []
+                    mask = []
+                    for i, t in enumerate(data[col]):
+                        if t is not None:
+                            times.append(parse_time(t))
+                        else:
+                            # Create a dummy time and mask it later
+                            times.append(Time(val=0, format='mjd'))
+                            mask.append(i)
+                    data[col] = Time(times)
+                    data[col][mask] = np.ma.masked
+
+                data[col].format = 'iso'
+
+        # Reorder the columns to put the most useful ones first.
         return data._reorder_columns(['Start Time', 'End Time', 'Source',
                                       'Instrument', 'Type', 'Wavelength'],
                                      remove_empty=True)
