@@ -30,7 +30,7 @@ srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I', srs_table['ID'] == '
 
 ##############################################################################
 # Now we extract the latitudes, longitudes and the region numbers.
-# :meth:`~astropy.visualization.wcsexes.WCSAxes.plot_coord` will error on some
+# :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord` will error on some
 # versions of Astropy if a coordinate component contains a mask, but since
 # none of the masks in these arrays here actually mask any elements, we simply
 # remove the masks.
