@@ -470,7 +470,6 @@ def test_vso_fetch_hmi(tmpdir):
     results = Fido.search(a.Time(start_time, end_time),
                           a.Instrument.hmi & a.Physobs.los_magnetic_field,
                           a.Sample(1 * u.minute))
-
     files = Fido.fetch(results[0, 0], path=tmpdir)
     assert len(files) == 1
 
@@ -486,16 +485,13 @@ def test_unclosedSocket_warning():
 def test_fido_no_time(mocker):
     jsoc_mock = mocker.patch("sunpy.net.jsoc.JSOCClient.search")
     jsoc_mock.return_value = jsoc.JSOCResponse()
-
     Fido.search(a.jsoc.Series("test"))
-
     jsoc_mock.assert_called_once()
 
 
 @pytest.mark.remote_data
 def test_jsoc_missing_email():
     res = Fido.search(a.Time("2011/01/01", "2011/01/01 00:01"), a.jsoc.Series.aia_lev1_euv_12s)
-
     with pytest.raises(ValueError, match=r"A registered email is required to get data from JSOC.*"):
         Fido.fetch(res)
 
@@ -506,12 +502,8 @@ def test_slice_jsoc():
     tend = '2011/06/07 06:33:15'
     res = Fido.search(a.Time(tstart, tend), a.jsoc.Series('hmi.M_45s'),
                       a.jsoc.Notify('jsoc@cadair.com'))
-
-    with pytest.warns(SunpyUserWarning):
+    with pytest.warns(SunpyUserWarning, match="Downloading of sliced JSOC results is not supported."):
         Fido.fetch(res[0, 0])
-
-    with pytest.warns(SunpyUserWarning):
-        Fido.fetch(res[0, 0:1])
 
 
 def test_fido_repr():
@@ -524,17 +516,15 @@ def test_fido_metadata_queries():
     results = Fido.search(a.Time('2010/8/1 03:40', '2010/8/1 3:40:10'),
                           a.hek.FI | a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
                           a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify("jsoc@cadair.com"))
-
     assert len(results['hek']) == 2
     assert isinstance(results['hek'], UnifiedResponse)
     assert isinstance(results['hek'][0], QueryResponseTable)
     assert len(results['hek'][1]) == 2
     assert results[::-1][0] is results['jsoc']
     assert isinstance(results['jsoc'], QueryResponseTable)
-
+    # Checks we can download the files form JSOC from this response.
     files = Fido.fetch(results)
     assert len(files) == len(results['jsoc'])
-
     assert results.keys() == ['hek', 'jsoc']
 
 
@@ -547,7 +537,6 @@ def test_path_format_keys():
     t2 = QueryResponseTable({'End Time': ['2011/01/01', '2011/01/02'],
                              '!excite!': ['cat', 'rabbit']})
     assert t2.path_format_keys() == {'_excite_', 'end_time'}
-
     unif = UnifiedResponse(t1, t2)
     assert unif.path_format_keys() == {'_excite_'}
 
