@@ -187,7 +187,7 @@ class JSOCClient(BaseClient):
 
     """
     # Default number of max connections that the Downloader opens
-    default_max_conn = 2
+    default_max_conn = 1
 
     @property
     def info_url(self):
@@ -421,7 +421,7 @@ class JSOCClient(BaseClient):
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
 
-        defaults = {'max_splits': 2}
+        defaults = {'max_splits': 1}
         defaults.update(kwargs)
 
         # Make response iterable
@@ -475,7 +475,10 @@ class JSOCClient(BaseClient):
         """
         c = drms.Client()
 
-        kwargs['max_splits'] = kwargs.get('max_splits', 2)
+        # Private communication from JSOC say we should not use more than one connection.
+        if kwargs.get('max_splits'):
+            log.info(f"max_splits keyword was passed and set to 1.")
+        kwargs['max_splits'] = 1
 
         # Convert Responses to a list if not already
         if isinstance(requests, str) or not isiterable(requests):
@@ -522,13 +525,10 @@ class JSOCClient(BaseClient):
         dl_set = True
         if not downloader:
             dl_set = False
-            downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=max_conn)
-
-        if downloader.max_conn * kwargs['max_splits'] > 10:
-            warn_user("JSOC does not support more than 10 parallel connections. " +
-                      f"Changing the number of parallel connections to {2 * self.default_max_conn}.")
-            kwargs['max_splits'] = 2
-            downloader.max_conn = self.default_max_conn
+            # Private communication from JSOC say we should not use more than one connection.
+            if max_conn != self.default_max_conn:
+                log.info(f"Setting max parallel downloads to 1 for the JSOC client.")
+            downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=1)
 
         urls = []
         for request in requests:

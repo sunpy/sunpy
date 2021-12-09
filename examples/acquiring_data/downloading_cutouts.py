@@ -84,12 +84,9 @@ q = Fido.search(
 )
 
 #####################################################
-# Submit the export request and download the data. We
-# set the number of parallel downloads to 2 so as not
-# to overwhelm the JSOC export service with our number
-# of download requests.
+# Submit the export request and download the data.
 
-files = Fido.fetch(q, max_conn=2)
+files = Fido.fetch(q)
 files.sort()
 
 #####################################################
