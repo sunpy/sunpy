@@ -107,7 +107,7 @@ class HECClient(BaseClient):
         interface between the sunpy module library and the web-service's API.
 
         .. note::
-            Default records returned by the service are limited to 500.
+           By default the maximum records returned by the service are limited to 500.
            To obtain more results ``a.helio.MaxRecords`` must be set to a higher value.
 
         Examples
@@ -167,7 +167,7 @@ class HECClient(BaseClient):
                                                     MAXRECORDS=max_records)
         results = votable_handler(etree.tostring(results))
         table = HECResponse(results.to_table(), client=self)
-        if len(table) == 500:
+        if len(table) == max_records == 500:
             warn_user("Number of results is the same as the default `max_records` of 500. "
                       "It is possible your query has been truncated. "
                       "If you want to change this, set `a.helio.MaxRecords` to a higher value.")
