@@ -380,10 +380,23 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if "wait" in kwargs:
             raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
 
+        # TODO: Remove when parfive allows us to special case URLS.
+        # Avoid more than one connection for JSOC only requests.
+        from sunpy.net.jsoc import JSOCClient
+
+        is_jsoc_only = False
+        for query_result in query_results:
+            if isinstance(query_result, UnifiedResponse):
+                is_jsoc_only = all([isinstance(result.client, JSOCClient) for result in query_result])
+            elif isinstance(query_result, QueryResponseTable):
+                is_jsoc_only = all([isinstance(result.table.client, JSOCClient) for result in query_result])
         if downloader is None:
+            if is_jsoc_only:
+                max_conn = 1
+                kwargs['max_splits'] = 1
             downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
         elif not isinstance(downloader, parfive.Downloader):
-            raise TypeError("The downloader argument must be a parfive.Downloader object.")
+            raise TypeError("The downloader argument must be a parfive.Downloader instance.")
 
         # Handle retrying failed downloads
         retries = [isinstance(arg, Results) for arg in query_results]
@@ -395,8 +408,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                 results._errors += dr._errors
             return results
         elif any(retries):
-            raise TypeError("If any arguments to fetch are "
-                            "`parfive.Results` objects, all arguments must be.")
+            raise TypeError("If any arguments to fetch are `parfive.Results` objects, all arguments must be.")
 
         reslist = []
         for query_result in query_results:
