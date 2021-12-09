@@ -30,9 +30,17 @@ srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I', srs_table['ID'] == '
 
 ##############################################################################
 # Now we extract the latitudes, longitudes and the region numbers.
+# :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord` will error on some
+# versions of Astropy if a coordinate component contains a mask, but since
+# none of the masks in these arrays here actually mask any elements, we simply
+# remove the masks.
 
 lats = srs_table['Latitude']
+if hasattr(lats, 'mask'):
+    lats = lats.unmasked
 lngs = srs_table['Longitude']
+if hasattr(lngs, 'mask'):
+    lngs = lngs.unmasked
 numbers = srs_table['Number']
 
 ##############################################################################
@@ -41,12 +49,10 @@ numbers = srs_table['Number']
 ax = plt.subplot(projection=smap)
 smap.plot(vmin=-120, vmax=120)
 smap.draw_limb()
-ax.set_autoscale_on(False)
-# As the values are masked arrays, we need to work around that.
-c = SkyCoord(lngs.data * lngs.unit, lats.data * lats.unit, frame="heliographic_stonyhurst")
+c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
 ax.plot_coord(c, 'o')
-for i, num in enumerate(numbers):
-    ax.annotate(num, (lngs[i].value, lats[i].value),
+for num, lng, lat in zip(numbers, lngs.value, lats.value):
+    ax.annotate(num, (lng, lat),
                 xycoords=ax.get_transform('heliographic_stonyhurst'),
                 color='red',
                 fontweight='bold',
