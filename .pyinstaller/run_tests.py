@@ -2,8 +2,11 @@ import os
 import sys
 import shutil
 from pathlib import Path
+from importlib import metadata
 
 import pytest
+
+metadata.version('numpy')
 
 # Skipping these tests that take check the name of the current module
 # (which ends up starting with sunpy_tests rather than sunpy).
