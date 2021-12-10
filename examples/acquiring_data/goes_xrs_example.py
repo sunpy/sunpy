@@ -72,11 +72,7 @@ goes_15.peek()
 # channel is known as the "xrsa" channel and the 1-8 angstrom channel is known
 # as the "xrsb" channel.
 
-fig, ax = plt.subplots()
-ax.plot(goes_15.index, goes_15.quantity("xrsb"))
-ax.set_ylabel("Flux (Wm$^{-2}$)")
-ax.set_xlabel("Time")
-fig.autofmt_xdate()
+goes_15.plot(columns=["xrsb"])
 plt.show()
 
 ###############################################################
