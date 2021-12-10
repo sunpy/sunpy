@@ -18,7 +18,7 @@ from sunpy.net.helio import attrs as ha
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
 from sunpy.util.decorators import deprecated
-from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 __all__ = ['HECClient', 'HECResponse']
 
@@ -108,6 +108,10 @@ class HECClient(BaseClient):
         Used to utilize the service's TimeQuery() method, this is a simple
         interface between the sunpy module library and the web-service's API.
 
+        .. note::
+           By default the maximum records returned by the service are limited to 500.
+           To obtain more results ``a.helio.MaxRecords`` must be set to a higher value.
+
         Examples
         --------
         >>> from sunpy.net.helio import attrs as ha
@@ -154,7 +158,7 @@ class HECClient(BaseClient):
             table = str.encode(table)
         start_time = qrdict['Time'].start
         end_time = qrdict['Time'].end
-        max_records = qrdict.get('max_records', 10)
+        max_records = qrdict.get('max_records', 500)
         while table is None:
             table = self.select_table()
         start_time = parse_time(start_time)
@@ -164,7 +168,12 @@ class HECClient(BaseClient):
                                                     FROM=table,
                                                     MAXRECORDS=max_records)
         results = votable_handler(etree.tostring(results))
-        return HECResponse(results.to_table(), client=self)
+        table = HECResponse(results.to_table(), client=self)
+        if len(table) == max_records == 500:
+            warn("Number of results is the same as the default `max_records` of 500. "
+                 "It is possible your query has been truncated. "
+                 "If you want to change this, set `a.helio.MaxRecords` to a higher value.", SunpyUserWarning)
+        return table
 
     @deprecated(since="2.1", message="Use Fido.search instead", alternative="Fido.search")
     def time_query(self, start_time, end_time, table=None, max_records=None):
