@@ -1,12 +1,11 @@
 """
 This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
 """
-import datetime
 from pathlib import Path
 from collections import OrderedDict
 
 import h5netcdf
-import matplotlib.dates
+import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
 import numpy as np
 import packaging.version
@@ -86,19 +85,21 @@ class XRSTimeSeries(GenericTimeSeries):
         if not axes:
             axes = plt.gca()
         self._validate_data_for_plotting()
-        dates = matplotlib.dates.date2num(parse_time(self.to_dataframe().index).datetime)
+        data = self.to_dataframe()
+        dates = mdates.date2num(parse_time(self.to_dataframe().index).datetime)
         axes.plot_date(
-            dates, self.to_dataframe()["xrsa"], "-", label=r"0.5--4.0 $\AA$", color="blue", lw=2, **kwargs
+            dates, data["xrsa"], "-", label=r"0.5--4.0 $\AA$", color="blue", lw=2, **kwargs
         )
         axes.plot_date(
-            dates, self.to_dataframe()["xrsb"], "-", label=r"1.0--8.0 $\AA$", color="red", lw=2, **kwargs
+            dates, data["xrsb"], "-", label=r"1.0--8.0 $\AA$", color="red", lw=2, **kwargs
         )
-
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
         axes.set_ylabel("Watts m$^{-2}$")
-        axes.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
-
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator)
+        axes.xaxis.set_major_locator(locator)
+        axes.xaxis.set_major_formatter(formatter)
         ax2 = axes.twinx()
         ax2.set_yscale("log")
         ax2.set_ylim(1e-9, 1e-2)
@@ -110,11 +111,6 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, "major")
         axes.xaxis.grid(False, "major")
         axes.legend()
-
-        # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter("%H:%M")
-        axes.xaxis.set_major_formatter(formatter)
-        axes.fmt_xdata = matplotlib.dates.DateFormatter("%H:%M")
         return axes
 
     @property
@@ -147,7 +143,7 @@ class XRSTimeSeries(GenericTimeSeries):
         return None
 
     @peek_show
-    def peek(self, title="GOES Xray Flux", **kwargs):
+    def peek(self, title="GOES X-ray flux", **kwargs):
         """
         Displays the GOES XRS light curve by calling `~sunpy.timeseries.sources.goes.XRSTimeSeries.plot`.
 
@@ -161,7 +157,7 @@ class XRSTimeSeries(GenericTimeSeries):
         Parameters
         ----------
         title : `str`, optional
-            The title of the plot. Defaults to "GOES Xray Flux".
+            The title of the plot. Defaults to "GOES X-ray flux".
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.

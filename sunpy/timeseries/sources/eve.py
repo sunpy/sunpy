@@ -3,9 +3,9 @@ import codecs
 from os.path import basename
 from collections import OrderedDict
 
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import dates
 from pandas import DataFrame, to_datetime
 from pandas.io.parsers import read_csv
 
@@ -88,8 +88,10 @@ class ESPTimeSeries(GenericTimeSeries):
             ax.set_ylabel(names[i])
             ax.legend(loc="upper right")
         axes[-1].set_xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
-        axes[-1].set_xlabel("Time (UT) " + str(self.to_dataframe().index[0])[0:11])
-        axes[-1].xaxis.set_major_formatter(dates.DateFormatter("%H:%M"))
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator)
+        axes[-1].xaxis.set_major_locator(locator)
+        axes[-1].xaxis.set_major_formatter(formatter)
         return axes
 
     @peek_show
