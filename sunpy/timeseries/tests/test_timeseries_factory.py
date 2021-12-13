@@ -1,5 +1,6 @@
 import os
 import glob
+import logging
 import datetime
 from pathlib import Path
 from collections import OrderedDict
@@ -28,7 +29,7 @@ eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
 eve_many_filepath = glob.glob(os.path.join(sunpy.data.test.rootdir, "eve", "*"))
 goes_filepath = get_test_filepath('go1520110607.fits')
 psp_filepath = get_test_filepath('psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
-
+swa_filepath = get_test_filepath('solo_L1_swa-pas-mom_20200706_V01.cdf')
 
 @pytest.mark.filterwarnings('ignore:Unknown units')
 def test_factory_concatenate_same_source():
@@ -134,6 +135,14 @@ def test_read_cdf_empty_variable():
     assert ts.quantity('nH').unit == u.cm**-3
 
     sunpy_cdf._known_units = known_units
+
+
+def test_read_empty_cdf(caplog):
+    with caplog.at_level(logging.DEBUG, logger='sunpy'):
+        ts_empty = sunpy.timeseries.TimeSeries(swa_filepath)
+    assert ts_empty == []
+    assert "No data found in file" in caplog.text
+    assert "solo_L1_swa-pas-mom_20200706_V01.cdf" in caplog.text
 
 
 def test_meta_from_fits_header():
