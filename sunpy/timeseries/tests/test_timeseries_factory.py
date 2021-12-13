@@ -31,6 +31,7 @@ goes_filepath = get_test_filepath('go1520110607.fits')
 psp_filepath = get_test_filepath('psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
 swa_filepath = get_test_filepath('solo_L1_swa-pas-mom_20200706_V01.cdf')
 
+
 @pytest.mark.filterwarnings('ignore:Unknown units')
 def test_factory_concatenate_same_source():
     # Test making a TimeSeries that is the concatenation of multiple files
