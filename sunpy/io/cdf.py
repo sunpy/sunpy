@@ -46,8 +46,13 @@ def read_cdf(fname):
     all_ts = []
     # For each time index, construct a GenericTimeSeries
     for index_key in time_index_keys:
-        index = cdf.varget(index_key)
+        try:
+            index = cdf.varget(index_key)
+        except ValueError:
+            # Empty index for cdflib >= 0.3.20
+            continue
         if index is None:
+            # Empty index for cdflib <0.3.20
             continue
         # TODO: use to_astropy_time() instead here when we drop pandas in timeseries
         index = CDFepoch.to_datetime(index)
