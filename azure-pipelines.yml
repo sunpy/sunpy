@@ -145,7 +145,6 @@ stages:
               - hdf5-devel
 
           envs:
-            - linux: py38-hypothesis
             - linux: py38-devdeps
             - linux: base_deps
 
