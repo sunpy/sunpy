@@ -135,7 +135,6 @@ stages:
           envs:
             - linux: base_deps
             - linux: py39-devdeps
-            - linux: py39-hypothesis
             - linux: pyinstaller
 
   # On branches which aren't main, and not Pull Requests, build the wheels but only upload them on tags
