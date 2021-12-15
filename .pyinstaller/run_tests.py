@@ -12,6 +12,7 @@ metadata.version('numpy')
 # (which ends up starting with sunpy_tests rather than sunpy).
 # asdf/cdf path issue with PyInstaller as well.
 SKIP_TESTS = [
+    "test_all",
     "test_attr_metamagic",
     "test_basic",
     "test_download_cache",
@@ -27,10 +28,16 @@ SKIP_TESTS = [
     "test_origin",
     "test_override_file",
     "test_read_cdf",
+    "test_read_empty_cdf",
+    "test_rotation",
     "test_same_file_id_different_module",
     "test_saveframe_arr",
     "test_saveframe",
+    "test_scale",
+    "test_scipy_rotation",
+    "test_shift",
     "test_skip_all",
+    "test_sunpy_warnings_logging",
 ]
 if len(sys.argv) == 3 and sys.argv[1] == "--sunpy-root":
     ROOT = Path(sys.argv[2])

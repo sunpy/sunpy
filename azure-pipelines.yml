@@ -55,11 +55,9 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
-
         libraries:
           apt:
             - libopenjp2-7
-
         envs:
           - linux: py39
 
@@ -74,14 +72,12 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
-
         libraries:
           apt:
             - libopenjp2-7
             - graphviz
           brew:
             - openjpeg
-
         envs:
           - macos: py37
           - windows: py310
@@ -100,19 +96,16 @@ stages:
         coverage: codecov
         toxdeps: tox-pypi-filter
         posargs: -n=4
-
         libraries:
           apt:
             - libopenjp2-7
             - graphviz
           brew:
             - openjpeg
-
         envs:
           - linux: build_docs_ci
             posargs: " "
             pytest: false
-
           - linux: py38-online
 
 
@@ -128,7 +121,6 @@ stages:
           coverage: codecov
           toxdeps: tox-pypi-filter
           posargs: -n=4
-
           libraries:
             apt:
               - libopenjp2-7
@@ -138,11 +130,9 @@ stages:
               - freetype-devel
               - libpng-devel
               - hdf5-devel
-
           envs:
             - linux: base_deps
             - linux: py39-devdeps
-            - linux: py39-hypothesis
             - linux: pyinstaller
 
   # On branches which aren't main, and not Pull Requests, build the wheels but only upload them on tags
