@@ -54,6 +54,8 @@ def heliographic_test_map():
     header['CUNIT2'] = 'deg'
     # Set observer location to avoid warnings later
     header['HGLN_OBS'] = 0.0
+    # Set rotation information
+    header['crota2'] = 0
     return sunpy.map.Map((data, header))
 
 

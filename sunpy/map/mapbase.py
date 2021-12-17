@@ -41,7 +41,7 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import cached_property_based_on, check_arithmetic_compatibility
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
@@ -1229,11 +1229,25 @@ class GenericMap(NDData):
         FITS-WCS compatible longitude. Used in self.wcs and
         self.reference_coordinate.
         """
-        return self.meta.get('crval1', 0.) * self.spatial_units[0]
+        if 'crval1' not in self.meta:
+            warn_deprecated('Assuming the reference longitude is 0. '
+                            'This is deprecated, and an error will be raised in the future. '
+                            'To fix this explicitly set the CRVAL1 keyword in the map metadata.')
+            crval1 = 0
+        else:
+            crval1 = self.meta['crval1']
+        return crval1 * self.spatial_units[0]
 
     @property
     def _reference_latitude(self):
-        return self.meta.get('crval2', 0.) * self.spatial_units[1]
+        if 'crval2' not in self.meta:
+            warn_deprecated('Assuming the reference latitude is 0. '
+                            'This is deprecated, and an error will be raised in the future. '
+                            'To fix this explicitly set the CRVAL2 keyword in the map metadata.')
+            crval2 = 0
+        else:
+            crval2 = self.meta['crval2']
+        return crval2 * self.spatial_units[1]
 
     @property
     def reference_coordinate(self):
@@ -1251,10 +1265,19 @@ class GenericMap(NDData):
         The pixel returned uses zero-based indexing, so will be 1 pixel less
         than the FITS CRPIX values.
         """
-        naxis1 = self.meta.get('naxis1', self.data.shape[1])
-        naxis2 = self.meta.get('naxis2', self.data.shape[0])
-        return PixelPair((self.meta.get('crpix1', (naxis1 + 1) / 2.) - 1) * u.pixel,
-                         (self.meta.get('crpix2', (naxis2 + 1) / 2.) - 1) * u.pixel)
+        if ('crpix1' not in self.meta) or ('crpix2' not in self.meta):
+            warn_deprecated('Assuming the reference pixel is the center of the data array. '
+                            'This is deprecated, and in future .reference_pixel will return None. '
+                            'To fix this explicitly set the CRPIX{1,2} keywords in the map metadata.')
+            naxis1 = self.meta.get('naxis1', self.data.shape[1])
+            naxis2 = self.meta.get('naxis2', self.data.shape[0])
+            crpix1 = (naxis1 + 1) / 2
+            crpix2 = (naxis2 + 1) / 2
+        else:
+            crpix1 = self.meta['crpix1']
+            crpix2 = self.meta['crpix2']
+        return PixelPair((crpix1 - 1) * u.pixel,
+                         (crpix2 - 1) * u.pixel)
 
     @property
     def scale(self):
@@ -1262,9 +1285,17 @@ class GenericMap(NDData):
         Image scale along the x and y axes in units/pixel
         (i.e. cdelt1, cdelt2).
         """
-        # TODO: Fix this if only CDi_j matrix is provided
-        return SpatialPair(self.meta.get('cdelt1', 1.) * self.spatial_units[0] / u.pixel,
-                           self.meta.get('cdelt2', 1.) * self.spatial_units[1] / u.pixel)
+        # When we support CD_ij, and only CD_ij is present, scale should return None.
+        if 'cdelt1' not in self.meta or 'cdelt2' not in self.meta:
+            warn_deprecated('Returning a default scale of 1 in units of CUNIT/pixel. '
+                            'This is deprecated, and in future .scale will return None. '
+                            'To fix this explicitly set the CDELT{1,2} keywords in the map metadata.')
+            cdelt1 = cdelt2 = 1
+        else:
+            cdelt1 = self.meta['cdelt1']
+            cdelt2 = self.meta['cdelt2']
+        return SpatialPair(cdelt1 * self.spatial_units[0] / u.pixel,
+                           cdelt2 * self.spatial_units[1] / u.pixel)
 
     @property
     def spatial_units(self):
@@ -1328,8 +1359,14 @@ class GenericMap(NDData):
         of 0deg is returned.
         """
         lam = self.scale[0] / self.scale[1]
-        p = np.deg2rad(self.meta.get(crota_key, 0))
-        return self._pc_matrix(lam, p)
+        if crota_key not in self.meta:
+            warn_deprecated('Returning a default rotation of 0 degrees. '
+                            'This is deprecated, and in the future will error. '
+                            'To fix this explicitly set the CROTA2 keyword in the map metadata.')
+            crota2 = 0
+        else:
+            crota2 = self.meta[crota_key]
+        return self._pc_matrix(lam, np.deg2rad(crota2))
 
     @property
     def _pv_values(self):

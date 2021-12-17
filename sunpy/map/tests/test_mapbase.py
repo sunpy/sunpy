@@ -926,6 +926,7 @@ def test_rotate_assumed_obstime():
         'crval2': 0,
         'cdelt1': 1,
         'cdelt2': 1,
+        'crota2': 0,
         'ctype1': 'HPLN-TAN',
         'ctype2': 'HPLT-TAN',
         'naxis': 2,
