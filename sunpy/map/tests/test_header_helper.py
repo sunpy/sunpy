@@ -65,6 +65,12 @@ def test_metakeywords():
     assert isinstance(meta, dict)
 
 
+def test_deafult_rotation(map_data, hpc_coord):
+    header = make_fitswcs_header(map_data, hpc_coord)
+    wcs = WCS(header)
+    np.testing.assert_allclose(wcs.wcs.pc, [[1, 0], [0, 1]], atol=1e-5)
+
+
 def test_rotation_angle(map_data, hpc_coord):
     header = make_fitswcs_header(map_data, hpc_coord,
                                  rotation_angle=90*u.deg)
