@@ -84,33 +84,15 @@ which correspond to the first and second axes in the header. ``axis1``
 corresponds to the coordinate axis for ``x`` and ``axis2`` corresponds to
 ``y``.
 
-This class makes some assumptions about the WCS information contained in
-the meta data. The first and most extensive assumption is that it is
-FITS-like WCS information as defined in the FITS WCS papers.
-
-Within this scope it also makes some other assumptions.
-
-* In the case of APIS convention headers where the CROTAi/j arguments are
-    provided it assumes that these can be converted to the standard PCi_j
-    notation using equations 32 in Thompson (2006).
-
-* If a CDi_j matrix is provided it is assumed that it can be converted to a
-    PCi_j matrix and CDELT keywords as described in
-    `Greisen & Calabretta (2002) <https://doi.org/10.1051/0004-6361:20021327>`_
-
-* The 'standard' FITS keywords that are used by this class are the PCi_j
-    matrix and CDELT, along with the other keywords specified in the WCS
-    papers. All subclasses of this class must convert their header
-    information to this formalism. The CROTA to PCi_j conversion is done in
-    this class.
+This class assumes that the metadata adheres to the FITS 4 standard.
+Where the CROTA2 metadata is provided (without PC_ij) it assumes a conversion
+to the standard PC_ij described in section 6.1 of .
+`Calabretta & Greisen (2002) <https://doi.org/10.1051/0004-6361:20021327>`_
 
 .. warning::
-    This class currently assumes that a header with the CDi_j matrix
-    information also includes the CDELT keywords, without these keywords
-    this class will not process the WCS.
-    Also the rotation_matrix does not work if the CDELT1 and CDELT2
-    keywords are exactly equal.
-    Also, if a file with more than two dimensions is feed into the class,
+    If a header has CD_ij values but no PC_ij values, CDELT values are required
+    for this class to construct the WCS.
+    If a file with more than two dimensions is feed into the class,
     only the first two dimensions (NAXIS1, NAXIS2) will be loaded and the
     rest will be discarded.
 """
