@@ -1332,7 +1332,7 @@ class GenericMap(NDData):
         If the specified key isn't present in the metadata, a default rotation
         of 0deg is returned.
         """
-        lam = self.scale[0] / self.scale[1]
+        lam = self.scale[1] / self.scale[0]
         p = np.deg2rad(self.meta.get(crota_key, 0))
         return self._pc_matrix(lam, p)
 
