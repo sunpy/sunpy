@@ -1278,13 +1278,19 @@ class GenericMap(NDData):
     @property
     def rotation_matrix(self):
         r"""
-        Matrix describing the rotation required to align solar North with
-        the top of the image.
+        Matrix describing the transformation needed to align the reference
+        pixel with the coordinate axes.
 
         The order or precendence of FITS keywords which this is taken from is:
         - PC\*_\*
         - CD\*_\*
         - CROTA\*
+
+        Notes
+        -----
+        In many cases this is a simple rotation matrix, hence the property name.
+        It general it does not have to be a pure rotation matrix, and can encode
+        other transformations e.g., skews for non-orthgonal coordinate systems.
         """
         if 'PC1_1' in self.meta:
             return np.array([[self.meta['PC1_1'], self.meta['PC1_2']],
