@@ -67,6 +67,9 @@ class MetaDict(OrderedDict):
         if save_original and not hasattr(self, '_original_meta'):
             self._original_meta = MetaDict(*args, save_original=False)
 
+    def __str__(self):
+        return '\n'.join([f'{key}: {item}' for key, item in self.items()])
+
     # Deliberately a property to prevent external modification
     @property
     def original_meta(self):
