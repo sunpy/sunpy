@@ -1164,7 +1164,7 @@ class GenericMap(NDData):
         This method can be overriden if an instruments header does not use this
         conversion.
         """
-        lam = self.scale[0] / self.scale[1]
+        lam = self.scale[1] / self.scale[0]
         p = np.deg2rad(self.meta.get('CROTA2', 0))
 
         return np.array([[np.cos(p), -1 * lam * np.sin(p)],
