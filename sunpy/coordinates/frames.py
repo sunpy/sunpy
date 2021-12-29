@@ -617,7 +617,6 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
         Examples
         --------
-
         .. minigallery:: sunpy.coordinates.Helioprojective.assume_spherical_screen
 
         >>> import astropy.units as u

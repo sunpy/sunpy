@@ -50,9 +50,9 @@ class Cache:
 
         Parameters
         ----------
-        urls: `list` or `str`
+        urls : `list` or `str`
             A list of urls or a single url.
-        redownload: `bool`
+        redownload : `bool`
             Whether to skip cache and redownload.
 
         Returns
@@ -98,7 +98,7 @@ class Cache:
 
         Parameters
         ----------
-        details: `dict`
+        details : `dict`
             Details detached from cache.
 
         Returns
@@ -121,7 +121,7 @@ class Cache:
 
         Parameters
         ----------
-        sha_hash: `str`
+        sha_hash : `str`
             SHA-256 hash of the file.
         """
         details = self._storage.find_by_key('file_hash', sha_hash)
@@ -133,7 +133,7 @@ class Cache:
 
         Parameters
         ----------
-        url: `str`
+        url : `str`
             URL of the file.
         """
         details = self._storage.find_by_key('url', url)
@@ -145,7 +145,7 @@ class Cache:
 
         Parameters
         ----------
-        urls: `list`
+        urls : `list`
             List of urls.
 
         Returns

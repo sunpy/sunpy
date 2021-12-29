@@ -137,7 +137,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
-        filepath : `str`
+        hdulist : `str`
             The path to the file you want to parse.
         """
         header = MetaDict(OrderedDict(hdulist[0].header))

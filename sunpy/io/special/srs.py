@@ -24,7 +24,6 @@ def read_srs(filepath):
 
     Returns
     -------
-
     table : `astropy.table.QTable`
         Table containing a stacked table from all the tables in the SRS file.
         The header information is stored in the ``.meta`` attribute.

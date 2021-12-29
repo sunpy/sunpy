@@ -27,9 +27,9 @@ class StorageProviderBase(metaclass=ABCMeta):
 
         Parameters
         ----------
-        key: `str`
+        key : `str`
             The key/column name of the field.
-        value: `str`
+        value : `str`
             The value associated with the key of the entry.
 
         Returns
@@ -40,7 +40,7 @@ class StorageProviderBase(metaclass=ABCMeta):
         Raises
         ------
         ``KeyError``
-             KeyError is raised if key does not exist.
+            KeyError is raised if key does not exist.
         """
 
     @abstractmethod
@@ -50,15 +50,15 @@ class StorageProviderBase(metaclass=ABCMeta):
 
         Parameters
         ----------
-        key: `str`
+        key : `str`
             The key/column name of the field.
-        value: `str`
+        value : `str`
             The value associated with the key of the entry.
 
         Raises
         ------
         ``KeyError``
-             KeyError is raised if key does not exist.
+            KeyError is raised if key does not exist.
         """
 
     @abstractmethod
@@ -68,7 +68,7 @@ class StorageProviderBase(metaclass=ABCMeta):
 
         Parameters
         ----------
-        details: `dict`
+        details : `dict`
             Details to be stored.
         """
 
@@ -136,7 +136,7 @@ class SqliteStorage(StorageProviderBase):
 
         Parameters
         ----------
-        commit: `bool`
+        commit : `bool`
             Whether to commit after succesful execution of db command.
         """
         conn = sqlite3.connect(str(self._db_path))

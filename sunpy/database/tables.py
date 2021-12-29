@@ -450,7 +450,6 @@ class DatabaseEntry(DatabaseEntryType, Base):
         Parameters
         ----------
         other : :class:`DatabaseEntry` instance
-
         attribute_list : `list`
             The list of attributes that will be compared in both instances,
             self and other.
@@ -542,12 +541,11 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
 
     Parameters
     ----------
-    search_result : `sunpy.net.dataretriever.fido_factory.UnifiedResponse`
-            A UnifiedResponse object that is used to store responses from the
-            unified downloader. This is returned by the ``search`` method of a
-            :class:`sunpy.net.dataretriever.fido_factory.UnifiedDownloaderFactory`
-            object.
-
+    sr : `sunpy.net.dataretriever.fido_factory.UnifiedResponse`
+        A UnifiedResponse object that is used to store responses from the
+        unified downloader. This is returned by the ``search`` method of a
+        :class:`sunpy.net.dataretriever.fido_factory.UnifiedDownloaderFactory`
+        object.
     default_waveunit : `str`, optional
         The wavelength unit that is used if it cannot be found in the Query
         Response block.
@@ -620,7 +618,6 @@ def entries_from_file(file, default_waveunit=None,
     sunpy.database.tables.WaveunitNotFoundError
         If ``default_waveunit`` is not given and the wavelength unit cannot
         be found in one of the FITS headers
-
     sunpy.database.tables.WaveunitNotConvertibleError
         If a wavelength unit could be found but cannot be used to create an
         instance of the type ``astropy.units.Unit``. This can be the case
@@ -781,11 +778,9 @@ def _create_display_table(database_entries, columns=None, sort=False):
     ----------
     database_entries : list
         The :class:`DatabaseEntry`s will be the rows in the resulting table.
-
     columns : list
         The column name strings that will be displayed in the resulting table. Possible
         values for the strings are all attributes of :class:`DatabaseEntry`.
-
     sort : bool (optional)
         If True, sorts the entries before displaying them.
 

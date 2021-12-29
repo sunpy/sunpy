@@ -196,10 +196,10 @@ class QueryResponseTable(QTable):
         Parameters
         ----------
         first_columns : list
-           The column names to put at the start of the table.
+            The column names to put at the start of the table.
         remove_empty : bool, optional
-           Remove columns where all values are `None`.
-           Defaults to ``True``.
+            Remove columns where all values are `None`.
+            Defaults to ``True``.
 
         Returns
         -------

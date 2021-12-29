@@ -115,7 +115,6 @@ def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwarg
 
     Examples
     --------
-
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> from sunpy.physics.solar_rotation import mapsequence_solar_derotate
     >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA

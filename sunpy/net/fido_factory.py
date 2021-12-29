@@ -43,7 +43,7 @@ class UnifiedResponse(Sequence):
         """
         Parameters
         ----------
-        results : `sunpy.net.base_client.QueryResponseTable`
+        *results : `sunpy.net.base_client.QueryResponseTable`
             One or more QueryResponse objects.
         """
         self._list = []
@@ -285,7 +285,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Parameters
         ----------
-        query : `sunpy.net.vso.attrs`, `sunpy.net.jsoc.attrs`
+        *query : `sunpy.net.vso.attrs`, `sunpy.net.jsoc.attrs`
             A query consisting of multiple parameters which define the
             requested data.  The query is specified using attributes from the
             VSO and the JSOC.  The query can mix attributes from the VSO and
@@ -326,7 +326,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Parameters
         ----------
-        query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.base_client.QueryResponseTable`
+        *query_results : `sunpy.net.fido_factory.UnifiedResponse` or `~sunpy.net.base_client.QueryResponseTable`
             Container returned by query method, or multiple.
         path : `str`
             The directory to retrieve the files into. Can refer to any fields
@@ -464,7 +464,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Parameters
         ----------
-        query : collection of `~sunpy.net.vso.attr` objects
+        *query : collection of `~sunpy.net.vso.attr` objects
 
         Returns
         -------

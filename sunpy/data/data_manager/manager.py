@@ -35,11 +35,11 @@ class DataManager:
 
         Parameters
         ----------
-        name: `str`
+        name : `str`
             The name to reference the file with.
-        urls: `list` or `str`
+        urls : `list` or `str`
             A list of urls to download the file from.
-        sha_hash: `str`
+        sha_hash : `str`
             SHA-256 hash of file.
         """
         if isinstance(urls, str):
@@ -123,14 +123,14 @@ class DataManager:
 
         Parameters
         ----------
-        name: `str`
+        name : `str`
             Name of the file provided in the `require` decorator.
-        uri: `str`
+        uri : `str`
             URI of the file which replaces original file. Scheme should be one
             of ``http``, ``https``, ``ftp`` or ``file``. If no scheme is given
             the uri will be interpreted as a local path. i.e.
             ``file:///tmp/test`` and ``/tmp/test`` are the same.
-        sha_hash: `str`, optional
+        sha_hash : `str`, optional
             SHA256 hash of the file to compared to after downloading.
         """
         try:
@@ -164,7 +164,7 @@ class DataManager:
 
         Parameters
         ----------
-        name: `str`
+        name : `str`
             Name of the file given to the data manager, same as the one provided
             in `~sunpy.data.data_manager.manager.DataManager.require`.
 

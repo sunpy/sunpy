@@ -113,9 +113,9 @@ def partial_key_match(key, dictionary):
     Parameters
     ----------
     key : `tuple`
-          A tuple containing the partial key.
-    dictionary: `dict`
-          The target dictionary from which we want to retrieve the value based on the partial key.
+        A tuple containing the partial key.
+    dictionary : `dict`
+        The target dictionary from which we want to retrieve the value based on the partial key.
 
     Yields
     ------
@@ -127,7 +127,7 @@ def partial_key_match(key, dictionary):
     * https://stackoverflow.com/questions/18893624/partial-match-dictionary-keyof-tuples-in-python
 
     Examples
-    ----------
+    --------
     >>> d = {('abc','def','ghi') : 1, ('abc', 'def', 'xyz') : 2, ('pqr', 'lmn', 'tuv') : 3}
     >>> list(partial_key_match(('abc', 'def', None), d))
         [1, 2]
@@ -158,7 +158,7 @@ def dict_keys_same(list_of_dicts):
     * https://stackoverflow.com/questions/10482439/make-sure-all-dicts-in-a-list-have-the-same-keys
 
     Examples
-    ----------
+    --------
     >>> l = [{'x': 42}, {'x': 23, 'y': 5}]
     >>> dict_keys_same(l)
         [{'x': 42, 'y': None}, {'x': 23, 'y': 5}]
@@ -175,7 +175,7 @@ def hash_file(path):
 
     Parameters
     ----------
-    path: `str`
+    path : `str`
         The path of the file to be hashed.
 
     Returns

@@ -28,7 +28,7 @@ def webservice_parser(service='HEC'):
 
     Parameters
     ----------
-    service: str
+    service : str
         Indicates which particular HELIO service is used. Defaults to HEC.
 
     Returns
@@ -82,7 +82,7 @@ def endpoint_parser(link):
 
     Parameters
     ----------
-    link: str
+    link : str
         A url to a page containing links to WSDL files.
 
     Returns
@@ -129,7 +129,7 @@ def taverna_parser(link):
 
     Parameters
     ----------
-    link: str
+    link : str
         A url to a page containing links to WSDL files.
 
     Returns
@@ -165,7 +165,7 @@ def link_test(link):
 
     Parameters
     ----------
-    link: str
+    link : str
         A string containing a URL
 
     Returns
@@ -201,7 +201,7 @@ def wsdl_retriever(service='HEC'):
 
     Parameters
     ----------
-    service: str
+    service : str
         Indicates which particular HELIO service is used. Defaults to HEC.
 
     Returns
