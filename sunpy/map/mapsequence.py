@@ -257,21 +257,17 @@ class MapSequence:
 
         Parameters
         ----------
-        axes: matplotlib.axes.Axes
+        axes : matplotlib.axes.Axes
             axes to plot the animation on, if none uses current axes
-
-        resample: list
+        resample : list
             Draws the map at a lower resolution to increase the speed of
             animation. Specify a list as a fraction i.e. [0.25, 0.25] to
             plot at 1/4 resolution.
             [Note: this will only work where the map arrays are the same size]
-
-        annotate: bool
+        annotate : bool
             Annotate the figure with scale and titles
-
-        interval: int
+        interval : int
             Animation interval in ms
-
         plot_function : function
             A function to be called as each map is plotted.
             For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
@@ -283,7 +279,7 @@ class MapSequence:
 
         See Also
         --------
-        `sunpy.visualization.animator.MapSequenceAnimator`
+        MapSequenceAnimator
 
         Examples
         --------
@@ -392,24 +388,19 @@ class MapSequence:
 
         Parameters
         ----------
-        fig: matplotlib.figure.Figure
+        fig : matplotlib.figure.Figure
             Figure to use to create the explorer
-
-        resample: list
+        resample : list
             Draws the map at a lower resolution to increase the speed of
             animation. Specify a list as a fraction i.e. [0.25, 0.25] to
             plot at 1/4 resolution.
             [Note: this will only work where the map arrays are the same size]
-
-        annotate: bool
+        annotate : bool
             Annotate the figure with scale and titles
-
-        interval: int
+        interval : int
             Animation interval in ms
-
-        colorbar: bool
+        colorbar : bool
             Plot colorbar
-
         plot_function : function
             A function to call to overplot extra items on the map plot.
             For more information see `sunpy.visualization.animator.MapSequenceAnimator`.

@@ -118,7 +118,7 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
     ----------
     axes : `~astropy.visualization.wcsaxes.WCSAxes`
         The `~astropy.visualization.wcsaxes.WCSAxes` object to create the HGS overlay on.
-    grid_spacing: `~astropy.units.Quantity`
+    grid_spacing : `~astropy.units.Quantity`
         Spacing for longitude and latitude grid in degrees.
     annotate : `bool`
         Passing `False` disables the axes labels and the ticks on the top and right axes.

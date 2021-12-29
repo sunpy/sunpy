@@ -110,7 +110,7 @@ def download_sample_data(overwrite=False):
 
     Parameters
     ----------
-    overwrite: `bool`
+    overwrite : `bool`
         Overwrite existing sample data.
     """
     # Workaround for tox only. This is not supported as a user option

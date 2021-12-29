@@ -86,7 +86,6 @@ def sky_position(t='now', equinox_of_date=True):
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
-
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).
@@ -114,7 +113,6 @@ def carrington_rotation_time(crot, longitude: u.deg = None):
     ----------
     crot : `int`, `float`, `~astropy.units.Quantity`
         Carrington rotation number(s). Can be a fractional rotation number.
-
     longitude : `~astropy.units.Quantity`
         Carrington longitude(s), which must be > 0 degrees and <= 360 degrees.
         If provided, ``crot`` must be strictly integral.
@@ -313,7 +311,6 @@ def true_rightascension(t='now', equinox_of_date=True):
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
-
     equinox_of_date : `bool`
         If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).
@@ -349,7 +346,6 @@ def true_declination(t='now', equinox_of_date=True):
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
-
     equinox_of_date : `bool`
         If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).
@@ -405,7 +401,6 @@ def apparent_rightascension(t='now', equinox_of_date=True):
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
-
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).
@@ -438,7 +433,6 @@ def apparent_declination(t='now', equinox_of_date=True):
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
-
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).

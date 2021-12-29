@@ -185,7 +185,6 @@ def propagate_with_solar_surface(rotation_model='howard'):
 
     Examples
     --------
-
     .. minigallery:: sunpy.coordinates.propagate_with_solar_surface
 
     >>> import astropy.units as u

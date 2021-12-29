@@ -16,7 +16,6 @@ def meta_keywords():
 
     Examples
     --------
-
     Returns a dictionary of all meta keywords that are used in a `sunpy.map.GenericMap` header:
         >>> import sunpy.map
         >>> sunpy.map.meta_keywords()
@@ -51,7 +50,7 @@ def make_fitswcs_header(data, coordinate,
         data array (in numpy order, i.e. ``(y_size, x_size)``).
     coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
         The coordinate of the reference pixel.
-    reference_pixel :`~astropy.units.Quantity` of size 2, optional
+    reference_pixel : `~astropy.units.Quantity`, optional
         Reference pixel along each axis. These are expected to be Cartestian ordered, i.e
         the first index is the x axis, second index is the y axis. Defaults to
         the center of data array, ``(data.shape[1] - 1)/2., (data.shape[0] - 1)/2.)``,
@@ -235,7 +234,7 @@ def get_observer_meta(observer, rsun: (u.Mm, None) = None):
 
     Parameters
     ----------
-    coordinate : `~astropy.coordinates.BaseCoordinateFrame`
+    observer : `~astropy.coordinates.BaseCoordinateFrame`
         The coordinate of the observer, must be transformable to Heliographic
         Stonyhurst.
     rsun : `astropy.units.Quantity`, optional

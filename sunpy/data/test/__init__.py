@@ -26,8 +26,8 @@ def get_test_filepath(filename, **kwargs):
     filename : `str`
         The name of the file inside the ``data/test`` directory.
 
-    Return
-    ------
+    Returns
+    -------
     filepath : `str`
         The full path to the file.
 
@@ -45,8 +45,8 @@ def test_data_filenames():
 
     This ignores any ``py``, ``pyc`` and ``__*__`` files in these directories.
 
-    Return
-    ------
+    Returns
+    -------
     `list`
         The name of all test files in ``data/test`` directory.
     """

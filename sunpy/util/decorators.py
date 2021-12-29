@@ -35,7 +35,7 @@ def deprecated(since, message='', name='', alternative='', pending=False,
     Used to mark a function or class as deprecated.
 
     Parameters
-    ------------
+    ----------
     since : str
         The release at which this API became deprecated.  This is
         required.
@@ -67,9 +67,6 @@ def deprecated(since, message='', name='', alternative='', pending=False,
     obj_type : str, optional
         The type of this object, if the automatically determined one
         needs to be overridden.
-    warning_type : `Warning`
-        Warning to be issued.
-        Default is `~sunpy.util.exceptions.SunpyDeprecationWarning`.
     """
     major, minor = get_removal_version(since)
     removal_version = f"{major}.{minor}"
@@ -267,7 +264,7 @@ def deprecate_positional_args_since(since, keyword_only=False):
     """
     Parameters
     ----------
-    since: str
+    since : str
         Parameter denoting last supported version.
     """
     def deprecate_positional_args(f):
@@ -278,7 +275,7 @@ def deprecate_positional_args_since(since, keyword_only=False):
 
         Parameters
         ----------
-        f: function
+        f : function
             Function to check arguments on.
 
         References
@@ -338,7 +335,7 @@ def cached_property_based_on(attr_name):
 
     Parameters
     ----------
-    attr_name :
+    attr_name
         The name of the attribute, on which changes are checked for. The actual
         attribute is accessed using ``getattr(attr_name, instance)``.
 
@@ -355,7 +352,7 @@ def cached_property_based_on(attr_name):
             """
             Parameters
             ----------
-            instance:
+            instance
                 Any class instance that has the property ``prop``,
                 and attribute ``attr``.
             """

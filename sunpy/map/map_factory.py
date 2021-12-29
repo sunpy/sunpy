@@ -204,8 +204,8 @@ class MapFactory(BasicRegistrationFactory):
         * url, which will be downloaded and read
         * lists containing any of the above.
 
-        Example
-        -------
+        Examples
+        --------
         self._parse_args(data, header,
                          (data, header),
                          ['file1', 'file2', 'file3'],

@@ -135,7 +135,7 @@ def split_database(source_database, destination_database, *query_string):
     destination_database : `~sunpy.database.database.Database`
         A SunPy `~Database` object. This is the database to which the matched
         entries will be moved.
-    query_string : `list`
+    *query_string : `list`
         A variable number of attributes that are chained together via the
         boolean AND operator. The | operator may be used between attributes
         to express the boolean OR operator.
@@ -465,7 +465,7 @@ class Database:
 
         Parameters
         ----------
-        query : `list`
+        *query : `list`
             A variable number of attributes that are chained together via the
             boolean AND operator. The | operator may be used between attributes
             to express the boolean OR operator.
@@ -566,7 +566,7 @@ class Database:
 
         Parameters
         ----------
-        query : `list`
+        *query : `list`
             A variable number of attributes that are chained together via the
             boolean AND operator. The | operator may be used between attributes
             to express the boolean OR operator.
@@ -645,7 +645,6 @@ class Database:
         ------
         TypeError
             If no tags are given.
-
         sunpy.database.TagAlreadyAssignedError
             If at least one of the given tags is already assigned to the given
             database entry.
@@ -730,7 +729,6 @@ class Database:
         database_entries : list
             The list of `~sunpy.database.tables.DatabaseEntry`
             that will be added to the database.
-
         ignore_already_added : bool, optional
             See Database.add
 
@@ -761,7 +759,6 @@ class Database:
         ----------
         database_entry : sunpy.database.tables.DatabaseEntry
             The database entry that will be added to this database.
-
         ignore_already_added : bool, optional
             If True, attempts to add an already existing database entry will
             result in a :exc:`sunpy.database.EntryAlreadyAddedError`.
@@ -789,7 +786,6 @@ class Database:
         ----------
         query_result : list
             The value returned by :meth:`sunpy.net.hek.HEKClient.search`
-
         ignore_already_added : bool
             See :meth:`sunpy.database.Database.add`.
 
@@ -854,7 +850,6 @@ class Database:
         query_result : sunpy.net.vso.VSOQueryResponseTable
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
-
         ignore_already_added : bool
             See :meth:`sunpy.database.Database.add`.
 
@@ -874,7 +869,6 @@ class Database:
         query_result : sunpy.net.vso.VSOQueryResponseTable
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
-
         ignore_already_added : bool
             See :meth:`sunpy.database.Database.add`.
 
@@ -897,7 +891,6 @@ class Database:
             unified downloader. This is returned by the ``search`` method of a
             :class:`sunpy.net.fido_factory.UnifiedDownloaderFactory`
             object.
-
         ignore_already_added : `bool`
             See :meth:`sunpy.database.Database.add`.
 
@@ -922,22 +915,18 @@ class Database:
         ----------
         path : str
             The directory where to look for FITS files.
-
         recursive : bool, optional
             If True, the given directory will be searched recursively.
             Otherwise, only the given directory and no subdirectories are
             searched. The default is `False`, i.e. the given directory is not
             searched recursively.
-
         pattern : str, optional
             The pattern can be used to filter the list of filenames before the
             files are attempted to be read. The default is to collect all
             files. This value is passed to the function :func:`fnmatch.filter`,
             see its documentation for more information on the supported syntax.
-
         ignore_already_added : bool, optional
             See :meth:`sunpy.database.Database.add`.
-
         time_string_parse_format : str, optional
             Fallback timestamp format which will be passed to
             `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
@@ -970,7 +959,6 @@ class Database:
             Either a path pointing to a FITS file or an opened file-like
             object. If an opened file object, its mode must be one of the
             following rb, rb+, or ab+.
-
         ignore_already_added : bool, optional
             See :meth:`sunpy.database.Database.add`.
 

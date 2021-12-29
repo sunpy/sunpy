@@ -205,9 +205,9 @@ class JSOCClient(BaseClient):
 
         Parameters
         ----------
-        query : a variable number of `~sunpy.net.jsoc.attrs`
-                as parameters, which are chained together using
-                the ``AND`` (``&``) operator.
+        *query : a variable number of `~sunpy.net.jsoc.attrs`
+            as parameters, which are chained together using
+            the ``AND`` (``&``) operator.
 
         Returns
         -------
@@ -216,7 +216,6 @@ class JSOCClient(BaseClient):
 
         Examples
         --------
-
         *Example 1*
 
         Request all AIA 304 image data between 2014-01-01T00:00 and
@@ -395,8 +394,8 @@ class JSOCClient(BaseClient):
         downloader : `parfive.Downloader`, optional
             The download manager to use.
         wait : `bool`, optional
-           If `False` ``downloader.download()`` will not be called. Only has
-           any effect if ``downloader`` is not `None`.
+            If `False` ``downloader.download()`` will not be called. Only has
+            any effect if ``downloader`` is not `None`.
         sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
             of the request.
@@ -406,7 +405,7 @@ class JSOCClient(BaseClient):
         results : a `parfive.Results` instance
             A `parfive.Results` object.
 
-       """
+        """
         for resp in jsoc_response.query_args:
             if 'notify' not in resp:
                 raise ValueError('A registered email is required to get data from JSOC. '
@@ -575,8 +574,7 @@ class JSOCClient(BaseClient):
 
         primekeys_istime.index.values = ['HARPNUM', 'T_OBS', 'WAVELNTH']
 
-        Case 1
-        ------
+        Case 1:
 
         primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
                     'HARPNUM' : '4864',
@@ -586,8 +584,7 @@ class JSOCClient(BaseClient):
 
         pkstr = '{4864}{2014.01.01_00:00:45_TAI}{605}'
 
-        Case 2
-        ------
+        Case 2:
 
         primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
                     'WAVELNTH': '605'}
@@ -596,8 +593,7 @@ class JSOCClient(BaseClient):
 
         pkstr = '{}{2014.01.01_00:00:45_TAI}{605}'
 
-        Case 3
-        ------
+        Case 3:
 
         primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI'}
 

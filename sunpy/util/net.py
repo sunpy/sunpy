@@ -152,7 +152,7 @@ def download_fileobj(opn, directory, url='', default="file", overwrite=False):
         The URL to parse for the filename.
     default : `str`, optional
         The name to use if the first two methods fail. Defaults to "file".
-    overwrite: `bool`, optional
+    overwrite : `bool`, optional
         If `True` will overwrite a file of the same name. Defaults to `False`.
 
     Returns
@@ -184,7 +184,7 @@ def download_file(url, directory, default="file", overwrite=False):
         The directory path to download the file in to.
     default : `str`, optional
         The name to use if the first two methods fail. Defaults to "file".
-    overwrite: `bool`, optional
+    overwrite : `bool`, optional
         If `True` will overwrite a file of the same name. Defaults to `False`.
 
     Returns
