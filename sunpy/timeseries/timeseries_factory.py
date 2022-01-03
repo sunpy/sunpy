@@ -194,7 +194,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         Parameters
         ----------
-        t: `~astropy.table.Table`
+        t : `~astropy.table.Table`
             The input table. The datetime column must be the first column or the (single) primary key index.
         """
         table = copy.deepcopy(t)

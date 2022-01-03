@@ -268,9 +268,8 @@ class Scraper:
          'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_093037.fts.gz',
          'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_124927.fts.gz']
 
-        Note
-        ----
-
+        Notes
+        -----
         The search is strict with the time range, so if the archive scraped contains daily files,
         but the range doesn't start from the beginning of the day, then the file for that day
         won't be selected. The end of the timerange will normally be OK as includes the file
@@ -375,7 +374,7 @@ class Scraper:
 
         Parameters
         ----------
-        url: `str`
+        url : `str`
             URL of the file.
         timerange : `~sunpy.time.TimeRange`
             Time interval for which files were searched.
@@ -423,9 +422,9 @@ class Scraper:
         ----------
         timerange : `~sunpy.time.TimeRange`
             Time interval where to find the directories for a given pattern.
-        extractor: `str`
+        extractor : `str`
             Pattern to extract metadata by parsing the URL.
-        matcher: `dict`
+        matcher : `dict`
             Dictionary to check if extracted metadata is valid.
 
         Returns

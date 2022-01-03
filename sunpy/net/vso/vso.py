@@ -78,16 +78,13 @@ def build_client(url=None, port_name=None, **kwargs):
     ----------
     url : `str`
         The URL to connect to.
-
     port_name : `str`
         The "port" to use.
-
-    kwargs : `dict`
+    **kwargs : `dict`
         All extra keyword arguments are passed to `zeep.Client`.
 
     Returns
     -------
-
     `zeep.Client`
     """
     if url is None and port_name is None:
@@ -163,7 +160,7 @@ class VSOClient(BaseClient):
 
         Parameters
         ----------
-        response_format: {``"legacy"``, ``"table"``}, optional
+        response_format : {``"legacy"``, ``"table"``}, optional
             The response format from the search, this can be either
             ``"legacy"`` to return a list-like object of the zeep responses, or
             ``"table"`` to return the responses in a subclass of
@@ -190,7 +187,6 @@ class VSOClient(BaseClient):
         2010-01-01 00:24:10.000 2010-01-01 00:24:22.000   SOHO ...    FULLDISK 2.01074
         2010-01-01 00:36:08.000 2010-01-01 00:36:20.000   SOHO ...    FULLDISK 2.01074
         2010-01-01 00:48:09.000 2010-01-01 00:48:21.000   SOHO ...    FULLDISK 2.01074
-
 
         Returns
         -------
@@ -361,8 +357,8 @@ class VSOClient(BaseClient):
         downloader : `parfive.Downloader`, optional
             The download manager to use.
         wait : `bool`, optional
-           If `False` ``downloader.download()`` will not be called. Only has
-           any effect if ``downloader`` is not `None`.
+            If `False` ``downloader.download()`` will not be called. Only has
+            any effect if ``downloader`` is not `None`.
 
         Returns
         -------
@@ -432,7 +428,7 @@ class VSOClient(BaseClient):
 
     def create_getdatarequest(self, maps, methods, info=None):
         """ Create datarequest from maps mapping data provider to
-        fileids and methods, """
+        fileids and methods,"""
         if info is None:
             info = {}
 

@@ -206,7 +206,6 @@ class CompositeMap:
         ----------
         index : `int`
             The index of the map in the composite map.
-
         alpha : `float`
             A float in the range 0 to 1.  Increasing values of alpha decrease
             the transparency of the layer (0 is complete transparency, 1
@@ -230,10 +229,8 @@ class CompositeMap:
         ----------
         index : `int`
             The index of the map in the composite map.
-
         levels : array-like
             The contour levels.
-
         percent : `bool`
             If True, the input 'levels' are interpreted as percentages relative
             to the maximum value of the data in layer 'index' of the composite
@@ -256,7 +253,6 @@ class CompositeMap:
         ----------
         index : `int`
             The index of the map in the composite map.
-
         plot_settings : `dict`
             A dictionary of the form
 
@@ -276,7 +272,6 @@ class CompositeMap:
         ----------
         index : `int`
             The index of the map in the composite map.
-
         zorder : `int`
             The layer order.
 
@@ -295,7 +290,6 @@ class CompositeMap:
         ----------
         index : `int`
             Map index to use to plot limb.
-
         axes : `matplotlib.axes.Axes` or None
             Axes to plot limb on or None to use current axes.
 
@@ -326,9 +320,9 @@ class CompositeMap:
 
         Parameters
         ----------
-        index: int
+        index : int
             Index to determine which map to use to draw grid.
-        axes: `~matplotlib.axes.Axes` or None
+        axes : `~matplotlib.axes.Axes` or None
             Axes to plot limb on or None to use current axes.
         grid_spacing : `float`
             Spacing (in degrees) for longitude and latitude grid.
@@ -373,18 +367,14 @@ class CompositeMap:
 
         Parameters
         ----------
-
-        axes: `~matplotlib.axes.Axes` or None
+        axes : `~matplotlib.axes.Axes` or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
-
         annotate : `bool`
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
-
         title : `str`
             Title of the composite map.
-
         **matplot_args : `dict`
             Any additional Matplotlib arguments that should be used
             when plotting.
@@ -500,13 +490,10 @@ class CompositeMap:
         colorbar : `bool` or `int`
             Whether to display a colorbar next to the plot.
             If specified as an integer a colorbar is plotted for that index.
-
         draw_limb : `bool`
             If true, draws a circle representing the solar limb.
-
-        draw_grid :  `bool`
+        draw_grid : `bool`
             If true, draws a grid over the surface of the Sun.
-
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting.

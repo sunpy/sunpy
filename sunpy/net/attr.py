@@ -199,8 +199,8 @@ class Attr(metaclass=AttrMeta):
             First string is the attribute name you want to register
             Second string is the description of the attribute.
 
-        Example
-        -------
+        Examples
+        --------
         # The first import is to make this example work, it should not be used otherwise
         >>> from sunpy.net.dataretriever import GenericClient
         >>> from sunpy.net import attr, attrs

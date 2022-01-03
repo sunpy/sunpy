@@ -1007,7 +1007,6 @@ class GenericMap(NDData):
         ----------
         axis1 : `~astropy.units.Quantity`
             The shift to apply to the Longitude (solar-x) coordinate.
-
         axis2 : `~astropy.units.Quantity`
             The shift to apply to the Latitude (solar-y) coordinate
 
@@ -1323,8 +1322,8 @@ class GenericMap(NDData):
         This method can be overridden if an instruments header does not use this
         conversion.
 
-        Paramters
-        ---------
+        Parameters
+        ----------
         crota_key : str, optional
             The key to use for CROTA2. Defaults to 'CROTA2'.
 
@@ -1416,7 +1415,6 @@ class GenericMap(NDData):
         -------
         x : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE1 axis.
-
         y : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE2 axis.
         """
@@ -1432,7 +1430,6 @@ class GenericMap(NDData):
         ----------
         x : `~astropy.units.Quantity`
             Pixel coordinate of the CTYPE1 axis. (Normally solar-x).
-
         y : `~astropy.units.Quantity`
             Pixel coordinate of the CTYPE2 axis. (Normally solar-y).
 
@@ -1963,7 +1960,7 @@ class GenericMap(NDData):
             Offset from (0,0) in original map pixels used to calculate where
             the data used to make the resulting superpixel map starts.
             If non-integer value are provided, they are rounded using `int`.
-        func :
+        func
             Function applied to the original data.
             The function 'func' must take a numpy array as its first argument,
             and support the axis keyword with the meaning of a numpy axis
@@ -2066,13 +2063,11 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        axes: `~matplotlib.axes` or `None`
+        axes : `~matplotlib.axes` or `None`
             Axes to plot limb on, or `None` to use current axes.
-
-        grid_spacing: `~astropy.units.Quantity`
+        grid_spacing : `~astropy.units.Quantity`
             Spacing for longitude and latitude grid, if length two it specifies
             (lon, lat) spacing.
-
         annotate : `bool`
             Passing `False` disables the axes labels and the ticks on the top and right axes.
 
@@ -2267,7 +2262,6 @@ class GenericMap(NDData):
             A list of numbers indicating the contours to draw. These are given
             as a percentage of the maximum value of the map data, or in units
             equivalent to the `~sunpy.map.GenericMap.unit` attribute.
-
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the contours. Defaults to the current
             axes.
@@ -2319,7 +2313,6 @@ class GenericMap(NDData):
         ----------
         draw_limb : bool
             Whether the solar limb should be plotted.
-
         draw_grid : bool or `~astropy.units.Quantity`
             Whether solar meridians and parallels are plotted.
             If `~astropy.units.Quantity` then sets degree difference between
@@ -2375,7 +2368,7 @@ class GenericMap(NDData):
         annotate : `bool`, optional
             If `True`, the data is plotted at its natural scale; with
             title and axis labels.
-        axes: `~matplotlib.axes.Axes` or None
+        axes : `~matplotlib.axes.Axes` or None
             If provided the image will be plotted on the given axes. Else the
             current Matplotlib axes will be used.
         title : `str`, `bool`, optional
@@ -2565,9 +2558,9 @@ class GenericMap(NDData):
         [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
         ...
 
-        See also
+        See Also
         --------
-        `skimage.measure.find_contours`
+        skimage.measure.find_contours
         """
         from skimage import measure
 
@@ -2632,10 +2625,10 @@ class GenericMap(NDData):
         outmap : `~sunpy.map.GenericMap`
             The reprojected map
         footprint : `~numpy.ndarray`
-             Footprint of the input arary in the output array.  Values of 0 indicate no
-             coverage or valid values in the input image, while values of 1 indicate
-             valid values.  Intermediate values indicate partial coverage.
-             Only returned if ``return_footprint`` is ``True``.
+            Footprint of the input arary in the output array.  Values of 0 indicate no
+            coverage or valid values in the input image, while values of 1 indicate
+            valid values.  Intermediate values indicate partial coverage.
+            Only returned if ``return_footprint`` is ``True``.
 
         Notes
         -----

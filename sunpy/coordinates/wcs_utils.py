@@ -36,7 +36,6 @@ except ImportError:
         obsgeo : array-like
             A shape ``(6, )`` array representing ``OBSGEO-[XYZ], OBSGEO-[BLH]`` as
             returned by ``WCS.wcs.obsgeo``.
-
         obstime : time-like
             The time assiociated with the coordinate, will be passed to
             `~.builtin_frames.ITRS` as the obstime keyword.
@@ -49,7 +48,6 @@ except ImportError:
 
         Notes
         -----
-
         The obsgeo array as accessed on a `.WCS` object is a length 6 numpy array
         where the first three elements are the coordinate in a cartesian
         representation and the second 3 are the coordinate in a spherical

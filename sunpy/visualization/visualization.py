@@ -30,9 +30,9 @@ def axis_labels_from_ctype(ctype, unit):
 
     Parameters
     ----------
-    ctype: `str`
+    ctype : `str`
         Coordinate type.
-    unit: `str`, `None`
+    unit : `str`, `None`
         Required unit. If `None` no unit is added to the label.
 
     Returns

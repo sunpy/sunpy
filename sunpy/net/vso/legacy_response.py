@@ -59,7 +59,7 @@ class QueryResponse(BaseQueryResponse):
 
     def total_size(self):
         """ Total size of data in KB. May be less than the actual
-        size because of inaccurate data providers. """
+        size because of inaccurate data providers."""
         # Warn about -1 values?
         return sum(record.size for record in self if record.size > 0)
 

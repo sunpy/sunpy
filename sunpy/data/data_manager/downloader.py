@@ -17,9 +17,9 @@ class DownloaderBase(metaclass=ABCMeta):
 
         Parameters
         ----------
-        url: `str`
+        url : `str`
             URL of the file to be downloaded.
-        path: `pathlib.Path` or `str`
+        path : `pathlib.Path` or `str`
             Path where the file should be downloaded to.
 
         Raises

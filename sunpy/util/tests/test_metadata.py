@@ -39,11 +39,10 @@ def check_contents_and_insertion_order(metadict_inst, expected):
 
     Parameters
     ----------
-    metadict_inst: sunpy.util.metadata.MetaDict
-                  a Metadict instance under test
-
-    expected: iterable object of key/value pairs
-             the values we expect from a test
+    metadict_inst : sunpy.util.metadata.MetaDict
+        a Metadict instance under test
+    expected : iterable object of key/value pairs
+        the values we expect from a test
     """
     check_contents(metadict_inst, expected)
     check_insertion_order(metadict_inst, expected)
@@ -55,9 +54,9 @@ def pairs_to_dict(lst_of_pairs):
 
     Parameters
     ----------
-    lst_of_pairs: iteterable object of iterable objects
-                  an iterable containing iterables, each of these
-                  contained iterables is a key/value pair.
+    lst_of_pairs : iteterable object of iterable objects
+        an iterable containing iterables, each of these
+        contained iterables is a key/value pair.
 
     Examples
     --------
@@ -151,8 +150,8 @@ def test_init_with_lst_of_lsts(seas_metadict, sea_locations):
 
     Each sub list is a key/value pair.
 
-    Example
-    -------
+    Examples
+    --------
     >>> m = MetaDict([['H', 'Hydrogen'], ['B', 'Boron']])
     """
     check_contents_and_insertion_order(MetaDict(sea_locations), sea_locations)
@@ -164,8 +163,8 @@ def test_init_with_tuple_of_tuples(sea_locations):
 
     Each 'sub-tuple' is a key/value pair.
 
-    Example
-    -------
+    Examples
+    --------
     >>> c = MetaDict((('Be', 21), ('Nb', 21)))
     """
     in_tuple = tuple(tuple(kv_pair) for kv_pair in sea_locations)

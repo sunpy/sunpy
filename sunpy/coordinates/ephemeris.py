@@ -49,10 +49,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
         If None, the returned coordinate is the instantaneous or "true" location.
         If not None, the returned coordinate is the astrometric location (i.e., accounts for light
         travel time to the specified observer)
-
-    Keyword Arguments
-    -----------------
-    include_velocity : `bool`
+    include_velocity : `bool`, optional
         If True, include the body's velocity in the output coordinate.  Defaults to False.
 
     Returns
@@ -152,10 +149,7 @@ def get_earth(time='now', *, include_velocity=False):
     ----------
     time : {parse_time_types}
         Time to use in a parse_time-compatible format
-
-    Keyword Arguments
-    -----------------
-    include_velocity : `bool`
+    include_velocity : `bool`, optional
         If True, include the Earth's velocity in the output coordinate. Defaults to False.
 
     Returns
@@ -228,9 +222,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         plain number for a number of evenly spaced intervals. For more information
         see the docstring of `astroquery.jplhorizons.HorizonsClass`.
 
-    Keyword Arguments
-    -----------------
-    include_velocity : `bool`
+    include_velocity : `bool`, optional
         If True, include the body's velocity in the output coordinate.  Defaults to False.
 
     Returns

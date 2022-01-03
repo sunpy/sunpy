@@ -295,6 +295,7 @@ def parse_time(time_string, *, format=None, **kwargs):
     ----------
     time_string : {parse_time_types}
         Time to parse.
+
     format : `str`, optional
         Specifies the format user has provided the time_string in.
         We support the same formats of `astropy.time.Time`.

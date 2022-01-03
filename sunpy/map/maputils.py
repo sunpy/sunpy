@@ -143,6 +143,7 @@ def sample_at_coords(smap, coordinates):
         A SunPy map.
     coordinates : `~astropy.coordinates.SkyCoord`
         Input coordinates.
+
     Returns
     -------
     `numpy.array`
