@@ -8,10 +8,12 @@ from setuptools import Extension
 
 
 def get_extensions():
+    exts = []
 
     if get_compiler() == 'msvc':
-        return list()
-    else:
+        return exts
+
+    try:
         cfg = defaultdict(list)
         cfg['include_dirs'].append(numpy.get_include())
         cfg['sources'].extend(sorted(glob(
@@ -23,5 +25,8 @@ def get_extensions():
                                           '-Wno-unused-result',
                                           '-Wno-sign-compare'])
 
-        e = Extension('sunpy.io._pyana', **cfg)
-        return [e]
+        exts.append(Extension('sunpy.io._pyana', **cfg))
+    except Exception as exc:
+        log.info(f"Failed to compile sunpy.io.ana with the following error:\n{exc}")
+    finally:
+        return exts
