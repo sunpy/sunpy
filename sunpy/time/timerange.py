@@ -158,7 +158,7 @@ class TimeRange:
         Returns
         -------
         `astropy.time.Time`
-           The center time.
+            The center time.
         """
         return self.start + self.dt / 2
 
@@ -170,7 +170,7 @@ class TimeRange:
         Returns
         -------
         `astropy.units.Quantity`
-           The amount of hours between the start and end time.
+            The amount of hours between the start and end time.
         """
         return self.dt.to('hour')
 
@@ -194,7 +194,7 @@ class TimeRange:
         Returns
         -------
         `astropy.units.Quantity`
-           The amount of seconds between the start and end time.
+            The amount of seconds between the start and end time.
         """
         return self.dt.to('s')
 
@@ -206,7 +206,7 @@ class TimeRange:
         Returns
         -------
         `astropy.units.Quantity`
-           The amount of minutes between the start and end time.
+            The amount of minutes between the start and end time.
         """
         return self.dt.to('min')
 

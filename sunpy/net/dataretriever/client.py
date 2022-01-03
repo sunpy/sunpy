@@ -145,9 +145,9 @@ class GenericClient(BaseClient):
 
         Parameters
         ----------
-        exdict: `dict`
+        exdict : `dict`
             Represents metadata extracted from files.
-        matchdict: `dict`
+        matchdict : `dict`
             Contains attr values accessed from ``register_values()``
             and the search query itself.
 
@@ -267,8 +267,8 @@ class GenericClient(BaseClient):
         downloader : `parfive.Downloader`, optional
             The download manager to use.
         wait : `bool`, optional
-           If `False` ``downloader.download()`` will not be called. Only has
-           any effect if ``downloader`` is not `None`.
+            If `False` ``downloader.download()`` will not be called. Only has
+            any effect if ``downloader`` is not `None`.
         **kwargs : dict, optional
             Passed to `parfive.Downloader.enqueue_file`.
 

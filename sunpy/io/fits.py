@@ -48,7 +48,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
     ----------
     filepath : `str`
         The fits file to be read.
-    hdus: `int` or iterable
+    hdus : `int` or iterable
         The HDU indexes to read from the file.
 
     Returns

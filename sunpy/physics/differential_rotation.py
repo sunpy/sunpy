@@ -31,7 +31,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     This function computes the change in longitude over days in degrees.
 
     Parameters
-    -----------
+    ----------
     duration : `~astropy.units.Quantity`
         Number of seconds to rotate over.
     latitude : `~astropy.units.Quantity`
@@ -77,13 +77,11 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
     References
     ----------
-
     * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
     * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
 
     Examples
     --------
-
     .. minigallery:: sunpy.physics.differential_rotation.diff_rot
 
     Default rotation calculation over two days at 30 degrees latitude:
@@ -178,11 +176,9 @@ def _get_new_observer(initial_obstime, observer, time):
     ----------
     initial_obstime : `~astropy.time.Time`
         The initial time before solar rotation has been applied.
-
     observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None
         The location of the new observer in space and time (the observer must have an
         interpretable obstime property).
-
     time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
         Used to define the duration over which the amount of solar rotation is
         calculated.  If 'time' is an `~astropy.time.Time` then the time interval is
@@ -241,14 +237,11 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     ----------
     coordinate : `~astropy.coordinates.SkyCoord`
         Any valid coordinate which is transformable to Heliographic Stonyhurst.
-
     observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None
         The location of the new observer in space and time (the observer must have an
         interpretable obstime property).
-
     time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
-
-    diff_rot_kwargs : `dict`
+    **diff_rot_kwargs : `dict`
         Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
         Note that the keyword "frame_time" is automatically set to the value
         "sidereal".
@@ -264,8 +257,8 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     The translational motion of the Sun over the time interval will be ignored.
     See :func:`~sunpy.coordinates.transform_with_sun_center`.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import Helioprojective, get_body_heliographic_stonyhurst
@@ -338,7 +331,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
         pixel indices, and values ``[:, 1]`` are the "y" values of the pixel indices.
     observer : `~astropy.coordinates.SkyCoord`
         The location of the observer.
-    diff_rot_kwargs : None, `~dict`
+    **diff_rot_kwargs : None, `~dict`
         Keyword arguments accepted by `~sunpy.physics.differential_rotation.diff_rot`.
 
     Returns
@@ -366,8 +359,7 @@ def _get_extreme_position(coords, axis, operator=np.nanmax):
     ----------
     coords : `~list`
         Each member of the list is a `~astropy.coordinates.SkyCoord`.
-
-    axis :  'Tx', 'Ty'
+    axis : 'Tx', 'Ty'
         Which helioprojective axis to examine.
     operator : numpy function
         A numpy function that finds an extreme value in an array
@@ -511,7 +503,6 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         This function, while greatly improved in 1.0, is still experimental.
         Please validate that it gives you results you expect and report any
         discrepancies on the SunPy issue tracker.
-
 
     The function transforms the input map data pixels by first rotating each
     pixel according to solar differential rotation.  The amount of solar
