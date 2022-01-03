@@ -80,10 +80,10 @@ stages:
           brew:
             - openjpeg
         envs:
-          - macos: py37
+          - macos: py38
           - windows: py310
-          - linux: py37-oldestdeps
-          - linux: py38-conda
+          - linux: py38-oldestdeps
+          - linux: py39-conda
             libraries: {}
 
   - stage: SecondPhaseTestsAllowedFail
@@ -151,8 +151,8 @@ stages:
           test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
           submodules: false
           targets:
-            - wheels_cp3[789]-manylinux*x86_64
-            - wheels_cp3[789]-macosx*
+            - wheels_cp3[89]-manylinux*x86_64
+            - wheels_cp3[89]-macosx*
             - wheels_cp310-manylinux*x86_64
             - wheels_cp310-macosx*
             - sdist
