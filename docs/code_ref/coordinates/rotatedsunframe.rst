@@ -3,6 +3,13 @@
 Differential rotation using coordinate frames
 *********************************************
 
+..
+  >>> # Due to small differences depending on different processors in numpy 1.22,
+  >>> # reduce precision at which results are printed. See https://github.com/matplotlib/matplotlib/pull/21634#issuecomment-1004200517
+  >>> # for the likely reason this is needed.
+  >>> import numpy as np
+  >>> np.set_printoptions(precision=6)
+
 Normally, coordinates refer to a point in inertial space (relative to the barycenter of the solar system).
 Transforming to a different observation time does not move the point itself, but if the coordinate frame origin and/or axis change with time, the coordinate representation is updated to account for this change.
 In solar physics an example of a frame that changes with time is the `~sunpy.coordinates.frames.HeliographicStonyhurst` (HGS) frame.
@@ -123,12 +130,12 @@ Note that the points closer to the equator (latitude of 0 degrees) have evolved 
 
   >>> meridian.transform_to(meridian.base)
   <HeliographicCarrington Coordinate (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
-      [(110.7550473 , -75., 695700.), (111.70697161, -60., 695700.),
-       (112.80904447, -45., 695700.), (113.68216339, -30., 695700.),
-       (114.17617983, -15., 695700.), (114.32632838,   0., 695700.),
-       (114.17617983,  15., 695700.), (113.68216339,  30., 695700.),
-       (112.80904447,  45., 695700.), (111.70697161,  60., 695700.),
-       (110.7550473 ,  75., 695700.)]>
+      [(110.755047, -75., 695700.), (111.706972, -60., 695700.),
+       (112.809044, -45., 695700.), (113.682163, -30., 695700.),
+       (114.17618 , -15., 695700.), (114.326328,   0., 695700.),
+       (114.17618 ,  15., 695700.), (113.682163,  30., 695700.),
+       (112.809044,  45., 695700.), (111.706972,  60., 695700.),
+       (110.755047,  75., 695700.)]>
 
 .. testsetup::
   # The next test is run with fixed-precision printing to ensure no whitespace appears when tested
@@ -168,17 +175,13 @@ Using the context manager, the ``radius`` component stays as the solar radius as
   >>> with transform_with_sun_center():
   ...     print(meridian.transform_to(f.HeliographicCarrington(observer="earth", obstime="2001-01-02")))
   <HeliographicCarrington Coordinate (obstime=2001-01-02T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
-      [( 96.5706461 , -75., 695700.),
-       ( 97.52257041, -60., 695700.),
-       ( 98.62464327, -45., 695700.),
-       ( 99.49776219, -30., 695700.),
-       ( 99.99177863, -15., 695700.),
-       (100.14192718,   0., 695700.),
-       ( 99.99177863,  15., 695700.),
-       ( 99.49776219,  30., 695700.),
-       ( 98.62464327,  45., 695700.),
-       ( 97.52257041,  60., 695700.),
-       ( 96.5706461 ,  75., 695700.)]>
+      [( 96.570646, -75., 695700.), ( 97.52257 , -60., 695700.),
+       ( 98.624643, -45., 695700.), ( 99.497762, -30., 695700.),
+       ( 99.991779, -15., 695700.), (100.141927,   0., 695700.),
+       ( 99.991779,  15., 695700.), ( 99.497762,  30., 695700.),
+       ( 98.624643,  45., 695700.), ( 97.52257 ,  60., 695700.),
+       ( 96.570646,  75., 695700.)]>
+
 
 
 Transforming multiple durations of rotation
@@ -203,17 +206,17 @@ Let's convert to the base coordinate frame to reveal the motion of the active re
 
   >>> ar.transform_to(ar.base)
   <Helioprojective Coordinate (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-      [(-865.54956344, 418.10284813, 0.98251245),
-       (-794.6736101 , 429.25935934, 0.98154904),
-       (-676.99949185, 439.15848306, 0.98069504),
-       (-519.35479485, 447.21239117, 0.98000079),
-       (-330.98303969, 452.94056372, 0.97950733),
-       (-123.        , 456.        , 0.97924388),
-       (  92.27675962, 456.20707835, 0.97922605),
-       ( 302.0813494 , 453.54935963, 0.9794549 ),
-       ( 493.98430821, 448.18638939, 0.97991687),
-       ( 656.65386199, 440.43943386, 0.98058459),
-       ( 780.54121099, 430.77097352, 0.98141858)]>
+      [(-865.549563, 418.102848, 0.982512),
+       (-794.67361 , 429.259359, 0.981549),
+       (-676.999492, 439.158483, 0.980695),
+       (-519.354795, 447.212391, 0.980001),
+       (-330.98304 , 452.940564, 0.979507),
+       (-123.      , 456.      , 0.979244),
+       (  92.27676 , 456.207078, 0.979226),
+       ( 302.081349, 453.54936 , 0.979455),
+       ( 493.984308, 448.186389, 0.979917),
+       ( 656.653862, 440.439434, 0.980585),
+       ( 780.541211, 430.770974, 0.981419)]>
 
 Be aware that these coordinates are represented in the `~sunpy.coordinates.frames.Helioprojective` coordinates as seen from Earth at the base time.
 Since the Earth moves in its orbit around the Sun, one may be more interested in representing these coordinates as they would been seen by an Earth observer at each time step.
@@ -232,17 +235,17 @@ Note that the active region moves slightly slower across the disk of the Sun bec
    '2001-01-02 00:00:00.000' '2001-01-03 00:00:00.000'
    '2001-01-04 00:00:00.000' '2001-01-05 00:00:00.000'
    '2001-01-06 00:00:00.000'], rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-      [(-853.35711952, 420.4015171 , 0.98229419),
-       (-771.20925988, 429.29848111, 0.98139195),
-       (-650.31062045, 437.85931953, 0.98060104),
-       (-496.63437759, 445.5199143 , 0.97996004),
-       (-317.86354884, 451.73196441, 0.97950022),
-       (-123.        , 456.        , 0.97924388),
-       (  78.10371414, 457.91678153, 0.9792032 ),
-       ( 275.2631572 , 457.19447514, 0.97937958),
-       ( 458.50075883, 453.68922577, 0.97976366),
-       ( 618.57211117, 447.41720169, 0.98033575),
-       ( 747.44848403, 438.56081068, 0.9810669 )]>
+      [(-853.35712 , 420.401517, 0.982294),
+       (-771.20926 , 429.298481, 0.981392),
+       (-650.31062 , 437.85932 , 0.980601),
+       (-496.634378, 445.519914, 0.97996 ),
+       (-317.863549, 451.731964, 0.9795  ),
+       (-123.      , 456.      , 0.979244),
+       (  78.103714, 457.916782, 0.979203),
+       ( 275.263157, 457.194475, 0.97938 ),
+       ( 458.500759, 453.689226, 0.979764),
+       ( 618.572111, 447.417202, 0.980336),
+       ( 747.448484, 438.560811, 0.981067)]>
 
 
 Transforming into RotatedSun frames
@@ -285,3 +288,8 @@ Example uses of RotatedSunFrame
 Here are the examples in our gallery that use `~sunpy.coordinates.metaframes.RotatedSunFrame`:
 
 .. minigallery:: sunpy.coordinates.RotatedSunFrame
+
+
+..
+  >>> # Reset change to default print options
+  >>> np.set_printoptions(precision=8)
