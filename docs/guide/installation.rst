@@ -7,7 +7,7 @@ Installation
 Requirements
 ============
 
-sunpy requires Python 3.7 or higher.
+sunpy requires Python 3.8 or higher.
 
 Installing Scientific Python and sunpy
 ======================================
