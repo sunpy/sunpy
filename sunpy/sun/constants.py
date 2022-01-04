@@ -34,7 +34,7 @@ def get(key):
 
     See Also
     --------
-    constants :
+    `~sunpy.sun.constants` :
         Contains the description of ``constants``, which, as a dictionary literal object, does not
         itself possess a docstring.
 
@@ -65,7 +65,7 @@ def find(sub=None):
 
     See Also
     --------
-    constants :
+    `~sunpy.sun.constants` :
         Contains the description of ``constants``, which, as a dictionary literal object, does not itself possess a docstring.
     """
     if sub is None:
