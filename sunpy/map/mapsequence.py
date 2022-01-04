@@ -279,7 +279,7 @@ class MapSequence:
 
         See Also
         --------
-        MapSequenceAnimator
+        `sunpy.visualization.animator.MapSequenceAnimator`
 
         Examples
         --------
