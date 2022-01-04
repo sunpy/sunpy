@@ -3,7 +3,7 @@ from PyInstaller.utils.hooks import collect_data_files, collect_entry_point, col
 # Imports needed to run tests
 datas, hiddenimports = collect_entry_point("pytest11")
 hiddenimports += collect_submodules('numpy.distutils')
-hiddenimports += collect_submodules('distutils')
+hiddenimports += collect_submodules('setuptools')
 hiddenimports += ['sunpy.data.data_manager.tests.mocks']
 hiddenimports += collect_submodules('sunpy')
 datas += collect_data_files("sunpy")
