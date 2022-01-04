@@ -7,6 +7,7 @@ from importlib import metadata
 import pytest
 
 metadata.version('numpy')
+metadata.version('astropy')
 
 # Skipping these tests that take check the name of the current module
 # (which ends up starting with sunpy_tests rather than sunpy).
