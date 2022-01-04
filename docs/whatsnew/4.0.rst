@@ -27,10 +27,10 @@ Better printing of metadata
 ===========================
 Printing a `.MetaDict` now prints each entry on a new line, making it much easier to read::
 
-  >>> from sunpy.data.sample import AIA_171_IMAGE
+  >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
   >>> from sunpy.map import Map
-  >>> m = Map(AIA_171_IMAGE)
-  >>> print(m.meta)
+  >>> m = Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+  >>> print(m.meta)  # doctest: +REMOTE_DATA
   simple: True
   bitpix: -32
   naxis: 2
