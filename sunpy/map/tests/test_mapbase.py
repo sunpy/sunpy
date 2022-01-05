@@ -719,61 +719,52 @@ def test_superpixel_simple_map(simple_map):
     # Make the superpixel map
     new_dims = (2, 2) * u.pix
     superpix_map = simple_map.superpixel(new_dims)
-    # Reference pixel should change, but referenc coordinate should not
+    # Reference pixel should change, but reference coordinate should not
     assert list(superpix_map.reference_pixel) == [0 * u.pix, 0 * u.pix]
     assert superpix_map.reference_coordinate == simple_map.reference_coordinate
 
     # Check that offset works
     superpix_map = simple_map.superpixel(new_dims, offset=[1, 2] * u.pix)
-    # Reference pixel should change, but referenc coordinate should not
+    # Reference pixel should change, but reference coordinate should not
     assert u.allclose(list(superpix_map.reference_pixel),
                       [-0.5 * u.pix, -1 * u.pix])
     assert superpix_map.reference_coordinate == simple_map.reference_coordinate
 
 
-def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
+@pytest.mark.parametrize('f', [np.sum, np.mean])
+def test_superpixel_dims_values(aia171_test_map, f):
     dimensions = (2, 2) * u.pix
-    superpixel_map_sum = aia171_test_map.superpixel(dimensions)
-    assert_quantity_allclose(superpixel_map_sum.dimensions[1],
-                             aia171_test_map.dimensions[1] / dimensions[1] * u.pix)
-    assert_quantity_allclose(superpixel_map_sum.dimensions[0],
-                             aia171_test_map.dimensions[0] / dimensions[0] * u.pix)
-    assert_quantity_allclose(superpixel_map_sum.data[0][0],
-                             (aia171_test_map.data[0][0] + aia171_test_map.data[0][1] +
-                              aia171_test_map.data[1][0] + aia171_test_map.data[1][1]))
+    superpix_map = aia171_test_map.superpixel(dimensions, func=f)
 
-    superpixel_map_avg = aia171_test_map.superpixel(dimensions, func=np.mean)
-    assert_quantity_allclose(superpixel_map_avg.dimensions[1],
-                             aia171_test_map.dimensions[1] / dimensions[1] * u.pix)
-    assert_quantity_allclose(superpixel_map_avg.dimensions[0],
-                             aia171_test_map.dimensions[0] / dimensions[0] * u.pix)
-    assert_quantity_allclose(superpixel_map_avg.data[0][0],
-                             (aia171_test_map.data[0][0] + aia171_test_map.data[0][1] +
-                              aia171_test_map.data[1][0] + aia171_test_map.data[1][1]) / 4.0)
+    # Check dimensions of new map
+    old_dims = u.Quantity(aia171_test_map.dimensions)
+    expected_new_dims = old_dims * (1 * u.pix / dimensions)
+    new_dims = superpix_map.dimensions
+    assert np.all(new_dims == expected_new_dims)
 
+    # Check value of lower left pixel is calculated correctly
+    expected = f(aia171_test_map.data[0:2, 0:2])
+    assert_quantity_allclose(superpix_map.data[0, 0], expected)
+
+
+def test_superpixel_masked(aia171_test_map_with_mask):
+    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    dimensions = (2, 2) * u.pix
     # Test that the mask is respected
-    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions)
-    assert superpixel_map_sum.mask is not None
-    assert_quantity_allclose(superpixel_map_sum.mask.shape[0],
-                             aia171_test_map.dimensions[1] / dimensions[1])
-    assert_quantity_allclose(superpixel_map_sum.mask.shape[1],
-                             aia171_test_map.dimensions[0] / dimensions[0])
+    superpix_map = aia171_test_map_with_mask.superpixel(dimensions)
+    assert superpix_map.mask is not None
+    # Check the shape of the mask
+    expected_shape = input_dims * (1 * u.pix / dimensions)
+    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
 
     # Test that the offset is respected
-    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
-    assert_quantity_allclose(superpixel_map_sum.dimensions[1],
-                             aia171_test_map.dimensions[1] / dimensions[1] * u.pix - 1 * u.pix)
-    assert_quantity_allclose(superpixel_map_sum.dimensions[0],
-                             aia171_test_map.dimensions[0] / dimensions[0] * u.pix - 1 * u.pix)
+    superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
+    assert np.all(superpix_map.dimensions == expected_shape - 1*u.pix)
 
     dimensions = (7, 9) * u.pix
-    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
-    assert_quantity_allclose(
-        superpixel_map_sum.dimensions[0],
-        int((aia171_test_map.dimensions[0] / dimensions[0]).value) * u.pix - 1 * u.pix)
-    assert_quantity_allclose(
-        superpixel_map_sum.dimensions[1],
-        int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
+    superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
+    expected_shape = np.round(input_dims * (1 * u.pix / dimensions))
+    assert np.all(superpix_map.dimensions == expected_shape - 1*u.pix)
 
 
 def test_superpixel_units(generic_map):
