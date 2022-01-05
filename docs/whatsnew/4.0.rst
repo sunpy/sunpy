@@ -1,5 +1,3 @@
-.. doctest-skip-all
-
 .. _whatsnew-4.0:
 
 ************************
@@ -24,6 +22,21 @@ Increase in required package versions
 We have bumped the minimum version of several packages we depend on; these are the new minimum versions:
 
 - python >= 3.8
+
+Better printing of metadata
+===========================
+Printing a `.MetaDict` now prints each entry on a new line, making it much easier to read::
+
+  >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
+  >>> from sunpy.map import Map
+  >>> m = Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+  >>> print(m.meta)  # doctest: +REMOTE_DATA
+  simple: True
+  bitpix: -32
+  naxis: 2
+  naxis1: 1024
+  naxis2: 1024
+  ...
 
 Contributors to this Release
 ============================
