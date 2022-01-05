@@ -465,86 +465,75 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
     expected = [
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',
-            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
-            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
-            instrument='VIRGO', size=155.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/LOI/121224_1.L01',
-            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
-            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
-            instrument='VIRGO', size=329.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/SPM/121222_1.S02',
-            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
-            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
-            instrument='VIRGO', size=87.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/DIARAD/121222_1.D01',
-            observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
-            observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
-            instrument='VIRGO', size=14.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/sph/VIRGO_D4.2_SPH_960411_120914.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0),
-            observation_time_end=datetime(2012, 9, 14, 0, 0),
-            instrument='VIRGO', size=512000.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_hourly.dat.tar.gz',
+            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_hourly_V8.txt',
             observation_time_start=datetime(1995, 12, 2, 0, 0),
             observation_time_end=datetime(2020, 1, 1, 0, 0),
-            instrument='VIRGO', size=3072.0, wavemin=None,
-            wavemax=None),
+            instrument='VIRGO', size=3072.0),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_daily.dat.tar.gz',
+            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_daily_V8.txt',
             observation_time_start=datetime(1995, 12, 2, 0, 0),
             observation_time_end=datetime(2020, 1, 1, 0, 0),
-            instrument='VIRGO', size=140.0, wavemin=None,
-            wavemax=None),
+            instrument='VIRGO', size=140.0),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-BLUE-L2-MISSIONLONG.fits',
             observation_time_start=datetime(1996, 1, 23, 0, 0),
             observation_time_end=datetime(2021, 5, 15, 23, 59),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
+            instrument='VIRGO', size=32652.0),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-GREEN-L2-MISSIONLONG.fits',
             observation_time_start=datetime(1996, 1, 23, 0, 0),
             observation_time_end=datetime(2021, 5, 15, 23, 59),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
+            instrument='VIRGO', size=32652.0),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-RED-L2-MISSIONLONG.fits',
             observation_time_start=datetime(1996, 1, 23, 0, 0),
             observation_time_end=datetime(2021, 5, 15, 23, 59),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
+            instrument='VIRGO', size=32652.0),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/loi/VIRGO-LOI-ALL-PIXELS-LEVEL2-19960401-20210430_V01.fits',
             observation_time_start=datetime(1996, 4, 1, 0, 0),
             observation_time_end=datetime(2021, 4, 30, 23, 59),
-            instrument='VIRGO', size=1677722.0, wavemin=None,
-            wavemax=None),
-    ]
+            instrument='VIRGO', size=1677722.0),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/sph/VIRGO_D4.2_SPH_960411_120914.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0),
+            observation_time_end=datetime(2012, 9, 14, 0, 0),
+            instrument='VIRGO', size=512000.0),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',
+            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
+            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
+            instrument='VIRGO', size=155.0),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/level1/1212/LOI/121224_1.L01',
+            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
+            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
+            instrument='VIRGO', size=329.0),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/level1/1212/SPM/121222_1.S02',
+            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
+            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
+            instrument='VIRGO', size=87.0),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/level1/1212/DIARAD/121222_1.D01',
+            observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
+            observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
+            instrument='VIRGO', size=14.0)]
 
-    assert len(entries) == len(expected)
     for e in entries:
         assert e in expected
+    for e in expected:
+        assert e in entries
 
 
 def test_create_display_table_missing_entries():
