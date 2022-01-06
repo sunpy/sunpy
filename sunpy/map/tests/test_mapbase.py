@@ -325,6 +325,38 @@ def test_swap_cd():
     np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
 
 
+@pytest.mark.filterwarnings('ignore:Missing metadata for observer')
+def test_crota_scale():
+    # Test non-zero crota and unequal CDELT{1,2}
+    n = 6
+    data = np.ones([n, n], dtype=np.float64)
+    header = {
+        'CRVAL1': 0,
+        'CRVAL2': 0,
+        'CRPIX1': (n + 1) / 2,
+        'CRPIX2': (n + 1) / 2,
+        'NAXIS1': n,
+        'NAXIS2': n,
+        'CUNIT1': 'arcsec',
+        'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
+        'DATE-OBS': '2020-01-01 00:00:00'
+    }
+
+    header.update({'CROTA2': 0, 'CDELT1': 1, 'CDELT2': 2})
+    map1 = sunpy.map.Map(data, header)
+    header.update({'CROTA2': 90, 'CDELT1': 2, 'CDELT2': 1})
+    map2 = sunpy.map.Map(data, header)
+
+    # Lower left coord
+    coord1 = map1.pixel_to_world(*(-0.5, -0.5) * u.pix)
+    # After rotating by 90 deg about the center of the map (CRPIX),
+    # this should map to the lower right coordinate
+    coord2 = map2.pixel_to_world(*(-0.5, n - 0.5) * u.pix)
+    assert coord1.separation(coord2) < 1e-6 * u.arcsec
+
+
 def test_world_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is internally consistent"""
     test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate)
