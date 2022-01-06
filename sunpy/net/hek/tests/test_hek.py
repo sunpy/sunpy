@@ -1,3 +1,5 @@
+import copy
+
 import pytest
 
 from sunpy.net import attr, attrs, hek
@@ -8,17 +10,34 @@ def foostrwrap(request):
     return hek.attrs._StringParamAttrWrapper("foo")
 
 
+class HEKResult:
+    """
+    Basic caching class to run the remote query once and return the result many times.
+    """
+    def __init__(self):
+        self._result = None
+
+    def get_result(self):
+        if self._result is None:
+            startTime = '2011/08/09 07:23:56'
+            endTime = '2011/08/09 12:40:29'
+            eventType = 'FL'
+            hekTime = attrs.Time(startTime, endTime)
+            hekEvent = attrs.hek.EventType(eventType)
+            h = hek.HEKClient()
+            hek_query = h.search(hekTime, hekEvent)
+            self._result = hek_query
+
+        return copy.deepcopy(self._result)
+
+
+_hek_result = HEKResult()
+
+
 @pytest.fixture
 @pytest.mark.remote_data
-def hek_client():
-    startTime = '2011/08/09 07:23:56'
-    endTime = '2011/08/09 12:40:29'
-    eventType = 'FL'
-    hekTime = attrs.Time(startTime, endTime)
-    hekEvent = attrs.hek.EventType(eventType)
-    h = hek.HEKClient()
-    hek_query = h.search(hekTime, hekEvent)
-    return hek_query
+def hek_result():
+    return _hek_result.get_result()
 
 
 def test_eventtype_collide():
@@ -95,17 +114,8 @@ def test_err_dummyattr_apply():
 
 
 @pytest.mark.remote_data
-def test_hek_client():
-    startTime = '2011/08/09 07:23:56'
-    endTime = '2011/08/09 12:40:29'
-    eventType = 'FL'
-
-    hekTime = attrs.Time(startTime, endTime)
-    hekEvent = attrs.hek.EventType(eventType)
-
-    h = hek.HEKClient()
-    hek_query = h.search(hekTime, hekEvent)
-    assert type(hek_query) == hek.hek.HEKTable
+def test_hek_client(hek_result):
+    assert type(hek_result) == hek.hek.HEKTable
 
 
 @pytest.mark.remote_data
@@ -124,32 +134,32 @@ def test_hek_empty_search_result():
 
 
 @pytest.mark.remote_data
-def test_getitem(hek_client):
-    assert hek_client.__getitem__(0) == hek_client[0]
+def test_getitem(hek_result):
+    assert hek_result.__getitem__(0) == hek_result[0]
 
 
 @pytest.mark.remote_data
-def test_get_voevent(hek_client):
-    ve = hek_client[0].get_voevent()
+def test_get_voevent(hek_result):
+    ve = hek_result[0].get_voevent()
     assert len(ve['voe:VOEvent']) == 7
 
 
 @pytest.mark.remote_data
-def test_vso_time(hek_client):
-    ve = hek_client[0].vso_time
+def test_vso_time(hek_result):
+    ve = hek_result[0].vso_time
     assert type(ve) == attrs.Time
 
 
 @pytest.mark.remote_data
-def test_vso_instrument(hek_client):
-    vc = hek_client[1].vso_instrument
+def test_vso_instrument(hek_result):
+    vc = hek_result[1].vso_instrument
     assert type(vc) == attrs.Instrument
 
 
 @pytest.mark.remote_data
-def test_HEKRow_get(hek_client):
-    assert hek_client[0]['event_peaktime'] == hek_client[0].get('event_peaktime')
-    assert hek_client[0].get('') is None
+def test_HEKRow_get(hek_result):
+    assert hek_result[0]['event_peaktime'] == hek_result[0].get('event_peaktime')
+    assert hek_result[0].get('') is None
 
 
 @pytest.mark.remote_data
