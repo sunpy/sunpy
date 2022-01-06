@@ -7,6 +7,7 @@ import html
 import inspect
 import numbers
 import textwrap
+import itertools
 import webbrowser
 from io import BytesIO
 from base64 import b64encode
@@ -1615,15 +1616,23 @@ class GenericMap(NDData):
             rmatrix = np.array([[c, -s],
                                 [s, c]])
 
+        # The data will be rotated by the inverse of the rotation matrix
+        inv_rmatrix = np.linalg.inv(rmatrix)
+
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((self.data.shape @ rmatrix,
-                                          self.data.shape @ rmatrix.T))), axis=0)
+        corners = itertools.product([-0.5, self.data.shape[1]-0.5],
+                                    [-0.5, self.data.shape[0]-0.5])
+        rot_corners = np.vstack([rmatrix @ c for c in corners])
+        extent = np.max(rot_corners, axis=0) - np.min(rot_corners, axis=0)
 
         # Calculate the needed padding or unpadding
-        diff = np.asarray(np.ceil((extent - self.data.shape) / 2), dtype=int).ravel()
+        diff = np.asarray(np.ceil((extent - np.flipud(self.data.shape)) / 2), dtype=int)
+        pad_x = np.max((diff[0], 0))
+        pad_y = np.max((diff[1], 0))
+        unpad_x = -np.min((diff[0], 0))
+        unpad_y = -np.min((diff[1], 0))
+
         # Pad the image array
-        pad_x = int(np.max((diff[1], 0)))
-        pad_y = int(np.max((diff[0], 0)))
 
         if issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
             warn_user("The specified `missing` value is not an integer, but the data "
@@ -1646,12 +1655,12 @@ class GenericMap(NDData):
             pixel_center = pixel_array_center
 
         # Apply the rotation to the image data
-        new_data = affine_transform(new_data.T,
-                                    np.asarray(rmatrix),
+        new_data = affine_transform(new_data,
+                                    np.asarray(inv_rmatrix),
                                     order=order, scale=scale,
-                                    image_center=np.flipud(pixel_center),
+                                    image_center=pixel_center,
                                     recenter=recenter, missing=missing,
-                                    method=method).T
+                                    method=method)
 
         if recenter:
             new_reference_pixel = pixel_array_center
@@ -1668,11 +1677,9 @@ class GenericMap(NDData):
         new_meta['crpix2'] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
 
         # Unpad the array if necessary
-        unpad_x = -np.min((diff[1], 0))
         if unpad_x > 0:
             new_data = new_data[:, unpad_x:-unpad_x]
             new_meta['crpix1'] -= unpad_x
-        unpad_y = -np.min((diff[0], 0))
         if unpad_y > 0:
             new_data = new_data[unpad_y:-unpad_y, :]
             new_meta['crpix2'] -= unpad_y
@@ -1681,7 +1688,7 @@ class GenericMap(NDData):
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
-        pc_C = np.dot(self.rotation_matrix, np.linalg.inv(rmatrix))
+        pc_C = np.dot(self.rotation_matrix, inv_rmatrix)
         new_meta['PC1_1'] = pc_C[0, 0]
         new_meta['PC1_2'] = pc_C[0, 1]
         new_meta['PC2_1'] = pc_C[1, 0]
