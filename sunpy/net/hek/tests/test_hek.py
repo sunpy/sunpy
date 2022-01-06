@@ -2,6 +2,8 @@ import copy
 
 import pytest
 
+from astropy.time import Time
+
 from sunpy.net import attr, attrs, hek
 
 
@@ -142,6 +144,12 @@ def test_getitem(hek_result):
 def test_get_voevent(hek_result):
     ve = hek_result[0].get_voevent()
     assert len(ve['voe:VOEvent']) == 7
+
+
+@pytest.mark.remote_data
+def test_hek_time_col(hek_result):
+    assert isinstance(hek_result[0]['event_starttime'], Time)
+    assert isinstance(hek_result[0]['event_endtime'], Time)
 
 
 @pytest.mark.remote_data
