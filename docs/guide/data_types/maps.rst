@@ -92,12 +92,18 @@ Here's an example of creating a header from some generic data and an `astropy.co
     ctype2: HPLT-TAN
     crval1: 0.0
     crval2: 0.0
-    ...
+    lonpole: 180.0
+    latpole: 0.0
+    mjdref: 0.0
     date-obs: 2013-10-28T00:00:00.000
     rsun_ref: 695700000.0
     dsun_obs: 148644585949.49
     hgln_obs: 0.0
     hglt_obs: 4.7711570596394
+    pc1_1: 1.0
+    pc1_2: -0.0
+    pc2_1: 0.0
+    pc2_2: 1.0
     rsun_obs: 965.3829548285768
 
 
@@ -125,12 +131,18 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     ctype2: HPLT-TAN
     crval1: 0.0
     crval2: 0.0
-    ...
+    lonpole: 180.0
+    latpole: 0.0
+    mjdref: 0.0
     date-obs: 2013-10-28T00:00:00.000
     rsun_ref: 695700000.0
     dsun_obs: 148644585949.49
     hgln_obs: 0.0
     hglt_obs: 4.7711570596394
+    pc1_1: 1.0
+    pc1_2: -0.0
+    pc2_1: 0.0
+    pc2_2: 1.0
     rsun_obs: 965.3829548285768
 
 As we can see, a list of WCS and observer meta information is contained within the generated headers,

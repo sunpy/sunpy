@@ -64,7 +64,7 @@ def make_fitswcs_header(data, coordinate,
     rotation_angle : `~astropy.units.Quantity`, optional
         Coordinate system rotation angle, will be converted to a rotation
         matrix and stored in the ``PCi_j`` matrix. Can not be specified with
-        ``rotation_matrix``.
+        ``rotation_matrix``. Defaults to no rotation.
     rotation_matrix : `~numpy.ndarray` of dimensions 2x2, optional
         Matrix describing the rotation required to align solar North with
         the top of the image in FITS ``PCi_j`` convention. Can not be specified
@@ -156,6 +156,8 @@ def make_fitswcs_header(data, coordinate,
 
     if rotation_angle is not None and rotation_matrix is not None:
         raise ValueError("Can not specify both rotation angle and rotation matrix.")
+    if rotation_angle is None and rotation_matrix is None:
+        rotation_angle = 0 * u.deg
 
     if rotation_angle is not None:
         lam = meta_wcs['cdelt1'] / meta_wcs['cdelt2']
