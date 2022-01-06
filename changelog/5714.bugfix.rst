@@ -1,2 +1,0 @@
-In consultation with JSOC, we now limit all JSOC downloads to one connection.
-This will override all connection user settings passed to the downloader.

@@ -1,4 +1,0 @@
-In the case where a map header has no PC_ij values, CROTA2 != 0, and
-CDELT1 != CDELT2, the calculation of the map rotation matrix has been fixed.
-This bug only affected maps with non-zero rotation, no PC matrix in the header,
-and un-equal scales along the two image axes.

@@ -1,3 +1,21 @@
+3.0.4 (2022-01-06)
+==================
+
+Bug Fixes
+---------
+
+- In consultation with JSOC, we now limit all JSOC downloads to one connection.
+  This will override all connection user settings passed to the downloader. (`#5714 <https://github.com/sunpy/sunpy/pull/5714>`__)
+- Increased the default maximum amount of records returned from HEC to 500 from 10.
+  If the maximum number of records are returned, a message is shown. (`#5738 <https://github.com/sunpy/sunpy/pull/5738>`__)
+- :func:`sunpy.map.make_fitswcs_header` now includes a PC_ij matrix in the returned
+  header if no rotation is specified. (`#5763 <https://github.com/sunpy/sunpy/pull/5763>`__)
+- In the case where a map header has no PC_ij values, CROTA2 != 0, and
+  CDELT1 != CDELT2, the calculation of the map rotation matrix has been fixed.
+  This bug only affected maps with non-zero rotation, no PC matrix in the header,
+  and un-equal scales along the two image axes. (`#5766 <https://github.com/sunpy/sunpy/pull/5766>`__)
+
+
 3.0.3 (2021-12-02)
 ==================
 
