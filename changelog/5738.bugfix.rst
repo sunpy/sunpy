@@ -1,2 +1,0 @@
-Increased the default maximum amount of records returned from HEC to 500 from 10.
-If the maximum number of records are returned, a message is shown.

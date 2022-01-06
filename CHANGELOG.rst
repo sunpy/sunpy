@@ -1,3 +1,38 @@
+3.1.3 (2022-01-06)
+==================
+
+Bug Fixes
+---------
+
+- Added automatic conversion of some common but non-standard unit strings in CDF
+  files to astropy unit objects. If sunpy does not recognise the unit string for
+  a particular column, units of ``u.dimensionless_unscaled`` are applied to that
+  column and a warning raised.
+
+  If you think a given unit should not be dimensionless and support should be
+  added for it in sunpy, please raise an issue at
+  https://github.com/sunpy/sunpy/issues. (`#5692 <https://github.com/sunpy/sunpy/pull/5692>`__)
+- In consultation with JSOC, we now limit all JSOC downloads to one connection.
+  This will override all connection user settings passed to the downloader. (`#5714 <https://github.com/sunpy/sunpy/pull/5714>`__)
+- Updated the ``plot`` methods on some timeseries classes to correctly label and format the time axis. (`#5720 <https://github.com/sunpy/sunpy/pull/5720>`__)
+- Increased the default maximum amount of records returned from HEC to 500 from 10.
+  If the maximum number of records are returned, a message is shown. (`#5738 <https://github.com/sunpy/sunpy/pull/5738>`__)
+- Reading a series of CDF files where at least one of them is empty no longer
+  raises an error. A message for each empty file is logged at the DEBUG level. (`#5751 <https://github.com/sunpy/sunpy/pull/5751>`__)
+- :func:`sunpy.map.make_fitswcs_header` now includes a PC_ij matrix in the returned
+  header if no rotation is specified. (`#5763 <https://github.com/sunpy/sunpy/pull/5763>`__)
+- In the case where a map header has no PC_ij values, CROTA2 != 0, and
+  CDELT1 != CDELT2, the calculation of the map rotation matrix has been fixed.
+  This bug only affected maps with non-zero rotation, no PC matrix in the header,
+  and un-equal scales along the two image axes. (`#5766 <https://github.com/sunpy/sunpy/pull/5766>`__)
+
+
+Documentation
+-------------
+
+- Add info about loading CDF files to the API documentation. (`#5735 <https://github.com/sunpy/sunpy/pull/5735>`__)
+
+
 3.1.2 (2021-12-02)
 ==================
 
