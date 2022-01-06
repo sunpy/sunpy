@@ -1622,7 +1622,7 @@ class GenericMap(NDData):
         # Calculate the shape in pixels to contain all of the image data
         corners = itertools.product([-0.5, self.data.shape[1]-0.5],
                                     [-0.5, self.data.shape[0]-0.5])
-        rot_corners = np.vstack([rmatrix @ c for c in corners])
+        rot_corners = np.vstack([rmatrix @ c for c in corners]) * scale
         extent = np.max(rot_corners, axis=0) - np.min(rot_corners, axis=0)
 
         # Calculate the needed padding or unpadding
@@ -1666,7 +1666,7 @@ class GenericMap(NDData):
             new_reference_pixel = pixel_array_center
         else:
             # Calculate new pixel coordinates for the rotation center
-            new_reference_pixel = pixel_center + np.dot(rmatrix,
+            new_reference_pixel = pixel_center + np.dot(rmatrix * scale,
                                                         pixel_rotation_center - pixel_center)
             new_reference_pixel = np.array(new_reference_pixel).ravel()
 
