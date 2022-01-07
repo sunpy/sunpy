@@ -60,4 +60,4 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
     print()
     args = _self_test_args(package=package, online=online,
                            online_only=online_only, figure_only=figure_only)
-    pytest.main(args)
+    return pytest.main(args)
