@@ -771,8 +771,8 @@ def test_superpixel_dims_values(aia171_test_map, f):
     # Check dimensions of new map
     old_dims = u.Quantity(aia171_test_map.dimensions)
     expected_new_dims = old_dims * (1 * u.pix / dimensions)
-    new_dims = superpix_map.dimensions
-    assert np.all(new_dims == expected_new_dims)
+    assert superpix_map.dimensions[0] == expected_new_dims[0]
+    assert superpix_map.dimensions[1] == expected_new_dims[1]
 
     # Check value of lower left pixel is calculated correctly
     expected = f(aia171_test_map.data[0:2, 0:2])
@@ -791,12 +791,14 @@ def test_superpixel_masked(aia171_test_map_with_mask):
 
     # Test that the offset is respected
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
-    assert np.all(superpix_map.dimensions == expected_shape - 1*u.pix)
+    assert superpix_map.dimensions[0] == expected_shape[0] - 1 * u.pix
+    assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
 
     dimensions = (7, 9) * u.pix
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
     expected_shape = np.round(input_dims * (1 * u.pix / dimensions))
-    assert np.all(superpix_map.dimensions == expected_shape - 1*u.pix)
+    assert superpix_map.dimensions[0] == expected_shape[0] - 1 * u.pix
+    assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
 
 
 def test_superpixel_units(generic_map):
