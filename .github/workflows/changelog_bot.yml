@@ -1,0 +1,32 @@
+name: Changelog Bot
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, labeled, unlabeled]
+    branches:
+      - main
+
+jobs:
+  update-changelog:
+    if: !contains( github.event.pull_request.labels.*.name, 'No Changelog Entry Needed' )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Setup Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Find and write changelog
+        run: python tools/write_changelog_entry.py
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+      - name: Commit changelog
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Add changelog
+          add_options: '-u'  # add deleted changelogs
+          file_pattern: 'changelog/\*.rst'
