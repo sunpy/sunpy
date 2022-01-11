@@ -8,7 +8,7 @@ on:
 
 jobs:
   update-changelog:
-    if: !contains( github.event.pull_request.labels.*.name, 'No Changelog Entry Needed' )
+    if: "!contains(github.event.pull_request.labels.*.name, 'No Changelog Entry Needed')"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR branch

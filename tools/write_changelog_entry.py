@@ -1,6 +1,6 @@
-import glob
 import os
 import re
+import glob
 
 
 def inc(obj, key):
