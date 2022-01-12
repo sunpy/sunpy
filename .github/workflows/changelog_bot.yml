@@ -30,4 +30,4 @@ jobs:
         with:
           commit_message: Add changelog
           add_options: '-u'  # add deleted changelogs
-          file_pattern: 'changelog/\*.rst'
+          file_pattern: 'changelog/*.rst'
