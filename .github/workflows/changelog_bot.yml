@@ -29,5 +29,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Add changelog
-          add_options: '-u'  # add deleted changelogs
           file_pattern: 'changelog/*.rst'
