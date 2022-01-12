@@ -75,6 +75,14 @@ For more information or to ask questions about SunPy, check out:
 .. _SunPy Element Channel: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. _SunPy Mailing List: https://groups.google.com/forum/#!forum/sunpy
 
+Acknowledging or Citing sunpy
+=============================
+
+If you use `sunpy` in your scientific work, we would appreciate citing it in your publications.
+The continued growth and development of `sunpy` is dependent on the community being aware of `sunpy`.
+
+Please see https://sunpy.org/about#acknowledging-or-citing-sunpy on how to do this.
+
 Contributing
 ============
 
