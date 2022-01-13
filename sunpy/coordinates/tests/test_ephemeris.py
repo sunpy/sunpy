@@ -148,12 +148,14 @@ def use_DE440s():
 
 
 @pytest.mark.remote_data
-@given(obstime=times())
-@settings(deadline=5000, max_examples=5, suppress_health_check=[HealthCheck.function_scoped_fixture])
+@given(obstime=times(n=50))
+@settings(deadline=5000, max_examples=1,
+          suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_consistency_with_horizons(use_DE440s, obstime):
     # Check that the high-accuracy Astropy ephemeris has been set
     assert solar_system_ephemeris.get() == 'de440s'
 
+    obstime = sorted(obstime)
     # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
     e1 = get_earth(obstime)
     e2 = get_horizons_coord('Geocenter', obstime)

@@ -2,6 +2,7 @@
 Provide a set of hypothesis strategies for various coordinates-related tests.
 """
 import hypothesis.strategies as st
+from hypothesis.extra.numpy import arrays
 
 import astropy.units as u
 from astropy.coordinates import Latitude, Longitude
@@ -29,8 +30,10 @@ def longitudes(draw, min_lon: u.deg = -180*u.deg, max_lon: u.deg = 180*u.deg,
 
 
 @st.composite
-def times(draw, min_time='1960-01-01', max_time='2024-01-01'):
+def times(draw, min_time='1960-01-01', max_time='2024-01-01', n=1):
     days = st.floats(min_value=0,
                      max_value=(parse_time(max_time) - parse_time(min_time)).to(u.day).value,
                      allow_nan=False, allow_infinity=False)
+    if n > 1:
+        days = arrays(float, shape=n, elements=days, unique=True)
     return parse_time(min_time) + draw(days) * u.day
