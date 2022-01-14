@@ -176,14 +176,15 @@ def test_hpc_distance_off_limb():
     assert hpc1.Tx == 1500 * u.arcsec
     assert hpc1.Ty == 0 * u.arcsec
 
-    hpc2 = hpc1.make_3d()
+    with pytest.raises(SunpyUserWarning, match="is all NaNs"):
+        hpc2 = hpc1.make_3d()
 
-    assert isinstance(hpc2._data, SphericalRepresentation)
+        assert isinstance(hpc2._data, SphericalRepresentation)
 
-    # Check the attrs are correct
-    assert hpc2.Tx == 1500 * u.arcsec
-    assert hpc2.Ty == 0 * u.arcsec
-    assert_quantity_allclose(hpc2.distance, u.Quantity(np.nan, u.km))
+        # Check the attrs are correct
+        assert hpc2.Tx == 1500 * u.arcsec
+        assert hpc2.Ty == 0 * u.arcsec
+        assert_quantity_allclose(hpc2.distance, u.Quantity(np.nan, u.km))
 
 
 def test_hpc_distance_3D():
