@@ -23,6 +23,11 @@ We have bumped the minimum version of several packages we depend on; these are t
 
 - python >= 3.8
 
+Improved return types of HEK queries
+====================================
+The 'event_endtime', 'event_starttime' and 'event_peaktime' columns in a HEK
+query are now returned as `~astropy.time.Time` objects.
+
 Better printing of metadata
 ===========================
 Printing a `.MetaDict` now prints each entry on a new line, making it much easier to read::
