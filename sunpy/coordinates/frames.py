@@ -4,6 +4,7 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
+import warnings
 from contextlib import contextmanager
 
 import numpy as np
@@ -530,11 +531,12 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
         # Check for the use of floats with lower precision than the native Python float
         if not set([lon.dtype.type, lat.dtype.type]).issubset([float, np.float64, np.longdouble]):
-            raise SunpyUserWarning("The Helioprojective component values appear to be lower "
-                                   "precision than the native Python float: "
-                                   f"Tx is {lon.dtype.name}, and Ty is {lat.dtype.name}. "
-                                   "To minimize precision loss, you may want to cast the values to "
-                                   "`float` or `numpy.float64` via the NumPy method `.astype()`.")
+            warnings.warn("The Helioprojective component values appear to be lower "
+                          "precision than the native Python float: "
+                          f"Tx is {lon.dtype.name}, and Ty is {lat.dtype.name}. "
+                          "To minimize precision loss, you may want to cast the values to "
+                          "`float` or `numpy.float64` via the NumPy method `.astype()`.",
+                          SunpyUserWarning)
 
         # Calculate the distance to the surface of the Sun using the law of cosines
         cos_alpha = np.cos(lat) * np.cos(lon)
