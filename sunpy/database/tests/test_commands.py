@@ -129,7 +129,7 @@ def test_remove_entry_repr(session):
     expected_repr_result = (
         '<RemoveEntry('
         'session <sqlalchemy.orm.session.Session object at *>, '
-        'entry <DatabaseEntry(id 3)>)>'.format(id(session)))
+        'entry DatabaseEntry(id=3))>'.format(id(session)))
     assert fnmatch.fnmatch(repr(RemoveEntry(session, entry)), expected_repr_result)
 
 
