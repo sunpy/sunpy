@@ -228,7 +228,7 @@ def test_hpc_low_precision_float_warning():
                           u.Quantity(0, u.arcsec, dtype=np.float16),
                           observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
 
-    with pytest.raises(SunpyUserWarning, match="Tx is float32, and Ty is float16"):
+    with pytest.warns(SunpyUserWarning, match="Tx is float32, and Ty is float16"):
         hpc.make_3d()
 
 
