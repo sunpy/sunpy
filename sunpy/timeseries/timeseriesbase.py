@@ -97,13 +97,13 @@ class GenericTimeSeries:
         # Check metadata input
         if meta is None:
             # No meta given, so default
-            self.meta = TimeSeriesMetaData(MetaDict(), tr, list(self._data.columns.values))
+            self.meta = TimeSeriesMetaData(MetaDict(), tr, self.columns)
         elif isinstance(meta, (dict, OrderedDict, MetaDict)):
             # Given the values for metadata (dict) and infer timerange and colnames from the data
-            self.meta = TimeSeriesMetaData(meta, tr, list(self._data.columns.values))
+            self.meta = TimeSeriesMetaData(meta, tr, self.columns)
         elif isinstance(meta, tuple):
             # Given the values all in a tuple
-            self.meta = TimeSeriesMetaData(meta, tr, list(self._data.columns.values))
+            self.meta = TimeSeriesMetaData(meta, tr, self.columns)
         else:
             # Should have a list of 3-tuples giving a complex metadata list.
             self.meta = meta
@@ -579,14 +579,14 @@ class GenericTimeSeries:
         * Re-arrange the order of the dictionary to match the columns.
         """
         # Populate unspecified units:
-        for column in set(self._data.columns.tolist()) - set(self.units.keys()):
+        for column in set(self.columns) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
             warn_user(f"Unknown units for {column}.")
 
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()
-        for column in self._data.columns.tolist():
+        for column in self.columns:
             units.update({column: self.units[column]})
 
         # Now use the amended units Ordered Dictionary
