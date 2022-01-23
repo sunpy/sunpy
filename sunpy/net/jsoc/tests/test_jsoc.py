@@ -15,6 +15,9 @@ import sunpy.net.attrs as a
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.util.exceptions import SunpyUserWarning
 
+# Ensure all JSOC tests are run on the same parallel worker
+pytestmark = pytest.mark.xdist_group(name="jsoc")
+
 
 @pytest.fixture
 def client():

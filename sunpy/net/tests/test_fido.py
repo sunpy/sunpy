@@ -479,6 +479,7 @@ def test_fido_repr():
     assert output[:50] == '<sunpy.net.fido_factory.UnifiedDownloaderFactory o'
 
 
+@pytest.mark.xdist_group(name="jsoc")
 @pytest.mark.remote_data
 def test_fido_metadata_queries():
     results = Fido.search(a.Time('2010/8/1 03:40', '2010/8/1 3:40:10'),
