@@ -121,6 +121,23 @@ class TagAlreadyAssignedError(Exception):
         return errmsg.format(self.database_entry, self.tag_name)
 
 
+class PartialFetchError(Exception):
+    """This exception is raised if the number of files returned by the
+    downloader does not match the number expected.
+
+    """
+
+    def __init__(self, paths, expected):
+        self.paths = paths
+        self.expected = int(expected)
+
+    def __str__(self):
+        return (f"The downloader returned {len(self.paths)} file(s) "
+                f"but {self.expected} file(s) were expected.\n"
+                f"Successful downloads: {self.paths}\n"
+                f"Errors: {self.paths.errors}")
+
+
 def split_database(source_database, destination_database, *query_string):
     """
     Queries the source database with the query string, and moves the
@@ -410,6 +427,10 @@ class Database:
             self.remove(temp)
 
         paths = client.fetch(query_result, path)
+
+        # Unable to handle partial success
+        if len(paths) != len(query_result):
+            raise PartialFetchError(paths, len(query_result))
 
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
