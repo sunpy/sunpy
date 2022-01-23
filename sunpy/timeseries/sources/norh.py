@@ -77,7 +77,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         plt.xticks(rotation=30)
         data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(
             ']', '').replace('\'', '')
-        axes.plot(self.to_dataframe().index, self.to_dataframe(), label=data_lab, **kwargs)
+        axes.plot(self.to_dataframe(), label=data_lab, **kwargs)
         axes.set_yscale("log")
         axes.set_ylim(1e-4, 1)
         axes.set_xlabel('Start time: ' + self.to_dataframe().index[0].strftime(TIME_FORMAT))
