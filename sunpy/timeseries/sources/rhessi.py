@@ -137,7 +137,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
     def plot(self, axes=None, **kwargs):
         """
-        Plots RHESSI Count Rate light curve from a pandas dataframe.
+        Plots RHESSI count rate light curve.
 
         Parameters
         ----------
