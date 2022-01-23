@@ -11,11 +11,21 @@ schedules:
          #   \ \ \________ Days
          #    \ \__________Hours
          #     \__________ Minutes
-    displayName: Daily 9am UTC build
+    displayName: Daily main build
     branches:
       include:
       - main
+    always: true
+  - cron: "15 9 * * *"
+    displayName: Daily 3.0 build
+    branches:
+      include:
       - 3.0
+    always: true
+  - cron: "30 9 * * *"
+    displayName: Daily 3.1 build
+    branches:
+      include:
       - 3.1
     always: true
 
@@ -54,7 +64,7 @@ stages:
         submodules: false
         coverage: codecov
         toxdeps: tox-pypi-filter
-        posargs: -n=4
+        posargs: -n auto --dist loadgroup
         libraries:
           apt:
             - libopenjp2-7
