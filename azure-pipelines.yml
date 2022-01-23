@@ -64,7 +64,7 @@ stages:
         submodules: false
         coverage: codecov
         toxdeps: tox-pypi-filter
-        posargs: -n auto --dist loadgroup
+        posargs: -n=4
         libraries:
           apt:
             - libopenjp2-7
