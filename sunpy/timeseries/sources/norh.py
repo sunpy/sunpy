@@ -78,7 +78,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         fig, ax = plt.subplots()
         data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(
             ']', '').replace('\'', '')
-        ax.plot(self.to_dataframe().index, self.to_dataframe(), label=data_lab, **kwargs)
+        ax.plot(self.to_dataframe(), label=data_lab, **kwargs)
         ax.set_yscale("log")
         ax.set_ylim(1e-4, 1)
         ax.set_title('Nobeyama Radioheliograph')
