@@ -61,7 +61,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
     def plot(self, axes=None, **kwargs):
         """
-        Plots the GBM timeseries with data from its pandas dataframe.
+        Plots the GBM timeseries.
 
         Parameters
         ----------

@@ -67,7 +67,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
     def plot(self, axes=None, columns=["xrsa", "xrsb"], **kwargs):
         """
-        Plots the GOES XRS light curve from a pandas dataframe.
+        Plots the GOES XRS light curve.
 
         Parameters
         ----------

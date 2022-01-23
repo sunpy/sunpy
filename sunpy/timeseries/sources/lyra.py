@@ -59,7 +59,7 @@ class LYRATimeSeries(GenericTimeSeries):
 
     def plot(self, axes=None, names=3, **kwargs):
         """
-        Plots the LYRA data from a pandas dataframe.
+        Plots the LYRA data.
 
         Parameters
         ----------

@@ -56,7 +56,7 @@ class NoRHTimeSeries(GenericTimeSeries):
 
     def plot(self, axes=None, **kwargs):
         """
-        Plot the NoRH lightcurve TimeSeries from a pandas dataframe.
+        Plot the NoRH lightcurve.
 
         Parameters
         ----------

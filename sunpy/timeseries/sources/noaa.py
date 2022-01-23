@@ -59,7 +59,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
     def plot(self, axes=None, plot_type='sunspot SWO', **kwargs):
         """
-        Plots NOAA Indices as a function of time from a pandas dataframe.
+        Plots NOAA Indices.
 
         Parameters
         ----------
