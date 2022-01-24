@@ -122,18 +122,18 @@ class TagAlreadyAssignedError(Exception):
 
 
 class PartialFetchError(Exception):
-    """This exception is raised if the number of files returned by the
+    """
+    This exception is raised if the number of files returned by the
     downloader does not match the number expected.
-
     """
 
-    def __init__(self, paths, expected):
+    def __init__(self, paths, n_expected):
         self.paths = paths
-        self.expected = int(expected)
+        self.n_expected = int(n_expected)
 
     def __str__(self):
         return (f"The downloader returned {len(self.paths)} file(s) "
-                f"but {self.expected} file(s) were expected.\n"
+                f"but {self.n_expected} file(s) were expected.\n"
                 f"Successful downloads: {self.paths}\n"
                 f"Errors: {self.paths.errors}")
 
