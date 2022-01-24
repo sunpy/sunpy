@@ -149,58 +149,28 @@ def table_ts():
     # Create TS from dataframe and check
     return sunpy.timeseries.TimeSeries(table, meta, units)
 
+
 # =============================================================================
 # Test Resulting TimeSeries Parameters
 # =============================================================================
+@pytest.fixture(params=['eve_test_ts', 'esp_test_ts', 'fermi_gbm_test_ts', 'norh_test_ts', 'goes_test_ts',
+                        'lyra_test_ts', 'rhessi_test_ts', 'noaa_ind_json_test_ts',
+                        'noaa_pre_json_test_ts', 'generic_ts', 'table_ts'])
+def many_ts(request):
+    # Fixture to return lots of different timeseries
+    return request.getfixturevalue(request.param)
 
 
-def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                    lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts,
-                    noaa_pre_json_test_ts, generic_ts, table_ts):
-    assert isinstance(eve_test_ts.units, OrderedDict)
-    assert isinstance(esp_test_ts.units, OrderedDict)
-    assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
-    assert isinstance(norh_test_ts.units, OrderedDict)
-    assert isinstance(goes_test_ts.units, OrderedDict)
-    assert isinstance(lyra_test_ts.units, OrderedDict)
-    assert isinstance(rhessi_test_ts.units, OrderedDict)
-    assert isinstance(noaa_ind_json_test_ts.units, OrderedDict)
-    assert isinstance(noaa_pre_json_test_ts.units, OrderedDict)
-    assert isinstance(generic_ts.units, OrderedDict)
-    assert isinstance(table_ts.units, OrderedDict)
+def test_units_type(many_ts):
+    assert isinstance(many_ts.units, OrderedDict)
 
 
-def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts,
-                   noaa_pre_json_test_ts, generic_ts, table_ts):
-    assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(esp_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(norh_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(goes_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(lyra_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(rhessi_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(noaa_ind_json_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(noaa_pre_json_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(generic_ts.meta, TimeSeriesMetaData)
-    assert isinstance(table_ts.meta, TimeSeriesMetaData)
+def test_meta_type(many_ts):
+    assert isinstance(many_ts.meta, TimeSeriesMetaData)
 
 
-def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
-                   lyra_test_ts, rhessi_test_ts, noaa_ind_json_test_ts,
-                   noaa_pre_json_test_ts, generic_ts, table_ts):
-    assert isinstance(eve_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(esp_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(fermi_gbm_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(norh_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(goes_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(lyra_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(rhessi_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(noaa_ind_json_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(noaa_pre_json_test_ts.to_dataframe(), DataFrame)
-    assert isinstance(generic_ts.to_dataframe(), DataFrame)
-    assert isinstance(table_ts.to_dataframe(), DataFrame)
-
+def test_data_type(many_ts):
+    assert isinstance(many_ts.to_dataframe(), DataFrame)
     # TODO: check length? (should match the number of columns)
 
 # =============================================================================
