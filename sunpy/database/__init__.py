@@ -10,6 +10,7 @@ from sunpy.database.database import (
     EntryAlreadyUnstarredError,
     EntryNotFoundError,
     NoSuchTagError,
+    PartialFetchError,
     TagAlreadyAssignedError,
     disable_undo,
     split_database,
@@ -19,4 +20,4 @@ __all__ = [
     'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError', 'NoSuchTagError',
     'NonRemovableTagError', 'EntryAlreadyStarredError',
     'EntryAlreadyUnstarredError', 'EntryNotFoundError',
-    'TagAlreadyAssignedError', 'disable_undo', 'split_database']
+    'TagAlreadyAssignedError', 'PartialFetchError', 'disable_undo', 'split_database']
