@@ -27,6 +27,7 @@ from sunpy.database import (
     EntryAlreadyUnstarredError,
     EntryNotFoundError,
     NoSuchTagError,
+    PartialFetchError,
     TagAlreadyAssignedError,
     attrs,
     disable_undo,
@@ -1036,6 +1037,22 @@ def test_fetch_separate_filenames():
 
     # Teardown
     shutil.rmtree(tmp_test_dir)
+
+
+@pytest.mark.remote_data
+def test_fetch_partial_download(mocker, database, download_query, tmpdir):
+    results = Results()
+    results.append("successful_download.fits")
+    results.add_error("unsuccessful_download.fits", "https://timeout.invalid", "Timeout Error")
+    mocker.patch("sunpy.net.vso.VSOClient.fetch", return_value=results)
+    path = str(tmpdir.join('{file}.fits'))
+    with pytest.raises(PartialFetchError) as e:
+        database.fetch(*download_query, path=path)
+    successes, failures = str(e.value).split("Errors: ")
+    assert "successful_download.fits" in successes
+    assert "unsuccessful_download.fits" in failures
+    assert "https://timeout.invalid" in failures
+    assert "Timeout Error" in failures
 
 
 @pytest.mark.remote_data
