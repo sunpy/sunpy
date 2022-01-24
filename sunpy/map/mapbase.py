@@ -2451,17 +2451,18 @@ class GenericMap(NDData):
             imshow_args['vmin'] = vmin
             imshow_args['vmax'] = vmax
 
+        msg = ('Cannot manually specify {0}, as the norm '
+               'already has {0} set. To prevent this error set {0} on '
+               '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
         if 'norm' in imshow_args:
             norm = imshow_args['norm']
             if 'vmin' in imshow_args:
                 if norm.vmin is not None:
-                    raise ValueError('Cannot manually specify vmin, as the norm '
-                                     'already has vmin set')
+                    raise ValueError(msg.format('vmin'))
                 norm.vmin = imshow_args.pop('vmin')
             if 'vmax' in imshow_args:
                 if norm.vmax is not None:
-                    raise ValueError('Cannot manually specify vmax, as the norm '
-                                     'already has vmax set')
+                    raise ValueError(msg.format('vmax'))
                 norm.vmax = imshow_args.pop('vmax')
 
         if self.mask is None:
