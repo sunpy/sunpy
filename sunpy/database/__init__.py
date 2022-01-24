@@ -10,8 +10,8 @@ from sunpy.database.database import (
     EntryAlreadyUnstarredError,
     EntryNotFoundError,
     NoSuchTagError,
-    TagAlreadyAssignedError,
     PartialFetchError,
+    TagAlreadyAssignedError,
     disable_undo,
     split_database,
 )
