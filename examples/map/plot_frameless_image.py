@@ -13,7 +13,7 @@ import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################
-# Create a `sunpy.map.GenericMap`.
+# Create a sunpy map from the sample data.
 
 smap = sunpy.map.Map(AIA_171_IMAGE)
 
@@ -32,7 +32,10 @@ norm = smap.plot_settings['norm']
 norm.vmin, norm.vmax = np.percentile(smap.data, [1, 99.9])
 ax.imshow(smap.data,
           norm=norm,
-          cmap=smap.plot_settings['cmap'])
+          cmap=smap.plot_settings['cmap'],
+          origin="lower")
+
+# sphinx_gallery_defer_figures
 
 ##############################################################################
 # At this point you could save the figure with ``plt.savefig()`` or show it:
