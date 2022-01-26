@@ -45,7 +45,7 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
     print("\n\n")
     print("Starting sunpy self test...")
     print("Checking for packages needed to run sunpy:")
-    missing = missing_dependencies_by_extra(exclude_extras=("asdf", "dask", "dev", "all", "docs"))
+    missing = missing_dependencies_by_extra(exclude_extras=["asdf", "dask", "dev", "all", "docs"])
     test_missing = missing.pop("tests")
     printed = print_missing_dependencies_report(missing)
     if not printed:
