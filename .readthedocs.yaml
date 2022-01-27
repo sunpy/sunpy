@@ -5,6 +5,7 @@ build:
     python: "3.9"
   apt_packages:
     - libopenjp2-7
+    - graphviz
 
 sphinx:
   builder: html
