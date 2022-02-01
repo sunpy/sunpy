@@ -29,7 +29,8 @@ def get_requirements(package):
     requirements: list = requires(package)
     requires_dict = defaultdict(list)
     for requirement in requirements:
-        package_name, package_marker = Requirement(requirement).name, Requirement(requirement).marker
+        req = Requirement(requirement)
+        package_name, package_marker = req.name, req.marker
         if package_marker and "extra ==" in str(package_marker):
             group = str(package_marker).split("extra == ")[1].strip('"').strip("'").strip()
             requires_dict[group].append(package_name)
