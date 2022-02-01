@@ -170,6 +170,9 @@ _known_units = {'ratio': u.dimensionless_unscaled,
                 '1/(cm**2-s-sr-MeV/nuc.)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '1/(cm^2 sec ster MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
 
+                'particles / (s cm^2 sr MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                'particles / (s cm^2 sr MeV/n)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+
                 '1/(cm**2-s-sr)': 1 / (u.cm**2 * u.s * u.sr),
                 '1/(SQcm-ster-s)': 1 / (u.cm**2 * u.s * u.sr),
                 '1/(SQcm-ster-s)..': 1 / (u.cm**2 * u.s * u.sr),
