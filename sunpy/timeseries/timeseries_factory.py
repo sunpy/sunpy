@@ -439,10 +439,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             new_timeseries = [full_timeseries]
 
-        # Sanitize any units OrderedDict details
-        for timeseries in new_timeseries:
-            timeseries._sanitize_units()
-
         # Only return single time series, not in a list if we only have one.
         if len(new_timeseries) == 1:
             return new_timeseries[0]

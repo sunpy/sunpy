@@ -113,6 +113,11 @@ class GenericTimeSeries:
         else:
             self.units = units
 
+        for col in self.columns:
+            if col not in self.units:
+                warn_user(f'Unknown units for {col}')
+                self.units[col] = u.dimensionless_unscaled
+
         # TODO: Fix this?
         # Validate input data
         # self._validate_meta()
@@ -329,7 +334,6 @@ class GenericTimeSeries:
         # Build similar TimeSeries object and sanatise metadata and units.
         object = self.__class__(truncated_data.sort_index(), truncated_meta, copy.copy(self.units))
         object._sanitize_metadata()
-        object._sanitize_units()
         return object
 
     def extract(self, column_name):
@@ -355,13 +359,13 @@ class GenericTimeSeries:
 
         # Extract column and remove empty rows
         data = self._data[[column_name]].dropna()
+        units = {column_name: self.units[column_name]}
 
         # Build generic TimeSeries object and sanatise metadata and units.
         object = GenericTimeSeries(data.sort_index(),
                                    TimeSeriesMetaData(copy.copy(self.meta.metadata)),
-                                   copy.copy(self.units))
+                                   units)
         object._sanitize_metadata()
-        object._sanitize_units()
         return object
 
     def concatenate(self, others, same_source=False, **kwargs):
@@ -438,6 +442,7 @@ class GenericTimeSeries:
         units.update(
             {k: v for unit in list(series.units for series in others) for k, v in unit.items()}
         )
+        units = {k: v for k, v in units.items() if k in data.columns}
 
         # If sources match then build similar TimeSeries.
         if all(self.__class__ == series.__class__ for series in others):
@@ -448,7 +453,6 @@ class GenericTimeSeries:
 
         # Sanatise metadata and units
         object._sanitize_metadata()
-        object._sanitize_units()
         return object
 
 # #### Plotting Methods #### #
@@ -567,30 +571,6 @@ class GenericTimeSeries:
                 warn_user(f"Invalid unit given for {key}.")
 
         return result
-
-    def _sanitize_units(self, **kwargs):
-        """
-        Sanitizes the `collections.OrderedDict` used to store the units.
-
-        Primarily this method will:
-
-        * Remove entries that don't match up to a column.
-        * Add unitless entries for columns with no units defined.
-        * Re-arrange the order of the dictionary to match the columns.
-        """
-        # Populate unspecified units:
-        for column in set(self.columns) - set(self.units.keys()):
-            # For all columns not present in the units dictionary.
-            self.units[column] = u.dimensionless_unscaled
-            warn_user(f"Unknown units for {column}.")
-
-        # Re-arrange so it's in the same order as the columns and removed unused.
-        units = OrderedDict()
-        for column in self.columns:
-            units.update({column: self.units[column]})
-
-        # Now use the amended units Ordered Dictionary
-        self.units = units
 
     def _sanitize_metadata(self, **kwargs):
         """
