@@ -1,3 +1,13 @@
+3.0.5 (2022-02-07)
+==================
+
+Bug Fixes
+---------
+
+- Fixed plotting and peeking NORH timeseries data with ``pandas`` 1.4.0. (`#5830 <https://github.com/sunpy/sunpy/pull/5830>`__)
+- In the case where `sunpy.database.Database.fetch()` successfully downloads only some of the search results, a `~sunpy.database.PartialFetchError` is raised. This fixes a bug where the successful downloads would have been added to the database, but sometimes with incorrect metadata. (`#5835 <https://github.com/sunpy/sunpy/pull/5835>`__)
+
+
 3.0.4 (2022-01-06)
 ==================
 
