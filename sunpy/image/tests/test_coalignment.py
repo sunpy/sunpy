@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
-from scipy.ndimage.interpolation import shift as sp_shift
+from scipy.ndimage import shift as sp_shift
 
 import astropy.units as u
 
