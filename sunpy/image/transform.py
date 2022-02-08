@@ -5,7 +5,7 @@ import numbers
 import warnings
 
 import numpy as np
-import scipy.ndimage.interpolation
+import scipy.ndimage
 
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -105,7 +105,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         if np.any(np.isnan(image)):
             warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
         # Transform the image using the scipy affine transform
-        rotated_image = scipy.ndimage.interpolation.affine_transform(
+        rotated_image = scipy.ndimage.affine_transform(
             np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
             mode='constant', cval=missing).T
     else:
