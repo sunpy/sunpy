@@ -291,33 +291,29 @@ class VSOClient(BaseClient):
                 # Work around https://github.com/sunpy/sunpy/issues/3372
                 if name.count('"') >= 2:
                     name = name.split('"')[1]
-
         if name is None:
             # Advice from the VSO is to fallback to providerid + fileid for a filename
             # As it's possible multiple providers give the same fileid.
             # However, I haven't implemented this yet as it would be a breaking
             # change to the filenames we expect.
             fileid = queryresponserow['fileid']
-
             # Some providers make fileid a path
             # Some also don't specify a file extension, but not a lot we can do
             # about that.
             name = fileid.split("/")[-1]
-
+            # This is a hack to to prevent IRIS data from being labelled as XML files
+            if "VOEvent_IRIS" in fileid:
+                name = url.split('/')[-1]
         # If somehow we have got this far with an empty string, fallback to url segment
         if not name:
             name = url.split('/')[-1]
-
         # Remove any not-filename appropriate characters
         name = slugify(name)
-
         # If absolutely everything else fails make a filename based on download time
         if not name:
             name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
-
         fname = pattern.format(file=name,
                                **queryresponserow.response_block_map)
-
         return fname
 
     def fetch(self, query_response, path=None, methods=None, site=None,
@@ -397,41 +393,32 @@ class VSOClient(BaseClient):
         else:
             path = Path(path)
         path = path.expanduser()
-
         dl_set = True
         if not downloader:
             dl_set = False
             downloader = Downloader(progress=progress, overwrite=overwrite)
-
         if isinstance(query_response, (QueryResponse, list)):
             query_response = VSOQueryResponseTable.from_zeep_response(query_response,
                                                                       client=self,
                                                                       _sort=False)
         if isinstance(query_response, QueryResponseRow):
             query_response = query_response.as_table()
-
         if not len(query_response):
             return downloader.download() if wait else Results()
-
         # Adding the site parameter to the info
         info = {}
         if site is not None:
             info['site'] = site
-
         VSOGetDataResponse = self.api.get_type("VSO:VSOGetDataResponse")
-
         data_request = self.make_getdatarequest(query_response, methods, info)
         data_response = VSOGetDataResponse(self.api.service.GetData(data_request))
-
         err_results = self.download_all(data_response,
                                         methods,
                                         downloader,
                                         str(path),
                                         self.by_fileid(query_response))
-
         if dl_set and not wait:
             return err_results
-
         results = downloader.download()
         results += err_results
         results._errors += err_results.errors
@@ -512,7 +499,6 @@ class VSOClient(BaseClient):
             ('0.7', (1, 4)),
             ('0.6', (0, 3)),
         ]
-
         for dresponse in response.getdataresponseitem:
             for version, (from_, to) in GET_VERSION:
                 if getattr(dresponse, version, '0.6') >= version:
@@ -520,7 +506,6 @@ class VSOClient(BaseClient):
             else:
                 results.add_error('', UnknownVersion(dresponse))
                 continue
-
             # If from_ and to are uninitialized, the else block of the loop
             # continues the outer loop and thus this code is never reached.
             code = (
@@ -529,7 +514,6 @@ class VSOClient(BaseClient):
             )
             if code == '200':
                 for dataitem in dresponse.getdataitem.dataitem:
-
                     try:
                         self.download(
                             dresponse.method.methodtype[0],
@@ -541,7 +525,6 @@ class VSOClient(BaseClient):
                     except NoData:
                         results.add_error('', '', DownloadFailed(dresponse))
                         continue
-
             elif code == '300' or code == '412' or code == '405':
                 if code == '300':
                     try:
@@ -565,15 +548,12 @@ class VSOClient(BaseClient):
                     except NoData:
                         results.add_error('', '', UnknownMethod(dresponse))
                         continue
-
                 files = []
                 for dataitem in dresponse.getdataitem.dataitem:
                     files.extend(dataitem.fileiditem.fileid)
-
                 request = self.create_getdatarequest(
                     {dresponse.provider: files}, methods, info
                 )
-
                 self.download_all(
                     self.api.service.GetData(request), methods, downloader, path,
                     qr, info
