@@ -5,11 +5,12 @@ from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pandas import DataFrame, to_datetime
+from pandas import to_datetime
 from pandas.io.parsers import read_csv
 
 import astropy.units as u
 from astropy.time import TimeDelta
+from astropy.timeseries import TimeSeries
 
 import sunpy.io
 from sunpy.time import parse_time
@@ -85,7 +86,7 @@ class ESPTimeSeries(GenericTimeSeries):
             plt.xticks(rotation=30)
             axes[i].set_ylabel(column_names[name])
             axes[i].legend(loc="upper right")
-        axes[-1].set_xlim(self._data.index[0], self._data.index[-1])
+        axes[-1].set_xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
         self._setup_x_axis(axes)
         return axes
 
@@ -130,10 +131,9 @@ class ESPTimeSeries(GenericTimeSeries):
 
         colnames = ['QD', 'CH_18', 'CH_26', 'CH_30', 'CH_36']
 
-        all_data = [hdulist[1].data[x] for x in colnames]
-        data = DataFrame(np.array(all_data).T, index=times.isot.astype(
-            'datetime64'), columns=colnames)
-        data.sort_index(inplace=True)
+        all_data = {name: hdulist[1].data[name] for name in colnames}
+        data = TimeSeries(all_data, time=times)
+        data.sort(['time'])
 
         units = OrderedDict([('QD', u.W/u.m**2),
                              ('CH_18', u.W/u.m**2),
@@ -352,6 +352,9 @@ class EVESpWxTimeSeries(GenericTimeSeries):
                              ('q3ESP', u.dimensionless_unscaled),
                              ('CMLat', u.deg),
                              ('CMLon', u.deg)])
+
+        data = TimeSeries(data={col: data[col] for col in data.columns},
+                          time=data.index)
         # Todo: check units used.
         return data, meta, units
 

@@ -1,8 +1,8 @@
 import cdflib
-import pandas as pd
-from cdflib.epochs import CDFepoch
+from cdflib.epochs_astropy import CDFAstropy
 
 import astropy.units as u
+from astropy.timeseries import TimeSeries
 
 from sunpy import log
 from sunpy.timeseries import GenericTimeSeries
@@ -54,9 +54,7 @@ def read_cdf(fname):
         if index is None:
             # Empty index for cdflib <0.3.20
             continue
-        # TODO: use to_astropy_time() instead here when we drop pandas in timeseries
-        index = CDFepoch.to_datetime(index)
-        df = pd.DataFrame(index=pd.DatetimeIndex(name=index_key, data=index))
+        ts = TimeSeries(time=CDFAstropy.convert_to_astropy(index))
         units = {}
 
         for var_key in sorted(var_keys):
@@ -95,14 +93,14 @@ def read_cdf(fname):
             elif data.ndim == 2:
                 # Multiple columns, give each column a unique label
                 for i, col in enumerate(data.T):
-                    df[var_key + f'_{i}'] = col
+                    ts[var_key + f'_{i}'] = col
                     units[var_key + f'_{i}'] = unit
             else:
                 # Single column
-                df[var_key] = data
+                ts[var_key] = data
                 units[var_key] = unit
 
-        all_ts.append(GenericTimeSeries(data=df, units=units, meta=meta))
+        all_ts.append(GenericTimeSeries(data=ts, units=units, meta=meta))
 
     if not len(all_ts):
         log.debug(f'No data found in file {fname}')

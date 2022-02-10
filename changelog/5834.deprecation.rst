@@ -1,0 +1,3 @@
+Passing a `~pandas.DataFrame` to `~sunpy.timeseries.GenericTimeSeries` is
+deprecated. Convert it to a `astropy.timeseries.TimeSeries` first,
+or pass the DataFrame to `sunpy.timeseries.TimeSeries` instead.

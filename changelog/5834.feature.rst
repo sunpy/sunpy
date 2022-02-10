@@ -1,0 +1,1 @@
+`~sunpy.timeseries` now has support for times that fall within a leapsecond.

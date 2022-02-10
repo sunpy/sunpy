@@ -135,12 +135,25 @@ def table_ts():
     return sunpy.timeseries.TimeSeries(table, meta, units)
 
 
-# =============================================================================
-# Test Resulting TimeSeries Parameters
-# =============================================================================
 @pytest.fixture(params=['eve_test_ts', 'esp_test_ts', 'fermi_gbm_test_ts', 'norh_test_ts', 'goes_test_ts',
                         'lyra_test_ts', 'rhessi_test_ts', 'noaa_ind_json_test_ts',
                         'noaa_pre_json_test_ts', 'generic_ts', 'table_ts'])
 def many_ts(request):
     # Fixture to return lots of different timeseries
     return request.getfixturevalue(request.param)
+
+
+@pytest.fixture
+def data_meta_units():
+    base = parse_time("2016/10/01T05:00:00")
+    dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
+    intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
+    intensity2 = np.cos(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
+
+    data = DataFrame(np.column_stack([intensity, intensity2]),
+                     index=dates.isot.astype('datetime64'),
+                     columns=['intensity', 'intensity2'])
+    units = {'intensity': u.W / u.m**2,
+             'intensity2': u.W / u.m**2}
+    meta = MetaDict({'key': 'value'})
+    return data, meta, units

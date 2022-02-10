@@ -6,10 +6,10 @@ from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas
 
 import astropy.units as u
 from astropy.time import TimeDelta
+from astropy.timeseries import TimeSeries
 
 import sunpy.io
 from sunpy import config
@@ -158,8 +158,8 @@ class NoRHTimeSeries(GenericTimeSeries):
         # Add the units data
         units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
         # Todo: check units used.
-        return pandas.DataFrame(
-            data, index=norh_time, columns=('Correlation Coefficient', )), header, units
+        data = {'Correlation Coefficient': data}
+        return TimeSeries(data=data, time=norh_time), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

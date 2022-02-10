@@ -12,6 +12,7 @@ import astropy.units as u
 from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time, TimeDelta
+from astropy.timeseries import TimeSeries as AstroTimeSeries
 
 import sunpy
 import sunpy.timeseries
@@ -22,6 +23,19 @@ from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
 # Test fixtures are in ../conftest.py
+
+
+def test_from_dataframe_warns(data_meta_units):
+    data, meta, units = data_meta_units
+    msg = 'Passing a DataFrame to GenericTimeSeries is deprecated'
+    with pytest.warns(SunpyDeprecationWarning, match=msg):
+        sunpy.timeseries.GenericTimeSeries(data, meta, units)
+
+
+def test_leapsecond_times():
+    t = Time(['2015-06-30 23:59:60.891082'])
+    ts = AstroTimeSeries(data={'a': [1]*u.s}, time=t)
+    sunpy.timeseries.GenericTimeSeries(ts)
 
 
 def test_units_type(many_ts):
@@ -443,7 +457,7 @@ def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
 def test_ts_to_table(generic_ts):
     tbl = generic_ts.to_table()
     assert isinstance(tbl, Table)
-    assert tbl.keys() == ['date', *generic_ts.columns]
+    assert tbl.keys() == ['time', *generic_ts.columns]
     assert len(tbl) == len(generic_ts.to_dataframe())
     assert (tbl[generic_ts.columns[0]].quantity ==
             generic_ts.quantity(generic_ts.columns[0])).all()

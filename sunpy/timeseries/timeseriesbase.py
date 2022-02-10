@@ -17,12 +17,12 @@ import pandas as pd
 
 import astropy
 import astropy.units as u
-from astropy.table import Column, Table
-from astropy.time import Time
+from astropy.table import Table
+from astropy.timeseries import TimeSeries
 from astropy.visualization import hist
 
 from sunpy import config
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.exceptions import warn_deprecated, warn_user
@@ -35,6 +35,7 @@ det = u.def_unit('detector')
 u.add_enabled_units([det])
 
 TIME_FORMAT = config.get("general", "time_format")
+_builtin_int = int
 
 __all__ = ["GenericTimeSeries"]
 
@@ -45,14 +46,15 @@ class GenericTimeSeries:
 
     Parameters
     ----------
-    data : `~pandas.DataFrame` or `numpy.array`
-        A `pandas.DataFrame` or `numpy.array` representing one or more fields as a function of time.
+    data : `~astropy.timeseries.TimeSeries`  or `numpy.array`
+        A `astropy.timeseries.TimeSeries` representing one or more fields as a function of time.
     meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`, optional
         The metadata giving details about the time series data/instrument.
         Defaults to `None`.
     units : `dict`, optional
         A mapping from column names in ``data`` to the physical units of that column.
-        Defaults to `None`.
+        Defaults to `None`. Any units already present in ``data`` will take precedence over
+        these units.
 
     Attributes
     ----------
@@ -60,26 +62,6 @@ class GenericTimeSeries:
         The metadata giving details about the time series data/instrument.
     units : `dict`
         A mapping from column names in ``data`` to the physical units of that column.
-
-    Examples
-    --------
-    >>> from sunpy.timeseries import TimeSeries
-    >>> from sunpy.time import parse_time
-    >>> from astropy.time import TimeDelta
-    >>> import astropy.units as u
-    >>> import numpy as np
-    >>> import pandas as pd
-    >>> times = parse_time("now") - TimeDelta(np.arange(24 * 60)*u.minute)
-    >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
-    >>> df = pd.DataFrame(intensity, index=times, columns=['intensity'])
-    >>> header = {}
-    >>> units = {'intensity': u.W/u.m**2}
-    >>> ts = TimeSeries(df, header, units)
-    >>> ts.peek()  # doctest: +SKIP
-
-    References
-    ----------
-    * `Pandas Documentation <https://pandas.pydata.org/pandas-docs/stable/>`_
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = None
@@ -105,6 +87,11 @@ class GenericTimeSeries:
 
     # kwargs are not used here but are passed in for sources.
     def __init__(self, data, meta=None, units=None, **kwargs):
+        if isinstance(data, pd.DataFrame):
+            warn_deprecated('Passing a DataFrame to GenericTimeSeries is deprecated. '
+                            'Pass to sunpy.timeseries.TimeSeries instead.')
+            data = TimeSeries.from_pandas(data)
+
         self._data = data
         tr = self.time_range
         # Check metadata input
@@ -128,8 +115,11 @@ class GenericTimeSeries:
 
         for col in self.columns:
             if col not in self.units:
-                warn_user(f'Unknown units for {col}')
-                self.units[col] = u.dimensionless_unscaled
+                if self._data[col].unit is not None:
+                    self.units[col] = self._data[col].unit
+                else:
+                    warn_user(f'Unknown units for {col}. Setting to dimensionless.')
+                    self.units[col] = u.dimensionless_unscaled
 
         # TODO: Fix this?
         # Validate input data
@@ -170,7 +160,9 @@ class GenericTimeSeries:
         """
         A list of all the names of the columns in the data.
         """
-        return list(self._data.columns.values)
+        names = self._data.colnames
+        names.remove('time')
+        return names
 
     @property
     def index(self):
@@ -186,17 +178,14 @@ class GenericTimeSeries:
         """
         The timestamps of the data.
         """
-        t = Time(self._data.index)
-        # Set time format to enable plotting with astropy.visualisation.time_support()
-        t.format = 'iso'
-        return t
+        return self._data['time']
 
     @property
     def shape(self):
         """
         The shape of the data, a tuple (nrows, ncols).
         """
-        return self._data.shape
+        return (len(self.time), len(self.columns))
 
     @property
     def time_range(self):
@@ -204,7 +193,7 @@ class GenericTimeSeries:
         The start and end times of the TimeSeries as a `~sunpy.time.TimeRange`.
         """
         if len(self._data) > 0:
-            return TimeRange(self._data.index.min(), self._data.index.max())
+            return TimeRange(self._data.time.min(), self._data.time.max())
         else:
             return None
 
@@ -436,7 +425,7 @@ class GenericTimeSeries:
         -------
         `~astropy.units.quantity.Quantity`
         """
-        values = self._data[colname].values
+        values = self._data[colname]
         unit = self.units[colname]
         return u.Quantity(values, unit)
 
@@ -503,7 +492,8 @@ class GenericTimeSeries:
         """
         if colname not in self.columns:
             raise ValueError(f'Given column name ({colname}) not in list of columns {self.columns}')
-        data = self._data.drop(colname, axis='columns')
+        data = self._data.copy()
+        data.remove_column(colname)
         units = self.units.copy()
         units.pop(colname)
         return self.__class__(data, self.meta, units)
@@ -520,7 +510,9 @@ class GenericTimeSeries:
         `~sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries` in ascending chronological order.
         """
-        return GenericTimeSeries(self._data.sort_index(**kwargs),
+        data = self._data.copy()
+        data.sort(['time'])
+        return GenericTimeSeries(data,
                                  TimeSeriesMetaData(copy.copy(self.meta.metadata)),
                                  copy.copy(self.units))
 
@@ -551,26 +543,46 @@ class GenericTimeSeries:
             a = TimeRange(a, b)
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
-            start = a.start.datetime
-            end = a.end.datetime
+            start = a.start
+            end = a.end
         else:
             # Otherwise we already have the values
             start = a
             end = b
 
+        self._data.sort(['time'])
+        times = self._data['time']
+        if not isinstance(start, _builtin_int):
+            start = parse_time(start)
+            # Get first index before end time
+            mask = times < start
+            if np.all(mask):
+                start = len(times)
+            else:
+                # Get first index after start time
+                start = np.ma.argmin(np.ma.MaskedArray(times.jd, mask=times < start))
+        if not isinstance(end, _builtin_int):
+            end = parse_time(end)
+            # Get first index before end time
+            mask = times > end
+            if np.all(mask):
+                end = 0
+            else:
+                end = np.ma.argmax(np.ma.MaskedArray(times.jd, mask=times > end)) + 1
+
         # If an interval integer was given then use in truncation.
-        truncated_data = self._data.sort_index()[start:end:int]
+        truncated_data = self._data[start:end:int]
 
         # Truncate the metadata
         # Check there is data still
         truncated_meta = TimeSeriesMetaData([])
         if len(truncated_data) > 0:
-            tr = TimeRange(truncated_data.index.min(), truncated_data.index.max())
+            tr = TimeRange(truncated_data['time'].min(), truncated_data['time'].max())
             truncated_meta = TimeSeriesMetaData(copy.deepcopy(self.meta.metadata))
             truncated_meta._truncate(tr)
 
         # Build similar TimeSeries object and sanatise metadata and units.
-        object = self.__class__(truncated_data.sort_index(), truncated_meta, copy.copy(self.units))
+        object = self.__class__(truncated_data, truncated_meta, copy.copy(self.units))
         object._sanitize_metadata()
         return object
 
@@ -588,21 +600,13 @@ class GenericTimeSeries:
         `~sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries` with only the selected column.
         """
-        # TODO: allow the extract function to pick more than one column
-        # TODO: Fix this?
-        # if isinstance(self, pandas.Series):
-        #    return self
-        # else:
-        #    return GenericTimeSeries(self._data[column_name], TimeSeriesMetaData(self.meta.metadata.copy()))
-
-        # Extract column and remove empty rows
-        data = self._data[[column_name]].dropna()
-        units = {column_name: self.units[column_name]}
+        # Extract column
+        data = self._data.copy()
+        data.keep_columns(['time', column_name])
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data.sort_index(),
-                                   TimeSeriesMetaData(copy.copy(self.meta.metadata)),
-                                   units)
+        object = GenericTimeSeries(data, TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                   units={column_name: self.units[column_name]})
         object._sanitize_metadata()
         return object
 
@@ -670,9 +674,13 @@ class GenericTimeSeries:
         # Concatenate the metadata and data.
         kwargs["sort"] = kwargs.pop("sort", False)
         meta = self.meta.concatenate([series.meta for series in others])
+        # TODO: refactor this to avoid going via DataFrames
         data = pd.concat(
-            [self._data.copy(), *list(series.to_dataframe() for series in others)], **kwargs
+            [self.to_dataframe(), *list(ts.to_dataframe() for ts in others)], **kwargs
         )
+        data = data.sort_index()
+        data = data.drop_duplicates()
+        data = TimeSeries.from_pandas(data)
 
         # Add all the new units to the dictionary.
         units = OrderedDict()
@@ -684,10 +692,10 @@ class GenericTimeSeries:
 
         # If sources match then build similar TimeSeries.
         if all(self.__class__ == series.__class__ for series in others):
-            object = self.__class__(data.sort_index(), meta, units)
+            object = self.__class__(data, meta, units)
         else:
             # Build generic time series if the sources don't match.
-            object = GenericTimeSeries(data.sort_index(), meta, units)
+            object = GenericTimeSeries(data, meta, units)
 
         # Sanatise metadata and units
         object._sanitize_metadata()
@@ -717,7 +725,9 @@ class GenericTimeSeries:
         """
         axes, columns = self._setup_axes_columns(axes, columns)
 
-        axes = self._data[columns].plot(ax=axes, **plot_args)
+        # TODO: rewrite this to avoid going via a DataFrame
+        axes = self.to_dataframe()[columns].plot(ax=axes, **plot_args)
+        axes.set_xlabel('')
 
         units = set([self.units[col] for col in columns])
         if len(units) == 1:
@@ -872,20 +882,8 @@ class GenericTimeSeries:
             A new `astropy.table.Table` containing the data from the `~sunpy.timeseries.TimeSeries`.
             The table will include units where relevant.
         """
-        # TODO: Table.from_pandas(df) doesn't include the index column. Add request?
-        # Get data columns
-        table = Table.from_pandas(self._data)
-
-        # Get index column and add to table.
-        index_col = Column(self._data.index.values, name='date')
-        table.add_column(index_col, index=0)
-
-        # Add in units.
-        for key in self.units:
-            table[key].unit = self.units[key]
-
-        # Output the table
-        return table
+        # TODO: deprecate this
+        return Table(data=self._data, units=self.units)
 
     def to_dataframe(self, **kwargs):
         """
@@ -896,7 +894,7 @@ class GenericTimeSeries:
         -------
         `~pandas.DataFrame`
         """
-        return self._data
+        return self._data.to_pandas()
 
     def to_array(self, **kwargs):
         """
@@ -905,17 +903,20 @@ class GenericTimeSeries:
         Parameters
         ----------
         **kwargs : `dict`
-            All keyword arguments are passed to `pandas.DataFrame.to_numpy`.
+            All keyword arguments are passed to
+            :meth:`astropy.timeseries.TimeSeries.as_array`.
 
         Returns
         -------
         `~numpy.ndarray`
             If the data is heterogeneous and contains booleans or objects, the result will be of ``dtype=object``.
         """
-        if hasattr(self._data, "to_numpy"):
-            return self._data.to_numpy(**kwargs)
+        # TODO: implement this without going via. a DataFrame
+        data = self.to_dataframe()
+        if hasattr(data, "to_numpy"):
+            return data.to_numpy(**kwargs)
         else:
-            return self._data.values
+            return data
 
     def __eq__(self, other):
         """
@@ -933,7 +934,13 @@ class GenericTimeSeries:
         """
         match = True
         if isinstance(other, type(self)):
-            if ((not self._data.equals(other.to_dataframe())) or
+            self_data = self.to_array()
+            other_data = self.to_array()
+            # TODO: when we depend on numpy>=1.18, use np.array_equal(..., equal_nan=True)
+            data_eq = ((self_data.shape == other_data.shape) and
+                       np.all(self_data[~np.isnan(self_data)] ==
+                              other_data[~np.isnan(other_data)]))
+            if (not data_eq or
                     (self.meta != other.meta) or
                     (self.units != other.units)):
                 match = False

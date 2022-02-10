@@ -8,10 +8,10 @@ import h5netcdf
 import matplotlib.ticker as mticker
 import numpy as np
 import packaging.version
-from pandas import DataFrame
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
+from astropy.timeseries import TimeSeries
 
 import sunpy.io
 from sunpy import log
@@ -207,9 +207,8 @@ class XRSTimeSeries(GenericTimeSeries):
         newxrsa = xrsa.byteswap().newbyteorder()
         newxrsb = xrsb.byteswap().newbyteorder()
 
-        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb},
-                         index=times.isot.astype('datetime64'))
-        data.sort_index(inplace=True)
+        data = TimeSeries(data={'xrsa': newxrsa, 'xrsb': newxrsb}, time=times)
+        data.sort(['time'])
 
         # Add the units
         units = OrderedDict([('xrsa', u.W/u.m**2),
@@ -263,8 +262,14 @@ class XRSTimeSeries(GenericTimeSeries):
             )
             times[idx] = Time(times[idx].isot.tolist()[0][0][:17] + "59.999").unix
             times = times.datetime
-        data = DataFrame({"xrsa": xrsa, "xrsb": xrsb, "xrsa_quality": xrsa_quality, "xrsb_quality": xrsb_quality}, index=times)
-        data = data.replace(-9999, np.nan)
+        data = TimeSeries(data={'xrsa': xrsa,
+                                'xrsb': xrsb,
+                                "xrsa_quality": xrsa_quality,
+                                "xrsb_quality": xrsb_quality},
+                          time=times)
+        data.sort(['time'])
+        xrsa[xrsa == -9999] = np.nan
+        xrsb[xrsb == -9999] = np.nan
         units = OrderedDict(
             [
                 ("xrsa", u.W/u.m**2),

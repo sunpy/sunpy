@@ -5,10 +5,10 @@ from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 import astropy.units as u
 from astropy.time import TimeDelta
+from astropy.timeseries import TimeSeries
 
 import sunpy.io
 from sunpy.time import parse_time
@@ -87,7 +87,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         """
         axes, columns = self._setup_axes_columns(axes, columns)
         for d in columns:
-            axes.plot(self._data.index, self._data[d], label=d, **kwargs)
+            axes.plot(self.to_dataframe().index, self.to_dataframe()[d], label=d, **kwargs)
         axes.set_yscale("log")
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
@@ -164,7 +164,6 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         met_ref_time = parse_time('2001-01-01 00:00')  # Mission elapsed time
         gbm_times = met_ref_time + TimeDelta(count_data['time'], format='sec')
         gbm_times.precision = 9
-        gbm_times = gbm_times.isot.astype('datetime64')
 
         column_labels = ['4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV',
                          '100-300 keV', '300-800 keV', '800-2000 keV']
@@ -174,7 +173,8 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
                              ('25-50 keV', u.ct / u.s / u.keV), ('50-100 keV', u.ct / u.s / u.keV),
                              ('100-300 keV', u.ct / u.s / u.keV), ('300-800 keV', u.ct / u.s / u.keV),
                              ('800-2000 keV', u.ct / u.s / u.keV)])
-        return pd.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
+        data = {name: col for name, col in zip(column_labels, np.array(summary_counts).T)}
+        return TimeSeries(data=data, time=gbm_times), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
