@@ -14,7 +14,8 @@ from pandas.testing import assert_frame_equal
 import astropy.units as u
 from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.time import TimeDelta
+from astropy.time import Time, TimeDelta
+from astropy.timeseries import TimeSeries as AstroTimeSeries
 
 import sunpy
 import sunpy.data.test
@@ -22,7 +23,7 @@ import sunpy.timeseries
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.util import SunpyUserWarning
+from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -98,23 +99,24 @@ def noaa_pre_json_test_ts():
 
 
 @pytest.fixture
-def generic_ts():
-    # Generate the data and the corresponding dates
+def data_meta_units():
     base = parse_time("2016/10/01T05:00:00")
     dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
     intensity2 = np.cos(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
-    # Create the data DataFrame, header MetaDict and units dict
     data = DataFrame(np.column_stack([intensity, intensity2]),
                      index=dates.isot.astype('datetime64'),
                      columns=['intensity', 'intensity2'])
     units = {'intensity': u.W / u.m**2,
              'intensity2': u.W / u.m**2}
     meta = MetaDict({'key': 'value'})
+    return data, meta, units
 
-    # Create the time series
-    return sunpy.timeseries.TimeSeries(data, meta, units)
+
+@pytest.fixture
+def generic_ts(data_meta_units):
+    return sunpy.timeseries.TimeSeries(*data_meta_units)
 
 
 @pytest.fixture
@@ -122,6 +124,20 @@ def concatenate_multi_files_ts():
     with pytest.warns(SunpyUserWarning, match='Unknown units'):
         return sunpy.timeseries.TimeSeries(
             a_list_of_many, source='EVE', concatenate=True)
+
+
+def test_from_dataframe_warns(data_meta_units):
+    data, meta, units = data_meta_units
+    msg = 'Passing a DataFrame to GenericTimeSeries is deprecated'
+    with pytest.warns(SunpyDeprecationWarning, match=msg):
+        sunpy.timeseries.GenericTimeSeries(data, meta, units)
+
+
+def test_leapsecond_times():
+    t = Time(['2015-06-30 23:59:60.891082'])
+    ts = AstroTimeSeries(data={'a': [1]*u.s}, time=t)
+    sunpy.timeseries.GenericTimeSeries(ts)
+
 
 # =============================================================================
 # Test Creating TimeSeries From Various Dataformats
@@ -256,7 +272,8 @@ def truncation_timerange_test_ts(eve_test_ts):
 def test_truncation_timerange(eve_test_ts, truncation_timerange_test_ts):
     # Check the resulting timerange in both TS and TSMD
     assert (truncation_timerange_test_ts.time_range ==
-            truncation_timerange_test_ts.meta.time_range ==
+            truncation_timerange_test_ts.meta.time_range)
+    assert (truncation_timerange_test_ts.time_range ==
             eve_test_ts.time_range.split(3)[1])
 
 
@@ -692,7 +709,7 @@ def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
 def test_ts_to_table(generic_ts):
     tbl = generic_ts.to_table()
     assert isinstance(tbl, Table)
-    assert tbl.keys() == ['date', *generic_ts.columns]
+    assert tbl.keys() == ['time', *generic_ts.columns]
     assert len(tbl) == len(generic_ts.to_dataframe())
     assert (tbl[generic_ts.columns[0]].quantity ==
             generic_ts.quantity(generic_ts.columns[0])).all()
@@ -914,14 +931,14 @@ def test_norh_plot(norh_test_ts):
 def test_noaa_json_ind_plot(noaa_ind_json_test_ts):
     ax = noaa_ind_json_test_ts.plot()
     for i, data in enumerate(ax.lines):
-        np.testing.assert_array_equal(data.get_ydata(), noaa_ind_json_test_ts._data[[
+        np.testing.assert_array_equal(data.get_ydata(), noaa_ind_json_test_ts.to_dataframe()[[
                                       'sunspot SWO', 'sunspot SWO smooth']].to_numpy().T[i])
 
 
 def test_noaa_json_pre_plot(noaa_pre_json_test_ts):
     ax = noaa_pre_json_test_ts.plot()
     for i, data in enumerate(ax.lines):
-        np.testing.assert_array_equal(data.get_ydata(), noaa_pre_json_test_ts._data[[
+        np.testing.assert_array_equal(data.get_ydata(), noaa_pre_json_test_ts.to_dataframe()[[
                                       'sunspot', 'sunspot high', 'sunspot low']].to_numpy().T[i])
 
 

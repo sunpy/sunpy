@@ -7,10 +7,10 @@ from collections import OrderedDict
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
-from pandas import DataFrame
 
 import astropy.units as u
 from astropy.time import TimeDelta
+from astropy.timeseries import TimeSeries
 
 import sunpy.io
 from sunpy.time import parse_time
@@ -226,10 +226,9 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
             A HDU list.
         """
         header, d = parse_observing_summary_hdulist(hdulist)
-        # The time of dict `d` is astropy.time, but dataframe can only take datetime
-        d['time'] = d['time'].datetime
         header = MetaDict(OrderedDict(header))
-        data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
+        data = {col: val for col, val in zip(d['labels'], d['data'].T)}
+        ts = TimeSeries(data=data, time=d['time'])
         # Add the units data
         units = OrderedDict([('3 - 6 keV', u.ct / u.s / u.Unit('detector')),
                              ('6 - 12 keV', u.ct / u.s / u.Unit('detector')),
@@ -241,7 +240,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
                              ('800 - 7000 keV', u.ct / u.s / u.Unit('detector')),
                              ('7000 - 20000 keV', u.ct / u.s / u.Unit('detector'))])
         # Todo: check units used. https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
-        return data, header, units
+        return ts, header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

@@ -10,10 +10,10 @@ import matplotlib.ticker as mticker
 import numpy as np
 import packaging.version
 from matplotlib import pyplot as plt
-from pandas import DataFrame
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
+from astropy.timeseries import TimeSeries
 
 import sunpy.io
 from sunpy import log
@@ -229,9 +229,8 @@ class XRSTimeSeries(GenericTimeSeries):
         newxrsa = xrsa.byteswap().newbyteorder()
         newxrsb = xrsb.byteswap().newbyteorder()
 
-        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb},
-                         index=times.isot.astype('datetime64'))
-        data.sort_index(inplace=True)
+        data = TimeSeries(data={'xrsa': newxrsa, 'xrsb': newxrsb}, time=times)
+        data.sort(['time'])
 
         # Add the units
         units = OrderedDict([('xrsa', u.W/u.m**2),
@@ -265,8 +264,9 @@ class XRSTimeSeries(GenericTimeSeries):
             else:
                 raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
 
-        data = DataFrame({"xrsa": xrsa, "xrsb": xrsb}, index=times.datetime)
-        data = data.replace(-9999, np.nan)
+        xrsa[xrsa == -9999] = np.nan
+        xrsb[xrsb == -9999] = np.nan
+        data = TimeSeries(data={"xrsa": xrsa, "xrsb": xrsb}, time=times)
         units = OrderedDict([("xrsa", u.W/u.m**2),
                              ("xrsb", u.W/u.m**2)])
 

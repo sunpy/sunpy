@@ -7,10 +7,10 @@ from collections import OrderedDict
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas
 
 import astropy.units as u
 from astropy.time import TimeDelta
+from astropy.timeseries import TimeSeries
 
 import sunpy.io
 from sunpy import config
@@ -102,6 +102,7 @@ class LYRATimeSeries(GenericTimeSeries):
         formatter = mdates.ConciseDateFormatter(locator)
         axes[-1].xaxis.set_major_locator(locator)
         axes[-1].xaxis.set_major_formatter(formatter)
+        axes[-1].set_xlabel('')
         return axes
 
     @peek_show
@@ -189,8 +190,8 @@ class LYRATimeSeries(GenericTimeSeries):
 
         # Return the header and the data
         times.precision = 9
-        data = pandas.DataFrame(table, index=times.isot.astype('datetime64'))
-        data.sort_index(inplace=True)
+        data = TimeSeries(data=table, time=times)
+        data.sort(['time'])
 
         # Add the units data
         units = OrderedDict([('CHANNEL1', u.W/u.m**2),

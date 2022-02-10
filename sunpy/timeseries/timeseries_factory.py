@@ -15,6 +15,7 @@ import astropy.io.fits
 import astropy.units as u
 from astropy.table import Table
 from astropy.time import Time
+from astropy.timeseries import TimeSeries as AstroTimeSeries
 
 import sunpy
 from sunpy.io.file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
@@ -211,10 +212,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         # Extract, convert and remove the index column from the input table
         index = table[index_name]
-        # Convert if the index is given as an astropy Time object
-        if isinstance(index, Time):
-            index = index.datetime
-        index = pd.to_datetime(index)
         table.remove_column(index_name)
 
         # Extract the column values from the table
@@ -224,9 +221,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             data[colname] = table[colname]
             units[colname] = table[colname].unit
 
-        # Create a dataframe with this and return
-        df = pd.DataFrame(data=data, index=index)
-        return df, MetaDict(table.meta), units
+        ts = AstroTimeSeries(data=data, time=Time(index))
+        return ts, MetaDict(table.meta), units
 
     def _parse_meta(self, meta):
         """
@@ -272,7 +268,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     meta.update(new_meta)
                 elif isinstance(data, np.ndarray):
                     # We have a numpy ndarray. We assume the first column is a dt index
-                    data = pd.DataFrame(data=data[:, 1:], index=Time(data[:, 0]))
+                    data = AstroTimeSeries(data=data[:, 1:], time=Time(data[:, 0]))
+                elif isinstance(data, pd.DataFrame):
+                    data = AstroTimeSeries(data={col: data[col].values for col in data.columns},
+                                           time=data.index)
 
                 # The next two could be metadata or units
                 for _ in range(2):
