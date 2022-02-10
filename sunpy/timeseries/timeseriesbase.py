@@ -131,10 +131,11 @@ class GenericTimeSeries:
     @property
     def data(self):
         """
-        A `pandas.DataFrame` representing one or more fields as a function of time.
+        Deprecated.
         """
-        warn_user("Using .data to access the dataframe is discouraged; "
-                  "use .to_dataframe() instead.")
+        warn_deprecated("Using .data is deprecated. "
+                        "Use .to_dataframe() to get a pandas DataFrame or "
+                        ".to_table() to get an astropy Table instead.")
         return self._data
 
     @data.setter

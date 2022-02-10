@@ -1,0 +1,3 @@
+Using `sunpy.timeseries.GenericTimeSeries.data` is deprecated.
+Use :meth:`sunpy.timeseries.GenericTimeSeries.to_dataframe` to get a pandas DataFrame or
+:meth:`sunpy.timeseries.GenericTimeSeries.to_table` to get an astropy Table instead."
