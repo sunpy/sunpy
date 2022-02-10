@@ -11,7 +11,7 @@ import pandas as pd
 
 import astropy
 import astropy.units as u
-from astropy.table import Table
+from astropy.table import Table, Column
 from astropy.timeseries import TimeSeries
 
 from sunpy import config
@@ -98,9 +98,9 @@ class GenericTimeSeries:
             self.meta = meta
 
         if units is None:
-            self.units = {}
-        else:
-            self.units = units
+            # Get any units already in self._data
+            units = {col: self._data[col].unit for col in self.columns}
+        self.units = units
 
         for col in self.columns:
             if col not in self.units:
@@ -116,6 +116,34 @@ class GenericTimeSeries:
         # self._validate_units()
 
 # #### Attribute definitions #### #
+
+    @property
+    def units(self):
+        """
+        Mapping from column name to column units.
+        """
+        return OrderedDict({col: self._data[col].unit for col in self.columns})
+
+    @units.setter
+    def units(self, units):
+        units = copy.copy(units)
+        for col in self.columns:
+            if col in units:
+                unit = units.pop(col)
+            else:
+                warn_user(f'Unknown units for {col}')
+                unit = u.dimensionless_unscaled
+
+            # Set column
+            quantity = self._data[col]
+            if isinstance(quantity, Column):
+                # Astropy 4.2
+                quantity = quantity.quantity
+            self._data[col] = u.Quantity(quantity.value, unit)
+
+        if len(units):
+            warn_user('The following entries in units do not have an associated column: '
+                      f'{list(units.keys())}')
 
     @property
     def data(self):
@@ -202,9 +230,7 @@ class GenericTimeSeries:
         -------
         `~astropy.units.quantity.Quantity`
         """
-        values = self._data[colname]
-        unit = self.units[colname]
-        return u.Quantity(values, unit)
+        return self._data[colname]
 
     def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
         """
@@ -227,31 +253,25 @@ class GenericTimeSeries:
             A new `~sunpy.timeseries.TimeSeries`.
         """
         # Get the expected units from the quantity if required
-        if not unit and isinstance(quantity, astropy.units.quantity.Quantity):
-            unit = quantity.unit
-        elif not unit:
-            unit = u.dimensionless_unscaled
+        if not isinstance(quantity, astropy.units.quantity.Quantity):
+            if not unit:
+                unit = u.dimensionless_unscaled
+            quantity *= unit
 
         # Make a copy of all the TimeSeries components.
-        data = copy.copy(self._data)
+        data = self._data.copy()
         meta = TimeSeriesMetaData(copy.copy(self.meta.metadata))
-        units = copy.copy(self.units)
-
-        # Add the unit to the units dictionary if already there.
-        if not (colname in self._data.columns):
-            units[colname] = unit
 
         # Convert the given quantity into values for given units if necessary.
-        values = quantity
-        if isinstance(values, astropy.units.quantity.Quantity) and overwrite:
-            values = values.to(units[colname]).value
+        if overwrite and colname in self.columns:
+            quantity = quantity.to(self.units[colname])
 
         # Update or add the data.
         if not (colname in self._data.columns) or overwrite:
-            data[colname] = values
+            data[colname] = quantity
 
         # Return a new TimeSeries with the given updated/added column.
-        return self.__class__(data, meta, units)
+        return self.__class__(data, meta)
 
     def remove_column(self, colname):
         """
@@ -271,9 +291,7 @@ class GenericTimeSeries:
             raise ValueError(f'Given column name ({colname}) not in list of columns {self.columns}')
         data = self._data.copy()
         data.remove_column(colname)
-        units = self.units.copy()
-        units.pop(colname)
-        return self.__class__(data, self.meta, units)
+        return self.__class__(data, self.meta)
 
     def sort_index(self, **kwargs):
         """
@@ -290,8 +308,7 @@ class GenericTimeSeries:
         data = self._data.copy()
         data.sort(['time'])
         return GenericTimeSeries(data,
-                                 TimeSeriesMetaData(copy.copy(self.meta.metadata)),
-                                 copy.copy(self.units))
+                                 TimeSeriesMetaData(copy.copy(self.meta.metadata)))
 
     def truncate(self, a, b=None, int=None):
         """
@@ -358,8 +375,8 @@ class GenericTimeSeries:
             truncated_meta = TimeSeriesMetaData(copy.deepcopy(self.meta.metadata))
             truncated_meta._truncate(tr)
 
-        # Build similar TimeSeries object and sanatise metadata and units.
-        object = self.__class__(truncated_data, truncated_meta, copy.copy(self.units))
+        # Build similar TimeSeries object and sanatise metadata
+        object = self.__class__(truncated_data, truncated_meta)
         object._sanitize_metadata()
         return object
 
@@ -382,8 +399,7 @@ class GenericTimeSeries:
         data.keep_columns(['time', column_name])
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data, TimeSeriesMetaData(copy.copy(self.meta.metadata)),
-                                   units={column_name: self.units[column_name]})
+        object = GenericTimeSeries(data, TimeSeriesMetaData(copy.copy(self.meta.metadata)))
         object._sanitize_metadata()
         return object
 
@@ -628,8 +644,7 @@ class GenericTimeSeries:
             A new `astropy.table.Table` containing the data from the `~sunpy.timeseries.TimeSeries`.
             The table will include units where relevant.
         """
-        # TODO: deprecate this
-        return Table(data=self._data, units=self.units)
+        return self._data
 
     def to_dataframe(self, **kwargs):
         """

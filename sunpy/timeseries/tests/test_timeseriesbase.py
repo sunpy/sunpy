@@ -711,7 +711,7 @@ def test_ts_to_table(generic_ts):
     assert isinstance(tbl, Table)
     assert tbl.keys() == ['time', *generic_ts.columns]
     assert len(tbl) == len(generic_ts.to_dataframe())
-    assert (tbl[generic_ts.columns[0]].quantity ==
+    assert (tbl[generic_ts.columns[0]] ==
             generic_ts.quantity(generic_ts.columns[0])).all()
 
 

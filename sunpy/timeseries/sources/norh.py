@@ -51,9 +51,6 @@ class NoRHTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'norh'
 
-    def __init__(self, data, header, units, **kwargs):
-        super().__init__(data, header, units, **kwargs)
-
     def plot(self, axes=None, **kwargs):
         """
         Plot the NoRH lightcurve.
