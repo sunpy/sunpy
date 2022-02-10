@@ -888,7 +888,9 @@ def test_equality_different_ts_types(generic_ts):
 
 
 def test_ts_index(generic_ts):
-    assert (generic_ts.index == generic_ts.to_dataframe().index).all()
+    with pytest.warns(SunpyDeprecationWarning, match='.index is deprecatd'):
+        assert (generic_ts.index == generic_ts.to_dataframe().index).all()
+    assert (generic_ts.time == generic_ts.to_table()['time']).all()
 
 
 def test_ts_shape(generic_ts):

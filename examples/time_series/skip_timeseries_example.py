@@ -73,7 +73,7 @@ print(ts_lyra.meta)
 print(ts_lyra.units)
 # There are a couple of other useful properties you can quickly get:
 print(ts_lyra.time_range)
-print(ts_lyra.index)
+print(ts_lyra.time)
 print(ts_lyra.columns)
 
 # Further data is available from within the metadata, you can filter out for a
@@ -84,8 +84,6 @@ combined_goes_ts.meta.get('telescop')
 combined_goes_ts.meta.get('telescop').values()
 
 ##############################################################################
-# The ID used in the data Pandas DataFrame object will be a datetime, as can
-# be seen using ts_lyra.index.
 # You can access a specific value within the TimeSeries data DataFrame using
 # all the normal Pandas methods.
 # For example, the row with the index of 2015-01-01 00:02:00.008000:

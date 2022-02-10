@@ -159,6 +159,8 @@ class GenericTimeSeries:
         """
         The time index of the data.
         """
+        warn_deprecated('.index is deprecatd. Use .time instead to get an astropy.time.Time object, '
+                        'or ts.to_dataframe().index to get a pandas DateTimeIndex.')
         return self.to_dataframe().index
 
     @property
@@ -173,7 +175,7 @@ class GenericTimeSeries:
         """
         The shape of the data, a tuple (nrows, ncols).
         """
-        return (len(self.index), len(self.columns))
+        return (len(self.time), len(self.columns))
 
     @property
     def time_range(self):
