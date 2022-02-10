@@ -33,7 +33,7 @@ smap = aia.submap(bottom_left, top_right=top_right)
 # sphinx_gallery_defer_figures
 
 fig = plt.figure()
-ax = plt.subplot(projection=smap)
+ax = fig.add_subplot(projection=smap)
 
 ax.imshow(smap.data)
 
@@ -59,8 +59,9 @@ ax.plot(pixel_coord[0], pixel_coord[1], 'x', color='white',
 
 map_coord = ([-300, 200] * u.arcsec)
 
-ax.plot(map_coord[0].to('deg'), map_coord[1].to('deg'), 'o', color='white', transform=ax.get_transform('world'),
+ax.plot(map_coord[0].to('deg'), map_coord[1].to('deg'), 'o', color='white',
+        transform=ax.get_transform('world'),
         label=f'Map coordinate [{map_coord[0]}, {map_coord[1]}]')
-plt.legend()
+ax.legend()
 
 plt.show()

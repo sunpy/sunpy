@@ -30,8 +30,8 @@ coords = {body: get_body_heliographic_stonyhurst(body, syn_map.date)
 # :func:`~sunpy.visualization.draw_limb` and provide them to
 # :meth:`~matplotlib.axes.Axes.legend`.
 fig = plt.figure(figsize=(12, 5))
-ax = plt.subplot(projection=syn_map)
-im = syn_map.plot()
+ax = fig.add_subplot(projection=syn_map)
+im = syn_map.plot(axes=ax)
 
 visible_limbs = []
 for (body, coord), color in zip(coords.items(), ['tab:blue', 'tab:red']):

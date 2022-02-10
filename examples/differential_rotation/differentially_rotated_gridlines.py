@@ -28,8 +28,8 @@ from sunpy.data.sample import AIA_171_IMAGE
 
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 fig = plt.figure()
-ax = plt.subplot(projection=aiamap)
-aiamap.plot(clip_interval=(1., 99.95)*u.percent)
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax, clip_interval=(1., 99.95)*u.percent)
 
 ##############################################################################
 # Lines of constant longitude prior to differential rotation

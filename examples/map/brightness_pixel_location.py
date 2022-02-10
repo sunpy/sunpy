@@ -29,7 +29,7 @@ hpc_max = aia.pixel_to_world(pixel_pos[:, 1], pixel_pos[:, 0])
 # Let's now plot the results.
 
 fig = plt.figure()
-ax = plt.subplot(projection=aia)
-aia.plot()
+ax = fig.add_subplot(projection=aia)
+aia.plot(axes=ax)
 ax.plot_coord(hpc_max, 'wx', fillstyle='none', markersize=10)
 plt.show()

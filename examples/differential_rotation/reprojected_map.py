@@ -63,12 +63,12 @@ with propagate_with_solar_surface():
 
 fig = plt.figure(figsize=(12, 4))
 
-ax1 = fig.add_subplot(1, 2, 1, projection=aiamap)
-aiamap.plot(vmin=0, vmax=20000, title='Original map')
+ax1 = fig.add_subplot(121, projection=aiamap)
+aiamap.plot(axes=ax1, vmin=0, vmax=20000, title='Original map')
 plt.colorbar()
 
-ax2 = fig.add_subplot(1, 2, 2, projection=out_warp)
-out_warp.plot(vmin=0, vmax=20000,
+ax2 = fig.add_subplot(122, projection=out_warp)
+out_warp.plot(axes=ax2, vmin=0, vmax=20000,
               title=f"Reprojected to an Earth observer {(out_time - in_time).to('day')} later")
 plt.colorbar()
 

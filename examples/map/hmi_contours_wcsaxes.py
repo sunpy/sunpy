@@ -39,11 +39,11 @@ sub_hmi = hmi.submap(bottom_left, top_right=top_right)
 
 fig = plt.figure(figsize=(11, 5))
 
-ax = plt.subplot(1, 2, 1, projection=sub_aia)
-sub_aia.plot(clip_interval=(1, 99.99)*u.percent)
+ax1 = fig.add_subplot(121, projection=sub_aia)
+sub_aia.plot(axes=ax1, clip_interval=(1, 99.99)*u.percent)
 
-ax2 = plt.subplot(1, 2, 2, projection=sub_hmi)
-sub_hmi.plot()
+ax2 = fig.add_subplot(122, projection=sub_hmi)
+sub_hmi.plot(axes=ax2)
 
 ################################################################################
 # In the next plot we will start by plotting the same aia submap, and draw a
@@ -53,9 +53,9 @@ sub_hmi.plot()
 
 fig = plt.figure(figsize=(8, 8))
 
-ax = plt.subplot(projection=sub_aia)
-sub_aia.plot(clip_interval=(1, 99.99)*u.percent)
-grid = sub_aia.draw_grid()
+ax = fig.add_subplot(projection=sub_aia)
+sub_aia.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+sub_aia.draw_grid(axes=ax)
 
 ax.set_title("AIA 193 with HMI magnetic field strength contours", y=1.1)
 

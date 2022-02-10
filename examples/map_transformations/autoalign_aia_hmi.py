@@ -36,9 +36,9 @@ map_hmi.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 # "upside down" relative to the AIA image.
 
 fig = plt.figure(figsize=(12, 5))
-ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+ax1 = fig.add_subplot(121, projection=map_aia)
 map_aia.plot(axes=ax1, clip_interval=(1, 99.9)*u.percent)
-ax2 = fig.add_subplot(1, 2, 2, projection=map_hmi)
+ax2 = fig.add_subplot(122, projection=map_hmi)
 map_hmi.plot(axes=ax2)
 
 ######################################################################
@@ -51,9 +51,9 @@ map_hmi.plot(axes=ax2)
 # orientation as the AIA image.
 
 fig = plt.figure(figsize=(12, 5))
-ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+ax1 = fig.add_subplot(121, projection=map_aia)
 map_aia.plot(axes=ax1, clip_interval=(1, 99.9)*u.percent)
-ax2 = fig.add_subplot(1, 2, 2, projection=map_aia)
+ax2 = fig.add_subplot(122, projection=map_aia)
 map_hmi.plot(axes=ax2, autoalign=True, title='HMI image in AIA reference frame')
 ax2.axis(ax1.axis())
 
@@ -62,7 +62,7 @@ ax2.axis(ax1.axis())
 # transparency of the HMI plot.
 
 fig = plt.figure()
-ax1 = fig.add_subplot(1, 1, 1, projection=map_aia)
+ax1 = fig.add_subplot(projection=map_aia)
 map_aia.plot(axes=ax1, clip_interval=(1, 99.9)*u.percent)
 map_hmi.plot(axes=ax1, autoalign=True, alpha=0.5)
 ax1.set_title('HMI overlaid on AIA')

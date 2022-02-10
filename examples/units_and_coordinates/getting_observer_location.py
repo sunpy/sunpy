@@ -42,7 +42,8 @@ sun = get_body_heliographic_stonyhurst('sun', aiamap.date)
 # field of view but remember that it is also above the plane of this plot
 # by its declination.
 
-ax = plt.subplot(projection='polar')
+fig = plt.figure()
+ax = fig.add_subplot(projection='polar')
 circle = plt.Circle((0.0, 0.0), 1.0, transform=ax.transProjectionAffine + ax.transAxes, color="green",
                     alpha=0.4, label="Earth")
 ax.add_artist(circle)

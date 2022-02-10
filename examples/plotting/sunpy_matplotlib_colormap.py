@@ -34,8 +34,8 @@ Z = (Z1 - Z2) * 2
 ###############################################################################
 # Let's now plot the results with the colormap.
 
-fig, ax = plt.subplots()
-im = ax.imshow(Z, interpolation='bilinear', cmap=sdoaia171,
-               origin='lower', extent=[-3, 3, -3, 3],
-               vmax=abs(Z).max(), vmin=-abs(Z).max())
+plt.figure()
+im = plt.imshow(Z, interpolation='bilinear', cmap=sdoaia171,
+                origin='lower', extent=[-3, 3, -3, 3],
+                vmax=abs(Z).max(), vmin=-abs(Z).max())
 plt.show()

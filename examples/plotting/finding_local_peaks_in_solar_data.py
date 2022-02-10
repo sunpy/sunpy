@@ -49,7 +49,7 @@ coordinates = peak_local_max(aiamap.data, min_distance=60, threshold_rel=0.2)
 # those positions marked red in the aiamap data.
 
 fig = plt.figure(figsize=(12, 8))
-ax = fig.add_subplot(111, projection='3d')
+ax = fig.add_subplot(projection='3d')
 ax.plot_surface(X, Y, aiamap.data)
 ax.view_init(elev=39, azim=64)
 peaks_pos = aiamap.data[coordinates[:, 0], coordinates[:, 1]]
@@ -57,6 +57,7 @@ ax.scatter(coordinates[:, 1], coordinates[:, 0], peaks_pos, color='r')
 ax.set_xlabel('X Coordinates')
 ax.set_ylabel('Y Coordinates')
 ax.set_zlabel('Intensity')
+plt.show()
 
 ###############################################################################
 # Now we need to turn the pixel coordinates into the world location so
@@ -69,8 +70,8 @@ hpc_max = aiamap.pixel_to_world(coordinates[:, 1]*u.pixel, coordinates[:, 0]*u.p
 # which will be marked with a blue x-label.
 
 fig = plt.figure()
-ax = plt.subplot(projection=aiamap)
-aiamap.plot()
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax)
 ax.plot_coord(hpc_max, 'bx')
 
 plt.show()

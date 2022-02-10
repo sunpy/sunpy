@@ -53,13 +53,13 @@ maps['AIA'].plot_settings['vmin'] = 0  # set the minimum plotted pixel value
 # the far side of the Sun from STEREO's point of view.
 
 fig = plt.figure(figsize=(10, 4))
-ax1 = fig.add_subplot(1, 2, 1, projection=maps['AIA'])
+ax1 = fig.add_subplot(121, projection=maps['AIA'])
 maps['AIA'].plot(axes=ax1)
-maps['AIA'].draw_limb()
+maps['AIA'].draw_limb(axes=ax1)
 
-ax2 = fig.add_subplot(1, 2, 2, projection=maps['EUVI'])
+ax2 = fig.add_subplot(122, projection=maps['EUVI'])
 maps['EUVI'].plot(axes=ax2)
-visible, hidden = maps['AIA'].draw_limb()
+visible, hidden = maps['AIA'].draw_limb(axes=ax2)
 hidden.remove()
 
 ##############################################################################
@@ -68,9 +68,9 @@ hidden.remove()
 # edge of the plot will have corresponding ticks and tick labels.
 
 fig = plt.figure()
-ax = plt.subplot(projection=maps['EUVI'])
+ax = fig.add_subplot(projection=maps['EUVI'])
 
-maps['EUVI'].plot()
+maps['EUVI'].plot(axes=ax)
 
 # Crop the view using pixel coordinates
 ax.set_xlim(500, 1300)

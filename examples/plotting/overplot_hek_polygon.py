@@ -68,7 +68,7 @@ rotated_ch_boundary = solar_rotate_coordinate(ch_boundary, time=aia_map.date)
 # it with hatching.
 
 fig = plt.figure()
-ax = plt.subplot(projection=aia_map)
+ax = fig.add_subplot(projection=aia_map)
 aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
 ax.plot_coord(rotated_ch_boundary, color='c')
 ax.set_title('{:s}\n{:s}'.format(aia_map.name, ch['frm_specificid']))

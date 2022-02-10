@@ -34,7 +34,7 @@ dt = 1 * u.day
 rotation_rate = [diff_rot(dt, this_lat) / dt for this_lat in latitudes]
 rotation_period = [360 * u.deg / this_rate for this_rate in rotation_rate]
 
-fig = plt.figure()
+plt.figure()
 plt.plot(np.sin(latitudes), [this_period.value for this_period in rotation_period])
 plt.ylim(38, 24)
 plt.ylabel('Rotation Period [{}]'.format(rotation_period[0].unit))
@@ -63,10 +63,10 @@ future_date = aia_map.date + dt
 # Now let's plot the original and rotated positions on the AIA map.
 
 fig = plt.figure()
-ax = plt.subplot(projection=aia_map)
-aia_map.plot(clip_interval=(1, 99.99)*u.percent)
+ax = fig.add_subplot(projection=aia_map)
+aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
 ax.set_title('The effect of {} days of differential rotation'.format(dt.to(u.day).value))
-aia_map.draw_grid()
+aia_map.draw_grid(axes=ax)
 
 for this_hpc_x, this_hpc_y in zip(hpc_x, hpc_y):
     start_coord = SkyCoord(this_hpc_x, this_hpc_y, frame=aia_map.coordinate_frame)
@@ -75,7 +75,7 @@ for this_hpc_x, this_hpc_y in zip(hpc_x, hpc_y):
                      [start_coord.Ty, rotated_coord.Ty],
                      frame=aia_map.coordinate_frame)
     ax.plot_coord(coord, 'o-')
-plt.ylim(0, aia_map.data.shape[1])
-plt.xlim(0, aia_map.data.shape[0])
+ax.set_ylim(0, aia_map.data.shape[1])
+ax.set_xlim(0, aia_map.data.shape[0])
 
 plt.show()

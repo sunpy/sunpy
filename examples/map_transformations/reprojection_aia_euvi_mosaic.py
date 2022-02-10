@@ -64,22 +64,19 @@ maps[0].meta['rsun_ref'] = sunpy.sun.constants.radius.to_value(u.m)
 
 earth = get_body_heliographic_stonyhurst('earth', maps[0].date)
 
-plt.figure(figsize=(8, 8))
-r_unit = u.AU
-
-ax = plt.subplot(projection='polar')
-circle = plt.Circle((0.0, 0.0), (10*u.Rsun).to_value(r_unit),
+fig = plt.figure(figsize=(8, 8))
+ax = fig.add_subplot(projection='polar')
+circle = plt.Circle((0.0, 0.0), (10*u.Rsun).to_value(u.AU),
                     transform=ax.transProjectionAffine + ax.transAxes, color="yellow",
                     alpha=1, label="Sun")
 ax.add_artist(circle)
-ax.text(earth.lon.to_value("rad")+0.05, earth.radius.to_value(r_unit), "Earth")
+ax.text(earth.lon.to_value("rad")+0.05, earth.radius.to_value(u.AU), "Earth")
 
 for this_satellite, this_coord in [(m.observatory, m.observer_coordinate) for m in maps]:
-    ax.plot(this_coord.lon.to('rad'), this_coord.radius.to(r_unit), 'o', label=this_satellite)
+    ax.plot(this_coord.lon.to('rad'), this_coord.radius.to(u.AU), 'o', label=this_satellite)
 
 ax.set_theta_zero_location("S")
 ax.set_rlim(0, 1.3)
-
 ax.legend()
 
 plt.show()
@@ -114,6 +111,8 @@ array, footprint = reproject_and_coadd(maps, out_wcs, shape_out,
 
 outmap = sunpy.map.Map((array, header))
 outmap.plot_settings = maps[0].plot_settings
+
+plt.figure()
 outmap.plot()
 
 plt.show()
@@ -183,9 +182,9 @@ outmap = sunpy.map.Map((array, header))
 outmap.plot_settings = maps[0].plot_settings
 outmap.nickname = 'AIA + EUVI/A + EUVI/B'
 
-plt.figure(figsize=(10, 5))
-ax = plt.subplot(projection=out_wcs)
-im = outmap.plot(vmin=400)
+fig = plt.figure(figsize=(10, 5))
+ax = fig.add_subplot(projection=out_wcs)
+im = outmap.plot(axes=ax, vmin=400)
 
 lon, lat = ax.coords
 lon.set_coord_type("longitude")

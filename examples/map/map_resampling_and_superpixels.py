@@ -29,7 +29,7 @@ aia_resampled_map = aia_map.resample(new_dimensions)
 ##############################################################################
 # Let's plot the result.
 
-ax = plt.subplot(projection=aia_resampled_map)
+plt.figure()
 aia_resampled_map.plot()
 plt.show()
 
@@ -46,6 +46,6 @@ aia_superpixel_map = aia_map.superpixel(new_dimensions)
 ##############################################################################
 # Let's plot the result.
 
-ax = plt.subplot(projection=aia_superpixel_map)
+plt.figure()
 aia_superpixel_map.plot()
 plt.show()

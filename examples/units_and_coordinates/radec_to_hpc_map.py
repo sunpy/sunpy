@@ -141,8 +141,8 @@ lofar_map = sunpy.map.Map(data, new_header)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=lofar_map)
-lofar_map.plot(cmap='viridis')
-lofar_map.draw_limb()
+lofar_map.plot(axes=ax, cmap='viridis')
+lofar_map.draw_limb(axes=ax)
 
 plt.show()
 
@@ -160,9 +160,9 @@ lofar_submap = lofar_map_rotate.submap(bl, top_right=tr)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=lofar_submap)
-lofar_submap.plot(cmap='viridis')
-lofar_submap.draw_limb()
-lofar_submap.draw_grid()
-lofar_submap.draw_contours(np.arange(30, 100, 5)*u.percent)
+lofar_submap.plot(axes=ax, cmap='viridis')
+lofar_submap.draw_limb(axes=ax)
+lofar_submap.draw_grid(axes=ax)
+lofar_submap.draw_contours(np.arange(30, 100, 5)*u.percent, axes=ax)
 
 plt.show()

@@ -80,7 +80,7 @@ aia_top_right = SkyCoord(-600 * u.arcsec,
 # Plot a rectangle around the region we want to crop.
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection=maps['AIA'])
+ax = fig.add_subplot(projection=maps['AIA'])
 maps['AIA'].plot(axes=ax)
 maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right)
 
@@ -90,7 +90,7 @@ maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right)
 subaia = maps['AIA'].submap(aia_bottom_left, top_right=aia_top_right)
 fig = plt.figure()
 ax = fig.add_subplot(projection=subaia)
-subaia.plot()
+subaia.plot(axes=ax)
 
 feature_aia = SkyCoord(-706 * u.arcsec,
                        -181 * u.arcsec,
@@ -114,11 +114,11 @@ print(feature_aia.transform_to(maps['EUVI'].coordinate_frame))
 
 fig = plt.figure(figsize=(10, 4))
 
-ax1 = fig.add_subplot(1, 2, 1, projection=maps['AIA'])
+ax1 = fig.add_subplot(121, projection=maps['AIA'])
 maps['AIA'].plot(axes=ax1)
 maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right, axes=ax1)
 
-ax2 = fig.add_subplot(1, 2, 2, projection=maps['EUVI'])
+ax2 = fig.add_subplot(122, projection=maps['EUVI'])
 maps['EUVI'].plot(axes=ax2)
 maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right, axes=ax2)
 
@@ -130,13 +130,13 @@ maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right, axes=ax2)
 
 fig = plt.figure(figsize=(15, 5))
 
-ax1 = fig.add_subplot(1, 2, 1, projection=subaia)
+ax1 = fig.add_subplot(121, projection=subaia)
 subaia.plot(axes=ax1)
 ax1.plot_coord(feature_aia, 'bx', fillstyle='none', markersize=20)
 
 subeuvi = maps['EUVI'].submap(aia_bottom_left, top_right=aia_top_right)
 
-ax2 = fig.add_subplot(1, 2, 2, projection=subeuvi)
+ax2 = fig.add_subplot(122, projection=subeuvi)
 subeuvi.plot(axes=ax2)
 maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right, axes=ax2)
 ax2.plot_coord(feature_aia, 'bx', fillstyle='none', markersize=20)

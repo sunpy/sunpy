@@ -40,7 +40,9 @@ m_cutout = m.submap(
     SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=m.coordinate_frame),
     top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=m.coordinate_frame),
 )
-m_cutout.peek()
+plt.figure()
+m_cutout.plot()
+plt.show()
 
 #####################################################
 # We want to watch the evolution of this active region
@@ -105,5 +107,4 @@ m_seq = sunpy.map.Map(files, sequence=True)
 for m in m_seq:
     m.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
 m_seq.peek()
-
 plt.show()

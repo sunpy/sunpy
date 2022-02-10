@@ -50,11 +50,12 @@ smap = aiamap.submap(bottom_left, width=fov, height=fov)
 ###############################################################################
 # Let's plot the results.
 
-ax = plt.subplot(projection=smap)
-smap.plot()
-smap.draw_limb()
+fig = plt.figure()
+ax = fig.add_subplot(projection=smap)
+smap.plot(axes=ax)
+smap.draw_limb(axes=ax)
 ax.grid(False)
 ax.plot_coord(venus_hpc, 'x', color='deepskyblue', label='Venus')
-plt.legend()
+ax.legend()
 
 plt.show()

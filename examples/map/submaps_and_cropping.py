@@ -29,10 +29,8 @@ swap_submap = swap_map.submap(bottom_left, top_right=top_right)
 ###############################################################################
 # Let's plot the results.
 
-fig = plt.figure()
-ax = fig.add_subplot(111, projection=swap_submap)
+plt.figure()
 swap_submap.plot()
 swap_submap.draw_limb()
 swap_submap.draw_grid()
-
 plt.show()

@@ -50,12 +50,12 @@ print(transformed_diffrot_point)
 # coordinates on top of the AIA observation.
 
 fig = plt.figure()
-ax = plt.subplot(projection=aiamap)
-aiamap.plot(clip_interval=(1., 99.95)*u.percent)
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax, clip_interval=(1., 99.95)*u.percent)
 
 ax.plot_coord(point, 'ro', fillstyle='none', label='Original')
 ax.plot_coord(transformed_diffrot_point, 'bo', fillstyle='none',
               label='Rotated')
-plt.legend()
+ax.legend()
 
 plt.show()

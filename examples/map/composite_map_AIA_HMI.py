@@ -46,7 +46,6 @@ comp_map.set_levels(index=1, levels=levels)
 # present on the AIA image and how they correspond to the line of sight
 # magnetic field.
 
-fig = plt.figure()
-ax = plt.subplot(projection=aia_smap)
+plt.figure()
 comp_map.plot()
 plt.show()

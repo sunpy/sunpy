@@ -67,12 +67,12 @@ map_euvi = map_euvi.resample(out_shape * u.pix)
 
 fig = plt.figure()
 
-ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+ax1 = fig.add_subplot(121, projection=map_aia)
 map_aia.plot(axes=ax1)
 map_aia.draw_limb(axes=ax1, color='white')
 map_euvi.draw_limb(axes=ax1, color='red')
 
-ax2 = fig.add_subplot(1, 2, 2, projection=map_euvi)
+ax2 = fig.add_subplot(122, projection=map_euvi)
 map_euvi.plot(axes=ax2)
 limb_aia = map_aia.draw_limb(axes=ax2, color='white')
 limb_euvi = map_euvi.draw_limb(axes=ax2, color='red')
@@ -107,9 +107,9 @@ outmap = map_euvi.reproject_to(out_header)
 # SDO, next to the AIA image.
 
 fig = plt.figure()
-ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+ax1 = fig.add_subplot(121, projection=map_aia)
 map_aia.plot(axes=ax1)
-ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
+ax2 = fig.add_subplot(122, projection=outmap)
 outmap.plot(axes=ax2, title='EUVI image as seen from SDO')
 map_euvi.draw_limb(color='blue')
 
@@ -157,11 +157,11 @@ outmap = map_aia.reproject_to(mars_header)
 
 fig = plt.figure()
 
-ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+ax1 = fig.add_subplot(121, projection=map_aia)
 map_aia.plot(axes=ax1)
 map_aia.draw_grid(color='w')
 
-ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
+ax2 = fig.add_subplot(122, projection=outmap)
 outmap.plot(axes=ax2, title='AIA observation as seen from Mars')
 map_aia.draw_grid(color='w')
 map_aia.draw_limb(color='blue')

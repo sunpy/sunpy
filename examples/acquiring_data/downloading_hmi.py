@@ -44,9 +44,8 @@ print(downloaded_file)
 # than negative to positive).
 
 hmi_map = sunpy.map.Map(downloaded_file[0])
-fig = plt.figure()
+plt.figure()
 hmi_map.plot()
-
 plt.show()
 
 ###############################################################################
@@ -63,6 +62,6 @@ plt.show()
 # in this case, 3 refers to bi-cubic.
 
 hmi_rotated = hmi_map.rotate(order=3)
+plt.figure()
 hmi_rotated.plot()
-
 plt.show()

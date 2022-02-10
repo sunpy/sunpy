@@ -34,10 +34,9 @@ hpc_max = aia.pixel_to_world(pixel_pos[:, 1], pixel_pos[:, 0])
 # Let's plot the results.
 
 fig = plt.figure()
-ax = plt.subplot(projection=aia)
-aia.plot()
+ax = fig.add_subplot(projection=aia)
+aia.plot(axes=ax)
 ax.plot_coord(hpc_max, color='white', marker='x', markersize=15)
-
 plt.show()
 
 ###############################################################################
@@ -55,8 +54,6 @@ scaled_map = sunpy.map.Map(aia.data, aia.meta, mask=mask.mask)
 ###############################################################################
 # Let's plot the results.
 
-fig = plt.figure()
-ax = plt.subplot(projection=scaled_map)
+plt.figure()
 scaled_map.plot()
-
 plt.show()

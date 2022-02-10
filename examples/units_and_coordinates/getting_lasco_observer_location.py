@@ -48,7 +48,8 @@ print(mercury_hpc_wrong)
 ##############################################################################
 # Let's plot how this looks with the incorrect observer information.
 
-ax = plt.subplot(projection=lasco)
+fig = plt.figure()
+ax = fig.add_subplot(projection=lasco)
 
 # Let's tweak the axis to show in degrees instead of arcsec
 lon, lat = ax.coords
@@ -56,7 +57,7 @@ lon.set_major_formatter('d.dd')
 lat.set_major_formatter('d.dd')
 ax.plot_coord(mercury_hpc_wrong, 's', color='white',
               fillstyle='none', markersize=12, label='Mercury')
-lasco.plot()
+lasco.plot(axes=ax)
 
 plt.show()
 
@@ -98,13 +99,14 @@ print(r)
 ##############################################################################
 # Let's plot the results.
 
-ax = plt.subplot(projection=lasco)
+fig = plt.figure()
+ax = fig.add_subplot(projection=lasco)
 
 # Let's tweak the axis to show in degrees instead of arcsec
 lon, lat = ax.coords
 lon.set_major_formatter('d.dd')
 lat.set_major_formatter('d.dd')
 ax.plot_coord(mercury_hpc, 's', color='white', fillstyle='none', markersize=12, label='Mercury')
-lasco.plot()
+lasco.plot(axes=ax)
 
 plt.show()

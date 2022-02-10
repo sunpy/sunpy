@@ -54,10 +54,10 @@ lat0 = SkyCoord(np.ones(num_points) * lat_value,
 # grid as well for comparison.
 
 fig = plt.figure()
-ax = plt.subplot(projection=aia)
-aia.plot(clip_interval=(1, 99.99)*u.percent)
+ax = fig.add_subplot(projection=aia)
+aia.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
 ax.plot_coord(lat0, color="C0")
 ax.plot_coord(lon0, color="C0")
-aia.draw_grid()
+aia.draw_grid(axes=ax)
 
 plt.show()

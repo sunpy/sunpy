@@ -35,13 +35,13 @@ flares_hek = hek_results[0]
 ###############################################################################
 # Lets plot everything together.
 
-fig, ax = plt.subplots()
+plt.figure()
 goes.plot()
-ax.axvline(parse_time(flares_hek['event_peaktime']).datetime)
-ax.axvspan(parse_time(flares_hek['event_starttime']).datetime,
-           parse_time(flares_hek['event_endtime']).datetime,
-           alpha=0.2, label=flares_hek['fl_goescls'])
-ax.legend(loc=2)
-ax.set_yscale('log')
+plt.axvline(parse_time(flares_hek['event_peaktime']).datetime)
+plt.axvspan(parse_time(flares_hek['event_starttime']).datetime,
+            parse_time(flares_hek['event_endtime']).datetime,
+            alpha=0.2, label=flares_hek['fl_goescls'])
+plt.legend(loc=2)
+plt.yscale('log')
 
 plt.show()
