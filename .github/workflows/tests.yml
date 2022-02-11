@@ -10,6 +10,7 @@ jobs:
   core-tests:
     uses: dstansby/sunpy/.github/workflows/python-test-workflow.yml@gh-actions
     with:
+      os: ubuntu-latest
       python-version: '3.9'
       tox-env: py39
 
@@ -17,5 +18,6 @@ jobs:
     needs: core-tests
     uses: dstansby/sunpy/.github/workflows/python-test-workflow.yml@gh-actions
     with:
+      os: ubuntu-latest
       python-version: '3.8'
       tox-env: py38-online

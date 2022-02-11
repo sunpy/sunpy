@@ -4,6 +4,9 @@ name: Python test workflow
 on:
   workflow_call:
     inputs:
+      os:
+        required: true
+        type: string
       python-version:
         required: true
         type: string
@@ -13,7 +16,7 @@ on:
 
 jobs:
   linux-tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.os }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ inputs.python-version }}
