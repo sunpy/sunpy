@@ -12,3 +12,10 @@ jobs:
     with:
       python-version: '3.9'
       tox-env: py39
+
+  remote-tests:
+    needs: core-tests
+    uses: dstansby/sunpy/.github/workflows/python-test-workflow.yml@gh-actions
+    with:
+      python-version: '3.8'
+      tox-env: py38-online
