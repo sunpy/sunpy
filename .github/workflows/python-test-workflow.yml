@@ -1,0 +1,30 @@
+name: Python test workflow
+
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: true
+        type: string
+      tox-env:
+        required: true
+        type: string
+
+jobs:
+  linux-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install system dependencies
+      run: |
+        sudo apt-get install -y libopenjp2-7 graphviz
+        python -m pip install --upgrade pip
+        python -m pip install tox tox-pypi-filter
+    - name: Run tests
+      run: |
+        tox -e ${{ inputs.tox-env }} -- -n auto --dist loadgroup
