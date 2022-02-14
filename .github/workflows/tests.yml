@@ -7,15 +7,29 @@ on:
     branches: [ main ]
 
 jobs:
-  core-tests:
+  linux-tests:
     uses: dstansby/sunpy/.github/workflows/python-test-workflow.yml@gh-actions
     with:
       os: ubuntu-latest
       python-version: '3.9'
       tox-env: py39
 
+  macosx-tests:
+    uses: dstansby/sunpy/.github/workflows/python-test-workflow.yml@gh-actions
+    with:
+      os: macos-latest
+      python-version: '3.8'
+      tox-env: py38
+
+  windows-tests:
+    uses: dstansby/sunpy/.github/workflows/python-test-workflow.yml@gh-actions
+    with:
+      os: windows-latest
+      python-version: '3.10'
+      tox-env: py310
+
   remote-tests:
-    needs: core-tests
+    needs: linux-tests
     uses: dstansby/sunpy/.github/workflows/python-test-workflow.yml@gh-actions
     with:
       os: ubuntu-latest
