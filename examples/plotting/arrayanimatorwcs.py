@@ -59,7 +59,7 @@ print(wcs)
 # axes you want to plot on the image. All other axes should have a ``0`` and
 # sliders will be created to control the value for this axis.
 
-wcs_anim = ArrayAnimatorWCS(sequence_array, wcs, [0, 'x', 'y'], vmax=1000)
+wcs_anim = ArrayAnimatorWCS(sequence_array, wcs, [0, 'x', 'y'], vmax=1000).get_animation()
 
 plt.show()
 
@@ -86,6 +86,6 @@ coord_params = {
 
 # We have to recreate the visualization since we displayed it earlier.
 wcs_anim = ArrayAnimatorWCS(sequence_array, wcs, [0, 'x', 'y'], vmax=1000,
-                            coord_params=coord_params)
+                            coord_params=coord_params).get_animation()
 
 plt.show()
