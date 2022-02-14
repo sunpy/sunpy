@@ -34,3 +34,5 @@ jobs:
     - name: Run tests
       run: |
         tox -e ${{ inputs.tox-env }} -- -n auto --dist loadgroup
+    - name: Upload test coverage to Codecov
+      uses: codecov/codecov-action@v2

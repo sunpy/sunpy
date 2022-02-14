@@ -16,6 +16,7 @@ jobs:
 
   macosx-tests:
     uses: dstansby/sunpy/.github/workflows/python-test-workflow.yml@gh-actions
+    needs: linux-tests
     with:
       os: macos-latest
       python-version: '3.8'
@@ -23,6 +24,7 @@ jobs:
 
   windows-tests:
     uses: dstansby/sunpy/.github/workflows/python-test-workflow.yml@gh-actions
+    needs: linux-tests
     with:
       os: windows-latest
       python-version: '3.10'
