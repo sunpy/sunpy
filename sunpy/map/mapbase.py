@@ -550,6 +550,12 @@ class GenericMap(NDData):
     def _meta_hash(self):
         return self.meta.item_hash()
 
+    def _set_symmetric_vmin_vmax(self):
+        # Set symmetric vmin/vmax about zero
+        threshold = np.nanmax(abs(self.data))
+        self.plot_settings['norm'].vmin = -threshold
+        self.plot_settings['norm'].vmax = threshold
+
     @property
     @cached_property_based_on('_meta_hash')
     def wcs(self):
@@ -686,6 +692,7 @@ class GenericMap(NDData):
     @staticmethod
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
+                        'mx/cm^2': 'G',
                         'dn': 'ct',
                         'dn/s': 'ct/s'}
         if unit_str.lower() in replacements:
