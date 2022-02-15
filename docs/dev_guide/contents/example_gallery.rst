@@ -32,3 +32,18 @@ Contribution Guidelines
   Similarly complex jargon should be avoided unless clearly explained.
 
 * There should be a good variety of examples for each section (simple and more complex to cater for different levels).
+
+* When creating a plot, particularly of a map, the example should follow these rules of thumb to minimize verbosity and maintain consistency with the other gallery examples:
+
+  * Do not use `~sunpy.map.GenericMap.peek` in examples. Instead, use `~sunpy.map.GenericMap.plot`.
+
+  * Always create a figure instance using ``plt.figure()`` prior to creating a plot.
+
+  * Only create an axes instance if it is explicitly needed later in the example
+    (e.g. when overplotting a coordinate on a map using ``ax.plot_coord``).
+
+  * If an axes instance is created, it should be explicitly passed as a keyword argument wherever possible
+    (e.g. in `~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.draw_grid`).
+
+  * After each figure is created, call ``plt.show()``. While not explicitly needed for the gallery to render,
+    this ensures that, when run as a script, the gallery will display each figure sequentially.
