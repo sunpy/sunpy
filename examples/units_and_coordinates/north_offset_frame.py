@@ -32,9 +32,10 @@ new_frame = NorthOffsetFrame(north=north)
 # form great circles radially away from the point, and the lines of latitude
 # measure angular distance from the point.
 
-ax = plt.subplot(projection=aiamap)
-aiamap.plot(clip_interval=(1, 99.99)*u.percent)
-aiamap.draw_grid()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+aiamap.draw_grid(axes=ax)
 
 overlay = ax.get_coords_overlay(new_frame)
 overlay[0].set_ticks(spacing=30. * u.deg)

@@ -27,8 +27,8 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 # sphinx_gallery_defer_figures
 
 fig = plt.figure(figsize=(5, 5))
-fig.add_subplot(111, projection=aia_map)
-aia_map.plot(clip_interval=(1, 99.99)*u.percent)
+ax = fig.add_subplot(projection=aia_map)
+aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
 
 ################################################################################
 # Specify two opposite corners of the rectangle as a single, two-element
@@ -43,6 +43,7 @@ coords = SkyCoord(
 )
 aia_map.draw_quadrangle(
     coords,
+    axes=ax,
     edgecolor="blue",
     linestyle="-",
     linewidth=2,
@@ -58,6 +59,7 @@ bottom_left = SkyCoord(-500 * u.arcsec, 200 * u.arcsec, frame=aia_map.coordinate
 top_right = SkyCoord(-100 * u.arcsec, 500 * u.arcsec, frame=aia_map.coordinate_frame)
 aia_map.draw_quadrangle(
     bottom_left,
+    axes=ax,
     top_right=top_right,
     edgecolor="green",
     linestyle="--",
@@ -75,6 +77,7 @@ width = 400 * u.arcsec
 height = 300 * u.arcsec
 aia_map.draw_quadrangle(
     bottom_left,
+    axes=ax,
     width=width,
     height=height,
     edgecolor="yellow",
@@ -90,12 +93,13 @@ bottom_left = aia_map.pixel_to_world(600 * u.pixel, 350 * u.pixel)
 top_right = aia_map.pixel_to_world(800 * u.pixel, 450 * u.pixel)
 aia_map.draw_quadrangle(
     bottom_left,
+    axes=ax,
     top_right=top_right,
     edgecolor="red",
     linestyle=":",
     linewidth=2,
     label='pixel_to_world()'
 )
-plt.legend()
+ax.legend()
 
 plt.show()

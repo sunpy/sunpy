@@ -52,7 +52,7 @@ ylims_pixel = pixel_coords.y.value
 # the range of the axes for which to plot.
 
 fig = plt.figure()
-ax = plt.subplot(projection=aia_map)
+ax = fig.add_subplot(projection=aia_map)
 aia_map.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
 ax.set_xlim(xlims_pixel)
 ax.set_ylim(ylims_pixel)

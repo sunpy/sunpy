@@ -38,10 +38,10 @@ bottom_left = SkyCoord(30*u.deg, -10*u.deg,
 # coordinate frame.
 
 fig = plt.figure()
-ax = plt.subplot(projection=aia)
-aia.plot(clip_interval=(1, 99.99)*u.percent)
-aia.draw_grid()
-aia.draw_quadrangle(bottom_left, width=20*u.deg, height=60*u.deg,
+ax = fig.add_subplot(projection=aia)
+aia.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+aia.draw_grid(axes=ax)
+aia.draw_quadrangle(bottom_left, axes=ax, width=20*u.deg, height=60*u.deg,
                     edgecolor='blue', linewidth=2)
 ax.plot_coord(bottom_left, 'x', color='red')
 

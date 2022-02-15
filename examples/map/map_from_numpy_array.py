@@ -47,6 +47,6 @@ manual_map = sunpy.map.Map(data, header)
 ##############################################################################
 # Let's plot the result.
 
-fig = plt.figure()
+plt.figure()
 manual_map.plot()
 plt.show()

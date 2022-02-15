@@ -245,6 +245,7 @@ sphinx_gallery_conf = {
     ]),
     'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': os.path.join('generated', 'gallery'),
+    'matplotlib_animations': True,
     # Comes from the theme.
     "default_thumb_file": os.path.join(html_static_path[0], "img", "sunpy_icon_128x128.png"),
     'abort_on_example_error': False,

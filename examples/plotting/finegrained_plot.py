@@ -34,9 +34,9 @@ title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 # <https://docs.astropy.org/en/stable/visualization/wcsaxes/ticks_labels_grid.html>`_ in astropy.
 
 fig = plt.figure(figsize=(6, 6))
-ax = plt.subplot(projection=aiamap_sub)
-aiamap_sub.plot(clip_interval=(1, 99.99)*u.percent)
-aiamap_sub.draw_limb(color='white', linewidth=2, linestyle='dashed')
+ax = fig.add_subplot(projection=aiamap_sub)
+aiamap_sub.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+aiamap_sub.draw_limb(axes=ax, color='white', linewidth=2, linestyle='dashed')
 
 # To have more control over the Heliographic Stonyhurst grid,
 # the axes object properties can be changed directly

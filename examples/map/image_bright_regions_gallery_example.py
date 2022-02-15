@@ -73,7 +73,6 @@ labels, n = ndimage.label(aiamap2.data)
 # regions are present above the 10% of the maximum level.
 
 plt.figure()
-ax = plt.subplot(projection=aiamap)
 aiamap.plot()
 plt.contour(labels)
 plt.figtext(0.3, 0.2, f'Number of regions = {n}', color='white')

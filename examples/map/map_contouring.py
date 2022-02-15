@@ -34,9 +34,9 @@ contours = aiamap.contour(50000 * u.ct)
 ##############################################################################
 # Finally, we can plot the map, and add each of the contours in turn.
 
-plt.figure()
-ax = plt.subplot(projection=aiamap)
-aiamap.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax)
 for contour in contours:
     ax.plot_coord(contour)
 plt.show()

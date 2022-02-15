@@ -36,7 +36,7 @@ great_arc = GreatArc(start, end)
 # Plot the great arc on the Sun.
 
 fig = plt.figure()
-ax = plt.subplot(projection=m)
+ax = fig.add_subplot(projection=m)
 m.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
 ax.plot_coord(great_arc.coordinates(), color='c')
 
@@ -63,10 +63,8 @@ angles = great_arc.inner_angles().to(u.deg)
 ###############################################################################
 # Plot the intensity along the arc from the start to the end point.
 
-fig, ax = plt.subplots()
-ax.plot(angles, intensity_along_arc)
-ax.set_xlabel('degrees of arc from start')
-ax.set_ylabel('intensity')
-ax.grid(linestyle='dotted')
+plt.plot(angles, intensity_along_arc)
+plt.xlabel(f'Distance along arc [{angles.unit}]')
+plt.ylabel(f'Intensity [{m.unit}]')
 
 plt.show()

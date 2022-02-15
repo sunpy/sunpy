@@ -46,16 +46,16 @@ numbers = srs_table['Number']
 ##############################################################################
 # Let's plot the results by defining coordinates for each location.
 
-ax = plt.subplot(projection=smap)
-smap.plot(vmin=-120, vmax=120)
-smap.draw_limb()
+fig = plt.figure()
+ax = fig.add_subplot(projection=smap)
+smap.plot(axes=ax, vmin=-120, vmax=120)
+smap.draw_limb(axes=ax)
 c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
 ax.plot_coord(c, 'o')
 for num, lng, lat in zip(numbers, lngs.value, lats.value):
     ax.annotate(num, (lng, lat),
                 xycoords=ax.get_transform('heliographic_stonyhurst'),
                 color='red',
-                fontweight='bold',
-                )
+                fontweight='bold')
 
 plt.show()

@@ -29,10 +29,8 @@ import sunpy.timeseries
 # The following image of the flare is now fairly iconic.
 
 aia_cutout03_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT03_IMAGE)
-fig = plt.figure()
-ax = fig.add_subplot(111, projection=aia_cutout03_map)
+plt.figure()
 aia_cutout03_map.plot()
-
 plt.show()
 
 ###############################################################################
@@ -41,7 +39,6 @@ plt.show()
 goes = sunpy.timeseries.TimeSeries(sample_data.GOES_XRS_TIMESERIES)
 fig = plt.figure()
 goes.plot()
-
 plt.show()
 
 ###############################################################################
@@ -56,32 +53,12 @@ aia_094_map = sunpy.map.Map(sample_data.AIA_094_IMAGE)
 aia_1600_map = sunpy.map.Map(sample_data.AIA_1600_IMAGE)
 
 fig = plt.figure(figsize=(6, 28))
-ax = fig.add_subplot(611, projection=aia_131_map)
-aia_131_map.plot(clip_interval=(0.5, 99.9)*u.percent)
-aia_131_map.draw_grid()
-
-ax = fig.add_subplot(612, projection=aia_171_map)
-aia_171_map.plot(clip_interval=(0.5, 99.9)*u.percent)
-aia_171_map.draw_grid()
-
-ax = fig.add_subplot(613, projection=aia_211_map)
-aia_211_map.plot(clip_interval=(0.5, 99.9)*u.percent)
-aia_211_map.draw_grid()
-
-ax = fig.add_subplot(614, projection=aia_335_map)
-aia_335_map.plot(clip_interval=(0.5, 99.9)*u.percent)
-aia_335_map.draw_grid()
-
-ax = fig.add_subplot(615, projection=aia_094_map)
-aia_094_map.plot(clip_interval=(0.5, 99.9)*u.percent)
-aia_094_map.draw_grid()
-
-ax = fig.add_subplot(616, projection=aia_1600_map)
-aia_1600_map.plot(clip_interval=(0.5, 99.9)*u.percent)
-aia_1600_map.draw_grid()
-
+for i, m in enumerate([aia_131_map, aia_171_map, aia_211_map,
+                       aia_335_map, aia_094_map, aia_1600_map]):
+    ax = fig.add_subplot(6, 1, i+1, projection=m)
+    m.plot(axes=ax, clip_interval=(0.5, 99.9)*u.percent)
+    m.draw_grid(axes=ax)
 fig.tight_layout(pad=8.50)
-
 plt.show()
 
 ###############################################################################
@@ -95,39 +72,25 @@ aia_cutout04_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT04_IMAGE)
 aia_cutout05_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT05_IMAGE)
 
 fig = plt.figure(figsize=(6, 28))
-ax = fig.add_subplot(511, projection=aia_cutout01_map)
-aia_cutout01_map.plot()
-
-ax = fig.add_subplot(512, projection=aia_cutout02_map)
-aia_cutout02_map.plot()
-
-ax = fig.add_subplot(513, projection=aia_cutout03_map)
-aia_cutout03_map.plot()
-
-ax = fig.add_subplot(514, projection=aia_cutout04_map)
-aia_cutout04_map.plot()
-
-ax = fig.add_subplot(515, projection=aia_cutout05_map)
-aia_cutout05_map.plot()
-
+for i, m in enumerate([aia_cutout01_map, aia_cutout02_map, aia_cutout03_map,
+                       aia_cutout04_map, aia_cutout05_map]):
+    ax = fig.add_subplot(5, 1, i+1, projection=m)
+    m.plot(axes=ax)
 fig.tight_layout(pad=5.50)
-
 plt.show()
 
 ###############################################################################
 # There are a number of other data sources available as well, such as SWAP.
 
 swap_map = sunpy.map.Map(sample_data.SWAP_LEVEL1_IMAGE)
-fig = plt.figure()
+plt.figure()
 swap_map.plot()
-
 plt.show()
 
 ###############################################################################
 # Also RHESSI.
 
 rhessi_map = sunpy.map.Map(sample_data.RHESSI_IMAGE)
-fig = plt.figure()
+plt.figure()
 rhessi_map.plot()
-
 plt.show()

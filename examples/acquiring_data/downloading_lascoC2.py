@@ -36,7 +36,6 @@ print(downloaded_files)
 # We can then load a downloaded file into a sunpy map and plot it.
 
 lascomap = sunpy.map.Map(downloaded_files[0])
-fig = plt.figure()
+plt.figure()
 lascomap.plot()
-
 plt.show()

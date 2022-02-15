@@ -25,20 +25,20 @@ syn_map = sunpy.map.Map(filename)
 # Plot the results.
 
 fig = plt.figure(figsize=(12, 5))
-axes = plt.subplot(projection=syn_map)
-im = syn_map.plot()
+ax = plt.subplot(projection=syn_map)
+im = syn_map.plot(axes=ax)
 
-axes.coords[0].set_axislabel("Carrington Longitude [deg]")
-axes.coords[1].set_axislabel("Latitude [deg]")
+ax.coords[0].set_axislabel("Carrington Longitude [deg]")
+ax.coords[1].set_axislabel("Latitude [deg]")
 
-axes.coords.grid(color='black', alpha=0.6, linestyle='dotted', linewidth=0.5)
+ax.coords.grid(color='black', alpha=0.6, linestyle='dotted', linewidth=0.5)
 
 cb = plt.colorbar(im, fraction=0.019, pad=0.1)
 cb.set_label(f"Radial magnetic field [{syn_map.unit}]")
 
 # In order to make the x-axis ticks show, the bottom y-limit has to be adjusted slightly
-axes.set_ylim(bottom=0)
-axes.set_title(f"{syn_map.meta['content']},\n"
-               f"Carrington rotation {syn_map.meta['CAR_ROT']}")
+ax.set_ylim(bottom=0)
+ax.set_title(f"{syn_map.meta['content']},\n"
+             f"Carrington rotation {syn_map.meta['CAR_ROT']}")
 
 plt.show()

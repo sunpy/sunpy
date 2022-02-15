@@ -23,10 +23,10 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 # pixels can be converted accurately to coordinates values.
 
 plt.figure()
-ax = plt.subplot(projection=aiamap)
 aiamap.plot()
 aiamap.draw_limb()
 aiamap.draw_grid()
+plt.show()
 
 ##############################################################################
 # The above image looks "dark" because the color scale is accounting for the
@@ -35,9 +35,7 @@ aiamap.draw_grid()
 # the darkest 1% of pixels and the brightest 0.01% of pixels.
 
 plt.figure()
-ax = plt.subplot(projection=aiamap)
 aiamap.plot(clip_interval=(1, 99.99)*u.percent)
 aiamap.draw_limb()
 aiamap.draw_grid()
-
 plt.show()

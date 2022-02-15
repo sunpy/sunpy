@@ -22,9 +22,9 @@ import sunpy.map
 
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
 
-fig = plt.figure()
-ax = plt.subplot(projection=aia_map)
-aia_map.plot(ax)
+plt.figure()
+aia_map.plot()
+plt.show()
 
 ###############################################################################
 # Reproject works by transforming an input image to a desired World Coordinate
@@ -54,9 +54,8 @@ outmap = aia_map.reproject_to(header)
 ###############################################################################
 # Plot the result.
 
-fig = plt.figure()
-ax = plt.subplot(projection=outmap)
-outmap.plot(ax)
+plt.figure()
+outmap.plot()
 outmap.draw_limb(color='blue')
 
 plt.show()

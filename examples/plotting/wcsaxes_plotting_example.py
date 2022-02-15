@@ -85,6 +85,6 @@ my_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
 ax.plot_coord(great_arc.coordinates(), color='c',
               label=f'SkyCoord [{723*u.arcsec}, {-500*u.arcsec}],\n \
                                [{-100*u.arcsec}, {900*u.arcsec}]')
-plt.legend(loc="lower center")
+ax.legend(loc="lower center")
 
 plt.show()

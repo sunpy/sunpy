@@ -33,6 +33,7 @@ aia_map.plot_settings['norm'].vmax = 10000
 plt.figure()
 plt.subplot(projection=aia_map)
 aia_map.plot()
+plt.show()
 
 ######################################################################
 # Let's define a new observer that is well separated from Earth.
@@ -68,8 +69,8 @@ out_header = sunpy.map.make_fitswcs_header(
 outmap_default = aia_map.reproject_to(out_header)
 
 plt.figure()
-plt.subplot(projection=outmap_default)
 outmap_default.plot()
+plt.show()
 
 ######################################################################
 # You can use the different assumption that the image lies on the
@@ -82,8 +83,8 @@ with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate):
     outmap_screen_all = aia_map.reproject_to(out_header)
 
 plt.figure()
-plt.subplot(projection=outmap_screen_all)
 outmap_screen_all.plot()
+plt.show()
 
 ######################################################################
 # Finally, you can specify that the spherical-screen assumption should
@@ -95,7 +96,5 @@ with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate,
     outmap_screen_off_disk = aia_map.reproject_to(out_header)
 
 plt.figure()
-plt.subplot(projection=outmap_screen_off_disk)
 outmap_screen_off_disk.plot()
-
 plt.show()

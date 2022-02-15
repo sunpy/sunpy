@@ -63,6 +63,7 @@ for model in ['howard', 'snodgrass', 'allen', 'rigid']:
 # Note that the "rigid" model appears as the meridian again as expected for a
 # rotation of exactly one sidereal period.
 
+plt.figure()
 aiamap.plot(clip_interval=(0.5, 99.9)*u.percent)
 
 colors = {

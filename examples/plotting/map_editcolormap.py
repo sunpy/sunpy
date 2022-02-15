@@ -31,8 +31,7 @@ aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.max())
 # and `normalizations <https://matplotlib.org/users/colormapnorms.html>`_.
 # For more advanced normalizations see `astropy.visualization`.
 
-ax = plt.subplot(projection=aiamap)
+plt.figure()
 aiamap.plot()
 plt.colorbar()
-
 plt.show()

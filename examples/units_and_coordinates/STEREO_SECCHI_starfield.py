@@ -87,7 +87,8 @@ mars = get_body_heliographic_stonyhurst('mars', cor2.date, observer=cor2.observe
 # Let's plot the results.  The coordinates will be transformed automatically
 # when plotted using :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord`.
 
-ax = plt.subplot(projection=cor2)
+fig = plt.figure()
+ax = fig.add_subplot(projection=cor2)
 
 # Let's tweak the axis to show in degrees instead of arcsec
 lon, lat = ax.coords
@@ -95,12 +96,12 @@ lon.set_major_formatter('d.dd')
 lat.set_major_formatter('d.dd')
 
 cor2.plot(axes=ax, vmin=0, vmax=600)
-cor2.draw_limb()
+cor2.draw_limb(axes=ax)
 
 # Plot the position of Mars
 ax.plot_coord(mars, 's', color='white', fillstyle='none', markersize=12, label='Mars')
 # Plot all of the stars
 ax.plot_coord(tbl_crds, 'o', color='white', fillstyle='none')
-plt.legend()
+ax.legend()
 
 plt.show()

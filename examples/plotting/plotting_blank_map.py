@@ -40,10 +40,10 @@ blank_map = sunpy.map.Map(data, header)
 # sphinx_gallery_defer_figures
 
 fig = plt.figure()
-ax = plt.subplot(projection=blank_map)
-blank_map.plot()
-blank_map.draw_limb(color="k")
-blank_map.draw_grid(color="k")
+ax = fig.add_subplot(projection=blank_map)
+blank_map.plot(axes=ax)
+blank_map.draw_limb(axes=ax, color="k")
+blank_map.draw_grid(axes=ax, color="k")
 
 ################################################################################
 # Coordinates that are being plotted - (0, 0), (50, 100) and (400, 400).

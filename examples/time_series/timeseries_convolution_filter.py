@@ -34,6 +34,7 @@ goes_lc = goes_lc.add_column(
 ###############################################################################
 # Plotting original and smoothed timeseries.
 
+plt.figure()
 plt.xlabel('Time')
 plt.ylabel("Flux (Wm$^{-2}$")
 plt.title('Smoothing of Time Series')

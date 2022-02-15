@@ -38,9 +38,9 @@ map_hmi.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 # Plot both images side by side.
 
 fig = plt.figure(figsize=(12, 5))
-ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+ax1 = fig.add_subplot(121, projection=map_aia)
 map_aia.plot(axes=ax1, clip_interval=(1, 99.9)*u.percent)
-ax2 = fig.add_subplot(1, 2, 2, projection=map_hmi)
+ax2 = fig.add_subplot(122, projection=map_hmi)
 map_hmi.plot(axes=ax2)
 
 ######################################################################
@@ -57,9 +57,9 @@ out_hmi = map_hmi.reproject_to(map_aia.wcs)
 # Plot the images side by side.
 
 fig = plt.figure(figsize=(12, 5))
-ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+ax1 = fig.add_subplot(121, projection=map_aia)
 map_aia.plot(axes=ax1, clip_interval=(1, 99.9)*u.percent)
-ax2 = fig.add_subplot(1, 2, 2, projection=out_hmi)
+ax2 = fig.add_subplot(122, projection=out_hmi)
 out_hmi.plot(axes=ax2, title='Reprojected HMI image')
 
 ######################################################################
@@ -67,7 +67,7 @@ out_hmi.plot(axes=ax2, title='Reprojected HMI image')
 # them over one another, by setting the transparency of the HMI plot.
 
 fig = plt.figure()
-ax1 = fig.add_subplot(1, 1, 1, projection=map_aia)
+ax1 = fig.add_subplot(projection=map_aia)
 map_aia.plot(axes=ax1, clip_interval=(1, 99.9)*u.percent)
 out_hmi.plot(axes=ax1, alpha=0.5)
 plt.title('HMI overlaid on AIA')

@@ -20,7 +20,8 @@ from sunpy.timeseries import TimeSeries
 
 goes_lc = TimeSeries(GOES_XRS_TIMESERIES)
 my_timeseries = goes_lc.truncate('2011/06/07 06:10', '2011/06/07 09:00')
-fig, ax = plt.subplots()
+
+plt.figure()
 my_timeseries.plot()
 
 ##############################################################################
@@ -100,14 +101,14 @@ def findpeaks(series, DELTA):
 series = my_timeseries.to_dataframe()['xrsa']
 minpeaks, maxpeaks = findpeaks(series, DELTA=1e-7)
 # Plotting the figure and extremum points
-fig, ax = plt.subplots()
-ax.set_xlabel('Time')
-ax.set_ylabel("Flux (Wm$^{-2}$")
-ax.set_title('Peaks in TimeSeries')
+plt.figure()
+plt.xlabel('Time')
+plt.ylabel("Flux (Wm$^{-2}$")
+plt.title('Peaks in TimeSeries')
 series.plot()
-ax.scatter(*zip(*minpeaks), color='red', label='min')
-ax.scatter(*zip(*maxpeaks), color='green', label='max')
-ax.legend()
-ax.grid(True)
+plt.scatter(*zip(*minpeaks), color='red', label='min')
+plt.scatter(*zip(*maxpeaks), color='green', label='max')
+plt.legend()
+plt.grid(True)
 
 plt.show()
