@@ -60,6 +60,8 @@ plt.show()
 # Note that, because arithmetic operations between `~sunpy.map.GenericMap`
 # objects are not supported, we subtract just the array data (with units
 # attached) of the second map from the first map. The ``quantity`` attribute
+# returns the image data as an `~astropy.units.Quantity`, where the resulting
+# units are those returned by the ``unit`` attribute of the map.
 
 m_seq_base = sunpy.map.Map([m - m_seq[0].quantity for m in m_seq], sequence=True)
 m_seq_running = sunpy.map.Map(
