@@ -131,7 +131,7 @@ class HMIMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an HMI image"""
-        return (str(header.get('TELESCOP', '')).endswith('HMI') and
+        return (str(header.get('INSTRUME', '')).startswith('HMI') and
                 not HMISynopticMap.is_datasource_for(data, header))
 
 
