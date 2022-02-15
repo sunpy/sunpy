@@ -1,0 +1,39 @@
+name: Automated tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  linux-py39:
+    uses: ./.github/workflows/python-test-workflow.yml
+    with:
+      os: ubuntu-latest
+      python-version: '3.9'
+      tox-env: py39
+
+  macosx-py38:
+    uses: ./.github/workflows/python-test-workflow.yml
+    needs: linux-py39
+    with:
+      os: macos-latest
+      python-version: '3.8'
+      tox-env: py38
+
+  windows-py310:
+    uses: ./.github/workflows/python-test-workflow.yml
+    needs: linux-py39
+    with:
+      os: windows-latest
+      python-version: '3.10'
+      tox-env: py310
+
+  linux-remote-py38:
+    needs: linux-py39
+    uses: ./.github/workflows/python-test-workflow.yml
+    with:
+      os: ubuntu-latest
+      python-version: '3.8'
+      tox-env: py38-online
