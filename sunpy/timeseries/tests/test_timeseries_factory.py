@@ -88,6 +88,16 @@ def test_factory_generate_from_pathlib():
     assert isinstance(ts_from_pathlib, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
 
+@pytest.mark.remote_data
+def test_from_url():
+    # This is the same PSP file we have in our test data, but accessed from a URL
+    url = ('https://spdf.gsfc.nasa.gov/pub/data/psp/fields/l2/mag_rtn_1min/2020/'
+           'psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
+    ts = sunpy.timeseries.TimeSeries(url)
+    assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
+    assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
+
+
 def test_read_cdf():
     ts_psp = sunpy.timeseries.TimeSeries(psp_filepath)
     assert len(ts_psp) == 2
