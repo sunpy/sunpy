@@ -61,7 +61,6 @@ else:
         ),
         reason="No SunPy ASDF entry points.",
     )
-new_hash_library = {}
 
 
 @pytest.fixture
