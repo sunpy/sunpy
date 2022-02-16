@@ -107,5 +107,5 @@ m_seq = sunpy.map.Map(files, sequence=True)
 for m in m_seq:
     m.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
 plt.figure()
-m_seq.plot()
+ani = m_seq.plot()
 plt.show()
