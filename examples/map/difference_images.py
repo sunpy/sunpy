@@ -64,10 +64,7 @@ plt.show()
 # units are those returned by the ``unit`` attribute of the map.
 
 m_seq_base = sunpy.map.Map([m - m_seq[0].quantity for m in m_seq], sequence=True)
-m_seq_running = sunpy.map.Map(
-    [m_seq[i] - m_seq[i-1 if i > 0 else 0].quantity for i in range(len(m_seq))],
-    sequence=True
-)
+m_seq_running = sunpy.map.Map([map - prev_map.quantity for map, prev_map in zip(m_seq[:-1], m_seq[1:])], sequence=True)
 
 ###########################################################################
 # Finally, let's plot the difference maps.
