@@ -1,3 +1,0 @@
-# Avoid DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
-# Ignore in setup.cfg seems to not work 100% of the time.
-importlib-metadata<3.9.0

@@ -6,23 +6,7 @@ import os
 import sys
 import datetime
 import warnings
-from pkg_resources import get_distribution
 from packaging.version import Version
-
-# -- Check for dependencies ----------------------------------------------------
-doc_requires = get_distribution("sunpy").requires(extras=("docs",))
-missing_requirements = []
-for requirement in doc_requires:
-    try:
-        get_distribution(requirement)
-    except Exception as e:
-        missing_requirements.append(requirement.name)
-if missing_requirements:
-    print(
-        f"The {' '.join(missing_requirements)} package(s) could not be found and "
-        "is needed to build the documentation, please install the 'docs' requirements."
-    )
-    sys.exit(1)
 
 # -- Read the Docs Specific Configuration --------------------------------------
 # This needs to be done before sunpy is imported
@@ -33,6 +17,16 @@ if on_rtd:
     os.environ['LANG'] = 'C'
     os.environ['LC_ALL'] = 'C'
     os.environ['HIDE_PARFIVE_PROGESS'] = 'True'
+
+# -- Check for dependencies ----------------------------------------------------
+from sunpy.util import missing_dependencies_by_extra  # NOQA
+missing_requirements = missing_dependencies_by_extra("sunpy")["docs"]
+if missing_requirements:
+    print(
+        f"The {' '.join(missing_requirements.keys())} package(s) could not be found and "
+        "is needed to build the documentation, please install the 'docs' requirements."
+    )
+    sys.exit(1)
 
 # -- Non stdlib imports --------------------------------------------------------
 import ruamel.yaml as yaml  # NOQA
