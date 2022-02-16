@@ -102,7 +102,7 @@ class JSONDump(Base):
         return self.dump
 
     def __repr__(self):
-        return f'<{self.__class__.__name__}(dump {self.dump!r})>'
+        return f'{self.__class__.__name__}(dump={self.dump!r})'
 
 
 class FitsHeaderEntry(Base):
@@ -130,7 +130,7 @@ class FitsHeaderEntry(Base):
         return not (self == other)
 
     def __repr__(self):
-        return '<{}(id {}, key {!r}, value {!r})>'.format(
+        return '{}(id={}, key={!r}, value={!r})'.format(
             self.__class__.__name__, self.id, self.key, self.value)
 
 
@@ -163,7 +163,7 @@ class FitsKeyComment(Base):
         return not (self == other)
 
     def __repr__(self):
-        return '<{}(id {}, key {!r}, value {!r})>'.format(
+        return '{}(id={}, key={!r}, value={!r})>'.format(
             self.__class__.__name__, self.id, self.key, self.value)
 
 
@@ -188,7 +188,7 @@ class Tag(Base):
         return self.name
 
     def __repr__(self):
-        return f'<{self.__class__.__name__}(name {self.name!r})>'
+        return f'{self.__class__.__name__}(name={self.name!r})'
 
 
 class DatabaseEntry(DatabaseEntryType, Base):
@@ -474,13 +474,13 @@ class DatabaseEntry(DatabaseEntryType, Base):
             'observation_time_start', 'observation_time_end', 'instrument',
             'size', 'wavemin', 'wavemax', 'path', 'download_time', 'starred',
             'fits_header_entries', 'tags']
-        ret = f'<{self.__class__.__name__}('
+        ret = f'{self.__class__.__name__}('
         for attr in attrs:
             value = getattr(self, attr, None)
             if value:
-                ret += f'{attr} {value!r}, '
+                ret += f'{attr}={value!r}, '
         ret = ret.rstrip(', ')
-        ret += ')>'
+        ret += ')'
         return ret
 
 
