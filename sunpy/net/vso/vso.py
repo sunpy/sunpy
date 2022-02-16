@@ -291,7 +291,8 @@ class VSOClient(BaseClient):
                 # Work around https://github.com/sunpy/sunpy/issues/3372
                 if name.count('"') >= 2:
                     name = name.split('"')[1]
-        if name is None:
+        # This is a hack to to prevent IRIS data from being labelled as XML files
+        if name is None and "VOEvent_IRIS" not in queryresponserow['fileid']:
             # Advice from the VSO is to fallback to providerid + fileid for a filename
             # As it's possible multiple providers give the same fileid.
             # However, I haven't implemented this yet as it would be a breaking
@@ -301,9 +302,6 @@ class VSOClient(BaseClient):
             # Some also don't specify a file extension, but not a lot we can do
             # about that.
             name = fileid.split("/")[-1]
-            # This is a hack to to prevent IRIS data from being labelled as XML files
-            if "VOEvent_IRIS" in fileid:
-                name = url.split('/')[-1]
         # If somehow we have got this far with an empty string, fallback to url segment
         if not name:
             name = url.split('/')[-1]
