@@ -1,0 +1,3 @@
+The 'event_endtime', 'event_starttime' and 'event_peaktime' columns in a HEK
+query are now returned as `~astropy.time.Time` objects. Previously they were
+timestamp strings.

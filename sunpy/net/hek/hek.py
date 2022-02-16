@@ -9,13 +9,13 @@ from itertools import chain
 
 import astropy.table
 from astropy.table import Row
-from astropy.time import Time
 
 import sunpy.net._attrs as core_attrs
 from sunpy import log
 from sunpy.net import attr
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.hek import attrs
+from sunpy.time import parse_time
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
@@ -44,7 +44,7 @@ class HEKClient(BaseClient):
     # that is, not all StringParamWrapper!
 
     default = {
-        'cosec': '2',
+        'cosec': '2',  # Return .json
         'cmd': 'search',
         'type': 'column',
         'event_type': '**',
@@ -79,10 +79,22 @@ class HEKClient(BaseClient):
             results.extend(result['result'])
             if not result['overmax']:
                 if len(results) > 0:
-                    return astropy.table.Table(dict_keys_same(results))
+                    table = astropy.table.Table(dict_keys_same(results))
+                    table = self._parse_times(table)
+                    return table
                 else:
                     return astropy.table.Table()
             page += 1
+
+    @staticmethod
+    def _parse_times(table):
+        # All time columns from https://www.lmsal.com/hek/VOEvent_Spec.html
+        time_keys = ['event_endtime', 'event_starttime', 'event_peaktime']
+        for tkey in time_keys:
+            if tkey in table.colnames:
+                table[tkey] = parse_time(table[tkey])
+                table[tkey].format = 'iso'
+        return table
 
     def search(self, *args, **kwargs):
         """
@@ -153,8 +165,8 @@ class HEKRow(Row):
     @property
     def vso_time(self):
         return core_attrs.Time(
-            Time.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
-            Time.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
+            self['event_starttime'],
+            self['event_endtime']
         )
 
     @property
