@@ -78,6 +78,22 @@ Also, there is now the option to rotate using `OpenCV <https://opencv.org>`__.
 The rotation function to use can be selected via the ``method`` keyword argument.
 New rotation functions beyond these three can be added using the new decorator :func:`~sunpy.image.transform.add_rotation_function`.
 
+Reworked internals of TimeSeries
+================================
+`~sunpy.timeseries.GenericTimeseries` has been re-worked to use astropy time
+handling underneath. This allows users to take full advantage of astropy time
+handling (e.g. different time systems, support for leapseconds) when using
+`~sunpy.timeseries.GenericTimeseries`.
+
+As part of this the following API has been deprecated:
+- `sunpy.timeseries.GenericTimeseries.index`. Use
+  `sunpy.timeseries.GenericTimeseries.times` instead.
+- `sunpy.timeseries.GenericTimeseries.data`. Use
+  :meth:`sunpy.timeseries.GenericTimeseries.to_table` or
+  :meth:`sunpy.timeseries.GenericTimeseries.to_dataframe` instead.
+
+Improvements to map and image rotation
+
 Improved return types of HEK queries
 ====================================
 The 'event_endtime', 'event_starttime' and 'event_peaktime' columns in a HEK
