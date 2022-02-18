@@ -20,7 +20,7 @@ import warnings
 from copy import deepcopy
 
 import numpy as np
-from scipy.ndimage.interpolation import shift
+from scipy.ndimage import shift
 from skimage.feature import match_template
 
 import astropy.units as u

@@ -1,9 +1,10 @@
 import os
+import warnings
 
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
-from scipy.ndimage.interpolation import shift as sp_shift
+from scipy.ndimage import shift as sp_shift
 
 import astropy.units as u
 
@@ -75,7 +76,7 @@ def test_parabolic_turning_point():
 
 
 def test_check_for_nonfinite_entries():
-    with pytest.warns(None) as warning_list:
+    with warnings.catch_warnings(record=True) as warning_list:
         a = np.zeros((3, 3))
         b = np.ones((3, 3))
         check_for_nonfinite_entries(a, b)
@@ -100,7 +101,7 @@ def test_check_for_nonfinite_entries():
 
             assert len(warning_list) == 1
 
-            with pytest.warns(None) as warning_list:
+            with pytest.warns() as warning_list:
                 check_for_nonfinite_entries(b, b)
 
             assert len(warning_list) == 2
