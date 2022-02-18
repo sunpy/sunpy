@@ -96,31 +96,6 @@ stages:
           - linux: py39-conda
             libraries: {}
 
-  - stage: SecondPhaseTestsAllowedFail
-    displayName: Stage 2 Tests - Online
-    dependsOn: FirstPhaseTests
-    condition: and(succeeded(), ne(dependencies.FirstPhaseTests.outputs['check_skip.search.found'], 'true'))
-    jobs:
-    - template: run-tox-env.yml@OpenAstronomy
-      parameters:
-        default_python: '3.8'
-        submodules: false
-        coverage: codecov
-        toxdeps: tox-pypi-filter
-        posargs: -n auto --dist loadgroup
-        libraries:
-          apt:
-            - libopenjp2-7
-            - graphviz
-          brew:
-            - openjpeg
-        envs:
-          - linux: build_docs_ci
-            posargs: " "
-            pytest: false
-          - linux: py38-online
-
-
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
     - stage: CronTests
       displayName: Cron Tests
@@ -171,7 +146,6 @@ stages:
     - stage: CronNotifier_OK
       condition: succeeded()
       dependsOn:
-        - SecondPhaseTestsAllowedFail
         - SecondPhaseTests
         - CronTests
         - Release
@@ -196,7 +170,6 @@ stages:
     - stage: CronNotifier_Fail
       condition: failed()
       dependsOn:
-        - SecondPhaseTestsAllowedFail
         - SecondPhaseTests
         - CronTests
         - Release
