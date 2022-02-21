@@ -1,4 +1,4 @@
-3.0.5 (2022-02-07)
+3.0.5 (2022-02-21)
 ==================
 
 Bug Fixes
@@ -6,6 +6,13 @@ Bug Fixes
 
 - Fixed plotting and peeking NORH timeseries data with ``pandas`` 1.4.0. (`#5830 <https://github.com/sunpy/sunpy/pull/5830>`__)
 - In the case where `sunpy.database.Database.fetch()` successfully downloads only some of the search results, a `~sunpy.database.PartialFetchError` is raised. This fixes a bug where the successful downloads would have been added to the database, but sometimes with incorrect metadata. (`#5835 <https://github.com/sunpy/sunpy/pull/5835>`__)
+- `HMIMap` now looks for ``'INSTRUME`` instead of ``'TELESCOP'`` in order to support Helioviewer JPEG2000 versions of HMI data which do not preserve the ``'TELESCOP'`` keyword as expected in the JSOC standard. (`#5886 <https://github.com/sunpy/sunpy/pull/5886>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Added a known issues entry about ``scikit-image`` package version pinning. (`#5865 <https://github.com/sunpy/sunpy/pull/5865>`__)
 
 
 3.0.4 (2022-01-06)
