@@ -91,7 +91,6 @@ def read_cdf(fname):
                               'If you think this variable should not be without units, '
                               'please raise an issue at https://github.com/sunpy/sunpy/issues')
                     unit = u.dimensionless_unscaled
-                    pass
                 else:
                     raise
 
