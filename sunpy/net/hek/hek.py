@@ -91,7 +91,7 @@ class HEKClient(BaseClient):
         # All time columns from https://www.lmsal.com/hek/VOEvent_Spec.html
         time_keys = ['event_endtime', 'event_starttime', 'event_peaktime']
         for tkey in time_keys:
-            if tkey in table.colnames:
+            if tkey in table.colnames and not any(time == "" for time in table[tkey]):
                 table[tkey] = parse_time(table[tkey])
                 table[tkey].format = 'iso'
         return table
