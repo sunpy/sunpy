@@ -1,0 +1,38 @@
+name: Automated tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  # Allow manual runs through the web UI
+  workflow_dispatch:
+  schedule:
+    #        ┌───────── minute (0 - 59)
+    #        │  ┌───────── hour (0 - 23)
+    #        │  │ ┌───────── day of the month (1 - 31)
+    #        │  │ │ ┌───────── month (1 - 12 or JAN-DEC)
+    #        │  │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
+    - cron: "37 3 * * *" # Every day at 3:37am UTC
+
+jobs:
+  linux-py310:
+    uses: ./.github/workflows/python-test-workflow.yml
+    with:
+      os: ubuntu-latest
+      python-version: '3.10'
+      tox-env: py310
+  linux-remote-py39:
+    uses: ./.github/workflows/python-test-workflow.yml
+    needs: linux-py310
+    with:
+      os: ubuntu-latest
+      python-version: '3.9'
+      tox-env: py39-online
+  linux-docs-py39:
+    uses: ./.github/workflows/python-test-workflow.yml
+    needs: linux-py310
+    with:
+      os: ubuntu-latest
+      python-version: '3.9'
+      tox-env: build_docs
