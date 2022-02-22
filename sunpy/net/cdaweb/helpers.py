@@ -28,7 +28,7 @@ def get_observatory_groups():
     >>>
     >>> groups = get_observatory_groups() #doctest: +REMOTE_DATA
     >>> groups['Group'] #doctest: +REMOTE_DATA
-        <Column name='Group' dtype='str55' length=72>
+        <Column name='Group' dtype='str55' length=70>
                         ACE
                       AMPTE
         ...
