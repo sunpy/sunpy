@@ -24,3 +24,4 @@ Code Reference
    util
    visualization
    stability
+   known_issues
