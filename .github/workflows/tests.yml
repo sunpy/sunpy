@@ -2,9 +2,9 @@ name: Automated tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main 3.1 3.0 ]
   pull_request:
-    branches: [ main ]
+    branches: [ main 3.1 3.0 ]
   # Allow manual runs through the web UI
   workflow_dispatch:
   schedule:
