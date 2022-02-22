@@ -30,6 +30,7 @@ jobs:
       tox-env: py310
   linux-py38-oldestdeps:
     uses: ./.github/workflows/python-test-workflow.yml
+    needs: linux-py310
     with:
       os: ubuntu-latest
       python-version: '3.8'
