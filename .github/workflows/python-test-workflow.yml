@@ -37,6 +37,6 @@ jobs:
     - name: Run tests
       if: startsWith(inputs.tox-env, 'py')
       run: |
-        tox -e ${{ inputs.tox-env }} -- -n auto --dist loadgroup
+        tox -e ${{ inputs.tox-env }} -- -n auto --dist loadfile
     - name: Upload test coverage to Codecov
       uses: codecov/codecov-action@v2
