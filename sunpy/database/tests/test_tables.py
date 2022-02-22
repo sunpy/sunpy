@@ -465,16 +465,10 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
     expected = [
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_hourly_V8.txt',
+            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_daily_hourly.zip',
             observation_time_start=datetime(1995, 12, 2, 0, 0),
             observation_time_end=datetime(2020, 1, 1, 0, 0),
-            instrument='VIRGO', size=3072.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_daily_V8.txt',
-            observation_time_start=datetime(1995, 12, 2, 0, 0),
-            observation_time_end=datetime(2020, 1, 1, 0, 0),
-            instrument='VIRGO', size=140.0),
+            instrument='VIRGO', size=13506.0),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-BLUE-L2-MISSIONLONG.fits',
