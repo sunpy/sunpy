@@ -15,29 +15,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  linux-py310:
+  linux-py39:
     uses: ./.github/workflows/python-test-workflow.yml
     with:
       os: ubuntu-latest
-      python-version: '3.10'
-      tox-env: py310
+      # Advisable to use current python version - 1 here to minimise time spent
+      # building wheels for dependencies
+      python-version: '3.9'
+      tox-env: py39
   linux-py38-oldestdeps:
     uses: ./.github/workflows/python-test-workflow.yml
-    needs: linux-py310
+    needs: linux-py39
     with:
       os: ubuntu-latest
       python-version: '3.8'
       tox-env: py38-oldestdeps
   linux-remote-py39:
     uses: ./.github/workflows/python-test-workflow.yml
-    needs: linux-py310
+    needs: linux-py39
     with:
       os: ubuntu-latest
       python-version: '3.9'
       tox-env: py39-online
   linux-docs-py39:
     uses: ./.github/workflows/python-test-workflow.yml
-    needs: linux-py310
+    needs: linux-py39
     with:
       os: ubuntu-latest
       python-version: '3.9'
