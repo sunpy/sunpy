@@ -71,7 +71,7 @@ def read_cdf(fname):
 
             data = cdf.varget(var_key)
             # Get units
-            try:
+            if 'UNITS' in attrs:
                 unit_str = attrs['UNITS']
                 try:
                     unit = u.Unit(unit_str)
@@ -84,15 +84,10 @@ def read_cdf(fname):
                                   'If you think this unit should not be dimensionless, '
                                   'please raise an issue at https://github.com/sunpy/sunpy/issues')
                         unit = u.dimensionless_unscaled
-            except KeyError as keyerr:
-                if keyerr.args[0] == 'UNITS':
-                    warn_user(f'No units provided for variable "{var_key}". '
-                              'Assigning dimensionless units. '
-                              'If you think this variable should not be without units, '
-                              'please raise an issue at https://github.com/sunpy/sunpy/issues')
-                    unit = u.dimensionless_unscaled
-                else:
-                    raise
+            else:
+                warn_user(f'No units provided for variable "{var_key}". '
+                          'Assigning dimensionless units.')
+                unit = u.dimensionless_unscaled
 
             if data.ndim == 2:
                 # Multiple columns, give each column a unique label
@@ -180,13 +175,16 @@ _known_units = {'ratio': u.dimensionless_unscaled,
                 '#/(cm^2*s*sr*MeV/nuc)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '#/(cm^2*s*sr*Mev/nuc)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '#/(cm^2*s*sr*Mev/nucleon)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                '#/(cm2-steradian-second-MeV/nucleon) ': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '1/(cm2 Sr sec MeV/nucleon)': 1 / (u.cm**2 * u.sr * u.s * u.MeV),
                 '1/(cm**2-s-sr-MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '1/(cm**2-s-sr-MeV/nuc.)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '1/(cm^2 sec ster MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                'cnts/sec/sr/cm^2/MeV': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
 
                 'particles / (s cm^2 sr MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 'particles / (s cm^2 sr MeV/n)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                'particles/(s cm2 sr MeV/n)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
 
                 '1/(cm**2-s-sr)': 1 / (u.cm**2 * u.s * u.sr),
                 '1/(SQcm-ster-s)': 1 / (u.cm**2 * u.s * u.sr),
@@ -195,4 +193,5 @@ _known_units = {'ratio': u.dimensionless_unscaled,
                 'Counts/256sec': 1 / (256 * u.s),
                 'Counts/hour': 1 / u.hr,
                 'counts / s': 1/u.s,
+                'cnts/sec': 1/u.s,
                 }
