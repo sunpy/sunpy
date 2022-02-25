@@ -4,7 +4,7 @@ import skimage.data as images
 from skimage import transform as tf
 
 from sunpy.image.transform import affine_transform
-from sunpy.util import SunpyUserWarning
+from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 
 # Tolerance for tests
 RTOL = 1.0e-10
@@ -80,14 +80,14 @@ def test_scipy_rotation(original, angle, k):
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = affine_transform(original, rmatrix=rmatrix, use_scipy=True)
+    rot = affine_transform(original, rmatrix=rmatrix, method='scipy')
     assert compare_results(expected, rot, allclose=False)
 
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=derot_matrix, use_scipy=True)
+    derot = affine_transform(rot, rmatrix=derot_matrix, method='scipy')
     assert compare_results(original, derot, allclose=False)
 
 
@@ -225,7 +225,7 @@ def test_nan_scipy(identity):
     # Test replacement of NaN values for scipy rotation
     in_arr = np.array([[np.nan]])
     with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for SciPy rotation.'):
-        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True)
+        out_arr = affine_transform(in_arr, rmatrix=identity, method='scipy')
     assert not np.all(np.isnan(out_arr))
 
 
@@ -243,6 +243,21 @@ def test_float32(identity):
     in_arr = np.array([[100]], dtype=np.float32)
     out_arr = affine_transform(in_arr, rmatrix=identity)
     assert np.issubdtype(out_arr.dtype, np.float32)
+
+
+def test_deprecated_args(identity):
+    in_arr = np.array([[100]])
+    with pytest.warns(SunpyDeprecationWarning, match="The 'use_scipy' argument is deprecated"):
+        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True)
+
+    with pytest.warns(SunpyDeprecationWarning, match="The 'use_scipy' argument is deprecated"):
+        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=False)
+
+    with pytest.raises(ValueError, match="Method blah not in supported methods"):
+        out_arr = affine_transform(in_arr, rmatrix=identity, method='blah')
+
+    with pytest.warns(SunpyUserWarning, match="Using scipy instead of skimage for rotation"):
+        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True, method='skimage')
 
 
 def test_reproducible_matrix_multiplication():
