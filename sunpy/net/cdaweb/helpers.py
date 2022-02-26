@@ -35,9 +35,9 @@ def get_observatory_groups():
                     Voyager
                        Wind
     >>> groups.loc['STEREO'] #doctest: +REMOTE_DATA
-    <Row index=58>
+    <Row index=...>
     Group                                  Observatories
-    str55                                      str531
+    str55                                      str...
     ------ -----------------------------------------------------------------------------
     STEREO 'Ahead', 'Behind', 'STA', 'STB', 'STEREO', 'STEREOA', 'STEREOB', 'sta', 'stb'
     """
