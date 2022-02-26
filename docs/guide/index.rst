@@ -13,7 +13,6 @@ For more details checkout the :ref:`reference`.
 .. toctree::
    :maxdepth: 2
 
-   installation
    Brief Tour <tour>
    Data Acquisition <acquiring_data/index>
    Data Types <data_types/index>
