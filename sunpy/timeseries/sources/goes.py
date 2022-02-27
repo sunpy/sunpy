@@ -211,12 +211,20 @@ class XRSTimeSeries(GenericTimeSeries):
             if "a_flux" in d.variables:
                 xrsa = np.array(d["a_flux"])
                 xrsb = np.array(d["b_flux"])
-                start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since").rstrip("UTC")
+                start_time_str = d["time"].attrs["units"]
+                if not isinstance(start_time_str, str):
+                    # For h5netcdf<0.14
+                    start_time_str = start_time_str.astype(str)
+                start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC")
                 times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
             elif "xrsa_flux" in d.variables:
                 xrsa = np.array(d["xrsa_flux"])
                 xrsb = np.array(d["xrsb_flux"])
-                start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since")
+                start_time_str = d["time"].attrs["units"]
+                if not isinstance(start_time_str, str):
+                    # For h5netcdf<0.14
+                    start_time_str = start_time_str.astype(str)
+                start_time_str = start_time_str.lstrip("seconds since")
                 times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
 
             else:
@@ -244,7 +252,11 @@ class XRSTimeSeries(GenericTimeSeries):
             try:
                 if sunpy.io.detect_filetype(kwargs["filepath"]) == "hdf5":
                     with h5netcdf.File(kwargs["filepath"], mode="r", **cls._netcdf_read_kw) as f:
-                        return "XRS" in f.attrs["summary"].astype("str")
+                        summary = f.attrs["summary"]
+                        if not isinstance(summary, str):
+                            # h5netcdf<0.14
+                            summary = summary.astype(str)
+                        return "XRS" in summary
             except Exception as e:
                 log.debug(f'Reading {kwargs["filepath"]} failed with the following exception:\n{e}')
                 return False
