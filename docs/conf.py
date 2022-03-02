@@ -177,10 +177,7 @@ intersphinx_mapping = {
         "https://docs.scipy.org/doc/scipy/reference/",
         (None, "http://www.astropy.org/astropy-data/intersphinx/scipy.inv"),
     ),
-    "matplotlib": (
-        "https://matplotlib.org/",
-        (None, "http://www.astropy.org/astropy-data/intersphinx/matplotlib.inv"),
-    ),
+    "matplotlib": ("https://matplotlib.org/stable", None),
     "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
     "astropy": ("https://docs.astropy.org/en/stable/", None),
     "astroquery": ("https://astroquery.readthedocs.io/en/latest/", None),
