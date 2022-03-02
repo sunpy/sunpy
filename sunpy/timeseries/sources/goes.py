@@ -119,10 +119,10 @@ class XRSTimeSeries(GenericTimeSeries):
         Retrieves the goes satellite number by parsing the meta dictionary.
         """
         # Various pattern matches for the meta fields.
-        pattern_inst = ("{}GOES 1-{SatelliteNumber:02d} {}")
-        pattern_new = ("{}sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc{}")
-        pattern_old = ("{}go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits{}")
-        pattern_r = ("{}sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc{}")
+        pattern_inst = ("GOES 1-{SatelliteNumber:02d} {}")
+        pattern_new = ("sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+        pattern_old = ("go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits")
+        pattern_r = ("sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
         pattern_telescop = ("GOES {SatelliteNumber:02d}")
         # The ordering of where we get the metadata from is important.
         # We alway want to check ID first as that will most likely have the correct information.
@@ -132,11 +132,14 @@ class XRSTimeSeries(GenericTimeSeries):
             or self.meta.metas[0].get("TELESCOP", "").strip()
             or self.meta.metas[0].get("Instrument", "").strip()
         )
+        if isinstance(id, bytes):
+            # Needed for old versions of h5netcdf
+            id = id.decode('ascii')
         if id is None:
             log.debug("Unable to get a satellite number from 'Instrument', 'TELESCOP' or 'id' ")
             return None
         for pattern in [pattern_inst, pattern_new, pattern_old, pattern_r, pattern_telescop]:
-            parsed = parse(pattern, str(id))
+            parsed = parse(pattern, id)
             if parsed is not None:
                 return f"GOES-{parsed['SatelliteNumber']}"
         log.debug('Satellite Number not found in metadata')
@@ -254,13 +257,22 @@ class XRSTimeSeries(GenericTimeSeries):
             if "a_flux" in d.variables:
                 xrsa = np.array(d["a_flux"])
                 xrsb = np.array(d["b_flux"])
-                start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since").rstrip("UTC")
-                times = Time(parse_time(start_time_str).utime + d["time"], format='utime')
+
+                start_time_str = d["time"].attrs["units"]
+                if not isinstance(start_time_str, str):
+                    # For h5netcdf<0.14
+                    start_time_str = start_time_str.astype(str)
+                start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC")
+                times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
             elif "xrsa_flux" in d.variables:
                 xrsa = np.array(d["xrsa_flux"])
                 xrsb = np.array(d["xrsb_flux"])
-                start_time_str = d["time"].attrs["units"].astype(str).lstrip("seconds since")
-                times = Time(parse_time(start_time_str).utime + d["time"], format='utime')
+                start_time_str = d["time"].attrs["units"]
+                if not isinstance(start_time_str, str):
+                    # For h5netcdf<0.14
+                    start_time_str = start_time_str.astype(str)
+                start_time_str = start_time_str.lstrip("seconds since")
+                times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
 
             else:
                 raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
@@ -287,7 +299,11 @@ class XRSTimeSeries(GenericTimeSeries):
             try:
                 if sunpy.io.detect_filetype(kwargs["filepath"]) == "hdf5":
                     with h5netcdf.File(kwargs["filepath"], mode="r", **cls._netcdf_read_kw) as f:
-                        return "XRS" in f.attrs["summary"].astype("str")
+                        summary = f.attrs["summary"]
+                        if not isinstance(summary, str):
+                            # h5netcdf<0.14
+                            summary = summary.astype(str)
+                        return "XRS" in summary
             except Exception as e:
                 log.debug(f'Reading {kwargs["filepath"]} failed with the following exception:\n{e}')
                 return False
