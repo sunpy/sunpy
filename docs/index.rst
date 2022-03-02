@@ -12,7 +12,7 @@ data analysis environment for Python.
     .. toctree::
       :maxdepth: 1
 
-      guide/installation
+      installation
       guide/index
       generated/gallery/index
       code_ref/index
