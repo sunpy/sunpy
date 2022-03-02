@@ -1,7 +1,5 @@
 name: $(BuildDefinitionName)_$(Date:yyyyMMdd)$(Rev:.rr)
 variables:
-  CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-  CIBW_MANYLINUX_I686_IMAGE: manylinux2014
   JSOC_EMAIL: "jsoc@cadair.com"  # For the example gallery on the dev deps build
 
 schedules:
@@ -35,7 +33,6 @@ resources:
     type: github
     endpoint: sunpy
     name: OpenAstronomy/azure-pipelines-templates
-    ref: master
 
 trigger:
   branches:
@@ -43,13 +40,6 @@ trigger:
     - '*'
     exclude:
     - '*backport*'
-  tags:
-    include:
-    - 'v*'
-    exclude:
-    - '*dev*'
-    - '*pre*'
-    - '*post*'
 
 pr:
   autoCancel: true
@@ -58,13 +48,14 @@ stages:
   - stage: FirstPhaseTests
     displayName: Core Tests
     jobs:
+    - template: check-skip.yml@OpenAstronomy
     - template: run-tox-env.yml@OpenAstronomy
       parameters:
         default_python: '3.8'
         submodules: false
         coverage: codecov
         toxdeps: tox-pypi-filter
-        posargs: -n=4
+        posargs: -n auto --dist loadgroup
         libraries:
           apt:
             - libopenjp2-7
@@ -74,6 +65,7 @@ stages:
   - stage: SecondPhaseTests
     displayName: Stage 2 Tests
     dependsOn: FirstPhaseTests
+    condition: and(succeeded(), ne(dependencies.FirstPhaseTests.outputs['check_skip.search.found'], 'true'))
     jobs:
     - template: run-tox-env.yml@OpenAstronomy
       parameters:
@@ -81,7 +73,7 @@ stages:
         submodules: false
         coverage: codecov
         toxdeps: tox-pypi-filter
-        posargs: -n=4
+        posargs: -n auto --dist loadgroup
         libraries:
           apt:
             - libopenjp2-7
@@ -89,7 +81,7 @@ stages:
           brew:
             - openjpeg
         envs:
-          - macos: py37
+          - macos: py38
           - windows: py310
           - linux: py38-oldestdeps
             posargs: -n auto --dist loadfile
@@ -107,7 +99,7 @@ stages:
           submodules: false
           coverage: codecov
           toxdeps: tox-pypi-filter
-          posargs: -n=4
+          posargs: -n auto --dist loadgroup
           libraries:
             apt:
               - libopenjp2-7
@@ -121,33 +113,12 @@ stages:
             - linux: base_deps
             - linux: py39-devdeps
 
-  # On branches which aren't main, and not Pull Requests, build the wheels but only upload them on tags
-  - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
-    - stage: Release
-      dependsOn: SecondPhaseTests
-      jobs:
-      - template: publish.yml@OpenAstronomy
-        parameters:
-          # Only Upload to PyPI on tags
-          ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
-            pypi_connection_name : 'PyPI'
-          test_extras: 'dev'
-          test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
-          submodules: false
-          targets:
-            - wheels_cp3[789]-manylinux*x86_64
-            - wheels_cp3[789]-macosx*
-            - wheels_cp310-manylinux*x86_64
-            - wheels_cp310-macosx*
-            - sdist
-
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
     - stage: CronNotifier_OK
       condition: succeeded()
       dependsOn:
         - SecondPhaseTests
         - CronTests
-        - Release
       jobs:
       - job: notify
         pool:
@@ -171,7 +142,6 @@ stages:
       dependsOn:
         - SecondPhaseTests
         - CronTests
-        - Release
       jobs:
       - job: notify
         pool:
