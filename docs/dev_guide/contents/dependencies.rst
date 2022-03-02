@@ -17,4 +17,5 @@ The minimum version of these packages that we enforce follows this policy.
 
 Sponsored affiliated packages will support *at least* the sunpy LTS version at the time of their release.
 
+For dependencies only needed to run our tests we will support versions released in the prior 12 months to the current date.
 .. _NEP-0029: https://numpy.org/neps/nep-0029-deprecation_policy.html
