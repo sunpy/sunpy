@@ -7,10 +7,9 @@ on:
       - '*backport*'
     tags:
       - 'v*'
-    tags-ignore:
-      - '*dev*'
-      - '*pre*'
-      - '*post*'
+      - '!*dev*'
+      - '!*pre*'
+      - '!*post*'
   pull_request:
     branches:
       - 'main'
