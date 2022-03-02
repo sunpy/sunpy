@@ -12,8 +12,10 @@ on:
       - '*pre*'
       - '*post*'
   pull_request:
-    paths:
-      - '.github/workflows/publish.yml'
+    branches:
+      - 'main'
+#    paths:
+#      - '.github/workflows/publish.yml'
   # Allow manual runs through the web UI
   workflow_dispatch:
   schedule:
