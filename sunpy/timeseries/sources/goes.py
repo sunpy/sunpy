@@ -263,7 +263,7 @@ class XRSTimeSeries(GenericTimeSeries):
                     # For h5netcdf<0.14
                     start_time_str = start_time_str.astype(str)
                 start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC")
-                times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
+                times = Time(parse_time(start_time_str).utime + d["time"], format="utime")
             elif "xrsa_flux" in d.variables:
                 xrsa = np.array(d["xrsa_flux"])
                 xrsb = np.array(d["xrsb_flux"])
@@ -272,7 +272,7 @@ class XRSTimeSeries(GenericTimeSeries):
                     # For h5netcdf<0.14
                     start_time_str = start_time_str.astype(str)
                 start_time_str = start_time_str.lstrip("seconds since")
-                times = parse_time(start_time_str) + TimeDelta(d["time"], format="sec")
+                times = Time(parse_time(start_time_str).utime + d["time"], format="utime")
 
             else:
                 raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
