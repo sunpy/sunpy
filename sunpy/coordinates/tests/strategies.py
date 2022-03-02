@@ -10,8 +10,8 @@ from astropy.coordinates import Latitude, Longitude
 from sunpy.time import parse_time
 
 
-@u.quantity_input
 @st.composite
+@u.quantity_input
 def latitudes(draw, min_lat: u.deg = -90*u.deg, max_lat: u.deg = 90*u.deg):
     lat = st.floats(min_value=min_lat.to_value(u.deg),
                     max_value=max_lat.to_value(u.deg),
@@ -19,8 +19,8 @@ def latitudes(draw, min_lat: u.deg = -90*u.deg, max_lat: u.deg = 90*u.deg):
     return Latitude(draw(lat) * u.deg)
 
 
-@u.quantity_input
 @st.composite
+@u.quantity_input
 def longitudes(draw, min_lon: u.deg = -180*u.deg, max_lon: u.deg = 180*u.deg,
                wrap_angle: u.deg = 180*u.deg):
     lon = st.floats(min_value=min_lon.to_value(u.deg),
