@@ -1519,7 +1519,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, use_scipy=False):
+               recenter=False, missing=0.0, use_scipy=None, *, method='skimage'):
         """
         Returns a new rotated and rescaled map.
 
@@ -1557,11 +1557,10 @@ class GenericMap(NDData):
         missing : float
             The numerical value to fill any missing points after rotation.
             Default: 0.0
-        use_scipy : bool
-            If True, forces the rotation to use
-            :func:`scipy.ndimage.affine_transform`, otherwise it
-            uses the :func:`skimage.transform.warp`.
-            Default: False, unless scikit-image can't be imported
+        method : {'skimage', 'scipy'}
+            Rotation function to use. Currently
+            :func:`scipy.ndimage.affine_transform` and
+            :func:`skimage.transform.warp` are supported.
 
         Returns
         -------
@@ -1584,7 +1583,7 @@ class GenericMap(NDData):
         to rotation, and differences from IDL's rot().
         """
         # Put the import here to reduce sunpy.map import time
-        from sunpy.image.transform import affine_transform
+        from sunpy.image.transform import _get_transform_method, affine_transform
 
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a rotation matrix.")
@@ -1593,6 +1592,8 @@ class GenericMap(NDData):
 
         if order not in range(6):
             raise ValueError("Order must be between 0 and 5.")
+
+        method = _get_transform_method(method, use_scipy)
 
         # The FITS-WCS transform is by definition defined around the
         # reference coordinate in the header.
@@ -1644,7 +1645,7 @@ class GenericMap(NDData):
                                     order=order, scale=scale,
                                     image_center=np.flipud(pixel_center),
                                     recenter=recenter, missing=missing,
-                                    use_scipy=use_scipy).T
+                                    method=method).T
 
         if recenter:
             new_reference_pixel = pixel_array_center

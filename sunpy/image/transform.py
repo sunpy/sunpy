@@ -6,13 +6,13 @@ import numbers
 import numpy as np
 import scipy.ndimage
 
-from sunpy.util.exceptions import warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_user
 
 __all__ = ['affine_transform']
 
 
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
-                     recenter=False, missing=0.0, use_scipy=False):
+                     recenter=False, missing=0.0, use_scipy=None, *, method='skimage'):
     """
     Rotates, shifts and scales an image.
 
@@ -40,10 +40,11 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Defaults to `True` i.e., recenter to the center of the array.
     missing : `float`, optional
         The value to replace any missing data after the transformation.
-    use_scipy : `bool`, optional
-        Force use of `scipy.ndimage.affine_transform`.
-        Will set all "NaNs" in image to zero before doing the transform.
-        Defaults to `False`, unless scikit-image can't be imported.
+    method : {'skimage', 'scipy'}
+        Transform function to use. Currently
+        :func:`scipy.ndimage.affine_transform` and
+        :func:`skimage.transform.warp` are supported.
+        Defaults to 'skimage', unless scikit-image can't be imported.
 
     Returns
     -------
@@ -93,13 +94,9 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     displacement = np.dot(rmatrix, rot_center)
     shift = image_center - displacement
-    if not use_scipy:
-        try:
-            import skimage.transform
-        except ImportError:
-            warn_user("scikit-image could not be imported. Image rotation will use scipy.")
-            use_scipy = True
-    if use_scipy:
+
+    method = _get_transform_method(method, use_scipy)
+    if method == 'scipy':
         if np.any(np.isnan(image)):
             warn_user("Setting NaNs to 0 for SciPy rotation.")
         # Transform the image using the scipy affine transform
@@ -107,6 +104,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
             mode='constant', cval=missing).T
     else:
+        import skimage.transform
+
         # Make the rotation matrix 3x3 to include translation of the image
         skmatrix = np.zeros((3, 3))
         skmatrix[:2, :2] = rmatrix
@@ -148,3 +147,27 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             rotated_image += im_min
 
     return rotated_image
+
+
+def _get_transform_method(method, use_scipy):
+    # This is re-used in affine_transform and GenericMap.rotate
+    supported_methods = {'scipy', 'skimage'}
+    if method not in supported_methods:
+        raise ValueError(f'Method {method} not in supported methods: {supported_methods}')
+
+    if use_scipy is not None:
+        warn_deprecated("The 'use_scipy' argument is deprecated. "
+                        "Specify the rotation method to the 'method' "
+                        "keyword argument instead.")
+        if use_scipy is True and method != 'scipy':
+            warn_user(f"Using scipy instead of {method} for rotation.")
+            method = 'scipy'
+
+    if method == 'skimage':
+        try:
+            import skimage  # NoQA
+        except ImportError:
+            warn_user("scikit-image could not be imported. Image rotation will use scipy.")
+            method = 'scipy'
+
+    return method
