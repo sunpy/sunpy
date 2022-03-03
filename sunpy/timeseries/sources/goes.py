@@ -263,6 +263,7 @@ class XRSTimeSeries(GenericTimeSeries):
                     # For h5netcdf<0.14
                     start_time_str = start_time_str.astype(str)
                 start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC")
+                # Perform the time addition in UTime format to ignore leap seconds
                 times = Time(parse_time(start_time_str).utime + d["time"], format="utime")
             elif "xrsa_flux" in d.variables:
                 xrsa = np.array(d["xrsa_flux"])
@@ -272,6 +273,7 @@ class XRSTimeSeries(GenericTimeSeries):
                     # For h5netcdf<0.14
                     start_time_str = start_time_str.astype(str)
                 start_time_str = start_time_str.lstrip("seconds since")
+                # Perform the time addition in UTime format to ignore leap seconds
                 times = Time(parse_time(start_time_str).utime + d["time"], format="utime")
 
             else:
