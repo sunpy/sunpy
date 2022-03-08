@@ -8,6 +8,7 @@ import pytest
 
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.visualization import ImageNormalize
 
 import sunpy
 import sunpy.data.test
@@ -197,6 +198,12 @@ def test_norm_animator(hmi_test_map):
 def test_map_sequence_plot(aia171_test_map, hmi_test_map):
     seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
     seq.plot()
+
+
+@figure_test
+def test_map_sequence_plot_custom_cmap_norm(aia171_test_map, hmi_test_map):
+    seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
+    seq.plot(cmap='Greys', norm=ImageNormalize(vmin=0, vmax=100))
 
 
 def test_save(aia171_test_map, hmi_test_map, tmp_path):
