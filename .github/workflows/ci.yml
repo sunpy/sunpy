@@ -114,3 +114,22 @@ jobs:
         - cp3{8,9,10}-macosx_universal2
 #    secrets:
 #      pypi_password: ${{ secrets.pypi_password }}
+
+  notify_pass:
+    needs: [cron, publish, online]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/matrix
+        with:
+          status: 'Succeeded'
+          token: ${{ secrets.bot_access_token }}
+
+  notify_fail:
+    if: failure()
+    needs: [cron, publish, online]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/matrix
+        with:
+          status: 'Succeeded'
+          token: ${{ secrets.bot_access_token }}
