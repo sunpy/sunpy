@@ -205,25 +205,21 @@ def _bin_data_for_summary(energy_bins, count_data):
     count_data : `numpy.ndarray`
         The array of count data to rebin.
     """
-    # find the indices corresponding to some standard summary energy bins
+
+    # list of energy bands to sum between
     ebands = [4, 15, 25, 50, 100, 300, 800, 2000]
-    indices = []
-    for e in ebands:
-        indices.append(np.searchsorted(energy_bins['e_max'], e))
 
     summary_counts = []
-    for i in range(0, len(count_data['counts'])):
-        counts_in_bands = []
-        for j in range(1, len(ebands)):
-            counts_in_bands.append(
-                np.sum(count_data['counts'][i][indices[j - 1]:indices[j]]) /
-                (count_data['exposure'][i] *
-                 (energy_bins['e_max'][indices[j]] -
-                  energy_bins['e_min'][indices[j - 1]])))
+    for i in range(len(ebands)-1):
+        # find the indices corresponding to some standard summary energy bins
+        ind_start = np.argmin(np.abs(energy_bins["e_min"]-ebands[i]))
+        ind_end = np.argmin(np.abs(energy_bins["e_max"]-ebands[i+1]))
+        # sum the counts in the energy bands, and find counts/s/keV
+        summed_counts = np.sum(count_data["counts"][:, ind_start:ind_end+1], axis=1)
+        energy_width = (energy_bins["e_max"][ind_end] - energy_bins["e_min"][ind_start])
+        summary_counts.append(summed_counts/energy_width/count_data["exposure"])
 
-        summary_counts.append(counts_in_bands)
-
-    return summary_counts
+    return np.array(summary_counts).T
 
 
 def _parse_detector(detector):
