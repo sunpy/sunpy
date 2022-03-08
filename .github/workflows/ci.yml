@@ -1,22 +1,108 @@
-name: Build and publish
+name: CI
 
 on:
   push:
+    branches:
+      - '*'
+      - '!*backport*'
     tags:
       - 'v*'
       - '!*dev*'
       - '!*pre*'
       - '!*post*'
   pull_request:
-    branches:
-      - 'main'
-#    paths:
-#      - '.github/workflows/publish.yml'
   # Allow manual runs through the web UI
   workflow_dispatch:
 
 jobs:
+  core:
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto --dist loadgroup
+      libraries: |
+        apt:
+          - libopenjp2-7
+      envs: |
+        - linux: py39
+
+  test:
+    needs: [core]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto --dist loadgroup
+      libraries: |
+        apt:
+          - libopenjp2-7
+          - graphviz
+        brew:
+          - openjpeg
+      envs: |
+        - macos: py38
+        - windows: py310
+        - linux: py38-oldestdeps
+          posargs: -n auto --dist loadfile
+        - linux: py39-conda
+          libraries: ''
+
+  online:
+    needs: [core]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      default_python: '3.8'
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto --dist loadgroup
+      libraries: |
+        apt:
+          - libopenjp2-7
+          - graphviz
+        brew:
+          - openjpeg
+      envs: |
+        - linux: build_docs_ci
+          posargs: ''
+          pytest: false
+        - linux: py38-online
+
+  cron:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      default_python: '3.8'
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto --dist loadgroup
+      libraries: |
+        apt:
+          - libopenjp2-7
+          - graphviz
+        yum:
+          - openssl-devel
+          - freetype-devel
+          - libpng-devel
+          - hdf5-devel
+      envs: |
+        - linux: base_deps
+        - linux: py39-devdeps
+        - linux: pyinstaller
+
   publish:
+    # Build wheels when pushing to any branch except main
+    # publish.yml will only publish if tagged
+    if: |
+      github.event_name != 'pull_request' && (
+        github.ref_name != 'main' ||
+        github.event_name == 'schedule' ||
+        github.event_name == 'workflow_dispatch' )
+    needs: [test]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
       test_extras: 'dev'
