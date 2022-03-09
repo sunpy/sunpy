@@ -40,7 +40,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Defaults to `True` i.e., recenter to the center of the array.
     missing : `float`, optional
         The value to replace any missing data after the transformation.
-    method : {'skimage', 'scipy'}
+    method : {``'skimage'``, ``'scipy'``}, optional
         Transform function to use. Currently
         :func:`scipy.ndimage.affine_transform` and
         :func:`skimage.transform.warp` are supported.

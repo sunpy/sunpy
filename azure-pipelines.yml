@@ -93,6 +93,7 @@ stages:
           - macos: py38
           - windows: py310
           - linux: py38-oldestdeps
+            posargs: -n auto --dist loadfile
           - linux: py39-conda
             libraries: {}
 

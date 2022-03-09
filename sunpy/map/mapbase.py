@@ -1557,7 +1557,7 @@ class GenericMap(NDData):
         missing : float
             The numerical value to fill any missing points after rotation.
             Default: 0.0
-        method : {'skimage', 'scipy'}
+        method : {``'skimage'``, ``'scipy'``}, optional
             Rotation function to use. Currently
             :func:`scipy.ndimage.affine_transform` and
             :func:`skimage.transform.warp` are supported.
