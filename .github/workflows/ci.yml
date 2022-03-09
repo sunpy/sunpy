@@ -111,7 +111,7 @@ jobs:
       targets: |
         - cp3{8,9,10}-manylinux*_x86_64
         - cp3{8,9,10}-macosx_x86_64
-        - cp3{8,9,10}-macosx_universal2
+        - cp3{8,9,10}-macosx_arm64
 #    secrets:
 #      pypi_password: ${{ secrets.pypi_password }}
 
