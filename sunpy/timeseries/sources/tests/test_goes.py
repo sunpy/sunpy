@@ -82,6 +82,18 @@ def test_new_goes16():
     assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
 
+def test_goes_netcdf_time_parsing15():
+    # testing to make sure the time is correctly parsed (to ignore leap seconds)
+    ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath, source="XRS")
+    assert ts_goes.index[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2013-10-28 00:00:01.385000'
+
+
+def test_goes_netcdf_time_parsing17():
+    # testing to make sure the time is correctly parsed (to ignore leap seconds)
+    ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath, source="XRS")
+    assert ts_goes.index[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2020-10-16 00:00:00.476771'
+
+
 @pytest.mark.remote_data
 def test_goes_remote():
     # Older format file
