@@ -203,7 +203,9 @@ def test_map_sequence_plot(aia171_test_map, hmi_test_map):
 @figure_test
 def test_map_sequence_plot_custom_cmap_norm(aia171_test_map, hmi_test_map):
     seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
-    seq.plot(cmap='Greys', norm=ImageNormalize(vmin=0, vmax=100))
+    animation = seq.plot(cmap='Greys', norm=ImageNormalize(vmin=0, vmax=100))
+    animation._step()
+    return animation
 
 
 def test_save(aia171_test_map, hmi_test_map, tmp_path):
