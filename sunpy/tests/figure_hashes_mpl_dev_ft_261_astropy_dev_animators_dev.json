@@ -9,6 +9,7 @@
   "sunpy.map.tests.test_mapbase.test_rotation_rect_pixelated_data": "817ef0de8c17246fc4e728d55d119b08c803b6a6906d4b0923f3969eaab0177f",
   "sunpy.map.tests.test_mapsequence.test_norm_animator": "5a7217dd55ab3a593a27741fecfe0851208fd1d31baeca4cbd018d65aaf3f483",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot": "3cdc53f41914028a4e9f23112d7e616ce8a423ef5670c8365fdadbc0e59780ca",
+  "sunpy.map.tests.test_mapsequence.test_map_sequence_plot_custom_cmap_norm": "c1276702147f4debaa14c17f6b0b2ab7f9e0b1ace309c72e767b2af071c4405e",
   "sunpy.map.tests.test_plotting.test_plot_aia171": "3cdc53f41914028a4e9f23112d7e616ce8a423ef5670c8365fdadbc0e59780ca",
   "sunpy.map.tests.test_plotting.test_plot_rotated_aia171": "9df0409afa257ebe481aa5170321072ddca349fe596f3d662208e127f39a938e",
   "sunpy.map.tests.test_plotting.test_plot_aia171_clip": "920852d09b1b0af6ed406312e8e54ce2b327d38061a0652d95df03b41e1c552d",

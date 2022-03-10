@@ -350,9 +350,9 @@ class MapSequence:
                 removes.pop(0).remove()
 
             im.set_array(ani_data[i].data)
-            im.set_cmap(ani_data[i].plot_settings['cmap'])
+            im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings['cmap']))
 
-            norm = deepcopy(ani_data[i].plot_settings['norm'])
+            norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings['norm']))
             # The following explicit call is for bugged versions of Astropy's
             # ImageNormalize
             norm.autoscale_None(ani_data[i].data)
