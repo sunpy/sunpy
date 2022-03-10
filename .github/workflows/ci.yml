@@ -85,7 +85,6 @@ jobs:
       envs: |
         - linux: base_deps
         - linux: py38-devdeps
-        - linux: pyinstaller
 
   publish:
     # Build wheels when pushing to any branch except main
