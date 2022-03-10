@@ -1,0 +1,2 @@
+Fixes a bug where the ``cmap`` and ``norm`` keyword arguments were ignored when calling
+`~sunpy.map.MapSequence.plot`.
