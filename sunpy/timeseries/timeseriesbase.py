@@ -5,8 +5,16 @@ This module provies `sunpy.timeseries.GenericTimeSeries` which all other
 import copy
 from collections import OrderedDict
 from collections.abc import Iterable
+import html
+import textwrap
+import webbrowser
+from io import BytesIO
+from base64 import b64encode
+from tempfile import NamedTemporaryFile
 
+import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 import astropy
 import astropy.units as u
@@ -32,7 +40,6 @@ __all__ = ["GenericTimeSeries"]
 class GenericTimeSeries:
     """
     A generic time series object.
-
     Parameters
     ----------
     data : `~pandas.DataFrame`
@@ -43,14 +50,12 @@ class GenericTimeSeries:
     units : `dict`, optional
         A mapping from column names in ``data`` to the physical units of that column.
         Defaults to `None`.
-
     Attributes
     ----------
     meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`
         The metadata giving details about the time series data/instrument.
     units : `dict`
         A mapping from column names in ``data`` to the physical units of that column.
-
     Examples
     --------
     >>> from sunpy.timeseries import TimeSeries
@@ -66,7 +71,6 @@ class GenericTimeSeries:
     >>> units = {'intensity': u.W/u.m**2}
     >>> ts = TimeSeries(df, header, units)
     >>> ts.peek()  # doctest: +SKIP
-
     References
     ----------
     * `Pandas Documentation <https://pandas.pydata.org/pandas-docs/stable/>`_
@@ -79,7 +83,6 @@ class GenericTimeSeries:
         """
         An __init_subclass__ hook initializes all of the subclasses of a given
         class.
-
         So for each subclass, it will call this block of code on import.
         This replicates some metaclass magic without the need to be
         aware of metaclasses. Here we use this to register each subclass
@@ -183,17 +186,426 @@ class GenericTimeSeries:
         else:
             return None
 
+    @property
+    def channel_info(self):
+        """
+        Information about the channels of the instrument (e.g., wavelengths
+        or energy ranges).
+        """
+        return self._channels
+
+    @property
+    def url(self):
+        """
+        URL to the instrument website.
+        """
+        return self._url
+
 # #### Data Access, Selection and Organisation Methods #### #
+
+    def _text_summary(self):
+        """
+        Produces a table summary of the timeseries data to be passed to
+        the _repr_html_ function.
+        """
+        obs = self.observatory
+        if obs is None:
+            try:
+                obs = self.meta.metadata[0][2]["telescop"]
+            except KeyError:
+                obs = "Unknown"
+        try:
+            inst = self.meta.metadata[0][2]["instrume"]
+        except KeyError:
+            inst = "Unknown"
+        try:
+            link = f"""<a href={self.url} target="_blank">{inst}</a>"""
+        except AttributeError:
+            link = inst
+        dat = self.to_dataframe()
+        drange = dat.max() - dat.min()
+        drange = drange.to_string(float_format="{:.2E}".format)
+        drange = drange.replace("\n", "<br>")
+
+        cha = self.meta.metadata[0][1]
+        try:
+            cha = self.channel_info
+            cha = cha.replace("\n", "<br>")
+        except AttributeError:
+            cha = "<br>".join(cha)
+
+        uni = list(set(self.units.values()))
+        uni = [x.unit if type(x) == u.quantity.Quantity else x for x in uni]
+        uni = ["dimensionless" if x == u.dimensionless_unscaled else x for x in uni]
+        uni = "<br>".join(str(x) for x in uni)
+
+        return textwrap.dedent(f"""\
+                   SunPy TimeSeries
+                   ----------------
+                   Observatory:\t\t {obs}
+                   Instrument:\t\t {link}
+                   Channel(s):\t\t {cha}
+                   Start Date:\t\t {dat.index.min().round('s')}
+                   End Date:\t\t {dat.index.max().round('s')}
+                   Samples per Channel:\t\t {self.shape[0]}
+                   Data Range(s):\t\t {drange}
+                   Units:\t\t {uni}\
+                   """)
+
+    def __str__(self):
+        return f"{self._text_summary()}\n{self._data.__repr__()}"
+
+    def __repr__(self):
+        return f"{object.__repr__(self)}\n{self}"
+
+    def _repr_html_(self):
+        """
+        Produces an HTML summary of the timeseries data with plots for use in
+        Jupyter notebooks.
+        """
+        from astropy.visualization import hist
+
+        # Call _text_summary and reformat as an HTML table
+        partial_html = (
+            self._text_summary()[34:]
+            .replace("\n", "</td></tr><tr><th>")
+            .replace(":\t", "</th><td>")
+        )
+        text_to_table = (
+            f"""\
+            <table style='text-align:left'>
+                <tr><th>{partial_html}</td></tr>
+            </table>"""
+        ).replace("\n", "")
+
+        # Create the timeseries plots for each channel as a panel in one
+        # figure. The color list below is passed to both timeseries and
+        # histogram plotting methods for consistency.
+        cols = ['b', 'g', 'r', 'c', 'm', 'y', 'tab:blue', 'tab:orange',
+                'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray',
+                'tab:green', 'tab:olive', 'tab:cyan', 'palegreen', 'pink'
+                ]
+        dat = self.to_dataframe()
+        fig, axs = plt.subplots(
+            nrows=len(self.columns),
+            ncols=1,
+            sharex=True,
+            constrained_layout=True,
+            figsize=(6, 9),
+        )
+        for i in range(len(self.columns)):
+            if len(self.columns) == 1:
+                axs.plot(
+                    dat.index,
+                    dat[self.columns[i]].values,
+                    color=cols[i],
+                    label=self.columns[i],
+                )
+                if (dat[self.columns[i]].values < 0).any() == False:
+                    axs.set_yscale("log")
+                axs.legend(frameon=False, handlelength=0)
+                axs.set_ylabel(self.units[self.columns[i]])
+            else:
+                axs[i].plot(
+                    dat.index,
+                    dat[self.columns[i]].values,
+                    color=cols[i],
+                    label=self.columns[i],
+                )
+                if (dat[self.columns[i]].values < 0).any() == False:
+                    axs[i].set_yscale("log")
+                axs[i].legend(frameon=False, handlelength=0)
+                if len(set(self.units.values())) == 1:
+                    fig.supylabel(self.units[self.columns[0]])
+                else:
+                    axs[i].set_ylabel(self.units[self.columns[i]])
+        plt.xticks(rotation=30)
+        spc = _figure_to_base64(fig)
+        plt.close(fig)
+        # Make histograms for each column of data. The histograms are
+        # created using the Astropy hist method that uses Scott's rule
+        # for bin sizes.
+        hlist = []
+        for i in range(len(dat.columns)):
+            if set(np.isnan(dat[self.columns[i]].values)) != {True}:
+                fig = plt.figure(figsize=(5, 3), constrained_layout=True)
+                hist(
+                    dat[self.columns[i]].values[~np.isnan(dat[self.columns[i]].values)],
+                    log=True,
+                    bins="scott",
+                    color=cols[i],
+                )
+                plt.title(self.columns[i] + " [click for other channels]")
+                plt.xlabel(self.units[self.columns[i]])
+                plt.ylabel("# of occurences")
+                hlist.append(_figure_to_base64(fig))
+                plt.close(fig)
+
+        # This loop creates a formatted list of base64 images that is passed
+        # directly into the JS script below, so all images are written into
+        # the html page when it is created (allows for an arbitrary number of
+        # histograms to be rotated through onclick).
+        hlist2 = []
+        for i in range(len(hlist)):
+            hlist2.append(f"data:image/png;base64,{hlist[i]}")
+
+        # The code below creates unique names to be passed to the JS script
+        # in the html summary. Otherwise, multiple timeseries summaries will
+        # conflict in a single notebook (due to the document.getElementByID
+        # method of updating images onclick).
+        source = str(self.source) + str(np.random.randint(100))
+        chg = "chg" + source
+
+        return textwrap.dedent(f"""\
+            <pre>{html.escape(object.__repr__(self))}</pre>
+            <script type="text/javascript">
+            var counter = 1;
+            var {source} = {hlist2};
+            {chg} = function () {{
+                document.getElementById("{source}").src = {source}[counter];
+                counter++;
+                if (counter >= {source}.length) {{
+                    counter = 0;
+                }}
+            }}
+            </script>
+            <table>
+                <tr>
+                    <td style='width:40%'>{text_to_table}</td>
+                    <td rowspan=3>
+                        <img src='data:image/png;base64,{spc}'/>
+                    </td>
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                    <td>
+                    <img src={hlist2[0]} alt="Click here for histograms" id="{source}"
+                         onClick="{chg}()"/>
+                    </td>
+                </tr>
+            </table>""")
+
+    def quicklook(self):
+        """
+        Display a quicklook summary of the Timeseries instance in the default
+        webbrowser.
+
+        Example
+        -------
+        >>> from sunpy.timeseries import TimeSeries
+        >>> import sunpy.data.sample
+        >>> goes_lc = TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
+        >>> goes_lc.quicklook()
+        """
+        with NamedTemporaryFile(
+            "w", delete=False, prefix="sunpy.timeseries.", suffix=".html"
+        ) as f:
+            url = "file://" + f.name
+            f.write(textwrap.dedent(f"""\
+                <html>
+                    <title>Quicklook summary for {html.escape(object.__repr__(self))}</title>
+                    <body>{self._repr_html_()}</body>
+                </html>""")
+                    )
+        webbrowser.open_new_tab(url)
+
+    def summary(self):
+        """
+        Produces an interactive data summary in Jupyter notebook using the
+        Plotly library. The plots here are identical to those created in
+        the _repr_html_ method.
+
+        Example
+        -------
+        >>> from sunpy.timeseries import TimeSeries
+        >>> import sunpy.data.sample
+        >>> goes_lc = TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
+        >>> goes_lc.summary()
+        """
+        try:
+            from plotly.subplots import make_subplots
+            import plotly.graph_objects as go
+            import plotly.colors as colors
+        except ModuleNotFoundError:
+            print("Plotly library needed")
+
+        # The components of _text_summary have to be redefined to be
+        # passed into a Plotly table.
+        obs = self.observatory
+        if obs is None:
+            try:
+                obs = self.meta.metadata[0][2]["telescop"]
+            except KeyError:
+                obs = "Unknown"
+        try:
+            inst = self.meta.metadata[0][2]["instrume"]
+        except KeyError:
+            inst = "Unknown"
+        try:
+            link = f"""<a href="{self.url}" target="_blank">{inst} information</a>"""
+        except AttributeError:
+            link = None
+
+        samp = self.shape[0]
+        dat = self.to_dataframe()
+        start = dat.index.min().round("s")
+        end = dat.index.max().round("s")
+        drange = dat.max() - dat.min()
+        drange = drange.to_string(float_format="{:.2E}".format)
+        drange = drange.replace("\n", "<br>")
+
+        cha1 = self.meta.metadata[0][1]
+        try:
+            cha = self.channel_info
+            cha = cha.replace("\n", "<br>")
+        except AttributeError:
+            cha = "<br>".join(cha1)
+
+        uni = list(set(self.units.values()))
+        uni = [x.unit if type(x) == u.quantity.Quantity else x for x in uni]
+        uni = ["dimensionless" if x == u.dimensionless_unscaled else x for x in uni]
+        uni = "<br>".join(str(x) for x in uni)
+
+        # Define color list so each channel has matching colors in its
+        # timeseries and histogram. The perm() function is necessary for
+        # designating the visibility of plots using the dropdown menu.
+        cols = colors.DEFAULT_PLOTLY_COLORS + colors.qualitative.Safe
+
+        def perm(ind):
+            P = [True, True] + [False for i in range(2 * len(cha1) - 2)]
+            if ind == 0:
+                return P
+            else:
+                Pnew = []
+                for i in range(len(P)):
+                    Pnew.append(P[i - 2 * ind])
+                return Pnew
+
+        # Initialize the plot, then create the timeseries and histograms.
+        # Bin size is set to Scott's rule.
+        fig = make_subplots(
+            rows=2,
+            cols=2,
+            shared_xaxes=False,
+            vertical_spacing=0.1,
+            horizontal_spacing=0.12,
+            specs=[
+                [{"type": "table", "rowspan": 2}, {"type": "scatter"}],
+                [None, {"type": "histogram"}],
+            ],
+        )
+        for i in range(len(cha1)):
+            fig.add_trace(
+                go.Scatter(
+                    x=dat.index,
+                    y=dat[cha1[i]],
+                    name=cha1[i],
+                    marker=dict(color=cols[i]),
+                ),
+                row=1,
+                col=2,
+            )
+            # Custom bin sizing slows down plotly's renderer a lot.
+            # So, datasets with over 10 channels are set to use plotly's
+            # default bin algorithm, which renders faster.
+            if len(self.columns) < 10:
+                binsize = astropy.stats.scott_bin_width(dat[cha1[i]].values)
+            else:
+                binsize = 0
+            fig.add_trace(
+                go.Histogram(
+                    x=dat[cha1[i]].values,
+                    name=cha1[i],
+                    marker_color=cols[i],
+                    xbins=dict(size=binsize),
+                    showlegend=False,
+                ),
+                row=2,
+                col=2,
+            )
+        Menu = [
+            dict(
+                label="All",
+                method="update",
+                args=[
+                    {"visible": [True for j in range(len(cha1))]},
+                    {
+                        "yaxis.title": str(self.units[self.columns[0]]),
+                        "xaxis2.title": str(self.units[self.columns[0]]),
+                    },
+                ],
+            )
+        ]
+        for i in range(len(cha1)):
+            Menu.append(
+                dict(
+                    label=cha1[i],
+                    method="update",
+                    args=[
+                        {"visible": perm(i)},
+                        {
+                            "yaxis.title": str(self.units[self.columns[i]]),
+                            "xaxis2.title": str(self.units[self.columns[i]]),
+                        },
+                    ],
+                ),
+            )
+        fig.update_layout(
+            updatemenus=[
+                dict(
+                    active=0,
+                    showactive=True,
+                    buttons=list(Menu),
+                    x=0,
+                    xanchor="left",
+                    y=1.1,
+                    yanchor="top",
+                )
+            ]
+        )
+        fig.add_trace(
+            go.Table(
+                cells=dict(
+                    values=[
+                        [
+                            "<b>Observatory</b>",
+                            "<b>Instrument</b>",
+                            "<b>Channel(s)</b>",
+                            "<b>Start Date</b>",
+                            "<b>End Date</b>",
+                            "<b>Samples per Channel</b>",
+                            "<b>Data Range(s)</b>",
+                            "<b>Units</b>",
+                        ],
+                        [obs, inst, cha, start, end, samp, drange, uni],
+                    ],
+                    align="right",
+                )
+            ),
+            row=1,
+            col=1,
+        )
+        fig["layout"]["yaxis2"]["title"] = "# of occurences"
+        fig["layout"]["yaxis"]["tickformat"] = ".1e"
+        fig["layout"]["xaxis2"]["tickformat"] = ".1e"
+
+        fig.update_layout(height=700, hovermode="x", showlegend=False)
+        fig.update_yaxes(type="log")
+        if link is not None:
+            fig.add_annotation(
+                xref="paper", x="0", yref="paper", y="-0.1", text=link,
+                showarrow=False
+            )
+        return fig.show()
 
     def quantity(self, colname, **kwargs):
         """
         Return a `~astropy.units.quantity.Quantity` for the given column.
-
         Parameters
         ----------
         colname : `str`
             The heading of the column you want to output.
-
         Returns
         -------
         `~astropy.units.quantity.Quantity`
@@ -206,7 +618,6 @@ class GenericTimeSeries:
         """
         Return a new `~sunpy.timeseries.TimeSeries` with the given column added
         or updated.
-
         Parameters
         ----------
         colname : `str`
@@ -216,7 +627,6 @@ class GenericTimeSeries:
             If updating values only then a numpy array is permitted.
         overwrite : `bool`, optional
             Defaults to `True`, allowing the method to overwrite a column already present in the `~sunpy.timeseries.TimeSeries`.
-
         Returns
         -------
         `sunpy.timeseries.TimeSeries`
@@ -252,12 +662,10 @@ class GenericTimeSeries:
     def remove_column(self, colname):
         """
         Remove a column.
-
         Parameters
         ----------
         colname : str
             The heading of the column to remove.
-
         Returns
         -------
         `sunpy.timeseries.TimeSeries`
@@ -276,7 +684,6 @@ class GenericTimeSeries:
         this shouldn't be necessary as most `~sunpy.timeseries.TimeSeries`
         operations sort the data anyway to ensure consistent behavior when
         truncating.
-
         Returns
         -------
         `~sunpy.timeseries.TimeSeries`
@@ -289,7 +696,6 @@ class GenericTimeSeries:
     def truncate(self, a, b=None, int=None):
         """
         Returns a truncated version of the TimeSeries object.
-
         Parameters
         ----------
         a : `sunpy.time.TimeRange`, `str`, `int`
@@ -300,7 +706,6 @@ class GenericTimeSeries:
         int : `int`, optional
             If specified, the integer indicating the slicing intervals.
             Defaults to `None`.
-
         Returns
         -------
         `~sunpy.timeseries.TimeSeries`
@@ -339,12 +744,10 @@ class GenericTimeSeries:
     def extract(self, column_name):
         """
         Returns a new time series with the chosen column.
-
         Parameters
         ----------
         column_name : `str`
             A valid column name.
-
         Returns
         -------
         `~sunpy.timeseries.TimeSeries`
@@ -374,7 +777,6 @@ class GenericTimeSeries:
         `~sunpy.timeseries.TimeSeries`. This function will check and remove any duplicate times.
         It will keep the column values from the original timeseries to which the new time
         series is being added.
-
         Parameters
         ----------
         others : `~sunpy.timeseries.TimeSeries` or `collections.abc.Iterable`
@@ -382,26 +784,20 @@ class GenericTimeSeries:
             `~sunpy.timeseries.TimeSeries`.
         same_source : `bool`, optional
             Set to `True` to check if the sources of the time series match. Defaults to `False`.
-
         Returns
         -------
         `~sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries`.
-
         Notes
         -----
         Extra keywords are passed to `pandas.concat`.
-
         Examples
         --------
         A single `~sunpy.timeseries.TimeSeries` or an `collections.abc.Iterable` containing multiple
         `~sunpy.timeseries.TimeSeries` can be passed to concatenate.
-
         >>> timeseries_1.concatenate(timeseries_2) # doctest: +SKIP
         >>> timeseries_1.concatenate([timeseries_2, timeseries_3]) # doctest: +SKIP
-
         Set ``same_source`` to `True` if the sources of the time series are the same.
-
         >>> timeseries_1.concatenate([timeseries_2, timeseries_3], same_source=True) # doctest: +SKIP
         """
         # Check to see if nothing needs to be done in case the same TimeSeries is provided.
@@ -460,7 +856,6 @@ class GenericTimeSeries:
     def plot(self, axes=None, columns=None, **plot_args):
         """
         Plot a plot of the `~sunpy.timeseries.TimeSeries`.
-
         Parameters
         ----------
         axes : `~matplotlib.axes.Axes`, optional
@@ -471,7 +866,6 @@ class GenericTimeSeries:
         **plot_args : `dict`, optional
             Additional plot keyword arguments that are handed to
             :meth:`pandas.DataFrame.plot`.
-
         Returns
         -------
         `~matplotlib.axes.Axes`
@@ -502,7 +896,6 @@ class GenericTimeSeries:
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the
         `~sunpy.timeseries.GenericTimeSeries.plot` method and Matplotlib's pyplot framework.
-
         Parameters
         ----------
         columns : list[str], optional
@@ -525,7 +918,6 @@ class GenericTimeSeries:
         """
         Raises an exception if the `~sunpy.timeseries.TimeSeries` is invalid
         for plotting.
-
         This should be added into all `~sunpy.timeseries.TimeSeries`
         peek methods.
         """
@@ -540,7 +932,6 @@ class GenericTimeSeries:
         """
         Validates the meta-information associated with a
         `~sunpy.timeseries.TimeSeries`.
-
         This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-
         specific validation should be handled in the relevant file in
@@ -557,7 +948,6 @@ class GenericTimeSeries:
         """
         Validates the astropy unit-information associated with a
         `~sunpy.timeseries.TimeSeries`.
-
         This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-
         specific validation should be handled in the relevant file in
@@ -576,9 +966,7 @@ class GenericTimeSeries:
         """
         Sanitizes the `~sunpy.timeseries.TimeSeriesMetaData`  used to store the
         metadata.
-
         Primarily this method will:
-
         * Remove entries outside of the dates or truncate if the metadata overflows past the data.
         * Remove column references in the metadata that don't match to a column in the data.
         * Remove metadata entries that have no columns matching the data.
@@ -596,7 +984,6 @@ class GenericTimeSeries:
         """
         Return an `astropy.table.Table` of the given
         `~sunpy.timeseries.TimeSeries`.
-
         Returns
         -------
         `~astropy.table.Table`
@@ -622,7 +1009,6 @@ class GenericTimeSeries:
         """
         Return a `~pandas.DataFrame` of the given
         `~sunpy.timeseries.TimeSeries`.
-
         Returns
         -------
         `~pandas.DataFrame`
@@ -632,12 +1018,10 @@ class GenericTimeSeries:
     def to_array(self, **kwargs):
         """
         Return a `numpy.array` of the given `~sunpy.timeseries.TimeSeries`.
-
         Parameters
         ----------
         **kwargs : `dict`
             All keyword arguments are passed to `pandas.DataFrame.to_numpy`.
-
         Returns
         -------
         `~numpy.ndarray`
@@ -652,12 +1036,10 @@ class GenericTimeSeries:
         """
         Check two `~sunpy.timeseries.TimeSeries` are the same, they have
         matching type, data, metadata and units entries.
-
         Parameters
         ----------
         other : `~sunpy.timeseries.TimeSeries`
             The second `~sunpy.timeseries.TimeSeries` to compare with.
-
         Returns
         -------
         `bool`
@@ -676,12 +1058,10 @@ class GenericTimeSeries:
         """
         Check two `~sunpy.timeseries.TimeSeries` are not the same, they don't
         have matching type, data, metadata and/or units entries.
-
         Parameters
         ----------
         other : `~sunpy.timeseries.TimeSeries`
             The second `~sunpy.timeseries.TimeSeries` to compare with.
-
         Returns
         -------
         `bool`
@@ -692,10 +1072,15 @@ class GenericTimeSeries:
     def _parse_file(cls, filepath):
         """
         Parses a file - to be implemented in any subclass that may use files.
-
         Parameters
         ----------
         filepath : `str`
             The path to the file you want to parse.
         """
         raise NoMatchError(f'Could not find any timeseries sources to parse {filepath}')
+
+def _figure_to_base64(fig):
+    # Converts a matplotlib Figure to a base64 UTF-8 string
+    buf = BytesIO()
+    fig.savefig(buf, format='png', facecolor='none')
+    return b64encode(buf.getvalue()).decode('utf-8')
