@@ -30,27 +30,22 @@ __all__ = ['XRSTimeSeries']
 class XRSTimeSeries(GenericTimeSeries):
     """
     GOES XRS Time Series.
-
     Each GOES satellite there are two X-ray Sensors (XRS) which provide solar X ray fluxes
     for the wavelength bands of 0.5 to 4 Å (short channel) sand 1 to 8 Å (long channel).
     Most recent data is usually available one or two days late.
-
     Data is available starting on 1981/01/01.
-
     Examples
     --------
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
     >>> goes.peek()   # doctest: +SKIP
-
     References
     ----------
     * `GOES Mission Homepage <https://www.goes.noaa.gov>`_
     * `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
     * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
     * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`_
-
     Notes
     -----
     * https://umbra.nascom.nasa.gov/goes/fits/goes_fits_files_notes.txt
@@ -58,6 +53,11 @@ class XRSTimeSeries(GenericTimeSeries):
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.
     _source = 'xrs'
+    _url = "https://www.swpc.noaa.gov/products/goes-x-ray-flux"
+
+    # Class attributes to return information about the specific channels and
+    # corresponding wavelengths as well as a url to the documentation.
+    _channels = u"xrsa 0.5-4 \u00C5 \n xrsb 1-8 \u00C5"
     _url = "https://www.swpc.noaa.gov/products/goes-x-ray-flux"
 
     _netcdf_read_kw = {}
@@ -70,7 +70,6 @@ class XRSTimeSeries(GenericTimeSeries):
     def plot(self, axes=None, columns=None, **kwargs):
         """
         Plots the GOES XRS light curve.
-
         Parameters
         ----------
         axes : `matplotlib.axes.Axes`, optional
@@ -80,7 +79,6 @@ class XRSTimeSeries(GenericTimeSeries):
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
-
         Returns
         -------
         `~matplotlib.axes.Axes`
@@ -153,14 +151,11 @@ class XRSTimeSeries(GenericTimeSeries):
     def peek(self, columns=None, title="GOES X-ray flux", **kwargs):
         """
         Displays the GOES XRS light curve by calling `~sunpy.timeseries.sources.goes.XRSTimeSeries.plot`.
-
         .. plot::
-
             import sunpy.timeseries
             import sunpy.data.sample
             ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
             ts_goes.peek()
-
         Parameters
         ----------
         columns : list[str], optional
@@ -181,7 +176,6 @@ class XRSTimeSeries(GenericTimeSeries):
     def _parse_file(cls, filepath):
         """
         Parses a GOES/XRS FITS file.
-
         Parameters
         ----------
         filepath : `str`
@@ -201,7 +195,6 @@ class XRSTimeSeries(GenericTimeSeries):
     def _parse_hdus(cls, hdulist):
         """
         Parses a GOES/XRS FITS `~astropy.io.fits.HDUList` from a FITS file.
-
         Parameters
         ----------
         hdulist : `astropy.io.fits.HDUList`
@@ -251,7 +244,6 @@ class XRSTimeSeries(GenericTimeSeries):
     def _parse_netcdf(filepath):
         """
         Parses the netCDF GOES files to return the data, header and associated units.
-
         Parameters
         ----------
         filepath : `~str`
