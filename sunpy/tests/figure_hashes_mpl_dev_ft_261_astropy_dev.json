@@ -11,6 +11,7 @@
   "sunpy.map.tests.test_plotting.test_draw_contours_aia": "e024ba7c9cd6e7705d033b14141c61824d0682dc97c4d04fbc8153f54bc51174",
   "sunpy.map.tests.test_plotting.test_draw_contours_different_wcs": "6c156932e27bce0a765e11cf4db4f9089a68925e16b6a74472ee597f89ebc8e7",
   "sunpy.map.tests.test_plotting.test_draw_grid_aia171": "8a8f5759a58ad5f0224c62248508e79c00f53a760a0c68fbe781d503c8c3af9d",
+  "sunpy.map.tests.test_mapsequence.test_map_sequence_plot_custom_cmap_norm": "c1276702147f4debaa14c17f6b0b2ab7f9e0b1ace309c72e767b2af071c4405e",
   "sunpy.map.tests.test_plotting.test_draw_limb_different_observer": "a4cab0ad23c2662632dbedc9937f3a51ee967aed9835f8a3026a387b901946d1",
   "sunpy.map.tests.test_plotting.test_draw_limb_heliographic_stonyhurst": "8fb7ab6239ddae9fb06c45b32a37cc14ef0c6d281bf6cd5ae567e8ad8cfd6ff5",
   "sunpy.map.tests.test_plotting.test_heliographic_grid_annotations": "c7c08b2b6dae1b96c303345b04682060da97a1b304e7f25bcfd40b2154751465",
