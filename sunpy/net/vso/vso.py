@@ -292,7 +292,8 @@ class VSOClient(BaseClient):
                 if name.count('"') >= 2:
                     name = name.split('"')[1]
 
-        if name is None:
+        # This is a hack to to prevent IRIS data from being labelled as XML files
+        if name is None and "VOEvent_IRIS" not in queryresponserow['fileid']:
             # Advice from the VSO is to fallback to providerid + fileid for a filename
             # As it's possible multiple providers give the same fileid.
             # However, I haven't implemented this yet as it would be a breaking
