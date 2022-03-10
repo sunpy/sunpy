@@ -3,6 +3,7 @@ import copy
 import glob
 import datetime
 from collections import OrderedDict
+from unittest import mock
 
 import numpy as np
 import pandas as pd
@@ -880,6 +881,19 @@ def test_ts_shape(generic_ts):
 
 def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().to_dataframe().equals(generic_ts.to_dataframe().sort_index())
+
+def test_repr_html_(generic_ts):
+    html_string = generic_ts._repr_html_()
+    assert isinstance(html_string, str)
+
+def test_quicklook(generic_ts):
+    with mock.patch('webbrowser.open_new_tab') as mockwbopen:
+        generic_ts.quicklook()
+
+    # Check that the mock web browser was opened with a file URL
+    mockwbopen.assert_called_once()
+    file_url = mockwbopen.call_args[0][0]
+    assert file_url.startswith("file://")
 
 # =============================================================================
 # Test Source Plot axes
