@@ -121,7 +121,6 @@ stages:
           envs:
             - linux: base_deps
             - linux: py39-devdeps
-            - linux: pyinstaller
 
   # On branches which aren't main, and not Pull Requests, build the wheels but only upload them on tags
   - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), or(ne(variables['Build.SourceBranchName'], 'main'), eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual'))) }}:
