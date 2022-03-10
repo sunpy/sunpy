@@ -101,8 +101,8 @@ stages:
           - macos: py37
           - windows: py310
           - linux: py37-oldestdeps
-
-          - linux: py38-conda
+            posargs: -n auto --dist loadfile
+          - linux: py39-conda
             libraries: {}
 
   - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.Reason'], 'Manual')) }}:
