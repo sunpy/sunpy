@@ -9,6 +9,7 @@ from hypothesis import assume
 from hypothesis.strategies import datetimes, one_of, sampled_from
 
 import astropy.time
+import astropy.units as u
 from astropy.time import Time
 
 from sunpy.net import attrs as a
@@ -105,8 +106,8 @@ def goes_time(draw, time=Times(
     assume(not (t1 <= Time('1983-05-01') <= t2))
     assume(not (t1 <= (Time('1983-05-01') + delta) <= t2))
     # This checks if the range start and stops on that day.
-    assume((np.abs(Time('1983-05-01') - t1)) > astropy.time.TimeDelta(0.01))
-    assume((np.abs(Time('1983-05-01') - t2)) > astropy.time.TimeDelta(0.01))
+    assume((np.abs(Time('1983-05-01') - t1)) > astropy.time.TimeDelta(0.01*u.s))
+    assume((np.abs(Time('1983-05-01') - t2)) > astropy.time.TimeDelta(0.01*u.s))
 
     tr = TimeRange(t1, t2)
 
