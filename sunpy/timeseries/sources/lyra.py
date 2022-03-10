@@ -27,27 +27,21 @@ __all__ = ['LYRATimeSeries']
 class LYRATimeSeries(GenericTimeSeries):
     """
     Proba-2 LYRA Lightcurve TimeSeries.
-
     LYRA (Large Yield RAdiometer) is an ultraviolet irradiance radiometer that observes the Sun in four passbands,
     chosen for their relevance to solar physics and space weather.
     LYRA is composed of three (redundant) units, each of them constituted of the same four channels:
-
     * 120-123 nm Lyman-alpha channel
     * 190-222 nm Herzberg continuum channel
     * Aluminium filter channel (17-80 nm + a contribution below 5 nm), including He II at 30.4 nm
     * Zirconium filter channel (6-20 nm + a contribution below 2 nm), rejecting He II
-
     LYRA can take data with cadences chosen in the 100Hz to 0.1Hz interval.
-
     PROBA2 was launched on 2 November 2009.
-
     Examples
     --------
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES)  # doctest: +REMOTE_DATA
     >>> lyra.peek()   # doctest: +SKIP
-
     References
     ----------
     * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`_
@@ -57,10 +51,14 @@ class LYRATimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'lyra'
 
+    # Class attributes to return information about the specific channels and
+    # corresponding wavelengths as well as a url to the documentation.
+    _channels = "CHANNEL1 120-123 nm \n CHANNEL2 190-222 nm \n CHANNEL3 17-80 nm \n CHANNEL4 6-20 nm"
+    _url = "https://proba2.sidc.be/about/LYRA"
+
     def plot(self, axes=None, names=3, **kwargs):
         """
         Plots the LYRA data.
-
         Parameters
         ----------
         axes : array of `matplotlib.axes.Axes`, optional
@@ -69,7 +67,6 @@ class LYRATimeSeries(GenericTimeSeries):
             The number of columns to plot. Defaults to 3.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot` functions.
-
         Returns
         -------
         array of `~matplotlib.axes.Axes`
@@ -108,14 +105,11 @@ class LYRATimeSeries(GenericTimeSeries):
     def peek(self, title=None, names=3, **kwargs):
         """
         Displays the LYRA data by calling `~sunpy.timeseries.sources.lyra.LYRATimeSeries.plot`.
-
         .. plot::
-
             import sunpy.timeseries
             import sunpy.data.sample
             lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
             lyra.peek()
-
         Parameters
         ----------
         title : `str`, optional
@@ -140,7 +134,6 @@ class LYRATimeSeries(GenericTimeSeries):
     def _parse_file(cls, filepath):
         """
         Parses Lyra FITS data files to create TimeSeries.
-
         Parameters
         ----------
         filepath : `str`
@@ -153,7 +146,6 @@ class LYRATimeSeries(GenericTimeSeries):
     def _parse_hdus(cls, hdulist):
         """
         Parses LYRA `astropy.io.fits.HDUList` from a FITS file.
-
         Parameters
         ----------
         hdulist : `astropy.io.fits.HDUList`
