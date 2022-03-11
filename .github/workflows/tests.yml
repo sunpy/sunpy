@@ -28,8 +28,8 @@ jobs:
     needs: linux-py39
     with:
       os: ubuntu-latest
-      python-version: '3.8'
-      tox-env: py38-oldestdeps
+      python-version: '3.7'
+      tox-env: py37-oldestdeps
   linux-remote-py39:
     uses: ./.github/workflows/python-test-workflow.yml
     needs: linux-py39
