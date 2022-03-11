@@ -356,6 +356,7 @@ def test_row_to_table(mocker, mock_build_client, client, mock_table_response):
 def test_iris_filename(client):
     pattern = "/home/yolo/sunpy/data/{file}"
     url = "https://www.lmsal.com/solarsoft/irisa/data/level2_compressed/2018/01/02/20180102_153155_3610108077/iris_l2_20180102_153155_3610108077_SJI_1330_t000.fits.gz"
-    search_results = client.search(a.Time("2018-01-02 15:31:55", "2018-01-02 15:31:55"), a.Instrument.iris)
+    search_results = client.search(a.Time("2018-01-02 15:31:55", "2018-01-02 15:31:55"),
+                                   a.Instrument.iris, response_format="table")
     filename = client.mk_filename(pattern, search_results[0], None, url)
     assert filename.endswith("iris_l2_20180102_153155_3610108077_sji_1330_t000_fits.gz")

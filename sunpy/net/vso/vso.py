@@ -299,7 +299,6 @@ class VSOClient(BaseClient):
             # However, I haven't implemented this yet as it would be a breaking
             # change to the filenames we expect.
             fileid = queryresponserow['fileid']
-
             # Some providers make fileid a path
             # Some also don't specify a file extension, but not a lot we can do
             # about that.
@@ -315,7 +314,6 @@ class VSOClient(BaseClient):
         # If absolutely everything else fails make a filename based on download time
         if not name:
             name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
-
         fname = pattern.format(file=name,
                                **queryresponserow.response_block_map)
 
