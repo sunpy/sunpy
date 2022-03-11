@@ -101,7 +101,7 @@ def test_check_for_nonfinite_entries():
 
             assert len(warning_list) == 1
 
-            with pytest.warns() as warning_list:
+            with pytest.warns(Warning) as warning_list:
                 check_for_nonfinite_entries(b, b)
 
             assert len(warning_list) == 2
