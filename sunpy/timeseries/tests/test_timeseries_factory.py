@@ -16,6 +16,7 @@ from astropy.time import TimeDelta
 import sunpy.data.test
 import sunpy.io
 import sunpy.timeseries
+from sunpy.data.test import get_test_filepath
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -35,7 +36,7 @@ goes_filepath = os.path.join(filepath, 'go1520110607.fits')
 goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
 lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
 new_goes15_filepath = os.path.join(filepath, 'goes_truncated_test_goes15.nc')
-new_goes16_filepath = os.path.join(filepath, 'goes_truncated_test_goes16.nc')
+new_goes17_filepath = get_test_filepath('goes_truncated_test_goes17.nc')
 noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
 noaa_ind_txt_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
 noaa_pre_json_filepath = os.path.join(filepath, 'predicted-solar-cycle-truncated.json')
@@ -128,9 +129,9 @@ class TestTimeSeries:
         ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
-    def test_implicit_new_goes16(self):
+    def test_implicit_new_goes17(self):
         # Test a GOES TimeSeries
-        ts_goes = sunpy.timeseries.TimeSeries(new_goes16_filepath)
+        ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_implicit_lyra(self):
@@ -188,9 +189,9 @@ class TestTimeSeries:
         ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
-    def test_new_goes16(self):
+    def test_new_goes17(self):
         # Test a GOES TimeSeries
-        ts_goes = sunpy.timeseries.TimeSeries(new_goes16_filepath, source='XRS')
+        ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_lyra(self):
