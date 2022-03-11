@@ -22,14 +22,17 @@ __all__ = ['GBMSummaryTimeSeries']
 class GBMSummaryTimeSeries(GenericTimeSeries):
     """
     Fermi/GBM Summary lightcurve TimeSeries.
+
     The Gamma-ray Burst Monitor (GBM) is an instrument on board Fermi.
     It is meant to detect gamma-ray bursts but also detects solar flares.
     It consists of 12 Sodium Iodide (NaI) scintillation detectors and 2 Bismuth Germanate (BGO) scintillation detectors.
     The NaI detectors cover from a few keV to about 1 MeV and provide burst triggers and locations.
     The BGO detectors cover the energy range from about 150 keV to about 30 MeV.
+
     This summary lightcurve makes use of the CSPEC (daily version) data set which consists of the counts
     accumulated every 4.096 seconds in 128 energy channels for each of the 14 detectors.
     Note that the data is re-binned from the original 128 into the following 8 pre-determined energy channels.
+
     * 4-15 keV
     * 15-25 keV
     * 25-50 keV
@@ -37,12 +40,14 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     * 100-300 keV
     * 300-800 keV
     * 800-2000 keV
+
     Examples
     --------
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')  # doctest: +REMOTE_DATA
     >>> gbm.peek()   # doctest: +SKIP
+
     References
     ----------
     * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`_
@@ -62,6 +67,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     def plot(self, axes=None, **kwargs):
         """
         Plots the GBM timeseries.
+
         Parameters
         ----------
         axes : `matplotlib.axes.Axes`, optional
@@ -69,6 +75,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
+
         Returns
         -------
         `~matplotlib.axes.Axes`
@@ -91,11 +98,14 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         """
         Displays the GBM timeseries by calling
         `~sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries.plot`.
+
         .. plot::
+
             import sunpy.timeseries
             import sunpy.data.sample
             gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')
             gbm.peek()
+
         Parameters
         ----------
         title : `str`, optional
@@ -116,6 +126,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     def _parse_file(cls, filepath):
         """
         Parses a GBM CSPEC FITS file.
+
         Parameters
         ----------
         filepath : `str`
@@ -128,6 +139,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     def _parse_hdus(cls, hdulist):
         """
         Parses a GBM CSPEC `astropy.io.fits.HDUList`.
+
         Parameters
         ----------
         hdulist : `str`
@@ -181,6 +193,7 @@ def _bin_data_for_summary(energy_bins, count_data):
     """
     Rebin the 128 energy channels into some summary ranges and put the data in
     the units of counts/s/keV.
+
     Bin ranges used:
     * 4-15 keV
     * 15-25 keV
@@ -189,6 +202,7 @@ def _bin_data_for_summary(energy_bins, count_data):
     * 100-300 keV
     * 300-800 keV
     * 800-2000 keV
+
     Parameters
     ----------
     energy_bins : `numpy.ndarray`
@@ -220,6 +234,7 @@ def _bin_data_for_summary(energy_bins, count_data):
 def _parse_detector(detector):
     """
     Check and fix detector name strings.
+
     Parameters
     ----------
     detector : `str`

@@ -40,6 +40,7 @@ __all__ = ["GenericTimeSeries"]
 class GenericTimeSeries:
     """
     A generic time series object.
+
     Parameters
     ----------
     data : `~pandas.DataFrame`
@@ -50,12 +51,14 @@ class GenericTimeSeries:
     units : `dict`, optional
         A mapping from column names in ``data`` to the physical units of that column.
         Defaults to `None`.
+
     Attributes
     ----------
     meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`
         The metadata giving details about the time series data/instrument.
     units : `dict`
         A mapping from column names in ``data`` to the physical units of that column.
+
     Examples
     --------
     >>> from sunpy.timeseries import TimeSeries
@@ -71,6 +74,7 @@ class GenericTimeSeries:
     >>> units = {'intensity': u.W/u.m**2}
     >>> ts = TimeSeries(df, header, units)
     >>> ts.peek()  # doctest: +SKIP
+
     References
     ----------
     * `Pandas Documentation <https://pandas.pydata.org/pandas-docs/stable/>`_
@@ -83,6 +87,7 @@ class GenericTimeSeries:
         """
         An __init_subclass__ hook initializes all of the subclasses of a given
         class.
+
         So for each subclass, it will call this block of code on import.
         This replicates some metaclass magic without the need to be
         aware of metaclasses. Here we use this to register each subclass
@@ -602,10 +607,12 @@ class GenericTimeSeries:
     def quantity(self, colname, **kwargs):
         """
         Return a `~astropy.units.quantity.Quantity` for the given column.
+
         Parameters
         ----------
         colname : `str`
             The heading of the column you want to output.
+
         Returns
         -------
         `~astropy.units.quantity.Quantity`
@@ -618,6 +625,7 @@ class GenericTimeSeries:
         """
         Return a new `~sunpy.timeseries.TimeSeries` with the given column added
         or updated.
+
         Parameters
         ----------
         colname : `str`
@@ -627,6 +635,7 @@ class GenericTimeSeries:
             If updating values only then a numpy array is permitted.
         overwrite : `bool`, optional
             Defaults to `True`, allowing the method to overwrite a column already present in the `~sunpy.timeseries.TimeSeries`.
+
         Returns
         -------
         `sunpy.timeseries.TimeSeries`
@@ -662,10 +671,12 @@ class GenericTimeSeries:
     def remove_column(self, colname):
         """
         Remove a column.
+
         Parameters
         ----------
         colname : str
             The heading of the column to remove.
+
         Returns
         -------
         `sunpy.timeseries.TimeSeries`
@@ -684,6 +695,7 @@ class GenericTimeSeries:
         this shouldn't be necessary as most `~sunpy.timeseries.TimeSeries`
         operations sort the data anyway to ensure consistent behavior when
         truncating.
+
         Returns
         -------
         `~sunpy.timeseries.TimeSeries`
@@ -696,6 +708,7 @@ class GenericTimeSeries:
     def truncate(self, a, b=None, int=None):
         """
         Returns a truncated version of the TimeSeries object.
+
         Parameters
         ----------
         a : `sunpy.time.TimeRange`, `str`, `int`
@@ -706,6 +719,7 @@ class GenericTimeSeries:
         int : `int`, optional
             If specified, the integer indicating the slicing intervals.
             Defaults to `None`.
+
         Returns
         -------
         `~sunpy.timeseries.TimeSeries`
@@ -744,10 +758,12 @@ class GenericTimeSeries:
     def extract(self, column_name):
         """
         Returns a new time series with the chosen column.
+
         Parameters
         ----------
         column_name : `str`
             A valid column name.
+
         Returns
         -------
         `~sunpy.timeseries.TimeSeries`
@@ -777,6 +793,7 @@ class GenericTimeSeries:
         `~sunpy.timeseries.TimeSeries`. This function will check and remove any duplicate times.
         It will keep the column values from the original timeseries to which the new time
         series is being added.
+
         Parameters
         ----------
         others : `~sunpy.timeseries.TimeSeries` or `collections.abc.Iterable`
@@ -784,20 +801,26 @@ class GenericTimeSeries:
             `~sunpy.timeseries.TimeSeries`.
         same_source : `bool`, optional
             Set to `True` to check if the sources of the time series match. Defaults to `False`.
+
         Returns
         -------
         `~sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries`.
+
         Notes
         -----
         Extra keywords are passed to `pandas.concat`.
+
         Examples
         --------
         A single `~sunpy.timeseries.TimeSeries` or an `collections.abc.Iterable` containing multiple
         `~sunpy.timeseries.TimeSeries` can be passed to concatenate.
+
         >>> timeseries_1.concatenate(timeseries_2) # doctest: +SKIP
         >>> timeseries_1.concatenate([timeseries_2, timeseries_3]) # doctest: +SKIP
+
         Set ``same_source`` to `True` if the sources of the time series are the same.
+
         >>> timeseries_1.concatenate([timeseries_2, timeseries_3], same_source=True) # doctest: +SKIP
         """
         # Check to see if nothing needs to be done in case the same TimeSeries is provided.
@@ -856,6 +879,7 @@ class GenericTimeSeries:
     def plot(self, axes=None, columns=None, **plot_args):
         """
         Plot a plot of the `~sunpy.timeseries.TimeSeries`.
+
         Parameters
         ----------
         axes : `~matplotlib.axes.Axes`, optional
@@ -866,6 +890,7 @@ class GenericTimeSeries:
         **plot_args : `dict`, optional
             Additional plot keyword arguments that are handed to
             :meth:`pandas.DataFrame.plot`.
+
         Returns
         -------
         `~matplotlib.axes.Axes`
@@ -896,6 +921,7 @@ class GenericTimeSeries:
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the
         `~sunpy.timeseries.GenericTimeSeries.plot` method and Matplotlib's pyplot framework.
+
         Parameters
         ----------
         columns : list[str], optional
@@ -918,6 +944,7 @@ class GenericTimeSeries:
         """
         Raises an exception if the `~sunpy.timeseries.TimeSeries` is invalid
         for plotting.
+
         This should be added into all `~sunpy.timeseries.TimeSeries`
         peek methods.
         """
@@ -932,6 +959,7 @@ class GenericTimeSeries:
         """
         Validates the meta-information associated with a
         `~sunpy.timeseries.TimeSeries`.
+
         This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-
         specific validation should be handled in the relevant file in
@@ -948,6 +976,7 @@ class GenericTimeSeries:
         """
         Validates the astropy unit-information associated with a
         `~sunpy.timeseries.TimeSeries`.
+
         This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-
         specific validation should be handled in the relevant file in
@@ -966,7 +995,9 @@ class GenericTimeSeries:
         """
         Sanitizes the `~sunpy.timeseries.TimeSeriesMetaData`  used to store the
         metadata.
+
         Primarily this method will:
+
         * Remove entries outside of the dates or truncate if the metadata overflows past the data.
         * Remove column references in the metadata that don't match to a column in the data.
         * Remove metadata entries that have no columns matching the data.
@@ -984,6 +1015,7 @@ class GenericTimeSeries:
         """
         Return an `astropy.table.Table` of the given
         `~sunpy.timeseries.TimeSeries`.
+
         Returns
         -------
         `~astropy.table.Table`
@@ -1009,6 +1041,7 @@ class GenericTimeSeries:
         """
         Return a `~pandas.DataFrame` of the given
         `~sunpy.timeseries.TimeSeries`.
+
         Returns
         -------
         `~pandas.DataFrame`
@@ -1018,10 +1051,12 @@ class GenericTimeSeries:
     def to_array(self, **kwargs):
         """
         Return a `numpy.array` of the given `~sunpy.timeseries.TimeSeries`.
+
         Parameters
         ----------
         **kwargs : `dict`
             All keyword arguments are passed to `pandas.DataFrame.to_numpy`.
+
         Returns
         -------
         `~numpy.ndarray`
@@ -1036,10 +1071,12 @@ class GenericTimeSeries:
         """
         Check two `~sunpy.timeseries.TimeSeries` are the same, they have
         matching type, data, metadata and units entries.
+
         Parameters
         ----------
         other : `~sunpy.timeseries.TimeSeries`
             The second `~sunpy.timeseries.TimeSeries` to compare with.
+
         Returns
         -------
         `bool`
@@ -1058,10 +1095,12 @@ class GenericTimeSeries:
         """
         Check two `~sunpy.timeseries.TimeSeries` are not the same, they don't
         have matching type, data, metadata and/or units entries.
+
         Parameters
         ----------
         other : `~sunpy.timeseries.TimeSeries`
             The second `~sunpy.timeseries.TimeSeries` to compare with.
+
         Returns
         -------
         `bool`
@@ -1072,6 +1111,7 @@ class GenericTimeSeries:
     def _parse_file(cls, filepath):
         """
         Parses a file - to be implemented in any subclass that may use files.
+
         Parameters
         ----------
         filepath : `str`
