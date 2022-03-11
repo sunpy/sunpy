@@ -108,6 +108,7 @@ jobs:
       pypi_password: ${{ secrets.pypi_token }}
 
   notify_pass:
+    if: github.event_name == 'schedule'
     needs: [cron, publish, online]
     runs-on: ubuntu-latest
     steps:
@@ -117,7 +118,7 @@ jobs:
           token: ${{ secrets.bot_access_token }}
 
   notify_fail:
-    if: failure()
+    if: failure() && github.event_name == 'schedule'
     needs: [cron, publish, online]
     runs-on: ubuntu-latest
     steps:
