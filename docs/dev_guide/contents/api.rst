@@ -44,15 +44,15 @@ The same applies if you want to change the default value of a keyword argument f
 
 .. code-block:: python
 
+    from sunpy.util.exceptions import warn_deprecated
+
     if response_format is None:
         response_format = "legacy"
-        warnings.warn("The default response format from the VSO client will "
-                    "be changing to 'table' in version 3.1. "
-                    "To remove this warning set response_format='legacy' "
-                    "to maintain the old behaviour or response_format='table'"
-                    " to use the new behaviour.",
-                    SunpyDeprecationWarning,
-                    stacklevel=2)
+        warn_deprecated("The default response format from the VSO client will "
+                        "be changing to 'table' in version 3.1. "
+                        "To remove this warning set response_format='legacy' "
+                        "to maintain the old behaviour or response_format='table'"
+                        " to use the new behaviour.")
 
 .. note::
 
