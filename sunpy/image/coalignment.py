@@ -1,4 +1,8 @@
 """
+.. warning::
+    This module will be removed in sunpy 4.1.
+    This code has been moved to `~sunkit_image.coalignment`.
+
 This module provides routines for the co-alignment of images and
 `~sunpy.map.mapsequence.MapSequence`.
 
@@ -26,7 +30,7 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.map.mapbase import GenericMap
-from sunpy.util.exceptions import warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_user
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
@@ -34,6 +38,9 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'check_for_nonfinite_entries',
            'apply_shifts', 'mapsequence_coalign_by_match_template',
            'calculate_match_template_shift']
+
+warn_deprecated('sunpy.image.coalignment is deprecated and will be removed in sunpy 4.1.'
+                'This module has been moved to sunkit-image.coalignment.')
 
 
 def _default_fmap_function(data):
