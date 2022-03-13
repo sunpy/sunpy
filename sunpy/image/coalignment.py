@@ -1,10 +1,10 @@
 """
-.. warning::
-    This module will be removed in sunpy 4.1.
-    This code has been moved to `~sunkit_image.coalignment`.
-
 This module provides routines for the co-alignment of images and
 `~sunpy.map.mapsequence.MapSequence`.
+
+.. deprecated:: 4.0
+    Use `~sunkit_image.coalignment` instead.
+    This module will be removed in sunpy 4.1.
 
 Currently this module provides image co-alignment by template matching.
 Which is partially inspired by the SSWIDL routine
