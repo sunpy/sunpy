@@ -1,10 +1,10 @@
 """
-This module provides routines for the co-alignment of images and
-`~sunpy.map.mapsequence.MapSequence`.
-
 .. deprecated:: 4.0
     Use `~sunkit_image.coalignment` instead.
     This module will be removed in sunpy 4.1.
+
+This module provides routines for the co-alignment of images and
+`~sunpy.map.mapsequence.MapSequence`.
 
 Currently this module provides image co-alignment by template matching.
 Which is partially inspired by the SSWIDL routine
@@ -39,7 +39,7 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'apply_shifts', 'mapsequence_coalign_by_match_template',
            'calculate_match_template_shift']
 
-warn_deprecated('sunpy.image.coalignment is deprecated and will be removed in sunpy 4.1.'
+warn_deprecated('sunpy.image.coalignment is deprecated and will be removed in sunpy 4.1. '
                 'This module has been moved to sunkit-image.coalignment.')
 
 
