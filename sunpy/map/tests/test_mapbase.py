@@ -9,6 +9,7 @@ from unittest import mock
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from hypothesis import given, settings
 from packaging import version
 
 import astropy.units as u
@@ -31,6 +32,8 @@ from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
+from .conftest import make_simple_map
+from .strategies import matrix_meta
 
 testpath = sunpy.data.test.rootdir
 
@@ -671,8 +674,6 @@ def test_resample(simple_map, shape):
     # Should be the mean of [0,1,2,3,4,5,6,7,8,9]
     if shape == [1, 1]:
         assert resampled.data == np.array([[4]])
-    assert resampled.scale.axis1 == 3 / shape[0] * simple_map.scale.axis1
-    assert resampled.scale.axis2 == 3 / shape[1] * simple_map.scale.axis2
 
     # Check that the corner coordinates of the input and output are the same
     resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
@@ -709,10 +710,8 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions, cm):
     """
     with cm:
         resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-        assert float(resampled_map.meta['cdelt1']) / generic_map.meta['cdelt1'] \
-            == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
-        assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
-            == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
+        assert resampled_map.meta['cdelt1'] == generic_map.meta['cdelt1']
+        assert resampled_map.meta['cdelt2'] == generic_map.meta['cdelt2']
         # TODO: we should really test the numbers here, not just that the correct
         # header values have been modified. However, I am lazy and we have figure
         # tests.
@@ -723,8 +722,8 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions, cm):
         assert resampled_map.meta['naxis1'] == new_dimensions[0].value
         assert resampled_map.meta['naxis2'] == new_dimensions[1].value
         for key in generic_map.meta:
-            if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1',
-                           'crval2', 'naxis1', 'naxis2'):
+            if key not in ('crpix1', 'crpix2', 'crval1',
+                           'crval2', 'naxis1', 'naxis2') and not key.startswith('pc'):
                 assert resampled_map.meta[key] == generic_map.meta[key]
 
 
@@ -818,6 +817,38 @@ def test_superpixel_fractional_inputs(generic_map):
     super2 = generic_map.superpixel((2.2, 3.2) * u.pix)
     assert np.all(super1.data == super2.data)
     assert super1.meta == super2.meta
+
+
+@pytest.mark.parametrize('method', ['resample', 'superpixel'])
+@settings(max_examples=10, deadline=1000)
+@given(pc=matrix_meta('pc'))
+def test_resample_rotated_map_pc(pc, method):
+    smap = make_simple_map()
+
+    smap.meta.update(pc)
+    # Check superpixel with a rotated map with unequal resampling
+    new_dims = (1, 2) * u.pix
+    new_map = getattr(smap, method)(new_dims)
+    # Coordinate of the lower left corner should not change
+    ll_pix = [-0.5, -0.5]*u.pix
+    assert smap.pixel_to_world(*ll_pix).separation(
+        new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
+
+
+@pytest.mark.parametrize('method', ['resample', 'superpixel'])
+@settings(max_examples=10, deadline=1000)
+@given(cd=matrix_meta('cd'))
+def test_resample_rotated_map_cd(cd, method):
+    smap = make_simple_map()
+
+    smap.meta.update(cd)
+    # Check superpixel with a rotated map with unequal resampling
+    new_dims = (1, 2) * u.pix
+    new_map = getattr(smap, method)(new_dims)
+    # Coordinate of the lower left corner should not change
+    ll_pix = [-0.5, -0.5]*u.pix
+    assert smap.pixel_to_world(*ll_pix).separation(
+        new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
 def test_superpixel_err(generic_map):
