@@ -41,7 +41,10 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'calculate_match_template_shift']
 
 DEPRECATED_SINCE = '4.0'
-ALT_MESSAGE = 'sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)'
+MESSAGE = 'The {func} {obj_type} is deprecated and may be removed in {future_version}.'
+ALT_MESSAGE = '\n        Use `~sunkit_image.coalignment.{func}` instead.'
+# Use message rather than alternative so we can directly link to functions in sunkit_image
+MESSAGE += ALT_MESSAGE
 
 
 def _default_fmap_function(data):
@@ -54,7 +57,7 @@ def _default_fmap_function(data):
     return np.float64(data)
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 def calculate_shift(this_layer, template):
     """
     Calculates the pixel shift required to put the template in the "best"
@@ -82,7 +85,7 @@ def calculate_shift(this_layer, template):
     return find_best_match_location(corr)
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 @u.quantity_input
 def clip_edges(data, yclips: u.pix, xclips: u.pix):
     """
@@ -116,7 +119,7 @@ def clip_edges(data, yclips: u.pix, xclips: u.pix):
                 int(xclips[0].value): nx - int(xclips[1].value)]
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 @u.quantity_input
 def calculate_clipping(y: u.pix, x: u.pix):
     """
@@ -174,7 +177,7 @@ def _lower_clip(z):
     return zlower
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 def match_template_to_layer(layer, template):
     """
     Calculate the correlation array that describes how well the template
@@ -196,7 +199,7 @@ def match_template_to_layer(layer, template):
     return match_template(layer, template)
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 def find_best_match_location(corr):
     """
     Calculate an estimate of the location of the peak of the correlation result
@@ -229,7 +232,7 @@ def find_best_match_location(corr):
     return y_shift_correlation_array, x_shift_correlation_array
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 def get_correlation_shifts(array):
     """
     Estimate the location of the maximum of a fit to the input array. The
@@ -275,7 +278,7 @@ def get_correlation_shifts(array):
     return y_location * u.pix, x_location * u.pix
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 def parabolic_turning_point(y):
     """
     Find the location of the turning point for a parabola
@@ -300,7 +303,7 @@ def parabolic_turning_point(y):
     return numerator / denominator
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 def check_for_nonfinite_entries(layer_image, template_image):
     """
     Issue a warning if there is any nonfinite entry in the layer or template images.
@@ -327,7 +330,7 @@ def check_for_nonfinite_entries(layer_image, template_image):
                   'local mean.')
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 @u.quantity_input
 def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
     """
@@ -387,7 +390,7 @@ def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
     return sunpy.map.Map(new_mc, sequence=True)
 
 
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 def calculate_match_template_shift(mc, template=None, layer_index=0,
                                    func=_default_fmap_function):
     """
@@ -479,7 +482,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 
 
 # Coalignment by matching a template
-@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
+@deprecated(since=DEPRECATED_SINCE, message=MESSAGE)
 def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
                                           func=_default_fmap_function, clip=True,
                                           shift=None, **kwargs):
