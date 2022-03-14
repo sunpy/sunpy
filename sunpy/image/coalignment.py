@@ -40,6 +40,9 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'apply_shifts', 'mapsequence_coalign_by_match_template',
            'calculate_match_template_shift']
 
+DEPRECATED_SINCE = '4.0'
+ALT_MESSAGE = 'sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)'
+
 
 def _default_fmap_function(data):
     """
@@ -51,8 +54,7 @@ def _default_fmap_function(data):
     return np.float64(data)
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 def calculate_shift(this_layer, template):
     """
     Calculates the pixel shift required to put the template in the "best"
@@ -80,8 +82,7 @@ def calculate_shift(this_layer, template):
     return find_best_match_location(corr)
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 @u.quantity_input
 def clip_edges(data, yclips: u.pix, xclips: u.pix):
     """
@@ -115,8 +116,7 @@ def clip_edges(data, yclips: u.pix, xclips: u.pix):
                 int(xclips[0].value): nx - int(xclips[1].value)]
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 @u.quantity_input
 def calculate_clipping(y: u.pix, x: u.pix):
     """
@@ -174,8 +174,7 @@ def _lower_clip(z):
     return zlower
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 def match_template_to_layer(layer, template):
     """
     Calculate the correlation array that describes how well the template
@@ -197,8 +196,7 @@ def match_template_to_layer(layer, template):
     return match_template(layer, template)
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 def find_best_match_location(corr):
     """
     Calculate an estimate of the location of the peak of the correlation result
@@ -231,8 +229,7 @@ def find_best_match_location(corr):
     return y_shift_correlation_array, x_shift_correlation_array
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 def get_correlation_shifts(array):
     """
     Estimate the location of the maximum of a fit to the input array. The
@@ -278,8 +275,7 @@ def get_correlation_shifts(array):
     return y_location * u.pix, x_location * u.pix
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 def parabolic_turning_point(y):
     """
     Find the location of the turning point for a parabola
@@ -304,8 +300,7 @@ def parabolic_turning_point(y):
     return numerator / denominator
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 def check_for_nonfinite_entries(layer_image, template_image):
     """
     Issue a warning if there is any nonfinite entry in the layer or template images.
@@ -332,8 +327,7 @@ def check_for_nonfinite_entries(layer_image, template_image):
                   'local mean.')
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 @u.quantity_input
 def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
     """
@@ -393,8 +387,7 @@ def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
     return sunpy.map.Map(new_mc, sequence=True)
 
 
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 def calculate_match_template_shift(mc, template=None, layer_index=0,
                                    func=_default_fmap_function):
     """
@@ -486,8 +479,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 
 
 # Coalignment by matching a template
-@deprecated(since='4.0',
-            alternative='sunkit_image.coalignment (https://github.com/sunpy/sunkit-image)')
+@deprecated(since=DEPRECATED_SINCE, alternative=ALT_MESSAGE)
 def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
                                           func=_default_fmap_function, clip=True,
                                           shift=None, **kwargs):

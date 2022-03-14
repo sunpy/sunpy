@@ -93,18 +93,19 @@ def test_check_for_nonfinite_entries():
                               match='The layer image has nonfinite entries.') as warning_list:
                 check_for_nonfinite_entries(b, np.ones((3, 3)))
 
-            assert len(warning_list) == 1
+            # Added a -1 because pytest.warns also catches the deprecation warning
+            assert len(warning_list)-1 == 1
 
             with pytest.warns(SunpyUserWarning,
                               match='The template image has nonfinite entries.') as warning_list:
                 check_for_nonfinite_entries(np.ones((3, 3)), b)
 
-            assert len(warning_list) == 1
+            assert len(warning_list)-1 == 1
 
             with pytest.warns(Warning) as warning_list:
                 check_for_nonfinite_entries(b, b)
 
-            assert len(warning_list) == 2
+            assert len(warning_list)-1 == 2
 
 
 def test_match_template_to_layer(aia171_test_map_layer,
