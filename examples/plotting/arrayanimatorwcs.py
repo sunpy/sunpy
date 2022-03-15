@@ -11,6 +11,7 @@ from mpl_animators import ArrayAnimatorWCS
 
 import astropy.units as u
 import astropy.wcs
+from astropy.visualization import AsinhStretch, ImageNormalize
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE, AIA_193_IMAGE
@@ -29,6 +30,9 @@ map_sequence = sunpy.map.Map(AIA_171_IMAGE, AIA_193_IMAGE, sequence=True)
 
 # Now we can just cast the sequence away into a NumPy array.
 sequence_array = map_sequence.as_array()
+
+# We'll also define a common normalization to use in the animations
+norm = ImageNormalize(vmin=0, vmax=3e4, stretch=AsinhStretch(0.01))
 
 ###############################################################################
 # Now we need to create the `~astropy.wcs.WCS` header that
@@ -59,7 +63,7 @@ print(wcs)
 # axes you want to plot on the image. All other axes should have a ``0`` and
 # sliders will be created to control the value for this axis.
 
-wcs_anim = ArrayAnimatorWCS(sequence_array, wcs, [0, 'x', 'y'], vmax=1000).get_animation()
+wcs_anim = ArrayAnimatorWCS(sequence_array, wcs, [0, 'x', 'y'], norm=norm).get_animation()
 
 plt.show()
 
@@ -85,7 +89,7 @@ coord_params = {
 }
 
 # We have to recreate the visualization since we displayed it earlier.
-wcs_anim = ArrayAnimatorWCS(sequence_array, wcs, [0, 'x', 'y'], vmax=1000,
+wcs_anim = ArrayAnimatorWCS(sequence_array, wcs, [0, 'x', 'y'], norm=norm,
                             coord_params=coord_params).get_animation()
 
 plt.show()
