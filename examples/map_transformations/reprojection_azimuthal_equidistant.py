@@ -54,6 +54,7 @@ out_map.plot_settings = aia_map.plot_settings
 
 fig = plt.figure(figsize=(8, 4))
 
+
 ###############################################################################
 # Plot the original AIA map
 ax = fig.add_subplot(1, 2, 1, projection=aia_map)
