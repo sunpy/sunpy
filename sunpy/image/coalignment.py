@@ -1,6 +1,6 @@
 """
 .. deprecated:: 4.0
-    Use `~sunkit_image.coalignment` instead.
+    Use `sunkit_image.coalignment` instead.
     This module will be removed in sunpy 4.1.
 
 This module provides routines for the co-alignment of images and
@@ -42,7 +42,7 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
 
 DEPRECATED_SINCE = '4.0'
 MESSAGE = 'The {func} {obj_type} is deprecated and may be removed in {future_version}.'
-ALT_MESSAGE = '\n        Use `~sunkit_image.coalignment.{func}` instead.'
+ALT_MESSAGE = '\n        Use `sunkit_image.coalignment.{func}` instead.'
 # Use message rather than alternative so we can directly link to functions in sunkit_image
 MESSAGE += ALT_MESSAGE
 
