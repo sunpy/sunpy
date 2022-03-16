@@ -52,74 +52,61 @@ or at the top under the "Checks" tab:
    :width: 600
    :alt: PR checks tab
 
-* `figure-tests (CircleCi) <https://circleci.com/gh/sunpy/sunpy/>`_: Runs two figure tests environments ("py39-figure", "py38-figure-devdeps").
+* `figure-tests (CircleCi) <https://circleci.com/gh/sunpy/sunpy/>`_: Runs two figure tests environments ("ci/circleci: py3\_-figure", "ci/circleci: py3\_-figure-devdeps").
 
-* figure_report/figure_tests (Giles): Show the final results of the figure tests.
+* figure_report (Giles): Show the final results and download updated hashes of the figure tests.
 
-* figure_report_devdeps (Giles): Show the final results of the figure tests using development packages.
+* figure_report_devdeps (Giles): Show the final results and download updated hashes of the figure tests using development packages.
 
 * changelog: absent | found (Giles): If a changelog is needed, this will check and will pass if a changelog with the correct number is found.
 
 * `docs/readthedocs.org:sunpy (Read the Docs) <https://readthedocs.org/projects/sunpy/>`_: This builds our documentation.
   This primary check is to ensure the documentation has rendered correctly.
-  Warnings are not checked on this build but under Azure Pipelines (see below).
+  Warnings are not checked on this build but under GitHub Actions (see below).
 
-* `sunpy.sunpy (Azure Pipelines) <https://dev.azure.com/sunpy/sunpy/_build>`_: Runs our test suite on all three operating systems.
-  There are 11 separate checks for this.
+* `CI (GitHub Actions) <https://github.com/sunpy/sunpy/actions>`_: Runs our test suite on multiple operating systems.
+  If the minimal "CI / core" tests are successful, the indepth "CI / test" and remote data "CI / online" tests will be run.
+  You will see multiple jobs within each group.
+  Each job corresponds to a tox environment being run on a particular operating system.
 
 * `codecov/patch (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage for the submitted code in the pull request.
 
 * `codecov/project (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage in sunpy overall.
 
-* `pre-commit - pr <https://pre-commit.ci>`__: Checks the code style checks have passed. This CI will automatically fix style issues by commenting ``pre-commit.ci autofix`` on its own line in a comment on the PR.
+* `pre-commit.ci - pr <https://pre-commit.ci>`__: Checks the code style checks have passed. This CI will automatically fix style issues by commenting ``pre-commit.ci autofix`` on its own line in a comment on the PR.
 
 It is common to see some of these checks fail.
 This can be happen due to a change that has broken a test (should be fixed) or a remote server has failed (might have to wait for it to come back).
 Therefore it is important to check why a task failed and if has a pre-existing issue, it can be safe to ignore a failing check on that pull request.
 However, you should try to ensure that as many checks pass before merging.
 
-Understanding Azure Pipelines
------------------------------
+Understanding GitHub Actions
+----------------------------
 
-The vast majority of our tests are run on Azure Pipelines and this means you might have to navigate to the results if you want to check why the tests failed.
-The tests for Azure Pipelines are split into two phases to reduce the number of builds running at one time.
-If your PR fails the the linux offline tests or the "style_check" check the second stage tests will not run.
+The vast majority of our tests are run on GitHub Actions and this means you might have to navigate to the results if you want to check why the tests failed.
+The tests for GitHub Actions are split into multiple phases to reduce the number of builds running at one time.
+If your PR fails the minimal initial stage, the subsequent stages tests will not run.
 
 The Azure checks on GitHub manifest:
 
-.. image:: images/azure_check_pr.png
+.. image:: images/actions_check_pr.png
    :width: 600
    :alt: PR checks tab
 
-This is the main form. There will be one check per Azure job ran, and a summary one called "sunpy.sunpy".
-The details text will redirect you to the "Checks" tab.
+This is the main form. There will be one check per GitHub Actions job ran.
+The publish and notify jobs are skipped in PRs, and each stage has an additional "Load tox environments" job to configure set up the stage.
+The "Details" link will show you the log output of the particular check:
 
-Doing so will show:
-
-.. image:: images/azure_summary_check.png
+.. image:: images/actions_summary_check.png
    :width: 600
    :alt: Summary of Azure outputs on Checks tab
 
-You get some statistics that you don't need to worry about and then a series of boxes under the "ANNOTATIONS" heading.
-Unfortunately, when a Azure step fails you sometimes will get "Bash exited with code '1'." which means you have to go to the page to see what happened.
-If the failure is due to a test, you will get a selection of test outputs under this heading.
+On the left you should see the entire list of GitHub Actions checks.
+You can navigate between the jobs here.
+You can also see a flow diagram for the jobs by clicking on "Summary".
 
-On the left you should see the entire list of Azure checks.
-You can go to a failing check and you will see:
-
-.. image:: images/azure_goto.png
-   :width: 600
-   :alt: Go to Azure Pipelines
-
-which will take you to the Azure Pipelines website.
-This will load up the following:
-
-.. image:: images/azure_steps_in_job.png
-   :width: 600
-   :alt: Build steps in Azure
-
-Here you can see each step that is undertaken during a job on Azure.
-Normally the "Running tox" should be red if the tests have failed.
+For each of the jobs you can see each step that is undertaken.
+Normally the "Run tox" step will be red if the tests have failed.
 You will need to click on this so it will load the output from the test suite.
 
 Our test suite is very verbose, so there will be a lot of text outputted.
