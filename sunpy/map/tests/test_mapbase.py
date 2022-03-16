@@ -26,6 +26,7 @@ import sunpy.data.test
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
+from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
@@ -1494,3 +1495,9 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn
         # the map test
         with warn_context:
             _ = value / aia171_test_map
+
+
+def test_parse_fits_units():
+    # Check that we parse a BUNIT of G correctly.
+    out_unit = GenericMap._parse_fits_unit("G")
+    assert out_unit == u.G
