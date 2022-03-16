@@ -684,12 +684,11 @@ class GenericMap(NDData):
 
     @staticmethod
     def _parse_fits_unit(unit_str):
-        unit_str = unit_str.lower()
         replacements = {'gauss': 'G',
                         'dn': 'ct',
                         'dn/s': 'ct/s'}
-        if unit_str in replacements:
-            unit_str = replacements[unit_str]
+        if unit_str.lower() in replacements:
+            unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
             warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
