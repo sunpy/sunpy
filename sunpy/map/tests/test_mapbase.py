@@ -1504,4 +1504,3 @@ def test_parse_fits_units():
     
     out_unit = GenericMap._parse_fits_unit("G")
     assert out_unit == u.G
-    assert out_unit == u.G
