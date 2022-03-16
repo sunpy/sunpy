@@ -53,14 +53,23 @@ class SJIMap(GenericMap):
         """
         Taken from WAVEUNIT, or if not present defaults to Angstrom.
         """
-        return u.Unit(header.get('waveunit', "Angstrom"))
+        return u.Unit(self.meta.get('waveunit', "Angstrom"))
 
     @property
     def wavelength(self):
         """
         Taken from WAVELNTH, or if not present TWAVE1.
         """
-        return header.get('wavelnth', header.get('twave1')) * self.waveunit
+        return self.meta.get('wavelnth', self.meta.get('twave1')) * self.waveunit
+
+    @property
+    def unit(self):
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+        # Remove "corrected" so that the unit can be parsed
+        unit_str = unit_str.lower().replace('corrected', '').strip()
+        return self._parse_fits_unit(unit_str)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -68,4 +77,4 @@ class SJIMap(GenericMap):
         tele = str(header.get('TELESCOP', '')).startswith('IRIS')
         obs = str(header.get('INSTRUME', '')).startswith('SJI')
         level = header.get('lvl_num') == 1
-        return tele and obs
+        return tele and obs and level
