@@ -1,0 +1,3 @@
+Remove the part of the `~sunpy.map.sources.IRISMap` docstring that says
+it only works on L1 as the data work for L2 and the level checking was
+not being enforced.
