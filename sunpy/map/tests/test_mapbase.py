@@ -1508,6 +1508,6 @@ def test_parse_fits_units():
     # Check that we parse a BUNIT of G correctly.
     out_unit = GenericMap._parse_fits_unit("Gauss")
     assert out_unit == u.G
-    
+
     out_unit = GenericMap._parse_fits_unit("G")
     assert out_unit == u.G
