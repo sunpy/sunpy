@@ -1,3 +1,29 @@
+3.0.6 (2022-03-16)
+==================
+
+Bug Fixes
+---------
+
+- When getting IRIS files from the VSO, Fido was incorrectly labelling them as XML files. (`#5868 <https://github.com/sunpy/sunpy/pull/5868>`__)
+- Fixes a bug where the ``cmap`` and ``norm`` keyword arguments were ignored when calling
+  `~sunpy.map.MapSequence.plot`. (`#5889 <https://github.com/sunpy/sunpy/pull/5889>`__)
+- Fix parsing of the GOES/XRS netcdf files to ignore leap seconds. (`#5915 <https://github.com/sunpy/sunpy/pull/5915>`__)
+- Fixed compatability with ``h5netcdf>0.14`` when loading GOES netcdf files. (`#5920 <https://github.com/sunpy/sunpy/pull/5920>`__)
+- Fixes a bug in `~sunpy.map.sources.IRISMap` where undefined variable was
+  used when parsing the wavelength.
+
+  Also fixes the unit parsing by removing the "corrected" string from the
+  ``BUNIT`` keyword as "corrected DN" cannot be parsed as a valid FITS unit. (`#5968 <https://github.com/sunpy/sunpy/pull/5968>`__)
+
+
+Added/Improved Documentation
+----------------------------
+
+- Remove the part of the `~sunpy.map.sources.IRISMap` docstring that says
+  it only works on L1 as the data work for L2 and the level checking was
+  not being enforced. (`#5968 <https://github.com/sunpy/sunpy/pull/5968>`__)
+
+
 3.0.5 (2022-02-21)
 ==================
 
