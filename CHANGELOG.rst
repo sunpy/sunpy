@@ -1,3 +1,35 @@
+3.1.5 (2022-03-16)
+==================
+
+Bug Fixes
+---------
+
+- Maps created from :meth:`~sunpy.map.GenericMap.resample` and
+  :meth:`~sunpy.map.GenericMap.superpixel` have been fixed in the case where
+  the resampling was not square, and the PCi_j matrix (often a rotation matrix)
+  was not a multiple of the identity matrix. When the PCi_j or CDi_j formalisms
+  are used in the metadata these are now correctly modified, and the CDELT values
+  are left unchanged. (`#5786 <https://github.com/sunpy/sunpy/pull/5786>`__)
+- When getting IRIS files from the VSO, Fido was incorrectly labelling them as XML files. (`#5868 <https://github.com/sunpy/sunpy/pull/5868>`__)
+- Fixes a bug where the ``cmap`` and ``norm`` keyword arguments were ignored when calling
+  `~sunpy.map.MapSequence.plot`. (`#5889 <https://github.com/sunpy/sunpy/pull/5889>`__)
+- Fix parsing of the GOES/XRS netcdf files to ignore leap seconds. (`#5915 <https://github.com/sunpy/sunpy/pull/5915>`__)
+- Fixed compatability with ``h5netcdf>0.14`` when loading GOES netcdf files. (`#5920 <https://github.com/sunpy/sunpy/pull/5920>`__)
+- Fixes a bug in `~sunpy.map.sources.IRISMap` where undefined variable was
+  used when parsing the wavelength.
+  Also fixes the unit parsing by removing the "corrected" string from the
+  ``BUNIT`` keyword as "corrected DN" cannot be parsed as a valid FITS unit. (`#5968 <https://github.com/sunpy/sunpy/pull/5968>`__)
+- Fixed unit handling issue with `.GenericMap` and lowercasing the unit before it submits it to `astropy.units`. (`#5970 <https://github.com/sunpy/sunpy/pull/5970>`__)
+
+
+Documentation
+-------------
+
+- Remove the part of the `~sunpy.map.sources.IRISMap` docstring that says
+  it only works on L1 as the data work for L2 and the level checking was
+  not being enforced. (`#5968 <https://github.com/sunpy/sunpy/pull/5968>`__)
+
+
 3.1.4 (2022-02-21)
 ==================
 
