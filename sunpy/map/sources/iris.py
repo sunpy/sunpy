@@ -1,3 +1,4 @@
+import astropy.units as u
 
 from sunpy.map import GenericMap
 
@@ -24,10 +25,6 @@ class SJIMap(GenericMap):
 
     IRIS was launched into a Sun-synchronous orbit on 27 June 2013.
 
-    .. warning::
-
-        This object can only handle level 1 SJI files.
-
     References
     ----------
     * `IRIS Mission Page <https://iris.lmsal.com>`_
@@ -41,14 +38,32 @@ class SJIMap(GenericMap):
         header['cunit2'] = header.get('cunit2', 'arcsec')
         super().__init__(data, header, **kwargs)
 
-        self.meta['detector'] = "SJI"
-        self.meta['waveunit'] = header.get('waveunit', "Angstrom")
-        self.meta['wavelnth'] = header.get('wavelnth', header.get('twave1'))
+    @property
+    def waveunit(self):
+        """
+        Taken from WAVEUNIT, or if not present defaults to Angstrom.
+        """
+        return u.Unit(self.meta.get('waveunit', "Angstrom"))
+
+    @property
+    def wavelength(self):
+        """
+        Taken from WAVELNTH, or if not present TWAVE1.
+        """
+        return self.meta.get('wavelnth', self.meta.get('twave1')) * self.waveunit
+
+    @property
+    def unit(self):
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+        # Remove "corrected" so that the unit can be parsed
+        unit_str = unit_str.lower().replace('corrected', '').strip()
+        return self._parse_fits_unit(unit_str)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an IRIS SJI image"""
         tele = str(header.get('TELESCOP', '')).startswith('IRIS')
         obs = str(header.get('INSTRUME', '')).startswith('SJI')
-        level = header.get('lvl_num') == 1
         return tele and obs
