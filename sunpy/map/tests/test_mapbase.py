@@ -1506,5 +1506,9 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn
 
 def test_parse_fits_units():
     # Check that we parse a BUNIT of G correctly.
+    out_unit = GenericMap._parse_fits_unit("Gauss")
+    assert out_unit == u.G
+    
     out_unit = GenericMap._parse_fits_unit("G")
+    assert out_unit == u.G
     assert out_unit == u.G
