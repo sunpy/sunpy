@@ -43,6 +43,21 @@ def test_observatory(irismap):
     assert irismap.observatory == "IRIS"
 
 
+def test_wavelength(irismap):
+    """Tests the wavelength and waveunit property of the SJIMap"""
+    assert irismap.wavelength == u.Quantity(1400, 'Angstrom')
+
+
+def test_level_number(irismap):
+    """Tests the processing_level property of the SJIMap"""
+    assert irismap.processing_level == 2.0
+
+
+def test_units(irismap):
+    """Tests the unit property of the SJIMap"""
+    assert irismap.unit == u.ct
+
+
 def test_wcs(irismap):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
