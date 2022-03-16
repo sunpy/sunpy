@@ -50,7 +50,7 @@ def test_wavelength(irismap):
 
 def test_level_number(irismap):
     """Tests the processing_level property of the SJIMap"""
-    assert irismap.processing_level == 1.0
+    assert irismap.processing_level == 2.0
 
 
 def test_units(irismap):

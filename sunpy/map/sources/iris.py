@@ -26,10 +26,6 @@ class SJIMap(GenericMap):
 
     IRIS was launched into a Sun-synchronous orbit on 27 June 2013.
 
-    .. warning::
-
-        This object can only handle level 1 SJI files.
-
     References
     ----------
     * `IRIS Mission Page <https://iris.lmsal.com>`_
@@ -76,5 +72,4 @@ class SJIMap(GenericMap):
         """Determines if header corresponds to an IRIS SJI image"""
         tele = str(header.get('TELESCOP', '')).startswith('IRIS')
         obs = str(header.get('INSTRUME', '')).startswith('SJI')
-        level = header.get('lvl_num') == 1
-        return tele and obs and level
+        return tele and obs
