@@ -48,6 +48,11 @@ def test_level_number(irismap):
     assert irismap.processing_level == 2.0
 
 
+def test_units(irismap):
+    """Tests the unit property of the SJIMap"""
+    assert irismap.unit == u.ct
+
+
 def test_wcs(irismap):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):

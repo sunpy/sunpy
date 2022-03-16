@@ -36,6 +36,7 @@ class SJIMap(GenericMap):
         # Assume pixel units are arcesc if not given
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
+        header['bunit'] = header.get('bunit', 'counts').lower().replace('corrected', '').strip().upper()
         super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = "SJI"
