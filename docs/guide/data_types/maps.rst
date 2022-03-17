@@ -754,7 +754,7 @@ To coalign a `~sunpy.map.MapSequence`, simply import
 the function and apply it to your `~sunpy.map.MapSequence`::
 
     >>> from sunpy.image.coalignment import mapsequence_coalign_by_match_template
-    >>> coaligned = mapsequence_coalign_by_match_template(mc)  # doctest: +REMOTE_DATA
+    >>> coaligned = mapsequence_coalign_by_match_template(mc)  # doctest: +REMOTE_DATA,+IGNORE_WARNINGS
 
 This will return a new `~sunpy.map.MapSequence`, coaligned to a template extracted from the
 center of the first map in the `~sunpy.map.MapSequence`, with the map dimensions clipped as
@@ -769,7 +769,7 @@ If you just want to calculate the shifts required to compensate for solar
 rotation relative to the first map in the `~sunpy.map.MapSequence` without applying them, use::
 
     >>> from sunpy.image.coalignment import calculate_match_template_shift
-    >>> shifts = calculate_match_template_shift(mc)  # doctest: +REMOTE_DATA
+    >>> shifts = calculate_match_template_shift(mc)  # doctest: +REMOTE_DATA,+IGNORE_WARNINGS
 
 This is the function used to calculate the shifts in `~sunpy.map.MapSequence` coalignment
 function above.  Please see `~sunpy.image.coalignment.calculate_match_template_shift` to learn more about its features.

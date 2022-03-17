@@ -188,6 +188,7 @@ intersphinx_mapping = {
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
     "skimage": ("https://scikit-image.org/docs/stable/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
+    "sunkit_image": ("https://docs.sunpy.org/projects/sunkit-image/en/stable/", None),
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
 }

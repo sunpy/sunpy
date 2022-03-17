@@ -2,12 +2,14 @@
 This module provides routines for applying solar rotation functions to
 map sequences.
 """
+import copy
 
 import numpy as np
+from scipy.ndimage import shift
 
 import astropy.units as u
 
-from sunpy.image.coalignment import apply_shifts
+import sunpy.map
 from sunpy.physics.differential_rotation import solar_rotate_coordinate
 
 __author__ = 'J. Ireland'
@@ -145,4 +147,150 @@ def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwarg
         yshift_keep[i] = yshift_arcseconds[i] / m.scale[1]
 
     # Apply the pixel shifts and return the mapsequence
-    return apply_shifts(mc, yshift_keep, xshift_keep, clip=clip)
+    return _apply_shifts(mc, yshift_keep, xshift_keep, clip=clip)
+
+
+def _apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
+    """
+    Apply a set of pixel shifts to a `~sunpy.map.MapSequence`, and return a new
+    `~sunpy.map.MapSequence`.
+
+    Parameters
+    ----------
+    mc : `sunpy.map.MapSequence`
+        A `~sunpy.map.MapSequence` of shape ``(ny, nx, nt)``, where ``nt`` is the number of
+        layers in the `~sunpy.map.MapSequence`. ``ny`` is the number of pixels in the
+        "y" direction, ``nx`` is the number of pixels in the "x" direction.
+    yshift : `~astropy.units.Quantity`
+        An array of pixel shifts in the y-direction for an image.
+    xshift : `~astropy.units.Quantity`
+        An array of pixel shifts in the x-direction for an image.
+    clip : `bool`, optional
+        If `True` (default), then clip off "x", "y" edges of the maps in the sequence that are
+        potentially affected by edges effects.
+
+    Notes
+    -----
+    All other keywords are passed to `scipy.ndimage.shift`.
+
+    Returns
+    -------
+    `sunpy.map.MapSequence`
+        A `~sunpy.map.MapSequence` of the same shape as the input. All layers in
+        the `~sunpy.map.MapSequence` have been shifted according the input shifts.
+    """
+    # New mapsequence will be constructed from this list
+    new_mc = []
+
+    # Calculate the clipping
+    if clip:
+        yclips, xclips = _calculate_clipping(-yshift, -xshift)
+
+    # Shift the data and construct the mapsequence
+    for i, m in enumerate(mc):
+        shifted_data = shift(copy.deepcopy(m.data), [yshift[i].value, xshift[i].value], **kwargs)
+        new_meta = copy.deepcopy(m.meta)
+        # Clip if required.  Use the submap function to return the appropriate
+        # portion of the data.
+        if clip:
+            shifted_data = _clip_edges(shifted_data, yclips, xclips)
+            new_meta['naxis1'] = shifted_data.shape[1]
+            new_meta['naxis2'] = shifted_data.shape[0]
+            # Add one to go from zero-based to one-based indexing
+            new_meta['crpix1'] = m.reference_pixel.x.value + 1 + xshift[i].value - xshift[0].value
+            new_meta['crpix2'] = m.reference_pixel.y.value + 1 + yshift[i].value - yshift[0].value
+
+        new_map = sunpy.map.Map(shifted_data, new_meta)
+
+        # Append to the list
+        new_mc.append(new_map)
+
+    return sunpy.map.Map(new_mc, sequence=True)
+
+
+def _clip_edges(data, yclips: u.pix, xclips: u.pix):
+    """
+    Clips off the "y" and "x" edges of a 2D array according to a list of pixel
+    values. This function is useful for removing data at the edge of 2d images
+    that may be affected by shifts from solar de- rotation and layer co-
+    registration, leaving an image unaffected by edge effects.
+
+    Parameters
+    ----------
+    data : `numpy.ndarray`
+        A numpy array of shape ``(ny, nx)``.
+    yclips : `astropy.units.Quantity`
+        The amount to clip in the y-direction of the data. Has units of
+        pixels, and values should be whole non-negative numbers.
+    xclips : `astropy.units.Quantity`
+        The amount to clip in the x-direction of the data. Has units of
+        pixels, and values should be whole non-negative numbers.
+
+    Returns
+    -------
+    `numpy.ndarray`
+        A 2D image with edges clipped off according to ``yclips`` and ``xclips``
+        arrays.
+    """
+    ny = data.shape[0]
+    nx = data.shape[1]
+    # The purpose of the int below is to ensure integer type since by default
+    # astropy quantities are converted to floats.
+    return data[int(yclips[0].value): ny - int(yclips[1].value),
+                int(xclips[0].value): nx - int(xclips[1].value)]
+
+
+def _calculate_clipping(y: u.pix, x: u.pix):
+    """
+    Return the upper and lower clipping values for the "y" and "x" directions.
+
+    Parameters
+    ----------
+    y : `astropy.units.Quantity`
+        An array of pixel shifts in the y-direction for an image.
+    x : `astropy.units.Quantity`
+        An array of pixel shifts in the x-direction for an image.
+
+    Returns
+    -------
+    `tuple`
+        The tuple is of the form ``([y0, y1], [x0, x1])``.
+        The number of (integer) pixels that need to be clipped off at each
+        edge in an image. The first element in the tuple is a list that gives
+        the number of pixels to clip in the y-direction. The first element in
+        that list is the number of rows to clip at the lower edge of the image
+        in y. The clipped image has "clipping[0][0]" rows removed from its
+        lower edge when compared to the original image. The second element in
+        that list is the number of rows to clip at the upper edge of the image
+        in y. The clipped image has "clipping[0][1]" rows removed from its
+        upper edge when compared to the original image. The second element in
+        the "clipping" tuple applies similarly to the x-direction (image
+        columns). The parameters ``y0, y1, x0, x1`` have the type
+        `~astropy.units.Quantity`.
+    """
+    return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
+            [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
+
+
+def _upper_clip(z):
+    """
+    Find smallest integer bigger than all the positive entries in the input
+    array.
+    """
+    zupper = 0
+    zcond = z >= 0
+    if np.any(zcond):
+        zupper = int(np.max(np.ceil(z[zcond])))
+    return zupper
+
+
+def _lower_clip(z):
+    """
+    Find smallest positive integer bigger than the absolute values of the
+    negative entries in the input array.
+    """
+    zlower = 0
+    zcond = z <= 0
+    if np.any(zcond):
+        zlower = int(np.max(np.ceil(-z[zcond])))
+    return zlower
