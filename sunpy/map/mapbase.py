@@ -2062,7 +2062,8 @@ class GenericMap(NDData):
         return cmap
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True,
+                  system='stonyhurst', **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -2079,6 +2080,11 @@ class GenericMap(NDData):
             (lon, lat) spacing.
         annotate : `bool`
             Passing `False` disables the axes labels and the ticks on the top and right axes.
+        system : str
+            Coordinate system for the grid. Must be 'stonyhurst' or 'carrington'.
+            If 'carrington', the ``observer`` keyword argument must be specified.
+        kwargs :
+            Additional keyword arguments are passed to `wcsaxes_heliographic_overlay`.
 
         Returns
         -------
@@ -2095,6 +2101,8 @@ class GenericMap(NDData):
                                                            annotate=annotate,
                                                            obstime=self.date,
                                                            rsun=self.rsun_meters,
+                                                           observer=self.observer_coordinate,
+                                                           system=system,
                                                            **kwargs)
 
     def draw_limb(self, axes=None, *, resolution=1000, **kwargs):
