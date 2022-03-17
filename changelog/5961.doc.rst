@@ -1,2 +1,1 @@
-Added the gallery example :ref:`reprojection_azimuthal_equidistant.py` to illustrate azimuthal equidistant projection.
-Added the gallery example :ref: `reprojection_wcs_projection.py` to illustrate how to reproject to a WCS projection centered on a solar feature.
+Added the gallery example :ref:`sphx_glr_generated_gallery_map_transformations_azimuthal_equidistant_projection.py` to illustrate azimuthal equidistant projection.
