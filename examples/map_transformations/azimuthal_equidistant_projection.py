@@ -10,7 +10,6 @@ You will need v0.6 or higher  of the `reproject` package installed.
 """
 
 import matplotlib.pyplot as plt
-import reproject
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
