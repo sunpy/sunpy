@@ -1,0 +1,3 @@
+The `sunpy.map.GenericMap.shifted_value` property has been deprecated.
+Modifications to the reference coordinate can be found in the
+``CRVAL1`` and ``CRVAL2`` keys of `sunpy.map.GenericMap.meta.modified_items`.

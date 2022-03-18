@@ -1,0 +1,3 @@
+The `sunpy.map.GenericMap.shift` method has been renamed to
+`sunpy.map.GenericMap.shift_reference_coord` and
+`~sunpy.map.GenericMap.shift` has been deprecated.
