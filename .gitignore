@@ -236,3 +236,6 @@ asv_results
 html
 results
 result_images
+
+#pipenv
+Pipfile
