@@ -1,5 +1,4 @@
 import os
-import warnings
 
 import numpy as np
 import pytest
@@ -81,12 +80,13 @@ def test_parabolic_turning_point():
 
 @pytest.mark.filterwarnings(DEP_WARNING)
 def test_check_for_nonfinite_entries():
-    with warnings.catch_warnings(record=True) as warning_list:
+    with pytest.warns(Warning) as warning_list:
         a = np.zeros((3, 3))
         b = np.ones((3, 3))
         check_for_nonfinite_entries(a, b)
 
-    assert len(warning_list) == 0
+    # Added a -1 because pytest.warns also catches the deprecation warning
+    assert len(warning_list)-1 == 0
 
     for i in range(0, 9):
         for non_number in [np.nan, np.inf]:
