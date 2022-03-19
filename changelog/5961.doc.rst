@@ -1,0 +1,1 @@
+Added the gallery example :ref:`sphx_glr_generated_gallery_map_transformations_azimuthal_equidistant_projection.py` to illustrate azimuthal equidistant projection.
