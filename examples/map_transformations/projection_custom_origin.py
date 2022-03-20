@@ -41,8 +41,8 @@ origin = origin_hpc.heliographic_stonyhurst
 ###############################################################################
 # We then create a FITS-WCS header that includes our custom origin coordinate.
 # The azimuthal equidistant projection is specified by the code `"ARC"`.
-# See :ref:`astropy:supported_projections` for the projection codes for other
-# projections.
+# See :doc:`astropy:/wcs/supported_projections` for the projection codes for
+# other projections.
 
 out_shape = (750, 750)
 out_header = sunpy.map.make_fitswcs_header(
@@ -59,11 +59,13 @@ out_map = aia_map.reproject_to(out_header)
 out_map.plot_settings = aia_map.plot_settings
 
 ###############################################################################
-
 # Finally, we plot both the original and reprojected maps side by side.
 
 fig = plt.figure(figsize=(8, 4))
 
+# sphinx_gallery_defer_figures
+
+###############################################################################
 # Plot the original AIA map, with the active region circled in red and the
 # heliographic grid and solar limb in blue.
 
@@ -83,5 +85,6 @@ ax = fig.add_subplot(1, 2, 2, projection=out_map)
 out_map.plot(axes=ax)
 out_map.draw_grid(axes=ax, color='blue')
 out_map.draw_limb(axes=ax, color='blue')
+ax.plot_coord(origin, 'o', color='red', fillstyle='none', markersize=20)
 ax.set_title('Postel projection centered at ROI', y=-0.1)
 plt.show()
