@@ -948,8 +948,6 @@ def test_timeseries_array():
     # Create a numpy ndarray with a first column having datetime64 entries, and a second column of data
 
     date = datetime.date(2017, 1, 1)
-
-    # NEED HELP: What should I pass to the second column?
     data = np.array([[date, 1], [date, 2], ])
 
     # Pass it to sunpy.timeseries.TimeSeries
