@@ -699,3 +699,32 @@ class GenericTimeSeries:
             The path to the file you want to parse.
         """
         raise NoMatchError(f'Could not find any timeseries sources to parse {filepath}')
+
+
+def test_timeseries_array():
+    """
+        Check that a numpy ndarray can be used to create a GenericTimeSeries.
+        """
+
+    import datetime
+    import numpy as np
+
+    import sunpy.timeseries
+    from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+
+    # Create a numpy ndarray with a first column having datetime64 entries, and a second column of data
+
+    # Input values for datetime class must be datetime objects
+
+    date = datetime.date(2017, 1, 1)
+
+    data = np.array(
+        [
+            [date, 1],
+            [date, 2],
+        ]
+    )
+
+    ts = sunpy.timeseries.TimeSeries(data)
+
+    assert isinstance(ts, GenericTimeSeries)
