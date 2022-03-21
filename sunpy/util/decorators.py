@@ -11,7 +11,7 @@ from functools import wraps
 
 import astropy.units as u
 
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning, warn_deprecated
 
 __all__ = ['deprecated']
 

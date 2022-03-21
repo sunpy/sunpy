@@ -684,12 +684,11 @@ class GenericMap(NDData):
 
     @staticmethod
     def _parse_fits_unit(unit_str):
-        unit_str = unit_str.lower()
         replacements = {'gauss': 'G',
                         'dn': 'ct',
                         'dn/s': 'ct/s'}
-        if unit_str in replacements:
-            unit_str = replacements[unit_str]
+        if unit_str.lower() in replacements:
+            unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
             warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
@@ -1501,13 +1500,20 @@ class GenericMap(NDData):
         new_meta = self.meta.copy()
 
         # Update metadata
-        new_meta['cdelt1'] *= scale_factor_x
-        new_meta['cdelt2'] *= scale_factor_y
-        if 'CD1_1' in new_meta:
-            new_meta['CD1_1'] *= scale_factor_x
-            new_meta['CD2_1'] *= scale_factor_x
-            new_meta['CD1_2'] *= scale_factor_y
-            new_meta['CD2_2'] *= scale_factor_y
+        if 'pc1_1' in self.meta:
+            new_meta['pc1_1'] *= scale_factor_x
+            new_meta['pc2_1'] *= scale_factor_x
+            new_meta['pc1_2'] *= scale_factor_y
+            new_meta['pc2_2'] *= scale_factor_y
+        if 'cd1_1' in self.meta:
+            new_meta['cd1_1'] *= scale_factor_x
+            new_meta['cd2_1'] *= scale_factor_x
+            new_meta['cd1_2'] *= scale_factor_y
+            new_meta['cd2_2'] *= scale_factor_y
+        if 'cd1_1' not in self.meta and 'pc1_1' not in self.meta:
+            # Using the CROTA2 and CDELT formalism
+            new_meta['cdelt1'] *= scale_factor_x
+            new_meta['cdelt2'] *= scale_factor_y
         new_meta['crpix1'] = (self.reference_pixel.x.to_value(u.pix) + 0.5) / scale_factor_x + 0.5
         new_meta['crpix2'] = (self.reference_pixel.y.to_value(u.pix) + 0.5) / scale_factor_y + 0.5
         new_meta['naxis1'] = new_data.shape[1]
@@ -1993,16 +1999,22 @@ class GenericMap(NDData):
         # create copy of new meta data
         new_meta = self.meta.copy()
 
-        scale = [self.scale[i].to_value(self.spatial_units[i] / u.pix) for i in range(2)]
-
         # Update metadata
-        new_meta['cdelt1'] = dimensions[0] * scale[0]
-        new_meta['cdelt2'] = dimensions[1] * scale[1]
-        if 'CD1_1' in new_meta:
-            new_meta['CD1_1'] *= dimensions[0]
-            new_meta['CD2_1'] *= dimensions[0]
-            new_meta['CD1_2'] *= dimensions[1]
-            new_meta['CD2_2'] *= dimensions[1]
+        if 'pc1_1' in self.meta:
+            new_meta['pc1_1'] *= dimensions[0]
+            new_meta['pc2_1'] *= dimensions[0]
+            new_meta['pc1_2'] *= dimensions[1]
+            new_meta['pc2_2'] *= dimensions[1]
+        if 'cd1_1' in self.meta:
+            new_meta['cd1_1'] *= dimensions[0]
+            new_meta['cd2_1'] *= dimensions[0]
+            new_meta['cd1_2'] *= dimensions[1]
+            new_meta['cd2_2'] *= dimensions[1]
+        if 'cd1_1' not in self.meta and 'pc1_1' not in self.meta:
+            # Using the CROTA2 and CDELT formalism
+            new_meta['cdelt1'] *= dimensions[0]
+            new_meta['cdelt2'] *= dimensions[1]
+
         new_meta['crpix1'] = ((self.reference_pixel.x.to_value(u.pix) +
                                0.5 - offset[0]) / dimensions[0]) + 0.5
         new_meta['crpix2'] = ((self.reference_pixel.y.to_value(u.pix) +

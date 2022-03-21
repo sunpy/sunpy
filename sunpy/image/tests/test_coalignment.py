@@ -1,5 +1,4 @@
 import os
-import warnings
 
 import numpy as np
 import pytest
@@ -26,6 +25,9 @@ from sunpy.image.coalignment import (
 )
 from sunpy.map import Map, MapSequence
 from sunpy.util import SunpyUserWarning
+
+DEP_WARNING = r'''ignore:The .* function is deprecated and may be removed in version 4.1.
+\s+Use `sunkit_image.coalignment.* instead.:sunpy.util.exceptions.SunpyDeprecationWarning'''
 
 
 @pytest.fixture
@@ -71,17 +73,20 @@ def aia171_test_template_shape(aia171_test_template):
     return aia171_test_template.shape
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_parabolic_turning_point():
     assert(parabolic_turning_point(np.asarray([6.0, 2.0, 0.0])) == 1.5)
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_check_for_nonfinite_entries():
-    with warnings.catch_warnings(record=True) as warning_list:
+    with pytest.warns(Warning) as warning_list:
         a = np.zeros((3, 3))
         b = np.ones((3, 3))
         check_for_nonfinite_entries(a, b)
 
-    assert len(warning_list) == 0
+    # Added a -1 because pytest.warns also catches the deprecation warning
+    assert len(warning_list)-1 == 0
 
     for i in range(0, 9):
         for non_number in [np.nan, np.inf]:
@@ -93,20 +98,22 @@ def test_check_for_nonfinite_entries():
                               match='The layer image has nonfinite entries.') as warning_list:
                 check_for_nonfinite_entries(b, np.ones((3, 3)))
 
-            assert len(warning_list) == 1
+            # Added a -1 because pytest.warns also catches the deprecation warning
+            assert len(warning_list)-1 == 1
 
             with pytest.warns(SunpyUserWarning,
                               match='The template image has nonfinite entries.') as warning_list:
                 check_for_nonfinite_entries(np.ones((3, 3)), b)
 
-            assert len(warning_list) == 1
+            assert len(warning_list)-1 == 1
 
             with pytest.warns(Warning) as warning_list:
                 check_for_nonfinite_entries(b, b)
 
-            assert len(warning_list) == 2
+            assert len(warning_list)-1 == 2
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_match_template_to_layer(aia171_test_map_layer,
                                  aia171_test_template,
                                  aia171_test_map_layer_shape,
@@ -120,6 +127,7 @@ def test_match_template_to_layer(aia171_test_map_layer,
     assert_allclose(np.max(result), 1.00, rtol=1e-2, atol=0)
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_get_correlation_shifts():
     # Input array is 3 by 3, the most common case
     test_array = np.zeros((3, 3))
@@ -150,6 +158,7 @@ def test_get_correlation_shifts():
         get_correlation_shifts(test_array)
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_find_best_match_location(aia171_test_map_layer, aia171_test_template,
                                   aia171_test_shift):
 
@@ -173,11 +182,13 @@ def test_upper_clip(aia171_test_clipping):
     assert(_upper_clip(test_array) == 0)
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_calculate_clipping(aia171_test_clipping):
     answer = calculate_clipping(aia171_test_clipping * u.pix, aia171_test_clipping * u.pix)
     assert_array_almost_equal(answer, ([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix))
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_clip_edges():
     a = np.zeros(shape=(341, 156))
     yclip = [4, 0] * u.pix
@@ -218,6 +229,7 @@ def aia171_test_mc(aia171_test_map, aia171_test_map_layer,
     return Map([aia171_test_map, m1], sequence=True)
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_calculate_match_template_shift(aia171_test_mc,
                                         aia171_mc_arcsec_displacements,
                                         aia171_test_map,
@@ -252,6 +264,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
         calculate_match_template_shift(aia171_test_mc, template='broken')
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_mapsequence_coalign_by_match_template(aia171_test_mc,
                                                aia171_test_map_layer_shape):
     # Define these local variables to make the code more readable
@@ -312,6 +325,7 @@ def test_mapsequence_coalign_by_match_template(aia171_test_mc,
                             rtol=5e-2, atol=0)
 
 
+@pytest.mark.filterwarnings(DEP_WARNING)
 def test_apply_shifts(aia171_test_map):
     # take two copies of the AIA image and create a test mapsequence.
     mc = Map([aia171_test_map, aia171_test_map], sequence=True)
