@@ -947,7 +947,7 @@ def test_lyra_plot(lyra_test_ts):
 def test_timeseries_array():
     # Create a numpy ndarray with a first column having datetime64 entries, and a second column of data
 
-    date = datetime.date.today()
+    date = datetime.datetime.now()
     data = np.array([[date, 1], [date, 2], ])
 
     # Pass it to sunpy.timeseries.TimeSeries
