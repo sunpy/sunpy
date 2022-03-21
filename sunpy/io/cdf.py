@@ -91,9 +91,7 @@ def read_cdf(fname):
 
             if data.ndim > 2:
                 # Skip data with dimensions >= 3 and give user warning
-                warn_user(f'The variable "{var_key}" has more than 2 dimensions, '
-                          'which is not supported at the moment. '
-                          f'Skipping variable "{var_key}" for now.')
+                warn_user(f'The variable "{var_key}" has been skipped because it has more than 2 dimensions, which is unsupported.')
             elif data.ndim == 2:
                 # Multiple columns, give each column a unique label
                 for i, col in enumerate(data.T):
