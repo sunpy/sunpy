@@ -19,8 +19,8 @@ from astropy.units import equivalencies
 import sunpy
 import sunpy.net.vso.legacy_response
 from sunpy import config
+from sunpy.io import _fits
 from sunpy.io import file_tools as sunpy_filetools
-from sunpy.io import fits
 from sunpy.io.header import FileHeader
 from sunpy.time import parse_time
 from sunpy.util.types import DatabaseEntryType
@@ -642,7 +642,7 @@ def entries_from_file(file, default_waveunit=None,
     110
 
     """
-    headers = fits.get_header(file)
+    headers = _fits.get_header(file)
 
     # This just checks for blank default headers
     # due to compression.
@@ -667,7 +667,7 @@ def entries_from_file(file, default_waveunit=None,
                     entry.fits_key_comments.append(FitsKeyComment(k, v))
                 continue
             entry.fits_header_entries.append(FitsHeaderEntry(key, value))
-        waveunit = fits.extract_waveunit(header)
+        waveunit = _fits.extract_waveunit(header)
         entry.hdu_index = headers.index(header)
         if waveunit is None:
             waveunit = default_waveunit

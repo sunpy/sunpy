@@ -6,8 +6,8 @@
 How to <verb> <active tense> <does something>.
 
 The example uses <packages> to <do something> and <other package> to <do other
-thing>. Include links to referenced packages like this: `sunpy.io.fits` to
-show the sunpy.io.fits or like this `~sunpy.io.fits`to show just 'fits'
+thing>. Include links to referenced packages like this: `sunpy.map` to
+show the sunpy.map or like this `~sunpy.map`to show just 'map'.
 """
 import matplotlib.pyplot as plt
 import numpy as np
