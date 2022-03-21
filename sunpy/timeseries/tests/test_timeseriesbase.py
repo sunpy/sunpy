@@ -21,8 +21,8 @@ import sunpy.data.test
 import sunpy.timeseries
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
