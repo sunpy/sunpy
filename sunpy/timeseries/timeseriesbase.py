@@ -7,7 +7,6 @@ from collections import OrderedDict
 from collections.abc import Iterable
 
 import pandas as pd
-import numpy as np
 
 import astropy
 import astropy.units as u
@@ -16,7 +15,6 @@ from astropy.table import Column, Table
 from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
@@ -701,28 +699,3 @@ class GenericTimeSeries:
             The path to the file you want to parse.
         """
         raise NoMatchError(f'Could not find any timeseries sources to parse {filepath}')
-
-
-def test_timeseries_array():
-    """
-        Check that a numpy ndarray can be used to create a GenericTimeSeries.
-        """
-
-    import datetime
-
-    # Create a numpy ndarray with a first column having datetime64 entries, and a second column of data
-    # Input values for datetime class must be datetime objects
-    date = datetime.date(2017, 1, 1)
-
-    data = np.array(
-        [
-            [date, 1],
-            [date, 2],
-        ]
-    )
-
-    # Pass it to sunpy.timeseries.TimeSeries
-    ts = sunpy.timeseries.TimeSeries(data)
-
-    # Check that the returned object has type GenericTimeSeries
-    assert isinstance(ts, GenericTimeSeries)

@@ -21,6 +21,7 @@ import sunpy.data.test
 import sunpy.timeseries
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
@@ -941,6 +942,19 @@ def test_lyra_plot(lyra_test_ts):
     axes = lyra_test_ts.plot()
     for i, ax in enumerate(axes):
         np.testing.assert_array_equal(ax.lines[0].get_ydata(), lyra_test_ts.to_array().T[i])
+
+
+def test_timeseries_array():
+    # Create a numpy ndarray with a first column having datetime64 entries, and a second column of data
+    # NEED HELP: instead of `datetime.date(2017, 1, 1)` should I use `datetime.datetime.today()`?
+    date = datetime.date(2017, 1, 1)
+    data = np.array([[date, 1], [date, 2], ])
+
+    # Pass it to sunpy.timeseries.TimeSeries
+    ts = sunpy.timeseries.TimeSeries(data)
+
+    # Check that the returned object has type GenericTimeSeries
+    assert isinstance(ts, GenericTimeSeries)
 
 
 # TODO:
