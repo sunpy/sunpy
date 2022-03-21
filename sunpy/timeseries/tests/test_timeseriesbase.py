@@ -947,7 +947,6 @@ def test_lyra_plot(lyra_test_ts):
 def test_timeseries_array():
     # Create a numpy ndarray with a first column having datetime64 entries, and a second column of data
 
-    # NEED HELP: instead of `datetime.date(2017, 1, 1)` should I use `datetime.datetime.today()`?
     date = datetime.date(2017, 1, 1)
 
     # NEED HELP: What should I pass to the second column?
