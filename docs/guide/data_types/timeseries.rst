@@ -37,9 +37,9 @@ following into your interactive Python shell: ::
 .. doctest-skip-all
 
 This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time
-series from a GOES XRS FITS file. The TimeSeries factory uses `sunpy.io.fits` to
-read the FITS file. Note that if you have not downloaded the data already you
-should get an error and some instruction on how to download the sample data.
+series from a GOES XRS FITS file. Note that if you have not downloaded the data
+already you should get an error and some instruction on how to download the
+sample data.
 
 The variable ``my_timeseries`` is a :ref:`timeseries` object. To create one from
 a local GOES/XRS FITS file try the following: ::
