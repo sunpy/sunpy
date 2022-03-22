@@ -115,7 +115,8 @@ jobs:
       - uses: ./.github/actions/matrix
         with:
           status: 'Succeeded'
-          token: ${{ secrets.bot_access_token }}
+          token: ${{ secrets.matrix_access_token }}
+          homeserver: ${{ secrets.matrix_homeserver }}
 
   notify_fail:
     if: failure() && github.event_name == 'schedule'
@@ -125,4 +126,5 @@ jobs:
       - uses: ./.github/actions/matrix
         with:
           status: 'Failed'
-          token: ${{ secrets.bot_access_token }}
+          token: ${{ secrets.matrix_access_token }}
+          homeserver: ${{ secrets.matrix_homeserver }}

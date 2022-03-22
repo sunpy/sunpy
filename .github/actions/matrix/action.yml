@@ -36,6 +36,6 @@ runs:
         STATUS: ${{ inputs.status }}
         ROOMID: ${{ inputs.roomid }}
         HOMESERVER: ${{ inputs.homeserver }}
-        ACCESS_TOKEN: ${{ secrets.token }}
+        ACCESS_TOKEN: ${{ inputs.token }}
         BRANCH: ${{ github.ref_name }}
         RUNID: ${{ github.run_id }}
