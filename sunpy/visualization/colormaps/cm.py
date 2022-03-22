@@ -195,11 +195,12 @@ def show_colormaps(search=None):
     a = np.vstack((a, a))
 
     fig = plt.figure(figsize=(7, 10), dpi=128)
-    fig.subplots_adjust(top=0.99, bottom=0.01, left=0.2, right=0.99)
+    fig.subplots_adjust(top=0.99, bottom=0.01, left=0.3, right=0.99)
     for i, name in enumerate(maps):
         ax = plt.subplot(nmaps, 1, i + 1)
-        plt.axis("off")
-        plt.imshow(a, aspect='auto', cmap=name, origin='lower')
-        pos = list(ax.get_position().bounds)
-        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, horizontalalignment='right')
+        ax.imshow(a, aspect='auto', cmap=name, origin='lower')
+        ax.xaxis.set_ticks([])
+        ax.yaxis.set_ticks([])
+        ax.set_ylabel(name, fontsize=10, horizontalalignment='right', verticalalignment='center', rotation=0)
+
     plt.show()
