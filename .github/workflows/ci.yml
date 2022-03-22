@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!*backport*'
+    tags:
+      - 'v*'
+      - '!*dev*'
+      - '!*pre*'
+      - '!*post*'
+  pull_request:
+  # Allow manual runs through the web UI
+  workflow_dispatch:
+
+jobs:
+  core:
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto
+      libraries: |
+        apt:
+          - libopenjp2-7
+      envs: |
+        - linux: py39
+
+  test:
+    needs: [core]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto
+      libraries: |
+        apt:
+          - libopenjp2-7
+        brew:
+          - openjpeg
+      envs: |
+        - macos: py38
+        - windows: py310
+        - linux: py38-oldestdeps
+        - linux: py39-conda
+          libraries: ''
+
+  online:
+    needs: [core]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      default_python: '3.8'
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto --dist loadgroup
+      libraries: |
+        apt:
+          - libopenjp2-7
+      envs: |
+        - linux: build_docs_ci
+          posargs: ''
+          pytest: false
+          libraries:
+            apt:
+              - libopenjp2-7
+              - graphviz
+        - linux: py38-online
+
+  cron:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      default_python: '3.8'
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto
+      libraries: |
+        apt:
+          - libopenjp2-7
+      envs: |
+        - linux: base_deps
+        - linux: py39-devdeps
+
+  publish:
+    # Build wheels when pushing to any branch except main
+    # publish.yml will only publish if tagged ^v.*
+    if: |
+      github.event_name != 'pull_request' && (
+        github.ref_name != 'main' ||
+        github.event_name == 'schedule' ||
+        github.event_name == 'workflow_dispatch' )
+    needs: [test]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
+    with:
+      test_extras: 'dev'
+      test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
+      submodules: false
+      targets: |
+        - cp3{8,9,10}-manylinux*_x86_64
+        - cp3{8,9,10}-macosx_x86_64
+        - cp3{8,9,10}-macosx_arm64
+    secrets:
+      pypi_token: ${{ secrets.pypi_token }}
+
+  notify_pass:
+    if: github.event_name == 'schedule'
+    needs: [cron, publish, online]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/matrix
+        with:
+          status: 'Succeeded'
+          token: ${{ secrets.matrix_access_token }}
+          homeserver: ${{ secrets.matrix_homeserver }}
+
+  notify_fail:
+    if: failure() && github.event_name == 'schedule'
+    needs: [cron, publish, online]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/matrix
+        with:
+          status: 'Failed'
+          token: ${{ secrets.matrix_access_token }}
+          homeserver: ${{ secrets.matrix_homeserver }}
