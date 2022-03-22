@@ -1,2 +1,2 @@
-The colorbar limits on MDI magnetic field maps are now automatically
+The colorbar limits on HMI magnetic field maps are now automatically
 set to be symmetric about zero.

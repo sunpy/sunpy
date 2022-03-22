@@ -197,7 +197,7 @@ class MDIMap(GenericMap):
     @property
     def unit(self):
         bunit = self.meta.get('bunit', None)
-        if bunit == 'Arbitrary intensity units':
+        if bunit is not None and bunit.lower() == 'arbitrary intensity units':
             return u.dimensionless_unscaled
         return super().unit
 
