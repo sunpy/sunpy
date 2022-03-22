@@ -55,11 +55,11 @@ Second, the module has seen little development in several years and by moving
 it to `sunkit_image.coalignment`, we hope to increase its visibility and attract a larger number
 of contributors.
 
-Deprecation of `sunpy.fits.io`
+Deprecation of `sunpy.io.fits`
 ==============================
-The `sunpy.io.fits` module is deprecated, and will be removed in verison 4.1.
+The `sunpy.io.fits` module is deprecated, and will be removed in version 4.1.
 This because it was designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.
-The `astropy.fits.io` module can be used instead as a replacement that is designed to be user-facing.
+The `astropy.io.fits` module can be used instead as a replacement that is designed to be user-facing.
 
 
 Contributors to this Release
