@@ -945,14 +945,15 @@ def test_lyra_plot(lyra_test_ts):
 
 
 def test_timeseries_array():
-    # Create a numpy ndarray with a first column having datetime64 entries, and a second column of data
-
-    date = datetime.datetime.now()
-    data = np.array([[date, 1], [date, 2], ])
-
-    # Pass it to sunpy.timeseries.TimeSeries
-    ts = sunpy.timeseries.TimeSeries(data)
-
+    # Create a datetime64 array
+    base = datetime.datetime(2022, 3, 1, 9, 5, 19, 987654)
+    times = np.array([base + datetime.timedelta(hours=i) for i in range(1440)])
+    # Create Intensity array
+    intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
+    data = np.array([times, intensity]).T
+    # Create Dataframe with np.array
+    df = pd.DataFrame.from_records(data, index="time", columns=['time', 'intensity'])
+    ts = sunpy.timeseries.TimeSeries(df, {}, {'intensity': u.W/u.m**2})
     # Check that the returned object has type GenericTimeSeries
     assert isinstance(ts, GenericTimeSeries)
 
