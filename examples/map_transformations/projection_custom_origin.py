@@ -31,7 +31,7 @@ aia_map.plot_settings['norm'].vmax = 10000
 ###############################################################################
 # Next, we create a `~astropy.coordinates.SkyCoord` to define the custom origin
 # of the map projection.  Here, we are going to center the projection at the
-# helioprojective coordinates of a particular active region.  We want our map
+# helioprojective coordinates of a particular active region. We want our map
 # projection to be in heliographic Stonyhurst coordinates, so we transform the
 # origin coordinate accordingly.
 
