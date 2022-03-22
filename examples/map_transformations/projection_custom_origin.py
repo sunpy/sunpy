@@ -41,7 +41,7 @@ origin = origin_hpc.heliographic_stonyhurst
 ###############################################################################
 # We then create a FITS-WCS header that includes our custom origin coordinate.
 # The azimuthal equidistant projection is specified by the code `"ARC"`.
-# See :doc:`astropy:/wcs/supported_projections` for the projection codes for
+# See :doc:`astropy:wcs/supported_projections` for the projection codes for
 # other projections.
 
 out_shape = (750, 750)
