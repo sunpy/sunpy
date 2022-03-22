@@ -4,7 +4,7 @@ Reprojecting to a Map Projection with a Custom Origin
 =====================================================
 
 In this example, we show how to reproject a map to a map projection with a
-custom origin.  Here, we choose the target map projection to be the
+custom origin. Here, we choose the target map projection to be the
 `azimuthal equidistant projection <https://en.wikipedia.org/wiki/Azimuthal_equidistant_projection>`__,
 also known as the Postel projection, which has useful properties relative to a
 specified origin of the projection. If a different map projection is desired,
