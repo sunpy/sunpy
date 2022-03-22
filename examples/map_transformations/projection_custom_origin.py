@@ -21,7 +21,7 @@ import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
-# We will use one of the AIA images from the sample data.  We fix the range of
+# We will use one of the AIA images from the sample data. We fix the range of
 # values for the Map's normalizer for a prettier image.
 
 aia_map = sunpy.map.Map(AIA_171_IMAGE)
