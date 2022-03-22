@@ -1,12 +1,5 @@
 version: 2.1
 
-no-backports: &no-backports
-  name: Skip any branches called cherry-pick
-  command: |
-    if [[ "${CIRCLE_BRANCH}" == *"cherry-pick"* || "${CIRCLE_BRANCH}" == *"backport"* ]]; then
-      circleci step halt
-    fi
-
 skip-check: &skip-check
   name: Check for [ci skip]
   command: bash .circleci/early_exit.sh
@@ -36,7 +29,6 @@ jobs:
     environment:
       TOXENV=<< parameters.jobname >>
     steps:
-      - run: *no-backports
       - checkout
       - run: *skip-check
       - run: *merge-check
