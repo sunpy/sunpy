@@ -151,6 +151,11 @@ def test_carrington(mdi):
     assert u.allclose(mdi.carrington_latitude, Angle(mdi.meta['CRLT_OBS']*u.deg))
 
 
+def test_unit(mdi):
+    assert mdi.unit == u.G
+    assert mdi.unit.to_string() == 'Mx / cm2'
+
+
 @pytest.mark.filterwarnings("error")
 def test_synoptic_source(mdi_synoptic):
     assert isinstance(mdi_synoptic, MDISynopticMap)

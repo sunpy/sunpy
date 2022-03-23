@@ -3,6 +3,7 @@ SunPy Map
 
 isort:skip_file
 """
+from ._units import *
 from sunpy.map.mapbase import *
 
 from sunpy.map import sources

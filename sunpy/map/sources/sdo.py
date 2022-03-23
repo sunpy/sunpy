@@ -193,15 +193,6 @@ class HMISynopticMap(HMIMap):
         else:
             return date
 
-    @property
-    def unit(self):
-        unit_str = self.meta.get('bunit', None)
-        if unit_str == 'Mx/cm^2':
-            # Maxwells aren't in the IAU unit sytle manual, so replace with Gauss
-            return u.Unit('G')
-        else:
-            return super().unit
-
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """

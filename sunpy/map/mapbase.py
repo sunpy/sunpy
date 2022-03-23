@@ -698,7 +698,10 @@ class GenericMap(NDData):
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
-        if isinstance(unit, u.UnrecognizedUnit):
+        # A seperate workaround for Maxwells
+        if unit_str == "Mx/cm^2":
+            unit = u.Unit(unit_str)
+        elif isinstance(unit, u.UnrecognizedUnit):
             warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                           f'See {_META_FIX_URL} for how to fix metadata before loading it '
                           'with sunpy.map.Map.\n'
