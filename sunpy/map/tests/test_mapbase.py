@@ -511,7 +511,7 @@ def test_shift_applied(generic_map):
                                 generic_map.reference_coordinate.Ty)
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
-    shifted_map = generic_map.shift_reference_coord(x_shift, y_shift)
+    shifted_map = generic_map.shift(x_shift, y_shift)
     assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
     assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
     crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units[0] +
@@ -541,7 +541,7 @@ def test_shift_history(generic_map):
     """Test the shifted_value is added to a non-zero previous shift"""
     x_shift1 = 5 * u.arcsec
     y_shift1 = 13 * u.arcsec
-    shifted_map1 = generic_map.shift_reference_coord(x_shift1, y_shift1)
+    shifted_map1 = generic_map.shift(x_shift1, y_shift1)
 
     x_shift2 = -28.5 * u.arcsec
     y_shift2 = 120 * u.arcsec
