@@ -193,6 +193,13 @@ class HMISynopticMap(HMIMap):
         else:
             return date
 
+    @property
+    def unit(self):
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+        return u.Unit(unit_str)
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """
