@@ -1595,6 +1595,7 @@ class GenericMap(NDData):
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a rotation matrix.")
         elif angle is None and rmatrix is None:
+            # Be aware that self.rotation_matrix may not actually be a pure rotation matrix
             rmatrix = self.rotation_matrix
 
         if order not in range(6):
@@ -1616,7 +1617,8 @@ class GenericMap(NDData):
             rmatrix = np.array([[c, -s],
                                 [s, c]])
 
-        # The data will be rotated by the inverse of the rotation matrix
+        # The data will be rotated by the inverse of the rotation matrix. Because rmatrix may not
+        # actually be a pure rotation matrix, we calculate the inverse in a general manner.
         inv_rmatrix = np.linalg.inv(rmatrix)
 
         # Calculate the shape in pixels to contain all of the image data
