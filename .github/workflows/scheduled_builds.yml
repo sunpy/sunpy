@@ -1,0 +1,18 @@
+name: Scheduled builds
+
+on:
+  schedule:
+    #        ┌───────── minute (0 - 59)
+    #        │ ┌───────── hour (0 - 23)
+    #        │ │ ┌───────── day of the month (1 - 31)
+    #        │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
+    #        │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
+    - cron: '0 3 * * 1'  # Every Monday at 03:00 UTC
+
+jobs:
+  dispatch_workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh workflow run ci.yml --ref main
+      - run: gh workflow run ci.yml --ref 3.1
+      - run: gh workflow run ci.yml --ref 3.0

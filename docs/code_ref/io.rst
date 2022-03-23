@@ -1,15 +1,7 @@
 Input/output (`sunpy.io`)
 *************************
 
-``sunpy.io`` contains two types of routines, the first reads (data, header)
-pairs from files in a way similar to FITS files. The other is special readers
-for files that are commonly used in solar physics.
-
-.. warning::
-
-   When reading FITS files, it is strongly recommended that `astropy.io.fits` be used over the tools in `sunpy.io`.
-   The sunpy FITS reader is designed to meet the needs of map, and does not represent the structure of the FITS file well.
-
+``sunpy.io`` contains readers for files that are commonly used in solar physics.
 
 Unified File Readers
 ====================
@@ -20,6 +12,7 @@ Unified File Readers
 
 .. _iofits:
 .. automodapi:: sunpy.io.fits
+   :allowed-package-names: sunpy.io._fits
 
 .. _iojp2:
 .. automodapi:: sunpy.io.jp2

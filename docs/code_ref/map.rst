@@ -50,7 +50,7 @@ Fixing map metadata
 If you need to fix the metadata of a fits file before it is handed to `Map`, this can be done as
 follows:
 
-    >>> data, header = sunpy.io.fits.read(filepath)[0] # doctest: +SKIP
+    >>> data, header = astropy.io.fits.read(filepath)[0] # doctest: +SKIP
     >>> header['cunit1'] = 'arcsec' # doctest: +SKIP
     >>> header['cunit2'] = 'arcsec' # doctest: +SKIP
     >>> map = sunpy.map.Map(data, header) # doctest: +SKIP

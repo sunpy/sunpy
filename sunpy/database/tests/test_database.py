@@ -35,7 +35,7 @@ from sunpy.database import (
 from sunpy.database.caching import LFUCache, LRUCache
 from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
 from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, FitsKeyComment, JSONDump, Tag
-from sunpy.io import fits
+from sunpy.io import _fits
 from sunpy.net import Fido
 from sunpy.net import attrs as net_attrs
 from sunpy.net import hek, vso
@@ -458,7 +458,7 @@ def num_entries_from_vso_query(db, query, path=None, file_pattern='',
         query, path=path, overwrite=overwrite)
     fits_pattern = file_pattern
     num_of_fits_headers = sum(
-        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+        len(_fits.get_header(file)) for file in glob.glob(fits_pattern))
     return num_of_fits_headers
 
 
@@ -538,7 +538,7 @@ def test_download_from_qr(database, download_qr, tmpdir):
         download_qr, path=str(tmpdir.join('{file}.fits')))
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
-        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+        len(_fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers > 0
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)
@@ -905,7 +905,7 @@ def test_fetch(database, download_query, tmpdir):
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
-        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+        len(_fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)

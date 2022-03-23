@@ -17,8 +17,8 @@ from astropy.table import Table
 from astropy.time import Time
 
 import sunpy
+from sunpy.io._fits import HDPair
 from sunpy.io.file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
-from sunpy.io.fits import HDPair
 from sunpy.io.header import FileHeader
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import expand_list

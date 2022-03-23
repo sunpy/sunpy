@@ -30,7 +30,7 @@ from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
 import sunpy.io as io
-import sunpy.io.fits
+import sunpy.io._fits
 import sunpy.visualization.colormaps
 from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, get_earth, sun
@@ -909,7 +909,7 @@ class GenericMap(NDData):
         if 'waveunit' in self.meta:
             return u.Unit(self.meta['waveunit'])
         else:
-            wunit = sunpy.io.fits.extract_waveunit(self.meta)
+            wunit = sunpy.io._fits.extract_waveunit(self.meta)
             if wunit is not None:
                 return u.Unit(wunit)
 
@@ -1336,7 +1336,7 @@ class GenericMap(NDData):
         """
         A `~astropy.io.fits.Header` representation of the ``meta`` attribute.
         """
-        return sunpy.io.fits.header_to_fits(self.meta)
+        return sunpy.io._fits.header_to_fits(self.meta)
 
 # #### Miscellaneous #### #
     def _get_cmap_name(self):

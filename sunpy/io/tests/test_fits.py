@@ -9,9 +9,9 @@ import astropy.io.fits as fits
 from astropy.utils.exceptions import AstropyUserWarning
 
 import sunpy.data.test
-import sunpy.io.fits
+import sunpy.io._fits
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
-from sunpy.io.fits import extract_waveunit, get_header, header_to_fits
+from sunpy.io._fits import extract_waveunit, get_header, header_to_fits
 from sunpy.util import MetaDict, SunpyMetadataWarning
 
 testpath = sunpy.data.test.rootdir
@@ -35,7 +35,7 @@ pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in heade
      (RHESSI_IMAGE, range(0, 1), 2)]
 )
 def read_hdus(fname, hdus, length):
-    pairs = sunpy.io.fits.read(fname, hdus=hdus)
+    pairs = sunpy.io._fits.read(fname, hdus=hdus)
     assert len(pairs) == length
 
 
@@ -60,24 +60,24 @@ def test_extract_waveunit(fname, waveunit, warn):
 
 
 def test_simple_write(tmpdir):
-    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    data, header = sunpy.io._fits.read(AIA_171_IMAGE)[0]
     outfile = tmpdir / "test.fits"
-    sunpy.io.fits.write(str(outfile), data, header)
+    sunpy.io._fits.write(str(outfile), data, header)
     assert outfile.exists()
 
 
 def test_extra_comment_write(tmpdir):
-    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    data, header = sunpy.io._fits.read(AIA_171_IMAGE)[0]
     header["KEYCOMMENTS"]["TEST"] = "Hello world"
     outfile = tmpdir / "test.fits"
-    sunpy.io.fits.write(str(outfile), data, header)
+    sunpy.io._fits.write(str(outfile), data, header)
     assert outfile.exists()
 
 
 def test_simple_write_compressed(tmpdir):
-    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    data, header = sunpy.io._fits.read(AIA_171_IMAGE)[0]
     outfile = tmpdir / "test.fits"
-    sunpy.io.fits.write(str(outfile), data, header, hdu_type=fits.CompImageHDU)
+    sunpy.io._fits.write(str(outfile), data, header, hdu_type=fits.CompImageHDU)
     assert outfile.exists()
     with fits.open(str(outfile)) as hdul:
         assert len(hdul) == 2
@@ -87,11 +87,11 @@ def test_simple_write_compressed(tmpdir):
 def test_simple_write_compressed_difftypeinst(tmpdir):
     # `hdu_type=fits.CompImageHDU` and `hdu_type=fits.CompImageHDU()`
     # should produce identical FITS files
-    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    data, header = sunpy.io._fits.read(AIA_171_IMAGE)[0]
     outfile_type = str(tmpdir / "test_type.fits")
     outfile_inst = str(tmpdir / "test_inst.fits")
-    sunpy.io.fits.write(outfile_type, data, header, hdu_type=fits.CompImageHDU)
-    sunpy.io.fits.write(outfile_inst, data, header, hdu_type=fits.CompImageHDU())
+    sunpy.io._fits.write(outfile_type, data, header, hdu_type=fits.CompImageHDU)
+    sunpy.io._fits.write(outfile_inst, data, header, hdu_type=fits.CompImageHDU())
     assert fits.FITSDiff(outfile_type, outfile_inst, ignore_comments=['PCOUNT']).identical
 
 
@@ -101,7 +101,7 @@ def test_simple_write_compressed_difftypeinst(tmpdir):
      ({'quantize_level': -32}, True)]
 )
 def test_simple_write_compressed_instance(tmpdir, kwargs, should_fail):
-    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    data, header = sunpy.io._fits.read(AIA_171_IMAGE)[0]
     outfile = tmpdir / "test.fits"
 
     # Ensure HDU instance is used correctly
@@ -109,7 +109,7 @@ def test_simple_write_compressed_instance(tmpdir, kwargs, should_fail):
     hdu.header['HELLO'] = 'world'  # should be in the written file
     hdu.header['TELESCOP'] = 'other'  # should be replaced with 'SDO/AIA'
     hdu.header['NAXIS'] = 5  # should be replaced with 2
-    sunpy.io.fits.write(str(outfile), data, header, hdu_type=hdu)
+    sunpy.io._fits.write(str(outfile), data, header, hdu_type=hdu)
     assert outfile.exists()
     with fits.open(str(outfile)) as hdul:
         assert len(hdul) == 2
@@ -132,7 +132,7 @@ def test_write_with_metadict_header_astropy(tmpdir):
     meta_header = MetaDict(OrderedDict(header))
     temp_file = tmpdir / "temp.fits"
     with pytest.warns(SunpyMetadataWarning, match='The meta key comment is not valid ascii'):
-        sunpy.io.fits.write(str(temp_file), data, meta_header)
+        sunpy.io._fits.write(str(temp_file), data, meta_header)
     assert temp_file.exists()
     fits_file.close()
 
@@ -149,7 +149,7 @@ def test_fitsheader():
             fits_file = fits.open(ffile)
             fits_file.verify("fix")
             meta_header = MetaDict(OrderedDict(fits_file[0].header))
-            sunpy.io.fits.header_to_fits(meta_header)
+            sunpy.io._fits.header_to_fits(meta_header)
             fits_file.close()
 
 

@@ -6,7 +6,7 @@ import re
 import pathlib
 
 try:
-    from . import fits
+    from . import _fits as fits
 except ImportError:
     fits = None
 
