@@ -1,7 +1,6 @@
 """SOHO Map subclass definitions"""
 
 import numpy as np
-from matplotlib import colors
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
@@ -182,11 +181,9 @@ class MDIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
-        vmin = np.nanmin(self.data)
-        vmax = np.nanmax(self.data)
-        threshold = max([abs(vmin), abs(vmax)])
-        self.plot_settings['norm'] = colors.Normalize(-threshold, threshold)
+        if self.unit is not None and self.unit.is_equivalent(u.T):
+            # Magnetic field maps, not intensity maps
+            self._set_symmetric_vmin_vmax()
 
     @property
     def _date_obs(self):
@@ -196,6 +193,13 @@ class MDIMap(GenericMap):
             return parse_time(self.meta['date-obs'])
         else:
             return parse_time(self.meta['date_obs'])
+
+    @property
+    def unit(self):
+        bunit = self.meta.get('bunit', None)
+        if bunit is not None and bunit.lower() == 'arbitrary intensity units':
+            return u.dimensionless_unscaled
+        return super().unit
 
     @property
     def spatial_units(self):
