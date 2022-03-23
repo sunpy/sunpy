@@ -152,8 +152,7 @@ def test_carrington(mdi):
 
 
 def test_unit(mdi):
-    assert mdi.unit == u.G
-    assert mdi.unit.to_string() == 'Mx / cm2'
+    assert mdi.unit == u.dimensionless_unscaled
 
 
 @pytest.mark.filterwarnings("error")
@@ -169,3 +168,9 @@ def test_wcs(mdi, mdi_synoptic):
     mdi.pixel_to_world(0*u.pix, 0*u.pix)
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
         mdi_synoptic.pixel_to_world(0*u.pix, 0*u.pix)
+
+
+def test_unit(mdi_synoptic):
+    assert mdi_synoptic.unit == u.G
+    assert mdi_synoptic.unit == u.Unit("Mx/cm^2")
+    assert mdi_synoptic.unit.to_string() == 'Mx / cm2'
