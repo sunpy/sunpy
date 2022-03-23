@@ -43,7 +43,7 @@ jobs:
         brew:
           - openjpeg
       envs: |
-        - macos: py38
+        - macos: py37
         - windows: py310
         - linux: py38-oldestdeps
           posargs: -n auto --dist loadfile
