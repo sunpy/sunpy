@@ -692,7 +692,6 @@ class GenericMap(NDData):
     @staticmethod
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
-                        'mx/cm^2': 'G',
                         'dn': 'ct',
                         'dn/s': 'ct/s'}
         if unit_str.lower() in replacements:
