@@ -3,6 +3,7 @@ Test Generic Map
 """
 import re
 import tempfile
+from copy import copy
 from unittest import mock
 
 import matplotlib.pyplot as plt
@@ -790,7 +791,7 @@ def test_superpixel_fractional_inputs(generic_map):
 @given(pc=matrix_meta('pc'))
 def test_resample_rotated_map_pc(pc, method):
     smap = make_simple_map()
-
+    pc=copy(pc)
     smap.meta.update(pc)
     # Check superpixel with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
@@ -806,7 +807,7 @@ def test_resample_rotated_map_pc(pc, method):
 @given(cd=matrix_meta('cd'))
 def test_resample_rotated_map_cd(cd, method):
     smap = make_simple_map()
-
+    cd = copy(cd)
     smap.meta.update(cd)
     # Check superpixel with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
