@@ -79,60 +79,23 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     shift = image_center - displacement
 
     # Check for any NaNs and set them to `missing` for the rotation
-    has_nans = np.any(np.isnan(image))
-    adjusted_image = np.nan_to_num(image, nan=missing) if has_nans else image
+    isnan = np.isnan(image)
+    has_nans = np.any(isnan)
+    nanfree_image = np.nan_to_num(image, nan=missing) if has_nans else image
 
+    # While `use_scipy` is still supported, we have to check which method to actually use
     method = _get_transform_method(method, use_scipy)
-    if method == 'scipy':
-        # Transform using scipy, with any NaNs set to zero
-        rotated_image = scipy.ndimage.affine_transform(
-            adjusted_image.T, rmatrix, offset=shift, order=order,
-            mode='constant', cval=missing).T
 
-        if clip:
-            # Clip the image to the input range, and assume that the `missing` value has been used
-            rotated_image.clip(np.min([missing, np.min(adjusted_image)]),
-                               np.max([missing, np.max(adjusted_image)]),
-                               out=rotated_image)
-    else:  # method == 'skimage'
-        import skimage.transform
-
-        # Make the rotation matrix 3x3 to include translation of the image
-        skmatrix = np.zeros((3, 3))
-        skmatrix[:2, :2] = rmatrix
-        skmatrix[2, 2] = 1.0
-        skmatrix[:2, 2] = shift
-        tform = skimage.transform.AffineTransform(skmatrix)
-
-        if issubclass(adjusted_image.dtype.type, numbers.Integral):
-            warn_user("Integer input data has been cast to float64.")
-            adjusted_image = adjusted_image.astype(np.float64)
-        else:
-            adjusted_image = adjusted_image.copy()
-
-        # Scale image to range [0, 1]
-        im_min = np.min(adjusted_image)
-        adjusted_image -= im_min
-        im_max = np.max(adjusted_image)
-        adjusted_missing = missing - im_min
-        if im_max > 0:
-            adjusted_image /= im_max
-            adjusted_missing /= im_max
-
-        rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-                                               mode='constant', cval=adjusted_missing, clip=clip)
-
-        # Convert the image back to its original range
-        if im_max > 0:
-            rotated_image *= im_max
-        rotated_image += im_min
+    # Transform the image using the appropriate function
+    rotated_image = _supported_rotation_methods[method](nanfree_image, rmatrix, shift, order,
+                                                        missing, clip)
 
     # Restore the NaNs
     if has_nans:
         # Use a convolution to find all pixels that are affected by NaNs
         # We want a kernel size that is an odd number that is at least order+1
         size = 2*int(np.ceil(order/2))+1
-        expanded_nans = convolve2d(np.isnan(image).astype(int),
+        expanded_nans = convolve2d(isnan.astype(int),
                                    np.ones((size, size)).astype(int),
                                    mode='same')
         rotated_nans = scipy.ndimage.affine_transform(expanded_nans.T, rmatrix,
@@ -145,9 +108,9 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
 def _get_transform_method(method, use_scipy):
     # This is re-used in affine_transform and GenericMap.rotate
-    supported_methods = {'scipy', 'skimage'}
-    if method not in supported_methods:
-        raise ValueError(f'Method {method} not in supported methods: {supported_methods}')
+    if method not in _supported_rotation_methods:
+        raise ValueError(f'Method {method} not in supported methods: '
+                         f'{_supported_rotation_methods.keys()}')
 
     if use_scipy is not None:
         warn_deprecated("The 'use_scipy' argument is deprecated. "
@@ -164,3 +127,76 @@ def _get_transform_method(method, use_scipy):
             raise ImportError("scikit-image must be installed to be usable for rotation.")
 
     return method
+
+
+# Define individual rotation implementations below and insert in the dictionary at the end.
+#
+# The arguments must be, in order:
+#   image : `numpy.ndarray`
+#       The image, which could be integers or floats, but will not have NaNs
+#   matrix : `numpy.ndarray` that is 2x2
+#       The linear transformation matrix (e.g., rotation+scale+skew)
+#   shift : 2-element `numpy.ndarray`
+#       The translational shift to apply to the image in each axis
+#   order : `int`
+#       The numerical parameter that controls the degree of interpolation
+#   missing : `float`
+#       The value to use for outside the bounds of the original image
+#   clip : `bool`
+#       Whether to clip the output image to the range of the input image
+#
+# Do not modify `image` directly; copy first if necessary.
+
+
+def _rotation_scipy(image, matrix, shift, order, missing, clip):
+    rotated_image = scipy.ndimage.affine_transform(
+        image.T, matrix, offset=shift, order=order,
+        mode='constant', cval=missing).T
+
+    if clip:
+        # Clip the image to the input range, and assume that the `missing` value has been used
+        rotated_image.clip(np.min([missing, np.min(image)]),
+                           np.max([missing, np.max(image)]),
+                           out=rotated_image)
+
+    return rotated_image
+
+
+def _rotation_skimage(image, matrix, shift, order, missing, clip):
+    import skimage.transform
+
+    # Make the rotation matrix 3x3 to include translation of the image
+    skmatrix = np.zeros((3, 3))
+    skmatrix[:2, :2] = matrix
+    skmatrix[2, 2] = 1.0
+    skmatrix[:2, 2] = shift
+    tform = skimage.transform.AffineTransform(skmatrix)
+
+    if issubclass(image.dtype.type, numbers.Integral):
+        warn_user("Integer input data has been cast to float64.")
+        adjusted_image = image.astype(np.float64)
+    else:
+        adjusted_image = image.copy()
+
+    # Scale image to range [0, 1]
+    im_min = np.min(adjusted_image)
+    adjusted_image -= im_min
+    im_max = np.max(adjusted_image)
+    adjusted_missing = missing - im_min
+    if im_max > 0:
+        adjusted_image /= im_max
+        adjusted_missing /= im_max
+
+    rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
+                                           mode='constant', cval=adjusted_missing, clip=clip)
+
+    # Convert the image back to its original range
+    if im_max > 0:
+        rotated_image *= im_max
+    rotated_image += im_min
+
+    return rotated_image
+
+
+_supported_rotation_methods = {'scipy': _rotation_scipy,
+                               'skimage': _rotation_skimage}
