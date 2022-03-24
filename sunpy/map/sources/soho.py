@@ -284,6 +284,8 @@ class MDISynopticMap(MDIMap):
         bunit = self.meta.get('bunit', None)
         if bunit is None:
             return
+		# Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
+		# The mapbase unit property forces this validation, so we must override it to prevent it.
         return u.Unit(bunit)
 
     @property
