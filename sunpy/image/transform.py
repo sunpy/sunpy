@@ -12,7 +12,7 @@ __all__ = ['affine_transform']
 
 
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
-                     recenter=False, missing=0.0, use_scipy=None, *, method='skimage'):
+                     recenter=False, missing=0.0, use_scipy=None, *, method='skimage', clip=True):
     """
     Rotates, shifts and scales an image.
 
@@ -45,6 +45,10 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         :func:`scipy.ndimage.affine_transform` and
         :func:`skimage.transform.warp` are supported.
         Defaults to 'skimage', unless scikit-image can't be imported.
+    clip : `bool`, optional
+        If `True`, clips the pixel values of the output image to the range of the
+        input image (including the value of ``missing``).
+        Defaults to `True`.
 
     Returns
     -------
@@ -103,6 +107,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         rotated_image = scipy.ndimage.affine_transform(
             np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
             mode='constant', cval=missing).T
+
+        if clip:
+            # Clip the image to the input range, and assume that the `missing` value has been used
+            rotated_image.clip(np.min([missing, np.nanmin(image)]),
+                               np.max([missing, np.nanmax(image)]),
+                               out=rotated_image)
     else:
         import skimage.transform
 
@@ -138,7 +148,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                 adjusted_missing = missing - im_min
 
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-                                               mode='constant', cval=adjusted_missing)
+                                               mode='constant', cval=adjusted_missing, clip=clip)
 
         # Convert the image back to its original range if it is valid
         if not is_nan_image:

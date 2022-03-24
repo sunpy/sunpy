@@ -1531,7 +1531,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, use_scipy=None, *, method='skimage'):
+               recenter=False, missing=0.0, use_scipy=None, *, method='skimage', clip=True):
         """
         Returns a new rotated and rescaled map.
 
@@ -1573,6 +1573,10 @@ class GenericMap(NDData):
             Rotation function to use. Currently
             :func:`scipy.ndimage.affine_transform` and
             :func:`skimage.transform.warp` are supported.
+        clip : `bool`, optional
+            If `True`, clips the pixel values of the output image to the range of the
+            input image (including the value of ``missing``).
+            Defaults to `True`.
 
         Returns
         -------
@@ -1667,7 +1671,7 @@ class GenericMap(NDData):
                                     order=order, scale=scale,
                                     image_center=pixel_center,
                                     recenter=recenter, missing=missing,
-                                    method=method)
+                                    method=method, clip=clip)
 
         if recenter:
             new_reference_pixel = pixel_array_center

@@ -1,9 +1,13 @@
 import numpy as np
 import pytest
 import skimage.data as images
+from matplotlib.figure import Figure
 from skimage import transform as tf
 
+from astropy.coordinates.matrix_utilities import rotation_matrix
+
 from sunpy.image.transform import affine_transform
+from sunpy.tests.helpers import figure_test
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 
 # Tolerance for tests
@@ -19,6 +23,11 @@ def original():
 @pytest.fixture
 def identity():
     return np.array([[1, 0], [0, 1]])
+
+
+@pytest.fixture
+def rot30():
+    return rotation_matrix(30)[0:2, 0:2]
 
 
 def compare_results(expect, result, allclose=True):
@@ -277,3 +286,30 @@ def test_reproducible_matrix_multiplication():
             print(f"{mismatches[i]} mismatching elements in multiplication #{i}")
 
     assert np.sum(mismatches != 0) == 0
+
+
+@figure_test
+def test_clipping(rot30):
+    # Generates a plot to test the clipping the output image to the range of the input image
+    image = np.ones((20, 20))
+    image[4:-4, 4:-4] = -1
+
+    fig = Figure(figsize=(7, 4))
+    axs = fig.subplots(2, 3)
+
+    axs[0, 0].imshow(image, vmin=-2, vmax=2)
+    axs[0, 1].imshow(affine_transform(image, rot30, clip=True, method='scipy'), vmin=-2, vmax=2)
+    axs[0, 2].imshow(affine_transform(image, rot30, clip=False, method='scipy'), vmin=-2, vmax=2)
+
+    axs[1, 0].imshow(image, vmin=-2, vmax=2)
+    axs[1, 1].imshow(affine_transform(image, rot30, clip=True, method='skimage'), vmin=-2, vmax=2)
+    axs[1, 2].imshow(affine_transform(image, rot30, clip=False, method='skimage'), vmin=-2, vmax=2)
+
+    axs[0, 0].set_title('Original')
+    axs[0, 1].set_title('clip=True')
+    axs[0, 2].set_title('clip=False')
+
+    axs[0, 0].set_ylabel('SciPy')
+    axs[1, 0].set_ylabel('scikit-image')
+
+    return fig
