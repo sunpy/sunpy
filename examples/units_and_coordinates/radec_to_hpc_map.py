@@ -147,10 +147,10 @@ lofar_map.draw_limb(axes=ax)
 plt.show()
 
 ##########################################################################
-# We can now rotate the image so that solar north is pointing up and create
+# We can now derotate the image so that solar north is pointing up and create
 # a submap in the field of view of interest.
 
-lofar_map_rotate = lofar_map.rotate()
+lofar_map_rotate = lofar_map.derotate()
 bl = SkyCoord(-1500*u.arcsec, -1500*u.arcsec, frame=lofar_map_rotate.coordinate_frame)
 tr = SkyCoord(1500*u.arcsec, 1500*u.arcsec, frame=lofar_map_rotate.coordinate_frame)
 lofar_submap = lofar_map_rotate.submap(bl, top_right=tr)

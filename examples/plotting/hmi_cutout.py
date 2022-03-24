@@ -24,7 +24,7 @@ from sunpy.data.sample import HMI_LOS_IMAGE
 # First, we use the sample HMI LOS image and focus the cutout over an active
 # region near the solar center.
 
-magnetogram = sunpy.map.Map(HMI_LOS_IMAGE).rotate()
+magnetogram = sunpy.map.Map(HMI_LOS_IMAGE).derotate()
 left_corner = SkyCoord(Tx=-142*u.arcsec, Ty=50*u.arcsec, frame=magnetogram.coordinate_frame)
 right_corner = SkyCoord(Tx=158*u.arcsec, Ty=350*u.arcsec, frame=magnetogram.coordinate_frame)
 

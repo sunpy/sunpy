@@ -49,7 +49,7 @@ hmi_map.plot()
 plt.show()
 
 ###############################################################################
-# Now rotate the image such that solar North is pointed up.
+# Now derotate the image such that solar North is pointed up.
 # We have to do this because the HMI instrument is mounted upside-down
 # relative to the AIA instrument on the SDO satellite, which means most
 # of the images are taken with solar North pointed up.
@@ -61,7 +61,7 @@ plt.show()
 # The order keyword, below, specifies the type of interpolation;
 # in this case, 3 refers to bi-cubic.
 
-hmi_rotated = hmi_map.rotate(order=3)
+hmi_rotated = hmi_map.derotate(order=3)
 plt.figure()
 hmi_rotated.plot()
 plt.show()

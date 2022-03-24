@@ -42,7 +42,7 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import cached_property_based_on, check_arithmetic_compatibility
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
@@ -1530,15 +1530,30 @@ class GenericMap(NDData):
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
+    def derotate(self, *, order=4, use_scipy=None, method='skimage'):
+        """
+        Remove rotation about Solar North from a map.
+
+        The pixels at the reference coordinate will be aligned with Solar North/West,
+        with Solar North pointing up.
+
+        See :meth:`~sunpy.map.GenericMap.rotate` for descriptions of the optional
+        keyword arguments and the method used.
+
+        Returns
+        -------
+        out : `~sunpy.map.GenericMap`
+        """
+        return self.rotate(rmatrix=self.rotation_matrix,
+                           order=order, use_scipy=use_scipy, method=method)
+
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
                recenter=False, missing=0.0, use_scipy=None, *, method='skimage'):
         """
         Returns a new rotated and rescaled map.
 
-        Specify either a rotation angle or a rotation matrix, but not both. If
-        neither an angle or a rotation matrix are specified, the map will be
-        rotated by the rotation angle in the metadata.
+        Specify either a rotation angle or a rotation matrix, but not both.
 
         The map will be rotated around the reference coordinate defined in the
         meta data.
@@ -1602,6 +1617,9 @@ class GenericMap(NDData):
             raise ValueError("You cannot specify both an angle and a rotation matrix.")
         elif angle is None and rmatrix is None:
             # Be aware that self.rotation_matrix may not actually be a pure rotation matrix
+            warn_deprecated("Calling rotate without an angle or rotation matrix is deprecated. "
+                            "Call map.derotate() instead. If you want to scale the map without "
+                            "a rotation, call map.resample(...) instead.")
             rmatrix = self.rotation_matrix
 
         if order not in range(6):

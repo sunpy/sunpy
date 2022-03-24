@@ -949,13 +949,13 @@ def test_rotate_recenter(generic_map):
 
 
 def test_rotate_crota_remove(aia171_test_map):
-    rot_map = aia171_test_map.rotate()
+    rot_map = aia171_test_map.derotate()
     assert rot_map.meta.get('CROTA1', None) is None
     assert rot_map.meta.get('CROTA2', None) is None
 
 
 def test_rotate_scale_cdelt(generic_map):
-    rot_map = generic_map.rotate(scale=10.)
+    rot_map = generic_map.rotate(angle=0*u.deg, scale=10.)
     assert rot_map.meta['CDELT1'] == generic_map.meta['CDELT1'] / 10.
     assert rot_map.meta['CDELT2'] == generic_map.meta['CDELT2'] / 10.
 
@@ -973,9 +973,9 @@ def test_rotate_rmatrix_angle(generic_map):
 
 def test_rotate_invalid_order(generic_map):
     with pytest.raises(ValueError):
-        generic_map.rotate(order=6)
+        generic_map.derotate(order=6)
     with pytest.raises(ValueError):
-        generic_map.rotate(order=-1)
+        generic_map.derotate(order=-1)
 
 
 def test_rotate_assumed_obstime():
@@ -1430,7 +1430,7 @@ def test_derotating_nonpurerotation_pcij(aia171_test_map):
     weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)
 
     # De-rotating the map by its PCij matrix should result in a normal-looking map
-    derotated_map = weird_map.rotate()
+    derotated_map = weird_map.derotate()
 
     fig = Figure(figsize=(8, 4))
 
@@ -1441,6 +1441,18 @@ def test_derotating_nonpurerotation_pcij(aia171_test_map):
     derotated_map.plot(axes=ax2, title='De-rotated map')
 
     return fig
+
+
+def test_rotate_warning(aia171_test_map):
+    # The following map has a a PCij matrix that is not a pure rotation
+    weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)
+
+    with pytest.warns(SunpyDeprecationWarning, match='Calling rotate without an angle or rotation matrix is deprecated'):
+        rotate = weird_map.rotate()
+
+    derotate = weird_map.derotate()
+
+    assert np.all(rotate.data == derotate.data)
 
 
 # This function is used in the arithmetic tests below
