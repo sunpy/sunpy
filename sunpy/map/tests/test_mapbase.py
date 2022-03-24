@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 from hypothesis import given, settings
+from matplotlib.figure import Figure
 from packaging import version
 
 import astropy.units as u
@@ -871,6 +872,10 @@ def calc_new_matrix(angle):
 
 
 def test_rotate(aia171_test_map):
+    # The test map has big-endian floats, so we switch it to floats with native byte ordering
+    # Otherwise, errors can be raised by code that has been compiled
+    aia171_test_map._data = aia171_test_map.data.astype('float')
+
     rotated_map_1 = aia171_test_map.rotate(20 * u.deg)
     rotated_map_2 = rotated_map_1.rotate(20 * u.deg)
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
@@ -886,17 +891,14 @@ def test_rotate(aia171_test_map):
     np.testing.assert_allclose(rotated_map_2.data[0, 0], 0., atol=1e-7)
     assert rotated_map_2.mean() < rotated_map_1.mean() < aia171_test_map.mean()
 
-    rotated_map_3 = aia171_test_map.rotate(0 * u.deg, scale=1.5)
-    assert rotated_map_3.mean() > aia171_test_map.mean()
+    # A scaled-up map should have the same mean because the output map should be expanded
+    rotated_map_3 = aia171_test_map.rotate(0 * u.deg, order=3, scale=2)
+    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_3.mean(), rtol=1e-4)
 
-    # Mean and std should be equal when angle of rotation is integral multiple
-    # of 90 degrees for a square map
-    rotated_map_4 = aia171_test_map.rotate(90 * u.deg, scale=1.5)
-    np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_4.mean(), rtol=1e-3)
-    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_4.std(), rtol=1e-3)
-    rotated_map_5 = aia171_test_map.rotate(180 * u.deg, scale=1.5)
-    np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_5.mean(), rtol=1e-3)
-    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_5.std(), rtol=2e-3)
+    # Mean and std should be equal for a 90 degree rotation
+    rotated_map_4 = aia171_test_map.rotate(90 * u.deg, order=3, scale=2)
+    np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_4.mean(), rtol=1e-10)
+    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_4.std(), rtol=1e-10)
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap(
@@ -1427,6 +1429,25 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_map = aia_map.superpixel([2, 1] * u.pix, func=np.mean)
     rect_rot_map = rect_map.rotate(30 * u.deg)
     rect_rot_map.peek()
+
+
+@figure_test
+def test_derotating_nonpurerotation_pcij(aia171_test_map):
+    # The following map has a a PCij matrix that is not a pure rotation
+    weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)
+
+    # De-rotating the map by its PCij matrix should result in a normal-looking map
+    derotated_map = weird_map.rotate()
+
+    fig = Figure(figsize=(8, 4))
+
+    ax1 = fig.add_subplot(121, projection=weird_map)
+    weird_map.plot(axes=ax1, title='Map with a non-pure-rotation PCij matrix')
+
+    ax2 = fig.add_subplot(122, projection=derotated_map)
+    derotated_map.plot(axes=ax2, title='De-rotated map')
+
+    return fig
 
 
 # This function is used in the arithmetic tests below
