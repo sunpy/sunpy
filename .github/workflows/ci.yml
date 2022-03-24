@@ -111,6 +111,7 @@ jobs:
     needs: [cron, publish, online]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/matrix
         with:
           status: 'Succeeded'
@@ -122,6 +123,7 @@ jobs:
     needs: [cron, publish, online]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/matrix
         with:
           status: 'Failed'
