@@ -211,38 +211,25 @@ def test_flat(identity):
     assert np.allclose(in_arr, out_arr, rtol=RTOL)
 
 
-# Although a depreaction warning is raised, behaviour is as expected and will
-# continue after the depreaction period, so ignore the warnings
-@pytest.mark.filterwarnings('ignore:Passing `np.nan` to mean no clipping in np.clip has always '
-                            'been unreliable, and is now deprecated')
-def test_nan_skimage_low(identity):
-    # Test non-replacement of NaN values for scikit-image rotation with order <= 3
+def test_nan_skimage(identity):
+    # Test preservation of NaN values for scikit-image rotation
     in_arr = np.array([[np.nan]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, order=3)
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=4, method='skimage')
     assert np.all(np.isnan(out_arr))
 
 
-def test_nan_skimage_high(identity):
-    # Test replacement of NaN values for scikit-image rotation with order >=4
-    in_arr = np.array([[np.nan]])
-    with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for higher-order scikit-image rotation.'):
-        out_arr = affine_transform(in_arr, rmatrix=identity, order=4)
-    assert not np.all(np.isnan(out_arr))
-
-
 def test_nan_scipy(identity):
-    # Test replacement of NaN values for scipy rotation
+    # Test preservation of NaN values for scipy rotation
     in_arr = np.array([[np.nan]])
-    with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for SciPy rotation.'):
-        out_arr = affine_transform(in_arr, rmatrix=identity, method='scipy')
-    assert not np.all(np.isnan(out_arr))
+    out_arr = affine_transform(in_arr, rmatrix=identity, method='scipy')
+    assert np.all(np.isnan(out_arr))
 
 
 def test_int(identity):
     # Test casting of integer array to float array
     in_arr = np.array([[100]], dtype=int)
     with pytest.warns(SunpyUserWarning, match='Integer input data has been cast to float64'):
-        out_arr = affine_transform(in_arr, rmatrix=identity)
+        out_arr = affine_transform(in_arr, rmatrix=identity, method='skimage')
     assert np.issubdtype(out_arr.dtype, np.floating)
 
 
@@ -308,6 +295,31 @@ def test_clipping(rot30):
     axs[0, 0].set_title('Original')
     axs[0, 1].set_title('clip=True')
     axs[0, 2].set_title('clip=False')
+
+    axs[0, 0].set_ylabel('SciPy')
+    axs[1, 0].set_ylabel('scikit-image')
+
+    return fig
+
+
+@pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
+@figure_test
+def test_nans(rot30):
+    # Generates a plot to test the preservation and expansions of NaNs by the rotation
+    image_with_nans = np.ones((23, 23))
+    image_with_nans[9:-9, 9:-9] = np.nan
+
+    fig = Figure(figsize=(16, 4))
+    axs = fig.subplots(2, 7)
+
+    axs[0, 0].set_title('Original (NaNs are white)')
+    axs[0, 0].imshow(image_with_nans, vmin=0)
+    axs[1, 0].imshow(image_with_nans, vmin=0)
+
+    for i in range(6):
+        axs[0, i+1].set_title(f'order={i}')
+        axs[0, i+1].imshow(affine_transform(image_with_nans, rot30, order=i, method='scipy'))
+        axs[1, i+1].imshow(affine_transform(image_with_nans, rot30, order=i, method='skimage'))
 
     axs[0, 0].set_ylabel('SciPy')
     axs[1, 0].set_ylabel('scikit-image')

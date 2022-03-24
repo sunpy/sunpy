@@ -5,6 +5,7 @@ import numbers
 
 import numpy as np
 import scipy.ndimage
+from scipy.signal import convolve2d
 
 from sunpy.util.exceptions import warn_deprecated, warn_user
 
@@ -63,12 +64,11 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     an alternative affine transformation. The two transformations use different
     algorithms and thus do not give identical output.
 
-    When using `skimage.transform.warp` with order >= 4 or using
-    `scipy.ndimage.affine_transform` at all, "NaN" values will be replaced with
-    zero prior to rotation. No attempt is made to retain the "NaN" values.
-
     Input arrays with integer data are cast to float 64 and can be re-cast using
     `numpy.ndarray.astype` if desired.
+
+    If there are NaNs in the image, pixels in the output image will be set to NaN if
+    they are within a number of pixels equal to half of the ``order`` parameter.
 
     In the case of `skimage.transform.warp`, the image is normalized to [0, 1]
     before passing it to the function. It is later rescaled back to the original range.
@@ -99,19 +99,21 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     displacement = np.dot(rmatrix, rot_center)
     shift = image_center - displacement
 
+    # Check for any NaNs and set them to `missing` for the rotation
+    has_nans = np.any(np.isnan(image))
+    adjusted_image = np.nan_to_num(image, nan=missing) if has_nans else image
+
     method = _get_transform_method(method, use_scipy)
     if method == 'scipy':
-        if np.any(np.isnan(image)):
-            warn_user("Setting NaNs to 0 for SciPy rotation.")
-        # Transform the image using the scipy affine transform
+        # Transform using scipy, with any NaNs set to zero
         rotated_image = scipy.ndimage.affine_transform(
-            np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
+            adjusted_image.T, rmatrix, offset=shift, order=order,
             mode='constant', cval=missing).T
 
         if clip:
             # Clip the image to the input range, and assume that the `missing` value has been used
-            rotated_image.clip(np.min([missing, np.nanmin(image)]),
-                               np.max([missing, np.nanmax(image)]),
+            rotated_image.clip(np.min([missing, np.min(adjusted_image)]),
+                               np.max([missing, np.max(adjusted_image)]),
                                out=rotated_image)
     else:
         import skimage.transform
@@ -123,38 +125,41 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         skmatrix[:2, 2] = shift
         tform = skimage.transform.AffineTransform(skmatrix)
 
-        if issubclass(image.dtype.type, numbers.Integral):
+        if issubclass(adjusted_image.dtype.type, numbers.Integral):
             warn_user("Integer input data has been cast to float64.")
-            adjusted_image = image.astype(np.float64)
+            adjusted_image = adjusted_image.astype(np.float64)
         else:
-            adjusted_image = image.copy()
-        if np.any(np.isnan(adjusted_image)) and order >= 4:
-            warn_user("Setting NaNs to 0 for higher-order scikit-image rotation.")
-            adjusted_image = np.nan_to_num(adjusted_image)
+            adjusted_image = adjusted_image.copy()
 
-        # Scale image to range [0, 1] if it is valid (not made up entirely of NaNs)
-        is_nan_image = np.all(np.isnan(adjusted_image))
-        if is_nan_image:
-            adjusted_missing = missing
-        else:
-            im_min = np.nanmin(adjusted_image)
-            adjusted_image -= im_min
-            im_max = np.nanmax(adjusted_image)
-            if im_max > 0:
-                adjusted_image /= im_max
-                adjusted_missing = (missing - im_min) / im_max
-            else:
-                # The input array is all one value (aside from NaNs), so no scaling is needed
-                adjusted_missing = missing - im_min
+        # Scale image to range [0, 1]
+        im_min = np.min(adjusted_image)
+        adjusted_image -= im_min
+        im_max = np.max(adjusted_image)
+        adjusted_missing = missing - im_min
+        if im_max > 0:
+            adjusted_image /= im_max
+            adjusted_missing /= im_max
 
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
                                                mode='constant', cval=adjusted_missing, clip=clip)
 
-        # Convert the image back to its original range if it is valid
-        if not is_nan_image:
-            if im_max > 0:
-                rotated_image *= im_max
-            rotated_image += im_min
+        # Convert the image back to its original range
+        if im_max > 0:
+            rotated_image *= im_max
+        rotated_image += im_min
+
+    # Restore the NaNs
+    if has_nans:
+        # Use a convolution to find all pixels that are affected by NaNs
+        # We want a kernel size that is an odd number that is at least order+1
+        size = 2*int(np.ceil(order/2))+1
+        expanded_nans = convolve2d(np.isnan(image).astype(int),
+                                   np.ones((size, size)).astype(int),
+                                   mode='same')
+        rotated_nans = scipy.ndimage.affine_transform(expanded_nans.T, rmatrix,
+                                                      offset=shift, order=1,
+                                                      mode='nearest').T
+        rotated_image[rotated_nans > 0] = np.nan
 
     return rotated_image
 
