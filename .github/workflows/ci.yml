@@ -43,9 +43,9 @@ jobs:
         brew:
           - openjpeg
       envs: |
-        - macos: py38
+        - macos: py37
         - windows: py310
-        - linux: py38-oldestdeps
+        - linux: py37-oldestdeps
           posargs: -n auto --dist loadfile
         - linux: py39-conda
           libraries: ''
@@ -66,7 +66,7 @@ jobs:
         brew:
           - openjpeg
       envs: |
-        - linux: build_docs_ci
+        - linux: build_docs
           posargs: ''
           pytest: false
         - linux: py38-online
@@ -91,7 +91,7 @@ jobs:
           - hdf5-devel
       envs: |
         - linux: base_deps
-        - linux: py39-devdeps
+        - linux: py38-devdeps
         - linux: pyinstaller
 
   publish:
