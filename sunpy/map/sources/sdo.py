@@ -198,8 +198,8 @@ class HMISynopticMap(HMIMap):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-		# Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
-		# The mapbase unit property forces this validation, so we must override it to prevent it.
+        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
+        # The mapbase unit property forces this validation, so we must override it to prevent it.
         return u.Unit(unit_str)
 
     @classmethod
