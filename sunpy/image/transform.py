@@ -13,12 +13,9 @@ __all__ = ['affine_transform']
 
 
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
-                     recenter=False, missing=0.0, use_scipy=None, *, method='skimage', clip=True):
+                     recenter=False, missing=0.0, use_scipy=None, *, method='scipy', clip=True):
     """
     Rotates, shifts and scales an image.
-
-    Will use `skimage.transform.warp` unless scikit-image can't be imported
-    then it will use`scipy.ndimage.affine_transform`.
 
     Parameters
     ----------
@@ -27,10 +24,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     rmatrix : `numpy.ndarray` that is 2x2
         Linear transformation rotation matrix.
     order : `int` 0-5, optional
-        Interpolation order to be used, defaults to 3. When using scikit-image this parameter
-        is passed into `skimage.transform.warp` (e.g., 3 corresponds to bi-cubic interpolation).
-        When using scipy it is passed into
-        `scipy.ndimage.affine_transform` where it controls the order of the spline.
+        Interpolation order to be used, defaults to 3.  The precise meaning depends
+        on the rotation method specifed by ``method``.
     scale : `float`
         A scale factor for the image with the default being no scaling.
     image_center : tuple, optional
@@ -45,7 +40,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Transform function to use. Currently
         :func:`scipy.ndimage.affine_transform` and
         :func:`skimage.transform.warp` are supported.
-        Defaults to 'skimage', unless scikit-image can't be imported.
+        Defaults to 'scipy'.
     clip : `bool`, optional
         If `True`, clips the pixel values of the output image to the range of the
         input image (including the value of ``missing``).
@@ -58,28 +53,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     Notes
     -----
-    This algorithm uses an affine transformation as opposed to a polynomial
-    geometrical transformation, which by default is `skimage.transform.warp`.
-    One can specify using `scipy.ndimage.affine_transform` as
-    an alternative affine transformation. The two transformations use different
-    algorithms and thus do not give identical output.
-
-    Input arrays with integer data are cast to float 64 and can be re-cast using
-    `numpy.ndarray.astype` if desired.
-
     If there are NaNs in the image, pixels in the output image will be set to NaN if
     they are within a number of pixels equal to half of the ``order`` parameter.
 
-    In the case of `skimage.transform.warp`, the image is normalized to [0, 1]
-    before passing it to the function. It is later rescaled back to the original range.
-
-    Although this function is analogous to the IDL's ``rot`` function, it does not
-    use the same algorithm as the IDL ``rot`` function.
-    IDL's ``rot`` calls the `POLY_2D <https://www.harrisgeospatial.com/docs/poly_2d.html>`__
-    method to calculate the inverse mapping of original to target pixel
-    coordinates. This is a polynomial geometrical transformation.
-    Then optionally it uses a bicubic convolution interpolation
-    algorithm to map the original to target pixel values.
+    For rotation using ``scikit-image``, an input image with integer data is cast to
+    64-bit floats, and the output image can be re-cast using `numpy.ndarray.astype`
+    if desired.
     """
     rmatrix = rmatrix / scale
     array_center = (np.array(image.shape)[::-1] - 1) / 2.0
@@ -115,7 +94,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             rotated_image.clip(np.min([missing, np.min(adjusted_image)]),
                                np.max([missing, np.max(adjusted_image)]),
                                out=rotated_image)
-    else:
+    else:  # method == 'skimage'
         import skimage.transform
 
         # Make the rotation matrix 3x3 to include translation of the image
@@ -182,7 +161,6 @@ def _get_transform_method(method, use_scipy):
         try:
             import skimage  # NoQA
         except ImportError:
-            warn_user("scikit-image could not be imported. Image rotation will use scipy.")
-            method = 'scipy'
+            raise ImportError("scikit-image must be installed to be usable for rotation.")
 
     return method

@@ -1,0 +1,1 @@
+:func:`sunpy.image.transform.affine_transform` and :meth:`sunpy.map.GenericMap.rotate` now default to using SciPy for rotation instead of scikit-image, so rotation results may be slightly different.

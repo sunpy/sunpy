@@ -1531,7 +1531,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, use_scipy=None, *, method='skimage', clip=True):
+               recenter=False, missing=0.0, use_scipy=None, *, method='scipy', clip=True):
         """
         Returns a new rotated and rescaled map.
 
