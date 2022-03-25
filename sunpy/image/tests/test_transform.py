@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
+import scipy.ndimage
 import skimage.data as images
 from matplotlib.figure import Figure
-from skimage import transform as tf
 
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
@@ -40,8 +40,8 @@ def compare_results(expect, result, allclose=True):
     res = result[1:-1, 1:-1]
     t1 = abs(exp.mean() - res.mean()) <= RTOL*exp.mean()
 
-    # Don't do the allclose test for scipy as the bicubic algorithm has edge effects
-    # TODO: Develop a way of testing this for scipy
+    # Don't do the allclose test for skimage due to its forced interpolation beyond the edge of the
+    # original image
     if not allclose:
         return t1
     else:
@@ -84,21 +84,21 @@ def test_rotation(original, angle, k):
 
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
                                       (-90.0, 3), (360.0, 0), (-360.0, 0)])
-def test_scipy_rotation(original, angle, k):
+def test_skimage_rotation(original, angle, k):
     # Test rotation against expected outcome
     angle = np.radians(angle)
     c = np.round(np.cos(angle))
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = affine_transform(original, rmatrix=rmatrix, method='scipy')
+    rot = affine_transform(original, rmatrix=rmatrix, method='skimage')
     assert compare_results(expected, rot, allclose=False)
 
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=derot_matrix, method='scipy')
+    derot = affine_transform(rot, rmatrix=derot_matrix, method='skimage')
     assert compare_results(original, derot, allclose=False)
 
 
@@ -131,14 +131,14 @@ def test_shift(original, dx, dy):
     assert compare_results(original[ymin:ymax, xmin:xmax], unshift[ymin:ymax, xmin:xmax])
 
 
+@pytest.mark.filterwarnings("ignore:.*grid_mode:UserWarning")
 @pytest.mark.parametrize("scale_factor", [0.25, 0.5, 0.75, 1.0, 1.25, 1.5])
 def test_scale(original, scale_factor):
     # No rotation for all scaling tests.
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
     # Check a scaled image against the expected outcome
-    newim = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
+    newim = scipy.ndimage.zoom(original, scale_factor, order=1, mode='constant', grid_mode=True)
     # Old width and new center of image
     w = original.shape[0] / 2.0 - 0.5
     new_c = (newim.shape[0] / 2.0) - 0.5
@@ -150,10 +150,11 @@ def test_scale(original, scale_factor):
     else:
         lower = int(w - new_c)
         expected[lower:upper, lower:upper] = newim
-    scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=4)
+    scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=1)
     assert compare_results(expected, scale)
 
 
+@pytest.mark.filterwarnings("ignore:.*grid_mode:UserWarning")
 @pytest.mark.parametrize("angle, dx, dy, scale_factor", [(90, -100, 40, 0.25),
                                                          (-90, 40, -80, 0.75),
                                                          (180, 20, 50, 1.5)])
@@ -170,8 +171,7 @@ def test_all(original, angle, dx, dy, scale_factor):
     c = np.round(np.cos(angle))
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
-    scale = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
+    scale = scipy.ndimage.zoom(original, scale_factor, order=1, mode='constant', grid_mode=True)
     new = np.zeros(original.shape)
 
     disp = np.array([dx, dy])
@@ -189,15 +189,15 @@ def test_all(original, angle, dx, dy, scale_factor):
     rcen = image_center - disp
     expected = np.rot90(new, k=k)
 
-    rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=4,
+    rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=1,
                                      recenter=True, image_center=rcen)
     assert compare_results(expected, rotscaleshift)
 
     # Check a rotated/shifted and restored image against original
-    transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, order=4, recenter=True,
+    transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, order=1, recenter=True,
                                    image_center=rcen)
     inv_rcen = image_center + np.dot(rmatrix.T, np.array([dx, dy]))
-    inverse = affine_transform(transformed, rmatrix=rmatrix.T, scale=1.0, order=4, recenter=True,
+    inverse = affine_transform(transformed, rmatrix=rmatrix.T, scale=1.0, order=1, recenter=True,
                                image_center=inv_rcen)
 
     # Need to ignore the portion of the image cut off by the first shift
