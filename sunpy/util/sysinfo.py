@@ -12,7 +12,7 @@ import sunpy.extern.distro as distro
 __all__ = ['system_info', 'find_dependencies', 'missing_dependencies_by_extra']
 
 
-def get_requirements(package):
+def get_requirements(package, names_only=False):
     """
     This wraps `importlib.metadata.requires` to not be garbage.
 
@@ -20,22 +20,35 @@ def get_requirements(package):
     ----------
     package : str
         Package you want requirements for.
+    names_only : boolean
+        Whether to return just the requirement package names or more details, including the extra group
 
     Returns
     -------
     `dict`
         A dictionary of requirements with keys being the extra requirement group names.
+        The values are either requirement package names, or a nested dictionary with keys being the
+        package names and values being the `packaging.requirements.Requirement` objects.
     """
     requirements: list = requires(package)
-    requires_dict = defaultdict(list)
+    if names_only:
+        requires_dict = defaultdict(list)
+    else:
+        requires_dict = defaultdict(dict)
     for requirement in requirements:
         req = Requirement(requirement)
         package_name, package_marker = req.name, req.marker
         if package_marker and "extra ==" in str(package_marker):
             group = str(package_marker).split("extra == ")[1].strip('"').strip("'").strip()
+        else:
+            group = "required"
+        # De-duplicate (the same package could appear more than once in the extra == 'all' group)
+        if package_name in requires_dict[group]:
+            continue
+        if names_only:
             requires_dict[group].append(package_name)
         else:
-            requires_dict["required"].append(package_name)
+            requires_dict[group][package_name] = req
     return requires_dict
 
 
@@ -54,12 +67,12 @@ def find_dependencies(package="sunpy", extras=None):
     for group in requirements:
         if group not in extras:
             continue
-        for package in requirements[group]:
+        for package, package_details in requirements[group].items():
             try:
                 package_version = version(package)
                 installed_requirements[package] = package_version
             except PackageNotFoundError:
-                missing_requirements[package] = f"Missing {package}"
+                missing_requirements[package] = f"Missing {package_details}"
     return missing_requirements, installed_requirements
 
 
@@ -71,7 +84,7 @@ def missing_dependencies_by_extra(package="sunpy", exclude_extras=None):
     dependencies associated with no extras.
     """
     exclude_extras = exclude_extras or []
-    requirements = get_requirements(package)
+    requirements = get_requirements(package, True)
     missing_dependencies = {}
     for group in requirements.keys():
         if group in exclude_extras:
@@ -80,13 +93,20 @@ def missing_dependencies_by_extra(package="sunpy", exclude_extras=None):
     return missing_dependencies
 
 
+def get_extra_groups(groups, exclude_extras):
+    return list(set(groups) - set(exclude_extras))
+
+
 def system_info():
     """
     Prints ones' system info in an "attractive" fashion.
     """
-    base_reqs = get_requirements("sunpy")["required"]
-    extra_reqs = get_requirements("sunpy")["all"]
-    missing_packages, installed_packages = find_dependencies(package="sunpy", extras=["required", "all"])
+    requirements = get_requirements("sunpy", True)
+    groups = [*requirements.keys()]
+    extra_groups = get_extra_groups(groups, ['all', 'dev'])
+    base_reqs = requirements['required']
+    extra_reqs = requirements['all']
+    missing_packages, installed_packages = find_dependencies(package="sunpy", extras=extra_groups)
     extra_prop = {"System": platform.system(),
                   "Arch": f"{platform.architecture()[0]}, ({platform.processor()})",
                   "Python": platform.python_version(),
