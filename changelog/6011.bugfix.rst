@@ -1,0 +1,1 @@
+Fixed `system_info` so it returns the extra group when an optional dependency is missing.
