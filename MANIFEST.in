@@ -1,24 +1,21 @@
-# Exclude specific files
-# All files which are tracked by git and not explicitly excluded here are included by setuptools_scm
 exclude .codecov.yaml
-exclude .mailmap
 exclude .editorconfig
 exclude .gitattributes
 exclude .gitignore
-exclude .pep8speaks.yml
+exclude .mailmap
 exclude .pre-commit-config.yaml
+exclude .readthedocs.yaml
 exclude .test_package_pins.txt
 exclude .zenodo.json
-exclude azure-pipelines.yml
+exclude asv.conf.json
+exclude CITATION.cff
 exclude readthedocs.yml
-exclude rtd-environment.yml
-# Prune folders
+
 prune .circleci
 prune .github
 prune .jupyter
+prune benchmarks
 prune binder
 prune changelog
 prune tools
-# This subpackage is only used in development checkouts and should not be
-# included in built tarballs
 prune sunpy/_dev
