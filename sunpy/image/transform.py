@@ -122,10 +122,15 @@ def _handle_clipping_externally(rotation_function):
         rotated_image = rotation_function(image, matrix, shift, order, missing, False)
 
         if clip and not np.all(np.isnan(rotated_image)):
-            # Clip the image to the input range, with checking for whether `missing` was used
-            lower = np.nanmin([np.nanmax([missing, np.nanmin(rotated_image)]), np.nanmin(image)])
-            upper = np.nanmax([np.nanmin([missing, np.nanmax(rotated_image)]), np.nanmax(image)])
-            rotated_image.clip(lower, upper, out=rotated_image)
+            # Clip the image to the input range
+            if np.isnan(missing):
+                # If `missing` is NaN, clipping to the input range is straightforward
+                rotated_image.clip(np.nanmin(image), np.nanmax(image), out=rotated_image)
+            else:
+                # Otherwise, check if `missing` should be considered part of the input range
+                lower = np.nanmin([np.max([missing, np.nanmin(rotated_image)]), np.nanmin(image)])
+                upper = np.nanmax([np.min([missing, np.nanmax(rotated_image)]), np.nanmax(image)])
+                rotated_image.clip(lower, upper, out=rotated_image)
 
         return rotated_image
 
