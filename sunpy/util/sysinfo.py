@@ -5,6 +5,7 @@ import platform
 from collections import defaultdict
 from importlib.metadata import PackageNotFoundError, version, requires, distribution
 
+from packaging.markers import Marker
 from packaging.requirements import Requirement
 
 import sunpy.extern.distro as distro
@@ -44,6 +45,28 @@ def get_requirements(package):
     return requires_dict
 
 
+def resolve_requirement_versions(package_versions):
+    """
+    Resolves a list of requirements for the same package.
+
+    Given a list of package details in the form of `packaging.requirements.Requirement`
+    objects, combine the specifier, extras, url and marker information to create
+    a new requirement object.
+    """
+    resolved = Requirement(str(package_versions[0]))
+
+    for package_version in package_versions[1:]:
+        resolved.specifier = resolved.specifier & package_version.specifier
+        resolved.extras = resolved.extras.union(package_version.extras)
+        resolved.url = resolved.url or package_version.url
+        if resolved.marker and package_version.marker:
+            resolved.marker = Marker(f"{resolved.marker} and {package_version.marker}")
+        elif package_version.marker:
+            resolved.marker = package_version.marker
+
+    return resolved
+
+
 def find_dependencies(package="sunpy", extras=None):
     """
     List installed and missing dependencies.
@@ -54,7 +77,7 @@ def find_dependencies(package="sunpy", extras=None):
     """
     requirements = get_requirements(package)
     installed_requirements = {}
-    missing_requirements = {}
+    missing_requirements = defaultdict(list)
     extras = extras or ["required"]
     for group in requirements:
         if group not in extras:
@@ -64,7 +87,9 @@ def find_dependencies(package="sunpy", extras=None):
                 package_version = version(package)
                 installed_requirements[package] = package_version
             except PackageNotFoundError:
-                missing_requirements[package] = f"Missing {package_details}"
+                missing_requirements[package].append(package_details)
+    for package, package_versions in missing_requirements.items():
+        missing_requirements[package] = resolve_requirement_versions(package_versions)
     return missing_requirements, installed_requirements
 
 
@@ -89,8 +114,11 @@ def get_extra_groups(groups, exclude_extras):
     return list(set(groups) - set(exclude_extras))
 
 
-def get_keys_list(dictionary):
-    return [*dictionary.keys()]
+def get_keys_list(dictionary, sort=True):
+    keys = [*dictionary.keys()]
+    if sort:
+        return sorted(keys)
+    return keys
 
 
 def system_info():
