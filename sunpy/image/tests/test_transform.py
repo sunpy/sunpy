@@ -215,16 +215,16 @@ def test_flat(identity):
 
 def test_nan_skimage(identity):
     # Test preservation of NaN values for scikit-image rotation
-    in_arr = np.array([[np.nan]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, order=4, method='skimage')
-    assert np.all(np.isnan(out_arr))
+    in_arr = np.array([[np.nan, 0]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='skimage')
+    assert np.isnan(out_arr[0, 0])
 
 
 def test_nan_scipy(identity):
     # Test preservation of NaN values for scipy rotation
-    in_arr = np.array([[np.nan]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, method='scipy')
-    assert np.all(np.isnan(out_arr))
+    in_arr = np.array([[np.nan, 0]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='scipy')
+    assert np.isnan(out_arr[0, 0])
 
 
 def test_int(identity):
@@ -325,17 +325,9 @@ def test_nans(rot30):
         axs[0, i+1].imshow(affine_transform(image_with_nans, rot30,
                                             order=i, method='scipy', missing=np.nan),
                            vmin=-1.1, vmax=1.1)
-
-    for i in {0, 1, 3}:
         axs[1, i+1].imshow(affine_transform(image_with_nans, rot30,
                                             order=i, method='skimage', missing=np.nan),
                            vmin=-1.1, vmax=1.1)
-
-    for i in {2, 4, 5}:
-        with pytest.warns(SunpyUserWarning, match="Setting `missing` to NaN"):
-            axs[1, i+1].imshow(affine_transform(image_with_nans, rot30,
-                                                order=i, method='skimage', missing=np.nan),
-                               vmin=-1.1, vmax=1.1)
 
     axs[0, 0].set_ylabel('SciPy')
     axs[1, 0].set_ylabel('scikit-image')

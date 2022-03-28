@@ -164,6 +164,28 @@ def _handle_image_nans_externally(rotation_function):
     return wrapper
 
 
+def _handle_nan_missing_externally(rotation_function):
+    """
+    Decorator for a rotation function to externally handle NaN as the value for `missing`
+    """
+    @wraps(rotation_function)
+    def wrapper(image, matrix, shift, order, missing, clip):
+        # Sanitize missing if it is NaN
+        missing_to_use = np.nanmin(image) if np.isnan(missing) else missing
+
+        rotated_image = rotation_function(image, matrix, shift, order, missing_to_use, clip)
+
+        if np.isnan(missing):
+            # Rotate a constant image to determine where to apply the NaNs for `missing`
+            constant = scipy.ndimage.affine_transform(np.ones_like(image).T.astype(int), matrix,
+                                                      offset=shift, order=0, mode='constant').T
+            rotated_image[constant < 1] = np.nan
+
+        return rotated_image
+
+    return wrapper
+
+
 # Define individual rotation implementations below and insert in the dictionary at the end.
 #
 # The arguments must be, in order:
@@ -180,9 +202,10 @@ def _handle_image_nans_externally(rotation_function):
 #   clip : `bool`
 #       Whether to clip the output image to the range of the input image
 #
-# There are two decorators that can be used:
+# There are three decorators that can be used:
 #
 # * `_handle_clipping_externally` is for rotation functions that do not implement clipping
+# * `_handle_nan_missing_externally` is for rotation functions that do not handle NaN for `missing`
 # * `_handle_image_nans_externally` is for rotation functions that do not handle NaNs in the image
 #
 # Do not modify `image` directly; copy first if necessary.
@@ -201,17 +224,18 @@ def _rotation_scipy(image, matrix, shift, order, missing, clip):
 
 
 @_handle_clipping_externally
+@_handle_nan_missing_externally
 @_handle_image_nans_externally
 def _rotation_skimage(image, matrix, shift, order, missing, clip):
     """
     Rotation using scikit-image
 
-    Although :func:`skimage.transform.warp` implements clipping, its clipping
-    behavior is inconsistent across interpolation orders, so we choose to handle
-    clipping externally.
+    We handle clipping externally because the clipping behavior of
+    :func:`skimage.transform.warp` is different between orders in {0, 1, 3} and
+    orders in {2, 4, 5}.
 
-    :func:`skimage.transform.warp` does not currently support setting `missing` to
-    NaN for interpolation orders 2, 4, or 5, so `missing` will be set to zero then.
+    We handle NaN for `missing` externally because :func:`skimage.transform.warp`
+    does not handle it correctly for orders in {2, 4, 5}.
     """
     import skimage.transform
 
@@ -221,11 +245,6 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     skmatrix[2, 2] = 1.0
     skmatrix[:2, 2] = shift
     tform = skimage.transform.AffineTransform(skmatrix)
-
-    if np.isnan(missing) and order in {2, 4, 5}:
-        warn_user("Setting `missing` to NaN is not supported for this order of scikit-image "
-                  "rotation, so using zero instead.")
-        missing = 0
 
     if issubclass(image.dtype.type, numbers.Integral):
         warn_user("Integer input data has been cast to float64.")

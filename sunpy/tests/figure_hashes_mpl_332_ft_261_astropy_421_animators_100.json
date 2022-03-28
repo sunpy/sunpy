@@ -1,6 +1,6 @@
 {
-  "sunpy.image.tests.test_transform.test_clipping": "217a195c1c2c6dd6c73ad8cea3f2559de524a3caed7d09d755748431394796dd",
-  "sunpy.image.tests.test_transform.test_nans": "a865d21f823bb5490966273c28ad12587ef6621c9fa954cc888ea413d137d73c",
+  "sunpy.image.tests.test_transform.test_clipping": "6766397e2be1d56ad01b1337c017e4fcbce2581a8ef4a9dbaa945114467cdc1d",
+  "sunpy.image.tests.test_transform.test_nans": "df90effea0e98969bb0332ad30d8a2835dacd7cfffb4b41f846065bbe9982fd4",
   "sunpy.map.tests.test_compositemap.test_plot_composite_map": "8160a5896607f62b7e7fa316236f565f54bd7a08f511808e98c9ad329678d21a",
   "sunpy.map.tests.test_compositemap.test_plot_composite_map_contours": "909ac12088dde3c15d0c7908f08b4b3c0da23e2a4966ed1ef8e705adb8727d2a",
   "sunpy.map.tests.test_compositemap.test_plot_composite_map_linewidths": "27aa1ac78d4e49f731bf1e43f4d2b398fe8a84d53ed9234794c7954fda54c45a",
