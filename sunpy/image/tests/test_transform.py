@@ -281,22 +281,23 @@ def test_reproducible_matrix_multiplication():
 def test_clipping(rot30):
     # Generates a plot to test the clipping the output image to the range of the input image
     image = np.ones((20, 20))
-    image[4:-4, 4:-4] = -1
+    image[4:-4, 4:-4] = 2
 
-    fig = Figure(figsize=(7, 4))
-    axs = fig.subplots(2, 3)
+    fig = Figure(figsize=(12, 4))
+    axs = fig.subplots(2, 5)
 
-    axs[0, 0].imshow(image, vmin=-2, vmax=2)
-    axs[0, 1].imshow(affine_transform(image, rot30, clip=True, method='scipy'), vmin=-2, vmax=2)
-    axs[0, 2].imshow(affine_transform(image, rot30, clip=False, method='scipy'), vmin=-2, vmax=2)
-
-    axs[1, 0].imshow(image, vmin=-2, vmax=2)
-    axs[1, 1].imshow(affine_transform(image, rot30, clip=True, method='skimage'), vmin=-2, vmax=2)
-    axs[1, 2].imshow(affine_transform(image, rot30, clip=False, method='skimage'), vmin=-2, vmax=2)
+    for i, method in enumerate(['scipy', 'skimage']):
+        axs[i, 0].imshow(image, vmin=0, vmax=3)
+        axs[i, 1].imshow(affine_transform(image, rot30, clip=True, method=method, missing=0), vmin=0, vmax=3)
+        axs[i, 2].imshow(affine_transform(image, rot30, clip=True, method=method, missing=2), vmin=0, vmax=3)
+        axs[i, 3].imshow(affine_transform(image, rot30, clip=True, method=method, missing=np.nan), vmin=0, vmax=3)
+        axs[i, 4].imshow(affine_transform(image, rot30, clip=False, method=method), vmin=0, vmax=3)
 
     axs[0, 0].set_title('Original')
-    axs[0, 1].set_title('clip=True')
-    axs[0, 2].set_title('clip=False')
+    axs[0, 1].set_title('clip & missing=0')
+    axs[0, 2].set_title('clip & missing=2')
+    axs[0, 3].set_title('clip & missing=NaN')
+    axs[0, 4].set_title('no clip')
 
     axs[0, 0].set_ylabel('SciPy')
     axs[1, 0].set_ylabel('scikit-image')
@@ -309,19 +310,32 @@ def test_clipping(rot30):
 def test_nans(rot30):
     # Generates a plot to test the preservation and expansions of NaNs by the rotation
     image_with_nans = np.ones((23, 23))
+    image_with_nans[4:-4, 4:-4] = 2
     image_with_nans[9:-9, 9:-9] = np.nan
 
     fig = Figure(figsize=(16, 4))
     axs = fig.subplots(2, 7)
 
     axs[0, 0].set_title('Original (NaNs are white)')
-    axs[0, 0].imshow(image_with_nans, vmin=0)
-    axs[1, 0].imshow(image_with_nans, vmin=0)
+    axs[0, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
+    axs[1, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
 
     for i in range(6):
         axs[0, i+1].set_title(f'order={i}')
-        axs[0, i+1].imshow(affine_transform(image_with_nans, rot30, order=i, method='scipy'))
-        axs[1, i+1].imshow(affine_transform(image_with_nans, rot30, order=i, method='skimage'))
+        axs[0, i+1].imshow(affine_transform(image_with_nans, rot30,
+                                            order=i, method='scipy', missing=np.nan),
+                           vmin=-1.1, vmax=1.1)
+
+    for i in {0, 1, 3}:
+        axs[1, i+1].imshow(affine_transform(image_with_nans, rot30,
+                                            order=i, method='skimage', missing=np.nan),
+                           vmin=-1.1, vmax=1.1)
+
+    for i in {2, 4, 5}:
+        with pytest.warns(SunpyUserWarning, match="Setting `missing` to NaN"):
+            axs[1, i+1].imshow(affine_transform(image_with_nans, rot30,
+                                                order=i, method='skimage', missing=np.nan),
+                               vmin=-1.1, vmax=1.1)
 
     axs[0, 0].set_ylabel('SciPy')
     axs[1, 0].set_ylabel('scikit-image')
