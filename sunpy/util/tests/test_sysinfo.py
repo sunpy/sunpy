@@ -2,9 +2,9 @@ from packaging.requirements import Requirement
 
 from sunpy.util.sysinfo import (
     find_dependencies,
+    format_requirement_string,
     missing_dependencies_by_extra,
     resolve_requirement_versions,
-    format_requirement_string,
     system_info,
 )
 
