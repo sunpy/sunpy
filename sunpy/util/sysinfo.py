@@ -60,11 +60,17 @@ def resolve_requirement_versions(package_versions):
         resolved.extras = resolved.extras.union(package_version.extras)
         resolved.url = resolved.url or package_version.url
         if resolved.marker and package_version.marker:
-            resolved.marker = Marker(f"{resolved.marker} and {package_version.marker}")
+            resolved.marker = Marker(f"{resolved.marker} or {package_version.marker}")
         elif package_version.marker:
             resolved.marker = package_version.marker
 
     return resolved
+
+
+def format_requirement_string(requirement):
+    formatted_string = f"Missing {requirement}"
+    formatted_string = formatted_string.replace("or extra ==", "or").strip()
+    return formatted_string
 
 
 def find_dependencies(package="sunpy", extras=None):
@@ -89,7 +95,8 @@ def find_dependencies(package="sunpy", extras=None):
             except PackageNotFoundError:
                 missing_requirements[package].append(package_details)
     for package, package_versions in missing_requirements.items():
-        missing_requirements[package] = resolve_requirement_versions(package_versions)
+        missing_requirements[package] = format_requirement_string(
+            resolve_requirement_versions(package_versions))
     return missing_requirements, installed_requirements
 
 

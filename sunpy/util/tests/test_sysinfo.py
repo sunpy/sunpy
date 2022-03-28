@@ -4,6 +4,7 @@ from sunpy.util.sysinfo import (
     find_dependencies,
     missing_dependencies_by_extra,
     resolve_requirement_versions,
+    format_requirement_string,
     system_info,
 )
 
@@ -48,17 +49,29 @@ def test_resolve_requirement_versions():
     package1 = Requirement('test-package[ext1]>=1.1.1; extra == "group1"')
     package2 = Requirement('test-package[ext2]<=2.0.0; extra == "group2"')
     assert str(resolve_requirement_versions([package1, package2])) == str(Requirement(
-        'test-package[ext1,ext2]<=2.0.0,>=1.1.1; extra == "group1" and extra == "group2"'))
+        'test-package[ext1,ext2]<=2.0.0,>=1.1.1; extra == "group1" or extra == "group2"'))
 
     package3 = Requirement('test-package==1.1.0; extra == "group3"')
     package4 = Requirement('test-package==1.1.0; extra == "group4"')
     assert str(resolve_requirement_versions([package3, package4])) == str(
-        Requirement('test-package==1.1.0; extra == "group3" and extra == "group4"'))
+        Requirement('test-package==1.1.0; extra == "group3" or extra == "group4"'))
 
     package5 = Requirement('test-package; extra == "group5"')
     package6 = Requirement('test-package[ext3]@https://foo.com')
     assert str(resolve_requirement_versions([package5, package6])) == str(
         Requirement('test-package[ext3]@ https://foo.com ; extra == "group5"'))
+
+
+def test_format_requirement_string():
+    package1 = Requirement('test-package[ext1]>=1.1.1; extra == "group1"')
+    assert format_requirement_string(package1) == 'Missing test-package[ext1]>=1.1.1; extra == "group1"'
+
+    package2 = Requirement('test-package>=1.1.1; extra == "group1" or extra == "group2" or extra == "group3"')
+    assert format_requirement_string(
+        package2) == 'Missing test-package>=1.1.1; extra == "group1" or "group2" or "group3"'
+
+    package3 = Requirement('test-package>=1.1.1')
+    assert format_requirement_string(package3) == 'Missing test-package>=1.1.1'
 
 
 def test_system_info(capsys):
