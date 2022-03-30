@@ -1253,7 +1253,7 @@ def test_contour(simple_map):
     assert contour.observer.lon == simple_map.observer_coordinate.frame.lon
     assert contour.obstime == simple_map.date
     assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
-    assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
+    assert u.allclose(contour.Ty, [-0.5, 0, 0.5, 0, -0.5] * u.arcsec, atol=1e-10 * u.arcsec)
 
 
 def test_contour_units(simple_map):
