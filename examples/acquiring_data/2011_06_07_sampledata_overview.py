@@ -145,7 +145,7 @@ norh.plot()
 plt.show()
 
 ####################################################################################
-# NOAA overlaid with HMI 
+# NOAA overlaid with HMI
 
 noaa = srs.read_srs(sample_data.SRS_TABLE)
 smap = sunpy.map.Map(sample_data.HMI_LOS_IMAGE)
@@ -168,7 +168,7 @@ c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
 
 ax.plot_coord(c, 'o')
 
-for lat, lng, num in zip(lats.value, lngs.value,numbers):
+for lat, lng, num in zip(lats.value, lngs.value, numbers):
     ax.annotate(num, (lng, lat),
                 xycoords=ax.get_transform('heliographic_stonyhurst'),
                 color='blue',
