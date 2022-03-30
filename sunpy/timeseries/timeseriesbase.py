@@ -269,6 +269,7 @@ class GenericTimeSeries:
         Jupyter notebooks.
         """
         from astropy.visualization import hist
+        import time
 
         # Call _text_summary and reformat as an HTML table
         partial_html = (
@@ -306,7 +307,7 @@ class GenericTimeSeries:
                     color=cols[i],
                     label=self.columns[i],
                 )
-                if (dat[self.columns[i]].values < 0).any() == False:
+                if (dat[self.columns[i]].values < 0).any() is np.bool_(False):
                     axs.set_yscale("log")
                 axs.legend(frameon=False, handlelength=0)
                 axs.set_ylabel(self.units[self.columns[i]])
@@ -317,7 +318,7 @@ class GenericTimeSeries:
                     color=cols[i],
                     label=self.columns[i],
                 )
-                if (dat[self.columns[i]].values < 0).any() == False:
+                if (dat[self.columns[i]].values < 0).any() is np.bool_(False):
                     axs[i].set_yscale("log")
                 axs[i].legend(frameon=False, handlelength=0)
                 if len(set(self.units.values())) == 1:
@@ -355,24 +356,24 @@ class GenericTimeSeries:
             hlist2.append(f"data:image/png;base64,{hlist[i]}")
 
         # The code below creates unique names to be passed to the JS script
-        # in the html summary. Otherwise, multiple timeseries summaries will
-        # conflict in a single notebook (due to the document.getElementByID
-        # method of updating images onclick).
-        source = str(self.source) + str(np.random.randint(100))
-        chg = "chg" + source
+        # in the html code. Otherwise, multiple timeseries summaries will
+        # conflict in a single notebook.
+        source = str(self.source) + str(time.perf_counter_ns())
 
         return textwrap.dedent(f"""\
             <pre>{html.escape(object.__repr__(self))}</pre>
             <script type="text/javascript">
-            var counter = 1;
-            var {source} = {hlist2};
-            {chg} = function () {{
-                document.getElementById("{source}").src = {source}[counter];
-                counter++;
-                if (counter >= {source}.length) {{
-                    counter = 0;
+            function ImageChange(images) {{
+                this.images = images;
+                this.i = 0;
+                this.next = function(img) {{
+                    this.i++;
+                    if (this.i == images.length)
+                    this.i = 0;
+                    img.src = images[this.i];
                 }}
             }}
+            var {source} = new ImageChange({hlist2});
             </script>
             <table>
                 <tr>
@@ -385,8 +386,8 @@ class GenericTimeSeries:
                 </tr>
                 <tr>
                     <td>
-                    <img src={hlist2[0]} alt="Click here for histograms" id="{source}"
-                         onClick="{chg}()"/>
+                    <img src="{hlist2[0]}" alt="Click here for histograms"
+                         onclick="{source}.next(this)"/>
                     </td>
                 </tr>
             </table>""")
@@ -929,6 +930,7 @@ class GenericTimeSeries:
             The path to the file you want to parse.
         """
         raise NoMatchError(f'Could not find any timeseries sources to parse {filepath}')
+
 
 def _figure_to_base64(fig):
     # Converts a matplotlib Figure to a base64 UTF-8 string
