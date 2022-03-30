@@ -280,6 +280,15 @@ class MDISynopticMap(MDIMap):
         return SpatialPair(u.Unit(cunit1), u.Unit(cunit2))
 
     @property
+    def unit(self):
+        bunit = self.meta.get('bunit', None)
+        if bunit is None:
+            return
+        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
+        # The mapbase unit property forces this validation, so we must override it to prevent it.
+        return u.Unit(bunit)
+
+    @property
     def scale(self):
         if self.meta['cunit2'] == 'Sine Latitude':
             # Since, this map uses the cylindrical equal-area (CEA) projection,

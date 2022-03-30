@@ -196,11 +196,11 @@ class HMISynopticMap(HMIMap):
     @property
     def unit(self):
         unit_str = self.meta.get('bunit', None)
-        if unit_str == 'Mx/cm^2':
-            # Maxwells aren't in the IAU unit sytle manual, so replace with Gauss
-            return u.Unit('G')
-        else:
-            return super().unit
+        if unit_str is None:
+            return
+        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
+        # The mapbase unit property forces this validation, so we must override it to prevent it.
+        return u.Unit(unit_str)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

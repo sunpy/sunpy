@@ -3,6 +3,7 @@ SunPy Map
 
 isort:skip_file
 """
+from ._units import maxwell
 from sunpy.map.mapbase import *
 
 from sunpy.map import sources

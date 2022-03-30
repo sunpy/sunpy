@@ -151,6 +151,10 @@ def test_carrington(mdi):
     assert u.allclose(mdi.carrington_latitude, Angle(mdi.meta['CRLT_OBS']*u.deg))
 
 
+def test_unit(mdi):
+    assert mdi.unit == u.dimensionless_unscaled
+
+
 @pytest.mark.filterwarnings("error")
 def test_synoptic_source(mdi_synoptic):
     assert isinstance(mdi_synoptic, MDISynopticMap)
@@ -164,3 +168,9 @@ def test_wcs(mdi, mdi_synoptic):
     mdi.pixel_to_world(0*u.pix, 0*u.pix)
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
         mdi_synoptic.pixel_to_world(0*u.pix, 0*u.pix)
+
+
+def test_unit(mdi_synoptic):
+    assert mdi_synoptic.unit == u.G
+    assert mdi_synoptic.unit == u.Unit("Mx/cm^2")
+    assert mdi_synoptic.unit.to_string() == 'Mx / cm2'

@@ -259,7 +259,7 @@ def test_heliographic_longitude(generic_map):
 
 
 def test_units(generic_map):
-    generic_map.spatial_units == ('arcsec', 'arcsec')
+    assert generic_map.spatial_units == ('arcsec', 'arcsec')
 
 
 def test_cmap(generic_map):
