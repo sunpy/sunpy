@@ -882,9 +882,11 @@ def test_ts_shape(generic_ts):
 def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().to_dataframe().equals(generic_ts.to_dataframe().sort_index())
 
+
 def test_repr_html_(generic_ts):
     html_string = generic_ts._repr_html_()
     assert isinstance(html_string, str)
+
 
 def test_quicklook(generic_ts):
     with mock.patch('webbrowser.open_new_tab') as mockwbopen:
