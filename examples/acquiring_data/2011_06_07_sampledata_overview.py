@@ -108,7 +108,7 @@ norh.plot()
 plt.show()
 
 ####################################################################################
-# NOAA
+# NOAA overlaid with HMI 
 
 noaa = srs.read_srs(sample_data.SRS_TABLE)
 smap = sunpy.map.Map(sample_data.HMI_LOS_IMAGE)
@@ -131,7 +131,7 @@ c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
 
 ax.plot_coord(c, 'o')
 
-for lat ,lng ,num in zip(lats.value, lngs.value, numbers):
+for lat, lng, num in zip(lats.value, lngs.value,numbers):
     ax.annotate(num, (lng, lat),
                 xycoords=ax.get_transform('heliographic_stonyhurst'),
                 color='blue',
@@ -143,15 +143,17 @@ plt.show()
 # EVE
 
 eve = sunpy.timeseries.TimeSeries(sample_data.EVE_TIMESERIES, source='EVE')
-fig = plt.figure()
+fig = plt.figure(figsize=(10, 6))
 eve.plot()
+plt.legend(bbox_to_anchor=(1.01, 0.85), loc='upper left', borderaxespad=0)
+fig.tight_layout()
 plt.show()
 
 ####################################################################################
 # LYRA
 
-lyra = sunpy.timeseries.TimeSeries(sample_data.LYRA_LEVEL3_TIMESERIES, source='LYRA')
-fig = plt.figure()
+lyra = sunpy.timeseries.TimeSeries(sample_data.LYRA_LEVEL3_TIMESERIES, source='lyra')
+plt.rcParams['figure.figsize'] = [12, 7]
 lyra.plot()
 plt.show()
 
@@ -159,6 +161,8 @@ plt.show()
 # GBM
 
 gbm = sunpy.timeseries.TimeSeries(sample_data.GBM_TIMESERIES, source='GBMSummary')
-fig = plt.figure()
+fig = plt.figure(figsize=(12, 6))
 gbm.plot()
+plt.legend(bbox_to_anchor=(1.01, 0.85), loc='upper left', borderaxespad=0)
+fig.tight_layout()
 plt.show()
