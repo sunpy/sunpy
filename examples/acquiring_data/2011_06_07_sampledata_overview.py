@@ -11,8 +11,8 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-import sunpy.data.sample as sample_data
 import sunpy.coordinates
+import sunpy.data.sample as sample_data
 import sunpy.map
 import sunpy.timeseries
 from sunpy.io.special import srs
