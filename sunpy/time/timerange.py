@@ -5,6 +5,7 @@ from datetime import timedelta
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
+import numpy as np
 
 from sunpy import config
 from sunpy.time import is_time_equal, parse_time
@@ -460,3 +461,20 @@ class TimeRange:
             int_second = self
 
         return int_second.start <= int_first.end
+
+    def range_list(self, frequency):
+        """
+        Return a Linearly Spaced List of Astropy Time Objects between the passed TimeRange.
+
+        Parameters
+        ----------
+        frequency : `int`
+            The number of objects needed
+        """
+        if frequency<=0:
+            raise ValueError("The number of objects needed cannot be 0 or less")
+        end = self._t2
+        start = self._t1
+        delta = (end-start)
+        time_list = list(start + delta * np.linspace(0,1,frequency))
+        return time_list
