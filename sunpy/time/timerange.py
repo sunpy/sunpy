@@ -462,19 +462,13 @@ class TimeRange:
 
         return int_second.start <= int_first.end
 
-    def range_list(self, frequency):
+    def range(self, steps):
         """
-        Return a Linearly Spaced List of Astropy Time Objects between the passed TimeRange.
+        Return a linearly spaced time range.
 
         Parameters
         ----------
-        frequency : `int`
-            The number of objects needed
+        steps : `int`
+            The number of steps between the start and end time.
         """
-        if frequency<=0:
-            raise ValueError("The number of objects needed cannot be 0 or less")
-        end = self._t2
-        start = self._t1
-        delta = (end-start)
-        time_list = list(start + delta * np.linspace(0,1,frequency))
-        return time_list
+        return self._t1 + (self._t2 - self._t1) * np.linspace(0, 1, steps)
