@@ -5,7 +5,6 @@ from datetime import timedelta
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
-import numpy as np
 
 from sunpy import config
 from sunpy.time import is_time_equal, parse_time
@@ -462,13 +461,20 @@ class TimeRange:
 
         return int_second.start <= int_first.end
 
-    def range(self, steps):
+    def range(self, delta):
         """
         Return a linearly spaced time range.
 
         Parameters
         ----------
-        steps : `int`
-            The number of steps between the start and end time.
+        delta : `astropy.time.TimeDelta`
+            The amount of time between two consecutive values.
         """
-        return self._t1 + (self._t2 - self._t1) * np.linspace(0, 1, steps)
+        if delta <= 0:
+            raise ValueError('Delta cannot be 0 or less.')
+        time_object = []
+        start = self._t1
+        while start <= self._t2:
+            time_object.append(start.value)
+            start += delta
+        return Time(time_object)

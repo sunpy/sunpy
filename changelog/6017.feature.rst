@@ -1,1 +1,1 @@
-Added a range function to TimeRange class that returns a linearly spaced time object.
+Added a range function to `TimeRange` that returns a linearly spaced time object.
