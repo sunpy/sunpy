@@ -943,6 +943,15 @@ def test_lyra_plot(lyra_test_ts):
         np.testing.assert_array_equal(ax.lines[0].get_ydata(), lyra_test_ts.to_array().T[i])
 
 
+def test_timeseries_array():
+    times = parse_time("now") - TimeDelta(np.arange(5) * u.minute)
+    intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (5)))
+    data = np.array([times, intensity]).T
+    with pytest.warns(SunpyUserWarning, match='Unknown units'):
+        ts = sunpy.timeseries.TimeSeries(data, {})
+        assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
+
+
 # TODO:
 # _validate_units
 # _validate_meta
