@@ -302,7 +302,7 @@ def test_range():
     linspace_range2 = tr2.range(TimeDelta(60*60, format='sec'))
     assert tr._t1 == linspace_range[0]
     assert tr._t1 == linspace_range2[0]
-    
+
     # Check time in the range
     assert tr._t1 + TimeDelta(5, format='sec') in linspace_range
     assert tr._t1 + TimeDelta(61, format='sec') not in linspace_range
