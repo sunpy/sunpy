@@ -7,7 +7,7 @@ on:
     #        │ │ ┌───────── day of the month (1 - 31)
     #        │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
     #        │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
-    - cron: '0 3 * * 1'  # Every Monday at 03:00 UTC
+    - cron: '0 7 * * *'  # Every day at 07:00 UTC
 
 jobs:
   dispatch_workflows:
@@ -16,3 +16,5 @@ jobs:
       - run: gh workflow run ci.yml --ref main
       - run: gh workflow run ci.yml --ref 3.1
       - run: gh workflow run ci.yml --ref 3.0
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
