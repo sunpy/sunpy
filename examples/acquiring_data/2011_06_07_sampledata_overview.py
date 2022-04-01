@@ -6,12 +6,16 @@ Sample data set overview
 An overview of the coordinated sample data set (available through `sunpy.data.sample`).
 """
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
+import sunpy.coordinates
 import sunpy.data.sample as sample_data
 import sunpy.map
 import sunpy.timeseries
+from sunpy.io.special import srs
 
 ###############################################################################
 # On 2011 June 7, various solar instruments observed a spectacular solar
@@ -93,4 +97,72 @@ plt.show()
 rhessi_map = sunpy.map.Map(sample_data.RHESSI_IMAGE)
 plt.figure()
 rhessi_map.plot()
+plt.show()
+
+##############################################################################
+# NORH
+
+norh = sunpy.timeseries.TimeSeries(sample_data.NORH_TIMESERIES)
+fig = plt.figure()
+norh.plot()
+plt.show()
+
+####################################################################################
+# NOAA overlaid with HMI
+
+noaa = srs.read_srs(sample_data.SRS_TABLE)
+smap = sunpy.map.Map(sample_data.HMI_LOS_IMAGE)
+
+noaa = noaa[np.logical_or(noaa['ID'] == 'I', noaa['ID'] == 'IA')]
+
+lats = noaa['Latitude']
+lngs = noaa['Longitude']
+numbers = noaa['Number']
+
+fig = plt.figure()
+ax = fig.add_subplot(projection=smap)
+
+smap.plot_settings["norm"].vmin = -200
+smap.plot_settings["norm"].vmax = 200
+smap.plot(axes=ax)
+smap.draw_limb(axes=ax)
+
+c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
+
+ax.plot_coord(c, 'o')
+
+for lat, lng, num in zip(lats.value, lngs.value, numbers):
+    ax.annotate(num, (lng, lat),
+                xycoords=ax.get_transform('heliographic_stonyhurst'),
+                color='blue',
+                fontweight='bold')
+
+plt.show()
+
+####################################################################################
+# EVE
+
+eve = sunpy.timeseries.TimeSeries(sample_data.EVE_TIMESERIES, source='EVE')
+fig = plt.figure(figsize=(10, 6))
+eve.plot()
+plt.legend(bbox_to_anchor=(1.01, 0.85), loc='upper left', borderaxespad=0)
+fig.tight_layout()
+plt.show()
+
+####################################################################################
+# LYRA
+
+lyra = sunpy.timeseries.TimeSeries(sample_data.LYRA_LEVEL3_TIMESERIES, source='lyra')
+plt.rcParams['figure.figsize'] = [12, 7]
+lyra.plot()
+plt.show()
+
+####################################################################################
+# GBM
+
+gbm = sunpy.timeseries.TimeSeries(sample_data.GBM_TIMESERIES, source='GBMSummary')
+fig = plt.figure(figsize=(12, 6))
+gbm.plot()
+plt.legend(bbox_to_anchor=(1.01, 0.85), loc='upper left', borderaxespad=0)
+fig.tight_layout()
 plt.show()
