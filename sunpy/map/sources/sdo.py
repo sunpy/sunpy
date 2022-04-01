@@ -208,5 +208,5 @@ class HMISynopticMap(HMIMap):
         Determines if header corresponds to an HMI synoptic map.
         """
         return (str(header.get('TELESCOP', '')).endswith('HMI') and
-                str(header.get('CONTENT', '')) ==
-                'Carrington Synoptic Chart Of Br Field')
+                'carrington synoptic chart' in
+                str(header.get('CONTENT', '')).lower())
