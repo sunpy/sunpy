@@ -22,7 +22,6 @@ import sunpy.timeseries
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
@@ -945,15 +944,12 @@ def test_lyra_plot(lyra_test_ts):
 
 
 def test_timeseries_array():
-    # Create a datetime64 array
-    base = datetime.datetime(2022, 3, 1, 9, 5, 19, 987654)
-    times = np.array([base + datetime.timedelta(hours=i) for i in range(5)])
-    # Create Intensity array
+    times = parse_time("now") - TimeDelta(np.arange(5) * u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (5)))
     data = np.array([times, intensity]).T
-    ts = sunpy.timeseries.TimeSeries(data, {}, {'intensity': u.W/u.m**2})
-    # Check that the returned object has type GenericTimeSeries
-    assert isinstance(ts, GenericTimeSeries)
+    with pytest.warns(SunpyUserWarning, match='Unknown units'):
+        ts = sunpy.timeseries.TimeSeries(data, {})
+        assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
 
 
 # TODO:
