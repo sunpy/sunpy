@@ -13,8 +13,8 @@ jobs:
   dispatch_workflows:
     runs-on: ubuntu-latest
     steps:
-      - run: gh workflow run ci.yml --ref main
-      - run: gh workflow run ci.yml --ref 3.1
-      - run: gh workflow run ci.yml --ref 3.0
+      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref main
+      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 3.1
+      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 3.0
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
