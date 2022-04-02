@@ -1,0 +1,1 @@
+Updated the `timeseriesbase` docstring. In the parameters section, added that the data variable can be a `pandas.DataFrame` or a `numpy.array`.
