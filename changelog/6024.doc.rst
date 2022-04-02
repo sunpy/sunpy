@@ -1,1 +1,1 @@
-Updated docstring of the `timeseriesbase`, parameters section. The data variable can be a `pandas.DataFrame` or a `numpy.array`.
+Updated timeseriesbase docstring, parameters section. The data variable description now says, a pandas.DataFrame or a numpy.array.
