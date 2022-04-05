@@ -31,7 +31,9 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
     This summary lightcurve makes use of the CSPEC (daily version) data set which consists of the counts
     accumulated every 4.096 seconds in 128 energy channels for each of the 14 detectors.
+
     Note that the data is re-binned from the original 128 into the following 8 pre-determined energy channels.
+    The rebinning method is ...
 
     * 4-15 keV
     * 15-25 keV

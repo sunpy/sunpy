@@ -1,1 +1,1 @@
-Speed up parsing Fermi/GBM files when binning the count data. The bin edge indices for which the counts are summed also slightly changed such that it finds the closest energy bin to chosen energy bands.
+Speed up parsing Fermi/GBM files when binning the count data.
