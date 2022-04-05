@@ -1,1 +1,1 @@
-Fixed `~sunpy.util.sysinfo.system_info` so it returns the extra group when an optional dependency is missing.
+Fixed `sunpy.system_info` so it returns the extra group when an optional dependency is missing.
