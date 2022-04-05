@@ -35,8 +35,8 @@ class GenericTimeSeries:
 
     Parameters
     ----------
-    data : `~pandas.DataFrame`
-        A `pandas.DataFrame` representing one or more fields as a function of time.
+    data : `~pandas.DataFrame` or `numpy.array`
+        A `pandas.DataFrame` or `numpy.array` representing one or more fields as a function of time.
     meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`, optional
         The metadata giving details about the time series data/instrument.
         Defaults to `None`.
