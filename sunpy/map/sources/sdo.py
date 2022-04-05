@@ -152,6 +152,7 @@ class HMISynopticMap(HMIMap):
     * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
     * `JSOC's HMI Synoptic Charts <http://jsoc.stanford.edu/HMI/LOS_Synoptic_charts.html>`__
     """
+
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self.plot_settings['cmap'] = 'hmimag'

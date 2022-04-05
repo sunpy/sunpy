@@ -17,6 +17,7 @@ class SunpyLogger(AstropyLogger):
     passed on to other loggers (e.g., from Astropy).
     """
     # Override the existing _showwarning() to capture SunpyWarning instead of AstropyWarning
+
     def _showwarning(self, *args, **kwargs):
 
         # Bail out if we are not catching a warning from SunPy

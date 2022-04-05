@@ -16,6 +16,7 @@ class HEKResult:
     """
     Basic caching class to run the remote query once and return the result many times.
     """
+
     def __init__(self):
         self._result = None
 
