@@ -11,12 +11,14 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.physics.differential_rotation import solar_rotate_coordinate
+from sunpy.util.decorators import deprecated
 
 __author__ = 'J. Ireland'
 
 __all__ = ['calculate_solar_rotate_shift', 'mapsequence_solar_derotate']
 
 
+@deprecated(since='4.0', alternative='`sunkit_image.coalignment.calculate_solar_rotate_shift`')
 def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     """
     Calculate the shift that must be applied to each map contained in a mapsequence
@@ -84,6 +86,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
 
+@deprecated(since='4.0', alternative='`sunkit_image.coalignment.mapsequence_coalign_by_rotation`')
 def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     """
     Move the layers in a mapsequence according to the input shifts.
