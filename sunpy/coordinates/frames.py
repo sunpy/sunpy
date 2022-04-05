@@ -587,12 +587,10 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
             d = np.fmin(d, dd) if self._spherical_screen['only_off_disk'] else dd
 
-        # If we have all NaNs in d, warn user
         if np.all(np.isnan(d)) and np.any(np.isfinite(cos_alpha)):
             warn_user("The conversion of these 2D helioprojective coordinates to 3D is all NaNs "
-                      "because off-disk coordinates need an additional assumption to be mapped to "
-                      "3D. Consider using the context manager "
-                      "`Helioprojective.assume_spherical_screen()`.")
+                      "because off-disk coordinates need an additional assumption to be mapped to calculate distance from the observer. "
+                      "Consider using the context manager `Helioprojective.assume_spherical_screen()`.")
 
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,
