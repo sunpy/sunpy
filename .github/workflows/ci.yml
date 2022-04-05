@@ -44,7 +44,7 @@ jobs:
       envs: |
         - macos: py37
         - windows: py310
-        - linux: py38-oldestdeps
+        - linux: py37-oldestdeps
         - linux: py39-conda
           libraries: ''
 
