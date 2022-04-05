@@ -1021,7 +1021,7 @@ class GenericMap(NDData):
     @deprecated('4.0', alternative='`sunpy.map.GenericMap.shift_reference_coord`')
     @u.quantity_input
     def shift(self, axis1: u.deg, axis2: u.deg):
-        GenericMap.shift.__doc__ = f"{GenericMap.shift_reference_coord.__doc__}"
+        GenericMap.shift.__doc__ = GenericMap.shift_reference_coord.__doc__
 
         new_map = self.shift_reference_coord(axis1, axis2)
         new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
@@ -1035,8 +1035,8 @@ class GenericMap(NDData):
         for a bad map location. These values are applied directly to the
         `~sunpy.map.GenericMap.reference_coordinate`. To check how much the
         reference coordinate has been modified, see
-        `~sunpy.map.GenericMap.meta.modified_items['CRVAL1']` and
-        `~sunpy.map.GenericMap.meta.modified_items['CRVAL2']`.
+        ``sunpy.map.GenericMap.meta.modified_items['CRVAL1']`` and
+        ``sunpy.map.GenericMap.meta.modified_items['CRVAL2']``.
 
         Parameters
         ----------

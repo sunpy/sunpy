@@ -104,7 +104,7 @@ being shifted and not the image itself.
 Additionally, the `sunpy.map.GenericMap.shifted_value` property, which keeps track of
 the shifts applied by `~sunpy.map.GenericMap.shift`, has been deprecated.
 Users should instead use the ``CRVAL1`` and ``CRVAL2`` keys in
-`sunpy.map.GenericMap.meta.modified_items` to see how the reference coordinate has been
+``sunpy.map.GenericMap.meta.modified_items`` to see how the reference coordinate has been
 modified.
 Note that `~sunpy.map.GenericMap.shift_reference_coord` does not modify
 `~sunpy.map.GenericMap.shifted_value`.
