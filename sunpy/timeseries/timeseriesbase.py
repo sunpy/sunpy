@@ -5,8 +5,6 @@ This module provies `sunpy.timeseries.GenericTimeSeries` which all other
 import copy
 import html
 import textwrap
-from io import BytesIO
-from base64 import b64encode
 from collections import OrderedDict
 from collections.abc import Iterable
 
@@ -24,8 +22,8 @@ from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
+from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import peek_show
-from sunpy.map.mapbase import _figure_to_base64
 
 # define and register a new unit, needed for RHESSI
 det = u.def_unit('detector')
