@@ -80,17 +80,18 @@ New rotation functions beyond these three can be added using the new decorator :
 
 Reworked internals of TimeSeries
 ================================
-`~sunpy.timeseries.GenericTimeseries` has been re-worked to use astropy time
+`sunpy.timeseries.GenericTimeSeries` has been re-worked to use astropy time
 handling underneath. This allows users to take full advantage of astropy time
 handling (e.g. different time systems, support for leapseconds) when using
-`~sunpy.timeseries.GenericTimeseries`.
+`sunpy.timeseries.GenericTimeSeries`.
 
 As part of this the following API has been deprecated:
-- `sunpy.timeseries.GenericTimeseries.index`. Use
-  `sunpy.timeseries.GenericTimeseries.times` instead.
-- `sunpy.timeseries.GenericTimeseries.data`. Use
-  :meth:`sunpy.timeseries.GenericTimeseries.to_table` or
-  :meth:`sunpy.timeseries.GenericTimeseries.to_dataframe` instead.
+
+- `sunpy.timeseries.GenericTimeSeries.index`. Use
+  `sunpy.timeseries.GenericTimeSeries.times` instead.
+- `sunpy.timeseries.GenericTimeSeries.data`. Use
+  :meth:`sunpy.timeseries.GenericTimeSeries.to_table` or
+  :meth:`sunpy.timeseries.GenericTimeSeries.to_dataframe` instead.
 
 Improvements to map and image rotation
 
