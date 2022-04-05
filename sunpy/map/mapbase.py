@@ -1013,7 +1013,7 @@ class GenericMap(NDData):
         `~sunpy.map.GenericMap.shift`."""
         warn_deprecated(
             '`sunpy.map.GenericMap.shifted_value` is deprecated and will be removed in sunpy 4.1. '
-            'Use `sunpy.map.GenericMap.meta.modified_items` to see how the '
+            'Use ``sunpy.map.GenericMap.meta.modified_items`` to see how the '
             'reference coordinate has been modified.'
         )
         return self._shift

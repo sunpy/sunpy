@@ -466,7 +466,7 @@ def test_save_compressed(aia171_test_map):
 
 DEP_WARNING_SHIFTED_VAL = (
     'ignore:`sunpy.map.GenericMap.shifted_value` is deprecated and will be removed in sunpy 4.1. '
-    'Use `sunpy.map.GenericMap.meta.modified_items` to see how the reference coordinate has been '
+    'Use ``sunpy.map.GenericMap.meta.modified_items`` to see how the reference coordinate has been '
     'modified.:sunpy.util.exceptions.SunpyDeprecationWarning'
 )
 DEP_WARNING_SHIFT = (
