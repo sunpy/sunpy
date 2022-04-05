@@ -9,8 +9,6 @@ import numbers
 import textwrap
 import itertools
 import webbrowser
-from io import BytesIO
-from base64 import b64encode
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
@@ -44,6 +42,7 @@ from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import cached_property_based_on, check_arithmetic_compatibility
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
+from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 
@@ -2697,19 +2696,3 @@ GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
-
-
-def _figure_to_base64(fig):
-    # Converts a matplotlib Figure to a base64 UTF-8 string
-    buf = BytesIO()
-    fig.savefig(buf, format='png', facecolor='none')  # works better than transparent=True
-    return b64encode(buf.getvalue()).decode('utf-8')
-
-
-def _modify_polygon_visibility(polygon, keep):
-    # Put import here to reduce sunpy.map import time
-    from matplotlib.path import Path
-
-    polygon_codes = polygon.get_path().codes
-    polygon_codes[:-1][~keep] = Path.MOVETO
-    polygon_codes[-1] = Path.MOVETO if not keep[0] else Path.LINETO
