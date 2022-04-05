@@ -3,10 +3,16 @@ This module provies `sunpy.timeseries.GenericTimeSeries` which all other
 `sunpy.timeseries.TimeSeries` classes inherit from.
 """
 import copy
+import html
+import textwrap
+from io import BytesIO
+from base64 import b64encode
 from collections import OrderedDict
 from collections.abc import Iterable
 
 import pandas as pd
+from matplotlib.backend_bases import FigureCanvasBase
+from matplotlib.figure import Figure
 
 import astropy
 import astropy.units as u
@@ -19,6 +25,7 @@ from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
+from sunpy.map.mapbase import _figure_to_base64
 
 # define and register a new unit, needed for RHESSI
 det = u.def_unit('detector')
@@ -122,6 +129,61 @@ class GenericTimeSeries:
         # Validate input data
         # self._validate_meta()
         # self._validate_units()
+
+    def _text_summary(self):
+        start_time, end_time = self.time_range.start, self.time_range.end
+        center_time = self.time_range.center
+        duration = str(self.time_range.days.value) + " days"
+        columns = ", ".join(self.columns)
+
+        return textwrap.dedent(f"""\
+                   Start Time:\t\t {start_time}
+                   End Time:\t\t {end_time}
+                   Center Time:\t\t {center_time}
+                   Duration:\t\t {duration}
+                   Columns:\t\t {columns}""")
+
+    def __str__(self):
+        return f"{self.meta}\n{self._data.__repr__()}"
+
+    def __repr__(self):
+        return f"{object.__repr__(self)}\n{self}"
+
+    def _repr_html_(self):
+        """
+        Produce an HTML summary with plots for use in Jupyter notebooks.
+        """
+
+        # Convert the text repr to an HTML table
+        partial_html = self._text_summary().replace('\n', '</td></tr><tr><th>')\
+            .replace(':\t', '</th><td>')
+        text_to_table = textwrap.dedent(f"""\
+            <table style='text-align:left'>
+                <tr><th>{partial_html}</td></tr>
+            </table>""").replace('\n', '')
+
+        # Plot the image in pixel space
+        fig = Figure()
+        # Figure instances in matplotlib<3.1 do not create a canvas by default
+        if fig.canvas is None:
+            FigureCanvasBase(fig)
+        ax = fig.subplots()
+        self.plot(axes=ax)
+        img_src = _figure_to_base64(fig)
+
+        return textwrap.dedent(f"""\
+            <pre>{html.escape(object.__repr__(self))}</pre>
+            <table>
+                <tr>
+                    <td>{text_to_table}</td>
+                    <td>
+                        <div align=center>
+                           <img src='data:image/png;base64,{img_src}'
+                        />
+                        </div>
+                    </td>
+                </tr>
+            </table>""")
 
 # #### Attribute definitions #### #
 
