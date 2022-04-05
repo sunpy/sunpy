@@ -1,1 +1,0 @@
-Fixed a bug where rotating a map while simultaneously scaling it could result in some of the map data being cropped out.

@@ -1,3 +1,14 @@
+3.0.7 (2022-04-05)
+==================
+
+Bug Fixes
+---------
+
+- Fixed a bug when rotating a map by a matrix that is not purely a rotation.
+  The likely way to inadvertently encounter this bug was when de-rotating a map with rectangular pixels that were not aligned with the coordinate axes. (`#5803 <https://github.com/sunpy/sunpy/pull/5803>`__)
+- Fixed a bug where rotating a map while simultaneously scaling it could result in some of the map data being cropped out. (`#5803 <https://github.com/sunpy/sunpy/pull/5803>`__)
+
+
 3.0.6 (2022-03-16)
 ==================
 
