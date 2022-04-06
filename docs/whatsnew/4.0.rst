@@ -28,14 +28,11 @@ Improved return types of HEK queries
 The 'event_endtime', 'event_starttime' and 'event_peaktime' columns in a HEK
 query are now returned as `~astropy.time.Time` objects.
 
-
 Drawing Carrington coordinate grids
 ===================================
 It is now easy to draw Carrington coordinate grids on top of maps using
 :meth:`sunpy.map.GenericMap.draw_grid` by specifying ``system='carrington'``.
-
-.. minigallery:: sunpy.map.GenericMap.draw_grid
-
+See :ref:`sphx_glr_generated_gallery_plotting_grid_plotting.py` for an example.
 
 Better printing of metadata
 ===========================
