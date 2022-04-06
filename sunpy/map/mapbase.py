@@ -666,27 +666,27 @@ class GenericMap(NDData):
 
     def std(self, *args, **kwargs):
         """
-        Calculate the standard deviation of the data array.
+        Calculate the standard deviation of the data array, ignoring NaNs.
         """
-        return self.data.std(*args, **kwargs)
+        return np.nanstd(self.data, *args, **kwargs)
 
     def mean(self, *args, **kwargs):
         """
-        Calculate the mean of the data array.
+        Calculate the mean of the data array, ignoring NaNs.
         """
-        return self.data.mean(*args, **kwargs)
+        return np.nanmean(self.data, *args, **kwargs)
 
     def min(self, *args, **kwargs):
         """
-        Calculate the minimum value of the data array.
+        Calculate the minimum value of the data array, ignoring NaNs.
         """
-        return self.data.min(*args, **kwargs)
+        return np.nanmin(self.data, *args, **kwargs)
 
     def max(self, *args, **kwargs):
         """
-        Calculate the maximum value of the data array.
+        Calculate the maximum value of the data array, ignoring NaNs.
         """
-        return self.data.max(*args, **kwargs)
+        return np.nanmax(self.data, *args, **kwargs)
 
     @staticmethod
     def _parse_fits_unit(unit_str):
