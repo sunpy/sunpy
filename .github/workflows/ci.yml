@@ -73,8 +73,8 @@ jobs:
               - graphviz
         - linux: py38-online
 
-  misc:
-    needs: [core]
+  cron:
+    if: github.event_name == 'workflow_dispatch'
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       default_python: '3.8'
@@ -86,7 +86,14 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
+<<<<<<< HEAD
         - windows: py310
+=======
+        - linux: base_deps
+        - linux: py39-devdeps
+        - linux: py310-conda
+          libraries: ''
+>>>>>>> 2096655dc (cron is back)
 
   publish:
     # Build wheels when pushing to any branch except main
@@ -110,7 +117,7 @@ jobs:
 
   notify_pass:
     if: github.event_name == 'workflow_dispatch'
-    needs: [publish, online, misc]
+    needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -122,7 +129,7 @@ jobs:
 
   notify_fail:
     if: failure() && github.event_name == 'workflow_dispatch'
-    needs: [publish, online, misc]
+    needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
