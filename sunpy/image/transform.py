@@ -14,7 +14,7 @@ __all__ = ['affine_transform']
 
 
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
-                     recenter=False, missing=0.0, use_scipy=None, *, method='scipy', clip=True):
+                     recenter=False, missing=np.nan, use_scipy=None, *, method='scipy', clip=True):
     """
     Rotates, shifts and scales an image.
 
@@ -37,7 +37,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Defaults to `True` i.e., recenter to the center of the array.
     missing : `float`, optional
         The value to replace any missing data after the transformation.
-        Can be `numpy.nan`.
+        Defaults to `numpy.nan`.
     method : {``'skimage'``, ``'scipy'``}, optional
         Transform function to use. Currently
         :func:`scipy.ndimage.affine_transform` and

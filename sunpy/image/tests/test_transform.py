@@ -117,14 +117,14 @@ def test_shift(original, dx, dy):
     # Check a shifted shape against expected outcome
     expected = np.roll(np.roll(original, dx, axis=1), dy, axis=0)
     rcen = image_center - np.array([dx, dy])
-    shift = affine_transform(original, rmatrix=rmatrix, recenter=True, image_center=rcen)
+    shift = affine_transform(original, rmatrix=rmatrix, recenter=True, image_center=rcen, missing=0)
     ymin, ymax = max([0, dy]), min([original.shape[1], original.shape[1]+dy])
     xmin, xmax = max([0, dx]), min([original.shape[0], original.shape[0]+dx])
     assert compare_results(expected[ymin:ymax, xmin:xmax], shift[ymin:ymax, xmin:xmax])
 
     # Check shifted and unshifted shape against original image
     rcen = image_center + np.array([dx, dy])
-    unshift = affine_transform(shift, rmatrix=rmatrix, recenter=True, image_center=rcen)
+    unshift = affine_transform(shift, rmatrix=rmatrix, recenter=True, image_center=rcen, missing=0)
     # Need to ignore the portion of the image cut off by the first shift
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
@@ -150,7 +150,7 @@ def test_scale(original, scale_factor):
     else:
         lower = int(w - new_c)
         expected[lower:upper, lower:upper] = newim
-    scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=1)
+    scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=1, missing=0)
     assert compare_results(expected, scale)
 
 
@@ -190,15 +190,15 @@ def test_all(original, angle, dx, dy, scale_factor):
     expected = np.rot90(new, k=k)
 
     rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=1,
-                                     recenter=True, image_center=rcen)
+                                     recenter=True, image_center=rcen, missing=0)
     assert compare_results(expected, rotscaleshift)
 
     # Check a rotated/shifted and restored image against original
     transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, order=1, recenter=True,
-                                   image_center=rcen)
+                                   image_center=rcen, missing=0)
     inv_rcen = image_center + np.dot(rmatrix.T, np.array([dx, dy]))
     inverse = affine_transform(transformed, rmatrix=rmatrix.T, scale=1.0, order=1, recenter=True,
-                               image_center=inv_rcen)
+                               image_center=inv_rcen, missing=0)
 
     # Need to ignore the portion of the image cut off by the first shift
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
@@ -288,16 +288,20 @@ def test_clipping(rot30):
 
     for i, method in enumerate(['scipy', 'skimage']):
         axs[i, 0].imshow(image, vmin=0, vmax=3)
-        axs[i, 1].imshow(affine_transform(image, rot30, clip=True, method=method, missing=0), vmin=0, vmax=3)
-        axs[i, 2].imshow(affine_transform(image, rot30, clip=True, method=method, missing=2), vmin=0, vmax=3)
-        axs[i, 3].imshow(affine_transform(image, rot30, clip=True, method=method, missing=np.nan), vmin=0, vmax=3)
-        axs[i, 4].imshow(affine_transform(image, rot30, clip=False, method=method), vmin=0, vmax=3)
+        axs[i, 1].imshow(affine_transform(image, rot30, clip=False, method=method, missing=0),
+                         vmin=0, vmax=3)
+        axs[i, 2].imshow(affine_transform(image, rot30, clip=True, method=method, missing=0),
+                         vmin=0, vmax=3)
+        axs[i, 3].imshow(affine_transform(image, rot30, clip=True, method=method, missing=2),
+                         vmin=0, vmax=3)
+        axs[i, 4].imshow(affine_transform(image, rot30, clip=True, method=method, missing=np.nan),
+                         vmin=0, vmax=3)
 
     axs[0, 0].set_title('Original')
-    axs[0, 1].set_title('clip & missing=0')
-    axs[0, 2].set_title('clip & missing=2')
-    axs[0, 3].set_title('clip & missing=NaN')
-    axs[0, 4].set_title('no clip')
+    axs[0, 1].set_title('no clip & missing=0')
+    axs[0, 2].set_title('clip & missing=0')
+    axs[0, 3].set_title('clip & missing=2')
+    axs[0, 4].set_title('clip & missing=NaN')
 
     axs[0, 0].set_ylabel('SciPy')
     axs[1, 0].set_ylabel('scikit-image')

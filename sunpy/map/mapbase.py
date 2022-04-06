@@ -1531,7 +1531,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, use_scipy=None, *, method='scipy', clip=True):
+               recenter=False, missing=np.nan, use_scipy=None, *, method='scipy', clip=True):
         """
         Returns a new rotated and rescaled map.
 
@@ -1568,7 +1568,7 @@ class GenericMap(NDData):
             Default: False
         missing : float
             The numerical value to fill any missing points after rotation.
-            Default: 0.0
+            Default: `numpy.nan`
         method : {``'skimage'``, ``'scipy'``}, optional
             Rotation function to use. Currently
             :func:`scipy.ndimage.affine_transform` and
