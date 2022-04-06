@@ -2084,7 +2084,7 @@ class GenericMap(NDData):
             Coordinate system for the grid. Must be 'stonyhurst' or 'carrington'.
             If 'carrington', the ``observer`` keyword argument must be specified.
         kwargs :
-            Additional keyword arguments are passed to `wcsaxes_heliographic_overlay`.
+            Additional keyword arguments are passed to `~sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay`.
 
         Returns
         -------
