@@ -10,7 +10,7 @@ from scipy.signal import convolve2d
 
 from sunpy.util.exceptions import warn_deprecated, warn_user
 
-__all__ = ['affine_transform']
+__all__ = ['add_rotation_function', 'affine_transform']
 
 
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
@@ -38,10 +38,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     missing : `float`, optional
         The value to replace any missing data after the transformation.
         Defaults to `numpy.nan`.
-    method : {``'skimage'``, ``'scipy'``}, optional
-        Transform function to use. Currently
-        :func:`scipy.ndimage.affine_transform` and
-        :func:`skimage.transform.warp` are supported.
+    method : {{{rotation_function_names}}}, optional
+        Transform function to use.
         Defaults to 'scipy'.
     clip : `bool`, optional
         If `True`, clips the pixel values of the output image to the range of the
@@ -57,10 +55,6 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     -----
     If there are NaNs in the image, pixels in the output image will be set to NaN if
     they are within a number of pixels equal to half of the ``order`` parameter.
-
-    For rotation using ``scikit-image``, an input image with integer data is cast to
-    64-bit floats, and the output image can be re-cast using `numpy.ndarray.astype`
-    if desired.
     """
     rmatrix = rmatrix / scale
     array_center = (np.array(image.shape)[::-1] - 1) / 2.0
@@ -84,16 +78,16 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     method = _get_transform_method(method, use_scipy)
 
     # Transform the image using the appropriate function
-    rotated_image = _supported_rotation_methods[method](image, rmatrix, shift, order, missing, clip)
+    rotated_image = _rotation_function_library[method](image, rmatrix, shift, order, missing, clip)
 
     return rotated_image
 
 
 def _get_transform_method(method, use_scipy):
     # This is re-used in affine_transform and GenericMap.rotate
-    if method not in _supported_rotation_methods:
+    if method not in _rotation_function_library:
         raise ValueError(f'Method {method} not in supported methods: '
-                         f'{_supported_rotation_methods.keys()}')
+                         f'{_rotation_function_library.keys()}')
 
     if use_scipy is not None:
         warn_deprecated("The 'use_scipy' argument is deprecated. "
@@ -112,115 +106,118 @@ def _get_transform_method(method, use_scipy):
     return method
 
 
-def _handle_clipping_externally(rotation_function):
+def add_rotation_function(name, *, handles_clipping=False,
+                          handles_image_nans=False, handles_nan_missing=False):
     """
-    Decorator for a rotation function to handle clipping externally
-    """
-    @wraps(rotation_function)
-    def wrapper(image, matrix, shift, order, missing, clip):
-        # Get the rotated image without any clipping
-        rotated_image = rotation_function(image, matrix, shift, order, missing, False)
+    Decorator to add a rotation function to the library of selectable
+    implementations.
 
-        if clip and not np.all(np.isnan(rotated_image)):
-            # Clip the image to the input range
-            if np.isnan(missing):
-                # If `missing` is NaN, clipping to the input range is straightforward
-                rotated_image.clip(np.nanmin(image), np.nanmax(image), out=rotated_image)
+    The decorator accepts the parameters listed under ``Parameters``.  The decorated
+    function must accept the parameters listed under ``Other Parameters`` in that
+    order and return the rotated image.
+
+    Parameters
+    ----------
+    name : `str`
+        The name that will be used to select the rotation function
+    handles_clipping : `bool`
+        Specifies whether the rotation function can internally perform clipping
+    handles_image_nans : `bool`
+        Specifies whether the rotation function can internally handle NaNs in the
+        input image
+    handles_nan_missing : `bool`
+        Specifies whether the rotation function can internally handle NaN as the
+        missing value
+
+    Other Parameters
+    ----------------
+    image : `numpy.ndarray`
+        The image, which could be integers or floats
+    matrix : `numpy.ndarray` that is 2x2
+        The linear transformation matrix (e.g., rotation+scale+skew)
+    shift : 2-element `numpy.ndarray`
+        The translational shift to apply to the image in each axis
+    order : `int`
+        The numerical parameter that controls the degree of interpolation
+    missing : `float`
+        The value to use for outside the bounds of the original image
+    clip : `bool`
+        Whether to clip the output image to the range of the input image
+
+    Notes
+    -----
+    The rotation function is supplied the input image directly, so the function
+    should not modify the image in place.
+    """
+    def decorator(rotation_function):
+        @wraps(rotation_function)
+        def wrapper(image, matrix, shift, order, missing, clip):
+            clip_to_use = clip if handles_clipping else False
+
+            # If missing cannot be used directly, use a value in the input range of the image
+            missing_to_use = (missing if handles_nan_missing or not np.isnan(missing)
+                              else np.nanmin(image))
+
+            if not handles_image_nans:
+                isnan = np.isnan(image)
+                has_nans = np.any(isnan)
             else:
-                # Otherwise, check if `missing` should be considered part of the input range
-                lower = np.nanmin([np.max([missing, np.nanmin(rotated_image)]), np.nanmin(image)])
-                upper = np.nanmax([np.min([missing, np.nanmax(rotated_image)]), np.nanmax(image)])
-                rotated_image.clip(lower, upper, out=rotated_image)
+                has_nans = False
 
-        return rotated_image
+            # If needed, set any image NaNs to a value that is in the range of the input image
+            image_to_use = np.nan_to_num(image, nan=np.nanmin(image)) if has_nans else image
 
-    return wrapper
+            rotated_image = rotation_function(image_to_use, matrix, shift, order,
+                                              missing_to_use, clip_to_use)
 
+            # If needed, restore the NaNs
+            if not handles_image_nans and has_nans:
+                # Use a convolution to find all pixels that are affected by NaNs
+                # We want a kernel size that is an odd number that is at least order+1
+                size = 2*int(np.ceil(order/2))+1
+                expanded_nans = convolve2d(isnan.astype(int),
+                                           np.ones((size, size)).astype(int),
+                                           mode='same')
+                rotated_nans = scipy.ndimage.affine_transform(expanded_nans.T, matrix,
+                                                              offset=shift, order=1,
+                                                              mode='nearest').T
+                rotated_image[rotated_nans > 0] = np.nan
 
-def _handle_image_nans_externally(rotation_function):
-    """
-    Decorator for a rotation function to handle any NaNs in the image externally to the function
-    """
-    @wraps(rotation_function)
-    def wrapper(image, matrix, shift, order, missing, clip):
-        # Check for any NaNs and set them to a value that is in the range of the input image
-        isnan = np.isnan(image)
-        has_nans = np.any(isnan)
-        nanfree_image = np.nan_to_num(image, nan=np.nanmin(image)) if has_nans else image
+            if not handles_nan_missing and np.isnan(missing):
+                # Rotate a constant image to determine where to apply the NaNs for `missing`
+                constant = scipy.ndimage.affine_transform(np.ones_like(image).T.astype(int), matrix,
+                                                          offset=shift, order=0, mode='constant').T
+                rotated_image[constant < 1] = np.nan
 
-        # Pass the NaN-free image on to the rotation function
-        rotated_image = rotation_function(nanfree_image, matrix, shift, order, missing, clip)
+            if not handles_clipping and clip and not np.all(np.isnan(rotated_image)):
+                # Clip the image to the input range
+                if np.isnan(missing):
+                    # If `missing` is NaN, clipping to the input range is straightforward
+                    rotated_image.clip(np.nanmin(image), np.nanmax(image), out=rotated_image)
+                else:
+                    # Otherwise, check if `missing` should be considered part of the input range
+                    lower = np.nanmin([np.max([missing, np.nanmin(rotated_image)]), np.nanmin(image)])
+                    upper = np.nanmax([np.min([missing, np.nanmax(rotated_image)]), np.nanmax(image)])
+                    rotated_image.clip(lower, upper, out=rotated_image)
 
-        # Restore the NaNs
-        if has_nans:
-            # Use a convolution to find all pixels that are affected by NaNs
-            # We want a kernel size that is an odd number that is at least order+1
-            size = 2*int(np.ceil(order/2))+1
-            expanded_nans = convolve2d(isnan.astype(int),
-                                       np.ones((size, size)).astype(int),
-                                       mode='same')
-            rotated_nans = scipy.ndimage.affine_transform(expanded_nans.T, matrix,
-                                                          offset=shift, order=1,
-                                                          mode='nearest').T
-            rotated_image[rotated_nans > 0] = np.nan
+            return rotated_image
 
-        return rotated_image
+        _rotation_function_library[name] = wrapper
 
-    return wrapper
+        affine_transform.__doc__ += (f"\n    Notes for the ``{name}`` rotation method:"
+                                     f"\n{wrapper.__doc__}")
 
-
-def _handle_nan_missing_externally(rotation_function):
-    """
-    Decorator for a rotation function to externally handle NaN as the value for `missing`
-    """
-    @wraps(rotation_function)
-    def wrapper(image, matrix, shift, order, missing, clip):
-        # Sanitize missing if it is NaN
-        missing_to_use = np.nanmin(image) if np.isnan(missing) else missing
-
-        rotated_image = rotation_function(image, matrix, shift, order, missing_to_use, clip)
-
-        if np.isnan(missing):
-            # Rotate a constant image to determine where to apply the NaNs for `missing`
-            constant = scipy.ndimage.affine_transform(np.ones_like(image).T.astype(int), matrix,
-                                                      offset=shift, order=0, mode='constant').T
-            rotated_image[constant < 1] = np.nan
-
-        return rotated_image
-
-    return wrapper
+        return wrapper
+    return decorator
 
 
-# Define individual rotation implementations below and insert in the dictionary at the end.
-#
-# The arguments must be, in order:
-#   image : `numpy.ndarray`
-#       The image, which could be integers or floats, and can include NaNs
-#   matrix : `numpy.ndarray` that is 2x2
-#       The linear transformation matrix (e.g., rotation+scale+skew)
-#   shift : 2-element `numpy.ndarray`
-#       The translational shift to apply to the image in each axis
-#   order : `int`
-#       The numerical parameter that controls the degree of interpolation
-#   missing : `float`
-#       The value to use for outside the bounds of the original image, and may be NaN
-#   clip : `bool`
-#       Whether to clip the output image to the range of the input image
-#
-# There are three decorators that can be used:
-#
-# * `_handle_clipping_externally` is for rotation functions that do not implement clipping
-# * `_handle_nan_missing_externally` is for rotation functions that do not handle NaN for `missing`
-# * `_handle_image_nans_externally` is for rotation functions that do not handle NaNs in the image
-#
-# Do not modify `image` directly; copy first if necessary.
+_rotation_function_library = {}
 
 
-@_handle_clipping_externally
-@_handle_image_nans_externally
+@add_rotation_function("scipy", handles_nan_missing=True)
 def _rotation_scipy(image, matrix, shift, order, missing, clip):
     """
-    Rotation using SciPy
+    * Rotates using :func:`scipy.ndimage.affine_transform`
     """
     rotated_image = scipy.ndimage.affine_transform(image.T, matrix, offset=shift, order=order,
                                                    mode='constant', cval=missing).T
@@ -228,19 +225,17 @@ def _rotation_scipy(image, matrix, shift, order, missing, clip):
     return rotated_image
 
 
-@_handle_clipping_externally
-@_handle_nan_missing_externally
-@_handle_image_nans_externally
+@add_rotation_function("skimage")
 def _rotation_skimage(image, matrix, shift, order, missing, clip):
     """
-    Rotation using scikit-image
-
-    We handle clipping externally because the clipping behavior of
-    :func:`skimage.transform.warp` is different between orders in {0, 1, 3} and
-    orders in {2, 4, 5}.
-
-    We handle NaN for `missing` externally because :func:`skimage.transform.warp`
-    does not handle it correctly for orders in {2, 4, 5}.
+    * Rotates using :func:`skimage.transform.warp`
+    * An input image with integer data is cast to floats prior to passing to
+      :func:`~skimage.transform.warp`.  The output image can be re-cast using
+      :meth:`numpy.ndarray.astype` if desired.
+    * Does not let :func:`~skimage.transform.warp` handle clipping due to
+      inconsistent handling across interpolation orders
+    * Does not pass NaN as ``missing`` to :func:`~skimage.transform.warp` due to
+      inconsistent handling across interpolation orders
     """
     import skimage.transform
 
@@ -277,5 +272,5 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     return rotated_image
 
 
-_supported_rotation_methods = {'scipy': _rotation_scipy,
-                               'skimage': _rotation_skimage}
+_rotation_function_names = ", ".join([f"``'{name}'``" for name in _rotation_function_library])
+affine_transform.__doc__ = affine_transform.__doc__.format(rotation_function_names=_rotation_function_names)
