@@ -34,16 +34,16 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Defaults to the center of the array.
     recenter : `bool` or array-like, optional
         Move the axis of rotation to the center of the array or recenter coords.
-        Defaults to `True` i.e., recenter to the center of the array.
+        Defaults to `False`.
     missing : `float`, optional
         The value to replace any missing data after the transformation.
         Defaults to `numpy.nan`.
     method : {{{rotation_function_names}}}, optional
         Transform function to use.
-        Defaults to 'scipy'.
+        Defaults to ``'scipy'``.
     clip : `bool`, optional
         If `True`, clips the pixel values of the output image to the range of the
-        input image (including the value of ``missing``).
+        input image (including the value of ``missing``, if used).
         Defaults to `True`.
 
     Returns
@@ -78,16 +78,16 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     method = _get_transform_method(method, use_scipy)
 
     # Transform the image using the appropriate function
-    rotated_image = _rotation_function_library[method](image, rmatrix, shift, order, missing, clip)
+    rotated_image = _rotation_function_registry[method](image, rmatrix, shift, order, missing, clip)
 
     return rotated_image
 
 
 def _get_transform_method(method, use_scipy):
     # This is re-used in affine_transform and GenericMap.rotate
-    if method not in _rotation_function_library:
+    if method not in _rotation_function_registry:
         raise ValueError(f'Method {method} not in supported methods: '
-                         f'{_rotation_function_library.keys()}')
+                         f'{_rotation_function_registry.keys()}')
 
     if use_scipy is not None:
         warn_deprecated("The 'use_scipy' argument is deprecated. "
@@ -106,8 +106,7 @@ def _get_transform_method(method, use_scipy):
     return method
 
 
-def add_rotation_function(name, *, handles_clipping=False,
-                          handles_image_nans=False, handles_nan_missing=False):
+def add_rotation_function(name, handles_clipping, handles_image_nans, handles_nan_missing):
     """
     Decorator to add a rotation function to the library of selectable
     implementations.
@@ -121,13 +120,17 @@ def add_rotation_function(name, *, handles_clipping=False,
     name : `str`
         The name that will be used to select the rotation function
     handles_clipping : `bool`
-        Specifies whether the rotation function can internally perform clipping
+        Specifies whether the rotation function will internally perform clipping.
+        If ``False``, the rotation function will always receive ``False`` for the
+        ``clip`` input parameter.
     handles_image_nans : `bool`
-        Specifies whether the rotation function can internally handle NaNs in the
-        input image
+        Specifies whether the rotation function will internally handle NaNs in the
+        input image.  If ``False``, the rotation function is guaranteed to be
+        provided an image without any NaNs.
     handles_nan_missing : `bool`
-        Specifies whether the rotation function can internally handle NaN as the
-        missing value
+        Specifies whether the rotation function will internally handle NaN as the
+        ``missing`` value.  If ``False``, the rotation function will never receive
+        NaN, but instead receive a value in the input range of the image.
 
     Other Parameters
     ----------------
@@ -146,8 +149,16 @@ def add_rotation_function(name, *, handles_clipping=False,
 
     Notes
     -----
+    The docstring of the rotation function should be a bulleted list of notes
+    specific to the rotation function.  It will be appended to ``Notes`` section of
+    the docstring for :func:`~sunpy.image.transform.affine_transform`.
+
     The rotation function is supplied the input image directly, so the function
     should not modify the image in place.
+
+    Setting any of the ``handles_*`` parameters to ``False`` means that computation
+    will be performed to modify the image returned by the rotation function before
+    it is returned to :func:`~sunpy.image.transform.affine_transform`.
     """
     def decorator(rotation_function):
         @wraps(rotation_function)
@@ -155,23 +166,23 @@ def add_rotation_function(name, *, handles_clipping=False,
             clip_to_use = clip if handles_clipping else False
 
             # If missing cannot be used directly, use a value in the input range of the image
-            missing_to_use = (missing if handles_nan_missing or not np.isnan(missing)
-                              else np.nanmin(image))
+            needs_missing_handling = not handles_nan_missing and np.isnan(missing)
+            missing_to_use = missing if not needs_missing_handling else np.nanmin(image)
 
             if not handles_image_nans:
                 isnan = np.isnan(image)
-                has_nans = np.any(isnan)
+                needs_nan_handling = np.any(isnan)
             else:
-                has_nans = False
+                needs_nan_handling = False
 
             # If needed, set any image NaNs to a value that is in the range of the input image
-            image_to_use = np.nan_to_num(image, nan=np.nanmin(image)) if has_nans else image
+            image_to_use = np.nan_to_num(image, nan=np.nanmin(image)) if needs_nan_handling else image
 
             rotated_image = rotation_function(image_to_use, matrix, shift, order,
                                               missing_to_use, clip_to_use)
 
             # If needed, restore the NaNs
-            if not handles_image_nans and has_nans:
+            if needs_nan_handling:
                 # Use a convolution to find all pixels that are affected by NaNs
                 # We want a kernel size that is an odd number that is at least order+1
                 size = 2*int(np.ceil(order/2))+1
@@ -183,7 +194,7 @@ def add_rotation_function(name, *, handles_clipping=False,
                                                               mode='nearest').T
                 rotated_image[rotated_nans > 0] = np.nan
 
-            if not handles_nan_missing and np.isnan(missing):
+            if needs_missing_handling:
                 # Rotate a constant image to determine where to apply the NaNs for `missing`
                 constant = scipy.ndimage.affine_transform(np.ones_like(image).T.astype(int), matrix,
                                                           offset=shift, order=0, mode='constant').T
@@ -202,22 +213,25 @@ def add_rotation_function(name, *, handles_clipping=False,
 
             return rotated_image
 
-        _rotation_function_library[name] = wrapper
+        _rotation_function_registry[name] = wrapper
 
-        affine_transform.__doc__ += (f"\n    Notes for the ``{name}`` rotation method:"
+        # Add the docstring of the rotation function to the docstring of affine_transform
+        affine_transform.__doc__ += (f"\n    **Specific notes for the '{name}' rotation method:**"
                                      f"\n{wrapper.__doc__}")
 
         return wrapper
     return decorator
 
 
-_rotation_function_library = {}
+_rotation_function_registry = {}
 
 
-@add_rotation_function("scipy", handles_nan_missing=True)
+@add_rotation_function("scipy",
+                       handles_clipping=False, handles_image_nans=False, handles_nan_missing=True)
 def _rotation_scipy(image, matrix, shift, order, missing, clip):
     """
     * Rotates using :func:`scipy.ndimage.affine_transform`
+    * The ``mode`` parameter is fixed to be ``'constant'``
     """
     rotated_image = scipy.ndimage.affine_transform(image.T, matrix, offset=shift, order=order,
                                                    mode='constant', cval=missing).T
@@ -225,15 +239,21 @@ def _rotation_scipy(image, matrix, shift, order, missing, clip):
     return rotated_image
 
 
-@add_rotation_function("skimage")
+@add_rotation_function("skimage",
+                       handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
 def _rotation_skimage(image, matrix, shift, order, missing, clip):
     """
     * Rotates using :func:`skimage.transform.warp`
+    * The implementation for higher orders of interpolation means that the pixels
+      in the output image that are beyond the extent of the input image may not have
+      exactly the value of the ``missing`` parameter.
     * An input image with integer data is cast to floats prior to passing to
       :func:`~skimage.transform.warp`.  The output image can be re-cast using
       :meth:`numpy.ndarray.astype` if desired.
     * Does not let :func:`~skimage.transform.warp` handle clipping due to
       inconsistent handling across interpolation orders
+    * Does not let :func:`~skimage.transform.warp` handle image NaNs because they
+      are not handled properly for some interpolation orders
     * Does not pass NaN as ``missing`` to :func:`~skimage.transform.warp` due to
       inconsistent handling across interpolation orders
     """
@@ -261,6 +281,8 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
         adjusted_image /= im_max
         adjusted_missing /= im_max
 
+    # Be aware that even though mode is set to 'constant', when skimage 0.19 calls scipy,
+    # it specifies the scipy mode to be 'grid-constant' rather than 'constant'
     rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
                                            mode='constant', cval=adjusted_missing, clip=clip)
 
@@ -272,5 +294,8 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     return rotated_image
 
 
-_rotation_function_names = ", ".join([f"``'{name}'``" for name in _rotation_function_library])
+# Generate the string with allowable rotation-function names for use in docstrings
+_rotation_function_names = ", ".join([f"``'{name}'``" for name in _rotation_function_registry])
+# Insert into the docstring for affine_transform.  We cannot use the add_common_docstring decorator
+# due to what would be a circular loop in definitions.
 affine_transform.__doc__ = affine_transform.__doc__.format(rotation_function_names=_rotation_function_names)

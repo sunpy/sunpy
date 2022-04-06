@@ -36,10 +36,15 @@ from sunpy.coordinates import HeliographicCarrington, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
-from sunpy.util.decorators import cached_property_based_on, check_arithmetic_compatibility
+from sunpy.util.decorators import (
+    add_common_docstring,
+    cached_property_based_on,
+    check_arithmetic_compatibility,
+)
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64
@@ -1529,6 +1534,7 @@ class GenericMap(NDData):
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
+    @add_common_docstring(rotation_function_names=_rotation_function_names)
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
                recenter=False, missing=np.nan, use_scipy=None, *, method='scipy', clip=True):
@@ -1552,30 +1558,22 @@ class GenericMap(NDData):
         rmatrix : array-like
             2x2 linear transformation rotation matrix.
         order : int
-            Interpolation order to be used. Must be in the range 0-5.
-            When using scikit-image this
-            parameter is passed into :func:`skimage.transform.warp` (e.g., 4
-            corresponds to bi-quartic interpolation).
-            When using scipy it is passed into
-            :func:`scipy.ndimage.affine_transform` where it
-            controls the order of the spline. Faster performance may be
-            obtained at the cost of accuracy by using lower values.
+            Interpolation order to be used.  The precise meaning depends on the
+            rotation method specified by ``method``.
             Default: 4
         scale : float
             A scale factor for the image, default is no scaling
         recenter : bool
             If True, position the axis of rotation at the center of the new map
-            Default: False
+            Default: `False`
         missing : float
             The numerical value to fill any missing points after rotation.
             Default: `numpy.nan`
-        method : {``'skimage'``, ``'scipy'``}, optional
-            Rotation function to use. Currently
-            :func:`scipy.ndimage.affine_transform` and
-            :func:`skimage.transform.warp` are supported.
+        method : {{{rotation_function_names}}}, optional
+            Rotation function to use.  Defaults to ``'scipy'``.
         clip : `bool`, optional
             If `True`, clips the pixel values of the output image to the range of the
-            input image (including the value of ``missing``).
+            input image (including the value of ``missing``, if used).
             Defaults to `True`.
 
         Returns
@@ -1594,13 +1592,9 @@ class GenericMap(NDData):
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
-        See :func:`sunpy.image.transform.affine_transform` for details on the
-        transformations, situations when the underlying data is modified prior
-        to rotation, and differences from IDL's rot().
+        See :func:`sunpy.image.transform.affine_transform` for details on each of the
+        rotation functions.
         """
-        # Put the import here to reduce sunpy.map import time
-        from sunpy.image.transform import _get_transform_method, affine_transform
-
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a rotation matrix.")
         elif angle is None and rmatrix is None:
