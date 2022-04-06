@@ -475,7 +475,8 @@ class JSOCClient(BaseClient):
         c = drms.Client()
 
         # Private communication from JSOC say we should not use more than one connection.
-        if kwargs.get('max_splits'):
+        max_splits = kwargs.get('max_splits', 1)
+        if max_splits != 1:
             log.info(f"max_splits keyword was passed and set to 1.")
         kwargs['max_splits'] = 1
 
