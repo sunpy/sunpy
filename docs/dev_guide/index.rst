@@ -35,7 +35,7 @@ This goes over the basics and has links to useful tutorials on git.
    contents/remote_data
    contents/config
    contents/funding
-   contenst/ci
+   contents/ci
 
 {%else%}
 
