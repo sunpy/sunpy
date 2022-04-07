@@ -2082,7 +2082,6 @@ class GenericMap(NDData):
             Passing `False` disables the axes labels and the ticks on the top and right axes.
         system : str
             Coordinate system for the grid. Must be 'stonyhurst' or 'carrington'.
-            If 'carrington', the ``observer`` keyword argument must be specified.
         kwargs :
             Additional keyword arguments are passed to `~sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay`.
 
