@@ -18,12 +18,10 @@ import sunpy.map
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 ##############################################################################
-# `~sunpy.map.GenericMap` provides the `~sunpy.map.GenericMap.rotate` method
-# which accepts an angle. This returns a rotated map and does not rotate in
-# place. The data array size is expanded so that none of the original data is
-# lost due to clipping. Note that subsequent rotations are not compounded.
-# The map is only rotated by the specified amount from the original maps
-# orientation.
+# `~sunpy.map.GenericMap` provides the :meth:`~sunpy.map.GenericMap.rotate`
+# method which accepts an angle. This returns a rotated map and does not
+# modify the original map. The data array size is expanded so that none of the
+# original data is lost due to cropping.
 
 aia_rotated = aia_map.rotate(angle=30 * u.deg)
 
