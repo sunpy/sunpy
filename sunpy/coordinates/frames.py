@@ -4,6 +4,7 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
+import traceback
 from contextlib import contextmanager
 
 import numpy as np
@@ -587,7 +588,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
             d = np.fmin(d, dd) if self._spherical_screen['only_off_disk'] else dd
 
-        if np.all(np.isnan(d)) and np.any(np.isfinite(cos_alpha)):
+        stack_trace = traceback.format_stack()
+        # _draw_grid is the specific function called in WCSAxes
+        if not any(["_draw_grid" in string for string in stack_trace]) and np.all(np.isnan(d)) and np.any(np.isfinite(cos_alpha)):
             warn_user("The conversion of these 2D helioprojective coordinates to 3D is all NaNs "
                       "because off-disk coordinates need an additional assumption to be mapped to calculate distance from the observer. "
                       "Consider using the context manager `Helioprojective.assume_spherical_screen()`.")

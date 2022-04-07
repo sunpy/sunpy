@@ -7,7 +7,6 @@ import html
 import inspect
 import numbers
 import textwrap
-import warnings
 import itertools
 import webbrowser
 from tempfile import NamedTemporaryFile
@@ -47,8 +46,6 @@ from sunpy.util.decorators import (
     check_arithmetic_compatibility,
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
-from sunpy.util.decorators import cached_property_based_on, check_arithmetic_compatibility
-from sunpy.util.exceptions import SunpyUserWarning, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -2158,12 +2155,10 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
         is_wcsaxes = wcsaxes_compat.is_wcsaxes(axes)
         if is_wcsaxes:
-            with warnings.catch_warnings():
-                warnings.filterwarnings("ignore", category=SunpyUserWarning)
-                # TODO: supply custom limb radius
-                return sunpy.visualization.limb.draw_limb(
-                    axes, self.observer_coordinate, resolution=resolution,
-                    rsun=self.rsun_meters, **kwargs)
+            # TODO: supply custom limb radius
+            return sunpy.visualization.limb.draw_limb(
+                axes, self.observer_coordinate, resolution=resolution,
+                rsun=self.rsun_meters, **kwargs)
         else:
             warn_deprecated("Drawing the limb on a non-WCS Axes is deprecated, "
                             "and will be removed in sunpy 4.1.")
@@ -2365,16 +2360,13 @@ class GenericMap(NDData):
             figure.colorbar(im, pad=pad).set_label(colorbar_label,
                                                    rotation=0, labelpad=-50, y=-0.02, size=12)
 
-        # We want to filter out warnings a user can do nothing about.
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=SunpyUserWarning)
-            if draw_limb:
-                self.draw_limb(axes=axes)
-            if draw_grid:
-                if grid_spacing is None:
-                    self.draw_grid(axes=axes)
-                else:
-                    self.draw_grid(axes=axes, grid_spacing=grid_spacing)
+        if draw_limb:
+            self.draw_limb(axes=axes)
+        if draw_grid:
+            if grid_spacing is None:
+                self.draw_grid(axes=axes)
+            else:
+                self.draw_grid(axes=axes, grid_spacing=grid_spacing)
 
         return figure
 
