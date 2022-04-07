@@ -21,21 +21,21 @@ This goes over the basics and has links to useful tutorials on git.
 
    contents/newcomers
    contents/code_standards
+   contents/tests
    contents/documentation
    contents/example_gallery
-   contents/tests
    contents/pr_review_procedure
-   contents/api
-   contents/dependencies
    contents/units_quantities
-   contents/new_objects
-   contents/extending_fido
-   contents/maintainer_workflow
-   contents/logger
-   contents/remote_data
+   contents/api
+   contents/ci_jobs
    contents/config
+   contents/dependencies
+   contents/extending_fido
    contents/funding
-   contents/ci
+   contents/logger
+   contents/maintainer_workflow
+   contents/new_objects
+   contents/remote_data
 
 {%else%}
 

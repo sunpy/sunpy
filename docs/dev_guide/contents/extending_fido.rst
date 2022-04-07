@@ -14,7 +14,6 @@ Before writing a new client, ensure you are familiar with how searches are speci
 When choosing a name for your new client it should have the form ``<name>Client`` as sunpy will split the name the name of the class to extract the name of your client.
 The main place this is done is when constructing a `~.UnifiedResponse` object, where the name part can be used to index the response object.
 
-
 .. _new_scraper_client:
 
 Writing a new "scraper" client
@@ -63,7 +62,6 @@ The supported time keys are: 'year', 'month', 'day', 'hour', 'minute', 'second',
 The attrs returned in the ``register_values()`` method are used to match your client to a search, as well as adding their values to the attr.
 This means that after this client has been imported, running ``print(a.Provider)`` will show that the ``EVEClient`` has registered a provider value of ``LASP``.
 In addition to this, a sanitized, lower cased version of the value will be available for tab completing, e.g. ``a.Provider.lasp`` or ``a.Level.zero``.
-
 
 More Complex Clients
 --------------------
@@ -342,7 +340,6 @@ A simple example, which just checks the type of ``attrs`` and not their values w
 
 Note, that this method is a class method, it gets called without instantiating your client to speed up the dispatching.
 
-
 Writing a Fetch Method
 ----------------------
 
@@ -370,7 +367,6 @@ If you do not wish to handle a single row any differently to a table, you can pl
 
 The primary function of the ``fetch()`` method is for you to convert this results object into a set of URLs for Fido to download.
 This logic will be specific to your client.
-
 
 Formatting the ``path=`` Argument
 #################################
@@ -417,7 +413,6 @@ Our simple example above now becomes::
       filepath = partial(make_filename, path, row)
 
 Where the ``path`` variable is a `pathlib.Path` object provided as the ``path`` argument to ``fetch()``.
-
 
 Adding URLs to be Downloaded
 ############################
