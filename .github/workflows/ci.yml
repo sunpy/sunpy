@@ -43,7 +43,9 @@ jobs:
           - openjpeg
       envs: |
         - macos: py38
-        - windows: py310
+        - windows: py39
+        - linux: base_deps
+        - linux: py39-devdeps
         - linux: py38-oldestdeps
         - linux: py39-conda
           libraries: ''
@@ -83,8 +85,7 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: base_deps
-        - linux: py39-devdeps
+        - windows: py310
 
   publish:
     # Build wheels when pushing to any branch except main
