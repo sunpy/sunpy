@@ -51,6 +51,7 @@ jobs:
           libraries: ''
 
   online:
+    if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
