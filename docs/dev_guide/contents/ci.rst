@@ -10,8 +10,8 @@ While we can run many jobs, we aim to limit the selection depending in the conte
 Currently we have several stages of CI jobs, some run on a pull request and some will only run on a schedule.
 
 1. "core" - Pull Request, Scheduled and Release
-   This runs a basic offline test suite on Linux for the latest version of Python we support.
-   It ensures that basic functionality works and that we don't have any regressions.
+    This runs a basic offline test suite on Linux for the latest version of Python we support.
+    It ensures that basic functionality works and that we don't have any regressions.
 
 2. "test" - Pull Request, Scheduled and Release
     This runs a basic test suite on Windows and Mac OS for older versions of Python we support.
@@ -29,8 +29,8 @@ Currently we have several stages of CI jobs, some run on a pull request and some
     These should be checked based on the last commit for that release branch instead before a tag.
 
 4. "cron" - Scheduled
-   Here we put builds that are useful to run on a schedule but not so useful on a pull request.
-   This allows us to run more "exotic" or focused builds that day to day, should not affect a pull request.
+    Here we put builds that are useful to run on a schedule but not so useful on a pull request.
+    This allows us to run more "exotic" or focused builds that day to day, should not affect a pull request.
 
     These are:
 
