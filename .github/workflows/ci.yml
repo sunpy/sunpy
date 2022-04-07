@@ -51,8 +51,7 @@ jobs:
           libraries: ''
 
   online:
-    # Don't run online tests for tagged releases
-    if: !startsWith(github.event.ref, 'refs/tags/v')
+    if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
