@@ -16,8 +16,7 @@ If you are thinking of contributing to sunpy please read the following carefully
 We currently recommend the :ref:`newcomers` as the place to start.
 This goes over the basics and has links to useful tutorials on git.
 
-.. toctree::
-   :maxdepth: 2
+.. panels::
 
     Getting started
     ^^^^^^^^^^^^^^^
@@ -42,8 +41,8 @@ This goes over the basics and has links to useful tutorials on git.
 
     ---
 
-    Management
-    ^^^^^^^^^^
+    Repo management
+    ^^^^^^^^^^^^^^^
     .. toctree::
       :maxdepth: 1
 
@@ -54,8 +53,8 @@ This goes over the basics and has links to useful tutorials on git.
 
     ---
 
-    API
-    ^^^
+    API and extending sunpy
+    ^^^^^^^^^^^^^^^^^^^^^^^
     .. toctree::
       :maxdepth: 1
 
