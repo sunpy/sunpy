@@ -44,6 +44,7 @@ jobs:
       envs: |
         - macos: py38
         - windows: py39
+        - linux: py38-oldestdeps
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -83,7 +84,6 @@ jobs:
       envs: |
         - linux: base_deps
         - linux: py39-devdeps
-        - linux: py38-oldestdeps
         - linux: py39-conda
           libraries: ''
 

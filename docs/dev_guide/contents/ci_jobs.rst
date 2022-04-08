@@ -7,6 +7,8 @@ What runs on our Continuous Integration
 Overall the aim of the Continuous Integration is to provide a way for developers to test their code on multiple platforms and help in the development process.
 While we can run many jobs, we aim to limit the selection depending in the context to ensure that the time taken is not wasted or ends up delaying a pull request or release.
 
+The goal is that, the builds we do not run on a pul request should primarily be ones which are unlikely to be the fault of the change in the pull request if they fail.
+
 Currently we have several stages of CI jobs, some run on a pull request and some will only run on a schedule.
 
 1. "core" - Pull Request, Scheduled and Release
@@ -17,6 +19,9 @@ Currently we have several stages of CI jobs, some run on a pull request and some
     This runs a basic test suite on Windows and Mac OS for older versions of Python we support.
     It ensures that basic functionality works and that we don't have any regressions.
     This stage needs to wait for the "core" stage to complete.
+    Furthermore, we run:
+
+    * "oldestdeps" - Check the offline test suite with the oldest dependencies installed.
 
 3. "online" - Pull Request, Scheduled
     This runs a full test suite on Linux for a version of Python.
@@ -36,5 +41,6 @@ Currently we have several stages of CI jobs, some run on a pull request and some
 
     * "base_deps" - Check that sunpy does not error if you only have the base dependencies installed.
     * "devdeps" - Check the offline test suite with the development dependencies installed.
-    * "oldestdeps" - Check the offline test suite with the oldest dependencies installed.
+      Likely to break due to upstream changes we can't fix and have to wait to be resolved.
     * "conda" - Check the offline test suite when using conda instead of pip/pypi.
+      Likely to break due to packaging upstream we can't fix and have to wait to be resolved.
