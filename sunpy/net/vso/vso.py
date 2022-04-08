@@ -308,7 +308,7 @@ class VSOClient(BaseClient):
         return fname
 
     def fetch(self, query_response, path=None, methods=None, site=None,
-              progress=True, overwrite=False, downloader=None, wait=True, **kwargs):
+              progress=True, overwrite=False, downloader=None, wait=True):
         """
         Download data specified in the query_response.
 
@@ -407,8 +407,7 @@ class VSOClient(BaseClient):
                                         methods,
                                         downloader,
                                         str(path),
-                                        self.by_fileid(query_response),
-                                        **kwargs)
+                                        self.by_fileid(query_response))
 
         if dl_set and not wait:
             return err_results
@@ -468,7 +467,7 @@ class VSOClient(BaseClient):
 
         return self.make('VSOGetDataRequest', request=request)
 
-    def download_all(self, response, methods, downloader, path, qr, info=None, **kwargs):
+    def download_all(self, response, methods, downloader, path, qr, info=None):
         results = Results()
         GET_VERSION = [
             ('0.8', (5, 8)),
@@ -499,8 +498,7 @@ class VSOClient(BaseClient):
                             dataitem.url,
                             downloader,
                             path,
-                            qr[dataitem.fileiditem.fileid[0]],
-                            **kwargs
+                            qr[dataitem.fileiditem.fileid[0]]
                         )
                     except NoData:
                         results.add_error('', '', DownloadFailed(dresponse))
@@ -540,17 +538,17 @@ class VSOClient(BaseClient):
 
                 self.download_all(
                     self.api.service.GetData(request), methods, downloader, path,
-                    qr, info, **kwargs
+                    qr, info
                 )
             else:
                 results.add_error('', '', UnknownStatus(dresponse))
 
         return results
 
-    def download(self, method, url, downloader, *args, **kwargs):
+    def download(self, method, url, downloader, *args):
         """ Enqueue a file to be downloaded, extra args are passed to ``mk_filename``"""
         if method.startswith('URL'):
-            return downloader.enqueue_file(url, filename=partial(self.mk_filename, *args), **kwargs)
+            return downloader.enqueue_file(url, filename=partial(self.mk_filename, *args))
 
         raise NoData
 

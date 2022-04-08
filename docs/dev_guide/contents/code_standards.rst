@@ -8,25 +8,25 @@ The purpose of the page is to describe the standards that are expected of all th
 All potential developers should read and abide by the following standards.
 Code which does not follow these standards closely will not be accepted.
 
-We try to closely follow the coding style and conventions proposed by `Astropy <https://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`__.
+We try to closely follow the coding style and conventions proposed by `Astropy <https://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
 
 Language Standard
 =================
 
-* All code must be compatible with Python 3.8 and later.
+* All code must be compatible with Python 3.7 and later.
   Usage of ``six``, ``__future__``, and ``2to3`` is no longer acceptable.
 
-* The new Python 3 formatting style should be used (i.e. ``f"{spam}"`` instead of ``"%s" % "spam"``).
-  ``.format`` is perfectly fine depending on the use case.
+* The new Python 3 formatting style should be used (i.e.
+  ``"{0:s}".format("spam")`` instead of ``"%s" % "spam"``).
 
-* The core package and affiliated packages should be importable with no dependencies other than components already in the sunpy core package, the `Python Standard Library <https://docs.python.org/3/library/index.html>`__, and packages already required by the sunpy core package.
+* The core package and affiliated packages should be importable with no dependencies other than components already in the sunpy core package, the `Python Standard Library <https://docs.python.org/3/library/index.html>`_, and packages already required by the sunpy core package.
   Adding dependencies to sunpy core will be considered but are highly discouraged.
   Such optional dependencies should be recorded in the ``setup.cfg`` file in the ``extras_require`` entry.
 
 Coding Style/Conventions
 ========================
 
-* The code will follow the standard `PEP8 Style Guide for Python Code <https://www.python.org/dev/peps/pep-0008/>`__.
+* The code will follow the standard `PEP8 Style Guide for Python Code <https://www.python.org/dev/peps/pep-0008/>`_.
   In particular, this includes using only 4 spaces for indentation, and never tabs.
 
 * **Follow the existing coding style** within a file and avoid making changes that are purely stylistic.

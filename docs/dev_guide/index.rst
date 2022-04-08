@@ -16,54 +16,25 @@ If you are thinking of contributing to sunpy please read the following carefully
 We currently recommend the :ref:`newcomers` as the place to start.
 This goes over the basics and has links to useful tutorials on git.
 
-.. panels::
+.. toctree::
+   :maxdepth: 2
 
-    Getting started
-    ^^^^^^^^^^^^^^^
-    .. toctree::
-      :maxdepth: 4
-
-      contents/newcomers
-
-    ---
-
-    Standards
-    ^^^^^^^^^
-    .. toctree::
-      :maxdepth: 1
-
-      contents/code_standards
-      contents/tests
-      contents/documentation
-      contents/example_gallery
-      contents/pr_review_procedure
-      contents/units_quantities
-
-    ---
-
-    Management
-    ^^^^^^^^^^
-    .. toctree::
-      :maxdepth: 1
-
-      contents/ci_jobs
-      contents/dependencies
-      contents/funding
-      contents/maintainer_workflow
-
-    ---
-
-    API
-    ^^^
-    .. toctree::
-      :maxdepth: 1
-
-      contents/api
-      contents/config
-      contents/extending_fido
-      contents/logger
-      contents/new_objects
-      contents/remote_data
+   contents/newcomers
+   contents/code_standards
+   contents/documentation
+   contents/example_gallery
+   contents/tests
+   contents/pr_review_procedure
+   contents/api
+   contents/dependencies
+   contents/units_quantities
+   contents/new_objects
+   contents/extending_fido
+   contents/maintainer_workflow
+   contents/logger
+   contents/remote_data
+   contents/config
+   contents/funding
 
 {%else%}
 
