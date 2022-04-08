@@ -19,23 +19,52 @@ This goes over the basics and has links to useful tutorials on git.
 .. toctree::
    :maxdepth: 2
 
-   contents/newcomers
-   contents/code_standards
-   contents/documentation
-   contents/example_gallery
-   contents/tests
-   contents/pr_review_procedure
-   contents/api
-   contents/dependencies
-   contents/units_quantities
-   contents/new_objects
-   contents/extending_fido
-   contents/maintainer_workflow
-   contents/logger
-   contents/remote_data
-   contents/config
-   contents/funding
-   contents/ci_jobs
+    Getting started
+    ^^^^^^^^^^^^^^^
+    .. toctree::
+      :maxdepth: 4
+
+      contents/newcomers
+
+    ---
+
+    Standards
+    ^^^^^^^^^
+    .. toctree::
+      :maxdepth: 1
+
+      contents/code_standards
+      contents/tests
+      contents/documentation
+      contents/example_gallery
+      contents/pr_review_procedure
+      contents/units_quantities
+
+    ---
+
+    Management
+    ^^^^^^^^^^
+    .. toctree::
+      :maxdepth: 1
+
+      contents/dependencies
+      contents/funding
+      contents/maintainer_workflow
+      contents/ci_jobs
+
+    ---
+
+    API
+    ^^^
+    .. toctree::
+      :maxdepth: 1
+
+      contents/api
+      contents/config
+      contents/extending_fido
+      contents/logger
+      contents/new_objects
+      contents/remote_data
 
 {%else%}
 
