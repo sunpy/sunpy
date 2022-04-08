@@ -1,6 +1,8 @@
 name: Scheduled builds
 
 on:
+  # Allow manual runs through the web UI
+  workflow_dispatch:
   schedule:
     #        ┌───────── minute (0 - 59)
     #        │ ┌───────── hour (0 - 23)
