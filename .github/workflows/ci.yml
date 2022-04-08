@@ -26,7 +26,7 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: py39
+        - linux: py310
 
   test:
     needs: [core]
@@ -67,7 +67,7 @@ jobs:
             apt:
               - libopenjp2-7
               - graphviz
-        - linux: py38-online
+        - linux: py39-online
 
   cron:
     if: github.event_name == 'workflow_dispatch'
@@ -109,7 +109,7 @@ jobs:
 
   notify_pass:
     if: github.event_name == 'workflow_dispatch'
-    needs: [cron, publish, online]
+    needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -121,7 +121,7 @@ jobs:
 
   notify_fail:
     if: failure() && github.event_name == 'workflow_dispatch'
-    needs: [cron, publish, online]
+    needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
