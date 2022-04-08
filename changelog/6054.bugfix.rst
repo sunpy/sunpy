@@ -6,3 +6,5 @@ column and a warning raised. Testing.
 If you think a given unit should not be dimensionless and support should be
 added for it in sunpy, please raise an issue at
 https://github.com/sunpy/sunpy/issues. Test.
+
+But if someone were to edit.
