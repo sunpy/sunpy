@@ -7,7 +7,8 @@ on:
       - main
 
 env:
-  BOT_AUTHOR: 'SunPyBot <bot@sunpy.org>'
+  BOT_USER_NAME: 'SunPyBot'
+  BOT_USER_EMAIL: 'bot@sunpy.org'
 
 jobs:
   update-changelog:
@@ -28,10 +29,14 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.number }}
           PR_BODY: ${{ github.event.pull_request.body }}
+          BOT_AUTHOR: ${{ env.BOT_USER_NAME }} <${{ env.BOT_USER_EMAIL }}>
       - name: Commit changelog
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Add changelog
+          commit_message: '[skip ci] Add changelog'
           add_options: '-A'
+          disable_globbing: true
           file_pattern: 'changelog/*.rst'
-          commit_author: ${{ env.BOT_AUTHOR }}
+          commit_user_name: ${{ env.BOT_USER_NAME }}
+          commit_user_email: ${{ env.BOT_USER_EMAIL }}
+          commit_author: ${{ env.BOT_USER_NAME }} <${{ env.BOT_USER_EMAIL }}>

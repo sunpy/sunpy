@@ -46,7 +46,7 @@ for entry in existing:
 #     markdown heading of "Changelog [category]"
 #     followed by a message in the next ``` code block.
 body = re.sub("(<!--.*?-->)", "", body, flags=re.DOTALL)
-regex = r"[#]+[ ]*Changelog[ ]*\[([a-zA-Z]+)\]*[^`]*```([^`]*)```"
+regex = r"[#]+[ ]*Changelog[ ]*\[([a-zA-Z]+)\][^`]*```((?s:.)*?)```"
 results = re.findall(regex, body)
 
 # Count entries per category
@@ -66,7 +66,7 @@ for category, text in results:
         counter = ''
 
     filename = f"{pr}.{category}{counter}.rst"
-    text = text.strip()
+    text = text.strip().replace('\r', '')
     if len(text) > 0:  # ignore empty messages
         entries += [(filename, text)]
 
