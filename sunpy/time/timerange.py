@@ -65,6 +65,7 @@ class TimeRange:
     True
     >>> time2 in time_range
     False
+
     >>> import numpy as np
     >>> from astropy.time import TimeDelta
     >>> time_range = TimeRange('2014/05/05 12:00', '2014/05/10 12:00')
