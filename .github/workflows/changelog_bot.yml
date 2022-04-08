@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+env:
+  BOT_AUTHOR: 'SunPyBot <bot@sunpy.org>'
+
 jobs:
   update-changelog:
     if: "!contains(github.event.pull_request.labels.*.name, 'No Changelog Entry Needed')"
@@ -29,4 +32,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Add changelog
+          add_options: '-A'
           file_pattern: 'changelog/*.rst'
+          commit_author: ${{ env.BOT_AUTHOR }}
