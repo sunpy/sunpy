@@ -1,1 +1,0 @@
-Added a range function to `.TimeRange` that returns a linearly spaced time object.
