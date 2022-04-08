@@ -5,6 +5,8 @@ sunpy core Documentation
 The sunpy core package is a community-developed, free and open-source solar
 data analysis environment for Python.
 
+Testing changelog bot.
+
 .. panels::
 
     Getting started
