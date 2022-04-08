@@ -4,10 +4,10 @@
 What runs on our Continuous Integration
 ***************************************
 
-Overall the aim of the Continuous Integration is to provide a way for developers to test their code on multiple platforms and help in the development process.
+Overall the aim of the Continuous Integration is to provide a way for contributors to test their code on multiple platforms and help in the development process.
 While we can run many jobs, we aim to limit the selection depending in the context to ensure that the time taken is not wasted or ends up delaying a pull request or release.
 
-The goal is that, the builds we do not run on a pul request should primarily be ones which are unlikely to be the fault of the change in the pull request if they fail.
+The goal is that, the builds we do not run on a pull request should primarily be ones which are unlikely to be the fault of the change in the pull request if they fail.
 
 Currently we have several stages of CI jobs, some run on a pull request and some will only run on a schedule.
 
