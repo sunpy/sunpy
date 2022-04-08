@@ -1,7 +1,7 @@
 name: Changelog Bot
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, edited, labeled, unlabeled]
     branches:
       - main
@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.head_ref }}
       - name: Setup Python 3.x
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.x'
       - name: Find and write changelog
