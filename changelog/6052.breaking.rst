@@ -1,0 +1,1 @@
+Several clients did not pass ``**kwargs`` through ``Fido.fetch`` to the client, they ended up going to ``parfive.Downloader.enqueue_file`` which has now not the case.
