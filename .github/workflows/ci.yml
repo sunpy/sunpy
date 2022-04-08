@@ -26,7 +26,7 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: py39
+        - linux: py310
 
   test:
     needs: [core]
@@ -44,11 +44,7 @@ jobs:
       envs: |
         - macos: py38
         - windows: py39
-        - linux: base_deps
-        - linux: py39-devdeps
         - linux: py38-oldestdeps
-        - linux: py39-conda
-          libraries: ''
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -71,7 +67,7 @@ jobs:
             apt:
               - libopenjp2-7
               - graphviz
-        - linux: py38-online
+        - linux: py39-online
 
   cron:
     if: github.event_name == 'workflow_dispatch'
@@ -86,7 +82,10 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - windows: py310
+        - linux: base_deps
+        - linux: py39-devdeps
+        - linux: py39-conda
+          libraries: ''
 
   publish:
     # Build wheels when pushing to any branch except main
@@ -110,7 +109,7 @@ jobs:
 
   notify_pass:
     if: github.event_name == 'workflow_dispatch'
-    needs: [cron, publish, online]
+    needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -122,7 +121,7 @@ jobs:
 
   notify_fail:
     if: failure() && github.event_name == 'workflow_dispatch'
-    needs: [cron, publish, online]
+    needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
