@@ -1,6 +1,8 @@
 name: Scheduled builds
 
 on:
+  # Allow manual runs through the web UI
+  workflow_dispatch:
   schedule:
     #        ┌───────── minute (0 - 59)
     #        │ ┌───────── hour (0 - 23)
@@ -17,4 +19,4 @@ jobs:
       - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 3.1
       - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 3.0
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
