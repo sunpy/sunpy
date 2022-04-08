@@ -65,6 +65,16 @@ class TimeRange:
     True
     >>> time2 in time_range
     False
+    >>> import numpy as np
+    >>> from astropy.time import TimeDelta
+    >>> time_range = TimeRange('2014/05/05 12:00', '2014/05/10 12:00')
+    >>> np.arange(time_range.start, time_range.end, TimeDelta(24*60*60, format = "sec"))
+    array([<Time object: scale='utc' format='isot' value=2014-05-05T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-06T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-07T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-08T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-09T12:00:00.000>],
+      dtype=object)
     """
 
     def __init__(self, a, b=None, format=None):
@@ -460,21 +470,3 @@ class TimeRange:
             int_second = self
 
         return int_second.start <= int_first.end
-
-    def range(self, delta):
-        """
-        Return a linearly spaced time range.
-
-        Parameters
-        ----------
-        delta : `astropy.time.TimeDelta`
-            The amount of time between two consecutive values.
-        """
-        if delta <= 0:
-            raise ValueError('Delta cannot be 0 or less.')
-        time_object = []
-        start = self._t1
-        while start <= self._t2:
-            time_object.append(start.value)
-            start += delta
-        return Time(time_object)

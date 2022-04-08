@@ -292,28 +292,3 @@ def test_intersects():
     tr2 = sunpy.time.TimeRange('2020-01-01', '2020-01-04')
     assert tr1.intersects(tr2)
     assert tr2.intersects(tr1)
-
-
-def test_range():
-    t = Time('2020-01-02')
-    tr = sunpy.time.TimeRange('2020-01-01T00:00:00', '2020-01-01T00:01:00')
-    tr2 = sunpy.time.TimeRange('2020-01-01T00:00:00', '2020-01-05T00:00:00')
-    linspace_range = tr.range(TimeDelta(1, format='sec'))
-    linspace_range2 = tr2.range(TimeDelta(60*60, format='sec'))
-    assert tr._t1 == linspace_range[0]
-    assert tr._t1 == linspace_range2[0]
-
-    # Check time in the range
-    assert tr._t1 + TimeDelta(5, format='sec') in linspace_range
-    assert tr._t1 + TimeDelta(61, format='sec') not in linspace_range
-    assert t in linspace_range2
-
-    # Check the length of the range
-    assert len(linspace_range.value) == 60
-    assert len(linspace_range2.value) == 96
-
-    # Check the raised exceptions
-    with pytest.raises(ValueError):
-        tr.range(TimeDelta(0, format='sec'))
-    with pytest.raises(ValueError):
-        tr.range(TimeDelta(-1, format='sec'))
