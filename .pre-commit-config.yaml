@@ -1,4 +1,21 @@
 repos:
+# The warnings/errors we check for here are:
+  # E901 - SyntaxError or IndentationError
+  # E902 - IOError
+  # F822 - undefined name in __all__
+  # F823 - local variable name referenced before assignment
+  # Others are taken care of by autopep8
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        args:
+          [
+            "--count",
+            "--select",
+            "E901,E902,F822,F823",
+          ]
+        exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|sunpy/visualization/colormaps/color_tables.py)$"
   - repo: https://github.com/myint/autoflake
     rev: v1.4
     hooks:
