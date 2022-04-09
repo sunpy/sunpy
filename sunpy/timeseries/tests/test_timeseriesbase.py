@@ -716,6 +716,67 @@ def test_timeseries_array():
         ts = sunpy.timeseries.TimeSeries(data, {})
         assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
 
+# =============================================================================
+# Test Source Plot columns keyword argument
+# =============================================================================
+
+
+def test_esp_plot_column(esp_test_ts):
+    axes = esp_test_ts.plot(columns=['QD', 'CH_18', 'CH_36'])
+    assert len(axes) == 3
+    assert '0.1-7nm' in axes[0].get_ylabel()
+    assert '18nm' in axes[1].get_ylabel()
+    assert '36nm' in axes[2].get_ylabel()
+
+
+def test_lyra_plot_column(lyra_test_ts):
+    axes = lyra_test_ts.plot(columns=['CHANNEL1', 'CHANNEL3'])
+    assert len(axes) == 2
+    assert 'Lyman alpha' in axes[0].get_ylabel()
+    assert 'Al filter' in axes[1].get_ylabel()
+
+
+def test_rhessi_plot_column(rhessi_test_ts):
+    ax = rhessi_test_ts.plot(columns=['3 - 6 keV', '25 - 50 keV', '100 - 300 keV'])
+    assert len(ax.lines) == 3
+    assert '3 - 6 keV' == ax.lines[0].get_label()
+    assert '25 - 50 keV' == ax.lines[1].get_label()
+    assert '100 - 300 keV' == ax.lines[2].get_label()
+
+
+def test_fermi_gbm_plot_column(fermi_gbm_test_ts):
+    ax = fermi_gbm_test_ts.plot(columns=['4-15 keV', '100-300 keV'])
+    assert len(ax.lines) == 2
+    assert '4-15 keV' == ax.lines[0].get_label()
+    assert '100-300 keV' == ax.lines[1].get_label()
+
+
+def test_goes_plot_column(goes_test_ts):
+    ax = goes_test_ts.plot(columns=['xrsa'])
+    assert len(ax.lines) == 1
+    assert '0.5--4.0' == ax.lines[0].get_label().split()[0]
+
+
+def test_norh_plot_column(norh_test_ts):
+    ax = norh_test_ts.plot(columns=['Correlation Coefficient'])
+    assert len(ax.lines) == 1
+    assert '17GHZ' == ax.lines[0].get_label()
+
+
+def test_noaa_json_ind_plot_column(noaa_ind_json_test_ts):
+    ax = noaa_ind_json_test_ts.plot(columns=['sunspot SWO', 'sunspot SWO smooth'])
+    assert len(ax.lines) == 2
+    assert 'sunspot SWO' == ax.lines[0].get_label()
+    assert 'sunspot SWO smooth' == ax.lines[1].get_label()
+
+
+def test_noaa_json_pre_plot_column(noaa_pre_json_test_ts):
+    ax = noaa_pre_json_test_ts.plot(columns=['sunspot', 'sunspot high', 'sunspot low'])
+    assert len(ax.lines) == 3
+    assert 'sunspot' == ax.lines[0].get_label()
+    assert 'sunspot high' == ax.lines[1].get_label()
+    assert 'sunspot low' == ax.lines[2].get_label()
+
 
 # TODO:
 # _validate_units

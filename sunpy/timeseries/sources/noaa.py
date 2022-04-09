@@ -57,7 +57,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaaindices'
 
-    def plot(self, axes=None, plot_type='sunspot SWO', **kwargs):
+    def plot(self, axes=None, plot_type='sunspot SWO', columns=None, **kwargs):
         """
         Plots NOAA Indices.
 
@@ -67,6 +67,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             The axes on which to plot the TimeSeries.
         plot_type : {``"sunspot SWO"``, ``"sunspot RI"``, ``"sunspot compare"``, ``"radio"``, ``"geo"``}, optional
             The type of plot required. Defaults to ``"sunspot SWO"``.
+        columns : list[str], optional
+            To maintain uniformity among plot methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -111,7 +113,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         return axes
 
     @peek_show
-    def peek(self, title="Solar Cycle Progression", plot_type='sunspot SWO', **kwargs):
+    def peek(self, title="Solar Cycle Progression", plot_type='sunspot SWO', columns=None, **kwargs):
         """
         Displays the NOAA Indices as a function of time by calling
         `~sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries.plot`.
@@ -129,6 +131,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             The title of the plot. Defaults to "Solar Cycle Progression".
         plot_type : {``"sunspot SWO"``, ``"sunspot RI"``, ``"sunspot compare"``, ``"radio"``, ``"geo"``}, optional
             The type of plot required. Defaults to ``"sunspot SWO"``.
+        columns : list[str], optional
+            To maintain uniformity among peek methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -229,7 +233,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaapredictindices'
 
-    def plot(self, axes=None, **plot_args):
+    def plot(self, axes=None, columns=None, **plot_args):
         """
         Plots predicted NOAA Indices as a function of time from a pandas dataframe.
 
@@ -237,6 +241,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         ----------
         axes : `matplotlib.axes.Axes`, optional
             The axes on which to plot the TimeSeries.
+        columns : list[str], optional
+            To maintain uniformity among plot methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -261,7 +267,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         return axes
 
     @peek_show
-    def peek(self, title="Solar Cycle Sunspot Number Prediction", **plot_args):
+    def peek(self, title="Solar Cycle Sunspot Number Prediction", columns=None, **plot_args):
         """
         Displays the predicted NOAA Indices as a function of time by calling
         `~sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries.plot`.
@@ -277,6 +283,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         ----------
         title : `str`, optional
             The title of the plot. Defaults to "Solar Cycle Sunspot Number Prediction".
+        columns : list[str], optional
+            To maintain uniformity among peek methods.
         **plot_args : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.

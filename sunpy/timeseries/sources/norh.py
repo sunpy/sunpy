@@ -54,7 +54,7 @@ class NoRHTimeSeries(GenericTimeSeries):
     def __init__(self, data, header, units, **kwargs):
         super().__init__(data, header, units, **kwargs)
 
-    def plot(self, axes=None, **kwargs):
+    def plot(self, axes=None, columns=None, **kwargs):
         """
         Plot the NoRH lightcurve.
 
@@ -62,6 +62,8 @@ class NoRHTimeSeries(GenericTimeSeries):
         ----------
         axes : `matplotlib.axes.Axes`, optional
             The axes on which to plot the TimeSeries. Defaults to current axes.
+        columns : list[str], optional
+            To maintain uniformity among plot methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -80,13 +82,13 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes.plot(self.to_dataframe(), label=data_lab, **kwargs)
         axes.set_yscale("log")
         axes.set_ylim(1e-4, 1)
-        axes.set_xlabel('Start time: ' + self.to_dataframe().index[0].strftime(TIME_FORMAT))
+        axes.set_xlabel('Start time: ' + self._data.index[0].strftime(TIME_FORMAT))
         axes.set_ylabel('Correlation')
         axes.legend()
         return axes
 
     @peek_show
-    def peek(self, title="Nobeyama Radioheliograph", **kwargs):
+    def peek(self, title="Nobeyama Radioheliograph", columns=None, **kwargs):
         """
         Displays the NoRH lightcurve TimeSeries by calling
         `~sunpy.timeseries.sources.norh.NoRHTimeSeries.plot`.
@@ -102,6 +104,8 @@ class NoRHTimeSeries(GenericTimeSeries):
         ----------
         title : `str`, optional
             The title of the plot. Defaults to "Nobeyama Radioheliograph".
+        columns : list[str], optional
+            To maintain uniformity among peek methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
