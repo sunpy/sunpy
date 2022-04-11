@@ -18,6 +18,9 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     """
     Rotates, shifts and scales an image.
 
+    This function supports NaN values in the input image and supports using NaN for
+    pixels in the output image that are beyond the extent of the input image.
+
     Parameters
     ----------
     image : `numpy.ndarray`
@@ -36,10 +39,11 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Move the axis of rotation to the center of the array or recenter coords.
         Defaults to `False`.
     missing : `float`, optional
-        The value to replace any missing data after the transformation.
+        The value to use for pixels in the output image that are beyond the extent
+        of the input image.
         Defaults to `numpy.nan`.
     method : {{{rotation_function_names}}}, optional
-        Transform function to use.
+        Rotation function to use.
         Defaults to ``'scipy'``.
     clip : `bool`, optional
         If `True`, clips the pixel values of the output image to the range of the
@@ -53,8 +57,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     Notes
     -----
-    If there are NaNs in the image, pixels in the output image will be set to NaN if
-    they are within a number of pixels equal to half of the ``order`` parameter.
+    For each NaN pixel in the input image, one or more pixels in the output image
+    will be set to NaN, with the number of pixels affected depending on the
+    interpolation order.
+
+    See :func:`~sunpy.image.transform.add_rotation_function` for how to add a
+    different rotation function.
     """
     rmatrix = rmatrix / scale
     array_center = (np.array(image.shape)[::-1] - 1) / 2.0
@@ -108,12 +116,20 @@ def _get_transform_method(method, use_scipy):
 
 def add_rotation_function(name, handles_clipping, handles_image_nans, handles_nan_missing):
     """
-    Decorator to add a rotation function to the library of selectable
+    Decorator to add a rotation function to the registry of selectable
     implementations.
 
+    Each registered rotation function becomes a selectable option for
+    :func:`sunpy.image.transform.affine_transform` and
+    :meth:`sunpy.map.GenericMap.rotate`.  Those two routines are required to handle
+    clipping the output image, NaNs in the input image, and NaN as the value to use
+    for pixels in the output image that are beyond the extent of the input image.
+    If the supplied rotation function cannot provide one or more of these capabilities,
+    the decorator is able to provide them instead.
+
     The decorator accepts the parameters listed under ``Parameters``.  The decorated
-    function must accept the parameters listed under ``Other Parameters`` in that
-    order and return the rotated image.
+    rotation function must accept the parameters listed under ``Other Parameters``
+    in that order and return the rotated image.
 
     Parameters
     ----------
@@ -159,6 +175,12 @@ def add_rotation_function(name, handles_clipping, handles_image_nans, handles_na
     Setting any of the ``handles_*`` parameters to ``False`` means that computation
     will be performed to modify the image returned by the rotation function before
     it is returned to :func:`~sunpy.image.transform.affine_transform`.
+
+    If the decorator is handling image NaNs on behalf of the rotation function
+    (i.e., ``handles_image_nans=False``), pixels in the output image will be set to
+    NaN if they are within a number of pixels equal to half of the ``order``
+    parameter.  This step requires an additional image convolution, which might be
+    avoidable if the rotation function were able to internally handle image NaNs.
     """
     def decorator(rotation_function):
         @wraps(rotation_function)
@@ -231,7 +253,8 @@ _rotation_function_registry = {}
 def _rotation_scipy(image, matrix, shift, order, missing, clip):
     """
     * Rotates using :func:`scipy.ndimage.affine_transform`
-    * The ``mode`` parameter is fixed to be ``'constant'``
+    * The ``mode`` parameter for :func:`~scipy.ndimage.affine_transform` is fixed to
+      be ``'constant'``
     """
     rotated_image = scipy.ndimage.affine_transform(image.T, matrix, offset=shift, order=order,
                                                    mode='constant', cval=missing).T

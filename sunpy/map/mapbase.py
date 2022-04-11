@@ -1567,7 +1567,8 @@ class GenericMap(NDData):
             If True, position the axis of rotation at the center of the new map
             Default: `False`
         missing : float
-            The numerical value to fill any missing points after rotation.
+            The value to use for pixels in the output map that are beyond the extent
+            of the input map.
             Default: `numpy.nan`
         method : {{{rotation_function_names}}}, optional
             Rotation function to use.  Defaults to ``'scipy'``.
