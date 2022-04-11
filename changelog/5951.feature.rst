@@ -1,0 +1,1 @@
+Updated and expanded the HTML representation for `~sunpy.timeseries.TimeSeries`.
