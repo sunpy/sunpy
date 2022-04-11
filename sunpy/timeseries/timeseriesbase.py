@@ -5,6 +5,7 @@ This module provies `sunpy.timeseries.GenericTimeSeries` which all other
 import copy
 import html
 import textwrap
+import time
 import webbrowser
 from collections import OrderedDict
 from collections.abc import Iterable
@@ -17,6 +18,7 @@ import matplotlib.pyplot as plt
 import astropy
 import astropy.units as u
 from astropy.table import Column, Table
+from astropy.visualization import hist
 
 from sunpy import config
 from sunpy.time import TimeRange
@@ -224,8 +226,8 @@ class GenericTimeSeries:
         drange = drange.replace("\n", "<br>")
 
         center = self.time_range.center.value.astype('datetime64[s]')
-        center = str(center).replace("T"," ")
-        resolution = round(self.time_range.seconds.value/self.shape[0],3)
+        center = str(center).replace("T", " ")
+        resolution = round(self.time_range.seconds.value/self.shape[0], 3)
         resolution = str(resolution)+" s"
 
         channels = self.columns
@@ -248,8 +250,7 @@ class GenericTimeSeries:
                    Resolution:\t\t {resolution}
                    Samples per Channel:\t\t {self.shape[0]}
                    Data Range(s):\t\t {drange}
-                   Units:\t\t {uni}\
-                   """)
+                   Units:\t\t {uni}""")
 
     def __str__(self):
         return f"{self._text_summary()}\n{self._data.__repr__()}"
@@ -262,9 +263,6 @@ class GenericTimeSeries:
         Produces an HTML summary of the timeseries data with plots for use in
         Jupyter notebooks.
         """
-        from astropy.visualization import hist
-        import time
-
         # Call _text_summary and reformat as an HTML table
         partial_html = (
             self._text_summary()[34:]
