@@ -195,7 +195,7 @@ Data and Configuration
 * We store data used for examples in the `sample-data repository <https://github.com/sunpy/sample-data>`_.
   This data should not be used for unit tests but can be within our documentation.
 
-* All persistent configuration should use the :ref:`config` mechanism.
+* All persistent configuration should use the :ref:`customizing-sunpy` mechanism.
   Such configuration items should be placed at the top of the module or package that makes use of them, and supply a description sufficient for users to understand what the setting
   changes.
 
