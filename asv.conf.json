@@ -13,10 +13,10 @@
     "results_dir": "asv_results/results",
     "env_dir": "asv_env",
     "install_command": [
-        "in-dir={env_dir} python -mpip install {wheel_file}[map]"
+        "in-dir={env_dir} python -mpip install {wheel_file}[all]"
     ],
     "build_command": [
-        "python -mpip install extension_helpers numpy",
+        "python -mpip install -U setuptools wheel extension_helpers numpy",
         "python setup.py build",
         "PIP_NO_BUILD_ISOLATION=false python -mpip wheel --no-deps --no-index -w {build_cache_dir} {build_dir}"
     ]

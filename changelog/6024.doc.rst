@@ -1,0 +1,1 @@
+Updated the timeseries documentation to make it clear that you can pass in a numpy array.

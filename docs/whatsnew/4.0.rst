@@ -28,6 +28,12 @@ Improved return types of HEK queries
 The 'event_endtime', 'event_starttime' and 'event_peaktime' columns in a HEK
 query are now returned as `~astropy.time.Time` objects.
 
+Drawing Carrington coordinate grids
+===================================
+It is now easy to draw Carrington coordinate grids on top of maps using
+:meth:`sunpy.map.GenericMap.draw_grid` by specifying ``system='carrington'``.
+See :ref:`sphx_glr_generated_gallery_plotting_grid_plotting.py` for an example.
+
 Better printing of metadata
 ===========================
 Printing a `.MetaDict` now prints each entry on a new line, making it much easier to read::
@@ -42,6 +48,30 @@ Printing a `.MetaDict` now prints each entry on a new line, making it much easie
   naxis1: 1024
   naxis2: 1024
   ...
+
+Deprecation of `sunpy.image.coalignment`
+========================================
+The `sunpy.image.coalignment` module has been deprecated and will be removed in version 4.1.
+Users should instead use `sunkit_image.coalignment` which includes identical functionality and
+an identical API.
+The reason for deprecating and moving `sunpy.image.coalignment` is twofold.
+First, the scope of the core `sunpy` package has increasingly narrowed, with more analysis-specific
+functionality moved out to affiliated packages.
+Second, the module has seen little development in several years and by moving
+it to `sunkit_image.coalignment`, we hope to increase its visibility and attract a larger number
+of contributors.
+
+Deprecation of `sunpy.io.fits`
+==============================
+The `sunpy.io.fits` module is deprecated, and will be removed in version 4.1.
+This because it was designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.
+The `astropy.io.fits` module can be used instead as a replacement that is designed to be user-facing.
+
+Deprecation of `sunpy.physics.solar_rotation`
+=============================================
+`sunpy.physics.solar_rotation.calculate_solar_rotate_shift` and `sunpy.physics.solar_rotation.mapsequence_solar_derotate` have been deprecated and will be removed in version 4.1.
+Both of these functions have been moved to `sunkit_image.coalignment` and have identical functionality and API.
+Note that `~sunpy.physics.solar_rotation.mapsequence_solar_derotate` has been renamed to `~sunkit_image.coalignment.mapsequence_coalign_by_rotation` to more accurately reflect its functionality.
 
 Contributors to this Release
 ============================

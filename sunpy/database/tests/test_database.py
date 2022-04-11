@@ -11,7 +11,6 @@ import configparser
 
 import pytest
 import sqlalchemy
-from parfive.downloader import Downloader
 from parfive.results import Results
 
 from astropy import units
@@ -32,12 +31,11 @@ from sunpy.database import (
     attrs,
     disable_undo,
     split_database,
-    tables,
 )
 from sunpy.database.caching import LFUCache, LRUCache
 from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
 from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, FitsKeyComment, JSONDump, Tag
-from sunpy.io import fits
+from sunpy.io import _fits
 from sunpy.net import Fido
 from sunpy.net import attrs as net_attrs
 from sunpy.net import hek, vso
@@ -454,58 +452,13 @@ def test_add_entry_from_hek_qr(database):
     assert len(database) == 90
 
 
-@pytest.mark.remote_data
-def test_hek_query_download(monkeypatch, database, tmpdir):
-    assert len(database) == 0
-    records = ['94_1331820530-1331820530', '94_1331820542-1331820542',
-               '94_1331820554-1331820554', '94_1331820566-1331820566',
-               '94_1331820578-1331820578', '94_1331820590-1331820590',
-               '94_1331820602-1331820602', '94_1331820614-1331820614',
-               '94_1331820626-1331820626', '94_1331820638-1331820638']
-
-    def mock_parfive_download(obj, *args, **kwargs):
-
-        assert obj.queued_downloads == 10
-
-        queue = obj.http_queue
-        if not isinstance(queue, list):
-            queue = list(queue._queue)
-        obj_records = []
-
-        for item in queue:
-            url = item.keywords['url']
-            obj_records.append(url[-24:])
-
-        assert obj_records == records
-
-        result = Results()
-        result.append(str(tmpdir))
-        return result
-
-    def mock_entries_from_dir(*args, **kwargs):
-        for i in range(10):
-            yield DatabaseEntry()
-
-    monkeypatch.setattr(Downloader, "download", mock_parfive_download)
-    monkeypatch.setattr(tables, "entries_from_dir", mock_entries_from_dir)
-
-    query = hek.HEKClient().search(
-        net_attrs.Time('2019/03/10 14:40:10', '2019/04/11 16:40:50'),
-        hek.attrs.EventType('FL')
-    )
-
-    database.download_from_hek_query_result(query[4], path=str(tmpdir))
-
-    assert len(database) == 10
-
-
 def num_entries_from_vso_query(db, query, path=None, file_pattern='',
                                overwrite=False):
     db.download_from_vso_query_result(
         query, path=path, overwrite=overwrite)
     fits_pattern = file_pattern
     num_of_fits_headers = sum(
-        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+        len(_fits.get_header(file)) for file in glob.glob(fits_pattern))
     return num_of_fits_headers
 
 
@@ -585,7 +538,7 @@ def test_download_from_qr(database, download_qr, tmpdir):
         download_qr, path=str(tmpdir.join('{file}.fits')))
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
-        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+        len(_fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers > 0
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)
@@ -952,7 +905,7 @@ def test_fetch(database, download_query, tmpdir):
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
-        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+        len(_fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)

@@ -96,6 +96,7 @@ def test_peek_limb_aia171(aia171_test_map):
 def test_draw_grid_aia171(aia171_test_map):
     aia171_test_map.plot()
     aia171_test_map.draw_grid(grid_spacing=(30, 40) * u.deg)
+    aia171_test_map.draw_grid(system='carrington', color='blue')
 
 
 @figure_test

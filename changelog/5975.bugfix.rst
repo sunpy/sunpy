@@ -1,0 +1,1 @@
+Fixed reading CDF files when a variable has more than 2 dimensions. If this is the case the variable will be ignored, and a user warning is provided.

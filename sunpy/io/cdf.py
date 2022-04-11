@@ -89,7 +89,10 @@ def read_cdf(fname):
                           'Assigning dimensionless units.')
                 unit = u.dimensionless_unscaled
 
-            if data.ndim == 2:
+            if data.ndim > 2:
+                # Skip data with dimensions >= 3 and give user warning
+                warn_user(f'The variable "{var_key}" has been skipped because it has more than 2 dimensions, which is unsupported.')
+            elif data.ndim == 2:
                 # Multiple columns, give each column a unique label
                 for i, col in enumerate(data.T):
                     df[var_key + f'_{i}'] = col

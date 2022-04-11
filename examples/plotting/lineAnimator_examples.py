@@ -45,6 +45,6 @@ xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0
 ###############################################################################
 # Generate animation object with variable x-axis data.
 
-ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata])
+ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata]).get_animation()
 
 plt.show()

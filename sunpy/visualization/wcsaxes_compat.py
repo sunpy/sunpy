@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 from astropy.visualization import wcsaxes
 
-from sunpy.coordinates import HeliographicStonyhurst
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst
 
 __all__ = ["is_wcsaxes", "gca_wcs", "get_world_transform",
            "default_wcs_grid", "wcsaxes_heliographic_overlay"]
@@ -107,7 +107,8 @@ def default_wcs_grid(axes):
 
 @u.quantity_input
 def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=True,
-                                 obstime=None, rsun=None, **kwargs):
+                                 obstime=None, rsun=None, observer=None, system='stonyhurst',
+                                 **kwargs):
     """
     Create a heliographic overlay using
     `~astropy.visualization.wcsaxes.WCSAxes`.
@@ -117,15 +118,24 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
     Parameters
     ----------
     axes : `~astropy.visualization.wcsaxes.WCSAxes`
-        The `~astropy.visualization.wcsaxes.WCSAxes` object to create the HGS overlay on.
-    grid_spacing : `~astropy.units.Quantity`
+        The `~astropy.visualization.wcsaxes.WCSAxes` object to create the overlay on.
+    grid_spacing: `~astropy.units.Quantity`
         Spacing for longitude and latitude grid in degrees.
     annotate : `bool`
         Passing `False` disables the axes labels and the ticks on the top and right axes.
     obstime : `~astropy.time.Time`
-        The ``obstime`` to use for the `~sunpy.coordinates.HeliographicStonyhurst` grid.
+        The ``obstime`` to use for the grid coordinate frame.
     rsun : `~astropy.units.Quantity`
-        The ``rsun`` to use for the `~sunpy.coordinates.HeliographicStonyhurst` grid.
+        The ``rsun`` to use for the grid coordinate frame.
+    observer : `~astropy.coordinates.SkyCoord`
+        The ``observer`` to use for the grid coordinate frame. Only used for
+        Carrington coordinates.
+    system : str
+        Coordinate system for the grid. Must be 'stonyhurst' or 'carrington'.
+        If 'carrington', the ``observer`` keyword argument must be specified.
+    kwargs :
+        Additional keyword arguments are passed to
+        :meth:`astropy.visualization.wcsaxes.CoordinateHelper.grid`.
 
     Returns
     -------
@@ -144,13 +154,20 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
     else:
         raise ValueError("grid_spacing must be a Quantity of length one or two.")
 
+    if system == 'stonyhurst':
+        overlay = axes.get_coords_overlay(HeliographicStonyhurst(
+            obstime=obstime, rsun=rsun))
+    elif system == 'carrington':
+        overlay = axes.get_coords_overlay(HeliographicCarrington(
+            obstime=obstime, observer=observer, rsun=rsun))
+    else:
+        raise ValueError(f"system must be 'stonyhurst' or 'carrington' (got '{system}')")
+
     # Set the native coordinates to be bottom and left only so they don't share
     # axes with the overlay.
     c1, c2 = axes.coords
     c1.set_ticks_position('bl')
     c2.set_ticks_position('bl')
-
-    overlay = axes.get_coords_overlay(HeliographicStonyhurst(obstime=obstime, rsun=rsun))
 
     lon = overlay[0]
     lat = overlay[1]
@@ -159,8 +176,8 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
     lon.set_major_formatter('dd')
 
     if annotate:
-        lon.set_axislabel('Solar Longitude', minpad=0.8)
-        lat.set_axislabel('Solar Latitude', minpad=0.9)
+        lon.set_axislabel(f'{system.capitalize()} Longitude', minpad=0.8)
+        lat.set_axislabel(f'{system.capitalize()} Latitude', minpad=0.9)
         lon.set_ticks_position('tr')
         lat.set_ticks_position('tr')
     else:

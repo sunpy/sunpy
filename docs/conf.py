@@ -60,6 +60,9 @@ warnings.filterwarnings("error", category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
 warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
 warnings.filterwarnings("error", category=AstropyDeprecationWarning)
+warnings.filterwarnings("ignore",
+                        message="The `sunpy.io.fits` module is deprecated",
+                        category=SunpyDeprecationWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 # We set the logger to debug so that we can see any sample data download errors
@@ -188,6 +191,7 @@ intersphinx_mapping = {
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
     "skimage": ("https://scikit-image.org/docs/stable/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
+    "sunkit_image": ("https://docs.sunpy.org/projects/sunkit-image/en/stable/", None),
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
 }

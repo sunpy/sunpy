@@ -7,9 +7,8 @@ import html
 import inspect
 import numbers
 import textwrap
+import itertools
 import webbrowser
-from io import BytesIO
-from base64 import b64encode
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
@@ -30,7 +29,7 @@ from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
 import sunpy.io as io
-import sunpy.io.fits
+import sunpy.io._fits
 import sunpy.visualization.colormaps
 from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, get_earth, sun
@@ -43,6 +42,7 @@ from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import cached_property_based_on, check_arithmetic_compatibility
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
+from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 
@@ -549,6 +549,12 @@ class GenericMap(NDData):
     def _meta_hash(self):
         return self.meta.item_hash()
 
+    def _set_symmetric_vmin_vmax(self):
+        # Set symmetric vmin/vmax about zero
+        threshold = np.nanmax(abs(self.data))
+        self.plot_settings['norm'].vmin = -threshold
+        self.plot_settings['norm'].vmax = threshold
+
     @property
     @cached_property_based_on('_meta_hash')
     def wcs(self):
@@ -684,12 +690,11 @@ class GenericMap(NDData):
 
     @staticmethod
     def _parse_fits_unit(unit_str):
-        unit_str = unit_str.lower()
         replacements = {'gauss': 'G',
                         'dn': 'ct',
                         'dn/s': 'ct/s'}
-        if unit_str in replacements:
-            unit_str = replacements[unit_str]
+        if unit_str.lower() in replacements:
+            unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
             warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
@@ -910,7 +915,7 @@ class GenericMap(NDData):
         if 'waveunit' in self.meta:
             return u.Unit(self.meta['waveunit'])
         else:
-            wunit = sunpy.io.fits.extract_waveunit(self.meta)
+            wunit = sunpy.io._fits.extract_waveunit(self.meta)
             if wunit is not None:
                 return u.Unit(wunit)
 
@@ -1337,7 +1342,7 @@ class GenericMap(NDData):
         """
         A `~astropy.io.fits.Header` representation of the ``meta`` attribute.
         """
-        return sunpy.io.fits.header_to_fits(self.meta)
+        return sunpy.io._fits.header_to_fits(self.meta)
 
 # #### Miscellaneous #### #
     def _get_cmap_name(self):
@@ -1501,13 +1506,20 @@ class GenericMap(NDData):
         new_meta = self.meta.copy()
 
         # Update metadata
-        new_meta['cdelt1'] *= scale_factor_x
-        new_meta['cdelt2'] *= scale_factor_y
-        if 'CD1_1' in new_meta:
-            new_meta['CD1_1'] *= scale_factor_x
-            new_meta['CD2_1'] *= scale_factor_x
-            new_meta['CD1_2'] *= scale_factor_y
-            new_meta['CD2_2'] *= scale_factor_y
+        if 'pc1_1' in self.meta:
+            new_meta['pc1_1'] *= scale_factor_x
+            new_meta['pc2_1'] *= scale_factor_x
+            new_meta['pc1_2'] *= scale_factor_y
+            new_meta['pc2_2'] *= scale_factor_y
+        if 'cd1_1' in self.meta:
+            new_meta['cd1_1'] *= scale_factor_x
+            new_meta['cd2_1'] *= scale_factor_x
+            new_meta['cd1_2'] *= scale_factor_y
+            new_meta['cd2_2'] *= scale_factor_y
+        if 'cd1_1' not in self.meta and 'pc1_1' not in self.meta:
+            # Using the CROTA2 and CDELT formalism
+            new_meta['cdelt1'] *= scale_factor_x
+            new_meta['cdelt2'] *= scale_factor_y
         new_meta['crpix1'] = (self.reference_pixel.x.to_value(u.pix) + 0.5) / scale_factor_x + 0.5
         new_meta['crpix2'] = (self.reference_pixel.y.to_value(u.pix) + 0.5) / scale_factor_y + 0.5
         new_meta['naxis1'] = new_data.shape[1]
@@ -1588,6 +1600,7 @@ class GenericMap(NDData):
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a rotation matrix.")
         elif angle is None and rmatrix is None:
+            # Be aware that self.rotation_matrix may not actually be a pure rotation matrix
             rmatrix = self.rotation_matrix
 
         if order not in range(6):
@@ -1609,15 +1622,24 @@ class GenericMap(NDData):
             rmatrix = np.array([[c, -s],
                                 [s, c]])
 
+        # The data will be rotated by the inverse of the rotation matrix. Because rmatrix may not
+        # actually be a pure rotation matrix, we calculate the inverse in a general manner.
+        inv_rmatrix = np.linalg.inv(rmatrix)
+
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((self.data.shape @ rmatrix,
-                                          self.data.shape @ rmatrix.T))), axis=0)
+        corners = itertools.product([-0.5, self.data.shape[1]-0.5],
+                                    [-0.5, self.data.shape[0]-0.5])
+        rot_corners = np.vstack([rmatrix @ c for c in corners]) * scale
+        extent = np.max(rot_corners, axis=0) - np.min(rot_corners, axis=0)
 
         # Calculate the needed padding or unpadding
-        diff = np.asarray(np.ceil((extent - self.data.shape) / 2), dtype=int).ravel()
+        diff = np.asarray(np.ceil((extent - np.flipud(self.data.shape)) / 2), dtype=int)
+        pad_x = np.max((diff[0], 0))
+        pad_y = np.max((diff[1], 0))
+        unpad_x = -np.min((diff[0], 0))
+        unpad_y = -np.min((diff[1], 0))
+
         # Pad the image array
-        pad_x = int(np.max((diff[1], 0)))
-        pad_y = int(np.max((diff[0], 0)))
 
         if issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
             warn_user("The specified `missing` value is not an integer, but the data "
@@ -1640,18 +1662,18 @@ class GenericMap(NDData):
             pixel_center = pixel_array_center
 
         # Apply the rotation to the image data
-        new_data = affine_transform(new_data.T,
-                                    np.asarray(rmatrix),
+        new_data = affine_transform(new_data,
+                                    np.asarray(inv_rmatrix),
                                     order=order, scale=scale,
-                                    image_center=np.flipud(pixel_center),
+                                    image_center=pixel_center,
                                     recenter=recenter, missing=missing,
-                                    method=method).T
+                                    method=method)
 
         if recenter:
             new_reference_pixel = pixel_array_center
         else:
             # Calculate new pixel coordinates for the rotation center
-            new_reference_pixel = pixel_center + np.dot(rmatrix,
+            new_reference_pixel = pixel_center + np.dot(rmatrix * scale,
                                                         pixel_rotation_center - pixel_center)
             new_reference_pixel = np.array(new_reference_pixel).ravel()
 
@@ -1662,11 +1684,9 @@ class GenericMap(NDData):
         new_meta['crpix2'] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
 
         # Unpad the array if necessary
-        unpad_x = -np.min((diff[1], 0))
         if unpad_x > 0:
             new_data = new_data[:, unpad_x:-unpad_x]
             new_meta['crpix1'] -= unpad_x
-        unpad_y = -np.min((diff[0], 0))
         if unpad_y > 0:
             new_data = new_data[unpad_y:-unpad_y, :]
             new_meta['crpix2'] -= unpad_y
@@ -1675,7 +1695,7 @@ class GenericMap(NDData):
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
-        pc_C = np.dot(self.rotation_matrix, np.linalg.inv(rmatrix))
+        pc_C = np.dot(self.rotation_matrix, inv_rmatrix)
         new_meta['PC1_1'] = pc_C[0, 0]
         new_meta['PC1_2'] = pc_C[0, 1]
         new_meta['PC2_1'] = pc_C[1, 0]
@@ -1993,16 +2013,22 @@ class GenericMap(NDData):
         # create copy of new meta data
         new_meta = self.meta.copy()
 
-        scale = [self.scale[i].to_value(self.spatial_units[i] / u.pix) for i in range(2)]
-
         # Update metadata
-        new_meta['cdelt1'] = dimensions[0] * scale[0]
-        new_meta['cdelt2'] = dimensions[1] * scale[1]
-        if 'CD1_1' in new_meta:
-            new_meta['CD1_1'] *= dimensions[0]
-            new_meta['CD2_1'] *= dimensions[0]
-            new_meta['CD1_2'] *= dimensions[1]
-            new_meta['CD2_2'] *= dimensions[1]
+        if 'pc1_1' in self.meta:
+            new_meta['pc1_1'] *= dimensions[0]
+            new_meta['pc2_1'] *= dimensions[0]
+            new_meta['pc1_2'] *= dimensions[1]
+            new_meta['pc2_2'] *= dimensions[1]
+        if 'cd1_1' in self.meta:
+            new_meta['cd1_1'] *= dimensions[0]
+            new_meta['cd2_1'] *= dimensions[0]
+            new_meta['cd1_2'] *= dimensions[1]
+            new_meta['cd2_2'] *= dimensions[1]
+        if 'cd1_1' not in self.meta and 'pc1_1' not in self.meta:
+            # Using the CROTA2 and CDELT formalism
+            new_meta['cdelt1'] *= dimensions[0]
+            new_meta['cdelt2'] *= dimensions[1]
+
         new_meta['crpix1'] = ((self.reference_pixel.x.to_value(u.pix) +
                                0.5 - offset[0]) / dimensions[0]) + 0.5
         new_meta['crpix2'] = ((self.reference_pixel.y.to_value(u.pix) +
@@ -2036,7 +2062,8 @@ class GenericMap(NDData):
         return cmap
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True,
+                  system='stonyhurst', **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -2053,6 +2080,10 @@ class GenericMap(NDData):
             (lon, lat) spacing.
         annotate : `bool`
             Passing `False` disables the axes labels and the ticks on the top and right axes.
+        system : str
+            Coordinate system for the grid. Must be 'stonyhurst' or 'carrington'.
+        kwargs :
+            Additional keyword arguments are passed to `~sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay`.
 
         Returns
         -------
@@ -2069,6 +2100,8 @@ class GenericMap(NDData):
                                                            annotate=annotate,
                                                            obstime=self.date,
                                                            rsun=self.rsun_meters,
+                                                           observer=self.observer_coordinate,
+                                                           system=system,
                                                            **kwargs)
 
     def draw_limb(self, axes=None, *, resolution=1000, **kwargs):
@@ -2670,19 +2703,3 @@ GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
-
-
-def _figure_to_base64(fig):
-    # Converts a matplotlib Figure to a base64 UTF-8 string
-    buf = BytesIO()
-    fig.savefig(buf, format='png', facecolor='none')  # works better than transparent=True
-    return b64encode(buf.getvalue()).decode('utf-8')
-
-
-def _modify_polygon_visibility(polygon, keep):
-    # Put import here to reduce sunpy.map import time
-    from matplotlib.path import Path
-
-    polygon_codes = polygon.get_path().codes
-    polygon_codes[:-1][~keep] = Path.MOVETO
-    polygon_codes[-1] = Path.MOVETO if not keep[0] else Path.LINETO

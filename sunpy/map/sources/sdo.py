@@ -108,6 +108,9 @@ class HMIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
+        if self.unit is not None and self.unit.is_equivalent(u.T):
+            # Magnetic field maps, not intensity maps
+            self._set_symmetric_vmin_vmax()
         self._nickname = self.detector
 
     @property
@@ -193,17 +196,15 @@ class HMISynopticMap(HMIMap):
     @property
     def unit(self):
         unit_str = self.meta.get('bunit', None)
-        if unit_str == 'Mx/cm^2':
-            # Maxwells aren't in the IAU unit sytle manual, so replace with Gauss
-            return u.Unit('G')
-        else:
-            return super().unit
+        if unit_str is None:
+            return
+        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
+        # The mapbase unit property forces this validation, so we must override it to prevent it.
+        return u.Unit(unit_str)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """
         Determines if header corresponds to an HMI synoptic map.
         """
-        return (str(header.get('TELESCOP', '')).endswith('HMI') and
-                str(header.get('CONTENT', '')) ==
-                'Carrington Synoptic Chart Of Br Field')
+        return str(header.get('TELESCOP', '')).endswith('HMI') and 'carrington synoptic chart' in str(header.get('CONTENT', '')).lower()

@@ -48,7 +48,12 @@ numbers = srs_table['Number']
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=smap)
-smap.plot(axes=ax, vmin=-120, vmax=120)
+# Passing vmin/vmax to ``plot`` does not work since
+# a normalisation is set on the map. So we have to
+# work around it like so:
+smap.plot_settings["norm"].vmin = -150
+smap.plot_settings["norm"].vmax = 150
+smap.plot(axes=ax)
 smap.draw_limb(axes=ax)
 c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
 ax.plot_coord(c, 'o')

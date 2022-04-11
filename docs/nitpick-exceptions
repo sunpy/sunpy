@@ -30,6 +30,7 @@ py:obj astropy.io.fits.hdu.base.ExtensionHDU
 
 # This comes from Map.wcs
 py:class prop
+py:class Maxwell
 
 # These come from astropy.coordinates.baseframe.represent_as
 py:class data

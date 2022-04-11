@@ -9,6 +9,8 @@ from unittest import mock
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from hypothesis import given, settings
+from matplotlib.figure import Figure
 from packaging import version
 
 import astropy.units as u
@@ -25,12 +27,15 @@ import sunpy.data.test
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
+from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
+from .conftest import make_simple_map
+from .strategies import matrix_meta
 
 testpath = sunpy.data.test.rootdir
 
@@ -254,7 +259,7 @@ def test_heliographic_longitude(generic_map):
 
 
 def test_units(generic_map):
-    generic_map.spatial_units == ('arcsec', 'arcsec')
+    assert generic_map.spatial_units == ('arcsec', 'arcsec')
 
 
 def test_cmap(generic_map):
@@ -671,8 +676,6 @@ def test_resample(simple_map, shape):
     # Should be the mean of [0,1,2,3,4,5,6,7,8,9]
     if shape == [1, 1]:
         assert resampled.data == np.array([[4]])
-    assert resampled.scale.axis1 == 3 / shape[0] * simple_map.scale.axis1
-    assert resampled.scale.axis2 == 3 / shape[1] * simple_map.scale.axis2
 
     # Check that the corner coordinates of the input and output are the same
     resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
@@ -709,10 +712,8 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions, cm):
     """
     with cm:
         resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-        assert float(resampled_map.meta['cdelt1']) / generic_map.meta['cdelt1'] \
-            == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
-        assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
-            == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
+        assert resampled_map.meta['cdelt1'] == generic_map.meta['cdelt1']
+        assert resampled_map.meta['cdelt2'] == generic_map.meta['cdelt2']
         # TODO: we should really test the numbers here, not just that the correct
         # header values have been modified. However, I am lazy and we have figure
         # tests.
@@ -723,8 +724,8 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions, cm):
         assert resampled_map.meta['naxis1'] == new_dimensions[0].value
         assert resampled_map.meta['naxis2'] == new_dimensions[1].value
         for key in generic_map.meta:
-            if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1',
-                           'crval2', 'naxis1', 'naxis2'):
+            if key not in ('crpix1', 'crpix2', 'crval1',
+                           'crval2', 'naxis1', 'naxis2') and not key.startswith('pc'):
                 assert resampled_map.meta[key] == generic_map.meta[key]
 
 
@@ -820,6 +821,38 @@ def test_superpixel_fractional_inputs(generic_map):
     assert super1.meta == super2.meta
 
 
+@pytest.mark.parametrize('method', ['resample', 'superpixel'])
+@settings(max_examples=10, deadline=1000)
+@given(pc=matrix_meta('pc'))
+def test_resample_rotated_map_pc(pc, method):
+    smap = make_simple_map()
+
+    smap.meta.update(pc)
+    # Check superpixel with a rotated map with unequal resampling
+    new_dims = (1, 2) * u.pix
+    new_map = getattr(smap, method)(new_dims)
+    # Coordinate of the lower left corner should not change
+    ll_pix = [-0.5, -0.5]*u.pix
+    assert smap.pixel_to_world(*ll_pix).separation(
+        new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
+
+
+@pytest.mark.parametrize('method', ['resample', 'superpixel'])
+@settings(max_examples=10, deadline=1000)
+@given(cd=matrix_meta('cd'))
+def test_resample_rotated_map_cd(cd, method):
+    smap = make_simple_map()
+
+    smap.meta.update(cd)
+    # Check superpixel with a rotated map with unequal resampling
+    new_dims = (1, 2) * u.pix
+    new_map = getattr(smap, method)(new_dims)
+    # Coordinate of the lower left corner should not change
+    ll_pix = [-0.5, -0.5]*u.pix
+    assert smap.pixel_to_world(*ll_pix).separation(
+        new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
+
+
 def test_superpixel_err(generic_map):
     with pytest.raises(ValueError, match="Offset is strictly non-negative."):
         generic_map.superpixel((2, 2) * u.pix, offset=(-2, 2) * u.pix)
@@ -832,6 +865,10 @@ def calc_new_matrix(angle):
 
 
 def test_rotate(aia171_test_map):
+    # The test map has big-endian floats, so we switch it to floats with native byte ordering
+    # Otherwise, errors can be raised by code that has been compiled
+    aia171_test_map._data = aia171_test_map.data.astype('float')
+
     rotated_map_1 = aia171_test_map.rotate(20 * u.deg)
     rotated_map_2 = rotated_map_1.rotate(20 * u.deg)
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
@@ -847,17 +884,14 @@ def test_rotate(aia171_test_map):
     np.testing.assert_allclose(rotated_map_2.data[0, 0], 0., atol=1e-7)
     assert rotated_map_2.mean() < rotated_map_1.mean() < aia171_test_map.mean()
 
-    rotated_map_3 = aia171_test_map.rotate(0 * u.deg, scale=1.5)
-    assert rotated_map_3.mean() > aia171_test_map.mean()
+    # A scaled-up map should have the same mean because the output map should be expanded
+    rotated_map_3 = aia171_test_map.rotate(0 * u.deg, order=3, scale=2)
+    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_3.mean(), rtol=1e-4)
 
-    # Mean and std should be equal when angle of rotation is integral multiple
-    # of 90 degrees for a square map
-    rotated_map_4 = aia171_test_map.rotate(90 * u.deg, scale=1.5)
-    np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_4.mean(), rtol=1e-3)
-    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_4.std(), rtol=1e-3)
-    rotated_map_5 = aia171_test_map.rotate(180 * u.deg, scale=1.5)
-    np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_5.mean(), rtol=1e-3)
-    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_5.std(), rtol=2e-3)
+    # Mean and std should be equal for a 90 degree rotation
+    rotated_map_4 = aia171_test_map.rotate(90 * u.deg, order=3, scale=2)
+    np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_4.mean(), rtol=1e-10)
+    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_4.std(), rtol=1e-10)
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap(
@@ -1390,6 +1424,25 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map.peek()
 
 
+@figure_test
+def test_derotating_nonpurerotation_pcij(aia171_test_map):
+    # The following map has a a PCij matrix that is not a pure rotation
+    weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)
+
+    # De-rotating the map by its PCij matrix should result in a normal-looking map
+    derotated_map = weird_map.rotate()
+
+    fig = Figure(figsize=(8, 4))
+
+    ax1 = fig.add_subplot(121, projection=weird_map)
+    weird_map.plot(axes=ax1, title='Map with a non-pure-rotation PCij matrix')
+
+    ax2 = fig.add_subplot(122, projection=derotated_map)
+    derotated_map.plot(axes=ax2, title='De-rotated map')
+
+    return fig
+
+
 # This function is used in the arithmetic tests below
 def check_arithmetic_value_and_units(map_new, data_expected):
     assert u.allclose(map_new.quantity, data_expected)
@@ -1463,3 +1516,12 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn
         # the map test
         with warn_context:
             _ = value / aia171_test_map
+
+
+def test_parse_fits_units():
+    # Check that we parse a BUNIT of G correctly.
+    out_unit = GenericMap._parse_fits_unit("Gauss")
+    assert out_unit == u.G
+
+    out_unit = GenericMap._parse_fits_unit("G")
+    assert out_unit == u.G

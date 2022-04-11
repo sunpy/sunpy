@@ -4,6 +4,8 @@ This module provides general utility functions.
 import os
 import hashlib
 import inspect
+from io import BytesIO
+from base64 import b64encode
 from shutil import get_terminal_size
 from itertools import chain, count
 from collections import UserList
@@ -271,3 +273,10 @@ def get_set_methods(obj):
         m[4:] for m in dir(obj)
         if m.startswith('set_') and callable(getattr(obj, m, None))
     }
+
+
+def _figure_to_base64(fig):
+    # Converts a matplotlib Figure to a base64 UTF-8 string
+    buf = BytesIO()
+    fig.savefig(buf, format='png', facecolor='none')  # works better than transparent=True
+    return b64encode(buf.getvalue()).decode('utf-8')

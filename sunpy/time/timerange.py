@@ -65,6 +65,17 @@ class TimeRange:
     True
     >>> time2 in time_range
     False
+
+    >>> import numpy as np
+    >>> from astropy.time import TimeDelta
+    >>> time_range = TimeRange('2014/05/05 12:00', '2014/05/10 12:00')
+    >>> np.arange(time_range.start, time_range.end, TimeDelta(24*60*60, format = "sec"))
+    array([<Time object: scale='utc' format='isot' value=2014-05-05T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-06T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-07T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-08T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-09T12:00:00.000>],
+      dtype=object)
     """
 
     def __init__(self, a, b=None, format=None):
