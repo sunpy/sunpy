@@ -8,6 +8,7 @@ class TimeSuite:
     An example benchmark that times the performance of sunpy map
     creation
     """
+
     def setup(self):
         self._map = sunpy.data.sample.AIA_171_IMAGE
 
