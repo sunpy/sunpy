@@ -54,8 +54,10 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
     * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
     """
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'noaaindices'
+    _url = "https://www.swpc.noaa.gov/products-and-data"
 
     def plot(self, axes=None, plot_type='sunspot SWO', **kwargs):
         """
@@ -226,8 +228,10 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
     """
 
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'noaapredictindices'
+    _url = "https://www.swpc.noaa.gov/products-and-data"
 
     def plot(self, axes=None, **plot_args):
         """

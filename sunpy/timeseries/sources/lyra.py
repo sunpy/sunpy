@@ -54,12 +54,9 @@ class LYRATimeSeries(GenericTimeSeries):
     * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`_
     * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
     """
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'lyra'
-
-    # Class attributes to return information about the specific channels and
-    # corresponding wavelengths as well as a url to the documentation.
-    _channels = "CHANNEL1 120-123 nm \n CHANNEL2 190-222 nm \n CHANNEL3 17-80 nm \n CHANNEL4 6-20 nm"
     _url = "https://proba2.sidc.be/about/LYRA"
 
     def plot(self, axes=None, names=3, **kwargs):

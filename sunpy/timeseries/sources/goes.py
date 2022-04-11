@@ -55,12 +55,9 @@ class XRSTimeSeries(GenericTimeSeries):
     -----
     * https://umbra.nascom.nasa.gov/goes/fits/goes_fits_files_notes.txt
     """
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'xrs'
-
-    # Class attributes to return information about the specific channels and
-    # corresponding wavelengths as well as a url to the documentation.
-    _channels = u"xrsa 0.5-4 \u00C5 \n xrsb 1-8 \u00C5"
     _url = "https://www.swpc.noaa.gov/products/goes-x-ray-flux"
 
     _netcdf_read_kw = {}
