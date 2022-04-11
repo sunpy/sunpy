@@ -5,20 +5,14 @@ This module provies `sunpy.timeseries.GenericTimeSeries` which all other
 import copy
 import html
 import textwrap
+import webbrowser
 from collections import OrderedDict
 from collections.abc import Iterable
-import html
-import textwrap
-import webbrowser
-from io import BytesIO
-from base64 import b64encode
 from tempfile import NamedTemporaryFile
 
-import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-from matplotlib.backend_bases import FigureCanvasBase
-from matplotlib.figure import Figure
+import pandas as pd
+import matplotlib.pyplot as plt
 
 import astropy
 import astropy.units as u
@@ -136,61 +130,6 @@ class GenericTimeSeries:
         # self._validate_meta()
         # self._validate_units()
 
-    def _text_summary(self):
-        start_time, end_time = self.time_range.start, self.time_range.end
-        center_time = self.time_range.center
-        duration = str(self.time_range.days.value) + " days"
-        columns = ", ".join(self.columns)
-
-        return textwrap.dedent(f"""\
-                   Start Time:\t\t {start_time}
-                   End Time:\t\t {end_time}
-                   Center Time:\t\t {center_time}
-                   Duration:\t\t {duration}
-                   Columns:\t\t {columns}""")
-
-    def __str__(self):
-        return f"{self.meta}\n{self._data.__repr__()}"
-
-    def __repr__(self):
-        return f"{object.__repr__(self)}\n{self}"
-
-    def _repr_html_(self):
-        """
-        Produce an HTML summary with plots for use in Jupyter notebooks.
-        """
-
-        # Convert the text repr to an HTML table
-        partial_html = self._text_summary().replace('\n', '</td></tr><tr><th>')\
-            .replace(':\t', '</th><td>')
-        text_to_table = textwrap.dedent(f"""\
-            <table style='text-align:left'>
-                <tr><th>{partial_html}</td></tr>
-            </table>""").replace('\n', '')
-
-        # Plot the image in pixel space
-        fig = Figure()
-        # Figure instances in matplotlib<3.1 do not create a canvas by default
-        if fig.canvas is None:
-            FigureCanvasBase(fig)
-        ax = fig.subplots()
-        self.plot(axes=ax)
-        img_src = _figure_to_base64(fig)
-
-        return textwrap.dedent(f"""\
-            <pre>{html.escape(object.__repr__(self))}</pre>
-            <table>
-                <tr>
-                    <td>{text_to_table}</td>
-                    <td>
-                        <div align=center>
-                           <img src='data:image/png;base64,{img_src}'
-                        />
-                        </div>
-                    </td>
-                </tr>
-            </table>""")
-
 # #### Attribute definitions #### #
 
     @property
@@ -252,17 +191,9 @@ class GenericTimeSeries:
             return None
 
     @property
-    def channel_info(self):
-        """
-        Information about the channels of the instrument (e.g., wavelengths
-        or energy ranges).
-        """
-        return self._channels
-
-    @property
     def url(self):
         """
-        URL to the instrument website.
+        URL to the mission website.
         """
         return self._url
 
@@ -292,12 +223,13 @@ class GenericTimeSeries:
         drange = drange.to_string(float_format="{:.2E}".format)
         drange = drange.replace("\n", "<br>")
 
-        cha = self.meta.metadata[0][1]
-        try:
-            cha = self.channel_info
-            cha = cha.replace("\n", "<br>")
-        except AttributeError:
-            cha = "<br>".join(cha)
+        center = self.time_range.center.value.astype('datetime64[s]')
+        center = str(center).replace("T"," ")
+        resolution = round(self.time_range.seconds.value/self.shape[0],3)
+        resolution = str(resolution)+" s"
+
+        channels = self.columns
+        channels = "<br>".join(channels)
 
         uni = list(set(self.units.values()))
         uni = [x.unit if type(x) == u.quantity.Quantity else x for x in uni]
@@ -309,9 +241,11 @@ class GenericTimeSeries:
                    ----------------
                    Observatory:\t\t {obs}
                    Instrument:\t\t {link}
-                   Channel(s):\t\t {cha}
+                   Channel(s):\t\t {channels}
                    Start Date:\t\t {dat.index.min().round('s')}
                    End Date:\t\t {dat.index.max().round('s')}
+                   Center Date:\t\t {center}
+                   Resolution:\t\t {resolution}
                    Samples per Channel:\t\t {self.shape[0]}
                    Data Range(s):\t\t {drange}
                    Units:\t\t {uni}\
@@ -357,8 +291,10 @@ class GenericTimeSeries:
             ncols=1,
             sharex=True,
             constrained_layout=True,
-            figsize=(6, 9),
+            figsize=(6, 10),
         )
+        # If all channels have the same unit, then one shared y-axis
+        # label is set. Otherwise, each subplot has its own yaxis label.
         for i in range(len(self.columns)):
             if len(self.columns) == 1:
                 axs.plot(
@@ -990,10 +926,3 @@ class GenericTimeSeries:
             The path to the file you want to parse.
         """
         raise NoMatchError(f'Could not find any timeseries sources to parse {filepath}')
-
-
-def _figure_to_base64(fig):
-    # Converts a matplotlib Figure to a base64 UTF-8 string
-    buf = BytesIO()
-    fig.savefig(buf, format='png', facecolor='none')
-    return b64encode(buf.getvalue()).decode('utf-8')
