@@ -1,21 +1,12 @@
-"""
-isort:skip_file.
-"""
 import numpy as np
 import pytest
-import sys
 
 import astropy.units as u
-from asdf.tests.helpers import assert_roundtrip_tree
+from asdf.testing.helpers import roundtrip_object
 
 import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import asdf_entry_points
-from sunpy.io.special.asdf.extension import SunpyExtension
-
-# TODO: Delete after a major pytest release
-if sys.version_info > (3, 9):
-    pytest.skip("pytest + asdf do not play well", allow_module_level=True)
 
 
 @pytest.fixture
@@ -26,10 +17,7 @@ def aia171_test_map():
 
 @asdf_entry_points
 def test_genericmap_basic(aia171_test_map, tmpdir):
-
-    tree = {'smap': aia171_test_map}
-
-    assert_roundtrip_tree(tree, tmpdir, extensions=SunpyExtension())
+    new_map = roundtrip_object(aia171_test_map)
 
 
 @asdf_entry_points
@@ -41,6 +29,4 @@ def test_genericmap_mask(aia171_test_map, tmpdir):
     aia171_test_map.mask = mask
     aia171_test_map._unit = u.m
 
-    tree = {'smap': aia171_test_map}
-
-    assert_roundtrip_tree(tree, tmpdir, extensions=SunpyExtension())
+    new_map = roundtrip_object(aia171_test_map)
