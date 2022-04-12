@@ -1278,8 +1278,11 @@ def test_contour_units(simple_map):
         assert np.all(c1 == c2)
 
     # Percentage
-    contours_percent = simple_map.contour(100 * u.percent)
-    contours_ref = simple_map.contour(np.max(simple_map.data) * simple_map.unit)
+    contours_percent = simple_map.contour(50 * u.percent)
+    high = np.max(simple_map.data)
+    low = np.min(simple_map.data)
+    middle = high - (high - low) / 2
+    contours_ref = simple_map.contour(middle * simple_map.unit)
     for c1, c2 in zip(contours_percent, contours_ref):
         assert np.all(c1 == c2)
 
