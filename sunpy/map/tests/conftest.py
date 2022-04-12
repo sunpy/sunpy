@@ -139,4 +139,4 @@ def eit_test_map():
     """
     Load SunPy's test EIT image.
     """
-    return get_dummy_map_from_header(get_test_filepath("EIT/efz20040301.020010_s.header"))
+    return get_dummy_map_from_header(get_test_filepath("EIT_header/efz20040301.020010_s.header"))

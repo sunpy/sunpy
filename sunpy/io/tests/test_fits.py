@@ -15,7 +15,7 @@ from sunpy.io.fits import extract_waveunit, format_comments_and_history, get_hea
 from sunpy.util import MetaDict, SunpyMetadataWarning
 
 RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
-EIT_195_IMAGE = get_test_filepath('EIT/efz20040301.000010_s.header')
+EIT_195_IMAGE = get_test_filepath('EIT_header/efz20040301.000010_s.header')
 AIA_171_IMAGE = get_test_filepath('aia_171_level1.fits')
 SWAP_LEVEL1_IMAGE = get_test_filepath('SWAP/resampled1_swap.header')
 

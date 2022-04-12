@@ -254,7 +254,7 @@ def test_map_list_urls_cache():
 # Catch Hinode/XRT warning
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
 @pytest.mark.parametrize('file, mapcls', [
-    ["EIT/efz20040301.000010_s.header", sunpy.map.sources.EITMap],
+    ["EIT_header/efz20040301.000010_s.header", sunpy.map.sources.EITMap],
     ["lasco_c2_25299383_s.header", sunpy.map.sources.LASCOMap],
     ["mdi.fd_Ic.20101015_230100_TAI.data.header", sunpy.map.sources.MDIMap],
     ["mdi.fd_M_96m_lev182.20101015_191200_TAI.data.header", sunpy.map.sources.MDIMap],

@@ -138,9 +138,11 @@ def format_comments_and_history(input_header):
     Combine ``COMMENT`` and ``HISTORY`` cards into single
     entries. Extract ``KEYCOMMENTS`` into a single entry
     and put ``WAVEUNIT`` into its own entry.
+
     Parameters
     ----------
     input_header : `~astropy.io.fits.Header`
+
     Returns
     -------
     header : `~astropy.io.fits.header.FileHeader`
