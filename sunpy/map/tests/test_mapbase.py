@@ -865,10 +865,6 @@ def calc_new_matrix(angle):
 
 
 def test_rotate(aia171_test_map):
-    # The test map has big-endian floats, so we switch it to floats with native byte ordering
-    # Otherwise, errors can be raised by code that has been compiled
-    aia171_test_map._data = aia171_test_map.data.astype('float')
-
     # We use order=0 for many of these tests to minimize losing edge pixels due to interpolation
     # with NaNs that are used as the default `missing` value
 
