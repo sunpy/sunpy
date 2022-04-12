@@ -897,6 +897,28 @@ def test_quicklook(generic_ts):
     file_url = mockwbopen.call_args[0][0]
     assert file_url.startswith("file://")
 
+    # Open the file specified in the URL and confirm that it contains the HTML
+    with open(file_url[7:], 'r') as f:
+        html_string = f.read()
+        if generic_ts.source is None:
+            name = "None"
+        else:
+            name = generic_ts.source
+        # The two sections below remove a random name from the two strings
+        # before the assertion
+        h1 = html_string.find(name)
+        h2 = html_string.find(" = new ImageChange")
+        ident = html_string[h1:h2]
+        html_string = html_string.replace(ident,"same")
+        
+        repr_html = generic_ts._repr_html_()
+        h1 = repr_html.find(name)
+        h2 = repr_html.find(" = new ImageChange")
+        ident = repr_html[h1:h2]
+        repr_html = repr_html.replace(ident,"same")
+        
+        assert repr_html in html_string
+
 # =============================================================================
 # Test Source Plot axes
 # =============================================================================
