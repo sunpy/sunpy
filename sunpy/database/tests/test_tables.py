@@ -12,7 +12,6 @@ import pytest
 
 import astropy.units as u
 from astropy import conf
-from astropy.utils.exceptions import AstropyUserWarning
 
 from sunpy.data.test import rootdir as testdir
 from sunpy.database import Database
