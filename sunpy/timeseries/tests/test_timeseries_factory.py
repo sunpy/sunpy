@@ -1,5 +1,4 @@
 import os
-import glob
 import logging
 import datetime
 from pathlib import Path
@@ -18,28 +17,18 @@ import sunpy.io
 import sunpy.net.attrs as a
 import sunpy.timeseries
 from sunpy.data.test import get_test_filepath, rootdir, test_data_filenames
-from sunpy.data.test import get_test_filepath
 from sunpy.net import Fido
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.metadata import MetaDict
 
-esp_filepath = get_test_filepath('eve_l1_esp_2011046_00_truncated.fits')
 eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
 eve_many_filepath = [f for f in test_data_filenames()
                      if f.parents[0].relative_to(f.parents[1]).name == 'eve']
-fermi_gbm_filepath = get_test_filepath('gbm.fits')
 goes_filepath = get_test_filepath('go1520110607.fits')
-goes_filepath_com = get_test_filepath('go1520120601.fits.gz')
-lyra_filepath = get_test_filepath('lyra_20150101-000000_lev3_std_truncated.fits.gz')
-new_goes15_filepath = get_test_filepath('goes_truncated_test_goes15.nc')
-new_goes16_filepath = get_test_filepath('goes_truncated_test_goes16.nc')
-noaa_ind_json_filepath = get_test_filepath('observed-solar-cycle-indices-truncated.json')
-noaa_pre_json_filepath = get_test_filepath('predicted-solar-cycle-truncated.json')
-norh_filepath = get_test_filepath('tca110810_truncated')
-rhessi_filepath = get_test_filepath('hsi_obssumm_20120601_018_truncated.fits.gz')
 psp_filepath = get_test_filepath('psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
+swa_filepath = get_test_filepath('solo_L1_swa-pas-mom_20200706_V01.cdf')
 
 
 @pytest.mark.filterwarnings('ignore:Unknown units')

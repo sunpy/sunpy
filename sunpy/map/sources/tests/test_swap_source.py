@@ -5,8 +5,6 @@ import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-from sunpy.map import Map
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.proba2 import SWAPMap
 

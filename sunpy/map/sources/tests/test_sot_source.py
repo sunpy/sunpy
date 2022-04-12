@@ -1,12 +1,8 @@
-from textwrap import dedent
 
-import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.io import fits
 
-from sunpy.map import Map
 from sunpy.map.sources.hinode import SOTMap
 from sunpy.util.exceptions import SunpyMetadataWarning
 
