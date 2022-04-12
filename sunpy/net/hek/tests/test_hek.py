@@ -38,7 +38,6 @@ _hek_result = HEKResult()
 
 
 @pytest.fixture
-@pytest.mark.remote_data
 def hek_result():
     return _hek_result.get_result()
 
@@ -49,9 +48,9 @@ def test_eventtype_collide():
     with pytest.raises(TypeError):
         (attrs.hek.AR & attrs.Time((2011, 1, 1),
                                    (2011, 1, 2))) & attrs.hek.CE
-        with pytest.raises(TypeError):
-            (attrs.hek.AR | attrs.Time((2011, 1, 1),
-                                       (2011, 1, 2))) & attrs.hek.CE
+    with pytest.raises(TypeError):
+        (attrs.hek.AR | attrs.Time((2011, 1, 1),
+                                   (2011, 1, 2))) & attrs.hek.CE
 
 
 def test_eventtype_or():
