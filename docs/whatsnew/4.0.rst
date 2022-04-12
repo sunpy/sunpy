@@ -93,7 +93,15 @@ As part of this the following API has been deprecated:
   :meth:`sunpy.timeseries.GenericTimeSeries.to_table` or
   :meth:`sunpy.timeseries.GenericTimeSeries.to_dataframe` instead.
 
-Improvements to map and image rotation
+Calling :meth:`sunpy.timeseries.GenericTimeSeries.concatenate` without
+specifying the new method argument as ``method='astropy'`` is also deprecated.
+The default value is ``method='pandas'``, which reproduces previous default
+behaviour, but will be removed in sunpy 4.1. The only difference between the
+two methods is that ``method='astropy'`` will not remove duplicate rows.
+
+This change allows sunpy 4.0 to be backward compatible with sunpy 3.1,
+whilst raising a warning that allows us to break this compatability in sunp
+4.1.
 
 Improved return types of HEK queries
 ====================================

@@ -288,7 +288,9 @@ def test_generic_construction_ts_list():
     assert ts_list == ts_list2
 
 
-def test_generic_construction_concatenation():
+@pytest.mark.filterwarnings('ignore:Using pandas to concatenate two TimeSeries is deprecated')
+@pytest.mark.parametrize('method', ['pandas', 'astropy'])
+def test_generic_construction_concatenation(method):
     # Generate the data and the corrisponding dates
     base = parse_time(datetime.datetime.today())
     times = base - TimeDelta(np.arange(24 * 60)*u.minute)
@@ -306,7 +308,7 @@ def test_generic_construction_concatenation():
     # Create TS individually
     ts_1 = sunpy.timeseries.TimeSeries(data, meta, units)
     ts_2 = sunpy.timeseries.TimeSeries(data2, meta2, units2)
-    ts_concat_1 = ts_1.concatenate(ts_2)
+    ts_concat_1 = ts_1.concatenate(ts_2, method=method)
 
     # Concatinate during construction
     ts_concat_2 = sunpy.timeseries.TimeSeries(

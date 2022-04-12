@@ -17,7 +17,7 @@ import pandas as pd
 
 import astropy
 import astropy.units as u
-from astropy.table import Table
+from astropy.table import Table, vstack
 from astropy.timeseries import TimeSeries
 from astropy.visualization import hist
 
@@ -611,7 +611,7 @@ class GenericTimeSeries:
         object._sanitize_metadata()
         return object
 
-    def concatenate(self, others, same_source=False, **kwargs):
+    def concatenate(self, others, same_source=False, *, method='pandas', sort=False, **kwargs):
         """
         Concatenate with another `~sunpy.timeseries.TimeSeries` or an iterable containing multiple
         `~sunpy.timeseries.TimeSeries`. This function will check and remove any duplicate times.
@@ -625,6 +625,11 @@ class GenericTimeSeries:
             `~sunpy.timeseries.TimeSeries`.
         same_source : `bool`, optional
             Set to `True` to check if the sources of the time series match. Defaults to `False`.
+        method : {'pandas', 'astropy'}, optional
+            Implemenation to concatenate with. 'pandas' is deprecated and will be removed as
+            an option in sunpy 4.1.
+        sort : bool, optional
+            If `True` sort the resulting timeseries by timestamp.
 
         Returns
         -------
@@ -672,16 +677,30 @@ class GenericTimeSeries:
         if not isinstance(others, Iterable):
             others = [others]
 
-        # Concatenate the metadata and data.
-        kwargs["sort"] = kwargs.pop("sort", False)
+        # Concatenate the metadata
         meta = self.meta.concatenate([series.meta for series in others])
-        # TODO: refactor this to avoid going via DataFrames
-        data = pd.concat(
-            [self.to_dataframe(), *list(ts.to_dataframe() for ts in others)], **kwargs
-        )
-        data = data.sort_index()
-        data = data.drop_duplicates()
-        data = TimeSeries.from_pandas(data)
+
+        # Concatenate the data
+        if method == 'pandas':
+            warn_deprecated("Using pandas to concatenate two TimeSeries is deprecated, "
+                            "and support will be removed in sunpy 4.1. "
+                            "Pass method='astropy' to concatenate to use astropy and prevent this warning.")
+            kwargs['sort'] = sort
+            data = pd.concat(
+                [self.to_dataframe(), *list(ts.to_dataframe() for ts in others)], **kwargs
+            )
+            data = data.sort_index()
+            data = data.drop_duplicates()
+            data = TimeSeries.from_pandas(data)
+        elif method == 'astropy':
+            if len(kwargs):
+                raise ValueError("Concatenating using method='astropy' does not support"
+                                 "any extra keyword arguments.")
+            data = vstack([self._data, *list(ts._data for ts in others)])
+            if sort:
+                data.sort('time')
+        else:
+            raise ValueError(f"method argument must be one of ['pandas', 'astropy'] (got '{method}')")
 
         # Add all the new units to the dictionary.
         units = OrderedDict()

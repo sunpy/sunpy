@@ -433,7 +433,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             # Merge all these timeseries into one.
             full_timeseries = new_timeseries.pop(0)
             for timeseries in new_timeseries:
-                full_timeseries = full_timeseries.concatenate(timeseries)
+                full_timeseries = full_timeseries.concatenate(timeseries, method='astropy')
 
             new_timeseries = [full_timeseries]
 

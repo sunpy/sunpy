@@ -271,9 +271,11 @@ def test_extraction(eve_test_ts):
 def concatenated_slices_test_ts(truncation_slice_test_ts_1, truncation_slice_test_ts_2,
                                 truncation_slice_test_ts_3, truncation_slice_test_ts_4):
     # Concatenate the slices individually to make a TS similar to the original
-    truncation_slice_test_ts_1 = truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_2)
-    truncation_slice_test_ts_1 = truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_3)
-    return truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_4)
+    truncation_slice_test_ts_1 = truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_2,
+                                                                        method='astropy')
+    truncation_slice_test_ts_1 = truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_3,
+                                                                        method='astropy')
+    return truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_4, method='astropy')
 
 
 @pytest.fixture
@@ -281,7 +283,8 @@ def concatenated_slices_test_list(truncation_slice_test_ts_1, truncation_slice_t
                                   truncation_slice_test_ts_3, truncation_slice_test_ts_4):
     # Concatenate the slices in a list to make a TS similar to the original
     return truncation_slice_test_ts_1.concatenate(
-        [truncation_slice_test_ts_2, truncation_slice_test_ts_3, truncation_slice_test_ts_4]
+        [truncation_slice_test_ts_2, truncation_slice_test_ts_3, truncation_slice_test_ts_4],
+        method='astropy'
     )
 
 
@@ -316,12 +319,17 @@ def test_concatenation_of_slices_list(eve_test_ts, concatenated_slices_test_list
 @pytest.fixture
 def different_data_concat(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate
-    return eve_test_ts.concatenate(fermi_gbm_test_ts)
+    return eve_test_ts.concatenate(fermi_gbm_test_ts, method='astropy')
 
 
 def test_concat_list(eve_test_ts, fermi_gbm_test_ts):
     assert (eve_test_ts.concatenate(fermi_gbm_test_ts) ==
             eve_test_ts.concatenate([fermi_gbm_test_ts]))
+
+@pytest.fixture
+def concatenation_different_data_test_list(eve_test_ts, fermi_gbm_test_ts):
+    # Take two different data sources, pass one as an iterable and concatenate
+    return eve_test_ts.concatenate([fermi_gbm_test_ts], method='astropy')
 
 
 def test_concatenation_of_different_data_ts(eve_test_ts, fermi_gbm_test_ts,
@@ -349,13 +357,43 @@ def test_concatenation_of_different_data_ts(eve_test_ts, fermi_gbm_test_ts,
         comined_units)
 
     # Test data is the concatenation
-    comined_df = pd.concat([eve_test_ts.to_dataframe(), fermi_gbm_test_ts.to_dataframe()],
-                           sort=False)
     comined_df = comined_df.sort_index()
     assert_frame_equal(different_data_concat.to_dataframe(), comined_df)
 
 
 def test_concatenation_of_self(eve_test_ts):
+    assert_frame_equal(concatenation_different_data_test_ts.to_dataframe(), comined_df)
+
+
+def test_concatenation_of_different_data_list(eve_test_ts, fermi_gbm_test_ts,
+                                              concatenation_different_data_test_list):
+    # Same test_concatenation_of_different_data_ts except an iterable is passed to concatenate
+    value = True
+    for key in list(concatenation_different_data_test_list.meta.metadata[0][2]
+                    .keys()):
+        if concatenation_different_data_test_list.meta.metadata[0][2][
+                key] != fermi_gbm_test_ts.meta.metadata[0][2][key]:
+            value = False
+    for key in list(concatenation_different_data_test_list.meta.metadata[1][2]
+                    .keys()):
+        if concatenation_different_data_test_list.meta.metadata[1][2][
+                key] != eve_test_ts.meta.metadata[0][2][key]:
+            value = False
+    assert value
+
+    # Test units concatenation
+    comined_units = copy.deepcopy(eve_test_ts.units)
+    comined_units.update(fermi_gbm_test_ts.units)
+    assert dict(concatenation_different_data_test_list.units) == dict(
+        comined_units)
+
+    # Test data is the concatenation
+    comined_df = pd.concat([eve_test_ts.to_dataframe(), fermi_gbm_test_ts.to_dataframe()],
+                           sort=False)
+    assert_frame_equal(concatenation_different_data_test_list.to_dataframe(), comined_df)
+
+
+def test_concatenation_of_self_ts(eve_test_ts):
     # Check that a self concatenation returns the original timeseries
     assert eve_test_ts.concatenate(eve_test_ts) == eve_test_ts
     assert eve_test_ts.concatenate([eve_test_ts]) == eve_test_ts
@@ -369,7 +407,17 @@ def test_concatenation_different_data_ts_error(eve_test_ts, fermi_gbm_test_ts):
         eve_test_ts.concatenate(fermi_gbm_test_ts, same_source=True)
 
 
-def test_generic_construction_concatenation():
+def test_concatenation_different_data_list_error(eve_test_ts, fermi_gbm_test_ts):
+    # Take two different data sources, pass one as an iterable and concatenate
+    # but set with the same_source kwarg as true. This should not concatenate.
+    with pytest.raises(TypeError, match="TimeSeries classes must match if "
+                                        "'same_source' is specified."):
+        eve_test_ts.concatenate([fermi_gbm_test_ts], same_source=True)
+
+
+@pytest.mark.filterwarnings('ignore:Using pandas to concatenate two TimeSeries is deprecated')
+@pytest.mark.parametrize('method', ['pandas', 'astropy'])
+def test_generic_construction_concatenation(method):
     nrows = 10
     # Generate the data and the corrisponding dates
     base = parse_time(datetime.datetime.today())
@@ -388,10 +436,15 @@ def test_generic_construction_concatenation():
     # Create TS individually
     ts_1 = sunpy.timeseries.TimeSeries(data, meta, units)
     ts_2 = sunpy.timeseries.TimeSeries(data2, meta2, units2)
-    ts_concat = ts_1.concatenate(ts_2, axis=1)
+    kwargs = {} if method == 'astropy' else {'axis': 1}
+    ts_concat = ts_1.concatenate(ts_2, method=method, **kwargs)
     assert isinstance(ts_concat,
                       sunpy.timeseries.timeseriesbase.GenericTimeSeries)
-    assert len(ts_concat.to_dataframe()) == len(times)
+    if method == 'astropy':
+        # Astropy doesn't remove duplicate columns
+        assert len(ts_concat.to_dataframe()) == 2 * nrows
+    elif method == 'pandas':
+        assert len(ts_concat.to_dataframe()) == nrows
     assert ts_concat.columns == ['intensity', 'intensity2']
     assert len(ts_concat.meta.metadata) == 2
 

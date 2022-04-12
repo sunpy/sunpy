@@ -1,0 +1,6 @@
+Using :meth:`sunpy.timeseries.GenericTimeSeries.concatenate` without the new
+``method`` argument will raise a warning that ``method='pandas'`` is no longer
+supported, and will be removed in sunpy 4.1. To remove this warning pass
+``method=astropy`` to concatenate the series using astropy. This will be the
+only way of concatenating in sunpy 4.1, and takes advantage of support for
+leapseconds when concatenating two timeseries.
