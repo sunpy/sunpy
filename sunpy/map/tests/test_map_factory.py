@@ -30,7 +30,7 @@ valid_map_inputs = [
     (pathlib.Path(AIA_171_IMAGE), ),
     (rootdir / "EIT", ),
     (os.fspath(rootdir / "EIT"), ),
-    (rootdir / "EIT" / "*", ),
+    (rootdir / "EIT" / "*.fits", ),
     (amap, ),
     (amap.data, amap.meta),
     ((amap.data, amap.meta), ),

@@ -294,7 +294,7 @@ def test_entries_from_file(mq_image):
         FitsHeaderEntry('NBREG', 1),
         FitsHeaderEntry('NBLAMBD', 1),
         FitsHeaderEntry('WAVELNTH', 6563),
-        FitsHeaderEntry('WAVEUNIT', -10),
+        FitsHeaderEntry('WAVEUNIT', 'angstrom'),
         FitsHeaderEntry('POLARANG', 0),
         FitsHeaderEntry('THEMISFF', 3),
         FitsHeaderEntry('LONGTRC', 258.78),
@@ -347,14 +347,14 @@ def test_entries_from_file_time_string_parse_format():
 
 
 def test_entries_from_dir(waveunit_fits_directory):
-    entries = list(entries_from_dir(waveunit_fits_directory, time_string_parse_format='%d/%m/%Y'))
+    entries = list(entries_from_dir(waveunit_fits_directory, time_string_parse_format='%d/%m/%Y', pattern='*fits'))
     assert len(entries) == 4
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
             break
     assert entry.path in (os.path.join(waveunit_fits_directory, filename), filename)
     assert filename.startswith(os.fspath(waveunit_fits_directory))
-    assert len(entry.fits_header_entries) == 42
+    assert len(entry.fits_header_entries) == 40
     assert entry.fits_header_entries == [
         FitsHeaderEntry('SIMPLE', True),
         FitsHeaderEntry('BITPIX', -32),
@@ -367,7 +367,7 @@ def test_entries_from_dir(waveunit_fits_directory):
         FitsHeaderEntry('DATE_OBS', '2012-07-01T09:10:58.200Z'),
         FitsHeaderEntry('DATE_END', '2012-07-01T09:10:58.200Z'),
         FitsHeaderEntry('WAVELNTH', 1.98669),
-        FitsHeaderEntry('WAVEUNIT', 0),
+        FitsHeaderEntry('WAVEUNIT', 'm'),
         FitsHeaderEntry('PHYSPARA', 'STOKESI'),
         FitsHeaderEntry('OBJECT', 'FS'),
         FitsHeaderEntry('OBS_TYPE', 'RADIO'),
@@ -384,8 +384,6 @@ def test_entries_from_dir(waveunit_fits_directory):
         FitsHeaderEntry('ORIGIN', 'wrfits'),
         FitsHeaderEntry('FREQ', 150.9),
         FitsHeaderEntry('FREQUNIT', 6),
-        FitsHeaderEntry('BSCALE', 1.0),
-        FitsHeaderEntry('BZERO', 0.0),
         FitsHeaderEntry('BUNIT', 'K'),
         FitsHeaderEntry('EXPTIME', 1168576512),
         FitsHeaderEntry('CTYPE1', 'Solar-X'),
@@ -418,19 +416,19 @@ def test_entries_from_dir(waveunit_fits_directory):
 
 
 def test_entries_from_dir_recursively_true():
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        entries = list(entries_from_dir(testdir, True,
-                                        default_waveunit='angstrom',
-                                        time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 91
+    entries = list(entries_from_dir(testdir, True,
+                                    default_waveunit='angstrom',
+                                    time_string_parse_format='%d/%m/%Y',
+                                    pattern='*fits'))
+    assert len(entries) == 18
 
 
 def test_entries_from_dir_recursively_false():
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        entries = list(entries_from_dir(testdir, False,
-                                        default_waveunit='angstrom',
-                                        time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 70
+    entries = list(entries_from_dir(testdir, False,
+                                    default_waveunit='angstrom',
+                                    time_string_parse_format='%d/%m/%Y',
+                                    pattern='*fits'))
+    assert len(entries) == 16
 
 
 @pytest.mark.remote_data

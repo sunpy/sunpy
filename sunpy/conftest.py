@@ -182,7 +182,8 @@ def eit_fits_directory(tmp_path_factory):
     # test directory and glob patterns for the map factory
     eit_dir = tmp_path_factory.mktemp('EIT')
     eit_header_files = [f for f in test_data_filenames()
-                        if f.parents[0].relative_to(f.parents[1]).name == 'EIT']
+                        if f.parents[0].relative_to(f.parents[1]).name == 'EIT_header'
+                        and f.suffix == '.header']
     for f in eit_header_files:
         _ = write_image_file_from_header_file(f, eit_dir)
     return pathlib.Path(eit_dir)
