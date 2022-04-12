@@ -18,7 +18,7 @@ class GenericMapConverter(Converter):
         import sunpy.map
 
         # Use the factory here to get the correct subclass back
-        out_map = sunpy.map.Map(np.asarray(node["data"]), node["meta"])
+        out_map = sunpy.map.Map(np.asanyarray(node["data"]), node["meta"])
         out_map = out_map.shift(*node["shift"])
 
         out_map.mask = node.get("mask")
