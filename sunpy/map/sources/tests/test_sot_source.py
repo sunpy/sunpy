@@ -5,6 +5,7 @@ import astropy.units as u
 
 from sunpy.map.sources.hinode import SOTMap
 from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 
 
 @pytest.fixture
