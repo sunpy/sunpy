@@ -1,6 +1,7 @@
 """
 Functions for geometrical image transformation and warping.
 """
+import sys
 import numbers
 from functools import wraps
 
@@ -270,6 +271,9 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     * The implementation for higher orders of interpolation means that the pixels
       in the output image that are beyond the extent of the input image may not have
       exactly the value of the ``missing`` parameter.
+    * An input image with byte ordering that does not match the native byte order of
+      the system (e.g., big-endian values on a little-endian system) will be
+      copied and byte-swapped prior to rotation.
     * An input image with integer data is cast to floats prior to passing to
       :func:`~skimage.transform.warp`.  The output image can be re-cast using
       :meth:`numpy.ndarray.astype` if desired.
@@ -303,6 +307,10 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     if im_max > 0:
         adjusted_image /= im_max
         adjusted_missing /= im_max
+
+    # Swap the byte order if it is non-native (e.g., big-endian on a little-endian system)
+    if adjusted_image.dtype.byteorder == ('>' if sys.byteorder == 'little' else '<'):
+        adjusted_image = adjusted_image.byteswap().newbyteorder()
 
     # Be aware that even though mode is set to 'constant', when skimage 0.19 calls scipy,
     # it specifies the scipy mode to be 'grid-constant' rather than 'constant'

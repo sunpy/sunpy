@@ -6,7 +6,7 @@ from skimage import transform as tf
 
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
-from sunpy.image.transform import affine_transform
+from sunpy.image.transform import _rotation_function_registry, affine_transform
 from sunpy.tests.helpers import figure_test
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 
@@ -339,3 +339,17 @@ def test_nans(rot30):
     axs[1, 0].set_ylabel('scikit-image')
 
     return fig
+
+
+@pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
+@pytest.mark.parametrize('method', _rotation_function_registry.keys())
+@pytest.mark.parametrize('order', range(6))
+def test_endian(method, order, rot30):
+    # Test that the rotation output values do not change with input byte order
+    native = np.ones((10, 10))
+    swapped = native.byteswap().newbyteorder()
+
+    rot_native = affine_transform(native, rot30, order=order, method=method, missing=0)
+    rot_swapped = affine_transform(swapped, rot30, order=order, method=method, missing=0)
+
+    assert compare_results(rot_native, rot_swapped)
