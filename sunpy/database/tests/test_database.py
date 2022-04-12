@@ -295,7 +295,7 @@ def test_tag_undo(database):
     assert len(entry.tags) == 1
 
 
-def remove_nonexisting_tag(database):
+def test_remove_nonexisting_tag(database):
     with pytest.raises(NoSuchTagError):
         database.remove_tag('foo')
 
@@ -367,7 +367,7 @@ def test_star_undo(database):
     assert entry.starred
 
 
-def unstar_entry(database):
+def test_unstar_entry(database):
     entry = DatabaseEntry()
     assert not entry.starred
     database.star(entry)
