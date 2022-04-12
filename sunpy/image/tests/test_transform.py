@@ -40,8 +40,8 @@ def compare_results(expect, result, allclose=True):
     res = result[1:-1, 1:-1]
     t1 = abs(exp.mean() - res.mean()) <= RTOL*exp.mean()
 
-    # Don't do the allclose test for scipy as the bicubic algorithm has edge effects
-    # TODO: Develop a way of testing this for scipy and cv2
+    # Don't do the allclose test for skimage due to its forced interpolation beyond the edge of the
+    # original image
     if not allclose:
         return t1
     else:
@@ -91,36 +91,14 @@ def test_skimage_rotation(original, angle, k):
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = affine_transform(original, rmatrix=rmatrix, method='scipy')
+    rot = affine_transform(original, rmatrix=rmatrix, method='skimage')
     assert compare_results(expected, rot, allclose=False)
 
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=derot_matrix, method='scipy')
-    assert compare_results(original, derot, allclose=False)
-
-
-@pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
-                                      (-90.0, 3), (360.0, 0), (-360.0, 0)])
-def test_cv2_rotation(original, angle, k):
-    # Test rotation against expected outcome
-    angle = np.radians(angle)
-    c = np.round(np.cos(angle))
-    s = np.round(np.sin(angle))
-    rmatrix = np.array([[c, -s], [s, c]])
-    expected = np.rot90(original, k=k)
-
-    # As of Oct. 2021, cv2 does not support order=4
-    rot = affine_transform(original, rmatrix=rmatrix, order=3, method='cv2')
-    assert compare_results(expected, rot, allclose=False)
-
-    # TODO: Check incremental 360 degree rotation against original image
-
-    # Check derotated image against original
-    derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=derot_matrix, order=3, method='cv2')
+    derot = affine_transform(rot, rmatrix=derot_matrix, method='skimage')
     assert compare_results(original, derot, allclose=False)
 
 
@@ -245,11 +223,37 @@ def test_nan_skimage(identity):
 
 
 def test_nan_scipy(identity):
-    # Test replacement of NaN values for scipy rotation
-    in_arr = np.array([[np.nan]])
-    with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for SciPy rotation.'):
-        out_arr = affine_transform(in_arr, rmatrix=identity, method='scipy')
-    assert not np.all(np.isnan(out_arr))
+    # Test preservation of NaN values for scipy rotation
+    in_arr = np.array([[np.nan, 0]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='scipy')
+    assert np.isnan(out_arr[0, 0])
+
+
+def test_nan_cv2(identity):
+    # Test preservation of NaN values for cv2 rotation
+    in_arr = np.array([[np.nan, 0]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='cv2')
+    assert np.isnan(out_arr[0, 0])
+
+
+@pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
+                                      (-90.0, 3), (360.0, 0), (-360.0, 0)])
+def test_cv2_rotation(original, angle, k):
+    # Test rotation against expected outcome
+    angle = np.radians(angle)
+    c = np.round(np.cos(angle))
+    s = np.round(np.sin(angle))
+    rmatrix = np.array([[c, -s], [s, c]])
+    expected = np.rot90(original, k=k)
+    # As of Oct. 2021, cv2 does not support order=4
+    rot = affine_transform(original, rmatrix=rmatrix, order=3, method='cv2')
+    assert compare_results(expected, rot, allclose=False)
+
+    # TODO: Check incremental 360 degree rotation against original image
+    # Check derotated image against original
+    derot_matrix = np.array([[c, s], [-s, c]])
+    derot = affine_transform(rot, rmatrix=derot_matrix, order=3, method='cv2')
+    assert compare_results(original, derot, allclose=False)
 
 
 def test_int(identity):

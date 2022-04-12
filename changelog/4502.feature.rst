@@ -1,4 +1,1 @@
-Changes :func:`map.rotate` and :func:`image.transform.affine_transform` to allow for
-passing-in of custom affine_transform functions.
 Added :func:`image.transform._opencv_affine_transform` as an option for map rotation.
-The `use_scipy` argument has been deprecated in favor of `method` in both functions.
