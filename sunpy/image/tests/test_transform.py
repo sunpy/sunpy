@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
-import scipy.ndimage
 import skimage.data as images
 from matplotlib.figure import Figure
+from skimage import transform as tf
 
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
@@ -131,14 +131,15 @@ def test_shift(original, dx, dy):
     assert compare_results(original[ymin:ymax, xmin:xmax], unshift[ymin:ymax, xmin:xmax])
 
 
-@pytest.mark.filterwarnings("ignore:.*grid_mode:UserWarning")
 @pytest.mark.parametrize("scale_factor", [0.25, 0.5, 0.75, 1.0, 1.25, 1.5])
 def test_scale(original, scale_factor):
     # No rotation for all scaling tests.
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
     # Check a scaled image against the expected outcome
-    newim = scipy.ndimage.zoom(original, scale_factor, order=1, mode='constant', grid_mode=True)
+    # When we depend on SciPy 1.6, we can replace this with scipy.ndimage.zoom(..., grid_mode=True)
+    newim = tf.rescale(original / original.max(), scale_factor, order=1,
+                       mode='constant', anti_aliasing=False) * original.max()
     # Old width and new center of image
     w = original.shape[0] / 2.0 - 0.5
     new_c = (newim.shape[0] / 2.0) - 0.5
@@ -154,7 +155,6 @@ def test_scale(original, scale_factor):
     assert compare_results(expected, scale)
 
 
-@pytest.mark.filterwarnings("ignore:.*grid_mode:UserWarning")
 @pytest.mark.parametrize("angle, dx, dy, scale_factor", [(90, -100, 40, 0.25),
                                                          (-90, 40, -80, 0.75),
                                                          (180, 20, 50, 1.5)])
@@ -171,7 +171,9 @@ def test_all(original, angle, dx, dy, scale_factor):
     c = np.round(np.cos(angle))
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
-    scale = scipy.ndimage.zoom(original, scale_factor, order=1, mode='constant', grid_mode=True)
+    # When we depend on SciPy 1.6, we can replace this with scipy.ndimage.zoom(..., grid_mode=True)
+    scale = tf.rescale(original / original.max(), scale_factor, order=1,
+                       mode='constant', anti_aliasing=False) * original.max()
     new = np.zeros(original.shape)
 
     disp = np.array([dx, dy])
