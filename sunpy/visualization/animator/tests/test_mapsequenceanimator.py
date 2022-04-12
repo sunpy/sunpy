@@ -14,7 +14,7 @@ from sunpy.visualization.animator import MapSequenceAnimator
 def test_map_sequence(aia171_test_map):
     return sunpy.map.Map(
         aia171_test_map,
-        get_dummy_map_from_header(get_test_filepath('mdi.fd_Ic.20101015_230100_TAI.data.header')),
+        get_test_filepath('EIT/efz20040301.000010_s.fits'),
         sequence=True,
     )
 
