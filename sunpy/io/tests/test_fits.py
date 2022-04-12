@@ -32,7 +32,7 @@ pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in heade
     [(RHESSI_IMAGE, None, 4),
      (RHESSI_IMAGE, 1, 1),
      (RHESSI_IMAGE, [1, 2], 2),
-     (RHESSI_IMAGE, range(0, 1), 2)]
+     (RHESSI_IMAGE, range(0, 2), 2)]
 )
 def test_read_hdus(fname, hdus, length):
     pairs = sunpy.io._fits.read(fname, hdus=hdus)

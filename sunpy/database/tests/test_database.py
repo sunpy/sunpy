@@ -296,8 +296,10 @@ def test_tag_undo(database):
 
 
 def test_remove_nonexisting_tag(database):
+    entry = DatabaseEntry()
+    database.add(entry)
     with pytest.raises(NoSuchTagError):
-        database.remove_tag('foo')
+        database.remove_tag(entry, 'foo')
 
 
 def test_remove_tag(filled_database):
