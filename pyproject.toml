@@ -8,6 +8,11 @@ requires = [
          ]
 build-backend = 'setuptools.build_meta'
 
+[tool.cibuildwheel]
+test-extras = "dev"
+test-command = 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
+
+
 [ tool.gilesbot ]
   [ tool.gilesbot.circleci_artifacts ]
     enabled = true
