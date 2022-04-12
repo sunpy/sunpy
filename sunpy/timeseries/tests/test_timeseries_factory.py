@@ -29,6 +29,7 @@ eve_many_filepath = [f for f in test_data_filenames()
 goes_filepath = get_test_filepath('go1520110607.fits')
 psp_filepath = get_test_filepath('psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
 swa_filepath = get_test_filepath('solo_L1_swa-pas-mom_20200706_V01.cdf')
+fermi_gbm_filepath = get_test_filepath('gbm.fits')
 
 
 @pytest.mark.filterwarnings('ignore:Unknown units')
