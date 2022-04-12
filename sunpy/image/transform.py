@@ -1,6 +1,7 @@
 """
 Functions for geometrical image transformation and warping.
 """
+import sys
 import numbers
 import warnings
 
@@ -141,6 +142,10 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             else:
                 # The input array is all one value (aside from NaNs), so no scaling is needed
                 adjusted_missing = missing - im_min
+
+        # Swap the byte order if it is non-native (e.g., big-endian on a little-endian system)
+        if adjusted_image.dtype.byteorder == ('>' if sys.byteorder == 'little' else '<'):
+            adjusted_image = adjusted_image.byteswap().newbyteorder()
 
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
                                                mode='constant', cval=adjusted_missing)
