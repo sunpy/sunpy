@@ -3,6 +3,8 @@ import pytest
 import skimage.data as images
 from skimage import transform as tf
 
+from astropy.coordinates.matrix_utilities import rotation_matrix
+
 from sunpy.image.transform import affine_transform
 from sunpy.util import SunpyUserWarning
 
@@ -19,6 +21,11 @@ def original():
 @pytest.fixture
 def identity():
     return np.array([[1, 0], [0, 1]])
+
+
+@pytest.fixture
+def rot30():
+    return rotation_matrix(30)[0:2, 0:2]
 
 
 def compare_results(expect, result, allclose=True):
@@ -262,3 +269,17 @@ def test_reproducible_matrix_multiplication():
             print(f"{mismatches[i]} mismatching elements in multiplication #{i}")
 
     assert np.sum(mismatches != 0) == 0
+
+
+@pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
+@pytest.mark.parametrize('use_scipy', [False, True])
+@pytest.mark.parametrize('order', range(6))
+def test_endian(use_scipy, order, rot30):
+    # Test that the rotation output values do not change with input byte order
+    native = np.ones((10, 10))
+    swapped = native.byteswap().newbyteorder()
+
+    rot_native = affine_transform(native, rot30, order=order, use_scipy=use_scipy, missing=0)
+    rot_swapped = affine_transform(swapped, rot30, order=order, use_scipy=use_scipy, missing=0)
+
+    assert compare_results(rot_native, rot_swapped)
