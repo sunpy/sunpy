@@ -108,10 +108,10 @@ def test_set_alpha_composite_map(composite_test_map):
     composite_test_map.plot()
 
 
-def test_set_alpha_out_of_range_composite_map(composite_test_map):
+@pytest.mark.parametrize("index,alpha", [(0, 5.0), (1, -3.0)])
+def test_set_alpha_out_of_range_composite_map(composite_test_map, index, alpha):
     with pytest.raises(Exception) as excinfo:
-        composite_test_map.set_alpha(0, 5.0)
-        composite_test_map.set_alpha(1, -3.0)
+        composite_test_map.set_alpha(index, alpha)
     assert str(excinfo.value) == 'Alpha value must be between 0 and 1.'
 
 
