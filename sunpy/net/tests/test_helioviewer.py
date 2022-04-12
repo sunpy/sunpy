@@ -14,7 +14,6 @@ from sunpy.tests.helpers import figure_test, skip_glymur
 
 
 @pytest.fixture(scope="function")
-@pytest.mark.remote_data
 def client():
     """
     Fixture to create a client and skip tests if not available

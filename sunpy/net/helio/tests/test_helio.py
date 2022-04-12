@@ -247,7 +247,6 @@ def test_link_test_on_urlerror(mock_link_test):
     link_test('') is None
 
 
-@pytest.mark.remote_data
 @pytest.fixture(scope="session")
 def client():
     try:

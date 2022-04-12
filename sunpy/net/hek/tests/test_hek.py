@@ -38,7 +38,6 @@ _hek_result = HEKResult()
 
 
 @pytest.fixture
-@pytest.mark.remote_data
 def hek_result():
     return _hek_result.get_result()
 

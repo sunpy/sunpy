@@ -29,19 +29,16 @@ hekEvent = a.hek.EventType(eventType)
 
 
 @pytest.fixture(scope="function")
-@pytest.mark.remote_data
 def h2v_client():
     return hek2vso.H2VClient()
 
 
 @pytest.fixture(scope="function")
-@pytest.mark.remote_data
 def hek_client():
     return hek.HEKClient()
 
 
 @pytest.fixture
-@pytest.mark.remote_data
 def vso_client():
     vso.VSOClient()
 
