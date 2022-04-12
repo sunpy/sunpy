@@ -40,4 +40,4 @@ def test_map_sequence_animator_wcs_update_plot(test_map_sequence):
     map1 = map_animator.im.get_array()
     map_animator.updatefig(1, map_animator.im, map_animator.sliders[0]._slider)
     map2 = map_animator.im.get_array()
-    assert np.all(map1.data != map2.data)
+    assert np.any(map1.data != map2.data)
