@@ -1,8 +1,7 @@
 %YAML 1.1
 ---
 $schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
-id: "http://sunpy.org/schemas/sunpy/coordinates/frames/heliocentricearthecliptic-1.0.0"
-tag: "tag:sunpy.org:sunpy/coordinates/frames/heliocentricearthecliptic-1.0.0"
+id: "asdf://sunpy.org/schemas/heliocentricearthecliptic-1.0.0"
 
 title: |
   Represents a Heliocentric Earth Ecliptic (HEE) coordinate object from SunPy

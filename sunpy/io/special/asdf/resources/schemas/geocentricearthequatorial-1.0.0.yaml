@@ -1,8 +1,7 @@
 %YAML 1.1
 ---
 $schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
-id: "http://sunpy.org/schemas/sunpy/coordinates/frames/geocentricearthequatorial-1.0.0"
-tag: "tag:sunpy.org:sunpy/coordinates/frames/geocentricearthequatorial-1.0.0"
+id: "asdf://sunpy.org/schemas/geocentricearthequatorial-1.0.0"
 
 title: |
   Represents a Geocentric Earth Equatorial (GEI) coordinate object from SunPy

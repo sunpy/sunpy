@@ -5,12 +5,11 @@ import pytest
 
 import asdf
 import astropy.units as u
+from asdf.testing.helpers import roundtrip_object
 from astropy.coordinates import CartesianRepresentation
 
 import sunpy.coordinates.frames as frames
 from sunpy.tests.helpers import asdf_entry_points
-
-from asdf.tests.helpers import assert_roundtrip_tree  # NOQA isort:skip
 
 sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
 # Don't test the two base frames
@@ -61,14 +60,12 @@ def test_hgc_100():
 
 @asdf_entry_points
 def test_saveframe(coordframe_scalar, tmpdir):
-    tree = {'frame': coordframe_scalar}
-    assert_roundtrip_tree(tree, tmpdir)
+    new_frame = roundtrip_object(coordframe_scalar)
 
 
 @asdf_entry_points
 def test_saveframe_arr(coordframe_array, tmpdir):
-    tree = {'frame': coordframe_array}
-    assert_roundtrip_tree(tree, tmpdir)
+    new_frame = roundtrip_object(coordframe_array)
 
 
 @asdf_entry_points
@@ -81,8 +78,7 @@ def test_hpc_observer_version(tmpdir):
     time = "2021-10-13T11:08"
     obs = frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=time)
     coord = frames.Helioprojective(10*u.arcsec, 10*u.arcsec, obstime=time, observer=obs)
-    tree = {'coord': coord}
-    assert_roundtrip_tree(tree, tmpdir)
+    new_coord = roundtrip_object(coord)
 
 
 @asdf_entry_points
@@ -95,5 +91,4 @@ def test_hcc_observer_version(tmpdir):
     time = "2021-10-13T11:08"
     obs = frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=time)
     coord = frames.Heliocentric(1*u.Mm, 1*u.Mm, 1*u.Mm, obstime=time, observer=obs)
-    tree = {'coord': coord}
-    assert_roundtrip_tree(tree, tmpdir)
+    new_coord = roundtrip_object(coord)

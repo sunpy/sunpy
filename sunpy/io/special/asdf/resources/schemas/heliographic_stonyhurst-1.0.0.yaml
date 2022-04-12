@@ -1,8 +1,7 @@
 %YAML 1.1
 ---
 $schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
-id: "http://sunpy.org/schemas/sunpy/coordinates/frames/heliographic_stonyhurst-1.0.0"
-tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.0.0"
+id: "asdf://sunpy.org/schemas/heliographic_stonyhurst-1.0.0"
 
 title: |
   Represents an heliographic stonyhurst coordinate object from SunPy

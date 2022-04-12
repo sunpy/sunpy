@@ -12,35 +12,35 @@ class HeliographicCarringtonConverter(FrameConverter):
 
 SUNPY_FRAME_CONVERTERS = [
     FrameConverter(
-        "tag:sunpy.org/sunpy/frames/heliographic_stonyhurst-*",
+        "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-*",
         "sunpy.coordinates.frames.HeliographicStonyhurst"
     ),
     HeliographicCarringtonConverter(
-        "tag:sunpy.org/sunpy/frames/heliographic_carrington-*",
+        "tag:sunpy.org:sunpy/coordinates/frames/heliographic_carrington-*",
         "sunpy.coordinates.frames.HeliographicCarrington"
     ),
     FrameConverter(
-        "tag:sunpy.org/sunpy/frames/helioprojective-*",
+        "tag:sunpy.org:sunpy/coordinates/frames/helioprojective-*",
         "sunpy.coordinates.frames.Helioprojective"
     ),
     FrameConverter(
-        "tag:sunpy.org/sunpy/frames/heliocentricinertial-*",
+        "tag:sunpy.org:sunpy/coordinates/frames/heliocentricinertial-*",
         "sunpy.coordinates.frames.HeliocentricInertial"
     ),
     FrameConverter(
-        "tag:sunpy.org/sunpy/frames/heliocentricearthecliptic-*",
+        "tag:sunpy.org:sunpy/coordinates/frames/heliocentricearthecliptic-*",
         "sunpy.coordinates.frames.HeliocentricEarthEcliptic"
     ),
     FrameConverter(
-        "tag:sunpy.org/sunpy/frames/heliocentric-*",
+        "tag:sunpy.org:sunpy/coordinates/frames/heliocentric-*",
         "sunpy.coordinates.frames.Heliocentric"
     ),
     FrameConverter(
-        "tag:sunpy.org/sunpy/frames/geocentricsolarecliptic-*",
+        "tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarecliptic-*",
         "sunpy.coordinates.frames.GeocentricSolarEcliptic"
     ),
     FrameConverter(
-        "tag:sunpy.org/sunpy/frames/geocentricearthequatorial-*",
+        "tag:sunpy.org:sunpy/coordinates/frames/geocentricearthequatorial-*",
         "sunpy.coordinates.frames.GeocentricEarthEquatorial"
     ),
 ]
