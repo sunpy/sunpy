@@ -1,0 +1,1 @@
+Any NaNs are now preserved by :func:`sunpy.image.transform.affine_transform` and :meth:`sunpy.map.GenericMap.rotate`.

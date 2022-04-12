@@ -1,0 +1,1 @@
+The math convenience methods of `sunpy.map.GenericMap` - :meth:`~sunpy.map.GenericMap.max`, :meth:`~sunpy.map.GenericMap.mean`, :meth:`~sunpy.map.GenericMap.min`, and , :meth:`~sunpy.map.GenericMap.std` - now ignore NaNs in the image data.

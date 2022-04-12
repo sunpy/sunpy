@@ -23,6 +23,17 @@ We have bumped the minimum version of several packages we depend on; these are t
 
 - python >= 3.8
 
+Improvements to map and image rotation
+======================================
+There have been significant improvements to :meth:`sunpy.map.GenericMap.rotate` and :func:`sunpy.image.transform.affine_transform`.
+Most notably, there is now comprehensive support for having not-a-number (NaN) values in pixels, with NaNs now preserved across image rotation.
+Accordingly, the default behavior for these functions has been changed to use NaN for the pixels in the output image that are beyond the extent of the input image.
+To obtain the prior behavior, which used zero by default for such pixels, the ``missing`` needs to be explicitly set to zero.
+
+The default rotation function used internally has been switched to :func:`scipy.ndimage.affine_transform` from :func:`skimage.transform.warp` due to changes in the latest release of `skimage`, although the differences between the rotation results are small.
+The rotation function to use can be selected via the ``method`` keyword argument.
+New rotation functions beyond these two can be added using the new decorator :func:`~sunpy.image.transform.add_rotation_function`.
+
 Improved return types of HEK queries
 ====================================
 The 'event_endtime', 'event_starttime' and 'event_peaktime' columns in a HEK

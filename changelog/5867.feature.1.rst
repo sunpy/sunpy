@@ -1,0 +1,1 @@
+Added a ``clip`` keyword to :func:`sunpy.image.transform.affine_transform` and :meth:`sunpy.map.GenericMap.rotate` to enable or disable whether the range of the output image is clipped to the range of the input range.
