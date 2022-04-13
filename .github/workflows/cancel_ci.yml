@@ -2,7 +2,7 @@ name: 'Cancel Previous Runs'
 
 on:
   workflow_run:
-    workflows: ["CI", "Automated tests", "Scheduled builds", "asv-benchmarks-daily"]
+    workflows: ["CI"]
     types:
       - requested
 
@@ -13,5 +13,4 @@ jobs:
     steps:
     - uses: styfle/cancel-workflow-action@0.9.1
       with:
-        all_but_latest: true
         workflow_id: ${{ github.event.workflow.id }}
