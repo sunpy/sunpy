@@ -24,6 +24,7 @@ Our homepage `SunPy`_ has more information about the project.
 
 For some examples of using SunPy see our `gallery`_, to see the latest changes in SunPy see our `Changelog`_.
 
+
 .. _SunPy: https://sunpy.org
 .. _gallery: https://docs.sunpy.org/en/stable/generated/gallery/index.html
 .. _Changelog: https://docs.sunpy.org/en/stable/whatsnew/changelog.html
