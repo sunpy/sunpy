@@ -26,7 +26,7 @@ def jsoc_response_double(jsoc_test_email):
                          {'T_REC': '2011/01/02T00:00', 'INSTRUME': 'AIA'}])
     resp.query_args = [{'start_time': astropy.time.Time("2020-01-01T01:00:36.000"),
                         'end_time': astropy.time.Time("2020-01-01T01:00:38.000"),
-                        'series': 'hmi.M_45s', 'notify': pytest.jsoc_test_email}]
+                        'series': 'hmi.M_45s', 'notify': jsoc_test_email}]
     return resp
 
 
@@ -93,7 +93,7 @@ def test_post_wave_series(client):
 def test_wait_get(client, jsoc_test_email):
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email))
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(jsoc_test_email))
     path = tempfile.mkdtemp()
     res = client.fetch(responses, path=path)
     assert isinstance(res, Results)
@@ -104,7 +104,7 @@ def test_wait_get(client, jsoc_test_email):
 def test_get_request_tar(client, jsoc_test_email):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email))
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(jsoc_test_email))
     bb = client.request_data(responses, method='url-tar')
     bb.wait()
     path = tempfile.mkdtemp()
@@ -113,7 +113,7 @@ def test_get_request_tar(client, jsoc_test_email):
 
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(jsoc_test_email),
         a.jsoc.Protocol('as-is'))
     bb = client.request_data(responses, method='url-tar')
     bb.wait()
@@ -246,7 +246,7 @@ def test_make_recordset(client):
 def test_request_data_error(client, jsoc_test_email):
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(jsoc_test_email),
         a.jsoc.Protocol('foo'))
     with pytest.raises(TypeError):
         client.request_data(responses)
@@ -256,7 +256,7 @@ def test_request_data_error(client, jsoc_test_email):
 def test_request_data_method(client, jsoc_test_email):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email))
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(jsoc_test_email))
     req = client.request_data(responses, method='url-tar')
     req.wait()
     assert req.status == 0
@@ -265,7 +265,7 @@ def test_request_data_method(client, jsoc_test_email):
 
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(jsoc_test_email),
         a.jsoc.Protocol('as-is'))
     req = client.request_data(responses, method='url-tar')
     req.wait()
@@ -301,7 +301,7 @@ def test_jsoc_cutout_attrs(client, jsoc_test_email):
         a.Time(m_ref.date, m_ref.date + 1 * u.min),
         a.Wavelength(171*u.angstrom),
         a.jsoc.Series.aia_lev1_euv_12s,
-        a.jsoc.Notify(pytest.jsoc_test_email),
+        a.jsoc.Notify(jsoc_test_email),
         a.jsoc.Segment.image,
         cutout,
     )
