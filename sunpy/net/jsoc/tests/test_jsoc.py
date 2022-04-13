@@ -14,7 +14,6 @@ import sunpy.net.attrs as a
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.util.exceptions import SunpyUserWarning
 
-TEST_EMAIL = "nabil.freij@gmail.com"
 # Ensure all JSOC tests are run on the same parallel worker
 pytestmark = pytest.mark.xdist_group(name="jsoc")
 
@@ -25,12 +24,12 @@ def client():
 
 
 @pytest.fixture
-def jsoc_response_double():
+def jsoc_response_double(jsoc_test_email):
     resp = JSOCResponse([{'T_REC': '2011/01/01T00:00', 'INSTRUME': 'AIA'},
                          {'T_REC': '2011/01/02T00:00', 'INSTRUME': 'AIA'}])
     resp.query_args = [{'start_time': astropy.time.Time("2020-01-01T01:00:36.000"),
                         'end_time': astropy.time.Time("2020-01-01T01:00:38.000"),
-                        'series': 'hmi.M_45s', 'notify': TEST_EMAIL}]
+                        'series': 'hmi.M_45s', 'notify': pytest.jsoc_test_email}]
     return resp
 
 
@@ -94,10 +93,10 @@ def test_post_wave_series(client):
 
 
 @pytest.mark.remote_data
-def test_wait_get(client):
+def test_wait_get(client, jsoc_test_email):
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(TEST_EMAIL))
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email))
     path = tempfile.mkdtemp()
     res = client.fetch(responses, path=path)
     assert isinstance(res, Results)
@@ -105,10 +104,10 @@ def test_wait_get(client):
 
 
 @pytest.mark.remote_data
-def test_get_request_tar(client):
+def test_get_request_tar(client, jsoc_test_email):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(TEST_EMAIL))
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email))
     bb = client.request_data(responses, method='url-tar')
     bb.wait()
     path = tempfile.mkdtemp()
@@ -117,7 +116,7 @@ def test_get_request_tar(client):
 
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(TEST_EMAIL),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email),
         a.jsoc.Protocol('as-is'))
     bb = client.request_data(responses, method='url-tar')
     bb.wait()
@@ -247,20 +246,20 @@ def test_make_recordset(client):
 
 
 @pytest.mark.remote_data
-def test_request_data_error(client):
+def test_request_data_error(client, jsoc_test_email):
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(TEST_EMAIL),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email),
         a.jsoc.Protocol('foo'))
     with pytest.raises(TypeError):
         client.request_data(responses)
 
 
 @pytest.mark.remote_data
-def test_request_data_method(client):
+def test_request_data_method(client, jsoc_test_email):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(TEST_EMAIL))
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email))
     req = client.request_data(responses, method='url-tar')
     req.wait()
     assert req.status == 0
@@ -269,7 +268,7 @@ def test_request_data_method(client):
 
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(TEST_EMAIL),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(pytest.jsoc_test_email),
         a.jsoc.Protocol('as-is'))
     req = client.request_data(responses, method='url-tar')
     req.wait()
@@ -294,7 +293,7 @@ def test_jsoc_attrs(client):
 
 @pytest.mark.flaky(reruns_delay=30)
 @pytest.mark.remote_data
-def test_jsoc_cutout_attrs(client):
+def test_jsoc_cutout_attrs(client, jsoc_test_email):
     m_ref = sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits'))
     cutout = a.jsoc.Cutout(
         SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=m_ref.coordinate_frame),
@@ -305,7 +304,7 @@ def test_jsoc_cutout_attrs(client):
         a.Time(m_ref.date, m_ref.date + 1 * u.min),
         a.Wavelength(171*u.angstrom),
         a.jsoc.Series.aia_lev1_euv_12s,
-        a.jsoc.Notify(TEST_EMAIL),
+        a.jsoc.Notify(pytest.jsoc_test_email),
         a.jsoc.Segment.image,
         cutout,
     )

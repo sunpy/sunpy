@@ -25,12 +25,19 @@ else:
 remotedata_spec = importlib.util.find_spec("pytest_remotedata")
 HAVE_REMOTEDATA = remotedata_spec is not None
 
+
 # Do not collect the sample data file because this would download the sample data.
 collect_ignore = ["data/sample.py"]
 
 
 console_logger = logging.getLogger()
 console_logger.setLevel('INFO')
+
+
+@pytest.fixture(scope='session', autouse=True)
+def jsoc_test_email():
+    # JSOC Test email
+    pytest.jsoc_test_email = "nabil.freij@gmail.com"
 
 
 @pytest.fixture(scope='session', autouse=True)
