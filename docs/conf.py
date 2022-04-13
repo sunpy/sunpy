@@ -217,7 +217,7 @@ graphviz_dot_args = [
 
 # -- Sphinx Gallery ------------------------------------------------------------
 # JSOC email os env
-os.environ["JSOC_EMAIL"] = "jsoc@cadair.com"
+os.environ["JSOC_EMAIL"] = "nabil.freij@gmail.com"
 sphinx_gallery_conf = {
     'backreferences_dir': os.path.join('generated', 'modules'),
     'filename_pattern': '^((?!skip_).)*$',
