@@ -33,7 +33,10 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     accumulated every 4.096 seconds in 128 energy channels for each of the 14 detectors.
 
     Note that the data is re-binned from the original 128 into the following 8 pre-determined energy channels.
-    The rebinning method is ...
+    The rebinning method treats the counts in each of the original 128 channels as
+    all having the energy of the maximum energy of that channel.  For example, the
+    counts in an 13.9--15.1 keV original channel would be accumulated into the
+    15--25 keV rebinned channel.
 
     * 4-15 keV
     * 15-25 keV
@@ -210,14 +213,12 @@ def _bin_data_for_summary(energy_bins, count_data):
 
     # list of energy bands to sum between
     ebands = [4, 15, 25, 50, 100, 300, 800, 2000]
+    indices = [np.searchsorted(energy_bins['e_max'], e) for e in ebands]
 
     summary_counts = []
-    for i in range(len(ebands)-1):
-        # find the indices corresponding to some standard summary energy bins
-        ind_start = np.argmin(np.abs(energy_bins["e_min"]-ebands[i]))
-        ind_end = np.argmin(np.abs(energy_bins["e_max"]-ebands[i+1]))
+    for ind_start, ind_end in zip(indices[:-1], indices[1:]):
         # sum the counts in the energy bands, and find counts/s/keV
-        summed_counts = np.sum(count_data["counts"][:, ind_start:ind_end+1], axis=1)
+        summed_counts = np.sum(count_data["counts"][:, ind_start:ind_end], axis=1)
         energy_width = (energy_bins["e_max"][ind_end] - energy_bins["e_min"][ind_start])
         summary_counts.append(summed_counts/energy_width/count_data["exposure"])
 
