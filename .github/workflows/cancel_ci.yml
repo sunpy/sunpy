@@ -2,7 +2,7 @@ name: Cancel duplicate workflows
 
 on:
   workflow_run:
-    workflows: ["CI"]
+    workflows: ["CI", "Automated tests", "Scheduled builds", "asv-benchmarks-daily"]
     types:
       - requested
 
@@ -14,3 +14,6 @@ jobs:
       uses: styfle/cancel-workflow-action@0.9.1
       with:
         workflow_id: ${{ github.event.workflow.id }}
+        ignore_sha: true
+        all_but_latest: true
+        access_token: ${{ github.token }}
