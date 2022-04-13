@@ -34,10 +34,9 @@ console_logger = logging.getLogger()
 console_logger.setLevel('INFO')
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture
 def jsoc_test_email():
-    # JSOC Test email
-    pytest.jsoc_test_email = "nabil.freij@gmail.com"
+    return "nabil.freij@gmail.com"
 
 
 @pytest.fixture(scope='session', autouse=True)
