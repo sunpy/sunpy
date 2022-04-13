@@ -494,7 +494,7 @@ def test_slice_jsoc(jsoc_test_email):
     tstart = '2011/06/07 06:32:45'
     tend = '2011/06/07 06:33:15'
     res = Fido.search(a.Time(tstart, tend), a.jsoc.Series('hmi.M_45s'),
-                      a.jsoc.Notify(pytest.jsoc_test_email))
+                      a.jsoc.Notify(jsoc_test_email))
     with pytest.warns(SunpyUserWarning, match="Downloading of sliced JSOC results is not supported."):
         Fido.fetch(res[0, 0])
 
@@ -508,7 +508,7 @@ def test_fido_repr():
 def test_fido_metadata_queries(jsoc_test_email):
     results = Fido.search(a.Time('2010/8/1 03:40', '2010/8/1 3:40:10'),
                           a.hek.FI | a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
-                          a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify(pytest.jsoc_test_email))
+                          a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify(jsoc_test_email))
     assert len(results['hek']) == 2
     assert isinstance(results['hek'], UnifiedResponse)
     assert isinstance(results['hek'][0], QueryResponseTable)
