@@ -1,4 +1,4 @@
-name: Cancel duplicate workflows
+name: 'Cancel Previous Runs'
 
 on:
   workflow_run:
@@ -9,11 +9,9 @@ on:
 jobs:
   cancel:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
-    - name: Cancel previous runs
-      uses: styfle/cancel-workflow-action@0.9.1
+    - uses: styfle/cancel-workflow-action@0.9.1
       with:
-        workflow_id: ${{ github.event.workflow.id }}
-        ignore_sha: true
         all_but_latest: true
-        access_token: ${{ github.token }}
+        workflow_id: ${{ github.event.workflow.id }}
