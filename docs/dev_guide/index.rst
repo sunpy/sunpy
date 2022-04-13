@@ -59,6 +59,7 @@ This section contains the various guidelines to be followed by anyone working on
       contents/logger
       contents/new_objects
       contents/remote_data
+      contents/map_rotate_custom
 
 {%else%}
 
