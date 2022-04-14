@@ -1,0 +1,2 @@
+Declare in our dependancies that we are not compatible with asdf 3.0.0 until we
+are.
