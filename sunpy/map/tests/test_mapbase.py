@@ -800,10 +800,6 @@ def calc_new_matrix(angle):
 
 
 def test_rotate(aia171_test_map):
-    # The test map has big-endian floats, so we switch it to floats with native byte ordering
-    # Otherwise, errors can be raised by code that has been compiled
-    aia171_test_map._data = aia171_test_map.data.astype('float')
-
     rotated_map_1 = aia171_test_map.rotate(20 * u.deg)
     rotated_map_2 = rotated_map_1.rotate(20 * u.deg)
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
