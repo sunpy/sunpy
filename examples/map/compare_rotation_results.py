@@ -8,11 +8,13 @@ This example will compare between the current library implementations for `sunpy
 import numpy as np
 import pylab as plt
 
+import astropy.units as u
+
 import sunpy.data.sample
 import sunpy.map
 
 ###############################################################################
-# Rotating a map in sunpy has a choice between two libraries: `skimage' and `scipy`
+# Rotating a map in sunpy has a choice between two libraries: ``skimage`` and ``scipy``
 # One can also create a custom rotation function and add it, see :ref:`map_rotate_custom`.
 #
 # Since all these options use different algorithms, we need a basis for comparison.
@@ -70,19 +72,18 @@ print(f"scikit-image vs scipy {smape(skimage_map.data, scipy_map.data):.2f}%")
 fig0, ax0 = plt.subplots()
 img0 = ax0.imshow(skimage_map.data - scipy_map.data, vmin=-50, vmax=50, cmap=plt.cm.seismic)
 fig0.colorbar(img0)
-ax0.set_title("Raw Difference: scikit-image vs scipy")
+ax0.set_title("HMI Difference: scikit-image vs scipy")
 
 plt.show()
 
 ###############################################################################
 # We can repeat this but for AIA data, using a 171 sample image.
-# Since there is no rotation in the FITS header, it will just apply the same rotation to the image.
-# This rotation is to set the rotation matrix to unity.
+# Since there is no rotation in the FITS header, we will rotate by 30 degrees
 
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
-skimage_map = aia_map.rotate(order=3, recenter=True, method='skimage')
-scipy_map = aia_map.rotate(order=3, recenter=True, method='scipy')
+skimage_map = aia_map.rotate(30*u.deg, order=3, recenter=True, method='skimage')
+scipy_map = aia_map.rotate(30*u.deg, order=3, recenter=True, method='scipy')
 
 ###############################################################################
 # Now we will calculate the Symmetric Mean Percentage Error.
@@ -101,6 +102,6 @@ print(f"scikit-image vs scipy {smape(skimage_map.data, scipy_map.data):.2f}%")
 fig0, ax0 = plt.subplots()
 img0 = ax0.imshow(skimage_map.data - scipy_map.data, vmin=-75, vmax=75, cmap=plt.cm.seismic)
 fig0.colorbar(img0)
-ax0.set_title("Raw Difference: scikit-image vs scipy")
+ax0.set_title("AIA Difference: scikit-image vs scipy")
 
 plt.show()

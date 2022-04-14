@@ -10,11 +10,15 @@ If you want to add a new rotation method that can be used by `sunpy.map.GenericM
 
     from sunpy.image.transform import add_rotation_function
 
-    @add_rotation_function("my_rotate",
-                        handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
+    @add_rotation_function("my_rotate", handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
     def _rotation_mine(image, matrix, shift, order, missing, clip):
         # Rotation code goes here
         return rotated_image
+
+The best explanation of what the arguments mean is:
+
+.. autofunction:: sunpy.image.transform.add_rotation_function
+   :noindex:
 
 Then you can do:
 
@@ -27,17 +31,7 @@ Then you can do:
 
     rot_map = hmi_map.rotate(order=3, recenter=True, method="my_rotate")
 
-There are several things you will want to be aware of when adding a new rotation method.
-
-* The `.add_rotation_function` means you can handle nans, clipping, and missing values in the image array
-  before it is passed to your rotation function via the boolean flags.
-  The documentation in `.add_rotation_function` explain how these work.
-* The arguments into the rotation method must be ``image, matrix, shift, order, missing, clip``.
-  There is no variation allowed.
-* The return value of the rotation method must the rotated image array.
-* You must describe the rotation method in the docstring of the function using unnumbered bullet points.
-
-Below is a semi-functioning OpenCV2 rotation method as an example:
+Below is a non-functioning OpenCV2 rotation method as an example:
 
 .. code-block:: python
 
