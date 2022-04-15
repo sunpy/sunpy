@@ -37,6 +37,7 @@ import sys
 import math
 import traceback
 import collections
+import collections.abc
 
 from astropy.io import fits
 
@@ -76,7 +77,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
         if hdus is not None:
             if isinstance(hdus, int):
                 hdulist = hdulist[hdus]
-            elif isinstance(hdus, collections.Iterable):
+            elif isinstance(hdus, collections.abc.Iterable):
                 hdulist = [hdulist[i] for i in hdus]
 
         hdulist = fits.hdu.HDUList(hdulist)

@@ -170,7 +170,7 @@ def test_wcs(mdi, mdi_synoptic):
         mdi_synoptic.pixel_to_world(0*u.pix, 0*u.pix)
 
 
-def test_unit(mdi_synoptic):
+def test_unit_synoptic(mdi_synoptic):
     assert mdi_synoptic.unit == u.G
     assert mdi_synoptic.unit == u.Unit("Mx/cm^2")
     assert mdi_synoptic.unit.to_string() == 'Mx / cm2'

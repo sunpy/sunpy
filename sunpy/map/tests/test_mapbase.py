@@ -865,33 +865,37 @@ def calc_new_matrix(angle):
 
 
 def test_rotate(aia171_test_map):
-    # The test map has big-endian floats, so we switch it to floats with native byte ordering
-    # Otherwise, errors can be raised by code that has been compiled
-    aia171_test_map._data = aia171_test_map.data.astype('float')
+    # We use order=0 for many of these tests to minimize losing edge pixels due to interpolation
+    # with NaNs that are used as the default `missing` value
 
-    rotated_map_1 = aia171_test_map.rotate(20 * u.deg)
-    rotated_map_2 = rotated_map_1.rotate(20 * u.deg)
+    rotated_map_1 = aia171_test_map.rotate(20 * u.deg, order=0)
+    rotated_map_2 = rotated_map_1.rotate(20 * u.deg, order=0)
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
                                np.dot(aia171_test_map.rotation_matrix, calc_new_matrix(20).T))
     np.testing.assert_allclose(rotated_map_2.rotation_matrix,
                                np.dot(aia171_test_map.rotation_matrix, calc_new_matrix(40).T))
 
     # Rotation of a map by a non-integral multiple of 90 degrees expands the map
-    # and assigns the value of 0 to corner pixels. This results in a reduction
-    # of the mean for a map of all non-negative values.
+    # and assigns the value of NaN to corner regions. The mean will be approximately
+    # the same, although there will be slight change due to the loss of edge pixels
+    # due to interpolation with the NaNs.
     assert rotated_map_2.data.shape > rotated_map_1.data.shape > aia171_test_map.data.shape
-    np.testing.assert_allclose(rotated_map_1.data[0, 0], 0., atol=1e-7)
-    np.testing.assert_allclose(rotated_map_2.data[0, 0], 0., atol=1e-7)
-    assert rotated_map_2.mean() < rotated_map_1.mean() < aia171_test_map.mean()
+    assert np.isnan(rotated_map_1.data[0, 0])
+    assert np.isnan(rotated_map_2.data[0, 0])
+    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_1.mean(), rtol=5e-3)
+    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_2.mean(), rtol=5e-3)
 
     # A scaled-up map should have the same mean because the output map should be expanded
-    rotated_map_3 = aia171_test_map.rotate(0 * u.deg, order=3, scale=2)
+    rotated_map_3 = aia171_test_map.rotate(0 * u.deg, order=0, scale=2)
     np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_3.mean(), rtol=1e-4)
 
-    # Mean and std should be equal for a 90 degree rotation
-    rotated_map_4 = aia171_test_map.rotate(90 * u.deg, order=3, scale=2)
-    np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_4.mean(), rtol=1e-10)
-    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_4.std(), rtol=1e-10)
+    # Mean and std should be equal for a 90 degree rotation as long as 1 pixel is cropped out on
+    # all sides
+    rotated_map_4 = aia171_test_map.rotate(90 * u.deg, order=0)
+    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].mean(),
+                               rotated_map_4.data[1:-1, 1:-1].mean(), rtol=1e-10)
+    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].std(),
+                               rotated_map_4.data[1:-1, 1:-1].std(), rtol=1e-10)
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap(
@@ -1270,8 +1274,11 @@ def test_contour_units(simple_map):
         assert np.all(c1 == c2)
 
     # Percentage
-    contours_percent = simple_map.contour(100 * u.percent)
-    contours_ref = simple_map.contour(np.max(simple_map.data) * simple_map.unit)
+    contours_percent = simple_map.contour(50 * u.percent)
+    high = np.max(simple_map.data)
+    low = np.min(simple_map.data)
+    middle = high - (high - low) / 2
+    contours_ref = simple_map.contour(middle * simple_map.unit)
     for c1, c2 in zip(contours_percent, contours_ref):
         assert np.all(c1 == c2)
 

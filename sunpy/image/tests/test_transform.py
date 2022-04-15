@@ -1,9 +1,13 @@
 import numpy as np
 import pytest
 import skimage.data as images
+from matplotlib.figure import Figure
 from skimage import transform as tf
 
-from sunpy.image.transform import affine_transform
+from astropy.coordinates.matrix_utilities import rotation_matrix
+
+from sunpy.image.transform import _rotation_function_registry, affine_transform
+from sunpy.tests.helpers import figure_test
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 
 # Tolerance for tests
@@ -21,6 +25,11 @@ def identity():
     return np.array([[1, 0], [0, 1]])
 
 
+@pytest.fixture
+def rot30():
+    return rotation_matrix(30)[0:2, 0:2]
+
+
 def compare_results(expect, result, allclose=True):
     """
     Function to check that the obtained results are what was expected, to
@@ -31,8 +40,8 @@ def compare_results(expect, result, allclose=True):
     res = result[1:-1, 1:-1]
     t1 = abs(exp.mean() - res.mean()) <= RTOL*exp.mean()
 
-    # Don't do the allclose test for scipy as the bicubic algorithm has edge effects
-    # TODO: Develop a way of testing this for scipy
+    # Don't do the allclose test for skimage due to its forced interpolation beyond the edge of the
+    # original image
     if not allclose:
         return t1
     else:
@@ -41,10 +50,12 @@ def compare_results(expect, result, allclose=True):
 
         # Print out every mismatch
         if not t2:
-            mismatches = np.stack([*notclose.nonzero(), exp[notclose], res[notclose]]).T
-            for row in mismatches:
-                print(f"i={int(row[0]+1)}, j={int(row[1]+1)}: expected={row[2]}, result={row[3]}, "
-                      f"adiff={row[2]-row[3]}, rdiff={(row[2]-row[3])/row[2]}")
+            with np.errstate(divide='ignore'):
+                mismatches = np.stack([*notclose.nonzero(), exp[notclose], res[notclose]]).T
+                for row in mismatches:
+                    print(f"i={int(row[0]+1)}, j={int(row[1]+1)}: ",
+                          f"expected={row[2]}, result={row[3]}, "
+                          f"adiff={row[2]-row[3]}, rdiff={(row[2]-row[3])/row[2]}")
 
     return t1 and t2
 
@@ -73,21 +84,21 @@ def test_rotation(original, angle, k):
 
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
                                       (-90.0, 3), (360.0, 0), (-360.0, 0)])
-def test_scipy_rotation(original, angle, k):
+def test_skimage_rotation(original, angle, k):
     # Test rotation against expected outcome
     angle = np.radians(angle)
     c = np.round(np.cos(angle))
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = affine_transform(original, rmatrix=rmatrix, method='scipy')
+    rot = affine_transform(original, rmatrix=rmatrix, method='skimage')
     assert compare_results(expected, rot, allclose=False)
 
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=derot_matrix, method='scipy')
+    derot = affine_transform(rot, rmatrix=derot_matrix, method='skimage')
     assert compare_results(original, derot, allclose=False)
 
 
@@ -106,14 +117,14 @@ def test_shift(original, dx, dy):
     # Check a shifted shape against expected outcome
     expected = np.roll(np.roll(original, dx, axis=1), dy, axis=0)
     rcen = image_center - np.array([dx, dy])
-    shift = affine_transform(original, rmatrix=rmatrix, recenter=True, image_center=rcen)
+    shift = affine_transform(original, rmatrix=rmatrix, recenter=True, image_center=rcen, missing=0)
     ymin, ymax = max([0, dy]), min([original.shape[1], original.shape[1]+dy])
     xmin, xmax = max([0, dx]), min([original.shape[0], original.shape[0]+dx])
     assert compare_results(expected[ymin:ymax, xmin:xmax], shift[ymin:ymax, xmin:xmax])
 
     # Check shifted and unshifted shape against original image
     rcen = image_center + np.array([dx, dy])
-    unshift = affine_transform(shift, rmatrix=rmatrix, recenter=True, image_center=rcen)
+    unshift = affine_transform(shift, rmatrix=rmatrix, recenter=True, image_center=rcen, missing=0)
     # Need to ignore the portion of the image cut off by the first shift
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
@@ -126,8 +137,9 @@ def test_scale(original, scale_factor):
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
     # Check a scaled image against the expected outcome
-    newim = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
+    # When we depend on SciPy 1.6, we can replace this with scipy.ndimage.zoom(..., grid_mode=True)
+    newim = tf.rescale(original / original.max(), scale_factor, order=1,
+                       mode='constant', anti_aliasing=False) * original.max()
     # Old width and new center of image
     w = original.shape[0] / 2.0 - 0.5
     new_c = (newim.shape[0] / 2.0) - 0.5
@@ -139,7 +151,7 @@ def test_scale(original, scale_factor):
     else:
         lower = int(w - new_c)
         expected[lower:upper, lower:upper] = newim
-    scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=4)
+    scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=1, missing=0)
     assert compare_results(expected, scale)
 
 
@@ -159,8 +171,9 @@ def test_all(original, angle, dx, dy, scale_factor):
     c = np.round(np.cos(angle))
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
-    scale = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
+    # When we depend on SciPy 1.6, we can replace this with scipy.ndimage.zoom(..., grid_mode=True)
+    scale = tf.rescale(original / original.max(), scale_factor, order=1,
+                       mode='constant', anti_aliasing=False) * original.max()
     new = np.zeros(original.shape)
 
     disp = np.array([dx, dy])
@@ -178,16 +191,16 @@ def test_all(original, angle, dx, dy, scale_factor):
     rcen = image_center - disp
     expected = np.rot90(new, k=k)
 
-    rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=4,
-                                     recenter=True, image_center=rcen)
+    rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=1,
+                                     recenter=True, image_center=rcen, missing=0)
     assert compare_results(expected, rotscaleshift)
 
     # Check a rotated/shifted and restored image against original
-    transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, order=4, recenter=True,
-                                   image_center=rcen)
+    transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, order=1, recenter=True,
+                                   image_center=rcen, missing=0)
     inv_rcen = image_center + np.dot(rmatrix.T, np.array([dx, dy]))
-    inverse = affine_transform(transformed, rmatrix=rmatrix.T, scale=1.0, order=4, recenter=True,
-                               image_center=inv_rcen)
+    inverse = affine_transform(transformed, rmatrix=rmatrix.T, scale=1.0, order=1, recenter=True,
+                               image_center=inv_rcen, missing=0)
 
     # Need to ignore the portion of the image cut off by the first shift
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
@@ -202,38 +215,25 @@ def test_flat(identity):
     assert np.allclose(in_arr, out_arr, rtol=RTOL)
 
 
-# Although a depreaction warning is raised, behaviour is as expected and will
-# continue after the depreaction period, so ignore the warnings
-@pytest.mark.filterwarnings('ignore:Passing `np.nan` to mean no clipping in np.clip has always '
-                            'been unreliable, and is now deprecated')
-def test_nan_skimage_low(identity):
-    # Test non-replacement of NaN values for scikit-image rotation with order <= 3
-    in_arr = np.array([[np.nan]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, order=3)
-    assert np.all(np.isnan(out_arr))
-
-
-def test_nan_skimage_high(identity):
-    # Test replacement of NaN values for scikit-image rotation with order >=4
-    in_arr = np.array([[np.nan]])
-    with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for higher-order scikit-image rotation.'):
-        out_arr = affine_transform(in_arr, rmatrix=identity, order=4)
-    assert not np.all(np.isnan(out_arr))
+def test_nan_skimage(identity):
+    # Test preservation of NaN values for scikit-image rotation
+    in_arr = np.array([[np.nan, 0]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='skimage')
+    assert np.isnan(out_arr[0, 0])
 
 
 def test_nan_scipy(identity):
-    # Test replacement of NaN values for scipy rotation
-    in_arr = np.array([[np.nan]])
-    with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for SciPy rotation.'):
-        out_arr = affine_transform(in_arr, rmatrix=identity, method='scipy')
-    assert not np.all(np.isnan(out_arr))
+    # Test preservation of NaN values for scipy rotation
+    in_arr = np.array([[np.nan, 0]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='scipy')
+    assert np.isnan(out_arr[0, 0])
 
 
 def test_int(identity):
     # Test casting of integer array to float array
     in_arr = np.array([[100]], dtype=int)
     with pytest.warns(SunpyUserWarning, match='Integer input data has been cast to float64'):
-        out_arr = affine_transform(in_arr, rmatrix=identity)
+        out_arr = affine_transform(in_arr, rmatrix=identity, method='skimage')
     assert np.issubdtype(out_arr.dtype, np.floating)
 
 
@@ -277,3 +277,79 @@ def test_reproducible_matrix_multiplication():
             print(f"{mismatches[i]} mismatching elements in multiplication #{i}")
 
     assert np.sum(mismatches != 0) == 0
+
+
+@figure_test
+def test_clipping(rot30):
+    # Generates a plot to test the clipping the output image to the range of the input image
+    image = np.ones((20, 20))
+    image[4:-4, 4:-4] = 2
+
+    fig = Figure(figsize=(12, 4))
+    axs = fig.subplots(2, 5)
+
+    for i, method in enumerate(['scipy', 'skimage']):
+        axs[i, 0].imshow(image, vmin=0, vmax=3)
+        axs[i, 1].imshow(affine_transform(image, rot30, clip=False, method=method, missing=0),
+                         vmin=0, vmax=3)
+        axs[i, 2].imshow(affine_transform(image, rot30, clip=True, method=method, missing=0),
+                         vmin=0, vmax=3)
+        axs[i, 3].imshow(affine_transform(image, rot30, clip=True, method=method, missing=2),
+                         vmin=0, vmax=3)
+        axs[i, 4].imshow(affine_transform(image, rot30, clip=True, method=method, missing=np.nan),
+                         vmin=0, vmax=3)
+
+    axs[0, 0].set_title('Original')
+    axs[0, 1].set_title('no clip & missing=0')
+    axs[0, 2].set_title('clip & missing=0')
+    axs[0, 3].set_title('clip & missing=2')
+    axs[0, 4].set_title('clip & missing=NaN')
+
+    axs[0, 0].set_ylabel('SciPy')
+    axs[1, 0].set_ylabel('scikit-image')
+
+    return fig
+
+
+@pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
+@figure_test
+def test_nans(rot30):
+    # Generates a plot to test the preservation and expansions of NaNs by the rotation
+    image_with_nans = np.ones((23, 23))
+    image_with_nans[4:-4, 4:-4] = 2
+    image_with_nans[9:-9, 9:-9] = np.nan
+
+    fig = Figure(figsize=(16, 4))
+    axs = fig.subplots(2, 7)
+
+    axs[0, 0].set_title('Original (NaNs are white)')
+    axs[0, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
+    axs[1, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
+
+    for i in range(6):
+        axs[0, i+1].set_title(f'order={i}')
+        axs[0, i+1].imshow(affine_transform(image_with_nans, rot30,
+                                            order=i, method='scipy', missing=np.nan),
+                           vmin=-1.1, vmax=1.1)
+        axs[1, i+1].imshow(affine_transform(image_with_nans, rot30,
+                                            order=i, method='skimage', missing=np.nan),
+                           vmin=-1.1, vmax=1.1)
+
+    axs[0, 0].set_ylabel('SciPy')
+    axs[1, 0].set_ylabel('scikit-image')
+
+    return fig
+
+
+@pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
+@pytest.mark.parametrize('method', _rotation_function_registry.keys())
+@pytest.mark.parametrize('order', range(6))
+def test_endian(method, order, rot30):
+    # Test that the rotation output values do not change with input byte order
+    native = np.ones((10, 10))
+    swapped = native.byteswap().newbyteorder()
+
+    rot_native = affine_transform(native, rot30, order=order, method=method, missing=0)
+    rot_swapped = affine_transform(swapped, rot30, order=order, method=method, missing=0)
+
+    assert compare_results(rot_native, rot_swapped)

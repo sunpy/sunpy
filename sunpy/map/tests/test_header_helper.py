@@ -188,10 +188,13 @@ def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
     # Check arguments not given as astropy Quantities
     with pytest.raises(TypeError):
         header = make_fitswcs_header(map_data, hpc_coord, reference_pixel=[0, 0])
+    with pytest.raises(TypeError):
         header = make_fitswcs_header(map_data, hpc_coord, scale=[0, 0])
 
     # Check arguments of reference_pixel and scale have to be given in astropy units of pix, and arcsec/pix
     with pytest.raises(u.UnitsError):
         header = make_fitswcs_header(map_data, hpc_coord, reference_pixel=u.Quantity([0, 0]))
+    with pytest.raises(u.UnitsError):
         header = make_fitswcs_header(map_data, hpc_coord, scale=u.Quantity([0, 0]))
+    with pytest.raises(u.UnitsError):
         header = make_fitswcs_header(map_data, hpc_coord, scale=u.Quantity([0, 0]*u.arcsec))

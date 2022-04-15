@@ -457,11 +457,12 @@ def test_jsoc_missing_email():
 
 
 @pytest.mark.remote_data
-def test_slice_jsoc():
+@pytest.mark.xdist_group(name="jsoc")
+def test_slice_jsoc(jsoc_test_email):
     tstart = '2011/06/07 06:32:45'
     tend = '2011/06/07 06:33:15'
     res = Fido.search(a.Time(tstart, tend), a.jsoc.Series('hmi.M_45s'),
-                      a.jsoc.Notify('jsoc@cadair.com'))
+                      a.jsoc.Notify(jsoc_test_email))
     with pytest.warns(SunpyUserWarning, match="Downloading of sliced JSOC results is not supported."):
         Fido.fetch(res[0, 0])
 
@@ -473,19 +474,16 @@ def test_fido_repr():
 
 @pytest.mark.xdist_group(name="jsoc")
 @pytest.mark.remote_data
-def test_fido_metadata_queries():
+def test_fido_metadata_queries(jsoc_test_email):
     results = Fido.search(a.Time('2010/8/1 03:40', '2010/8/1 3:40:10'),
                           a.hek.FI | a.hek.FL & (a.hek.FL.PeakFlux > 1000) |
-                          a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify("jsoc@cadair.com"))
+                          a.jsoc.Series('hmi.m_45s') & a.jsoc.Notify(jsoc_test_email))
     assert len(results['hek']) == 2
     assert isinstance(results['hek'], UnifiedResponse)
     assert isinstance(results['hek'][0], QueryResponseTable)
     assert len(results['hek'][1]) == 2
     assert results[::-1][0] is results['jsoc']
     assert isinstance(results['jsoc'], QueryResponseTable)
-    # Checks we can download the files form JSOC from this response.
-    files = Fido.fetch(results)
-    assert len(files) == len(results['jsoc'])
     assert results.keys() == ['hek', 'jsoc']
 
 

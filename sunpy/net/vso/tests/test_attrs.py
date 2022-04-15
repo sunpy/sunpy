@@ -95,10 +95,10 @@ def test_wave_inputQuantity():
     wrong_type_mesage = "Wave inputs must be astropy Quantities"
     with pytest.raises(TypeError) as excinfo:
         core_attrs.Wavelength(10, 23)
-        assert excinfo.value.message == wrong_type_mesage
+    assert wrong_type_mesage in str(excinfo.value)
     with pytest.raises(TypeError) as excinfo:
         core_attrs.Wavelength(10 * u.AA, 23)
-        assert excinfo.value.message == wrong_type_mesage
+    assert wrong_type_mesage in str(excinfo.value)
 
 
 def test_wave_toangstrom():

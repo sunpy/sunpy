@@ -10,32 +10,55 @@ Developer's Guide
 
 {% if is_development %}
 
-This article describes the guidelines to be followed by developers working on sunpy.
-If you are thinking of contributing to sunpy please read the following carefully.
+This section contains the various guidelines to be followed by anyone working on sunpy.
 
-We currently recommend the :ref:`newcomers` as the place to start.
-This goes over the basics and has links to useful tutorials on git.
+.. panels::
 
-.. toctree::
-   :maxdepth: 2
+    Getting started
+    ^^^^^^^^^^^^^^^
+    .. toctree::
+      :maxdepth: 3
 
-   contents/newcomers
-   contents/code_standards
-   contents/documentation
-   contents/example_gallery
-   contents/tests
-   contents/pr_review_procedure
-   contents/api
-   contents/dependencies
-   contents/units_quantities
-   contents/new_objects
-   contents/extending_fido
-   contents/maintainer_workflow
-   contents/logger
-   contents/remote_data
-   contents/config
-   contents/funding
-   contents/ci_jobs
+      contents/newcomers
+
+    ---
+
+    Conventions
+    ^^^^^^^^^^^
+    .. toctree::
+      :maxdepth: 1
+
+      contents/code_standards
+      contents/tests
+      contents/documentation
+      contents/example_gallery
+      contents/pr_review_procedure
+      contents/units_quantities
+
+    ---
+
+    Repo management
+    ^^^^^^^^^^^^^^^
+    .. toctree::
+      :maxdepth: 1
+
+      contents/maintainer_workflow
+      contents/dependencies
+      contents/ci_jobs
+      contents/funding
+
+    ---
+
+    Extending sunpy
+    ^^^^^^^^^^^^^^^
+    .. toctree::
+      :maxdepth: 1
+
+      contents/public_api
+      contents/extending_fido
+      contents/logger
+      contents/new_objects
+      contents/remote_data
 
 {%else%}
 

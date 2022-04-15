@@ -1,0 +1,1 @@
+Created the decorator :func:`sunpy.image.transform.add_rotation_function` for registering new rotation functions for use by :func:`sunpy.image.transform.affine_transform` and :meth:`sunpy.map.GenericMap.rotate`.

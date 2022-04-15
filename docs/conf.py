@@ -153,6 +153,9 @@ napoleon_use_rtype = False
 # Disable google style docstrings
 napoleon_google_docstring = False
 
+# Disable the use of param, which prevents a distinct "Other Parameters" section
+napoleon_use_param = False
+
 # Enable nitpicky mode, which forces links to be non-broken
 nitpicky = True
 # This is not used. See docs/nitpick-exceptions file for the actual listing.
@@ -221,7 +224,7 @@ graphviz_dot_args = [
 
 # -- Sphinx Gallery ------------------------------------------------------------
 # JSOC email os env
-os.environ["JSOC_EMAIL"] = "jsoc@cadair.com"
+os.environ["JSOC_EMAIL"] = "nabil.freij@gmail.com"
 sphinx_gallery_conf = {
     'backreferences_dir': os.path.join('generated', 'modules'),
     'filename_pattern': '^((?!skip_).)*$',
