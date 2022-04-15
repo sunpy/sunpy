@@ -548,7 +548,7 @@ If you want to see the current list of clients you can do::
           Client                                                    Description
     ----------------- -------------------------------------------------------------------------------------------------------
     CDAWEBClient      Provides access to query and download from the Coordinated Data Analysis Web (CDAWeb).
-    EVEClient         Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
+    EVEClient         Provides access to Level 0CS Extreme ultraviolet Variability Experiment (EVE) data.
     GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
     XRSClient         Provides access to the GOES XRS fits files archive.
     SUVIClient        Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
