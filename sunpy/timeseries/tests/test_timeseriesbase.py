@@ -49,7 +49,7 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 
 @pytest.fixture
-def eve_ts():
+def eve_test_ts():
     with pytest.warns(SunpyUserWarning, match='Unknown units'):
         return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
 
@@ -247,137 +247,108 @@ def test_truncation_slices(eve_test_ts,
             eve_test_ts.time_range.end)
 
 
-@pytest.fixture
-def truncation_timerange_test_ts(eve_test_ts):
-    # Truncate using a TimeRange object.
-    return eve_test_ts.truncate(eve_test_ts.time_range.split(3)[1])
-
-
-def test_truncation_timerange(eve_test_ts, truncation_timerange_test_ts):
+def test_truncation_timerange(eve_test_ts):
+    truncated = eve_test_ts.truncate(eve_test_ts.time_range.split(3)[1])
     # Check the resulting timerange in both TS and TSMD
-    assert (truncation_timerange_test_ts.time_range ==
-            truncation_timerange_test_ts.meta.time_range ==
+    assert (truncated.time_range ==
+            truncated.meta.time_range ==
             eve_test_ts.time_range.split(3)[1])
 
 
-@pytest.fixture
-def truncation_dates_test_ts(eve_test_ts):
-    # Truncate using strings for start and end datetime.
+def test_truncation_dates(eve_test_ts):
     start_str = str(eve_test_ts.time_range.split(3)[1].start)
     end_str = str(eve_test_ts.time_range.split(3)[1].end)
-    return eve_test_ts.truncate(start_str, end_str)
-
-
-def test_truncation_dates(eve_test_ts, truncation_dates_test_ts):
+    truncated = eve_test_ts.truncate(start_str, end_str)
     # Check the resulting timerange in both TS and TSMD
-    assert (truncation_dates_test_ts.time_range ==
-            truncation_dates_test_ts.meta.time_range ==
+    assert (truncated.time_range ==
+            truncated.meta.time_range ==
             eve_test_ts.time_range.split(3)[1])
+
 
 # =============================================================================
 # Test Basic Single-Timeseries Truncation Operations
 # =============================================================================
-
-
-@pytest.fixture
-def truncated_none_ts(concatenate_multi_files_ts):
+def test_truncated_none_ts(concatenate_multi_files_ts):
     # This timerange covers the whole range of metadata, so no change is expected
     a = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
     b = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
-    return truncated
+
+    assert concatenate_multi_files_ts.meta == truncated.meta
 
 
-def test_truncated_none_ts(concatenate_multi_files_ts, truncated_none_ts):
-    assert concatenate_multi_files_ts.meta == truncated_none_ts.meta
-
-
-@pytest.fixture
-def truncated_start_ts(concatenate_multi_files_ts):
-    # This time range starts after the original, so expect truncation
+def test_truncated_start_ts(concatenate_multi_files_ts):
     a = concatenate_multi_files_ts.meta.metadata[1][0].center
     b = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
-    return truncated
 
-
-def test_truncated_start_ts(concatenate_multi_files_ts, truncated_start_ts):
     # Check the 3 untouched metadata entries match
     assert concatenate_multi_files_ts.meta.metadata[
-        2:] == truncated_start_ts.meta.metadata[1:]
+        2:] == truncated.meta.metadata[1:]
     # Now check the truncated (but not truncated out) meta entry
     assert concatenate_multi_files_ts.meta.metadata[1][
-        0].start != truncated_start_ts.meta.metadata[0][0].start
+        0].start != truncated.meta.metadata[0][0].start
     assert concatenate_multi_files_ts.meta.metadata[1][
-        0].end == truncated_start_ts.meta.metadata[0][0].end
+        0].end == truncated.meta.metadata[0][0].end
     assert concatenate_multi_files_ts.meta.metadata[1][
-        1] == truncated_start_ts.meta.metadata[0][1]
+        1] == truncated.meta.metadata[0][1]
     assert concatenate_multi_files_ts.meta.metadata[1][
-        2] == truncated_start_ts.meta.metadata[0][2]
+        2] == truncated.meta.metadata[0][2]
 
 
-@pytest.fixture
-def truncated_end_ts(concatenate_multi_files_ts):
-    # This time range ends before the original, so expect truncation
+def test_truncated_end_ts(concatenate_multi_files_ts):
     a = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
     b = concatenate_multi_files_ts.meta.metadata[-2][0].center
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
-    return truncated
 
-
-def test_truncated_end_ts(concatenate_multi_files_ts, truncated_end_ts):
     # Check the 3 untouched metadata entries match
-    assert concatenate_multi_files_ts.meta.metadata[:-2] == truncated_end_ts.meta.metadata[:3]
+    assert concatenate_multi_files_ts.meta.metadata[:-2] == truncated.meta.metadata[:3]
     # Now check the truncated (but not truncated out) meta entry
     assert concatenate_multi_files_ts.meta.metadata[-2][
-        0].start == truncated_end_ts.meta.metadata[-1][0].start
+        0].start == truncated.meta.metadata[-1][0].start
     assert concatenate_multi_files_ts.meta.metadata[-2][
-        0].end != truncated_end_ts.meta.metadata[-1][0].end
+        0].end != truncated.meta.metadata[-1][0].end
     assert concatenate_multi_files_ts.meta.metadata[-2][
-        1] == truncated_end_ts.meta.metadata[-1][1]
+        1] == truncated.meta.metadata[-1][1]
     assert concatenate_multi_files_ts.meta.metadata[-2][
-        2] == truncated_end_ts.meta.metadata[-1][2]
+        2] == truncated.meta.metadata[-1][2]
 
 
-@pytest.fixture
-def truncated_both_ts(concatenate_multi_files_ts):
+def test_truncated_both_ts(concatenate_multi_files_ts):
     # This time range starts after and ends before the original, so expect truncation
     a = concatenate_multi_files_ts.meta.metadata[1][0].center
     b = concatenate_multi_files_ts.meta.metadata[-2][0].center
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
-    return truncated
 
-
-def test_truncated_both_ts(concatenate_multi_files_ts, truncated_both_ts):
     # Check the 1 untouched metadata entry matches the original
     assert concatenate_multi_files_ts.meta.metadata[
-        2:-2] == truncated_both_ts.meta.metadata[1:-1]
+        2:-2] == truncated.meta.metadata[1:-1]
     # Check the start truncated (but not truncated out) meta entry
     assert concatenate_multi_files_ts.meta.metadata[1][
-        0].start != truncated_both_ts.meta.metadata[0][0].start
+        0].start != truncated.meta.metadata[0][0].start
     assert concatenate_multi_files_ts.meta.metadata[1][
-        0].end == truncated_both_ts.meta.metadata[0][0].end
+        0].end == truncated.meta.metadata[0][0].end
     assert concatenate_multi_files_ts.meta.metadata[1][
-        1] == truncated_both_ts.meta.metadata[0][1]
+        1] == truncated.meta.metadata[0][1]
     assert concatenate_multi_files_ts.meta.metadata[1][
-        2] == truncated_both_ts.meta.metadata[0][2]
+        2] == truncated.meta.metadata[0][2]
     # Check the end truncated (but not truncated out) meta entry
     assert concatenate_multi_files_ts.meta.metadata[-2][
-        0].start == truncated_both_ts.meta.metadata[-1][0].start
+        0].start == truncated.meta.metadata[-1][0].start
     assert concatenate_multi_files_ts.meta.metadata[-2][
-        0].end != truncated_both_ts.meta.metadata[-1][0].end
+        0].end != truncated.meta.metadata[-1][0].end
     assert concatenate_multi_files_ts.meta.metadata[-2][
-        1] == truncated_both_ts.meta.metadata[-1][1]
+        1] == truncated.meta.metadata[-1][1]
     assert concatenate_multi_files_ts.meta.metadata[-2][
-        2] == truncated_both_ts.meta.metadata[-1][2]
+        2] == truncated.meta.metadata[-1][2]
 
 
 @pytest.fixture
@@ -407,22 +378,14 @@ def test_truncated_outside_tr_ts(truncated_new_tr_all_before_ts,
     assert (truncated_new_tr_all_before_ts.meta.metadata ==
             truncated_new_tr_all_after_ts.meta.metadata ==
             [])
-# =============================================================================
-# Test Extraction Operations
-# =============================================================================
 
 
-@pytest.fixture
-def extraction_test_ts(eve_test_ts):
-    # Extract the CMLon column
-    return eve_test_ts.extract('CMLon')
-
-
-def test_extraction(eve_test_ts, extraction_test_ts):
+def test_extraction(eve_test_ts):
+    cmlon = eve_test_ts.extract('CMLon')
     # Test there's only one column in the data, metadata and units
-    assert len(extraction_test_ts.to_dataframe().columns) == 1
-    assert len(extraction_test_ts.meta.columns) == 1
-    assert len(extraction_test_ts.units) == 1
+    assert len(cmlon.to_dataframe().columns) == 1
+    assert len(cmlon.meta.columns) == 1
+    assert len(cmlon.units) == 1
 
     # Test this column name matches
     assert eve_test_ts.to_dataframe().columns[0] == eve_test_ts.to_dataframe().columns[0] == list(
@@ -431,7 +394,7 @@ def test_extraction(eve_test_ts, extraction_test_ts):
     # Test the data matches
     extracted_df = DataFrame(eve_test_ts.to_dataframe()['CMLon']).dropna()
     extracted_df = extracted_df.sort_index()
-    assert_frame_equal(extraction_test_ts.to_dataframe(), extracted_df)
+    assert_frame_equal(cmlon.to_dataframe(), extracted_df)
 
 # =============================================================================
 # Test Concatenation Operations
@@ -612,21 +575,15 @@ def test_remove_column(eve_test_ts):
         eve_test_ts.remove_column('random column name')
 
 
-@pytest.fixture
-def add_column_from_array_ts(eve_test_ts, column_quantity):
-    # Add a column to a TS using a numpy array
-    return eve_test_ts.add_column(
-        'array_added', column_quantity.value, unit=column_quantity.unit)
-
-
-def test_add_column_from_array(eve_test_ts, add_column_from_array_ts,
-                               column_quantity):
+def test_add_column_from_array(eve_test_ts, column_quantity):
     # Test the column similar to the original quantity?
+    new_ts = eve_test_ts.add_column(
+        'array_added', column_quantity.value, unit=column_quantity.unit)
     assert_quantity_allclose(
-        add_column_from_array_ts.quantity('array_added'), column_quantity)
+        new_ts.quantity('array_added'), column_quantity)
 
     # Test the full list of columns are pressent
-    assert set(add_column_from_array_ts.to_dataframe().columns) == set(
+    assert set(new_ts.to_dataframe().columns) == set(
         eve_test_ts.to_dataframe().columns) | {'array_added'}
 
 
@@ -723,6 +680,7 @@ def test_column_subset_peek(generic_ts):
 
 
 def test_empty_ts_invalid_peek(generic_ts):
+    # Truncate a timeseries so it's empty
     a = generic_ts.time_range.start - TimeDelta(2*u.day)
     b = generic_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = generic_ts.truncate(TimeRange(a, b))
