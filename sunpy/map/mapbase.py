@@ -2161,6 +2161,8 @@ class GenericMap(NDData):
                 axes, self.observer_coordinate, resolution=resolution,
                 rsun=self.rsun_meters, **kwargs)
         else:
+            warn_deprecated("Drawing the limb on a non-WCS Axes is deprecated, "
+                            "and will be removed in sunpy 4.1.")
             # If not WCSAxes use a Circle
             c_kw.setdefault('radius', self.rsun_obs.value)
 
