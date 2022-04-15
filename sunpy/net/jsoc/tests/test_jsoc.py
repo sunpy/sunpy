@@ -264,16 +264,6 @@ def test_search_metadata(client):
 
 
 @pytest.mark.remote_data
-def test_request_data_error(client):
-    responses = client.search(
-        a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(jsoc_test_email),
-        a.jsoc.Protocol('foo'))
-    with pytest.raises(TypeError):
-        client.request_data(responses)
-
-
-@pytest.mark.remote_data
 def test_request_data_method(client, jsoc_test_email):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
