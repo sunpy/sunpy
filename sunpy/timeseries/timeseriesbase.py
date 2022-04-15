@@ -136,7 +136,7 @@ class GenericTimeSeries:
         warn_deprecated("Using .data is deprecated. "
                         "Use .to_dataframe() to get a pandas DataFrame or "
                         ".to_table() to get an astropy Table instead.")
-        return self._data
+        return self.to_dataframe()
 
     @data.setter
     def data(self, d):
@@ -694,7 +694,7 @@ class GenericTimeSeries:
             data = TimeSeries.from_pandas(data)
         elif method == 'astropy':
             if len(kwargs):
-                raise ValueError("Concatenating using method='astropy' does not support"
+                raise ValueError("Concatenating using method='astropy' does not support "
                                  "any extra keyword arguments.")
             data = vstack([self._data, *list(ts._data for ts in others)])
             if sort:

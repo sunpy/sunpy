@@ -618,6 +618,20 @@ def test_timeseries_array():
         assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
 
 
+def test_timeseries_deprecations(generic_ts):
+    with pytest.warns(SunpyDeprecationWarning, match='Using .data is deprecated'):
+        assert np.all(generic_ts.to_dataframe() == generic_ts.data)
+
+
+def test_concatenate_errors(generic_ts, eve_test_ts):
+    with pytest.raises(
+            ValueError, match=r".*using method='astropy' does not support any extra keyword arguments"):
+        generic_ts.concatenate(eve_test_ts, method='astropy', kwarg='kwarg')
+
+    with pytest.raises(
+            ValueError, match="method argument must be one of"):
+        generic_ts.concatenate(eve_test_ts, method='not a method')
+
 # TODO:
 # _validate_units
 # _validate_meta
