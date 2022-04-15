@@ -9,7 +9,7 @@ __all__ = ['EVEClient']
 
 class EVEClient(GenericClient):
     """
-    Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
+    Provides access to Level 0CS Extreme ultraviolet Variability Experiment (EVE) data.
 
     To use this client you must request Level 0 data.
     It is hosted by `LASP <http://lasp.colorado.edu/home/eve/data/data-access/>`__.
