@@ -2307,7 +2307,7 @@ class GenericMap(NDData):
         # Transform the indices if plotting to a different WCS
         # We do this instead of using the `transform` keyword argument so that Matplotlib does not
         # get confused about the bounds of the contours
-        if wcsaxes_compat.is_wcsaxes(axes) and self.wcs is not axes.wcs:
+        if self.wcs is not axes.wcs:
             transform = axes.get_transform(self.wcs) - axes.transData  # pixel->pixel transform
             x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
             x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
@@ -2451,26 +2451,15 @@ class GenericMap(NDData):
             if title:
                 axes.set_title(title)
 
-            if wcsaxes_compat.is_wcsaxes(axes):
-                # WCSAxes has unit identifiers on the tick labels, so no need
-                # to add unit information to the label
-                spatial_units = [None, None]
-                ctype = axes.wcs.wcs.ctype
-            else:
-                spatial_units = self.spatial_units
-                ctype = self.coordinate_system
+            # WCSAxes has unit identifiers on the tick labels, so no need
+            # to add unit information to the label
+            spatial_units = [None, None]
+            ctype = axes.wcs.wcs.ctype
 
             axes.set_xlabel(axis_labels_from_ctype(ctype[0],
                                                    spatial_units[0]))
             axes.set_ylabel(axis_labels_from_ctype(ctype[1],
                                                    spatial_units[1]))
-
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            bl = self._get_lon_lat(self.bottom_left_coord)
-            tr = self._get_lon_lat(self.top_right_coord)
-            x_range = list(u.Quantity([bl[0], tr[0]]).to(self.spatial_units[0]).value)
-            y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units[1]).value)
-            imshow_args.update({'extent': x_range + y_range})
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
@@ -2519,8 +2508,7 @@ class GenericMap(NDData):
                 if item in imshow_args:
                     del imshow_args[item]
 
-            if wcsaxes_compat.is_wcsaxes(axes):
-                imshow_args.setdefault('transform', axes.get_transform(self.wcs))
+            imshow_args.setdefault('transform', axes.get_transform(self.wcs))
 
             # The quadrilaterals of pcolormesh can slightly overlap, which creates the appearance
             # of a grid pattern when alpha is not 1.  These settings minimize the overlap.
@@ -2532,8 +2520,7 @@ class GenericMap(NDData):
         else:
             ret = axes.imshow(data, **imshow_args)
 
-        if wcsaxes_compat.is_wcsaxes(axes):
-            wcsaxes_compat.default_wcs_grid(axes)
+        wcsaxes_compat.default_wcs_grid(axes)
 
         # Set current axes/image if pyplot is being used (makes colorbar work)
         for i in plt.get_fignums():
