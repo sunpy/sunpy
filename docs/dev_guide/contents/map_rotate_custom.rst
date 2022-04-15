@@ -31,6 +31,19 @@ Then you can do:
 
     rot_map = hmi_map.rotate(order=3, recenter=True, method="my_rotate")
 
+It is important to know what keywords from `sunpy.map.GenericMap.rotate` are used by the rotation function.
+
+
+* ``angle`` - This is passed to `sunpy.image.transform.affine_transform` as a rotation matrix.
+* ``rmatrix`` - This is passed to `sunpy.image.transform.affine_transform`
+* ``order`` - This is passed to `sunpy.image.transform.affine_transform`
+* ``scale`` - This is passed to `sunpy.image.transform.affine_transform`
+* ``recenter`` - This is passed to `sunpy.image.transform.affine_transform`
+* ``missing`` - This is passed to `sunpy.image.transform.affine_transform`
+* ``use_scipy`` - This is passed to `sunpy.image.transform.affine_transform`
+* ``method`` - This is passed to `sunpy.image.transform.affine_transform`
+* ``clip`` - This is passed to `sunpy.image.transform.affine_transform`
+
 Below is a non-functioning OpenCV2 rotation method as an example:
 
 .. code-block:: python
