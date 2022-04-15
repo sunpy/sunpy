@@ -5,6 +5,7 @@ Comparing Map Rotation Functions
 
 This example will compare between the current library implementations for `sunpy.map.GenericMap.rotate`.
 """
+import matplotlib.colors
 import numpy as np
 import pylab as plt
 
@@ -69,10 +70,11 @@ print(f"scikit-image vs scipy {smape(skimage_map.data, scipy_map.data):.2f}%")
 ###############################################################################
 # Now for a visual comparison, the raw differences, that should highlight the differences.
 
-fig0, ax0 = plt.subplots()
-img0 = ax0.imshow(skimage_map.data - scipy_map.data, vmin=-50, vmax=50, cmap=plt.cm.seismic)
-fig0.colorbar(img0)
-ax0.set_title("HMI Difference: scikit-image vs scipy")
+fig, ax = plt.subplots()
+norm = matplotlib.colors.SymLogNorm(10)
+img = ax.imshow(skimage_map.data - scipy_map.data, cmap='RdBu_r', norm=norm)
+ax.set_title("HMI Difference: scikit-image vs scipy")
+fig.colorbar(img)
 
 plt.show()
 
@@ -93,15 +95,16 @@ print(f"scikit-image vs scipy {smape(skimage_map.data, scipy_map.data):.2f}%")
 
 ###############################################################################
 # This essentially means that the average difference between every pixel in the
-# ``skimage`` and ``scipy`` images is about 1.9\% average difference in the
+# ``skimage`` and ``scipy`` images is about 2\% average difference in the
 # final rotated image.
 
 ###############################################################################
 # Now for a visual comparison, the raw differences, that should highlight the differences.
 
-fig0, ax0 = plt.subplots()
-img0 = ax0.imshow(skimage_map.data - scipy_map.data, vmin=-75, vmax=75, cmap=plt.cm.seismic)
-fig0.colorbar(img0)
-ax0.set_title("AIA Difference: scikit-image vs scipy")
+fig, ax = plt.subplots()
+norm = matplotlib.colors.SymLogNorm(10)
+img = ax.imshow(skimage_map.data - scipy_map.data, cmap='RdBu_r', norm=norm)
+ax.set_title("AIA Difference: scikit-image vs scipy")
+fig.colorbar(img)
 
 plt.show()
