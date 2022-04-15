@@ -49,7 +49,7 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 
 @pytest.fixture
-def eve_test_ts():
+def eve_ts():
     with pytest.warns(SunpyUserWarning, match='Unknown units'):
         return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
 
@@ -485,31 +485,30 @@ def test_concatenation_of_slices_list(eve_test_ts, concatenated_slices_test_list
 
 
 @pytest.fixture
-def concatenation_different_data_test_ts(eve_test_ts, fermi_gbm_test_ts):
+def different_data_concat(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate
     return eve_test_ts.concatenate(fermi_gbm_test_ts)
 
 
-@pytest.fixture
-def concatenation_different_data_test_list(eve_test_ts, fermi_gbm_test_ts):
-    # Take two different data sources, pass one as an iterable and concatenate
-    return eve_test_ts.concatenate([fermi_gbm_test_ts])
+def test_concat_list(eve_test_ts, fermi_gbm_test_ts):
+    assert (eve_test_ts.concatenate(fermi_gbm_test_ts) ==
+            eve_test_ts.concatenate([fermi_gbm_test_ts]))
 
 
 def test_concatenation_of_different_data_ts(eve_test_ts, fermi_gbm_test_ts,
-                                            concatenation_different_data_test_ts):
+                                            different_data_concat):
     # TODO: test the metadata is as expected using the below. (note ATM this fails if the order is changed)
-    # assert concatenation_different_data_test_ts.meta.metadata[0] == fermi_gbm_test_ts.meta.metadata[0]
-    # assert concatenation_different_data_test_ts.meta.metadata[1] == eve_test_ts.meta.metadata[0]
+    # assert different_data_concat.meta.metadata[0] == fermi_gbm_test_ts.meta.metadata[0]
+    # assert different_data_concat.meta.metadata[1] == eve_test_ts.meta.metadata[0]
     value = True
-    for key in list(concatenation_different_data_test_ts.meta.metadata[0][2]
+    for key in list(different_data_concat.meta.metadata[0][2]
                     .keys()):
-        if concatenation_different_data_test_ts.meta.metadata[0][2][
+        if different_data_concat.meta.metadata[0][2][
                 key] != fermi_gbm_test_ts.meta.metadata[0][2][key]:
             value = False
-    for key in list(concatenation_different_data_test_ts.meta.metadata[1][2]
+    for key in list(different_data_concat.meta.metadata[1][2]
                     .keys()):
-        if concatenation_different_data_test_ts.meta.metadata[1][2][
+        if different_data_concat.meta.metadata[1][2][
                 key] != eve_test_ts.meta.metadata[0][2][key]:
             value = False
     assert value
@@ -517,52 +516,19 @@ def test_concatenation_of_different_data_ts(eve_test_ts, fermi_gbm_test_ts,
     # Test units concatenation
     comined_units = copy.deepcopy(eve_test_ts.units)
     comined_units.update(fermi_gbm_test_ts.units)
-    assert dict(concatenation_different_data_test_ts.units) == dict(
+    assert dict(different_data_concat.units) == dict(
         comined_units)
 
     # Test data is the concatenation
     comined_df = pd.concat([eve_test_ts.to_dataframe(), fermi_gbm_test_ts.to_dataframe()],
                            sort=False)
     comined_df = comined_df.sort_index()
-    assert_frame_equal(concatenation_different_data_test_ts.to_dataframe(), comined_df)
+    assert_frame_equal(different_data_concat.to_dataframe(), comined_df)
 
 
-def test_concatenation_of_different_data_list(eve_test_ts, fermi_gbm_test_ts,
-                                              concatenation_different_data_test_list):
-    # Same test_concatenation_of_different_data_ts except an iterable is passed to concatenate
-    value = True
-    for key in list(concatenation_different_data_test_list.meta.metadata[0][2]
-                    .keys()):
-        if concatenation_different_data_test_list.meta.metadata[0][2][
-                key] != fermi_gbm_test_ts.meta.metadata[0][2][key]:
-            value = False
-    for key in list(concatenation_different_data_test_list.meta.metadata[1][2]
-                    .keys()):
-        if concatenation_different_data_test_list.meta.metadata[1][2][
-                key] != eve_test_ts.meta.metadata[0][2][key]:
-            value = False
-    assert value
-
-    # Test units concatenation
-    comined_units = copy.deepcopy(eve_test_ts.units)
-    comined_units.update(fermi_gbm_test_ts.units)
-    assert dict(concatenation_different_data_test_list.units) == dict(
-        comined_units)
-
-    # Test data is the concatenation
-    comined_df = pd.concat([eve_test_ts.to_dataframe(), fermi_gbm_test_ts.to_dataframe()],
-                           sort=False)
-    comined_df = comined_df.sort_index()
-    assert_frame_equal(concatenation_different_data_test_list.to_dataframe(), comined_df)
-
-
-def test_concatenation_of_self_ts(eve_test_ts):
+def test_concatenation_of_self(eve_test_ts):
     # Check that a self concatenation returns the original timeseries
     assert eve_test_ts.concatenate(eve_test_ts) == eve_test_ts
-
-
-def test_concatenation_of_self_list(eve_test_ts):
-    # Check that a self concatenation as an iterable returns the original timeseries
     assert eve_test_ts.concatenate([eve_test_ts]) == eve_test_ts
 
 
@@ -572,14 +538,6 @@ def test_concatenation_different_data_ts_error(eve_test_ts, fermi_gbm_test_ts):
     with pytest.raises(TypeError, match="TimeSeries classes must match if "
                                         "'same_source' is specified."):
         eve_test_ts.concatenate(fermi_gbm_test_ts, same_source=True)
-
-
-def test_concatenation_different_data_list_error(eve_test_ts, fermi_gbm_test_ts):
-    # Take two different data sources, pass one as an iterable and concatenate
-    # but set with the same_source kwarg as true. This should not concatenate.
-    with pytest.raises(TypeError, match="TimeSeries classes must match if "
-                                        "'same_source' is specified."):
-        eve_test_ts.concatenate([fermi_gbm_test_ts], same_source=True)
 
 
 def test_generic_construction_concatenation():
@@ -627,20 +585,12 @@ def test_column_quantity(eve_test_ts, column_quantity):
              np.isnan(column_quantity.value))).all()
 
 
-@pytest.fixture
-def add_column_from_quantity_ts(eve_test_ts, column_quantity):
-    # Add a column to a TS using an astropy quantity
-    return eve_test_ts.add_column('quantity_added', column_quantity)
-
-
-def test_add_column_from_quantity(eve_test_ts, add_column_from_quantity_ts,
-                                  column_quantity):
+def test_add_column_from_quantity(eve_test_ts, column_quantity):
+    new_ts = eve_test_ts.add_column('quantity_added', column_quantity)
     # Test the column similar to the original quantity?
-    assert_quantity_allclose(
-        add_column_from_quantity_ts.quantity('quantity_added'),
-        column_quantity)
+    assert_quantity_allclose(new_ts.quantity('quantity_added'), column_quantity)
     # Test the full list of columns are pressent
-    assert set(add_column_from_quantity_ts.to_dataframe().columns) == set(
+    assert set(new_ts.to_dataframe().columns) == set(
         eve_test_ts.to_dataframe().columns) | {'quantity_added'}
 
 
