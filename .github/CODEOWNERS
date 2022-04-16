@@ -7,9 +7,6 @@ docs/code_ref/database.rst        @sunpy/database
 sunpy/image/                      @sunpy/image
 docs/code_ref/image.rst           @sunpy/image
 
-sunpy/instr/                      @sunpy/instr
-docs/code_ref/instr.rst           @sunpy/instr
-
 sunpy/io/                         @sunpy/io
 docs/code_ref/io.rst              @sunpy/io
 
@@ -21,9 +18,6 @@ docs/code_ref/net.rst             @sunpy/net
 
 sunpy/physics/                    @sunpy/physics
 docs/code_ref/physics.rst         @sunpy/physics
-
-sunpy/roi/                        @sunpy/roi
-docs/code_ref/roi.rst             @sunpy/roi
 
 sunpy/sun/                        @sunpy/sun
 docs/code_ref/sun.rst             @sunpy/sun

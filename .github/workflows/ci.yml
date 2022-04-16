@@ -26,7 +26,7 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: py39
+        - linux: py310
 
   test:
     needs: [core]
@@ -42,13 +42,12 @@ jobs:
         brew:
           - openjpeg
       envs: |
-        - macos: py37
-        - windows: py310
+        - macos: py38
+        - windows: py39
         - linux: py37-oldestdeps
-        - linux: py39-conda
-          libraries: ''
 
   online:
+    if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
@@ -68,7 +67,7 @@ jobs:
             apt:
               - libopenjp2-7
               - graphviz
-        - linux: py38-online
+        - linux: py39-online
 
   cron:
     if: github.event_name == 'workflow_dispatch'
@@ -84,7 +83,9 @@ jobs:
           - libopenjp2-7
       envs: |
         - linux: base_deps
-        - linux: py38-devdeps
+        - linux: py39-devdeps
+        - linux: py39-conda
+          libraries: ''
 
   publish:
     # Build wheels when pushing to any branch except main
@@ -102,13 +103,13 @@ jobs:
       targets: |
         - cp3{7,8,9,10}-manylinux*_x86_64
         - cp3{7,8,9,10}-macosx_x86_64
-        - cp3{8,9,10}-macosx_arm64
+        - cp3{7,8,9,10}-macosx_arm64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
   notify_pass:
     if: github.event_name == 'workflow_dispatch'
-    needs: [cron, publish, online]
+    needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -120,7 +121,7 @@ jobs:
 
   notify_fail:
     if: failure() && github.event_name == 'workflow_dispatch'
-    needs: [cron, publish, online]
+    needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
