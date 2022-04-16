@@ -11,6 +11,8 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.tests.helpers import figure_test
 
+import test_plotting
+
 # Ignore missing metadata warnings
 pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer'),
               pytest.mark.filterwarnings(r'ignore:Unable to treat `\.meta` as a FITS header')]
@@ -123,6 +125,24 @@ def test_set_levels_percent(composite_test_map):
     implicit_percentage = np.arange(10, 100, 10)
     composite_test_map.set_levels(0, implicit_percentage, percent=True)
     assert_quantity_allclose(composite_test_map.get_levels(0), implicit_percentage << u.percent)
+
+def test_plot_autoalign(composite_test_map):
+    composite_test_map._data =  composite_test_map.data.astype('float32')
+    rotated_map =  composite_test_map.rotate(30*u.deg, order=3)
+
+    # Plotting the rotated map on the original projection should appear de-rotated
+    fig = test_plotting.Figure()
+    ax = fig.add_subplot(projection= composite_test_map)
+    rotated_map.plot(axes=ax, autoalign=True)
+    return fig
+
+
+def test_plot_autoalign_bad_inputs( composite_test_map):
+    with pytest.raises(ValueError):
+         composite_test_map.plot(autoalign='bad')
+
+
+
 
 
 @figure_test

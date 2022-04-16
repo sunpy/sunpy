@@ -439,8 +439,12 @@ class CompositeMap:
             # non False levels property.
             if m.levels is False:
                 # We tell GenericMap.plot() that we need to autoalign the map
-                if wcsaxes_compat.is_wcsaxes(axes):
+                
+                if wcsaxes_compat.gca_wcs(m.wcs)==axes.wcs:
+                    params['autoalign'] = False
+                elif wcsaxes_compat.is_wcsaxes(axes):
                     params['autoalign'] = True
+                   
 
                 # Filter `matplot_args`
                 if params.get('autoalign', None) in (True, 'pcolormesh'):
@@ -523,7 +527,7 @@ class CompositeMap:
             raise TypeError("draw_grid should be bool, int, long or float")
 
         return figure
-
+ 
 
 class OutOfRangeAlphaValue(ValueError):
     """Exception to raise when an alpha value outside of the range 0-1 is
