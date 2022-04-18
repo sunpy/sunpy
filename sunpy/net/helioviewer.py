@@ -21,8 +21,8 @@ from sunpy.util.xml import xml_to_dict
 __all__ = ['HelioviewerClient']
 
 HELIOVIEWER_API_URLS = [
-    "https://helioviewer-api.ias.u-psud.fr/",
     "https://api.helioviewer.org/",
+    "https://helioviewer-api.ias.u-psud.fr/",
 ]
 
 
