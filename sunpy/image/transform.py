@@ -329,61 +329,56 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
                        handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
 def _rotation_cv2(image, matrix, shift, order, missing, clip):
     """
-    Uses `cv2.warpAffine` to do the affine transform on input `image` in same manner
-    as sunpy's default `skimage.transform.warp`.
+    * Rotates using ``cv2.warpAffine()`` from `OpenCV <https://opencv.org>`__
+    * The ``order`` parameter selects from the following interpolation algorithms:
+
+      * 0: nearest-neighbor interpolation
+      * 1: bilinear interpolation
+      * 3: bicubic interpolation
+      * 4: bicubic interpolation, same as ``order=3``
+
+    * An input image with byte ordering that does not match the native byte order of
+      the system (e.g., big-endian values on a little-endian system) will be
+      copied and byte-swapped prior to rotation.
+    * An input image with integer data is cast to floats prior to passing to
+      ``warpAffine()``.  The output image can be re-cast using
+      :meth:`numpy.ndarray.astype` if desired.
     """
-    # Flags for converting input order from `integer` to the appropriate interpolation flag
-    # As of Oct. 2021, OpenCV warpAffine does not support order 2,4,5
+    try:
+        import cv2
+    except ImportError:
+        raise ImportError("The opencv-python package is required to use this rotation method.")
+
     _CV_ORDER_FLAGS = {
         0: cv2.INTER_NEAREST,
         1: cv2.INTER_LINEAR,
         3: cv2.INTER_CUBIC,
+        4: cv2.INTER_CUBIC,
     }
 
     try:
-        order = _CV_ORDER_FLAGS[order]
+        order_to_use = _CV_ORDER_FLAGS[order]
     except KeyError:
-        raise ValueError("Input order={} not supported in openCV. ".format(order),
-                         "Please use order = 0, 1, or 3.")
+        allowed = ", ".join([str(k) for k in _CV_ORDER_FLAGS.keys()])
+        raise ValueError(f"Allowed values for `order` are: {allowed}")
 
-    # needed to convert `missing` from potentially a np.dtype
-    # to the native `int` type required for cv2.warpAffine
-    try:
-        missing = missing.tolist()
-    except AttributeError:
-        pass
-
-    # OpenCV applies the shift+rotation operations in a different order(?); we need to calculate
-    # translation using `rmatrix/scale`, but scale+rotation with `rmatrix*scale`
-    # in order to match what skimage/scipy do
-
-    shift = _calculate_shift(image, rmatrix / scale, image_center, recenter)
-
-    rmatrix = rmatrix * scale
-
-    trans = np.eye(3, 3)
-    rot_scale = np.eye(3, 3)
-
-    # openCV defines the translation matrix as [right, down]
-    # but `_calculate_shift` returns [left,up], so we have to adjust
-    trans[:2, 2] = [-shift[0], -shift[1]]
-
-    # CV rotation is defined clockwise, so we transpose rmatrix
-    rot_scale[:2, :2] = rmatrix.T
-    rmatrix = (rot_scale @ trans)[:2]
-
-    # cast input image to float, if needed
-    # code adapted from sunpy.transform source code
     if issubclass(image.dtype.type, numbers.Integral):
+        warn_user("Integer input data has been cast to float64.")
         adjusted_image = image.astype(np.float64)
     else:
         adjusted_image = image.copy()
 
-    h, w = adjusted_image.shape
+    trans = np.concatenate([matrix, shift[:, np.newaxis]], axis=1)
 
-    # equivalent to skimage.transform.warp(adjusted_image, tform, order=order,
-    #                                     mode='constant', cval=adjusted_missing)
-    return cv2.warpAffine(adjusted_image, rmatrix, (w, h), flags=order,
+    # Swap the byte order if it is non-native (e.g., big-endian on a little-endian system)
+    if adjusted_image.dtype.byteorder == ('>' if sys.byteorder == 'little' else '<'):
+        adjusted_image = adjusted_image.byteswap().newbyteorder()
+
+    # missing must be a Python float, not a NumPy float
+    missing = float(missing)
+
+    return cv2.warpAffine(adjusted_image, trans, np.flip(adjusted_image.shape),
+                          flags=order_to_use | cv2.WARP_INVERSE_MAP,
                           borderMode=cv2.BORDER_CONSTANT, borderValue=missing)
 
 

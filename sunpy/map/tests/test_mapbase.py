@@ -27,6 +27,7 @@ import sunpy.data.test
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
+from sunpy.image.transform import _rotation_function_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
@@ -1431,13 +1432,14 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map.peek()
 
 
+@pytest.mark.parametrize('method', _rotation_function_registry.keys())
 @figure_test
-def test_derotating_nonpurerotation_pcij(aia171_test_map):
+def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
     # The following map has a a PCij matrix that is not a pure rotation
     weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)
 
     # De-rotating the map by its PCij matrix should result in a normal-looking map
-    derotated_map = weird_map.rotate()
+    derotated_map = weird_map.rotate(method=method)
 
     fig = Figure(figsize=(8, 4))
 
@@ -1445,7 +1447,7 @@ def test_derotating_nonpurerotation_pcij(aia171_test_map):
     weird_map.plot(axes=ax1, title='Map with a non-pure-rotation PCij matrix')
 
     ax2 = fig.add_subplot(122, projection=derotated_map)
-    derotated_map.plot(axes=ax2, title='De-rotated map')
+    derotated_map.plot(axes=ax2, title=f'De-rotated map via {method}')
 
     return fig
 

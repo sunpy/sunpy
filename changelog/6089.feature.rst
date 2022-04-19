@@ -1,0 +1,2 @@
+Added the option to rotate using `OpenCV <https://opencv.org>`__ when using :func:`sunpy.image.transform.affine_transform` or :meth:`sunpy.map.GenericMap.rotate` by specifying ``method='cv2'``.
+The OpenCV Python package must be installed on the system.

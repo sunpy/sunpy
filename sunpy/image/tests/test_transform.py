@@ -285,10 +285,12 @@ def test_clipping(rot30):
     image = np.ones((20, 20))
     image[4:-4, 4:-4] = 2
 
-    fig = Figure(figsize=(12, 4))
-    axs = fig.subplots(2, 5)
+    num_methods = len(_rotation_function_registry.keys())
 
-    for i, method in enumerate(['scipy', 'skimage']):
+    fig = Figure(figsize=(12, 2*num_methods))
+    axs = fig.subplots(num_methods, 5)
+
+    for i, method in enumerate(_rotation_function_registry.keys()):
         axs[i, 0].imshow(image, vmin=0, vmax=3)
         axs[i, 1].imshow(affine_transform(image, rot30, clip=False, method=method, missing=0),
                          vmin=0, vmax=3)
@@ -298,6 +300,7 @@ def test_clipping(rot30):
                          vmin=0, vmax=3)
         axs[i, 4].imshow(affine_transform(image, rot30, clip=True, method=method, missing=np.nan),
                          vmin=0, vmax=3)
+        axs[i, 0].set_ylabel(method)
 
     axs[0, 0].set_title('Original')
     axs[0, 1].set_title('no clip & missing=0')
@@ -305,10 +308,11 @@ def test_clipping(rot30):
     axs[0, 3].set_title('clip & missing=2')
     axs[0, 4].set_title('clip & missing=NaN')
 
-    axs[0, 0].set_ylabel('SciPy')
-    axs[1, 0].set_ylabel('scikit-image')
-
     return fig
+
+
+# TODO: Record this information as part of the registration decorator
+_UNSUPPORTED_METHOD_AND_ORDER = [('cv2', 2), ('cv2', 5)]
 
 
 @pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
@@ -319,24 +323,27 @@ def test_nans(rot30):
     image_with_nans[4:-4, 4:-4] = 2
     image_with_nans[9:-9, 9:-9] = np.nan
 
-    fig = Figure(figsize=(16, 4))
-    axs = fig.subplots(2, 7)
+    num_methods = len(_rotation_function_registry.keys())
+
+    fig = Figure(figsize=(16, 2*num_methods))
+    axs = fig.subplots(num_methods, 7)
 
     axs[0, 0].set_title('Original (NaNs are white)')
-    axs[0, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
-    axs[1, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
 
-    for i in range(6):
-        axs[0, i+1].set_title(f'order={i}')
-        axs[0, i+1].imshow(affine_transform(image_with_nans, rot30,
-                                            order=i, method='scipy', missing=np.nan),
-                           vmin=-1.1, vmax=1.1)
-        axs[1, i+1].imshow(affine_transform(image_with_nans, rot30,
-                                            order=i, method='skimage', missing=np.nan),
-                           vmin=-1.1, vmax=1.1)
-
-    axs[0, 0].set_ylabel('SciPy')
-    axs[1, 0].set_ylabel('scikit-image')
+    for j in range(6):
+        axs[0, j+1].set_title(f'order={j}')
+    for i, method in enumerate(_rotation_function_registry.keys()):
+        axs[i, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
+        for j in range(6):
+            if (method, j) in _UNSUPPORTED_METHOD_AND_ORDER:
+                with pytest.raises(ValueError):
+                    affine_transform(image_with_nans, rot30, order=j, method=method, missing=np.nan)
+                axs[i, j+1].remove()
+            else:
+                axs[i, j+1].imshow(affine_transform(image_with_nans, rot30,
+                                                    order=j, method=method, missing=np.nan),
+                                   vmin=-1.1, vmax=1.1)
+        axs[i, 0].set_ylabel(method)
 
     return fig
 
@@ -345,6 +352,9 @@ def test_nans(rot30):
 @pytest.mark.parametrize('method', _rotation_function_registry.keys())
 @pytest.mark.parametrize('order', range(6))
 def test_endian(method, order, rot30):
+    if (method, order) in _UNSUPPORTED_METHOD_AND_ORDER:
+        return
+
     # Test that the rotation output values do not change with input byte order
     native = np.ones((10, 10))
     swapped = native.byteswap().newbyteorder()
