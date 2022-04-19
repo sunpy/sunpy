@@ -1181,6 +1181,27 @@ def test_quicklook(aia171_test_map):
         assert aia171_test_map._repr_html_() in html_string
 
 
+# requires dask array to run properly
+def test_dask_array(aia171_test_map):
+    dask_array = pytest.importorskip('dask.array')
+
+    da = dask_array.from_array(aia171_test_map.data, chunks=(1, 1))
+    pair_map = sunpy.map.Map(da, aia171_test_map.meta)
+
+    # Check that _repr_html_ functions for a dask array
+    html_string = pair_map._repr_html_()
+    assert isinstance(html_string, str)
+
+    # Check that quicklook functions for a dask array
+    with mock.patch('webbrowser.open_new_tab') as mockwbopen:
+        pair_map.quicklook()
+
+    # Check that the mock web browser was opened with a file URL
+    mockwbopen.assert_called_once()
+    file_url = mockwbopen.call_args[0][0]
+    assert file_url.startswith('file://')
+
+
 @pytest.fixture
 def generic_map2(generic_map):
     generic_map.meta["CTYPE1"] = "HPLN-TAN"
