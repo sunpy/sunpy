@@ -312,7 +312,7 @@ def test_clipping(rot30):
 
 
 # TODO: Record this information as part of the registration decorator
-_UNSUPPORTED_METHOD_AND_ORDER = [('cv2', 2), ('cv2', 5)]
+_UNSUPPORTED_METHOD_AND_ORDER = [('cv2', 2), ('cv2', 4), ('cv2', 5)]
 
 
 @pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")

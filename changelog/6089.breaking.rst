@@ -1,0 +1,1 @@
+Changed the default interpolation order for :meth:`sunpy.map.GenericMap.rotate` from 4 (typically biquartic) to 3 (typically bicubic).

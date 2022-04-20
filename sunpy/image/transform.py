@@ -335,7 +335,6 @@ def _rotation_cv2(image, matrix, shift, order, missing, clip):
       * 0: nearest-neighbor interpolation
       * 1: bilinear interpolation
       * 3: bicubic interpolation
-      * 4: bicubic interpolation, same as ``order=3``
 
     * An input image with byte ordering that does not match the native byte order of
       the system (e.g., big-endian values on a little-endian system) will be
@@ -353,7 +352,6 @@ def _rotation_cv2(image, matrix, shift, order, missing, clip):
         0: cv2.INTER_NEAREST,
         1: cv2.INTER_LINEAR,
         3: cv2.INTER_CUBIC,
-        4: cv2.INTER_CUBIC,
     }
 
     try:
