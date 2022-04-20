@@ -16,6 +16,15 @@ sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
 sunpy_frames = [frame for frame in sunpy_frames if 'base' not in frame.name]
 
 
+def assert_round_trip_frame(old):
+    new = roundtrip_object(old)
+    assert isinstance(new, type(old))
+    if new.has_data:
+        assert new.data.components == old.data.components
+        for comp in new.data.components:
+            assert u.allclose(getattr(new.data, comp), getattr(old.data, comp))
+
+
 @pytest.fixture(params=sunpy_frames)
 @asdf_entry_points
 def coordframe_scalar(request):
@@ -60,12 +69,12 @@ def test_hgc_100():
 
 @asdf_entry_points
 def test_saveframe(coordframe_scalar, tmpdir):
-    new_frame = roundtrip_object(coordframe_scalar)
+    assert_round_trip_frame(coordframe_scalar)
 
 
 @asdf_entry_points
 def test_saveframe_arr(coordframe_array, tmpdir):
-    new_frame = roundtrip_object(coordframe_array)
+    assert_round_trip_frame(coordframe_array)
 
 
 @asdf_entry_points
@@ -78,7 +87,7 @@ def test_hpc_observer_version(tmpdir):
     time = "2021-10-13T11:08"
     obs = frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=time)
     coord = frames.Helioprojective(10*u.arcsec, 10*u.arcsec, obstime=time, observer=obs)
-    new_coord = roundtrip_object(coord)
+    assert_round_trip_frame(coord)
 
 
 @asdf_entry_points
@@ -91,4 +100,4 @@ def test_hcc_observer_version(tmpdir):
     time = "2021-10-13T11:08"
     obs = frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=time)
     coord = frames.Heliocentric(1*u.Mm, 1*u.Mm, 1*u.Mm, obstime=time, observer=obs)
-    new_coord = roundtrip_object(coord)
+    assert_round_trip_frame(coord)
