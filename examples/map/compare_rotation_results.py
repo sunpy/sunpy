@@ -15,8 +15,9 @@ import sunpy.data.sample
 import sunpy.map
 
 ###############################################################################
-# Rotating a map in sunpy has a choice between two libraries: ``skimage`` and ``scipy``
-# One can also create a custom rotation function and add it, see :ref:`map_rotate_custom`.
+# Rotating a map in sunpy has a choice between three libraries: ``scipy`` (the default),
+# ``skimage`` and ``opencv2``. Furthermore, one can also create a custom rotation
+#  function and register it for use with `~sunpy.map.GenericMap.rotate`, see :ref:`map_rotate_custom`.
 #
 # Since all these options use different algorithms, we need a basis for comparison.
 #
@@ -30,7 +31,7 @@ import sunpy.map
 
 def smape(arr1, arr2):
     """
-    Symmetric Mean Absolute Percentage Error
+    Symmetric Mean Absolute Percentage Error.
 
     Parameters
     ----------
@@ -47,34 +48,44 @@ def smape(arr1, arr2):
     eps = np.finfo(np.float64).eps
     return np.nanmean(np.abs(arr1 - arr2) / (np.maximum(np.abs(arr1) + np.abs(arr2), eps))) * 100
 
+
 ###############################################################################
 # Using an HMI sample data, we will do a rotation to align the image to the north.
-# We will also fix the order (to 3) for each operation.
-
+# By default, the order of rotation is 3.
 
 hmi_map = sunpy.map.Map(sunpy.data.sample.HMI_LOS_IMAGE)
 
-skimage_map = hmi_map.rotate(order=3, recenter=True, method='skimage')
-scipy_map = hmi_map.rotate(order=3, recenter=True, method='scipy')
+scipy_map = hmi_map.rotate(method='scipy')
+skimage_map = hmi_map.rotate(method='scikit-image')
+cv2_map = hmi_map.rotate(method='opencv')
 
 ###############################################################################
 # Now we will calculate the Symmetric Mean Percentage Error.
 
 print("HMI Example")
-print(f"scikit-image vs scipy {smape(skimage_map.data, scipy_map.data):.2f}%")
+print(f"scipy vs scikit-image {smape(scipy_map.data, skimage_map.data):.2f}%")
+print(f"scipy vs opencv2 {smape(scipy_map.data, cv2_map.data):.2f}%")
+print(f"scikit-image vs opencv2 {smape(skimage_map.data, cv2_map.data):.2f}%")
 
 ###############################################################################
 # This essentially means that the average difference between every pixel in the
-# ``skimage`` and ``scipy`` images is about 15\%, in the final rotated image.
+# ``scipy`` and ``skimage`` rotated images are about 15\%.
+# Where as the comparision with ``opencv2`` is only about 10\%.
 
 ###############################################################################
 # Now for a visual comparison, the raw differences, that should highlight the differences.
+# Note that only two comparisions are shown.
 
-fig, ax = plt.subplots()
-norm = matplotlib.colors.SymLogNorm(10)
-img = ax.imshow(skimage_map.data - scipy_map.data, cmap='RdBu_r', norm=norm)
-ax.set_title("HMI Difference: scikit-image vs scipy")
-fig.colorbar(img)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+norm = matplotlib.colors.SymLogNorm(5, vmin=-30, vmax=30)
+
+img1 = ax1.imshow(scipy_map.data - skimage_map.data, cmap='RdBu_r', norm=norm)
+ax1.set_title("HMI Difference: scipy vs scikit-image")
+fig.colorbar(img1, ax=ax1)
+
+img2 = ax2.imshow(scipy_map.data - cv2_map.data, cmap='RdBu_r', norm=norm)
+ax2.set_title("HMI Difference: scipy vs opencv2")
+fig.colorbar(img2, ax=ax2)
 
 plt.show()
 
@@ -84,27 +95,36 @@ plt.show()
 
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
-skimage_map = aia_map.rotate(30*u.deg, order=3, recenter=True, method='skimage')
-scipy_map = aia_map.rotate(30*u.deg, order=3, recenter=True, method='scipy')
+scipy_map = aia_map.rotate(30*u.deg, method='scipy')
+skimage_map = aia_map.rotate(30*u.deg, method='scikit-image')
+cv2_map = aia_map.rotate(30*u.deg, method='opencv')
 
 ###############################################################################
-# Now we will calculate the Symmetric Mean Percentage Error.
+# Now we will calculate the Symmetric Mean Percentage Error for AIA.
 
 print("AIA 171 Example")
-print(f"scikit-image vs scipy {smape(skimage_map.data, scipy_map.data):.2f}%")
+print(f"scipy vs scikit-image {smape(scipy_map.data, skimage_map.data):.2f}%")
+print(f"scipy vs opencv2 {smape(scipy_map.data, cv2_map.data):.2f}%")
+print(f"scikit-image vs opencv2 {smape(skimage_map.data, cv2_map.data):.2f}%")
 
 ###############################################################################
 # This essentially means that the average difference between every pixel in the
-# ``skimage`` and ``scipy`` images is about 2\% average difference in the
-# final rotated image.
+# ``scipy`` and ``skimage`` rotated images are about 2\%.
+# Where as the comparision with ``opencv2`` is only about 1.5\%.
 
 ###############################################################################
 # Now for a visual comparison, the raw differences, that should highlight the differences.
+# Note that only two comparisions are shown.
 
-fig, ax = plt.subplots()
-norm = matplotlib.colors.SymLogNorm(10)
-img = ax.imshow(skimage_map.data - scipy_map.data, cmap='RdBu_r', norm=norm)
-ax.set_title("AIA Difference: scikit-image vs scipy")
-fig.colorbar(img)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+norm = matplotlib.colors.SymLogNorm(5, vmin=-30, vmax=30)
+
+img1 = ax1.imshow(scipy_map.data - skimage_map.data, cmap='RdBu_r', norm=norm)
+ax1.set_title("AIA Difference: scipy vs scikit-image")
+fig.colorbar(img1, ax=ax1)
+
+img2 = ax2.imshow(scipy_map.data - cv2_map.data, cmap='RdBu_r', norm=norm)
+ax2.set_title("AIA Difference: scipy vs opencv2")
+fig.colorbar(img2, ax=ax2)
 
 plt.show()
