@@ -25,6 +25,6 @@ allOf:
         type: object
         properties:
           obstime:
-            $ref: "tag:stsci.edu:asdf/time/time-1.1.0"
+            tag: "tag:stsci.edu:asdf/time/time-1.1.0"
         additionalProperties: False
 ...

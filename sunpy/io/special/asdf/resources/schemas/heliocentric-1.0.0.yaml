@@ -42,11 +42,11 @@ allOf:
         properties:
           observer:
             anyOf:
-              - $ref: "heliographic_stonyhurst-1.0.0"
-              - $ref: "heliographic_stonyhurst-1.1.0"
+              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.0.0"
+              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.1.0"
               - type:
                   string
           obstime:
-            $ref: "tag:stsci.edu:asdf/time/time-1.1.0"
+            tag: "tag:stsci.edu:asdf/time/time-1.1.0"
         additionalProperties: False
 ...

@@ -32,9 +32,9 @@ allOf:
         type: object
         properties:
           equinox:
-            $ref: "tag:stsci.edu:asdf/time/time-1.1.0"
+            tag: "tag:stsci.edu:asdf/time/time-1.1.0"
           obstime:
-            $ref: "tag:stsci.edu:asdf/time/time-1.1.0"
+            tag: "tag:stsci.edu:asdf/time/time-1.1.0"
         required: [equinox]
         additionalProperties: False
 ...
