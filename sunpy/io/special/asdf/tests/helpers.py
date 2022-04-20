@@ -2,8 +2,8 @@ from io import BytesIO
 
 import asdf
 
-
 # Remove this file when we depend on asdf 2.9+
+
 
 def roundtrip_object(obj, version=None):
     """
