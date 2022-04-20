@@ -2,11 +2,11 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from asdf.testing.helpers import roundtrip_object
 
 import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import asdf_entry_points
+from .helpers import roundtrip_object
 
 
 def assert_roundtrip_map(old):
