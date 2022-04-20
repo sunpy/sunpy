@@ -1189,17 +1189,11 @@ def test_dask_array(aia171_test_map):
     pair_map = sunpy.map.Map(da, aia171_test_map.meta)
 
     # Check that _repr_html_ functions for a dask array
-    html_string = pair_map._repr_html_()
-    assert isinstance(html_string, str)
+    html_dask_repr = pair_map._repr_html_()
 
-    # Check that quicklook functions for a dask array
-    with mock.patch('webbrowser.open_new_tab') as mockwbopen:
-        pair_map.quicklook()
-
-    # Check that the mock web browser was opened with a file URL
-    mockwbopen.assert_called_once()
-    file_url = mockwbopen.call_args[0][0]
-    assert file_url.startswith('file://')
+    html_dask_repr = pair_map._repr_html_(compute_dask=False)
+    html_computed_repr = pair_map._repr_html_(compute_dask=True)
+    assert html_dask_repr != html_computed_repr
 
 
 @pytest.fixture

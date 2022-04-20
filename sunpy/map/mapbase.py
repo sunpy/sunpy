@@ -17,7 +17,12 @@ import numpy as np
 from matplotlib import cm
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
-from dask.array import Array as DaskArray
+DASK_INSTALLED = False
+try:
+    from dask.array import Array as DaskArray
+    DASK_INSTALLED = True
+except ImportError:
+    pass
 
 import astropy.units as u
 import astropy.wcs
@@ -320,7 +325,7 @@ class GenericMap(NDData):
 
         # If data is from a dask array, pull data into memory for quicklook() method
         # For basic html representation, only use dask html representation without computing data
-        if isinstance(finite_data, DaskArray):
+        if DASK_INSTALLED and isinstance(finite_data, DaskArray):
             if compute_dask:
                 finite_data = finite_data.compute()
             else:

@@ -1,0 +1,1 @@
+Add fix for dask arrays in map html representation.
