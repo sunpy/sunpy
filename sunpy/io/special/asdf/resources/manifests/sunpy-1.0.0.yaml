@@ -1,7 +1,7 @@
 %YAML 1.1
 ---
 id: asdf://sunpy.org/manifests/dkist-1.0.0
-extension_uri: asdf://sunpy.org/extensions/dkist-1.0.0
+extension_uri: asdf://sunpy.org/extensions/sunpy-1.0.0
 title: SunPy ASDF Manifest
 description: ASDF schemas and tags for SunPy classes.
 

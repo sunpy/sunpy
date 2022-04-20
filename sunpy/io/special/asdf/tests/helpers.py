@@ -3,6 +3,8 @@ from io import BytesIO
 import asdf
 
 
+# Remove this file when we depend on asdf 2.9+
+
 def roundtrip_object(obj, version=None):
     """
     Add the specified object to an AsdfFile's tree, write the file to
