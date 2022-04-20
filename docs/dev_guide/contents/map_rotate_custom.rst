@@ -15,7 +15,7 @@ If you want to add a new rotation method that can be used by `sunpy.map.GenericM
         # Rotation code goes here
         return rotated_image
 
-The best explanation of what the arguments mean is:
+The best explanation of the arguments is found from the detailed function documentation:
 
 .. autofunction:: sunpy.image.transform.add_rotation_function
    :noindex:
@@ -31,8 +31,7 @@ Then you can do:
 
     rot_map = hmi_map.rotate(order=3, recenter=True, method="my_rotate")
 
-It is important to know what keywords from `sunpy.map.GenericMap.rotate` are used by the rotation function.
-
+It is important to know what keywords from `sunpy.map.GenericMap.rotate` are used by the underlying rotation function.
 
 * ``angle`` - This is passed to `sunpy.image.transform.affine_transform` as a rotation matrix.
 * ``rmatrix`` - This is passed to `sunpy.image.transform.affine_transform`
@@ -40,58 +39,8 @@ It is important to know what keywords from `sunpy.map.GenericMap.rotate` are use
 * ``scale`` - This is passed to `sunpy.image.transform.affine_transform`
 * ``recenter`` - This is passed to `sunpy.image.transform.affine_transform`
 * ``missing`` - This is passed to `sunpy.image.transform.affine_transform`
-* ``use_scipy`` - This is passed to `sunpy.image.transform.affine_transform`
+* ``use_scipy`` - This is passed to `sunpy.image.transform.affine_transform`, it is deprecated and removal is planned for sunpy 4.1, you should use ``method`` instead.
 * ``method`` - This is passed to `sunpy.image.transform.affine_transform`
 * ``clip`` - This is passed to `sunpy.image.transform.affine_transform`
 
-Below is a non-functioning OpenCV2 rotation method as an example:
-
-.. code-block:: python
-
-    from sunpy.image.transform import add_rotation_function
-
-    @add_rotation_function("cv2",
-                        handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
-    def _rotation_cv2(image, matrix, shift, order, missing, clip):
-        """
-        * Rotates using :func:`cv2.warpAffine`
-        * This is only implemented for three orders of interpolation, 0, 1 and 3.
-        * An input image with integer data is cast to floats prior to passing to
-          :funccv2.warpAffine`. The output image can be re-cast using
-          :meth:`numpy.ndarray.astype` if desired.
-        * Does not let :func:`~cv2.warpAffine` handle clipping due to
-          inconsistent handling across interpolation orders
-        * Does not let :func:`~cv2.warpAffine` handle image NaNs because they
-          are not supported.
-        * Does not pass NaN as ``missing`` to :func:`~cv2.warpAffine` due to
-          unsupported input.
-        """
-        try:
-            import cv2
-        except ImportError:
-            raise ImportError("The opencv-python package is required to use this rotation method.")
-
-        # OpenCV warpAffine does not support order 2,4,5
-        _CV_ORDER_FLAGS = {
-            0: cv2.INTER_NEAREST,
-            1: cv2.INTER_LINEAR,
-            3: cv2.INTER_CUBIC,
-        }
-        try:
-            order = _CV_ORDER_FLAGS[order]
-        except KeyError:
-            raise ValueError(f"Input order={order} not supported in openCV. ",
-                            "Please use order=0, 1, or 3.")
-        trans = np.eye(3, 3)
-        rot_scale = np.eye(3, 3)
-        trans[:2, 2] = [-shift[0], -shift[1]]
-        rot_scale[:2, :2] = matrix.T
-        rmatrix = (rot_scale @ trans)[:2]
-        if issubclass(image.dtype.type, numbers.Integral):
-            warn_user("Integer input data has been cast to float64.")
-            adjusted_image = image.astype(np.float64)
-        else:
-            adjusted_image = image.copy()
-        h, w = adjusted_image.shape
-        return cv2.warpAffine(adjusted_image, rmatrix, (w, h), flags=order,
-                            borderMode=cv2.BORDER_CONSTANT, borderValue=missing)
+The methods that ``sunpy`` use are defined in `sunpy/image/transform.py <https://github.com/sunpy/sunpy/blob/main/sunpy/image/transform.py>`__`.
