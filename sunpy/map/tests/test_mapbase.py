@@ -27,7 +27,7 @@ import sunpy.data.test
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
-from sunpy.image.transform import _rotation_function_registry
+from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
@@ -1432,7 +1432,7 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map.peek()
 
 
-@pytest.mark.parametrize('method', _rotation_function_registry.keys())
+@pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test
 def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
     # The following map has a a PCij matrix that is not a pure rotation

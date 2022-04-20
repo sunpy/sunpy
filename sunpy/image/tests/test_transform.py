@@ -6,7 +6,7 @@ from skimage import transform as tf
 
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
-from sunpy.image.transform import _rotation_function_registry, affine_transform
+from sunpy.image.transform import _rotation_registry, affine_transform
 from sunpy.tests.helpers import figure_test
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 
@@ -285,12 +285,12 @@ def test_clipping(rot30):
     image = np.ones((20, 20))
     image[4:-4, 4:-4] = 2
 
-    num_methods = len(_rotation_function_registry.keys())
+    num_methods = len(_rotation_registry.keys())
 
     fig = Figure(figsize=(12, 2*num_methods))
     axs = fig.subplots(num_methods, 5)
 
-    for i, method in enumerate(_rotation_function_registry.keys()):
+    for i, method in enumerate(_rotation_registry.keys()):
         axs[i, 0].imshow(image, vmin=0, vmax=3)
         axs[i, 1].imshow(affine_transform(image, rot30, clip=False, method=method, missing=0),
                          vmin=0, vmax=3)
@@ -311,10 +311,6 @@ def test_clipping(rot30):
     return fig
 
 
-# TODO: Record this information as part of the registration decorator
-_UNSUPPORTED_METHOD_AND_ORDER = [('cv2', 2), ('cv2', 4), ('cv2', 5)]
-
-
 @pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
 @figure_test
 def test_nans(rot30):
@@ -323,7 +319,7 @@ def test_nans(rot30):
     image_with_nans[4:-4, 4:-4] = 2
     image_with_nans[9:-9, 9:-9] = np.nan
 
-    num_methods = len(_rotation_function_registry.keys())
+    num_methods = len(_rotation_registry.keys())
 
     fig = Figure(figsize=(16, 2*num_methods))
     axs = fig.subplots(num_methods, 7)
@@ -332,10 +328,10 @@ def test_nans(rot30):
 
     for j in range(6):
         axs[0, j+1].set_title(f'order={j}')
-    for i, method in enumerate(_rotation_function_registry.keys()):
+    for i, method in enumerate(_rotation_registry.keys()):
         axs[i, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
         for j in range(6):
-            if (method, j) in _UNSUPPORTED_METHOD_AND_ORDER:
+            if j not in _rotation_registry[method].allowed_orders:
                 with pytest.raises(ValueError):
                     affine_transform(image_with_nans, rot30, order=j, method=method, missing=np.nan)
                 axs[i, j+1].remove()
@@ -349,10 +345,10 @@ def test_nans(rot30):
 
 
 @pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
-@pytest.mark.parametrize('method', _rotation_function_registry.keys())
+@pytest.mark.parametrize('method', _rotation_registry.keys())
 @pytest.mark.parametrize('order', range(6))
 def test_endian(method, order, rot30):
-    if (method, order) in _UNSUPPORTED_METHOD_AND_ORDER:
+    if order not in _rotation_registry[method].allowed_orders:
         return
 
     # Test that the rotation output values do not change with input byte order
