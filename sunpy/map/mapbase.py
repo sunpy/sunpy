@@ -2153,6 +2153,7 @@ class GenericMap(NDData):
         # even if the image is rotated relative to the axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
+
         is_wcsaxes = wcsaxes_compat.is_wcsaxes(axes)
         if is_wcsaxes:
             # TODO: supply custom limb radius
@@ -2362,6 +2363,7 @@ class GenericMap(NDData):
 
         if draw_limb:
             self.draw_limb(axes=axes)
+
         if draw_grid:
             if grid_spacing is None:
                 self.draw_grid(axes=axes)
