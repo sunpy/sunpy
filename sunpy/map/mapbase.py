@@ -2154,7 +2154,6 @@ class GenericMap(NDData):
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
         is_wcsaxes = wcsaxes_compat.is_wcsaxes(axes)
-
         if is_wcsaxes:
             # TODO: supply custom limb radius
             return sunpy.visualization.limb.draw_limb(
@@ -2165,7 +2164,6 @@ class GenericMap(NDData):
                             "and will be removed in sunpy 4.1.")
             # If not WCSAxes use a Circle
             c_kw.setdefault('radius', self.rsun_obs.value)
-
             circ = patches.Circle([0, 0], **c_kw)
             axes.add_artist(circ)
             return circ, None
@@ -2364,7 +2362,6 @@ class GenericMap(NDData):
 
         if draw_limb:
             self.draw_limb(axes=axes)
-
         if draw_grid:
             if grid_spacing is None:
                 self.draw_grid(axes=axes)

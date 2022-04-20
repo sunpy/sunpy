@@ -1,0 +1,1 @@
+Added a helpful warning message when converting a 2D Helioprojective coordinate will return all NaNs.
