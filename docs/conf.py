@@ -253,6 +253,39 @@ sphinx_gallery_conf = {
     'only_warn_on_example_error': True,
 }
 
+# -- Linking to OpenCV docs by using rst_epilog --------------------------------
+try:
+    import requests
+    from bs4 import BeautifulSoup
+
+    base_url = "https://docs.opencv.org"
+
+    # The stable-version docs are the first item in the second list on the main page
+    all_docs = BeautifulSoup(requests.get(base_url).text, 'html.parser')
+    version = all_docs.find_all('ul')[1].li.a.attrs['href'][2:]  # strip leading "./"
+
+    # Find the relative URL to the page for the `cv` namespace
+    stable_docs = BeautifulSoup(requests.get(f"{base_url}/{version}/namespaces.html").text,
+                                'html.parser')
+    cv_namespace = stable_docs.find("a", string="cv").attrs['href']
+
+    # Find the relative URL for warpAffine in the `cv` namespace
+    all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text,
+                           'html.parser')
+    warpAffine = all_cv.find("a", string="warpAffine").attrs['href'][6:]  # strip leading "../../"
+
+    # Construct the full URL for warpAffine
+    warpAffine_full = f"{base_url}/{version}/{warpAffine}"
+except:
+    # In the event of any failure (e.g., no network connectivity)
+    warpAffine_full = ""
+
+rst_epilog = f"""
+.. |cv2_warpAffine| replace:: **cv2.warpAffine()**
+.. _cv2_warpAffine: {warpAffine_full}
+"""
+
+
 # -- Stability Page ------------------------------------------------------------
 with open('./code_ref/sunpy_stability.yaml', 'r') as estability:
     sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)

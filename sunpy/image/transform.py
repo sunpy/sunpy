@@ -350,7 +350,7 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
                        handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
 def _rotation_cv2(image, matrix, shift, order, missing, clip):
     """
-    * Rotates using ``cv2.warpAffine()`` from `OpenCV <https://opencv.org>`__
+    * Rotates using |cv2_warpAffine|_ from `OpenCV <https://opencv.org>`__
     * The ``order`` parameter selects from the following interpolation algorithms:
 
       * 0: nearest-neighbor interpolation
@@ -361,7 +361,7 @@ def _rotation_cv2(image, matrix, shift, order, missing, clip):
       the system (e.g., big-endian values on a little-endian system) will be
       copied and byte-swapped prior to rotation.
     * An input image with integer data is cast to floats prior to passing to
-      ``warpAffine()``.  The output image can be re-cast using
+      |cv2_warpAffine|_.  The output image can be re-cast using
       :meth:`numpy.ndarray.astype` if desired.
     """
     try:
