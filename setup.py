@@ -4,7 +4,13 @@ import os
 from itertools import chain
 
 from extension_helpers import get_extensions
-from setuptools.config import read_configuration
+
+try:
+    # Recommended for setuptools 61.0.0+
+    # (though may disappear in the future)
+    from setuptools.config.setupcfg import read_configuration
+except ImportError:
+    from setuptools.config import read_configuration
 
 ################################################################################
 # Programmatically generate some extras combos.
