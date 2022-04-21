@@ -1,22 +1,22 @@
 %YAML 1.1
 ---
 $schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
-id: "http://sunpy.org/schemas/sunpy/coordinates/frames/heliocentric-1.0.0"
-tag: "tag:sunpy.org:sunpy/coordinates/frames/heliocentric-1.0.0"
+id: "asdf://sunpy.org/schemas/helioprojective-1.0.0"
 
 title: |
-  Represents an heliocentric coordinate object from SunPy
+  Represents an helioprojective coordinate object from SunPy
 
 examples:
   -
-    - A Heliocentric frame without data
+    - A Helioprojective frame without data
     - |
-        !<tag:sunpy.org:sunpy/coordinates/frames/heliocentric-1.0.0>
-          frame_attributes: {}
+        !<tag:sunpy.org:sunpy/coordinates/frames/helioprojective-1.0.0>
+          frame_attributes:
+            rsun: !unit/quantity-1.1.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
   -
-    - A Heliocentric frame with an observer and an obstime
+    - A Helioprojective frame with an observer and an obstime
     - |
-        !<tag:sunpy.org:sunpy/coordinates/frames/heliocentric-1.0.0>
+        !<tag:sunpy.org:sunpy/coordinates/frames/helioprojective-1.0.0>
           frame_attributes:
             observer: !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.1.0>
               data: !<tag:astropy.org:astropy/coordinates/representation-1.0.0>
@@ -34,6 +34,7 @@ examples:
                 obstime: !time/time-1.1.0 '2011-01-01T01:01:01.000'
                 rsun: !unit/quantity-1.1.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
             obstime: !time/time-1.1.0 '2011-01-01T01:01:01.000'
+            rsun: !unit/quantity-1.1.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
 
 allOf:
   - $ref: "http://astropy.org/schemas/astropy/coordinates/frames/baseframe-1.0.0"
@@ -43,11 +44,15 @@ allOf:
         properties:
           observer:
             anyOf:
-              - $ref: "heliographic_stonyhurst-1.0.0"
-              - $ref: "heliographic_stonyhurst-1.1.0"
+              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.0.0"
+              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.1.0"
               - type:
                   string
+          rsun:
+            tag: "tag:stsci.edu:asdf/unit/quantity-1.1.0"
           obstime:
-            $ref: "tag:stsci.edu:asdf/time/time-1.1.0"
+            tag: "tag:stsci.edu:asdf/time/time-1.1.0"
+
+        required: [rsun]
         additionalProperties: False
 ...

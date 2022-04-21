@@ -1,8 +1,7 @@
 %YAML 1.1
 ---
 $schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
-id: "http://sunpy.org/schemas/sunpy/coordinates/frames/geocentricsolarecliptic-1.0.0"
-tag: "tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarecliptic-1.0.0"
+id: "asdf://sunpy.org/schemas/geocentricsolarecliptic-1.0.0"
 
 title: |
   Represents a Geocentric Solar Ecliptic (GSE) coordinate object from SunPy
@@ -26,6 +25,6 @@ allOf:
         type: object
         properties:
           obstime:
-            $ref: "tag:stsci.edu:asdf/time/time-1.1.0"
+            tag: "tag:stsci.edu:asdf/time/time-1.1.0"
         additionalProperties: False
 ...

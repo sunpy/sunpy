@@ -1,22 +1,21 @@
 %YAML 1.1
 ---
 $schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
-id: "http://sunpy.org/schemas/sunpy/coordinates/frames/heliocentricinertial-1.0.0"
-tag: "tag:sunpy.org:sunpy/coordinates/frames/heliocentricinertial-1.0.0"
+id: "asdf://sunpy.org/schemas/heliographic_carrington-1.0.0"
 
 title: |
-  Represents a Heliocentric Inertial (HCI) coordinate object from SunPy
+  Represents an heliographic Carrington coordinate object from SunPy
 
 examples:
   -
-    - A HeliocentricInertial frame without data
+    - A HeliographicCarrington frame without data
     - |
-        !<tag:sunpy.org:sunpy/coordinates/frames/heliocentricinertial-1.0.0>
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_carrington-1.0.0>
           frame_attributes: {}
   -
-    - A HeliocentricInertial frame with an obstime
+    - A HeliographicCarrington frame with an obstime
     - |
-        !<tag:sunpy.org:sunpy/coordinates/frames/heliocentricinertial-1.0.0>
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_carrington-1.0.0>
           frame_attributes: {obstime: !time/time-1.1.0 '2011-01-01T01:01:01.000'}
 
 allOf:

@@ -1,0 +1,5 @@
+The minimum supported asdf version has been increased to 2.8.0 to allow future
+compatibility with the breaking changes planned for asdf 3.0.
+In addtion to this the `asdf-astropy <https://github.com/astropy/asdf-astropy>`__
+package is now required to serialise and deserialise the sunpy coordinate frame
+classes to ASDF.
