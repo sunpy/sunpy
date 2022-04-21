@@ -87,12 +87,12 @@ file
             -128.03072  , -128.03072  ]], dtype=float32)
    >>> input_asdf.close()  # doctest: +REMOTE_DATA
 
-When saving a Map to ASDF the specific Map source class is not saved, all maps are saved as a `.GenericMap`.
+When saving a Map to ASDF all maps are saved as a `.GenericMap` and not a specific source class.
 This comes with some trade-offs.
-If you are using custom map sources defined outside of `sunpy`, and these sources are imported after asdf has been invoked (not imported, but used) for the first time then they will not be registered with the asdf converter.
-Also if the custom map subclass is not present (registered with `sunpy.map.Map`) upon loading of the map, it will be returned as a `.GenericMap`.
-This approach has been chosen despite these limitations so that a map once saved to an ASDF file can be loaded back into a map (even if it is the base `.GenericMap`), rather than the asdf library returning it as a Python dictionary.
-It also follows the philosophy of the was Maps are saved and loaded in the FITS format, where the components of the Map are serialised and the meta data handling is differentiated solely on the contents of the ``.meta`` attribute.
+If you are using custom map sources defined outside of the `sunpy` core package, and these sources are imported after asdf has been invoked for the first time (used, not just imported), then they will not be registered with the asdf converter.
+Also if the custom map subclass is not registered with `sunpy.map.Map` upon loading of the map, it will be returned as a `.GenericMap`.
+This approach has been chosen despite these limitations so that once a map is saved to an ASDF file it can always be loaded back into a map rather than the asdf library returning it as a Python dictionary.
+It also follows the philosophy of the way maps are saved and loaded in the FITS format, where the components of the Map are serialised and the way meta data is handled depends solely on the contents of the ``.meta`` attribute.
 
 
 CDF (common data format)

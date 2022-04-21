@@ -1,2 +1,2 @@
 Migrate the asdf infrastructure to the new style converters etc added in asdf
-2.8.0. This future proofs us for the upcoming 3.0 release.
+2.8.0. This makes sure sunpy will be compatible with the upcoming asdf 3.0 release.
