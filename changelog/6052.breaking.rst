@@ -1,1 +1,1 @@
-Several clients did not pass ``**kwargs`` through ``Fido.fetch`` to the client, they ended up going to ``parfive.Downloader.enqueue_file`` which has now not the case.
+The `.JSOCClient` and every `.GenericClient` was passing all ``**kwargs`` to `parfive.Downloader.enqueue_file`, this was unintended and has been removed.

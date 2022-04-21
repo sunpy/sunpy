@@ -1,0 +1,1 @@
+`.VSOClient` was not passing ``**kwargs`` through each download method.

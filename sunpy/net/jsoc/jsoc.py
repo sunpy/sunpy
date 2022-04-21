@@ -477,7 +477,7 @@ class JSOCClient(BaseClient):
         # Private communication from JSOC say we should not use more than one connection.
         max_splits = kwargs.get('max_splits', 1)
         if max_splits != 1:
-            log.info(f"max_splits keyword was passed and set to 1.")
+            log.info(f"Setting max_splits to it's maximum allowed value of 1 for requests made by the JSOCClient.")
         kwargs['max_splits'] = 1
 
         # Convert Responses to a list if not already
