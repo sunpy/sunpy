@@ -84,6 +84,16 @@ Deprecation of `sunpy.physics.solar_rotation`
 Both of these functions have been moved to `sunkit_image.coalignment` and have identical functionality and API.
 Note that `~sunpy.physics.solar_rotation.mapsequence_solar_derotate` has been renamed to `~sunkit_image.coalignment.mapsequence_coalign_by_rotation` to more accurately reflect its functionality.
 
+New dependency on ``asdf-astropy`` for ASDF support
+===================================================
+With the 4.0 release of sunpy the `asdf` plugin has been updated to support future versions of the `asdf` Python library.
+This has lead to no significant changes to how ASDF files are handled on save or load, however the plugin code is significantly simpler.
+
+When updating sunpy to 4.0 **it is important that the `asdf-astropy` package is installed if asdf is installed**.
+If installing sunpy with ``sunpy[all]`` or ``sunpy[asdf]`` when using pip this will happen automatically, however, if you update sunpy with ``pip install -U sunpy`` and you have previously installed asdf (implicitly or explicitly) you will need to install the ``asdf-astropy`` package.
+**If you have installed sunpy with conda, you will need to explicitly install ``asdf-astropy``** if you have ``asdf`` installed as the sunpy conda package does not depend on ``asdf``.
+If ``asdf-astropy`` is not installed then sunpy's asdf plugin will fail to load and emit a warning, this will happen every time for *any* ASDF file irrespective of if it contains a sunpy object in its tree.
+
 Contributors to this Release
 ============================
 
