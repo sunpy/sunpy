@@ -325,6 +325,68 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     return rotated_image
 
 
+@add_rotation_function("cv2",
+                       handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
+def _rotation_cv2(image, matrix, shift, order, missing, clip):
+    """
+    Uses `cv2.warpAffine` to do the affine transform on input `image` in same manner
+    as sunpy's default `skimage.transform.warp`.
+    """
+    # Flags for converting input order from `integer` to the appropriate interpolation flag
+    # As of Oct. 2021, OpenCV warpAffine does not support order 2,4,5
+    _CV_ORDER_FLAGS = {
+        0: cv2.INTER_NEAREST,
+        1: cv2.INTER_LINEAR,
+        3: cv2.INTER_CUBIC,
+    }
+
+    try:
+        order = _CV_ORDER_FLAGS[order]
+    except KeyError:
+        raise ValueError("Input order={} not supported in openCV. ".format(order),
+                         "Please use order = 0, 1, or 3.")
+
+    # needed to convert `missing` from potentially a np.dtype
+    # to the native `int` type required for cv2.warpAffine
+    try:
+        missing = missing.tolist()
+    except AttributeError:
+        pass
+
+    # OpenCV applies the shift+rotation operations in a different order(?); we need to calculate
+    # translation using `rmatrix/scale`, but scale+rotation with `rmatrix*scale`
+    # in order to match what skimage/scipy do
+
+    shift = _calculate_shift(image, rmatrix / scale, image_center, recenter)
+
+    rmatrix = rmatrix * scale
+
+    trans = np.eye(3, 3)
+    rot_scale = np.eye(3, 3)
+
+    # openCV defines the translation matrix as [right, down]
+    # but `_calculate_shift` returns [left,up], so we have to adjust
+    trans[:2, 2] = [-shift[0], -shift[1]]
+
+    # CV rotation is defined clockwise, so we transpose rmatrix
+    rot_scale[:2, :2] = rmatrix.T
+    rmatrix = (rot_scale @ trans)[:2]
+
+    # cast input image to float, if needed
+    # code adapted from sunpy.transform source code
+    if issubclass(image.dtype.type, numbers.Integral):
+        adjusted_image = image.astype(np.float64)
+    else:
+        adjusted_image = image.copy()
+
+    h, w = adjusted_image.shape
+
+    # equivalent to skimage.transform.warp(adjusted_image, tform, order=order,
+    #                                     mode='constant', cval=adjusted_missing)
+    return cv2.warpAffine(adjusted_image, rmatrix, (w, h), flags=order,
+                          borderMode=cv2.BORDER_CONSTANT, borderValue=missing)
+
+
 # Generate the string with allowable rotation-function names for use in docstrings
 _rotation_function_names = ", ".join([f"``'{name}'``" for name in _rotation_function_registry])
 # Insert into the docstring for affine_transform.  We cannot use the add_common_docstring decorator
