@@ -17,12 +17,11 @@ import numpy as np
 from matplotlib import cm
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
-DASK_INSTALLED = False
 try:
     from dask.array import Array as DaskArray
     DASK_INSTALLED = True
 except ImportError:
-    pass
+    DASK_INSTALLED = False
 
 import astropy.units as u
 import astropy.wcs
@@ -323,9 +322,8 @@ class GenericMap(NDData):
         count_nan = np.isnan(self.data).sum()
         count_inf = np.isinf(self.data).sum()
 
-        # If data is from a dask array, pull data into memory for quicklook() method
-        # For basic html representation, only use dask html representation without computing data
         if DASK_INSTALLED and isinstance(finite_data, DaskArray):
+            # This will fetch the entire data array into memory and only happens for the quicklook method
             if compute_dask:
                 finite_data = finite_data.compute()
             else:
