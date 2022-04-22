@@ -17,6 +17,7 @@ import numpy as np
 from matplotlib import cm
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
+
 try:
     from dask.array import Array as DaskArray
     DASK_INSTALLED = True
