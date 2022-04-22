@@ -11,7 +11,7 @@ class GenericMapConverter(Converter):
     @property
     def types(self):
         from sunpy.map.mapbase import GenericMap
-        return list(GenericMap._registry.keys())
+        return [GenericMap] + list(GenericMap._registry.keys())
 
     def from_yaml_tree(self, node, tag, ctx):
         import sunpy.map
