@@ -181,6 +181,14 @@
       "HMI Level 1"
     ],
     [
+      "hmi.location_45s",
+      "WCS HMI location parameters for 45s products"
+    ],
+    [
+      "hmi.location_720s",
+      "HMI observer location parameters for 720s products"
+    ],
+    [
       "hmi.lookup_chebycoef_bnoise",
       "Btotal noise mask"
     ],
@@ -387,6 +395,10 @@
     [
       "hmi.pfss_synop",
       "PFSS cubes from full CR synoptic maps for Q-map computation, higher resolution Br computed at radius of Q-maps, and smoothed Br used as input"
+    ],
+    [
+      "hmi.phasemaps_extended",
+      "This series contains Phase Maps of Tunable Elements for the extended mission."
     ],
     [
       "hmi.polar_db",
@@ -1935,6 +1947,10 @@
       "Mean Br in 1 deg latitude bins, weighted average (1/mu)"
     ],
     [
+      "noconvergence",
+      "quality flag: 0=convergence, 1=no convergence"
+    ],
+    [
       "num",
       "Total pixel number in 1 deg latitude bins"
     ],
@@ -1948,6 +1964,10 @@
     ],
     [
       "phase",
+      "0"
+    ],
+    [
+      "phases",
       "0"
     ],
     [
