@@ -30,9 +30,13 @@ Most notably, there is now comprehensive support for having not-a-number (NaN) v
 Accordingly, the default behavior for these functions has been changed to use NaN for the pixels in the output image that are beyond the extent of the input image.
 To obtain the prior behavior, which used zero by default for such pixels, the ``missing`` needs to be explicitly set to zero.
 
-The default rotation function used internally has been switched to :func:`scipy.ndimage.affine_transform` from :func:`skimage.transform.warp` due to changes in the latest release of `skimage`, although the differences between the rotation results are small.
+The default rotation function used internally has been switched to :func:`scipy.ndimage.affine_transform` from :func:`skimage.transform.warp` due to changes in the latest release of ``scikit-image``, although the differences between the rotation results are small.
+Since bicubic interpolation by :func:`scipy.ndimage.affine_transform` is sufficient in quality for the typical user, we have changed the default interpolation order for :meth:`sunpy.map.GenericMap.rotate` to bicubic interpolation (``order=3``) instead of biquartic interpolation (``order=4``) for improved performance under default settings.
+:func:`sunpy.image.transform.affine_transform` has always defaulted to bicubic interpolation (``order=3``).
+
+Also, there is now the option to rotate using `OpenCV <https://opencv.org>`__.
 The rotation function to use can be selected via the ``method`` keyword argument.
-New rotation functions beyond these two can be added using the new decorator :func:`~sunpy.image.transform.add_rotation_function`.
+New rotation functions beyond these three can be added using the new decorator :func:`~sunpy.image.transform.add_rotation_function`.
 
 Improved return types of HEK queries
 ====================================

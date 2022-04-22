@@ -4,6 +4,7 @@ Functions for geometrical image transformation and warping.
 import sys
 import numbers
 from functools import wraps
+from collections import namedtuple
 
 import numpy as np
 import scipy.ndimage
@@ -87,16 +88,16 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     method = _get_transform_method(method, use_scipy)
 
     # Transform the image using the appropriate function
-    rotated_image = _rotation_function_registry[method](image, rmatrix, shift, order, missing, clip)
+    rotated_image = _rotation_registry[method].function(image, rmatrix, shift, order, missing, clip)
 
     return rotated_image
 
 
 def _get_transform_method(method, use_scipy):
     # This is re-used in affine_transform and GenericMap.rotate
-    if method not in _rotation_function_registry:
+    if method not in _rotation_registry:
         raise ValueError(f'Method {method} not in supported methods: '
-                         f'{_rotation_function_registry.keys()}')
+                         f'{_rotation_registry.keys()}')
 
     if use_scipy is not None:
         warn_deprecated("The 'use_scipy' argument is deprecated. "
@@ -106,7 +107,7 @@ def _get_transform_method(method, use_scipy):
             warn_user(f"Using scipy instead of {method} for rotation.")
             method = 'scipy'
 
-    if method == 'skimage':
+    if method == 'scikit-image':
         try:
             import skimage  # NoQA
         except ImportError:
@@ -115,7 +116,8 @@ def _get_transform_method(method, use_scipy):
     return method
 
 
-def add_rotation_function(name, handles_clipping, handles_image_nans, handles_nan_missing):
+def add_rotation_function(name, *, allowed_orders,
+                          handles_clipping, handles_image_nans, handles_nan_missing):
     """
     Decorator to add a rotation function to the registry of selectable
     implementations.
@@ -128,7 +130,7 @@ def add_rotation_function(name, handles_clipping, handles_image_nans, handles_na
     If the supplied rotation function cannot provide one or more of these capabilities,
     the decorator is able to provide them instead.
 
-    The decorator accepts the parameters listed under ``Parameters``.  The decorated
+    The decorator requires the parameters listed under ``Parameters``.  The decorated
     rotation function must accept the parameters listed under ``Other Parameters``
     in that order and return the rotated image.
 
@@ -136,6 +138,8 @@ def add_rotation_function(name, handles_clipping, handles_image_nans, handles_na
     ----------
     name : `str`
         The name that will be used to select the rotation function
+    allowed_orders : `set`
+        The allowed values for the ``order`` parameter.
     handles_clipping : `bool`
         Specifies whether the rotation function will internally perform clipping.
         If ``False``, the rotation function will always receive ``False`` for the
@@ -186,6 +190,10 @@ def add_rotation_function(name, handles_clipping, handles_image_nans, handles_na
     def decorator(rotation_function):
         @wraps(rotation_function)
         def wrapper(image, matrix, shift, order, missing, clip):
+            if order not in allowed_orders:
+                raise ValueError(f"{order} is one of the allowed orders for method '{name}': "
+                                 f"{set(allowed_orders)}")
+
             clip_to_use = clip if handles_clipping else False
 
             # If missing cannot be used directly, use a value in the input range of the image
@@ -236,7 +244,8 @@ def add_rotation_function(name, handles_clipping, handles_image_nans, handles_na
 
             return rotated_image
 
-        _rotation_function_registry[name] = wrapper
+        _rotation_registry[name] = _rotation_method(function=wrapper,
+                                                    allowed_orders=set(allowed_orders))
 
         # Add the docstring of the rotation function to the docstring of affine_transform
         affine_transform.__doc__ += (f"\n    **Specific notes for the '{name}' rotation method:**"
@@ -246,14 +255,17 @@ def add_rotation_function(name, handles_clipping, handles_image_nans, handles_na
     return decorator
 
 
-_rotation_function_registry = {}
+_rotation_method = namedtuple('_rotation_method', ['function', 'allowed_orders'])
+_rotation_registry = {}
 
 
-@add_rotation_function("scipy",
+@add_rotation_function("scipy", allowed_orders=range(6),
                        handles_clipping=False, handles_image_nans=False, handles_nan_missing=True)
 def _rotation_scipy(image, matrix, shift, order, missing, clip):
     """
     * Rotates using :func:`scipy.ndimage.affine_transform`
+    * The ``order`` parameter is the order of the spline interpolation, and ranges
+      from 0 to 5.
     * The ``mode`` parameter for :func:`~scipy.ndimage.affine_transform` is fixed to
       be ``'constant'``
     """
@@ -263,11 +275,20 @@ def _rotation_scipy(image, matrix, shift, order, missing, clip):
     return rotated_image
 
 
-@add_rotation_function("skimage",
+@add_rotation_function("scikit-image", allowed_orders=range(6),
                        handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
 def _rotation_skimage(image, matrix, shift, order, missing, clip):
     """
     * Rotates using :func:`skimage.transform.warp`
+    * The ``order`` parameter selects from the following interpolation algorithms:
+
+      * 0: nearest-neighbor
+      * 1: bi-linear
+      * 2: bi-quadratic
+      * 3: bi-cubic
+      * 4: bi-quartic
+      * 5: bi-quintic
+
     * The implementation for higher orders of interpolation means that the pixels
       in the output image that are beyond the extent of the input image may not have
       exactly the value of the ``missing`` parameter.
@@ -325,8 +346,58 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     return rotated_image
 
 
+@add_rotation_function("opencv", allowed_orders={0, 1, 3},
+                       handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
+def _rotation_cv2(image, matrix, shift, order, missing, clip):
+    """
+    * Rotates using |cv2_warpAffine|_ from `OpenCV <https://opencv.org>`__
+    * The ``order`` parameter selects from the following interpolation algorithms:
+
+      * 0: nearest-neighbor interpolation
+      * 1: bilinear interpolation
+      * 3: bicubic interpolation
+
+    * An input image with byte ordering that does not match the native byte order of
+      the system (e.g., big-endian values on a little-endian system) will be
+      copied and byte-swapped prior to rotation.
+    * An input image with integer data is cast to floats prior to passing to
+      |cv2_warpAffine|_.  The output image can be re-cast using
+      :meth:`numpy.ndarray.astype` if desired.
+    """
+    try:
+        import cv2
+    except ImportError:
+        raise ImportError("The opencv-python package is required to use this rotation method.")
+
+    _CV_ORDER_FLAGS = {
+        0: cv2.INTER_NEAREST,
+        1: cv2.INTER_LINEAR,
+        3: cv2.INTER_CUBIC,
+    }
+    order_to_use = _CV_ORDER_FLAGS[order]
+
+    if issubclass(image.dtype.type, numbers.Integral):
+        warn_user("Integer input data has been cast to float64.")
+        adjusted_image = image.astype(np.float64)
+    else:
+        adjusted_image = image.copy()
+
+    trans = np.concatenate([matrix, shift[:, np.newaxis]], axis=1)
+
+    # Swap the byte order if it is non-native (e.g., big-endian on a little-endian system)
+    if adjusted_image.dtype.byteorder == ('>' if sys.byteorder == 'little' else '<'):
+        adjusted_image = adjusted_image.byteswap().newbyteorder()
+
+    # missing must be a Python float, not a NumPy float
+    missing = float(missing)
+
+    return cv2.warpAffine(adjusted_image, trans, np.flip(adjusted_image.shape),
+                          flags=order_to_use | cv2.WARP_INVERSE_MAP,
+                          borderMode=cv2.BORDER_CONSTANT, borderValue=missing)
+
+
 # Generate the string with allowable rotation-function names for use in docstrings
-_rotation_function_names = ", ".join([f"``'{name}'``" for name in _rotation_function_registry])
+_rotation_function_names = ", ".join([f"``'{name}'``" for name in _rotation_registry])
 # Insert into the docstring for affine_transform.  We cannot use the add_common_docstring decorator
 # due to what would be a circular loop in definitions.
 affine_transform.__doc__ = affine_transform.__doc__.format(rotation_function_names=_rotation_function_names)
