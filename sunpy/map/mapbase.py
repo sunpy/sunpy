@@ -18,6 +18,12 @@ from matplotlib import cm
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
+try:
+    from dask.array import Array as DaskArray
+    DASK_INSTALLED = True
+except ImportError:
+    DASK_INSTALLED = False
+
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
@@ -300,7 +306,7 @@ class GenericMap(NDData):
     def __repr__(self):
         return f"{object.__repr__(self)}\n{self}"
 
-    def _repr_html_(self):
+    def _repr_html_(self, compute_dask=False):
         """
         Produce an HTML summary with plots for use in Jupyter notebooks.
         """
@@ -316,6 +322,25 @@ class GenericMap(NDData):
         finite_data = self.data[np.isfinite(self.data)]
         count_nan = np.isnan(self.data).sum()
         count_inf = np.isinf(self.data).sum()
+
+        if DASK_INSTALLED and isinstance(finite_data, DaskArray):
+            # This will fetch the entire data array into memory and only happens for the quicklook method
+            if compute_dask:
+                finite_data = finite_data.compute()
+            else:
+                dask_html = self.data._repr_html_()
+                return textwrap.dedent(f"""\
+                    <pre>{html.escape(object.__repr__(self))}</pre>
+                    <table>
+                        <tr>
+                            <td>{text_to_table}</td>
+                            <td>
+                                {dask_html}
+                            </td>
+                        </tr>
+                        <tr>
+                        </tr>
+                    </table>""")
 
         # Assemble an informational string with the counts of bad pixels
         bad_pixel_text = ""
@@ -471,7 +496,7 @@ class GenericMap(NDData):
             f.write(textwrap.dedent(f"""\
                 <html>
                     <title>Quicklook summary for {html.escape(object.__repr__(self))}</title>
-                    <body>{self._repr_html_()}</body>
+                    <body>{self._repr_html_(compute_dask=True)}</body>
                 </html>"""))
         webbrowser.open_new_tab(url)
 

@@ -1,0 +1,1 @@
+Fixed a crash for dask arrays when displaying the `~sunpy.map.GenericMap` html representation.
