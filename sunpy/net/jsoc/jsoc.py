@@ -804,6 +804,7 @@ class JSOCClient(BaseClient):
         for series in data_sources:
             info = client.series(rf'{series}\.')
             for item in info:
+                print(f'🛰 Getting info for {series}: {item}')
                 data = client.info(item)
                 series_store.append((data.name, data.note))
                 if not data.segments.empty:
