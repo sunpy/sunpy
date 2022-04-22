@@ -15,7 +15,47 @@ SunPy 4.0 also includes a large number of smaller improvements and bug fixes, wh
 
 By the numbers:
 
-TODO: fill this in at release time.
+This release of sunpy contains 1310 commits in 182 merged pull requests closing 83 issues from 29 people, 19 of which are first-time contributors to sunpy.
+
+* 1310 commits have been added since 3.1
+* 83 issues have been closed since 3.1
+* 182 pull requests have been merged since 3.1
+* 29 people have contributed since 3.1
+* 19 of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+-  Akash Verma  *
+-  Alasdair Wilson  *
+-  Albert Y. Shih
+-  Alex Kaszynski  *
+-  Alex W  *
+-  Andy Tang  *
+-  Anubhav Sinha  *
+-  Conor MacBride
+-  Daniel Garcia Briseno  *
+-  David Stansby
+-  Devansh Shukla  *
+-  Jan Gieseler  *
+-  Jeffrey Aaron Paul
+-  Jia Qing  *
+-  Karthikeyan Singaravelan  *
+-  Krish Agrawal  *
+-  Laura Hayes
+-  Lazar Zivadinovic
+-  Nabil Freij
+-  Noah Altunian  *
+-  Rohan Sharma  *
+-  Samriddhi Agarwal
+-  Stuart Mumford
+-  Thomas Braccia  *
+-  Tim Gates  *
+-  Will Barnes
+-  William Russell  *
+-  cbard  *
+-  pre-commit-ci[bot]  *
+
+Where a * indicates that this release contains their first contribution to sunpy.
 
 Increase in required package versions
 =====================================
