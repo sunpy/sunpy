@@ -107,7 +107,7 @@ def _get_transform_method(method, use_scipy):
             warn_user(f"Using scipy instead of {method} for rotation.")
             method = 'scipy'
 
-    if method == 'skimage':
+    if method == 'scikit-image':
         try:
             import skimage  # NoQA
         except ImportError:
@@ -116,7 +116,7 @@ def _get_transform_method(method, use_scipy):
     return method
 
 
-def add_rotation_function(name, allowed_orders,
+def add_rotation_function(name, *, allowed_orders,
                           handles_clipping, handles_image_nans, handles_nan_missing):
     """
     Decorator to add a rotation function to the registry of selectable
@@ -130,7 +130,7 @@ def add_rotation_function(name, allowed_orders,
     If the supplied rotation function cannot provide one or more of these capabilities,
     the decorator is able to provide them instead.
 
-    The decorator accepts the parameters listed under ``Parameters``.  The decorated
+    The decorator requires the parameters listed under ``Parameters``.  The decorated
     rotation function must accept the parameters listed under ``Other Parameters``
     in that order and return the rotated image.
 
@@ -275,7 +275,7 @@ def _rotation_scipy(image, matrix, shift, order, missing, clip):
     return rotated_image
 
 
-@add_rotation_function("skimage", allowed_orders=range(6),
+@add_rotation_function("scikit-image", allowed_orders=range(6),
                        handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
 def _rotation_skimage(image, matrix, shift, order, missing, clip):
     """
@@ -346,7 +346,7 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     return rotated_image
 
 
-@add_rotation_function("cv2", allowed_orders={0, 1, 3},
+@add_rotation_function("opencv", allowed_orders={0, 1, 3},
                        handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
 def _rotation_cv2(image, matrix, shift, order, missing, clip):
     """

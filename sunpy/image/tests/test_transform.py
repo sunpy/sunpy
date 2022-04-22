@@ -91,14 +91,14 @@ def test_skimage_rotation(original, angle, k):
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = affine_transform(original, rmatrix=rmatrix, method='skimage')
+    rot = affine_transform(original, rmatrix=rmatrix, method='scikit-image')
     assert compare_results(expected, rot, allclose=False)
 
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=derot_matrix, method='skimage')
+    derot = affine_transform(rot, rmatrix=derot_matrix, method='scikit-image')
     assert compare_results(original, derot, allclose=False)
 
 
@@ -218,7 +218,7 @@ def test_flat(identity):
 def test_nan_skimage(identity):
     # Test preservation of NaN values for scikit-image rotation
     in_arr = np.array([[np.nan, 0]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='skimage')
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='scikit-image')
     assert np.isnan(out_arr[0, 0])
 
 
@@ -233,7 +233,7 @@ def test_int(identity):
     # Test casting of integer array to float array
     in_arr = np.array([[100]], dtype=int)
     with pytest.warns(SunpyUserWarning, match='Integer input data has been cast to float64'):
-        out_arr = affine_transform(in_arr, rmatrix=identity, method='skimage')
+        out_arr = affine_transform(in_arr, rmatrix=identity, method='scikit-image')
     assert np.issubdtype(out_arr.dtype, np.floating)
 
 
@@ -256,8 +256,8 @@ def test_deprecated_args(identity):
     with pytest.raises(ValueError, match="Method blah not in supported methods"):
         out_arr = affine_transform(in_arr, rmatrix=identity, method='blah')
 
-    with pytest.warns(SunpyUserWarning, match="Using scipy instead of skimage for rotation"):
-        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True, method='skimage')
+    with pytest.warns(SunpyUserWarning, match="Using scipy instead of scikit-image for rotation"):
+        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True, method='scikit-image')
 
 
 def test_reproducible_matrix_multiplication():
@@ -288,7 +288,7 @@ def test_clipping(rot30):
     num_methods = len(_rotation_registry.keys())
 
     fig = Figure(figsize=(12, 2*num_methods))
-    axs = fig.subplots(num_methods, 5)
+    axs = fig.subplots(nrows=num_methods, ncols=5)
 
     for i, method in enumerate(_rotation_registry.keys()):
         axs[i, 0].imshow(image, vmin=0, vmax=3)
@@ -322,7 +322,7 @@ def test_nans(rot30):
     num_methods = len(_rotation_registry.keys())
 
     fig = Figure(figsize=(16, 2*num_methods))
-    axs = fig.subplots(num_methods, 7)
+    axs = fig.subplots(nrows=num_methods, ncols=7)
 
     axs[0, 0].set_title('Original (NaNs are white)')
 
