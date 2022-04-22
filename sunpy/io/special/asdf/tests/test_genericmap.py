@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-import astropy.units as u
 import asdf
+import astropy.units as u
 
 import sunpy.map
 from sunpy.data.test import get_test_filepath
@@ -17,9 +17,6 @@ def assert_roundtrip_map(old):
     for ok, ov in old.meta.items():
         assert ok in new.meta
         assert new.meta[ok] == ov
-    if 'crval1' in old.meta.modified_items and 'crval1' in new.meta.modified_items:
-        np.testing.assert_allclose(old.meta.modified_items["crval1"], new.meta.modified_items["crval1"])
-        np.testing.assert_allclose(old.meta.modified_items["crval2"], new.meta.modified_items["crval2"])
     if old.mask is not None and new.mask is not None:
         np.testing.assert_allclose(old.mask, new.mask)
     assert old.unit == new.unit
@@ -52,7 +49,8 @@ def test_load_100_file_with_shift():
         aiamap = af['object']
         assert isinstance(aiamap, sunpy.map.sources.AIAMap)
         assert "crval1" in aiamap.meta.modified_items
-        assert "crval2" in aiamap.meta.modified_items
+        crval1 = aiamap.meta.modified_items["crval1"]
+        assert crval1.current - crval1.original == 10
 
 
 @asdf_entry_points

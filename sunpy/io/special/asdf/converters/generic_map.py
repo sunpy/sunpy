@@ -21,18 +21,20 @@ class GenericMapConverter(Converter):
         return tags[0]
 
     def from_yaml_tree(self, node, tag, ctx):
-        import sunpy.map
         import astropy.units as u
+
+        import sunpy.map
 
         # Use the factory here to get the correct subclass back
         out_map = sunpy.map.Map(np.asanyarray(node["data"]), node["meta"])
-        breakpoint()
-        if 'generic_map-1.0.0' in tag and not np.allclose(node['shift'], 0 * u.deg):
-            breakpoint()
-            out_map = out_map.shift_reference_coord(*node['shift'])
         out_map.mask = node.get("mask")
         out_map.uncertainty = node.get("uncertainty")
         out_map._unit = node.get("unit")
+
+        # Old files can have a shift that needs applying
+        if 'generic_map-1.0.0' in tag and not np.allclose(node['shift'], 0 * u.deg):
+            out_map = out_map.shift_reference_coord(*node['shift'])
+
         return out_map
 
     def to_yaml_tree(self, smap, tag, ctx):
