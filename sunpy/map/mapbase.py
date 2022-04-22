@@ -1021,7 +1021,7 @@ class GenericMap(NDData):
     @deprecated('4.0', alternative='`sunpy.map.GenericMap.shift_reference_coord`')
     @u.quantity_input
     def shift(self, axis1: u.deg, axis2: u.deg):
-        GenericMap.shift.__doc__ = GenericMap.shift_reference_coord.__doc__
+        # Note that the doc redirection for this method is at the end of the file.
 
         new_map = self.shift_reference_coord(axis1, axis2)
         new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
@@ -2725,6 +2725,7 @@ class GenericMap(NDData):
 
 
 GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
+GenericMap.shift.__doc__ = GenericMap.shift_reference_coord.__doc__
 
 
 class InvalidHeaderInformation(ValueError):
