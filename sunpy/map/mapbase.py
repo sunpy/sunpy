@@ -50,8 +50,9 @@ from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
+    deprecated,
 )
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -1010,15 +1011,32 @@ class GenericMap(NDData):
     def shifted_value(self):
         """The total shift applied to the reference coordinate by past applications of
         `~sunpy.map.GenericMap.shift`."""
+        warn_deprecated(
+            '`sunpy.map.GenericMap.shifted_value` is deprecated and will be removed in sunpy 4.1. '
+            'Use ``sunpy.map.GenericMap.meta.modified_items`` to see how the '
+            'reference coordinate has been modified.'
+        )
         return self._shift
 
+    @deprecated('4.0', alternative='`sunpy.map.GenericMap.shift_reference_coord`')
     @u.quantity_input
     def shift(self, axis1: u.deg, axis2: u.deg):
+        # Note that the doc redirection for this method is at the end of the file.
+
+        new_map = self.shift_reference_coord(axis1, axis2)
+        new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
+                                     self.shifted_value[1] + axis2)
+        return new_map
+
+    @u.quantity_input
+    def shift_reference_coord(self, axis1: u.deg, axis2: u.deg):
         """
         Returns a map shifted by a specified amount to, for example, correct
         for a bad map location. These values are applied directly to the
-        `~sunpy.map.GenericMap.reference_coordinate`. To check how much shift
-        has already been applied see `~sunpy.map.GenericMap.shifted_value`
+        `~sunpy.map.GenericMap.reference_coordinate`. To check how much the
+        reference coordinate has been modified, see
+        ``sunpy.map.GenericMap.meta.modified_items['CRVAL1']`` and
+        ``sunpy.map.GenericMap.meta.modified_items['CRVAL2']``.
 
         Parameters
         ----------
@@ -1040,9 +1058,6 @@ class GenericMap(NDData):
 
         # Create new map with the modification
         new_map = self._new_instance(self.data, new_meta, self.plot_settings)
-
-        new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
-                                     self.shifted_value[1] + axis2)
 
         return new_map
 
@@ -2710,6 +2725,7 @@ class GenericMap(NDData):
 
 
 GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
+GenericMap.shift.__doc__ = GenericMap.shift_reference_coord.__doc__
 
 
 class InvalidHeaderInformation(ValueError):

@@ -464,6 +464,19 @@ def test_save_compressed(aia171_test_map):
     assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
 
 
+DEP_WARNING_SHIFTED_VAL = (
+    'ignore:`sunpy.map.GenericMap.shifted_value` is deprecated and will be removed in sunpy 4.1. '
+    'Use ``sunpy.map.GenericMap.meta.modified_items`` to see how the reference coordinate has been '
+    'modified.:sunpy.util.exceptions.SunpyDeprecationWarning'
+)
+DEP_WARNING_SHIFT = (
+    'ignore:The shift function is deprecated and may be removed in version 4.1.'
+    r'\s+Use `sunpy.map.GenericMap.shift_reference_coord` instead.'
+    ':sunpy.util.exceptions.SunpyDeprecationWarning'
+)
+
+
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFTED_VAL)
 def test_default_shift():
     """Test that the default shift is zero"""
     data = np.ones([6, 6], dtype=np.float64)
@@ -490,6 +503,8 @@ def test_default_shift():
     assert cd_map.shifted_value[1].value == 0
 
 
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFT)
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFTED_VAL)
 def test_shift_applied(generic_map):
     """Test that adding a shift actually updates the reference coordinate"""
     original_reference_coord = (generic_map.reference_coordinate.Tx,
@@ -500,23 +515,28 @@ def test_shift_applied(generic_map):
     assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
     assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
     crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units[0] +
-               shifted_map.shifted_value[0]).to(shifted_map.spatial_units[0])).value
+               x_shift).to(shifted_map.spatial_units[0])).value
     assert shifted_map.meta.get('crval1') == crval1
     crval2 = ((generic_map.meta.get('crval2') * generic_map.spatial_units[1] +
-               shifted_map.shifted_value[1]).to(shifted_map.spatial_units[1])).value
+               y_shift).to(shifted_map.spatial_units[1])).value
     assert shifted_map.meta.get('crval2') == crval2
 
 
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFT)
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFTED_VAL)
 def test_set_shift(generic_map):
     """Test that previously applied shift is stored in the shifted_value property"""
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
-    resultant_shift = shifted_map.shifted_value
-    assert resultant_shift[0] == x_shift
-    assert resultant_shift[1] == y_shift
+    mod_crval1 = shifted_map.meta.modified_items['crval1']
+    mod_crval2 = shifted_map.meta.modified_items['crval2']
+    assert x_shift == (mod_crval1.current - mod_crval1.original) * shifted_map.spatial_units[0]
+    assert y_shift == (mod_crval2.current - mod_crval2.original) * shifted_map.spatial_units[1]
 
 
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFT)
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFTED_VAL)
 def test_shift_history(generic_map):
     """Test the shifted_value is added to a non-zero previous shift"""
     x_shift1 = 5 * u.arcsec
@@ -527,9 +547,12 @@ def test_shift_history(generic_map):
     y_shift2 = 120 * u.arcsec
     final_shifted_map = shifted_map1.shift(x_shift2, y_shift2)
 
-    resultant_shift = final_shifted_map.shifted_value
-    assert resultant_shift[0] == x_shift1 + x_shift2
-    assert resultant_shift[1] == y_shift1 + y_shift2
+    mod_crval1 = final_shifted_map.meta.modified_items['crval1']
+    mod_crval2 = final_shifted_map.meta.modified_items['crval2']
+    delta_crval1 = (mod_crval1.current - mod_crval1.original) * final_shifted_map.spatial_units[0]
+    delta_crval2 = (mod_crval2.current - mod_crval2.original) * final_shifted_map.spatial_units[1]
+    assert x_shift1 + x_shift2 == delta_crval1
+    assert y_shift1 + y_shift2 == delta_crval2
 
 
 def test_corners(simple_map):
