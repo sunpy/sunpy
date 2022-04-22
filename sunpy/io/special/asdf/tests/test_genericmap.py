@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
+import asdf
 
 import sunpy.map
 from sunpy.data.test import get_test_filepath
@@ -42,3 +43,23 @@ def test_genericmap_mask(aia171_test_map, tmpdir):
     aia171_test_map.mask = mask
     aia171_test_map._unit = u.m
     assert_roundtrip_map(aia171_test_map)
+
+
+@asdf_entry_points
+def test_load_100_file_with_shift():
+    fname = get_test_filepath("aiamap_shift_genericmap_1.0.0.asdf")
+    with asdf.open(fname) as af:
+        aiamap = af['object']
+        assert isinstance(aiamap, sunpy.map.sources.AIAMap)
+        assert "crval1" in aiamap.meta.modified_items
+        assert "crval2" in aiamap.meta.modified_items
+
+
+@asdf_entry_points
+def test_load_100_file_with_no_shift():
+    fname = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
+    with asdf.open(fname) as af:
+        aiamap = af['object']
+        assert isinstance(aiamap, sunpy.map.sources.AIAMap)
+        assert "crval1" not in aiamap.meta.modified_items
+        assert "crval2" not in aiamap.meta.modified_items
