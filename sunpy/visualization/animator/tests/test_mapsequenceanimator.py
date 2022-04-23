@@ -5,7 +5,7 @@ import pytest
 from astropy.visualization.wcsaxes import WCSAxes
 
 import sunpy.map
-from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import figure_test
 from sunpy.visualization.animator import MapSequenceAnimator
 
