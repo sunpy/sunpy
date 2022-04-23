@@ -1,0 +1,474 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - docs.virtualsolar.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>307 Temporary Redirect</title>
+
+        </head><body>
+
+        <h1>Temporary Redirect</h1>
+
+        <p>The document has moved <a href="http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.2.15 (CentOS) Server at docs.virtualsolar.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '359'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:22:45 GMT
+      Location:
+      - http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 307
+      message: Temporary Redirect
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - netdrms01.nispdc.nso.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n\n<wsdl:definitions
+        xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n\txmlns:VSO=\"http://virtualsolar.org/VSO/VSOi\"
+        \n\txmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n\txmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+        \n\tname=\"VSO\"\n\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\t<wsdl:types>\n\n\t\t<xsd:schema
+        elementFormDefault=\"unqualified\"\n\t\t\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\n\t\t\t<!--
+        for VSO \"Query\" function -->\n\n\t\t\t<xsd:complexType name=\"QueryRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"block\" type=\"VSO:QueryRequestBlock\" \n\t\t\t\t\tminOccurs=\"1\"
+        maxOccurs=\"1\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"QueryRequestBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"time\"
+        type=\"VSO:Time\" minOccurs=\"1\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"source\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\"
+        type=\"xsd:string\" minOccurs=\"0\" />\t\t\n\t\t\t\t\t<xsd:element name=\"wave\"
+        type=\"VSO:Wave\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"extent\"
+        type=\"VSO:Extent\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"field\"
+        type=\"VSO:Field\" minOccurs=\"0\" />\n\t\t\t\t\t<!-- VSO extended Query elements:\n\t\t\t\t\tPlease
+        note that these elements might be handle differently\n\t\t\t\t\tor might take
+        different arguments depending on the provider.\n\t\t\t\t\tIn general we've
+        made an effort to standarize as much as possible.\n\t\t\t\t\t -->\n\t\t\t\t\t<xsd:element
+        name=\"pixels\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"level\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"resolution\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"detector\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"filter\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"sample\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"quicklook\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"pscale\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Time\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"start\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"end\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element
+        name=\"near\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        \ wavemin and wavemax are really type float. However sometimes\n\t\t\t providers
+        can't handle the decimal point and throw and error.\n\t\t\t By leaving the
+        field as string, we allow the developer some \n\t\t\t flexibility. e.g. passing
+        an integer as string -->\n\t\t\t<xsd:complexType name=\"Wave\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"wavemin\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"wavemax\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"waveunit\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"wavetype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!-- Currently not
+        fully implemented. Only \"type\" is. -->     \n\t\t\t<xsd:complexType name=\"Extent\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"x\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"y\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"width\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"length\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"type\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Field\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fielditem\"
+        type=\"xsd:string\" \n\t\t\t\t\tminOccurs=\"0\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for VSO \"Query\" function Response -->\n\t\t\t\n\t\t\t<xsd:complexType name=\"QueryResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"provideritem\" type=\"VSO:ProviderQueryResponse\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        provider response block (a bit late to rename it now) -->\n\t\t\t<xsd:complexType
+        name=\"ProviderQueryResponse\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_found\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_returned\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"record\"
+        type=\"VSO:QueryResponseBlockArray\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"error\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlockArray\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"recorditem\" type=\"VSO:QueryResponseBlock\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"source\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"time\" type=\"VSO:Time\"
+        />\n\t\t\t\t\t<xsd:element name=\"wave\" type=\"VSO:Wave\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extent\" type=\"VSO:Extent\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"size\" type=\"xsd:float\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extra\" type=\"VSO:Extra\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"info\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"datatype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileurl\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Extra\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"thumbnail\"
+        type=\"VSO:Thumbnail\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"flags\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Thumbnail\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"hires\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"lowres\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for \"GetData\" function -->\n\n\t\t\t<xsd:complexType name=\"VSOGetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"request\" type=\"VSO:GetDataRequest\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"GetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"method\"
+        type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"info\"
+        type=\"VSO:Info\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"datacontainer\"
+        type=\"VSO:DataContainer\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"MethodItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"methodtype\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Info\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"email\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"host\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"user\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"directory\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"password\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"address\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"required\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"site\" type=\"xsd:string\" minOccurs=\"0\"/>\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"DataContainer\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"datarequestitem\"
+        type=\"VSO:DataRequestItem\" \n\t\t\t\t\tminOccurs='0' maxOccurs=\"unbounded\"
+        />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataRequestItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"FileidItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fileid\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t
+        \       <!-- for \"GetData\" function Response -->\n                        <xsd:complexType
+        name=\"VSOGetDataResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"getdataresponseitem\" type=\"VSO:GetDataResponseItem\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataResponseItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"version\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"info\" minOccurs=\"0\">\n\t\t\t\t\t\t<xsd:complexType>\n\t\t\t\t\t\t\t<xsd:sequence>\n\t\t\t\t\t\t\t\t<xsd:element
+        name=\"infoitem\" type=\"xsd:string\"\n\t\t\t\t\t\t\t\t maxOccurs=\"unbounded\"
+        />\n\t\t\t\t\t\t\t</xsd:sequence>\n\t\t\t\t\t\t</xsd:complexType>\n\t\t\t\t\t</xsd:element>\n\t\t\t\t\t<xsd:element
+        name=\"provider\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"getdataitem\" type=\"VSO:GetDataItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"details\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"method\" type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"dataitem\"
+        type=\"VSO:DataItem\" minOccurs='0' \n\t\t\t\t\tmaxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\t\t\t\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"url\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t\t<!-- <xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        /> -->\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t</xsd:schema>\n\t</wsdl:types>\n\n\t<wsdl:message
+        name=\"QueryRequest\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:QueryRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"QueryResponse\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:QueryResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:message
+        name=\"GetDataInput\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:VSOGetDataRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"GetDataOutput\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:VSOGetDataResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:portType
+        name=\"VSOiPort\">\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<wsdl:input
+        message=\"VSO:QueryRequest\" />\n\t\t\t<wsdl:output message=\"VSO:QueryResponse\"
+        />\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation name=\"GetData\">\n\t\t\t<wsdl:input
+        message=\"VSO:GetDataInput\" />\n\t\t\t<wsdl:output message=\"VSO:GetDataOutput\"
+        />\n\t\t</wsdl:operation>\n\n\t</wsdl:portType>\n\n\t<wsdl:binding name=\"VSOiBinding\"
+        type=\"VSO:VSOiPort\">\n\t\t<soap:binding style=\"rpc\"\n\t\t\ttransport=\"http://schemas.xmlsoap.org/soap/http\"
+        />\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#Query\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation
+        name=\"GetData\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#GetData\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t</wsdl:binding>\n\n\t<wsdl:service
+        name=\"VSOiService\">\n\t\t<wsdl:port name=\"nsoTestVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://VSO.tuc.noao.edu/cgi-bin/VSO/DEV_SOAP/bin/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t\t<wsdl:port name=\"nsoVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t</wsdl:service>\n</wsdl:definitions>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '12090'
+      Content-Type:
+      - application/wsdl+xml
+      Date:
+      - Sat, 23 Apr 2022 19:22:45 GMT
+      ETag:
+      - '"101681-2f3a-591e53e1795cf"'
+      Last-Modified:
+      - Fri, 06 Sep 2019 16:50:58 GMT
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: GET
+    uri: http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>307 Temporary Redirect</title>
+
+        </head><body>
+
+        <h1>Temporary Redirect</h1>
+
+        <p>The document has moved <a href="http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.2.15 (CentOS) Server at docs.virtualsolar.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '359'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:22:46 GMT
+      Location:
+      - http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 307
+      message: Temporary Redirect
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: GET
+    uri: http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n\n<wsdl:definitions
+        xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n\txmlns:VSO=\"http://virtualsolar.org/VSO/VSOi\"
+        \n\txmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n\txmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+        \n\tname=\"VSO\"\n\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\t<wsdl:types>\n\n\t\t<xsd:schema
+        elementFormDefault=\"unqualified\"\n\t\t\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\n\t\t\t<!--
+        for VSO \"Query\" function -->\n\n\t\t\t<xsd:complexType name=\"QueryRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"block\" type=\"VSO:QueryRequestBlock\" \n\t\t\t\t\tminOccurs=\"1\"
+        maxOccurs=\"1\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"QueryRequestBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"time\"
+        type=\"VSO:Time\" minOccurs=\"1\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"source\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\"
+        type=\"xsd:string\" minOccurs=\"0\" />\t\t\n\t\t\t\t\t<xsd:element name=\"wave\"
+        type=\"VSO:Wave\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"extent\"
+        type=\"VSO:Extent\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"field\"
+        type=\"VSO:Field\" minOccurs=\"0\" />\n\t\t\t\t\t<!-- VSO extended Query elements:\n\t\t\t\t\tPlease
+        note that these elements might be handle differently\n\t\t\t\t\tor might take
+        different arguments depending on the provider.\n\t\t\t\t\tIn general we've
+        made an effort to standarize as much as possible.\n\t\t\t\t\t -->\n\t\t\t\t\t<xsd:element
+        name=\"pixels\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"level\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"resolution\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"detector\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"filter\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"sample\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"quicklook\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"pscale\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Time\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"start\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"end\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element
+        name=\"near\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        \ wavemin and wavemax are really type float. However sometimes\n\t\t\t providers
+        can't handle the decimal point and throw and error.\n\t\t\t By leaving the
+        field as string, we allow the developer some \n\t\t\t flexibility. e.g. passing
+        an integer as string -->\n\t\t\t<xsd:complexType name=\"Wave\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"wavemin\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"wavemax\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"waveunit\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"wavetype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!-- Currently not
+        fully implemented. Only \"type\" is. -->     \n\t\t\t<xsd:complexType name=\"Extent\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"x\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"y\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"width\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"length\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"type\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Field\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fielditem\"
+        type=\"xsd:string\" \n\t\t\t\t\tminOccurs=\"0\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for VSO \"Query\" function Response -->\n\t\t\t\n\t\t\t<xsd:complexType name=\"QueryResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"provideritem\" type=\"VSO:ProviderQueryResponse\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        provider response block (a bit late to rename it now) -->\n\t\t\t<xsd:complexType
+        name=\"ProviderQueryResponse\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_found\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_returned\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"record\"
+        type=\"VSO:QueryResponseBlockArray\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"error\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlockArray\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"recorditem\" type=\"VSO:QueryResponseBlock\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"source\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"time\" type=\"VSO:Time\"
+        />\n\t\t\t\t\t<xsd:element name=\"wave\" type=\"VSO:Wave\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extent\" type=\"VSO:Extent\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"size\" type=\"xsd:float\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extra\" type=\"VSO:Extra\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"info\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"datatype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileurl\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Extra\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"thumbnail\"
+        type=\"VSO:Thumbnail\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"flags\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Thumbnail\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"hires\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"lowres\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for \"GetData\" function -->\n\n\t\t\t<xsd:complexType name=\"VSOGetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"request\" type=\"VSO:GetDataRequest\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"GetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"method\"
+        type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"info\"
+        type=\"VSO:Info\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"datacontainer\"
+        type=\"VSO:DataContainer\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"MethodItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"methodtype\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Info\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"email\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"host\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"user\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"directory\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"password\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"address\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"required\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"site\" type=\"xsd:string\" minOccurs=\"0\"/>\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"DataContainer\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"datarequestitem\"
+        type=\"VSO:DataRequestItem\" \n\t\t\t\t\tminOccurs='0' maxOccurs=\"unbounded\"
+        />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataRequestItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"FileidItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fileid\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t
+        \       <!-- for \"GetData\" function Response -->\n                        <xsd:complexType
+        name=\"VSOGetDataResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"getdataresponseitem\" type=\"VSO:GetDataResponseItem\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataResponseItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"version\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"info\" minOccurs=\"0\">\n\t\t\t\t\t\t<xsd:complexType>\n\t\t\t\t\t\t\t<xsd:sequence>\n\t\t\t\t\t\t\t\t<xsd:element
+        name=\"infoitem\" type=\"xsd:string\"\n\t\t\t\t\t\t\t\t maxOccurs=\"unbounded\"
+        />\n\t\t\t\t\t\t\t</xsd:sequence>\n\t\t\t\t\t\t</xsd:complexType>\n\t\t\t\t\t</xsd:element>\n\t\t\t\t\t<xsd:element
+        name=\"provider\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"getdataitem\" type=\"VSO:GetDataItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"details\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"method\" type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"dataitem\"
+        type=\"VSO:DataItem\" minOccurs='0' \n\t\t\t\t\tmaxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\t\t\t\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"url\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t\t<!-- <xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        /> -->\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t</xsd:schema>\n\t</wsdl:types>\n\n\t<wsdl:message
+        name=\"QueryRequest\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:QueryRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"QueryResponse\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:QueryResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:message
+        name=\"GetDataInput\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:VSOGetDataRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"GetDataOutput\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:VSOGetDataResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:portType
+        name=\"VSOiPort\">\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<wsdl:input
+        message=\"VSO:QueryRequest\" />\n\t\t\t<wsdl:output message=\"VSO:QueryResponse\"
+        />\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation name=\"GetData\">\n\t\t\t<wsdl:input
+        message=\"VSO:GetDataInput\" />\n\t\t\t<wsdl:output message=\"VSO:GetDataOutput\"
+        />\n\t\t</wsdl:operation>\n\n\t</wsdl:portType>\n\n\t<wsdl:binding name=\"VSOiBinding\"
+        type=\"VSO:VSOiPort\">\n\t\t<soap:binding style=\"rpc\"\n\t\t\ttransport=\"http://schemas.xmlsoap.org/soap/http\"
+        />\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#Query\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation
+        name=\"GetData\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#GetData\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t</wsdl:binding>\n\n\t<wsdl:service
+        name=\"VSOiService\">\n\t\t<wsdl:port name=\"nsoTestVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://VSO.tuc.noao.edu/cgi-bin/VSO/DEV_SOAP/bin/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t\t<wsdl:port name=\"nsoVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t</wsdl:service>\n</wsdl:definitions>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '12090'
+      Content-Type:
+      - application/wsdl+xml
+      Date:
+      - Sat, 23 Apr 2022 19:22:46 GMT
+      ETag:
+      - '"101681-2f3a-591e53e1795cf"'
+      Last-Modified:
+      - Fri, 06 Sep 2019 16:50:58 GMT
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 200
+      message: OK
+version: 1

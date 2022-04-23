@@ -43,7 +43,7 @@ def vso_client():
     vso.VSOClient()
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_translate_results_to_query(hek_client):
     """Make sure that conversion of HEK results to VSO queries is accurate"""
     h = hek_client
@@ -58,7 +58,7 @@ def test_translate_results_to_query(hek_client):
     assert isinstance(vso_query, list)
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_vso_attribute_parse(hek_client):
     """Make sure that Parsing of VSO attributes from HEK queries is accurate"""
     h = hek_client
@@ -85,7 +85,7 @@ def test_vso_attribute_parse(hek_client):
     assert vso_query[3].unit == u.Unit("Angstrom")
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_members(h2v_client):
     client = h2v_client
     assert isinstance(client.hek_client, hek.HEKClient)
@@ -95,7 +95,7 @@ def test_members(h2v_client):
     assert client.num_of_records == 0
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_translate_and_query(h2v_client, hek_client):
     h = hek_client
     h2v = h2v_client
@@ -109,7 +109,7 @@ def test_translate_and_query(h2v_client, hek_client):
     assert isinstance(h2v_q[0], vso.VSOQueryResponseTable)
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_full_query(h2v_client, hek_client):
     h2v = h2v_client
     h = hek_client
@@ -139,7 +139,7 @@ def test_full_query(h2v_client, hek_client):
             assert np.nan_to_num(h2v_q_1[i].total_size()) == np.nan_to_num(h2v_q_2[i].total_size())
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_quick_clean(h2v_client, hek_client):
     h2v = h2v_client
     h2v_q = h2v.full_query(
