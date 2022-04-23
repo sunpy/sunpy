@@ -145,7 +145,7 @@ def format_comments_and_history(input_header):
 
     Returns
     -------
-    header : `~astropy.io.fits.header.FileHeader`
+    header : `sunpy.io.header.FileHeader`
     """
     try:
         comment = "".join(input_header['COMMENT']).strip()
