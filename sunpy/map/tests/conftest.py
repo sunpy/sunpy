@@ -67,7 +67,7 @@ def aia171_test_map_with_mask(aia171_test_map):
 
 @pytest.fixture
 def generic_map():
-    data = np.ones([6, 6], dtype=np.float64)
+    data = np.arange(36, dtype=np.float64).reshape((6, 6))
     dobs = Time('1970-01-01T00:00:00')
     l0 = sun.L0(dobs).to_value(u.deg)
     b0 = sun.B0(dobs).to_value(u.deg)
