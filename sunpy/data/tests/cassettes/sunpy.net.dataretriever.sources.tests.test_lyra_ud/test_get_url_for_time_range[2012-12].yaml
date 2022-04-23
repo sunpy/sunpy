@@ -1,0 +1,220 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - proba2.oma.be
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://proba2.oma.be/lyra/data/bsd/2012/12/01/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /lyra/data/bsd/2012/12/01</title>\n </head>\n <body>\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML+RDFa 1.0//EN\"\n  \"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">\n<html
+        xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" version=\"XHTML+RDFa
+        1.0\" dir=\"ltr\"\n  xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n
+        \ xmlns:dc=\"http://purl.org/dc/terms/\"\n  xmlns:foaf=\"http://xmlns.com/foaf/0.1/\"\n
+        \ xmlns:og=\"http://ogp.me/ns#\"\n  xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n
+        \ xmlns:sioc=\"http://rdfs.org/sioc/ns#\"\n  xmlns:sioct=\"http://rdfs.org/sioc/types#\"\n
+        \ xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\n  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\">\n\n<head
+        profile=\"http://www.w3.org/1999/xhtml/vocab\">\n  <meta http-equiv=\"Content-Type\"
+        content=\"text/html; charset=utf-8\" />\n<meta name=\"Generator\" content=\"Drupal
+        7 (http://drupal.org)\" />\n<link rel=\"canonical\" href=\"/home\" />\n<link
+        rel=\"shortlink\" href=\"/node/119\" />\n<link rel=\"shortcut icon\" href=\"https://proba2.sidc.be/sites/default/files/favicon.ico\"
+        type=\"image/vnd.microsoft.icon\" />\n  <title>About the PROBA2 Science Center
+        | PROBA2 Science Center</title>\n  <style type=\"text/css\" media=\"all\">\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.base.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.menus.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.messages.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.theme.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/modules/comment/comment.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/field/theme/field.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/node/node.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/search/search.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/user/user.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/forum/forum.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/views/css/views.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/ctools/css/ctools.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/css/panels.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/video/css/video.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/plugins/layouts/twocol_stacked/twocol_stacked.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/default/files/color/garland-34868b0a/style.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"print\">\n@import url(\"https://proba2.sidc.be/themes/garland/print.css?pzsdlg\");\n</style>\n\n<!--[if
+        lt IE 7]>\n<link type=\"text/css\" rel=\"stylesheet\" href=\"https://proba2.sidc.be/themes/garland/fix-ie.css?pzsdlg\"
+        media=\"all\" />\n<![endif]-->\n  <script type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery-extend-3.4.0.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.once.js?v=1.2\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/drupal.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/libraries/colorbox/jquery.colorbox-min.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/js/colorbox.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/video/js/video.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\">\n<!--//--><![CDATA[//><!--\njQuery.extend(Drupal.settings,
+        {\"basePath\":\"\\/\",\"pathPrefix\":\"\",\"ajaxPageState\":{\"theme\":\"garland\",\"theme_token\":\"KVbbstVXXpzrSRAVF-f2-_-rhAyd3Yb6CUXITN0zILE\",\"js\":{\"misc\\/jquery.js\":1,\"misc\\/jquery-extend-3.4.0.js\":1,\"misc\\/jquery.once.js\":1,\"misc\\/drupal.js\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.js\":1,\"sites\\/all\\/libraries\\/colorbox\\/jquery.colorbox-min.js\":1,\"sites\\/all\\/modules\\/colorbox\\/js\\/colorbox.js\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.js\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.js\":1,\"sites\\/all\\/modules\\/video\\/js\\/video.js\":1},\"css\":{\"modules\\/system\\/system.base.css\":1,\"modules\\/system\\/system.menus.css\":1,\"modules\\/system\\/system.messages.css\":1,\"modules\\/system\\/system.theme.css\":1,\"modules\\/comment\\/comment.css\":1,\"modules\\/field\\/theme\\/field.css\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.css\":1,\"modules\\/node\\/node.css\":1,\"modules\\/search\\/search.css\":1,\"modules\\/user\\/user.css\":1,\"modules\\/forum\\/forum.css\":1,\"sites\\/all\\/modules\\/views\\/css\\/views.css\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.css\":1,\"sites\\/all\\/modules\\/ctools\\/css\\/ctools.css\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.css\":1,\"sites\\/all\\/modules\\/panels\\/css\\/panels.css\":1,\"sites\\/all\\/modules\\/video\\/css\\/video.css\":1,\"sites\\/all\\/modules\\/panels\\/plugins\\/layouts\\/twocol_stacked\\/twocol_stacked.css\":1,\"themes\\/garland\\/style.css\":1,\"themes\\/garland\\/print.css\":1,\"themes\\/garland\\/fix-ie.css\":1}},\"colorbox\":{\"opacity\":\"0.85\",\"current\":\"{current}
+        of {total}\",\"previous\":\"\\u00ab Prev\",\"next\":\"Next \\u00bb\",\"close\":\"Close\",\"maxWidth\":\"98%\",\"maxHeight\":\"98%\",\"fixed\":true,\"mobiledetect\":true,\"mobiledevicewidth\":\"480px\"},\"dhtmlMenu\":{\"nav\":\"hover\",\"animation\":{\"effects\":{\"height\":\"height\",\"opacity\":\"opacity\",\"width\":0},\"speed\":\"500\"},\"effects\":{\"siblings\":\"close-same-tree\",\"children\":\"none\",\"remember\":\"0\"},\"filter\":{\"type\":\"whitelist\",\"list\":{\"main-menu\":0,\"management\":0,\"menu-about-proba2\":0,\"menu-community\":0,\"menu-data\":0,\"menu-science\":0,\"navigation\":0,\"shortcut-set-1\":0,\"user-menu\":0}}}});\n//--><!]]>\n</script>\n</head>\n<body
+        class=\"html front not-logged-in two-sidebars page-node page-node- page-node-119
+        node-type-panel fluid-width\" >\n  <div id=\"skip-link\">\n    <a href=\"#main-content\"
+        class=\"element-invisible element-focusable\">Skip to main content</a>\n  </div>\n
+        \     \n  <div id=\"wrapper\">\n    <div id=\"container\" class=\"clearfix\">\n\n
+        \     <div id=\"header\">\n        <div id=\"logo-floater\">\n                              <div
+        id=\"branding\"><strong><a href=\"/\">\n                          <img src=\"https://proba2.sidc.be/sites/default/files/proba2_logo_shadow.png\"
+        alt=\" Welcome to the PROBA2 Science Center\" title=\" Welcome to the PROBA2
+        Science Center\" id=\"logo\" />\n                        <span>Welcome to
+        the PROBA2 Science Center</span>            </a></strong></div>\n                          </div>\n\n
+        \       <h2 class=\"element-invisible\">Main menu</h2><ul class=\"links inline
+        main-menu\"><li class=\"menu-218 first active\"><a href=\"/\" title=\"\" class=\"active\">Home</a></li>\n<li
+        class=\"menu-743\"><a href=\"/ssa\" title=\"Space Situational Awareness Services\">SSA
+        Services</a></li>\n<li class=\"menu-553\"><a href=\"/contact\">Contact</a></li>\n<li
+        class=\"menu-549 last\"><a href=\"/acknowledgements\" title=\"List of institutes
+        and agencies\">Acknowledgments</a></li>\n</ul>              </div> <!-- /#header
+        -->\n\n              <div id=\"sidebar-first\" class=\"sidebar\">\n            <div
+        class=\"region region-sidebar-first\">\n    <div id=\"block-menu-menu-about-proba2\"
+        class=\"block block-menu clearfix\">\n  <div class=\"content\">\n  <table>\n
+        \  <tr><th valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a
+        href=\"?C=N;O=D\">Name</a></th><th><a href=\"?C=M;O=A\">Last modified</a></th><th><a
+        href=\"?C=S;O=A\">Size</a></th><th><a href=\"?C=D;O=A\">Description</a></th></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td valign=\"top\"><img src=\"/icons/back.gif\"
+        alt=\"[PARENTDIR]\"></td><td><a href=\"/lyra/data/bsd/2012/12/\">Parent Directory</a></td><td>&nbsp;</td><td
+        align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img
+        src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20121201-000000_lev2_std.fits\">lyra_20121201-000000_lev2_std.fits</a></td><td
+        align=\"right\">2020-07-08 10:13  </td><td align=\"right\"> 74M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20121201-000000_lev3_std.fits\">lyra_20121201-000000_lev3_std.fits</a></td><td
+        align=\"right\">2020-07-08 10:13  </td><td align=\"right\"> 62K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n            </div>\n          </div>\n
+        \       </div>\n      </div>\n    </div><!-- /#container -->\n  </div><!--
+        /#wrapper -->\n</body>\n</html>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:09:59 GMT
+      Server:
+      - Apache/2.4.41 (Ubuntu)
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - proba2.oma.be
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://proba2.oma.be/lyra/data/bsd/2012/12/02/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /lyra/data/bsd/2012/12/02</title>\n </head>\n <body>\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML+RDFa 1.0//EN\"\n  \"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">\n<html
+        xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" version=\"XHTML+RDFa
+        1.0\" dir=\"ltr\"\n  xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n
+        \ xmlns:dc=\"http://purl.org/dc/terms/\"\n  xmlns:foaf=\"http://xmlns.com/foaf/0.1/\"\n
+        \ xmlns:og=\"http://ogp.me/ns#\"\n  xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n
+        \ xmlns:sioc=\"http://rdfs.org/sioc/ns#\"\n  xmlns:sioct=\"http://rdfs.org/sioc/types#\"\n
+        \ xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\n  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\">\n\n<head
+        profile=\"http://www.w3.org/1999/xhtml/vocab\">\n  <meta http-equiv=\"Content-Type\"
+        content=\"text/html; charset=utf-8\" />\n<meta name=\"Generator\" content=\"Drupal
+        7 (http://drupal.org)\" />\n<link rel=\"canonical\" href=\"/home\" />\n<link
+        rel=\"shortlink\" href=\"/node/119\" />\n<link rel=\"shortcut icon\" href=\"https://proba2.sidc.be/sites/default/files/favicon.ico\"
+        type=\"image/vnd.microsoft.icon\" />\n  <title>About the PROBA2 Science Center
+        | PROBA2 Science Center</title>\n  <style type=\"text/css\" media=\"all\">\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.base.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.menus.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.messages.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.theme.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/modules/comment/comment.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/field/theme/field.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/node/node.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/search/search.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/user/user.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/forum/forum.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/views/css/views.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/ctools/css/ctools.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/css/panels.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/video/css/video.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/plugins/layouts/twocol_stacked/twocol_stacked.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/default/files/color/garland-34868b0a/style.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"print\">\n@import url(\"https://proba2.sidc.be/themes/garland/print.css?pzsdlg\");\n</style>\n\n<!--[if
+        lt IE 7]>\n<link type=\"text/css\" rel=\"stylesheet\" href=\"https://proba2.sidc.be/themes/garland/fix-ie.css?pzsdlg\"
+        media=\"all\" />\n<![endif]-->\n  <script type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery-extend-3.4.0.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.once.js?v=1.2\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/drupal.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/libraries/colorbox/jquery.colorbox-min.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/js/colorbox.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/video/js/video.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\">\n<!--//--><![CDATA[//><!--\njQuery.extend(Drupal.settings,
+        {\"basePath\":\"\\/\",\"pathPrefix\":\"\",\"ajaxPageState\":{\"theme\":\"garland\",\"theme_token\":\"KVbbstVXXpzrSRAVF-f2-_-rhAyd3Yb6CUXITN0zILE\",\"js\":{\"misc\\/jquery.js\":1,\"misc\\/jquery-extend-3.4.0.js\":1,\"misc\\/jquery.once.js\":1,\"misc\\/drupal.js\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.js\":1,\"sites\\/all\\/libraries\\/colorbox\\/jquery.colorbox-min.js\":1,\"sites\\/all\\/modules\\/colorbox\\/js\\/colorbox.js\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.js\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.js\":1,\"sites\\/all\\/modules\\/video\\/js\\/video.js\":1},\"css\":{\"modules\\/system\\/system.base.css\":1,\"modules\\/system\\/system.menus.css\":1,\"modules\\/system\\/system.messages.css\":1,\"modules\\/system\\/system.theme.css\":1,\"modules\\/comment\\/comment.css\":1,\"modules\\/field\\/theme\\/field.css\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.css\":1,\"modules\\/node\\/node.css\":1,\"modules\\/search\\/search.css\":1,\"modules\\/user\\/user.css\":1,\"modules\\/forum\\/forum.css\":1,\"sites\\/all\\/modules\\/views\\/css\\/views.css\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.css\":1,\"sites\\/all\\/modules\\/ctools\\/css\\/ctools.css\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.css\":1,\"sites\\/all\\/modules\\/panels\\/css\\/panels.css\":1,\"sites\\/all\\/modules\\/video\\/css\\/video.css\":1,\"sites\\/all\\/modules\\/panels\\/plugins\\/layouts\\/twocol_stacked\\/twocol_stacked.css\":1,\"themes\\/garland\\/style.css\":1,\"themes\\/garland\\/print.css\":1,\"themes\\/garland\\/fix-ie.css\":1}},\"colorbox\":{\"opacity\":\"0.85\",\"current\":\"{current}
+        of {total}\",\"previous\":\"\\u00ab Prev\",\"next\":\"Next \\u00bb\",\"close\":\"Close\",\"maxWidth\":\"98%\",\"maxHeight\":\"98%\",\"fixed\":true,\"mobiledetect\":true,\"mobiledevicewidth\":\"480px\"},\"dhtmlMenu\":{\"nav\":\"hover\",\"animation\":{\"effects\":{\"height\":\"height\",\"opacity\":\"opacity\",\"width\":0},\"speed\":\"500\"},\"effects\":{\"siblings\":\"close-same-tree\",\"children\":\"none\",\"remember\":\"0\"},\"filter\":{\"type\":\"whitelist\",\"list\":{\"main-menu\":0,\"management\":0,\"menu-about-proba2\":0,\"menu-community\":0,\"menu-data\":0,\"menu-science\":0,\"navigation\":0,\"shortcut-set-1\":0,\"user-menu\":0}}}});\n//--><!]]>\n</script>\n</head>\n<body
+        class=\"html front not-logged-in two-sidebars page-node page-node- page-node-119
+        node-type-panel fluid-width\" >\n  <div id=\"skip-link\">\n    <a href=\"#main-content\"
+        class=\"element-invisible element-focusable\">Skip to main content</a>\n  </div>\n
+        \     \n  <div id=\"wrapper\">\n    <div id=\"container\" class=\"clearfix\">\n\n
+        \     <div id=\"header\">\n        <div id=\"logo-floater\">\n                              <div
+        id=\"branding\"><strong><a href=\"/\">\n                          <img src=\"https://proba2.sidc.be/sites/default/files/proba2_logo_shadow.png\"
+        alt=\" Welcome to the PROBA2 Science Center\" title=\" Welcome to the PROBA2
+        Science Center\" id=\"logo\" />\n                        <span>Welcome to
+        the PROBA2 Science Center</span>            </a></strong></div>\n                          </div>\n\n
+        \       <h2 class=\"element-invisible\">Main menu</h2><ul class=\"links inline
+        main-menu\"><li class=\"menu-218 first active\"><a href=\"/\" title=\"\" class=\"active\">Home</a></li>\n<li
+        class=\"menu-743\"><a href=\"/ssa\" title=\"Space Situational Awareness Services\">SSA
+        Services</a></li>\n<li class=\"menu-553\"><a href=\"/contact\">Contact</a></li>\n<li
+        class=\"menu-549 last\"><a href=\"/acknowledgements\" title=\"List of institutes
+        and agencies\">Acknowledgments</a></li>\n</ul>              </div> <!-- /#header
+        -->\n\n              <div id=\"sidebar-first\" class=\"sidebar\">\n            <div
+        class=\"region region-sidebar-first\">\n    <div id=\"block-menu-menu-about-proba2\"
+        class=\"block block-menu clearfix\">\n  <div class=\"content\">\n  <table>\n
+        \  <tr><th valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a
+        href=\"?C=N;O=D\">Name</a></th><th><a href=\"?C=M;O=A\">Last modified</a></th><th><a
+        href=\"?C=S;O=A\">Size</a></th><th><a href=\"?C=D;O=A\">Description</a></th></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td valign=\"top\"><img src=\"/icons/back.gif\"
+        alt=\"[PARENTDIR]\"></td><td><a href=\"/lyra/data/bsd/2012/12/\">Parent Directory</a></td><td>&nbsp;</td><td
+        align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img
+        src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20121202-000000_lev2_std.fits\">lyra_20121202-000000_lev2_std.fits</a></td><td
+        align=\"right\">2020-07-08 10:15  </td><td align=\"right\"> 74M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20121202-000000_lev3_std.fits\">lyra_20121202-000000_lev3_std.fits</a></td><td
+        align=\"right\">2020-07-08 10:15  </td><td align=\"right\"> 62K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n            </div>\n          </div>\n
+        \       </div>\n      </div>\n    </div><!-- /#container -->\n  </div><!--
+        /#wrapper -->\n</body>\n</html>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:09:59 GMT
+      Server:
+      - Apache/2.4.41 (Ubuntu)
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1
