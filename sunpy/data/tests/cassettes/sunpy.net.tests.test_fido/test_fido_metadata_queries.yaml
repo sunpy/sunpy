@@ -1,0 +1,722 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - www.lmsal.com
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=fi&x1=-5000&y1=-5000&x2=5000&y2=5000&event_coordsys=helioprojective&event_starttime=2010-08-01T03%3A40%3A00&event_endtime=2010-08-01T03%3A40%3A10&page=1
+  response:
+    body:
+      string: "\n       {\n\"result\":[\n{\n\"gs_thumburl\":\"http://www.lmsal.com/hpkb/podimages/pod_cheung_mark_20100802T10%3A17%3A49.937/thumb/panorama_cheung_AIA-304_AIA-211_AIA-171_AIA-6173_20100801T000031_at_20100802T171708.jpg\",\"comment_count\":\"0\",\"hpc_bbox\":\"POLYGON((-387
+        -673,222 -673,222 -240,-387 -240,-387 -673))\",\"fi_barbstot\":null,\"frm_humanflag\":\"true\",\"hgc_coord\":\"POINT(108.4890811
+        -22.9941)\",\"event_coordsys\":\"UTC-HPC-TOPO\",\"obs_levelnum\":null,\"hpc_coord\":\"POINT(-83
+        -456)\",\"event_npixels\":null,\"gs_imageurl\":\"http://www.lmsal.com/hpkb/podimages/pod_cheung_mark_20100802T10%3A17%3A49.937/panorama_cheung_AIA-304_AIA-211_AIA-171_AIA-6173_20100801T000031_at_20100802T171708.jpg\",\"ar_polarity\":null,\"frm_paramset\":\"n/a\",\"hrc_coord\":\"POINT(0.482804353131553
+        169.684096839068)\",\"event_starttime\":\"2010-08-01T00:00:31\",\"ar_mtwilsoncls\":\"\",\"event_type\":\"FI\",\"intensmin\":null,\"obs_meanwavel\":3.04000000000000012e-06,\"frm_url\":\"n/a\",\"skel_chaincode\":\"\",\"bound_chaincode\":\"\",\"noposition\":\"false\",\"active\":\"true\",\"intensmax\":null,\"frm_versionnumber\":null,\"area_uncert\":null,\"obs_dataprepurl\":\"\",\"hpc_geom\":\"0103000000010000000500000000000000003078C000000000000885C00000000000C06B4000000000000885C00000000000C06B400000000000006EC000000000003078C00000000000006EC000000000003078C000000000000885C0\",\"hgc_bbox\":\"POLYGON((81.451915
+        -40.488804,131.691331 -39.782279,127.647704 -9.052909,89.516009 -9.415835,81.451915
+        -40.488804))\",\"intensmedian\":null,\"chaincodetype\":\"\",\"obs_channelid\":\"304\",\"event_clippedspatial\":\"\",\"ar_noaaclass\":\"\",\"SOL_standard\":\"SOL2010-08-01T00:00:31L108C112\",\"event_avg_rating\":0.4,\"eventtype\":\"7\",\"intensunit\":\"\",\"hpc_boundcc\":\"\",\"event_mapurl\":\"\",\"frm_contact\":\"Scott
+        Green\",\"ar_penumbracls\":\"\",\"intensmean\":null,\"fi_barbsendc2\":\"\",\"bound_ccstartc1\":null,\"fi_barbsendc1\":\"\",\"frm_name\":\"cheung\",\"area_atdiskcenter\":null,\"frm_identifier\":\"Annotator-build_20100728-avc\",\"obs_observatory\":\"SDO\",\"event_description\":\"Seems
+        to disappear/break up near the end of the movie.\",\"fi_barbsstartc2\":\"\",\"boundbox_c2ur\":-673,\"fi_barbsstartc1\":\"\",\"obs_firstprocessingdate\":\"\",\"boundbox_c2ll\":-240,\"frm_institute\":\"LMSAL\",\"hrc_bbox\":\"POLYGON((0.808684
+        150.099499,0.738198 198.25598,0.340553 222.768825,0.474352 121.805329,0.808684
+        150.099499))\",\"fi_lengthunit\":\"\",\"refs_orig\":\"\",\"hrc_skeletoncc\":\"\",\"ar_mcintoshcls\":\"\",\"event_maskurl\":\"\",\"bound_ccstartc2\":null,\"gs_movieurl\":\"http://sdowww.lmsal.com/sdomedia/h264/2010/08/01/AVC_MarkCheung_20100801T000031-20100802T003431_SDO_304_755.9_20100802_171748.mov\",\"event_score\":\"\",\"skel_startc2\":null,\"skel_startc1\":null,\"event_expires\":\"\",\"hrc_boundcc\":\"\",\"event_probability\":null,\"intensvar\":null,\"frm_daterun\":\"2010-08-02T17:17:48\",\"event_coordunit\":\"arcsec\",\"hpc_y\":-456,\"hpc_x\":-83,\"search_instrument\":\"AIA\",\"ar_numspots\":null,\"kb_archivdate\":\"2010-08-02T17:17:51\",\"kb_archivist\":\"cheung_mark\",\"intenstotal\":null,\"sum_overlap_scores\":\"0\",\"hgs_boundcc\":\"\",\"intensskew\":null,\"obs_includesnrt\":\"\",\"rasterscan\":\"\",\"obs_wavelunit\":\"cm\",\"kb_archivid\":\"ivo://helio-informatics.org/FI304_MarkCheung_20100802_171748\",\"search_frm_name\":\"Human
+        Annotation\",\"boundbox_c1ur\":-387,\"ar_noaanum\":null,\"area_atdiskcenteruncert\":null,\"fi_barbsl\":null,\"boundbox_c1ll\":222,\"event_importance_num_ratings\":\"1\",\"ar_compactnesscls\":\"\",\"skel_curvature\":null,\"event_testflag\":\"false\",\"event_c2error\":216.5,\"fi_barbsr\":null,\"hrc_r\":0.482804353131553,\"skel_nsteps\":null,\"hgs_y\":-22.9941,\"obs_title\":\"\",\"hgs_x\":-5.4542489,\"hcr_checked\":\"true\",\"frm_specificid\":\"\",\"event_title\":\"Quiescent
+        filament\",\"hgc_skeletoncc\":\"\",\"obs_instrument\":\"AIA\",\"event_c1error\":304.199999999999989,\"revision\":\"1\",\"hpc_radius\":\"463.492179006291337\",\"hpc_skeletoncc\":\"\",\"event_endtime\":\"2010-08-02T00:34:31\",\"event_importance\":0.400000000000000022,\"event_coord2\":-456,\"event_coord3\":null,\"event_coord1\":-83,\"search_observatory\":\"SDO\",\"area_raw\":null,\"hgs_skeletoncc\":\"\",\"concept\":\"Filament\",\"event_pixelunit\":\"\",\"hgc_boundcc\":\"\",\"hgc_x\":108.4890811,\"hrc_a\":169.684096839068,\"event_peaktime\":\"\",\"hgc_y\":-22.9941,\"gs_galleryid\":\"pod_cheung_mark_20100802T10:17:49.937\",\"hgs_coord\":\"POINT(-5.4542489
+        -22.9941)\",\"fi_chirality\":null,\"ar_zurichcls\":\"\",\"fi_tilt\":null,\"bound_ccnsteps\":null,\"intenskurt\":null,\"event_clippedtemporal\":\"\",\"rasterscantype\":\"\",\"search_channelid\":\"304\",\"hgs_bbox\":\"POLYGON((-32.491415
+        -40.488804,17.748001 -39.782279,13.704374 -9.052909,-24.427321 -9.415835,-32.491415
+        -40.488804))\",\"area_unit\":\"\",\"obs_lastprocessingdate\":\"\",\"fi_length\":null,\"refs\":[\n{\n\"ref_name\":
+        \"Movie\",\n\"ref_type\": \"movie\",\n\"ref_url\": \"http://sdowww.lmsal.com/sdomedia/h264/2010/08/01/AVC_MarkCheung_20100801T000031-20100802T003431_SDO_304_755.9_20100802_171748.mov\"\n},{\n\"ref_name\":
+        \"Event_MapURL\",\n\"ref_type\": \"unknown\",\n\"ref_url\": \"\"\n},{\n\"ref_name\":
+        \"FRM_URL\",\n\"ref_type\": \"unknown\",\n\"ref_url\": \"n/a\"\n}]\n}],\n\"association\":
+        [\n],\n\"overmax\": false\n}  \n"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Connection:
+      - close
+      Content-Security-Policy:
+      - 'default-src ''self''; script-src ''self'' ''unsafe-inline'' ''unsafe-eval''
+        http://*.lmsal.com https://*.lmsal.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net
+        https://www.purpleair.com; style-src ''self'' ''unsafe-inline'' http://*.lmsal.com
+        https://*.lmsal.com https://fonts.googleapis.com; img-src ''self'' blob: data:
+        http://*.lmsal.com https://*.lmsal.com http://sdc.uio.no https://sdc.uio.no
+        http://solarb.mssl.ucl.ac.uk https://solarb.mssl.ucl.ac.uk https://epic.gsfc.nasa.gov;
+        frame-src ''self'' http://*.lmsal.com https://*.lmsal.com https://*.google.com  http://www.youtube.com
+        https://www.youtube.com; connect-src https://*.lmsal.com  http://*.lmsal.com
+        wss://www.lmsal.com http://localhost:8000 https://localhost:8443 https://api.cdnjs.com
+        https://epic.gsfc.nasa.gov; media-src http://*.lmsal.com https://*.lmsal.com;
+        frame-ancestors http://*.lmsal.com https://*.lmsal.com http://127.0.0.1:8888;
+        font-src https://*.lmsal.com https://fonts.gstatic.com https://cdnjs.cloudflare.com'
+      Content-Type:
+      - application/json;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:40:04 GMT
+      Set-Cookie:
+      - TS016c429e=0138b389951d1f666a74243d2eb72ffc86d15fe5f8ff73ee6bb7bff31a30d52276dbe040eda7193118f79dda96b800a64e0c26af94;
+        Path=/; Domain=.lmsal.com; Secure; HTTPOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - 1; mode=block
+      vary:
+      - Origin
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - www.lmsal.com
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=fl&x1=-5000&y1=-5000&x2=5000&y2=5000&event_coordsys=helioprojective&param0=FL_PeakFlux&value0=1000&event_starttime=2010-08-01T03%3A40%3A00&event_endtime=2010-08-01T03%3A40%3A10&op0=%3E&page=1
+  response:
+    body:
+      string: "\n       {\n\"result\":[\n{\n\"gs_thumburl\":\"http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100731_205448_25495028/www/EDS_FlareDetective-TriggerModule_20100801T033001-20100801T035225_AIA_171_S21W87_ssw_cutout_20100801_033013_AIA_171_S21W87_20100801_033012_context_0180.gif\",\"comment_count\":\"0\",\"hpc_bbox\":\"POLYGON((844.8
+        -384,921.6 -384,921.6 -307.2,844.8 -307.2,844.8 -384))\",\"frm_humanflag\":\"false\",\"hgc_coord\":\"POINT(-160.608198
+        -21.228119)\",\"event_coordsys\":\"UTC-HPC-TOPO\",\"obs_levelnum\":null,\"hpc_coord\":\"POINT(883.2
+        -345.6)\",\"event_npixels\":null,\"gs_imageurl\":\"http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100731_205448_25495028/www/EDS_FlareDetective-TriggerModule_20100801T033001-20100801T035225_AIA_171_S21W87_ssw_cutout_20100801_033013_AIA_171_S21W87_20100801_033012_context_0800.gif\",\"ar_polarity\":null,\"frm_paramset\":\"DerivativeThreshold=
+        2.00000e+00 EndFraction= 2.50000e-01\",\"hrc_coord\":\"POINT(1.00310353596975
+        248.629377730657)\",\"event_starttime\":\"2010-08-01T03:40:01\",\"ar_mtwilsoncls\":\"\",\"event_type\":\"FL\",\"intensmin\":null,\"fl_fluence\":null,\"obs_meanwavel\":1.70999999999999993e-06,\"frm_url\":\"www.cfa.harvard.edu\",\"skel_chaincode\":\"\",\"bound_chaincode\":\"\",\"noposition\":\"false\",\"fl_fluenceunit\":\"\",\"active\":\"true\",\"intensmax\":null,\"frm_versionnumber\":0.5,\"fl_peaktempunit\":\"\",\"fl_halphaclass\":\"\",\"area_uncert\":null,\"obs_dataprepurl\":\"\",\"hpc_geom\":\"010300000001000000050000006666666666668A4000000000000078C0CDCCCCCCCCCC8C4000000000000078C0CDCCCCCCCCCC8C4033333333333373C06666666666668A4033333333333373C06666666666668A4000000000000078C0\",\"hgc_bbox\":\"POLYGON((-172.869921
+        -22.581195,-160.75663 -22.469716,-160.26931 -18.309842,-179.221753 -16.928858,-172.869921
+        -22.581195))\",\"intensmedian\":null,\"chaincodetype\":\"\",\"obs_channelid\":\"171\",\"event_clippedspatial\":\"\",\"ar_noaaclass\":\"\",\"SOL_standard\":\"SOL2010-08-01T03:40:01L200C111\",\"event_avg_rating\":null,\"eventtype\":\"9\",\"intensunit\":\"\",\"hpc_boundcc\":\"\",\"event_mapurl\":\"\",\"frm_contact\":\"Paolo
+        C. Grigis - pgrigis@cfa.harvard.edu\",\"ar_penumbracls\":\"\",\"intensmean\":null,\"bound_ccstartc1\":null,\"frm_name\":\"Flare
+        Detective - Trigger Module\",\"area_atdiskcenter\":null,\"frm_identifier\":\"Feature
+        Finding Team\",\"obs_observatory\":\"SDO\",\"event_description\":\"\",\"boundbox_c2ur\":-307.199999999999989,\"obs_firstprocessingdate\":\"\",\"boundbox_c2ll\":-384,\"frm_institute\":\"SAO\",\"hrc_bbox\":\"POLYGON((0.981493
+        245.556045,1.055976 247.380135,1.027474 251.565051,0.95076 250.016893,0.981493
+        245.556045))\",\"refs_orig\":\"\",\"ar_mcintoshcls\":\"\",\"event_maskurl\":\"\",\"bound_ccstartc2\":null,\"gs_movieurl\":\"\",\"event_score\":\"0.13427866573283298\",\"skel_startc2\":null,\"skel_startc1\":null,\"fl_efoldtime\":null,\"event_expires\":\"\",\"fl_efoldtimeunit\":\"\",\"hrc_boundcc\":\"\",\"event_probability\":null,\"intensvar\":null,\"frm_daterun\":\"2010-07-31T20:51:51\",\"event_coordunit\":\"arcseconds\",\"hpc_y\":-345.6,\"hpc_x\":883.2,\"search_instrument\":\"AIA\",\"ar_numspots\":null,\"kb_archivdate\":\"2010-08-01T03:54:48\",\"kb_archivist\":\"rtimmons\",\"intenstotal\":null,\"sum_overlap_scores\":\"0\",\"hgs_boundcc\":\"\",\"intensskew\":null,\"obs_includesnrt\":\"\",\"rasterscan\":\"\",\"obs_wavelunit\":\"cm\",\"kb_archivid\":\"ivo://helio-informatics.org/FL_FlareDetective-TriggerModule_20100801_035438_2010-08-01T03:40:01.340_1\",\"search_frm_name\":\"Flare
+        Detective - Trigger Module\",\"boundbox_c1ur\":921.600000000000023,\"ar_noaanum\":null,\"area_atdiskcenteruncert\":null,\"boundbox_c1ll\":844.799999999999955,\"event_importance_num_ratings\":\"\",\"ar_compactnesscls\":\"\",\"skel_curvature\":null,\"event_testflag\":\"false\",\"event_c2error\":2,\"hrc_r\":1.00310353596975,\"skel_nsteps\":null,\"hgs_y\":-21.228119,\"obs_title\":\"\",\"fl_peakemunit\":\"\",\"hgs_x\":87.464482,\"hcr_checked\":\"true\",\"frm_specificid\":\"\",\"event_title\":\"\",\"obs_instrument\":\"AIA\",\"event_c1error\":2,\"revision\":\"2\",\"hpc_radius\":\"948.41003790554646\",\"event_endtime\":\"2010-08-01T03:42:25\",\"event_importance\":null,\"event_coord2\":-345.600000000000023,\"event_coord3\":null,\"event_coord1\":883.200000000000045,\"search_observatory\":\"SDO\",\"area_raw\":null,\"concept\":\"Flare\",\"event_pixelunit\":\"\",\"hgc_boundcc\":\"\",\"fl_peakflux\":1027.6400000000001,\"hgc_x\":-160.608198,\"hrc_a\":248.629377730657,\"event_peaktime\":\"2010-08-01T03:40:37\",\"hgc_y\":-21.228119,\"gs_galleryid\":\"\",\"fl_goescls\":\"\",\"hgs_coord\":\"POINT(87.464482
+        -21.228119)\",\"ar_zurichcls\":\"\",\"bound_ccnsteps\":null,\"intenskurt\":null,\"event_clippedtemporal\":\"\",\"fl_peakfluxunit\":\"erg/cm/cm/s\",\"fl_peakem\":null,\"rasterscantype\":\"\",\"search_channelid\":\"171\",\"fl_peaktemp\":null,\"hgs_bbox\":\"POLYGON((75.202759
+        -22.581195,87.31605 -22.469716,87.80337 -18.309842,68.850927 -16.928858,75.202759
+        -22.581195))\",\"area_unit\":\"\",\"obs_lastprocessingdate\":\"\",\"refs\":[\n{\n\"ref_name\":
+        \"SDO Movie\",\n\"ref_type\": \"movie\",\n\"ref_url\": \"http://sdowww.lmsal.com/sdomedia/h264/2010/08/01/EDS_FlareDetective-TriggerModule_20100801T033001-20100801T035225_AIA_171_S21W87.mov\"\n},{\n\"ref_name\":
+        \"FRM_URL\",\n\"ref_type\": \"unknown\",\n\"ref_url\": \"http://www.cfa.harvard.edu\"\n},{\n\"ref_name\":
+        \"SSW Context Image\",\n\"ref_type\": \"image\",\n\"ref_url\": \"http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100731_205448_25495028/www/EDS_FlareDetective-TriggerModule_20100801T033001-20100801T035225_AIA_171_S21W87_ssw_cutout_20100801_033013_AIA_171_S21W87_20100801_033012_context_0800.gif\"\n}]\n},{\n\"gs_thumburl\":\"http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100801_234037_25860951/www/EDS_FlareDetective-TriggerModule_20100801T033008-20100801T035232_AIA_193_S21W87_ssw_cutout_20100801_033020_AIA_193_S21W87_20100801_033019_context_0180.gif\",\"comment_count\":\"0\",\"hpc_bbox\":\"POLYGON((844.8
+        -384,921.6 -384,921.6 -307.2,844.8 -307.2,844.8 -384))\",\"frm_humanflag\":\"false\",\"hgc_coord\":\"POINT(-160.61388
+        -21.227645)\",\"event_coordsys\":\"UTC-HPC-TOPO\",\"obs_levelnum\":null,\"hpc_coord\":\"POINT(883.2
+        -345.6)\",\"event_npixels\":null,\"gs_imageurl\":\"http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100801_234037_25860951/www/EDS_FlareDetective-TriggerModule_20100801T033008-20100801T035232_AIA_193_S21W87_ssw_cutout_20100801_033020_AIA_193_S21W87_20100801_033019_context_0800.gif\",\"ar_polarity\":null,\"frm_paramset\":\"DerivativeThreshold=
+        3.00000e+00 EndFraction= 2.50000e-01\",\"hrc_coord\":\"POINT(1.00310352536024
+        248.629377730657)\",\"event_starttime\":\"2010-08-01T03:40:08\",\"ar_mtwilsoncls\":\"\",\"event_type\":\"FL\",\"intensmin\":null,\"fl_fluence\":null,\"obs_meanwavel\":1.93000000000000016e-06,\"frm_url\":\"www.cfa.harvard.edu\",\"skel_chaincode\":\"\",\"bound_chaincode\":\"\",\"noposition\":\"false\",\"fl_fluenceunit\":\"\",\"active\":\"true\",\"intensmax\":null,\"frm_versionnumber\":0.5,\"fl_peaktempunit\":\"\",\"fl_halphaclass\":\"\",\"area_uncert\":null,\"obs_dataprepurl\":\"\",\"hpc_geom\":\"010300000001000000050000006666666666668A4000000000000078C0CDCCCCCCCCCC8C4000000000000078C0CDCCCCCCCCCC8C4033333333333373C06666666666668A4033333333333373C06666666666668A4000000000000078C0\",\"hgc_bbox\":\"POLYGON((-172.871007
+        -22.581193,-160.762352 -22.469237,-160.27491 -18.309378,-179.222836 -16.928856,-172.871007
+        -22.581193))\",\"intensmedian\":null,\"chaincodetype\":\"\",\"obs_channelid\":\"193\",\"event_clippedspatial\":\"\",\"ar_noaaclass\":\"\",\"SOL_standard\":\"SOL2010-08-01T03:40:08L200C111\",\"event_avg_rating\":null,\"eventtype\":\"9\",\"intensunit\":\"\",\"hpc_boundcc\":\"\",\"event_mapurl\":\"\",\"frm_contact\":\"Paolo
+        C. Grigis - pgrigis@cfa.harvard.edu\",\"ar_penumbracls\":\"\",\"intensmean\":null,\"bound_ccstartc1\":null,\"frm_name\":\"Flare
+        Detective - Trigger Module\",\"area_atdiskcenter\":null,\"frm_identifier\":\"Feature
+        Finding Team\",\"obs_observatory\":\"SDO\",\"event_description\":\"\",\"boundbox_c2ur\":-307.199999999999989,\"obs_firstprocessingdate\":\"\",\"boundbox_c2ll\":-384,\"frm_institute\":\"SAO\",\"hrc_bbox\":\"POLYGON((0.981493
+        245.556045,1.055976 247.380135,1.027474 251.565051,0.95076 250.016893,0.981493
+        245.556045))\",\"refs_orig\":\"\",\"ar_mcintoshcls\":\"\",\"event_maskurl\":\"\",\"bound_ccstartc2\":null,\"gs_movieurl\":\"\",\"event_score\":\"0.188393109143556031\",\"skel_startc2\":null,\"skel_startc1\":null,\"fl_efoldtime\":null,\"event_expires\":\"\",\"fl_efoldtimeunit\":\"\",\"hrc_boundcc\":\"\",\"event_probability\":null,\"intensvar\":null,\"frm_daterun\":\"2010-08-01T23:40:09\",\"event_coordunit\":\"arcseconds\",\"hpc_y\":-345.6,\"hpc_x\":883.2,\"search_instrument\":\"AIA\",\"ar_numspots\":null,\"kb_archivdate\":\"2010-08-02T06:40:38\",\"kb_archivist\":\"rtimmons\",\"intenstotal\":null,\"sum_overlap_scores\":\"0\",\"hgs_boundcc\":\"\",\"intensskew\":null,\"obs_includesnrt\":\"\",\"rasterscan\":\"\",\"obs_wavelunit\":\"cm\",\"kb_archivid\":\"ivo://helio-informatics.org/FL_FlareDetective-TriggerModule_20100802_064031_2010-08-01T03:40:08.840_1\",\"search_frm_name\":\"Flare
+        Detective - Trigger Module\",\"boundbox_c1ur\":921.600000000000023,\"ar_noaanum\":null,\"area_atdiskcenteruncert\":null,\"boundbox_c1ll\":844.799999999999955,\"event_importance_num_ratings\":\"\",\"ar_compactnesscls\":\"\",\"skel_curvature\":null,\"event_testflag\":\"false\",\"event_c2error\":2,\"hrc_r\":1.00310352536024,\"skel_nsteps\":null,\"hgs_y\":-21.227645,\"obs_title\":\"\",\"fl_peakemunit\":\"\",\"hgs_x\":87.45988,\"hcr_checked\":\"true\",\"frm_specificid\":\"\",\"event_title\":\"\",\"obs_instrument\":\"AIA\",\"event_c1error\":2,\"revision\":\"2\",\"hpc_radius\":\"948.41003790554646\",\"event_endtime\":\"2010-08-01T03:42:32\",\"event_importance\":null,\"event_coord2\":-345.600000000000023,\"event_coord3\":null,\"event_coord1\":883.200000000000045,\"search_observatory\":\"SDO\",\"area_raw\":null,\"concept\":\"Flare\",\"event_pixelunit\":\"\",\"hgc_boundcc\":\"\",\"fl_peakflux\":1441.77999999999997,\"hgc_x\":-160.61388,\"hrc_a\":248.629377730657,\"event_peaktime\":\"2010-08-01T03:40:44\",\"hgc_y\":-21.227645,\"gs_galleryid\":\"\",\"fl_goescls\":\"\",\"hgs_coord\":\"POINT(87.45988
+        -21.227645)\",\"ar_zurichcls\":\"\",\"bound_ccnsteps\":null,\"intenskurt\":null,\"event_clippedtemporal\":\"\",\"fl_peakfluxunit\":\"erg/cm/cm/s\",\"fl_peakem\":null,\"rasterscantype\":\"\",\"search_channelid\":\"193\",\"fl_peaktemp\":null,\"hgs_bbox\":\"POLYGON((75.202753
+        -22.581193,87.311408 -22.469237,87.79885 -18.309378,68.850924 -16.928856,75.202753
+        -22.581193))\",\"area_unit\":\"\",\"obs_lastprocessingdate\":\"\",\"refs\":[\n{\n\"ref_name\":
+        \"FRM_URL\",\n\"ref_type\": \"unknown\",\n\"ref_url\": \"http://www.cfa.harvard.edu\"\n},{\n\"ref_name\":
+        \"SDO Movie\",\n\"ref_type\": \"movie\",\n\"ref_url\": \"http://sdowww.lmsal.com/sdomedia/h264/2010/08/01/EDS_FlareDetective-TriggerModule_20100801T033008-20100801T035232_AIA_193_S21W87.mov\"\n},{\n\"ref_name\":
+        \"SSW Context Image\",\n\"ref_type\": \"image\",\n\"ref_url\": \"http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100801_234037_25860951/www/EDS_FlareDetective-TriggerModule_20100801T033008-20100801T035232_AIA_193_S21W87_ssw_cutout_20100801_033020_AIA_193_S21W87_20100801_033019_context_0800.gif\"\n}]\n}],\n\"association\":
+        [\n],\n\"overmax\": false\n}  \n"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Connection:
+      - close
+      Content-Security-Policy:
+      - 'default-src ''self''; script-src ''self'' ''unsafe-inline'' ''unsafe-eval''
+        http://*.lmsal.com https://*.lmsal.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net
+        https://www.purpleair.com; style-src ''self'' ''unsafe-inline'' http://*.lmsal.com
+        https://*.lmsal.com https://fonts.googleapis.com; img-src ''self'' blob: data:
+        http://*.lmsal.com https://*.lmsal.com http://sdc.uio.no https://sdc.uio.no
+        http://solarb.mssl.ucl.ac.uk https://solarb.mssl.ucl.ac.uk https://epic.gsfc.nasa.gov;
+        frame-src ''self'' http://*.lmsal.com https://*.lmsal.com https://*.google.com  http://www.youtube.com
+        https://www.youtube.com; connect-src https://*.lmsal.com  http://*.lmsal.com
+        wss://www.lmsal.com http://localhost:8000 https://localhost:8443 https://api.cdnjs.com
+        https://epic.gsfc.nasa.gov; media-src http://*.lmsal.com https://*.lmsal.com;
+        frame-ancestors http://*.lmsal.com https://*.lmsal.com http://127.0.0.1:8888;
+        font-src https://*.lmsal.com https://fonts.gstatic.com https://cdnjs.cloudflare.com'
+      Content-Type:
+      - application/json;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:40:04 GMT
+      Set-Cookie:
+      - TS016c429e=0138b389952f244fbb0ae6c3d45d97c5f25968cff2b02052800e75e1ebf467321c09713f981aad9dab8372ae082b02700efb0677e0;
+        Path=/; Domain=.lmsal.com; Secure; HTTPOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - 1; mode=block
+      vary:
+      - Origin
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - jsoc.stanford.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_info?op=series_struct&ds=hmi.m_45s
+  response:
+    body:
+      string: "{\n\t\"note\": \"magnetograms with a cadence of 45 seconds.\",\n\t\"retention\":
+        10000,\n\t\"stagingretention\": 3,\n\t\"unitsize\": 32,\n\t\"archive\": 1,\n\t\"tapegroup\":
+        6,\n\t\"primekeys\": [\"T_REC\",\n\t\"CAMERA\"],\n\t\"primekeysinfo\": [{\n\t\t\"name\":
+        \"T_REC\",\n\t\t\"slotted\": 1,\n\t\t\"step\": \"45.0\"\n\t},\n\t{\n\t\t\"name\":
+        \"CAMERA\",\n\t\t\"slotted\": 0\n\t}],\n\t\"dbindex\": [\"T_REC\",\n\t\"CAMERA\"],\n\t\"keywords\":
+        [{\n\t\t\"name\": \"cparms_sg000\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"compress Rice\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"\"\n\t},\n\t{\n\t\t\"name\": \"magnetogram_bzero\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"0\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"\"\n\t},\n\t{\n\t\t\"name\": \"magnetogram_bscale\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"0.1\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"\"\n\t},\n\t{\n\t\t\"name\": \"DATE\",\n\t\t\"type\": \"time\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-4712.01.01_11:59:28Z\",\n\t\t\"units\":
+        \"ISO\",\n\t\t\"note\": \"Date_time of processing; ISO 8601 format UTC\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATE__OBS\",\n\t\t\"type\": \"time\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-4712.01.01_11:59:27.82Z\",\n\t\t\"units\": \"ISO\",\n\t\t\"note\": \"[DATE-OBS]
+        DATE_OBS = T_OBS - EXPTIME\\/2.0\"\n\t},\n\t{\n\t\t\"name\": \"DATE-OBS\",\n\t\t\"type\":
+        \"time\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-4712.01.01_11:59:27.82Z\",\n\t\t\"units\":
+        \"ISO\",\n\t\t\"note\": \"[DATE-OBS] DATE_OBS = T_OBS - EXPTIME\\/2.0\"\n\t},\n\t{\n\t\t\"name\":
+        \"TELESCOP\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"SDO\\/HMI\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"For HMI: SDO\\/HMI\"\n\t},\n\t{\n\t\t\"name\":
+        \"INSTRUME\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"For HMI: HMI_SIDE1, HMI_FRONT2,
+        or HMI_COMBINED\"\n\t},\n\t{\n\t\t\"name\": \"WAVELNTH\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"constant\",\n\t\t\"defval\": \"6173.0\",\n\t\t\"units\": \"Angstrom\",\n\t\t\"note\":
+        \"For HMI: 6173.3 Angstroms\"\n\t},\n\t{\n\t\t\"name\": \"CAMERA\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"For HMI: 1 (side camera), 2 (front camera), or
+        3 (both cameras)\"\n\t},\n\t{\n\t\t\"name\": \"BUNIT\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"constant\",\n\t\t\"defval\": \"Gauss\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"BUNIT: physical units of data, Gauss\"\n\t},\n\t{\n\t\t\"name\": \"ORIGIN\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"SDO\\/JSOC-SDP\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"ORIGIN: location where file made\"\n\t},\n\t{\n\t\t\"name\":
+        \"CONTENT\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"MAGNETOGRAM\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"CONTENT: MAGNETOGRAM\"\n\t},\n\t{\n\t\t\"name\":
+        \"QUALITY\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"0x80000000\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Level 1.5 Quality
+        word\"\n\t},\n\t{\n\t\t\"name\": \"QUALLEV1\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"0x80000000\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"Logical OR on the bits of the level 1 Quality word\"\n\t},\n\t{\n\t\t\"name\":
+        \"HISTORY\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"processing history of data\"\n\t},\n\t{\n\t\t\"name\":
+        \"COMMENT\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"commentary on the data\"\n\t},\n\t{\n\t\t\"name\":
+        \"BLD_VERS\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Code release build number
+        of program that created this record\"\n\t},\n\t{\n\t\t\"name\": \"HCAMID\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"HMI_SEQ_ID_EXP_PATH\"\n\t},\n\t{\n\t\t\"name\":
+        \"SOURCE\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"level 1 filtergrams used
+        to produce the observables\"\n\t},\n\t{\n\t\t\"name\": \"TOTVALS\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"Expected number of data values (pixels)\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAVALS\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Actual number
+        of data values in images (pixels)\"\n\t},\n\t{\n\t\t\"name\": \"MISSVALS\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"Missing values: TOTVALS - DATAVALS\"\n\t},\n\t{\n\t\t\"name\":
+        \"SATVALS\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Saturated values\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAMIN2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Minimum value from all
+        pixels\"\n\t},\n\t{\n\t\t\"name\": \"DATAMAX2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\":
+        \"Maximum value from all pixels\"\n\t},\n\t{\n\t\t\"name\": \"DATAMED2\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Median value from all pixels\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAMEA2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Mean value from all pixels\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATARMS2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Rms deviation from the
+        mean value of all pixels\"\n\t},\n\t{\n\t\t\"name\": \"DATASKE2\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Skewness from the mean value of all pixels\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAKUR2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Kurtosis of all pixels\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAMIN\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Minimum value from pixels
+        within 99% of solar radius\"\n\t},\n\t{\n\t\t\"name\": \"DATAMAX\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Maximum value from pixels within 99% of solar
+        radius\"\n\t},\n\t{\n\t\t\"name\": \"DATAMEDN\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\":
+        \"Median value from pixels within 99% of solar radius\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAMEAN\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Mean value from pixels
+        within 99% of solar radius\"\n\t},\n\t{\n\t\t\"name\": \"DATARMS\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Rms deviation from the mean value of pixels within
+        99% of solar radius\"\n\t},\n\t{\n\t\t\"name\": \"DATASKEW\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Skewness from the mean value of pixels within
+        99% of solar radius\"\n\t},\n\t{\n\t\t\"name\": \"DATAKURT\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Kurtosis of pixels within 99% of solar radius\"\n\t},\n\t{\n\t\t\"name\":
+        \"CTYPE1\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"HPLN-TAN\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"CTYPE1: HPLN-TAN
+        (SOLARX)\"\n\t},\n\t{\n\t\t\"name\": \"CTYPE2\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"constant\",\n\t\t\"defval\": \"HPLT-TAN\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"CTYPE2: HPLT-TAN (SOLARY)\"\n\t},\n\t{\n\t\t\"name\": \"CRPIX1\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"pixel\",\n\t\t\"note\": \"CRPIX1: location of the Sun center in CCD x direction\"\n\t},\n\t{\n\t\t\"name\":
+        \"CRPIX2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"pixel\",\n\t\t\"note\": \"CRPIX2: location of the
+        Sun center in CCD y direction\"\n\t},\n\t{\n\t\t\"name\": \"CRVAL1\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"0.000000\",\n\t\t\"units\":
+        \"arcsec\",\n\t\t\"note\": \"CRVAL1: x origin - center of the solar disk\"\n\t},\n\t{\n\t\t\"name\":
+        \"CRVAL2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"0.000000\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\": \"CRVAL2: y origin
+        - center of the solar disk\"\n\t},\n\t{\n\t\t\"name\": \"CDELT1\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"arcsec\\/pixel\",\n\t\t\"note\": \"image scale in the x direction\"\n\t},\n\t{\n\t\t\"name\":
+        \"CDELT2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"arcsec\\/pixel\",\n\t\t\"note\": \"image scale
+        in the y direction\"\n\t},\n\t{\n\t\t\"name\": \"CUNIT1\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"arcsec\",\n\t\t\"units\":
+        \"arcsec\",\n\t\t\"note\": \"CUNIT1: arcsec\"\n\t},\n\t{\n\t\t\"name\": \"CUNIT2\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"arcsec\",\n\t\t\"units\":
+        \"arcsec\",\n\t\t\"note\": \"CUNIT2: arcsec\"\n\t},\n\t{\n\t\t\"name\": \"CROTA2\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"deg\",\n\t\t\"note\": \"CROTA2: INST_ROT + SAT_ROT\"\n\t},\n\t{\n\t\t\"name\":
+        \"CRDER1\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\": \"CRDER1: estimate of
+        random error in coordinate x\"\n\t},\n\t{\n\t\t\"name\": \"CRDER2\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"arcsec\",\n\t\t\"note\": \"CRDER2: estimate of random error in coordinate
+        y\"\n\t},\n\t{\n\t\t\"name\": \"CSYSER1\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\":
+        \"CSYSER1: estimate of systematic error in coordinate x\"\n\t},\n\t{\n\t\t\"name\":
+        \"CSYSER2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\": \"CSYSER2: estimate of
+        systematic error in coordinate y\"\n\t},\n\t{\n\t\t\"name\": \"WCSNAME\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"Helioprojective-cartesian\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"WCS system name\"\n\t},\n\t{\n\t\t\"name\": \"DSUN_OBS\",\n\t\t\"type\":
+        \"double\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"m\",\n\t\t\"note\": \"Distance from SDO to Sun center.\"\n\t},\n\t{\n\t\t\"name\":
+        \"DSUN_REF\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"149597870691\",\n\t\t\"units\": \"m\",\n\t\t\"note\": \"Astronomical Unit\"\n\t},\n\t{\n\t\t\"name\":
+        \"RSUN_REF\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"696000000\",\n\t\t\"units\": \"m\",\n\t\t\"note\": \"Reference radius of
+        the Sun: 696,000,000.0 m\"\n\t},\n\t{\n\t\t\"name\": \"CRLN_OBS\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"deg\",\n\t\t\"note\": \"Carrington longitude of the observer\"\n\t},\n\t{\n\t\t\"name\":
+        \"CRLT_OBS\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"deg\",\n\t\t\"note\": \"Carrington latitude of
+        the observer\"\n\t},\n\t{\n\t\t\"name\": \"CAR_ROT\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"Carrington rotation number of CRLN_OBS\"\n\t},\n\t{\n\t\t\"name\": \"OBS_VR\",\n\t\t\"type\":
+        \"double\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"m\\/s\",\n\t\t\"note\": \"velocity of the observer in radial direction.
+        + is away from Sun\"\n\t},\n\t{\n\t\t\"name\": \"OBS_VW\",\n\t\t\"type\":
+        \"double\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"m\\/s\",\n\t\t\"note\": \"velocity of the observer solar-westward. + in
+        rough direction of Earth orbit\"\n\t},\n\t{\n\t\t\"name\": \"OBS_VN\",\n\t\t\"type\":
+        \"double\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"m\\/s\",\n\t\t\"note\": \"velocity of the observer solar-northward (heliographic).
+        + to north\"\n\t},\n\t{\n\t\t\"name\": \"RSUN_OBS\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\":
+        \"angular radius of Sun. Corresponds to arcsin(RSUN_REF\\/DSUN_OBS)\"\n\t},\n\t{\n\t\t\"name\":
+        \"T_OBS\",\n\t\t\"type\": \"time\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-4712.01.01_11:59:28_TAI\",\n\t\t\"units\": \"TAI\",\n\t\t\"note\": \"nominal
+        time\"\n\t},\n\t{\n\t\t\"name\": \"T_REC\",\n\t\t\"type\": \"time\",\n\t\t\"recscope\":
+        \"ts_eq\",\n\t\t\"defval\": \"-4712.01.01_11:59:28_TAI\",\n\t\t\"units\":
+        \"TAI\",\n\t\t\"note\": \"Slot time\"\n\t},\n\t{\n\t\t\"name\": \"T_REC_epoch\",\n\t\t\"type\":
+        \"time\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"1993.01.01_00:00:00_TAI\",\n\t\t\"units\":
+        \"TAI\",\n\t\t\"note\": \"Time of origin; MDI EPOCH\"\n\t},\n\t{\n\t\t\"name\":
+        \"T_REC_step\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"45.0\",\n\t\t\"units\": \"seconds\",\n\t\t\"note\": \"ts_eq step\"\n\t},\n\t{\n\t\t\"name\":
+        \"T_REC_unit\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"secs\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"ts_eq unit\"\n\t},\n\t{\n\t\t\"name\":
+        \"CADENCE\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"45.0\",\n\t\t\"units\": \"seconds\",\n\t\t\"note\": \"repetition interval\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATASIGN\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"1\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"DATASIGN: sign of observable
+        quantity wrt Sun center\"\n\t},\n\t{\n\t\t\"name\": \"HFLID\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"HMI_SEQ_ID_FRAMELIST\"\n\t},\n\t{\n\t\t\"name\":
+        \"HCFTID\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"HMI_SEQ_ID_FOCUS\"\n\t},\n\t{\n\t\t\"name\":
+        \"QLOOK\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"0\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"QLOOK: 0=final data, 1=quick-look
+        data\"\n\t},\n\t{\n\t\t\"name\": \"CAL_FSN\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"FSN of the look-up table used to produce the observables\"\n\t},\n\t{\n\t\t\"name\":
+        \"LUTQUERY\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"query used for the look-up
+        tables\"\n\t},\n\t{\n\t\t\"name\": \"TSEL\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"degree Celsius\",\n\t\t\"note\":
+        \"temperature keyword for polarization calibration\"\n\t},\n\t{\n\t\t\"name\":
+        \"TFRONT\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"degree Celsius\",\n\t\t\"note\": \"temperature
+        keyword for polarization calibration\"\n\t},\n\t{\n\t\t\"name\": \"TINTNUM\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"number of points used for the temporal interpolation\"\n\t},\n\t{\n\t\t\"name\":
+        \"SINTNUM\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"number of points
+        used for the spatial interpolation\"\n\t},\n\t{\n\t\t\"name\": \"DISTCOEF\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"path to the distortion coefficient table used to
+        produce the data\"\n\t},\n\t{\n\t\t\"name\": \"ROTCOEF\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"path to the differential-rotation coefficient table used to produce the
+        data\"\n\t},\n\t{\n\t\t\"name\": \"ODICOEFF\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"order of the distortion-coefficient polynomials\"\n\t},\n\t{\n\t\t\"name\":
+        \"OROCOEFF\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"order of the differential-rotation
+        polynomials\"\n\t},\n\t{\n\t\t\"name\": \"POLCALM\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"method used by the polarization calibration subroutine\"\n\t},\n\t{\n\t\t\"name\":
+        \"CODEVER0\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"version of the l.o.s. observable
+        code used to produce the data\"\n\t},\n\t{\n\t\t\"name\": \"CODEVER1\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"version of the gapfilling subroutine used to produce
+        the data\"\n\t},\n\t{\n\t\t\"name\": \"CODEVER2\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"version of the temporal interpolation subroutine used to produce the data\"\n\t},\n\t{\n\t\t\"name\":
+        \"CODEVER3\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"version of the polarization
+        calibration subroutine used to produce the data\"\n\t},\n\t{\n\t\t\"name\":
+        \"CALVER64\",\n\t\t\"type\": \"longlong\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"0x0000000000000000\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Calibration
+        Version\"\n\t},\n\t{\n\t\t\"name\": \"T_REC_index\",\n\t\t\"type\": \"longlong\",\n\t\t\"recscope\":
+        \"index\",\n\t\t\"defval\": \"0\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"Index keyword associated with T_REC\"\n\t}],\n\t\"segments\": [{\n\t\t\"name\":
+        \"magnetogram\",\n\t\t\"type\": \"int\",\n\t\t\"units\": \"Gauss\",\n\t\t\"protocol\":
+        \"fits\",\n\t\t\"dims\": \"4096x4096\",\n\t\t\"note\": \"magnetogram\"\n\t}],\n\t\"links\":
+        [],\n\t\"Interval\": {\n\t\t\"FirstRecord\": \"hmi.M_45s[2010.03.29_08:00:00_TAI][2]\",\n\t\t\"FirstRecnum\":
+        3760477,\n\t\t\"LastRecord\": \"hmi.M_45s[2022.04.19_23:53:15_TAI][2]\",\n\t\t\"LastRecnum\":
+        10671313,\n\t\t\"MaxRecnum\": 10671313\n\t},\n\t\"runtime\": 0.028,\n\t\"status\":
+        0\n}\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 23 Apr 2022 19:40:06 GMT
+      Server:
+      - Apache/2.2.3 (CentOS)
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - jsoc.stanford.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_info?op=series_struct&ds=hmi.m_45s
+  response:
+    body:
+      string: "{\n\t\"note\": \"magnetograms with a cadence of 45 seconds.\",\n\t\"retention\":
+        10000,\n\t\"stagingretention\": 3,\n\t\"unitsize\": 32,\n\t\"archive\": 1,\n\t\"tapegroup\":
+        6,\n\t\"primekeys\": [\"T_REC\",\n\t\"CAMERA\"],\n\t\"primekeysinfo\": [{\n\t\t\"name\":
+        \"T_REC\",\n\t\t\"slotted\": 1,\n\t\t\"step\": \"45.0\"\n\t},\n\t{\n\t\t\"name\":
+        \"CAMERA\",\n\t\t\"slotted\": 0\n\t}],\n\t\"dbindex\": [\"T_REC\",\n\t\"CAMERA\"],\n\t\"keywords\":
+        [{\n\t\t\"name\": \"cparms_sg000\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"compress Rice\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"\"\n\t},\n\t{\n\t\t\"name\": \"magnetogram_bzero\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"0\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"\"\n\t},\n\t{\n\t\t\"name\": \"magnetogram_bscale\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"0.1\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"\"\n\t},\n\t{\n\t\t\"name\": \"DATE\",\n\t\t\"type\": \"time\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-4712.01.01_11:59:28Z\",\n\t\t\"units\":
+        \"ISO\",\n\t\t\"note\": \"Date_time of processing; ISO 8601 format UTC\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATE__OBS\",\n\t\t\"type\": \"time\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-4712.01.01_11:59:27.82Z\",\n\t\t\"units\": \"ISO\",\n\t\t\"note\": \"[DATE-OBS]
+        DATE_OBS = T_OBS - EXPTIME\\/2.0\"\n\t},\n\t{\n\t\t\"name\": \"DATE-OBS\",\n\t\t\"type\":
+        \"time\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-4712.01.01_11:59:27.82Z\",\n\t\t\"units\":
+        \"ISO\",\n\t\t\"note\": \"[DATE-OBS] DATE_OBS = T_OBS - EXPTIME\\/2.0\"\n\t},\n\t{\n\t\t\"name\":
+        \"TELESCOP\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"SDO\\/HMI\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"For HMI: SDO\\/HMI\"\n\t},\n\t{\n\t\t\"name\":
+        \"INSTRUME\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"For HMI: HMI_SIDE1, HMI_FRONT2,
+        or HMI_COMBINED\"\n\t},\n\t{\n\t\t\"name\": \"WAVELNTH\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"constant\",\n\t\t\"defval\": \"6173.0\",\n\t\t\"units\": \"Angstrom\",\n\t\t\"note\":
+        \"For HMI: 6173.3 Angstroms\"\n\t},\n\t{\n\t\t\"name\": \"CAMERA\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"For HMI: 1 (side camera), 2 (front camera), or
+        3 (both cameras)\"\n\t},\n\t{\n\t\t\"name\": \"BUNIT\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"constant\",\n\t\t\"defval\": \"Gauss\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"BUNIT: physical units of data, Gauss\"\n\t},\n\t{\n\t\t\"name\": \"ORIGIN\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"SDO\\/JSOC-SDP\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"ORIGIN: location where file made\"\n\t},\n\t{\n\t\t\"name\":
+        \"CONTENT\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"MAGNETOGRAM\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"CONTENT: MAGNETOGRAM\"\n\t},\n\t{\n\t\t\"name\":
+        \"QUALITY\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"0x80000000\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Level 1.5 Quality
+        word\"\n\t},\n\t{\n\t\t\"name\": \"QUALLEV1\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"0x80000000\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"Logical OR on the bits of the level 1 Quality word\"\n\t},\n\t{\n\t\t\"name\":
+        \"HISTORY\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"processing history of data\"\n\t},\n\t{\n\t\t\"name\":
+        \"COMMENT\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"commentary on the data\"\n\t},\n\t{\n\t\t\"name\":
+        \"BLD_VERS\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Code release build number
+        of program that created this record\"\n\t},\n\t{\n\t\t\"name\": \"HCAMID\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"HMI_SEQ_ID_EXP_PATH\"\n\t},\n\t{\n\t\t\"name\":
+        \"SOURCE\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"level 1 filtergrams used
+        to produce the observables\"\n\t},\n\t{\n\t\t\"name\": \"TOTVALS\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"Expected number of data values (pixels)\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAVALS\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Actual number
+        of data values in images (pixels)\"\n\t},\n\t{\n\t\t\"name\": \"MISSVALS\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"Missing values: TOTVALS - DATAVALS\"\n\t},\n\t{\n\t\t\"name\":
+        \"SATVALS\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Saturated values\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAMIN2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Minimum value from all
+        pixels\"\n\t},\n\t{\n\t\t\"name\": \"DATAMAX2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\":
+        \"Maximum value from all pixels\"\n\t},\n\t{\n\t\t\"name\": \"DATAMED2\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Median value from all pixels\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAMEA2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Mean value from all pixels\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATARMS2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Rms deviation from the
+        mean value of all pixels\"\n\t},\n\t{\n\t\t\"name\": \"DATASKE2\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Skewness from the mean value of all pixels\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAKUR2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Kurtosis of all pixels\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAMIN\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Minimum value from pixels
+        within 99% of solar radius\"\n\t},\n\t{\n\t\t\"name\": \"DATAMAX\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Maximum value from pixels within 99% of solar
+        radius\"\n\t},\n\t{\n\t\t\"name\": \"DATAMEDN\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\":
+        \"Median value from pixels within 99% of solar radius\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATAMEAN\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"Gauss\",\n\t\t\"note\": \"Mean value from pixels
+        within 99% of solar radius\"\n\t},\n\t{\n\t\t\"name\": \"DATARMS\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Rms deviation from the mean value of pixels within
+        99% of solar radius\"\n\t},\n\t{\n\t\t\"name\": \"DATASKEW\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Skewness from the mean value of pixels within
+        99% of solar radius\"\n\t},\n\t{\n\t\t\"name\": \"DATAKURT\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"Gauss\",\n\t\t\"note\": \"Kurtosis of pixels within 99% of solar radius\"\n\t},\n\t{\n\t\t\"name\":
+        \"CTYPE1\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"HPLN-TAN\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"CTYPE1: HPLN-TAN
+        (SOLARX)\"\n\t},\n\t{\n\t\t\"name\": \"CTYPE2\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"constant\",\n\t\t\"defval\": \"HPLT-TAN\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"CTYPE2: HPLT-TAN (SOLARY)\"\n\t},\n\t{\n\t\t\"name\": \"CRPIX1\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"pixel\",\n\t\t\"note\": \"CRPIX1: location of the Sun center in CCD x direction\"\n\t},\n\t{\n\t\t\"name\":
+        \"CRPIX2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"pixel\",\n\t\t\"note\": \"CRPIX2: location of the
+        Sun center in CCD y direction\"\n\t},\n\t{\n\t\t\"name\": \"CRVAL1\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"0.000000\",\n\t\t\"units\":
+        \"arcsec\",\n\t\t\"note\": \"CRVAL1: x origin - center of the solar disk\"\n\t},\n\t{\n\t\t\"name\":
+        \"CRVAL2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"0.000000\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\": \"CRVAL2: y origin
+        - center of the solar disk\"\n\t},\n\t{\n\t\t\"name\": \"CDELT1\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"arcsec\\/pixel\",\n\t\t\"note\": \"image scale in the x direction\"\n\t},\n\t{\n\t\t\"name\":
+        \"CDELT2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"arcsec\\/pixel\",\n\t\t\"note\": \"image scale
+        in the y direction\"\n\t},\n\t{\n\t\t\"name\": \"CUNIT1\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"arcsec\",\n\t\t\"units\":
+        \"arcsec\",\n\t\t\"note\": \"CUNIT1: arcsec\"\n\t},\n\t{\n\t\t\"name\": \"CUNIT2\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"arcsec\",\n\t\t\"units\":
+        \"arcsec\",\n\t\t\"note\": \"CUNIT2: arcsec\"\n\t},\n\t{\n\t\t\"name\": \"CROTA2\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"deg\",\n\t\t\"note\": \"CROTA2: INST_ROT + SAT_ROT\"\n\t},\n\t{\n\t\t\"name\":
+        \"CRDER1\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\": \"CRDER1: estimate of
+        random error in coordinate x\"\n\t},\n\t{\n\t\t\"name\": \"CRDER2\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"arcsec\",\n\t\t\"note\": \"CRDER2: estimate of random error in coordinate
+        y\"\n\t},\n\t{\n\t\t\"name\": \"CSYSER1\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\":
+        \"CSYSER1: estimate of systematic error in coordinate x\"\n\t},\n\t{\n\t\t\"name\":
+        \"CSYSER2\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\": \"CSYSER2: estimate of
+        systematic error in coordinate y\"\n\t},\n\t{\n\t\t\"name\": \"WCSNAME\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"Helioprojective-cartesian\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"WCS system name\"\n\t},\n\t{\n\t\t\"name\": \"DSUN_OBS\",\n\t\t\"type\":
+        \"double\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"m\",\n\t\t\"note\": \"Distance from SDO to Sun center.\"\n\t},\n\t{\n\t\t\"name\":
+        \"DSUN_REF\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"149597870691\",\n\t\t\"units\": \"m\",\n\t\t\"note\": \"Astronomical Unit\"\n\t},\n\t{\n\t\t\"name\":
+        \"RSUN_REF\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"696000000\",\n\t\t\"units\": \"m\",\n\t\t\"note\": \"Reference radius of
+        the Sun: 696,000,000.0 m\"\n\t},\n\t{\n\t\t\"name\": \"CRLN_OBS\",\n\t\t\"type\":
+        \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"deg\",\n\t\t\"note\": \"Carrington longitude of the observer\"\n\t},\n\t{\n\t\t\"name\":
+        \"CRLT_OBS\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"deg\",\n\t\t\"note\": \"Carrington latitude of
+        the observer\"\n\t},\n\t{\n\t\t\"name\": \"CAR_ROT\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"Carrington rotation number of CRLN_OBS\"\n\t},\n\t{\n\t\t\"name\": \"OBS_VR\",\n\t\t\"type\":
+        \"double\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"m\\/s\",\n\t\t\"note\": \"velocity of the observer in radial direction.
+        + is away from Sun\"\n\t},\n\t{\n\t\t\"name\": \"OBS_VW\",\n\t\t\"type\":
+        \"double\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"m\\/s\",\n\t\t\"note\": \"velocity of the observer solar-westward. + in
+        rough direction of Earth orbit\"\n\t},\n\t{\n\t\t\"name\": \"OBS_VN\",\n\t\t\"type\":
+        \"double\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\":
+        \"m\\/s\",\n\t\t\"note\": \"velocity of the observer solar-northward (heliographic).
+        + to north\"\n\t},\n\t{\n\t\t\"name\": \"RSUN_OBS\",\n\t\t\"type\": \"double\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"arcsec\",\n\t\t\"note\":
+        \"angular radius of Sun. Corresponds to arcsin(RSUN_REF\\/DSUN_OBS)\"\n\t},\n\t{\n\t\t\"name\":
+        \"T_OBS\",\n\t\t\"type\": \"time\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-4712.01.01_11:59:28_TAI\",\n\t\t\"units\": \"TAI\",\n\t\t\"note\": \"nominal
+        time\"\n\t},\n\t{\n\t\t\"name\": \"T_REC\",\n\t\t\"type\": \"time\",\n\t\t\"recscope\":
+        \"ts_eq\",\n\t\t\"defval\": \"-4712.01.01_11:59:28_TAI\",\n\t\t\"units\":
+        \"TAI\",\n\t\t\"note\": \"Slot time\"\n\t},\n\t{\n\t\t\"name\": \"T_REC_epoch\",\n\t\t\"type\":
+        \"time\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\": \"1993.01.01_00:00:00_TAI\",\n\t\t\"units\":
+        \"TAI\",\n\t\t\"note\": \"Time of origin; MDI EPOCH\"\n\t},\n\t{\n\t\t\"name\":
+        \"T_REC_step\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"45.0\",\n\t\t\"units\": \"seconds\",\n\t\t\"note\": \"ts_eq step\"\n\t},\n\t{\n\t\t\"name\":
+        \"T_REC_unit\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"secs\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"ts_eq unit\"\n\t},\n\t{\n\t\t\"name\":
+        \"CADENCE\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"45.0\",\n\t\t\"units\": \"seconds\",\n\t\t\"note\": \"repetition interval\"\n\t},\n\t{\n\t\t\"name\":
+        \"DATASIGN\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"1\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"DATASIGN: sign of observable
+        quantity wrt Sun center\"\n\t},\n\t{\n\t\t\"name\": \"HFLID\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"HMI_SEQ_ID_FRAMELIST\"\n\t},\n\t{\n\t\t\"name\":
+        \"HCFTID\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"HMI_SEQ_ID_FOCUS\"\n\t},\n\t{\n\t\t\"name\":
+        \"QLOOK\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"constant\",\n\t\t\"defval\":
+        \"0\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"QLOOK: 0=final data, 1=quick-look
+        data\"\n\t},\n\t{\n\t\t\"name\": \"CAL_FSN\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"FSN of the look-up table used to produce the observables\"\n\t},\n\t{\n\t\t\"name\":
+        \"LUTQUERY\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"query used for the look-up
+        tables\"\n\t},\n\t{\n\t\t\"name\": \"TSEL\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"nan\",\n\t\t\"units\": \"degree Celsius\",\n\t\t\"note\":
+        \"temperature keyword for polarization calibration\"\n\t},\n\t{\n\t\t\"name\":
+        \"TFRONT\",\n\t\t\"type\": \"float\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"nan\",\n\t\t\"units\": \"degree Celsius\",\n\t\t\"note\": \"temperature
+        keyword for polarization calibration\"\n\t},\n\t{\n\t\t\"name\": \"TINTNUM\",\n\t\t\"type\":
+        \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"number of points used for the temporal interpolation\"\n\t},\n\t{\n\t\t\"name\":
+        \"SINTNUM\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"number of points
+        used for the spatial interpolation\"\n\t},\n\t{\n\t\t\"name\": \"DISTCOEF\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"path to the distortion coefficient table used to
+        produce the data\"\n\t},\n\t{\n\t\t\"name\": \"ROTCOEF\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"path to the differential-rotation coefficient table used to produce the
+        data\"\n\t},\n\t{\n\t\t\"name\": \"ODICOEFF\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"order of the distortion-coefficient polynomials\"\n\t},\n\t{\n\t\t\"name\":
+        \"OROCOEFF\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"order of the differential-rotation
+        polynomials\"\n\t},\n\t{\n\t\t\"name\": \"POLCALM\",\n\t\t\"type\": \"int\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"-2147483648\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"method used by the polarization calibration subroutine\"\n\t},\n\t{\n\t\t\"name\":
+        \"CODEVER0\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"version of the l.o.s. observable
+        code used to produce the data\"\n\t},\n\t{\n\t\t\"name\": \"CODEVER1\",\n\t\t\"type\":
+        \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\": \"\",\n\t\t\"units\":
+        \"none\",\n\t\t\"note\": \"version of the gapfilling subroutine used to produce
+        the data\"\n\t},\n\t{\n\t\t\"name\": \"CODEVER2\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\":
+        \"variable\",\n\t\t\"defval\": \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"version of the temporal interpolation subroutine used to produce the data\"\n\t},\n\t{\n\t\t\"name\":
+        \"CODEVER3\",\n\t\t\"type\": \"string\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"version of the polarization
+        calibration subroutine used to produce the data\"\n\t},\n\t{\n\t\t\"name\":
+        \"CALVER64\",\n\t\t\"type\": \"longlong\",\n\t\t\"recscope\": \"variable\",\n\t\t\"defval\":
+        \"0x0000000000000000\",\n\t\t\"units\": \"none\",\n\t\t\"note\": \"Calibration
+        Version\"\n\t},\n\t{\n\t\t\"name\": \"T_REC_index\",\n\t\t\"type\": \"longlong\",\n\t\t\"recscope\":
+        \"index\",\n\t\t\"defval\": \"0\",\n\t\t\"units\": \"none\",\n\t\t\"note\":
+        \"Index keyword associated with T_REC\"\n\t}],\n\t\"segments\": [{\n\t\t\"name\":
+        \"magnetogram\",\n\t\t\"type\": \"int\",\n\t\t\"units\": \"Gauss\",\n\t\t\"protocol\":
+        \"fits\",\n\t\t\"dims\": \"4096x4096\",\n\t\t\"note\": \"magnetogram\"\n\t}],\n\t\"links\":
+        [],\n\t\"Interval\": {\n\t\t\"FirstRecord\": \"hmi.M_45s[2010.03.29_08:00:00_TAI][2]\",\n\t\t\"FirstRecnum\":
+        3760477,\n\t\t\"LastRecord\": \"hmi.M_45s[2022.04.19_23:53:15_TAI][2]\",\n\t\t\"LastRecnum\":
+        10671313,\n\t\t\"MaxRecnum\": 10671313\n\t},\n\t\"runtime\": 0.026,\n\t\"status\":
+        0\n}\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 23 Apr 2022 19:40:06 GMT
+      Server:
+      - Apache/2.2.3 (CentOS)
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - jsoc.stanford.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_info?op=rs_list&ds=hmi.m_45s%5B2010.08.01_03%3A40%3A34_TAI-2010.08.01_03%3A40%3A44_TAI%5D&key=%2A%2AALL%2A%2A
+  response:
+    body:
+      string: '{"keywords":[{"name":"DATE","values":["2012-09-05T07:57:40Z"]},{"name":"DATE__OBS","values":["2010-08-01T03:39:41.00Z"]},{"name":"DATE-OBS","values":["2010-08-01T03:39:41.00Z"]},{"name":"TELESCOP","values":["SDO\/HMI"]},{"name":"INSTRUME","values":["HMI_FRONT2"]},{"name":"WAVELNTH","values":["6173.0"]},{"name":"CAMERA","values":["2"]},{"name":"BUNIT","values":["Gauss"]},{"name":"ORIGIN","values":["SDO\/JSOC-SDP"]},{"name":"CONTENT","values":["MAGNETOGRAM"]},{"name":"QUALITY","values":["0x00000000"]},{"name":"QUALLEV1","values":["0x00000000"]},{"name":"HISTORY","values":["Polynomial
+        Coefficients used for Doppler velocity correction: 1.333019e+02 5.532295e-04
+        -1.414157e-06 1.826364e-10 \nCROTA2 corrected by adding -0.0702 degrees"]},{"name":"COMMENT","values":["De-rotation:
+        ON; Un-distortion: ON; Re-centering: ON; Re-sizing: OFF; RSUNerr=0.5; correction
+        for cosmic-ray hits"]},{"name":"BLD_VERS","values":["-511"]},{"name":"HCAMID","values":["3"]},{"name":"SOURCE","values":["hmi.lev1[:#6348058,#6348046,#6348010,#6348082,#6348094,#6348166,#6348060,#6348048,#6348012,#6348084,#6348096,#6348168,#6348062,#6348050,#6348014,#6347966,#6348086,#6348098,#6348064,#6348052,#6348016,#6347968,#6348088,#6348100,#6348066,#6348054,#6348018,#6347970,#6348090,#6348102,#6348068,#6348032,#6348020,#6347996,#6348104,#6348116,#6348070,#6348034,#6348022,#6347998,#6348106,#6348118,#6348072,#6348036,#6348024,#6348000,#6348108,#6348120,#6348074,#6348038,#6348026,#6348002,#6348110,#6348122,#6348076,#6348040,#6348028,#6348004,#6348112,#6348124,#6348078,#6348042,#6348030,#6348006,#6348114,#6348126,#6348080,#6348056,#6348044,#6348008,#6348092,#6348164]"]},{"name":"TOTVALS","values":["11637782"]},{"name":"DATAVALS","values":["11637782"]},{"name":"MISSVALS","values":["0"]},{"name":"SATVALS","values":["10235"]},{"name":"DATAMIN2","values":["-4470.989746"]},{"name":"DATAMAX2","values":["4470.989746"]},{"name":"DATAMED2","values":["-0.058550"]},{"name":"DATAMEA2","values":["-0.278637"]},{"name":"DATARMS2","values":["62.809631"]},{"name":"DATASKE2","values":["-0.783281"]},{"name":"DATAKUR2","values":["2636.481201"]},{"name":"DATAMIN","values":["-2267.471680"]},{"name":"DATAMAX","values":["1035.622192"]},{"name":"DATAMEDN","values":["-0.060310"]},{"name":"DATAMEAN","values":["-0.268451"]},{"name":"DATARMS","values":["28.155598"]},{"name":"DATASKEW","values":["-21.853561"]},{"name":"DATAKURT","values":["1292.156616"]},{"name":"CTYPE1","values":["HPLN-TAN"]},{"name":"CTYPE2","values":["HPLT-TAN"]},{"name":"CRPIX1","values":["2041.515869"]},{"name":"CRPIX2","values":["2047.844238"]},{"name":"CRVAL1","values":["0.000000"]},{"name":"CRVAL2","values":["0.000000"]},{"name":"CDELT1","values":["0.504285"]},{"name":"CDELT2","values":["0.504285"]},{"name":"CUNIT1","values":["arcsec"]},{"name":"CUNIT2","values":["arcsec"]},{"name":"CROTA2","values":["179.929855"]},{"name":"CRDER1","values":["MISSING"]},{"name":"CRDER2","values":["MISSING"]},{"name":"CSYSER1","values":["MISSING"]},{"name":"CSYSER2","values":["MISSING"]},{"name":"WCSNAME","values":["Helioprojective-cartesian"]},{"name":"DSUN_OBS","values":["151855544707.36"]},{"name":"DSUN_REF","values":["149597870691"]},{"name":"RSUN_REF","values":["696000000"]},{"name":"CRLN_OBS","values":["111.963272"]},{"name":"CRLT_OBS","values":["5.789389"]},{"name":"CAR_ROT","values":["2099"]},{"name":"OBS_VR","values":["1798.364614"]},{"name":"OBS_VW","values":["31499.633969"]},{"name":"OBS_VN","values":["2845.311372"]},{"name":"RSUN_OBS","values":["945.377441"]},{"name":"T_OBS","values":["2010.08.01_03:40:38_TAI"]},{"name":"T_REC","values":["2010.08.01_03:40:30_TAI"]},{"name":"T_REC_epoch","values":["1993.01.01_00:00:00_TAI"]},{"name":"T_REC_step","values":["45.0"]},{"name":"T_REC_unit","values":["secs"]},{"name":"CADENCE","values":["45.0"]},{"name":"DATASIGN","values":["1"]},{"name":"HFLID","values":["1001"]},{"name":"HCFTID","values":["11"]},{"name":"QLOOK","values":["0"]},{"name":"CAL_FSN","values":["4875802"]},{"name":"LUTQUERY","values":["hmi.lookup[4875802][][3][36][58][0][82]"]},{"name":"TSEL","values":["22.380854"]},{"name":"TFRONT","values":["28.071377"]},{"name":"TINTNUM","values":["6"]},{"name":"SINTNUM","values":["10"]},{"name":"DISTCOEF","values":["\/home\/couvidat\/cvs\/JSOC\/proj\/lev1.5_hmi\/apps\/..\/libs\/lev15\/"]},{"name":"ROTCOEF","values":["\/home\/couvidat\/cvs\/JSOC\/proj\/lev1.5_hmi\/apps\/..\/libs\/lev15\/"]},{"name":"ODICOEFF","values":["6"]},{"name":"OROCOEFF","values":["4"]},{"name":"POLCALM","values":["1"]},{"name":"CODEVER0","values":["$Id:
+        HMI_observables.c,v 1.20 2010\/11\/12 21:38:52 couvidat Exp $"]},{"name":"CODEVER1","values":["$Id:
+        interpol_code.c,v 1.1 2010\/09\/16 20:46:48 couvidat Exp $"]},{"name":"CODEVER2","values":["$Id:
+        interpol_code.c,v 1.1 2010\/09\/16 20:46:48 couvidat Exp $"]},{"name":"CODEVER3","values":["$Id:
+        polcal.c,v 1.4 2010\/09\/23 20:57:27 schou Exp $"]},{"name":"CALVER64","values":["0x0000000000000010"]}],"segments":[],"links":[],"count":1,"runtime":0.207,"status":0}
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 23 Apr 2022 19:40:07 GMT
+      Server:
+      - Apache/2.2.3 (CentOS)
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1

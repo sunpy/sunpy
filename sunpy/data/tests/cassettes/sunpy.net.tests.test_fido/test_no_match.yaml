@@ -1,0 +1,32 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - jsoc.stanford.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_info?op=series_struct&ds=bob
+  response:
+    body:
+      string: '{"status": 4, "error": "Expecting value: line 1 column 1 (char 0)"}
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 23 Apr 2022 19:39:52 GMT
+      Server:
+      - Apache/2.2.3 (CentOS)
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1

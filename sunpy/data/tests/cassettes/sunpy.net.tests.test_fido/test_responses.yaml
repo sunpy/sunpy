@@ -1,0 +1,1065 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - proba2.oma.be
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://proba2.oma.be/lyra/data/bsd/2012/01/01/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /lyra/data/bsd/2012/01/01</title>\n </head>\n <body>\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML+RDFa 1.0//EN\"\n  \"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">\n<html
+        xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" version=\"XHTML+RDFa
+        1.0\" dir=\"ltr\"\n  xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n
+        \ xmlns:dc=\"http://purl.org/dc/terms/\"\n  xmlns:foaf=\"http://xmlns.com/foaf/0.1/\"\n
+        \ xmlns:og=\"http://ogp.me/ns#\"\n  xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n
+        \ xmlns:sioc=\"http://rdfs.org/sioc/ns#\"\n  xmlns:sioct=\"http://rdfs.org/sioc/types#\"\n
+        \ xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\n  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\">\n\n<head
+        profile=\"http://www.w3.org/1999/xhtml/vocab\">\n  <meta http-equiv=\"Content-Type\"
+        content=\"text/html; charset=utf-8\" />\n<meta name=\"Generator\" content=\"Drupal
+        7 (http://drupal.org)\" />\n<link rel=\"canonical\" href=\"/home\" />\n<link
+        rel=\"shortlink\" href=\"/node/119\" />\n<link rel=\"shortcut icon\" href=\"https://proba2.sidc.be/sites/default/files/favicon.ico\"
+        type=\"image/vnd.microsoft.icon\" />\n  <title>About the PROBA2 Science Center
+        | PROBA2 Science Center</title>\n  <style type=\"text/css\" media=\"all\">\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.base.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.menus.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.messages.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.theme.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/modules/comment/comment.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/field/theme/field.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/node/node.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/search/search.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/user/user.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/forum/forum.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/views/css/views.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/ctools/css/ctools.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/css/panels.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/video/css/video.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/plugins/layouts/twocol_stacked/twocol_stacked.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/default/files/color/garland-34868b0a/style.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"print\">\n@import url(\"https://proba2.sidc.be/themes/garland/print.css?pzsdlg\");\n</style>\n\n<!--[if
+        lt IE 7]>\n<link type=\"text/css\" rel=\"stylesheet\" href=\"https://proba2.sidc.be/themes/garland/fix-ie.css?pzsdlg\"
+        media=\"all\" />\n<![endif]-->\n  <script type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery-extend-3.4.0.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.once.js?v=1.2\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/drupal.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/libraries/colorbox/jquery.colorbox-min.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/js/colorbox.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/video/js/video.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\">\n<!--//--><![CDATA[//><!--\njQuery.extend(Drupal.settings,
+        {\"basePath\":\"\\/\",\"pathPrefix\":\"\",\"ajaxPageState\":{\"theme\":\"garland\",\"theme_token\":\"KVbbstVXXpzrSRAVF-f2-_-rhAyd3Yb6CUXITN0zILE\",\"js\":{\"misc\\/jquery.js\":1,\"misc\\/jquery-extend-3.4.0.js\":1,\"misc\\/jquery.once.js\":1,\"misc\\/drupal.js\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.js\":1,\"sites\\/all\\/libraries\\/colorbox\\/jquery.colorbox-min.js\":1,\"sites\\/all\\/modules\\/colorbox\\/js\\/colorbox.js\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.js\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.js\":1,\"sites\\/all\\/modules\\/video\\/js\\/video.js\":1},\"css\":{\"modules\\/system\\/system.base.css\":1,\"modules\\/system\\/system.menus.css\":1,\"modules\\/system\\/system.messages.css\":1,\"modules\\/system\\/system.theme.css\":1,\"modules\\/comment\\/comment.css\":1,\"modules\\/field\\/theme\\/field.css\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.css\":1,\"modules\\/node\\/node.css\":1,\"modules\\/search\\/search.css\":1,\"modules\\/user\\/user.css\":1,\"modules\\/forum\\/forum.css\":1,\"sites\\/all\\/modules\\/views\\/css\\/views.css\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.css\":1,\"sites\\/all\\/modules\\/ctools\\/css\\/ctools.css\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.css\":1,\"sites\\/all\\/modules\\/panels\\/css\\/panels.css\":1,\"sites\\/all\\/modules\\/video\\/css\\/video.css\":1,\"sites\\/all\\/modules\\/panels\\/plugins\\/layouts\\/twocol_stacked\\/twocol_stacked.css\":1,\"themes\\/garland\\/style.css\":1,\"themes\\/garland\\/print.css\":1,\"themes\\/garland\\/fix-ie.css\":1}},\"colorbox\":{\"opacity\":\"0.85\",\"current\":\"{current}
+        of {total}\",\"previous\":\"\\u00ab Prev\",\"next\":\"Next \\u00bb\",\"close\":\"Close\",\"maxWidth\":\"98%\",\"maxHeight\":\"98%\",\"fixed\":true,\"mobiledetect\":true,\"mobiledevicewidth\":\"480px\"},\"dhtmlMenu\":{\"nav\":\"hover\",\"animation\":{\"effects\":{\"height\":\"height\",\"opacity\":\"opacity\",\"width\":0},\"speed\":\"500\"},\"effects\":{\"siblings\":\"close-same-tree\",\"children\":\"none\",\"remember\":\"0\"},\"filter\":{\"type\":\"whitelist\",\"list\":{\"main-menu\":0,\"management\":0,\"menu-about-proba2\":0,\"menu-community\":0,\"menu-data\":0,\"menu-science\":0,\"navigation\":0,\"shortcut-set-1\":0,\"user-menu\":0}}}});\n//--><!]]>\n</script>\n</head>\n<body
+        class=\"html front not-logged-in two-sidebars page-node page-node- page-node-119
+        node-type-panel fluid-width\" >\n  <div id=\"skip-link\">\n    <a href=\"#main-content\"
+        class=\"element-invisible element-focusable\">Skip to main content</a>\n  </div>\n
+        \     \n  <div id=\"wrapper\">\n    <div id=\"container\" class=\"clearfix\">\n\n
+        \     <div id=\"header\">\n        <div id=\"logo-floater\">\n                              <div
+        id=\"branding\"><strong><a href=\"/\">\n                          <img src=\"https://proba2.sidc.be/sites/default/files/proba2_logo_shadow.png\"
+        alt=\" Welcome to the PROBA2 Science Center\" title=\" Welcome to the PROBA2
+        Science Center\" id=\"logo\" />\n                        <span>Welcome to
+        the PROBA2 Science Center</span>            </a></strong></div>\n                          </div>\n\n
+        \       <h2 class=\"element-invisible\">Main menu</h2><ul class=\"links inline
+        main-menu\"><li class=\"menu-218 first active\"><a href=\"/\" title=\"\" class=\"active\">Home</a></li>\n<li
+        class=\"menu-743\"><a href=\"/ssa\" title=\"Space Situational Awareness Services\">SSA
+        Services</a></li>\n<li class=\"menu-553\"><a href=\"/contact\">Contact</a></li>\n<li
+        class=\"menu-549 last\"><a href=\"/acknowledgements\" title=\"List of institutes
+        and agencies\">Acknowledgments</a></li>\n</ul>              </div> <!-- /#header
+        -->\n\n              <div id=\"sidebar-first\" class=\"sidebar\">\n            <div
+        class=\"region region-sidebar-first\">\n    <div id=\"block-menu-menu-about-proba2\"
+        class=\"block block-menu clearfix\">\n  <div class=\"content\">\n  <table>\n
+        \  <tr><th valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a
+        href=\"?C=N;O=D\">Name</a></th><th><a href=\"?C=M;O=A\">Last modified</a></th><th><a
+        href=\"?C=S;O=A\">Size</a></th><th><a href=\"?C=D;O=A\">Description</a></th></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td valign=\"top\"><img src=\"/icons/back.gif\"
+        alt=\"[PARENTDIR]\"></td><td><a href=\"/lyra/data/bsd/2012/01/\">Parent Directory</a></td><td>&nbsp;</td><td
+        align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img
+        src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120101-000000_lev2_std.fits\">lyra_20120101-000000_lev2_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:38  </td><td align=\"right\"> 74M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120101-000000_lev3_std.fits\">lyra_20120101-000000_lev3_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:38  </td><td align=\"right\"> 62K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n            </div>\n          </div>\n
+        \       </div>\n      </div>\n    </div><!-- /#container -->\n  </div><!--
+        /#wrapper -->\n</body>\n</html>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:39:58 GMT
+      Server:
+      - Apache/2.4.41 (Ubuntu)
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - proba2.oma.be
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://proba2.oma.be/lyra/data/bsd/2012/01/02/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /lyra/data/bsd/2012/01/02</title>\n </head>\n <body>\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML+RDFa 1.0//EN\"\n  \"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">\n<html
+        xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" version=\"XHTML+RDFa
+        1.0\" dir=\"ltr\"\n  xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n
+        \ xmlns:dc=\"http://purl.org/dc/terms/\"\n  xmlns:foaf=\"http://xmlns.com/foaf/0.1/\"\n
+        \ xmlns:og=\"http://ogp.me/ns#\"\n  xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n
+        \ xmlns:sioc=\"http://rdfs.org/sioc/ns#\"\n  xmlns:sioct=\"http://rdfs.org/sioc/types#\"\n
+        \ xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\n  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\">\n\n<head
+        profile=\"http://www.w3.org/1999/xhtml/vocab\">\n  <meta http-equiv=\"Content-Type\"
+        content=\"text/html; charset=utf-8\" />\n<meta name=\"Generator\" content=\"Drupal
+        7 (http://drupal.org)\" />\n<link rel=\"canonical\" href=\"/home\" />\n<link
+        rel=\"shortlink\" href=\"/node/119\" />\n<link rel=\"shortcut icon\" href=\"https://proba2.sidc.be/sites/default/files/favicon.ico\"
+        type=\"image/vnd.microsoft.icon\" />\n  <title>About the PROBA2 Science Center
+        | PROBA2 Science Center</title>\n  <style type=\"text/css\" media=\"all\">\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.base.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.menus.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.messages.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.theme.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/modules/comment/comment.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/field/theme/field.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/node/node.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/search/search.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/user/user.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/forum/forum.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/views/css/views.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/ctools/css/ctools.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/css/panels.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/video/css/video.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/plugins/layouts/twocol_stacked/twocol_stacked.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/default/files/color/garland-34868b0a/style.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"print\">\n@import url(\"https://proba2.sidc.be/themes/garland/print.css?pzsdlg\");\n</style>\n\n<!--[if
+        lt IE 7]>\n<link type=\"text/css\" rel=\"stylesheet\" href=\"https://proba2.sidc.be/themes/garland/fix-ie.css?pzsdlg\"
+        media=\"all\" />\n<![endif]-->\n  <script type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery-extend-3.4.0.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.once.js?v=1.2\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/drupal.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/libraries/colorbox/jquery.colorbox-min.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/js/colorbox.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/video/js/video.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\">\n<!--//--><![CDATA[//><!--\njQuery.extend(Drupal.settings,
+        {\"basePath\":\"\\/\",\"pathPrefix\":\"\",\"ajaxPageState\":{\"theme\":\"garland\",\"theme_token\":\"KVbbstVXXpzrSRAVF-f2-_-rhAyd3Yb6CUXITN0zILE\",\"js\":{\"misc\\/jquery.js\":1,\"misc\\/jquery-extend-3.4.0.js\":1,\"misc\\/jquery.once.js\":1,\"misc\\/drupal.js\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.js\":1,\"sites\\/all\\/libraries\\/colorbox\\/jquery.colorbox-min.js\":1,\"sites\\/all\\/modules\\/colorbox\\/js\\/colorbox.js\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.js\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.js\":1,\"sites\\/all\\/modules\\/video\\/js\\/video.js\":1},\"css\":{\"modules\\/system\\/system.base.css\":1,\"modules\\/system\\/system.menus.css\":1,\"modules\\/system\\/system.messages.css\":1,\"modules\\/system\\/system.theme.css\":1,\"modules\\/comment\\/comment.css\":1,\"modules\\/field\\/theme\\/field.css\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.css\":1,\"modules\\/node\\/node.css\":1,\"modules\\/search\\/search.css\":1,\"modules\\/user\\/user.css\":1,\"modules\\/forum\\/forum.css\":1,\"sites\\/all\\/modules\\/views\\/css\\/views.css\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.css\":1,\"sites\\/all\\/modules\\/ctools\\/css\\/ctools.css\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.css\":1,\"sites\\/all\\/modules\\/panels\\/css\\/panels.css\":1,\"sites\\/all\\/modules\\/video\\/css\\/video.css\":1,\"sites\\/all\\/modules\\/panels\\/plugins\\/layouts\\/twocol_stacked\\/twocol_stacked.css\":1,\"themes\\/garland\\/style.css\":1,\"themes\\/garland\\/print.css\":1,\"themes\\/garland\\/fix-ie.css\":1}},\"colorbox\":{\"opacity\":\"0.85\",\"current\":\"{current}
+        of {total}\",\"previous\":\"\\u00ab Prev\",\"next\":\"Next \\u00bb\",\"close\":\"Close\",\"maxWidth\":\"98%\",\"maxHeight\":\"98%\",\"fixed\":true,\"mobiledetect\":true,\"mobiledevicewidth\":\"480px\"},\"dhtmlMenu\":{\"nav\":\"hover\",\"animation\":{\"effects\":{\"height\":\"height\",\"opacity\":\"opacity\",\"width\":0},\"speed\":\"500\"},\"effects\":{\"siblings\":\"close-same-tree\",\"children\":\"none\",\"remember\":\"0\"},\"filter\":{\"type\":\"whitelist\",\"list\":{\"main-menu\":0,\"management\":0,\"menu-about-proba2\":0,\"menu-community\":0,\"menu-data\":0,\"menu-science\":0,\"navigation\":0,\"shortcut-set-1\":0,\"user-menu\":0}}}});\n//--><!]]>\n</script>\n</head>\n<body
+        class=\"html front not-logged-in two-sidebars page-node page-node- page-node-119
+        node-type-panel fluid-width\" >\n  <div id=\"skip-link\">\n    <a href=\"#main-content\"
+        class=\"element-invisible element-focusable\">Skip to main content</a>\n  </div>\n
+        \     \n  <div id=\"wrapper\">\n    <div id=\"container\" class=\"clearfix\">\n\n
+        \     <div id=\"header\">\n        <div id=\"logo-floater\">\n                              <div
+        id=\"branding\"><strong><a href=\"/\">\n                          <img src=\"https://proba2.sidc.be/sites/default/files/proba2_logo_shadow.png\"
+        alt=\" Welcome to the PROBA2 Science Center\" title=\" Welcome to the PROBA2
+        Science Center\" id=\"logo\" />\n                        <span>Welcome to
+        the PROBA2 Science Center</span>            </a></strong></div>\n                          </div>\n\n
+        \       <h2 class=\"element-invisible\">Main menu</h2><ul class=\"links inline
+        main-menu\"><li class=\"menu-218 first active\"><a href=\"/\" title=\"\" class=\"active\">Home</a></li>\n<li
+        class=\"menu-743\"><a href=\"/ssa\" title=\"Space Situational Awareness Services\">SSA
+        Services</a></li>\n<li class=\"menu-553\"><a href=\"/contact\">Contact</a></li>\n<li
+        class=\"menu-549 last\"><a href=\"/acknowledgements\" title=\"List of institutes
+        and agencies\">Acknowledgments</a></li>\n</ul>              </div> <!-- /#header
+        -->\n\n              <div id=\"sidebar-first\" class=\"sidebar\">\n            <div
+        class=\"region region-sidebar-first\">\n    <div id=\"block-menu-menu-about-proba2\"
+        class=\"block block-menu clearfix\">\n  <div class=\"content\">\n  <table>\n
+        \  <tr><th valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a
+        href=\"?C=N;O=D\">Name</a></th><th><a href=\"?C=M;O=A\">Last modified</a></th><th><a
+        href=\"?C=S;O=A\">Size</a></th><th><a href=\"?C=D;O=A\">Description</a></th></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td valign=\"top\"><img src=\"/icons/back.gif\"
+        alt=\"[PARENTDIR]\"></td><td><a href=\"/lyra/data/bsd/2012/01/\">Parent Directory</a></td><td>&nbsp;</td><td
+        align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img
+        src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120102-000000_lev2_std.fits\">lyra_20120102-000000_lev2_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:40  </td><td align=\"right\"> 74M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120102-000000_lev3_std.fits\">lyra_20120102-000000_lev3_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:40  </td><td align=\"right\"> 62K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n            </div>\n          </div>\n
+        \       </div>\n      </div>\n    </div><!-- /#container -->\n  </div><!--
+        /#wrapper -->\n</body>\n</html>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:39:58 GMT
+      Server:
+      - Apache/2.4.41 (Ubuntu)
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - proba2.oma.be
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://proba2.oma.be/lyra/data/bsd/2012/01/03/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /lyra/data/bsd/2012/01/03</title>\n </head>\n <body>\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML+RDFa 1.0//EN\"\n  \"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">\n<html
+        xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" version=\"XHTML+RDFa
+        1.0\" dir=\"ltr\"\n  xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n
+        \ xmlns:dc=\"http://purl.org/dc/terms/\"\n  xmlns:foaf=\"http://xmlns.com/foaf/0.1/\"\n
+        \ xmlns:og=\"http://ogp.me/ns#\"\n  xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n
+        \ xmlns:sioc=\"http://rdfs.org/sioc/ns#\"\n  xmlns:sioct=\"http://rdfs.org/sioc/types#\"\n
+        \ xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\n  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\">\n\n<head
+        profile=\"http://www.w3.org/1999/xhtml/vocab\">\n  <meta http-equiv=\"Content-Type\"
+        content=\"text/html; charset=utf-8\" />\n<meta name=\"Generator\" content=\"Drupal
+        7 (http://drupal.org)\" />\n<link rel=\"canonical\" href=\"/home\" />\n<link
+        rel=\"shortlink\" href=\"/node/119\" />\n<link rel=\"shortcut icon\" href=\"https://proba2.sidc.be/sites/default/files/favicon.ico\"
+        type=\"image/vnd.microsoft.icon\" />\n  <title>About the PROBA2 Science Center
+        | PROBA2 Science Center</title>\n  <style type=\"text/css\" media=\"all\">\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.base.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.menus.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.messages.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.theme.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/modules/comment/comment.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/field/theme/field.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/node/node.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/search/search.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/user/user.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/forum/forum.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/views/css/views.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/ctools/css/ctools.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/css/panels.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/video/css/video.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/plugins/layouts/twocol_stacked/twocol_stacked.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/default/files/color/garland-34868b0a/style.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"print\">\n@import url(\"https://proba2.sidc.be/themes/garland/print.css?pzsdlg\");\n</style>\n\n<!--[if
+        lt IE 7]>\n<link type=\"text/css\" rel=\"stylesheet\" href=\"https://proba2.sidc.be/themes/garland/fix-ie.css?pzsdlg\"
+        media=\"all\" />\n<![endif]-->\n  <script type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery-extend-3.4.0.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.once.js?v=1.2\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/drupal.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/libraries/colorbox/jquery.colorbox-min.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/js/colorbox.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/video/js/video.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\">\n<!--//--><![CDATA[//><!--\njQuery.extend(Drupal.settings,
+        {\"basePath\":\"\\/\",\"pathPrefix\":\"\",\"ajaxPageState\":{\"theme\":\"garland\",\"theme_token\":\"KVbbstVXXpzrSRAVF-f2-_-rhAyd3Yb6CUXITN0zILE\",\"js\":{\"misc\\/jquery.js\":1,\"misc\\/jquery-extend-3.4.0.js\":1,\"misc\\/jquery.once.js\":1,\"misc\\/drupal.js\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.js\":1,\"sites\\/all\\/libraries\\/colorbox\\/jquery.colorbox-min.js\":1,\"sites\\/all\\/modules\\/colorbox\\/js\\/colorbox.js\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.js\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.js\":1,\"sites\\/all\\/modules\\/video\\/js\\/video.js\":1},\"css\":{\"modules\\/system\\/system.base.css\":1,\"modules\\/system\\/system.menus.css\":1,\"modules\\/system\\/system.messages.css\":1,\"modules\\/system\\/system.theme.css\":1,\"modules\\/comment\\/comment.css\":1,\"modules\\/field\\/theme\\/field.css\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.css\":1,\"modules\\/node\\/node.css\":1,\"modules\\/search\\/search.css\":1,\"modules\\/user\\/user.css\":1,\"modules\\/forum\\/forum.css\":1,\"sites\\/all\\/modules\\/views\\/css\\/views.css\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.css\":1,\"sites\\/all\\/modules\\/ctools\\/css\\/ctools.css\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.css\":1,\"sites\\/all\\/modules\\/panels\\/css\\/panels.css\":1,\"sites\\/all\\/modules\\/video\\/css\\/video.css\":1,\"sites\\/all\\/modules\\/panels\\/plugins\\/layouts\\/twocol_stacked\\/twocol_stacked.css\":1,\"themes\\/garland\\/style.css\":1,\"themes\\/garland\\/print.css\":1,\"themes\\/garland\\/fix-ie.css\":1}},\"colorbox\":{\"opacity\":\"0.85\",\"current\":\"{current}
+        of {total}\",\"previous\":\"\\u00ab Prev\",\"next\":\"Next \\u00bb\",\"close\":\"Close\",\"maxWidth\":\"98%\",\"maxHeight\":\"98%\",\"fixed\":true,\"mobiledetect\":true,\"mobiledevicewidth\":\"480px\"},\"dhtmlMenu\":{\"nav\":\"hover\",\"animation\":{\"effects\":{\"height\":\"height\",\"opacity\":\"opacity\",\"width\":0},\"speed\":\"500\"},\"effects\":{\"siblings\":\"close-same-tree\",\"children\":\"none\",\"remember\":\"0\"},\"filter\":{\"type\":\"whitelist\",\"list\":{\"main-menu\":0,\"management\":0,\"menu-about-proba2\":0,\"menu-community\":0,\"menu-data\":0,\"menu-science\":0,\"navigation\":0,\"shortcut-set-1\":0,\"user-menu\":0}}}});\n//--><!]]>\n</script>\n</head>\n<body
+        class=\"html front not-logged-in two-sidebars page-node page-node- page-node-119
+        node-type-panel fluid-width\" >\n  <div id=\"skip-link\">\n    <a href=\"#main-content\"
+        class=\"element-invisible element-focusable\">Skip to main content</a>\n  </div>\n
+        \     \n  <div id=\"wrapper\">\n    <div id=\"container\" class=\"clearfix\">\n\n
+        \     <div id=\"header\">\n        <div id=\"logo-floater\">\n                              <div
+        id=\"branding\"><strong><a href=\"/\">\n                          <img src=\"https://proba2.sidc.be/sites/default/files/proba2_logo_shadow.png\"
+        alt=\" Welcome to the PROBA2 Science Center\" title=\" Welcome to the PROBA2
+        Science Center\" id=\"logo\" />\n                        <span>Welcome to
+        the PROBA2 Science Center</span>            </a></strong></div>\n                          </div>\n\n
+        \       <h2 class=\"element-invisible\">Main menu</h2><ul class=\"links inline
+        main-menu\"><li class=\"menu-218 first active\"><a href=\"/\" title=\"\" class=\"active\">Home</a></li>\n<li
+        class=\"menu-743\"><a href=\"/ssa\" title=\"Space Situational Awareness Services\">SSA
+        Services</a></li>\n<li class=\"menu-553\"><a href=\"/contact\">Contact</a></li>\n<li
+        class=\"menu-549 last\"><a href=\"/acknowledgements\" title=\"List of institutes
+        and agencies\">Acknowledgments</a></li>\n</ul>              </div> <!-- /#header
+        -->\n\n              <div id=\"sidebar-first\" class=\"sidebar\">\n            <div
+        class=\"region region-sidebar-first\">\n    <div id=\"block-menu-menu-about-proba2\"
+        class=\"block block-menu clearfix\">\n  <div class=\"content\">\n  <table>\n
+        \  <tr><th valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a
+        href=\"?C=N;O=D\">Name</a></th><th><a href=\"?C=M;O=A\">Last modified</a></th><th><a
+        href=\"?C=S;O=A\">Size</a></th><th><a href=\"?C=D;O=A\">Description</a></th></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td valign=\"top\"><img src=\"/icons/back.gif\"
+        alt=\"[PARENTDIR]\"></td><td><a href=\"/lyra/data/bsd/2012/01/\">Parent Directory</a></td><td>&nbsp;</td><td
+        align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img
+        src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120103-000000_lev2_std.fits\">lyra_20120103-000000_lev2_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:41  </td><td align=\"right\"> 74M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120103-000000_lev3_std.fits\">lyra_20120103-000000_lev3_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:41  </td><td align=\"right\"> 62K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n            </div>\n          </div>\n
+        \       </div>\n      </div>\n    </div><!-- /#container -->\n  </div><!--
+        /#wrapper -->\n</body>\n</html>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:39:58 GMT
+      Server:
+      - Apache/2.4.41 (Ubuntu)
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - proba2.oma.be
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://proba2.oma.be/lyra/data/bsd/2012/01/04/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /lyra/data/bsd/2012/01/04</title>\n </head>\n <body>\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML+RDFa 1.0//EN\"\n  \"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">\n<html
+        xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" version=\"XHTML+RDFa
+        1.0\" dir=\"ltr\"\n  xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n
+        \ xmlns:dc=\"http://purl.org/dc/terms/\"\n  xmlns:foaf=\"http://xmlns.com/foaf/0.1/\"\n
+        \ xmlns:og=\"http://ogp.me/ns#\"\n  xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n
+        \ xmlns:sioc=\"http://rdfs.org/sioc/ns#\"\n  xmlns:sioct=\"http://rdfs.org/sioc/types#\"\n
+        \ xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\n  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\">\n\n<head
+        profile=\"http://www.w3.org/1999/xhtml/vocab\">\n  <meta http-equiv=\"Content-Type\"
+        content=\"text/html; charset=utf-8\" />\n<meta name=\"Generator\" content=\"Drupal
+        7 (http://drupal.org)\" />\n<link rel=\"canonical\" href=\"/home\" />\n<link
+        rel=\"shortlink\" href=\"/node/119\" />\n<link rel=\"shortcut icon\" href=\"https://proba2.sidc.be/sites/default/files/favicon.ico\"
+        type=\"image/vnd.microsoft.icon\" />\n  <title>About the PROBA2 Science Center
+        | PROBA2 Science Center</title>\n  <style type=\"text/css\" media=\"all\">\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.base.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.menus.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.messages.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.theme.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/modules/comment/comment.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/field/theme/field.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/node/node.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/search/search.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/user/user.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/forum/forum.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/views/css/views.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/ctools/css/ctools.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/css/panels.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/video/css/video.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/plugins/layouts/twocol_stacked/twocol_stacked.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/default/files/color/garland-34868b0a/style.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"print\">\n@import url(\"https://proba2.sidc.be/themes/garland/print.css?pzsdlg\");\n</style>\n\n<!--[if
+        lt IE 7]>\n<link type=\"text/css\" rel=\"stylesheet\" href=\"https://proba2.sidc.be/themes/garland/fix-ie.css?pzsdlg\"
+        media=\"all\" />\n<![endif]-->\n  <script type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery-extend-3.4.0.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.once.js?v=1.2\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/drupal.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/libraries/colorbox/jquery.colorbox-min.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/js/colorbox.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/video/js/video.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\">\n<!--//--><![CDATA[//><!--\njQuery.extend(Drupal.settings,
+        {\"basePath\":\"\\/\",\"pathPrefix\":\"\",\"ajaxPageState\":{\"theme\":\"garland\",\"theme_token\":\"KVbbstVXXpzrSRAVF-f2-_-rhAyd3Yb6CUXITN0zILE\",\"js\":{\"misc\\/jquery.js\":1,\"misc\\/jquery-extend-3.4.0.js\":1,\"misc\\/jquery.once.js\":1,\"misc\\/drupal.js\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.js\":1,\"sites\\/all\\/libraries\\/colorbox\\/jquery.colorbox-min.js\":1,\"sites\\/all\\/modules\\/colorbox\\/js\\/colorbox.js\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.js\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.js\":1,\"sites\\/all\\/modules\\/video\\/js\\/video.js\":1},\"css\":{\"modules\\/system\\/system.base.css\":1,\"modules\\/system\\/system.menus.css\":1,\"modules\\/system\\/system.messages.css\":1,\"modules\\/system\\/system.theme.css\":1,\"modules\\/comment\\/comment.css\":1,\"modules\\/field\\/theme\\/field.css\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.css\":1,\"modules\\/node\\/node.css\":1,\"modules\\/search\\/search.css\":1,\"modules\\/user\\/user.css\":1,\"modules\\/forum\\/forum.css\":1,\"sites\\/all\\/modules\\/views\\/css\\/views.css\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.css\":1,\"sites\\/all\\/modules\\/ctools\\/css\\/ctools.css\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.css\":1,\"sites\\/all\\/modules\\/panels\\/css\\/panels.css\":1,\"sites\\/all\\/modules\\/video\\/css\\/video.css\":1,\"sites\\/all\\/modules\\/panels\\/plugins\\/layouts\\/twocol_stacked\\/twocol_stacked.css\":1,\"themes\\/garland\\/style.css\":1,\"themes\\/garland\\/print.css\":1,\"themes\\/garland\\/fix-ie.css\":1}},\"colorbox\":{\"opacity\":\"0.85\",\"current\":\"{current}
+        of {total}\",\"previous\":\"\\u00ab Prev\",\"next\":\"Next \\u00bb\",\"close\":\"Close\",\"maxWidth\":\"98%\",\"maxHeight\":\"98%\",\"fixed\":true,\"mobiledetect\":true,\"mobiledevicewidth\":\"480px\"},\"dhtmlMenu\":{\"nav\":\"hover\",\"animation\":{\"effects\":{\"height\":\"height\",\"opacity\":\"opacity\",\"width\":0},\"speed\":\"500\"},\"effects\":{\"siblings\":\"close-same-tree\",\"children\":\"none\",\"remember\":\"0\"},\"filter\":{\"type\":\"whitelist\",\"list\":{\"main-menu\":0,\"management\":0,\"menu-about-proba2\":0,\"menu-community\":0,\"menu-data\":0,\"menu-science\":0,\"navigation\":0,\"shortcut-set-1\":0,\"user-menu\":0}}}});\n//--><!]]>\n</script>\n</head>\n<body
+        class=\"html front not-logged-in two-sidebars page-node page-node- page-node-119
+        node-type-panel fluid-width\" >\n  <div id=\"skip-link\">\n    <a href=\"#main-content\"
+        class=\"element-invisible element-focusable\">Skip to main content</a>\n  </div>\n
+        \     \n  <div id=\"wrapper\">\n    <div id=\"container\" class=\"clearfix\">\n\n
+        \     <div id=\"header\">\n        <div id=\"logo-floater\">\n                              <div
+        id=\"branding\"><strong><a href=\"/\">\n                          <img src=\"https://proba2.sidc.be/sites/default/files/proba2_logo_shadow.png\"
+        alt=\" Welcome to the PROBA2 Science Center\" title=\" Welcome to the PROBA2
+        Science Center\" id=\"logo\" />\n                        <span>Welcome to
+        the PROBA2 Science Center</span>            </a></strong></div>\n                          </div>\n\n
+        \       <h2 class=\"element-invisible\">Main menu</h2><ul class=\"links inline
+        main-menu\"><li class=\"menu-218 first active\"><a href=\"/\" title=\"\" class=\"active\">Home</a></li>\n<li
+        class=\"menu-743\"><a href=\"/ssa\" title=\"Space Situational Awareness Services\">SSA
+        Services</a></li>\n<li class=\"menu-553\"><a href=\"/contact\">Contact</a></li>\n<li
+        class=\"menu-549 last\"><a href=\"/acknowledgements\" title=\"List of institutes
+        and agencies\">Acknowledgments</a></li>\n</ul>              </div> <!-- /#header
+        -->\n\n              <div id=\"sidebar-first\" class=\"sidebar\">\n            <div
+        class=\"region region-sidebar-first\">\n    <div id=\"block-menu-menu-about-proba2\"
+        class=\"block block-menu clearfix\">\n  <div class=\"content\">\n  <table>\n
+        \  <tr><th valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a
+        href=\"?C=N;O=D\">Name</a></th><th><a href=\"?C=M;O=A\">Last modified</a></th><th><a
+        href=\"?C=S;O=A\">Size</a></th><th><a href=\"?C=D;O=A\">Description</a></th></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td valign=\"top\"><img src=\"/icons/back.gif\"
+        alt=\"[PARENTDIR]\"></td><td><a href=\"/lyra/data/bsd/2012/01/\">Parent Directory</a></td><td>&nbsp;</td><td
+        align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img
+        src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120104-000000_lev2_std.fits\">lyra_20120104-000000_lev2_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:42  </td><td align=\"right\"> 28M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120104-000000_lev3_std.fits\">lyra_20120104-000000_lev3_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:42  </td><td align=\"right\"> 28K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n            </div>\n          </div>\n
+        \       </div>\n      </div>\n    </div><!-- /#container -->\n  </div><!--
+        /#wrapper -->\n</body>\n</html>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:39:58 GMT
+      Server:
+      - Apache/2.4.41 (Ubuntu)
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - proba2.oma.be
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://proba2.oma.be/lyra/data/bsd/2012/01/05/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /lyra/data/bsd/2012/01/05</title>\n </head>\n <body>\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML+RDFa 1.0//EN\"\n  \"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">\n<html
+        xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" version=\"XHTML+RDFa
+        1.0\" dir=\"ltr\"\n  xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"\n
+        \ xmlns:dc=\"http://purl.org/dc/terms/\"\n  xmlns:foaf=\"http://xmlns.com/foaf/0.1/\"\n
+        \ xmlns:og=\"http://ogp.me/ns#\"\n  xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n
+        \ xmlns:sioc=\"http://rdfs.org/sioc/ns#\"\n  xmlns:sioct=\"http://rdfs.org/sioc/types#\"\n
+        \ xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\"\n  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\">\n\n<head
+        profile=\"http://www.w3.org/1999/xhtml/vocab\">\n  <meta http-equiv=\"Content-Type\"
+        content=\"text/html; charset=utf-8\" />\n<meta name=\"Generator\" content=\"Drupal
+        7 (http://drupal.org)\" />\n<link rel=\"canonical\" href=\"/home\" />\n<link
+        rel=\"shortlink\" href=\"/node/119\" />\n<link rel=\"shortcut icon\" href=\"https://proba2.sidc.be/sites/default/files/favicon.ico\"
+        type=\"image/vnd.microsoft.icon\" />\n  <title>About the PROBA2 Science Center
+        | PROBA2 Science Center</title>\n  <style type=\"text/css\" media=\"all\">\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.base.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.menus.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.messages.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/system/system.theme.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/modules/comment/comment.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/field/theme/field.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/node/node.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/search/search.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/modules/user/user.css?pzsdlg\");\n@import url(\"https://proba2.sidc.be/modules/forum/forum.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/views/css/views.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/ctools/css/ctools.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/css/panels.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/video/css/video.css?pzsdlg\");\n@import
+        url(\"https://proba2.sidc.be/sites/all/modules/panels/plugins/layouts/twocol_stacked/twocol_stacked.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"all\">\n@import url(\"https://proba2.sidc.be/sites/default/files/color/garland-34868b0a/style.css?pzsdlg\");\n</style>\n<style
+        type=\"text/css\" media=\"print\">\n@import url(\"https://proba2.sidc.be/themes/garland/print.css?pzsdlg\");\n</style>\n\n<!--[if
+        lt IE 7]>\n<link type=\"text/css\" rel=\"stylesheet\" href=\"https://proba2.sidc.be/themes/garland/fix-ie.css?pzsdlg\"
+        media=\"all\" />\n<![endif]-->\n  <script type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery-extend-3.4.0.js?v=1.4.4\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/jquery.once.js?v=1.2\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/misc/drupal.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/filetree/filetree.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/libraries/colorbox/jquery.colorbox-min.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/js/colorbox.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/colorbox/styles/default/colorbox_style.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/dhtml_menu/dhtml_menu.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\" src=\"https://proba2.sidc.be/sites/all/modules/video/js/video.js?pzsdlg\"></script>\n<script
+        type=\"text/javascript\">\n<!--//--><![CDATA[//><!--\njQuery.extend(Drupal.settings,
+        {\"basePath\":\"\\/\",\"pathPrefix\":\"\",\"ajaxPageState\":{\"theme\":\"garland\",\"theme_token\":\"KVbbstVXXpzrSRAVF-f2-_-rhAyd3Yb6CUXITN0zILE\",\"js\":{\"misc\\/jquery.js\":1,\"misc\\/jquery-extend-3.4.0.js\":1,\"misc\\/jquery.once.js\":1,\"misc\\/drupal.js\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.js\":1,\"sites\\/all\\/libraries\\/colorbox\\/jquery.colorbox-min.js\":1,\"sites\\/all\\/modules\\/colorbox\\/js\\/colorbox.js\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.js\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.js\":1,\"sites\\/all\\/modules\\/video\\/js\\/video.js\":1},\"css\":{\"modules\\/system\\/system.base.css\":1,\"modules\\/system\\/system.menus.css\":1,\"modules\\/system\\/system.messages.css\":1,\"modules\\/system\\/system.theme.css\":1,\"modules\\/comment\\/comment.css\":1,\"modules\\/field\\/theme\\/field.css\":1,\"sites\\/all\\/modules\\/filetree\\/filetree.css\":1,\"modules\\/node\\/node.css\":1,\"modules\\/search\\/search.css\":1,\"modules\\/user\\/user.css\":1,\"modules\\/forum\\/forum.css\":1,\"sites\\/all\\/modules\\/views\\/css\\/views.css\":1,\"sites\\/all\\/modules\\/colorbox\\/styles\\/default\\/colorbox_style.css\":1,\"sites\\/all\\/modules\\/ctools\\/css\\/ctools.css\":1,\"sites\\/all\\/modules\\/dhtml_menu\\/dhtml_menu.css\":1,\"sites\\/all\\/modules\\/panels\\/css\\/panels.css\":1,\"sites\\/all\\/modules\\/video\\/css\\/video.css\":1,\"sites\\/all\\/modules\\/panels\\/plugins\\/layouts\\/twocol_stacked\\/twocol_stacked.css\":1,\"themes\\/garland\\/style.css\":1,\"themes\\/garland\\/print.css\":1,\"themes\\/garland\\/fix-ie.css\":1}},\"colorbox\":{\"opacity\":\"0.85\",\"current\":\"{current}
+        of {total}\",\"previous\":\"\\u00ab Prev\",\"next\":\"Next \\u00bb\",\"close\":\"Close\",\"maxWidth\":\"98%\",\"maxHeight\":\"98%\",\"fixed\":true,\"mobiledetect\":true,\"mobiledevicewidth\":\"480px\"},\"dhtmlMenu\":{\"nav\":\"hover\",\"animation\":{\"effects\":{\"height\":\"height\",\"opacity\":\"opacity\",\"width\":0},\"speed\":\"500\"},\"effects\":{\"siblings\":\"close-same-tree\",\"children\":\"none\",\"remember\":\"0\"},\"filter\":{\"type\":\"whitelist\",\"list\":{\"main-menu\":0,\"management\":0,\"menu-about-proba2\":0,\"menu-community\":0,\"menu-data\":0,\"menu-science\":0,\"navigation\":0,\"shortcut-set-1\":0,\"user-menu\":0}}}});\n//--><!]]>\n</script>\n</head>\n<body
+        class=\"html front not-logged-in two-sidebars page-node page-node- page-node-119
+        node-type-panel fluid-width\" >\n  <div id=\"skip-link\">\n    <a href=\"#main-content\"
+        class=\"element-invisible element-focusable\">Skip to main content</a>\n  </div>\n
+        \     \n  <div id=\"wrapper\">\n    <div id=\"container\" class=\"clearfix\">\n\n
+        \     <div id=\"header\">\n        <div id=\"logo-floater\">\n                              <div
+        id=\"branding\"><strong><a href=\"/\">\n                          <img src=\"https://proba2.sidc.be/sites/default/files/proba2_logo_shadow.png\"
+        alt=\" Welcome to the PROBA2 Science Center\" title=\" Welcome to the PROBA2
+        Science Center\" id=\"logo\" />\n                        <span>Welcome to
+        the PROBA2 Science Center</span>            </a></strong></div>\n                          </div>\n\n
+        \       <h2 class=\"element-invisible\">Main menu</h2><ul class=\"links inline
+        main-menu\"><li class=\"menu-218 first active\"><a href=\"/\" title=\"\" class=\"active\">Home</a></li>\n<li
+        class=\"menu-743\"><a href=\"/ssa\" title=\"Space Situational Awareness Services\">SSA
+        Services</a></li>\n<li class=\"menu-553\"><a href=\"/contact\">Contact</a></li>\n<li
+        class=\"menu-549 last\"><a href=\"/acknowledgements\" title=\"List of institutes
+        and agencies\">Acknowledgments</a></li>\n</ul>              </div> <!-- /#header
+        -->\n\n              <div id=\"sidebar-first\" class=\"sidebar\">\n            <div
+        class=\"region region-sidebar-first\">\n    <div id=\"block-menu-menu-about-proba2\"
+        class=\"block block-menu clearfix\">\n  <div class=\"content\">\n  <table>\n
+        \  <tr><th valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a
+        href=\"?C=N;O=D\">Name</a></th><th><a href=\"?C=M;O=A\">Last modified</a></th><th><a
+        href=\"?C=S;O=A\">Size</a></th><th><a href=\"?C=D;O=A\">Description</a></th></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td valign=\"top\"><img src=\"/icons/back.gif\"
+        alt=\"[PARENTDIR]\"></td><td><a href=\"/lyra/data/bsd/2012/01/\">Parent Directory</a></td><td>&nbsp;</td><td
+        align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img
+        src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120105-000000_lev2_std.fits\">lyra_20120105-000000_lev2_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:43  </td><td align=\"right\"> 43M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/unknown.gif\" alt=\"[   ]\"></td><td><a href=\"lyra_20120105-000000_lev3_std.fits\">lyra_20120105-000000_lev3_std.fits</a></td><td
+        align=\"right\">2020-07-07 07:43  </td><td align=\"right\"> 39K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n            </div>\n          </div>\n
+        \       </div>\n      </div>\n    </div><!-- /#container -->\n  </div><!--
+        /#wrapper -->\n</body>\n</html>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:39:58 GMT
+      Server:
+      - Apache/2.4.41 (Ubuntu)
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - docs.virtualsolar.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>307 Temporary Redirect</title>
+
+        </head><body>
+
+        <h1>Temporary Redirect</h1>
+
+        <p>The document has moved <a href="http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.2.15 (CentOS) Server at docs.virtualsolar.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '359'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:39:58 GMT
+      Location:
+      - http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 307
+      message: Temporary Redirect
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - netdrms01.nispdc.nso.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n\n<wsdl:definitions
+        xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n\txmlns:VSO=\"http://virtualsolar.org/VSO/VSOi\"
+        \n\txmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n\txmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+        \n\tname=\"VSO\"\n\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\t<wsdl:types>\n\n\t\t<xsd:schema
+        elementFormDefault=\"unqualified\"\n\t\t\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\n\t\t\t<!--
+        for VSO \"Query\" function -->\n\n\t\t\t<xsd:complexType name=\"QueryRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"block\" type=\"VSO:QueryRequestBlock\" \n\t\t\t\t\tminOccurs=\"1\"
+        maxOccurs=\"1\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"QueryRequestBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"time\"
+        type=\"VSO:Time\" minOccurs=\"1\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"source\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\"
+        type=\"xsd:string\" minOccurs=\"0\" />\t\t\n\t\t\t\t\t<xsd:element name=\"wave\"
+        type=\"VSO:Wave\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"extent\"
+        type=\"VSO:Extent\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"field\"
+        type=\"VSO:Field\" minOccurs=\"0\" />\n\t\t\t\t\t<!-- VSO extended Query elements:\n\t\t\t\t\tPlease
+        note that these elements might be handle differently\n\t\t\t\t\tor might take
+        different arguments depending on the provider.\n\t\t\t\t\tIn general we've
+        made an effort to standarize as much as possible.\n\t\t\t\t\t -->\n\t\t\t\t\t<xsd:element
+        name=\"pixels\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"level\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"resolution\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"detector\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"filter\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"sample\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"quicklook\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"pscale\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Time\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"start\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"end\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element
+        name=\"near\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        \ wavemin and wavemax are really type float. However sometimes\n\t\t\t providers
+        can't handle the decimal point and throw and error.\n\t\t\t By leaving the
+        field as string, we allow the developer some \n\t\t\t flexibility. e.g. passing
+        an integer as string -->\n\t\t\t<xsd:complexType name=\"Wave\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"wavemin\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"wavemax\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"waveunit\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"wavetype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!-- Currently not
+        fully implemented. Only \"type\" is. -->     \n\t\t\t<xsd:complexType name=\"Extent\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"x\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"y\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"width\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"length\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"type\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Field\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fielditem\"
+        type=\"xsd:string\" \n\t\t\t\t\tminOccurs=\"0\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for VSO \"Query\" function Response -->\n\t\t\t\n\t\t\t<xsd:complexType name=\"QueryResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"provideritem\" type=\"VSO:ProviderQueryResponse\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        provider response block (a bit late to rename it now) -->\n\t\t\t<xsd:complexType
+        name=\"ProviderQueryResponse\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_found\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_returned\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"record\"
+        type=\"VSO:QueryResponseBlockArray\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"error\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlockArray\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"recorditem\" type=\"VSO:QueryResponseBlock\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"source\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"time\" type=\"VSO:Time\"
+        />\n\t\t\t\t\t<xsd:element name=\"wave\" type=\"VSO:Wave\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extent\" type=\"VSO:Extent\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"size\" type=\"xsd:float\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extra\" type=\"VSO:Extra\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"info\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"datatype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileurl\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Extra\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"thumbnail\"
+        type=\"VSO:Thumbnail\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"flags\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Thumbnail\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"hires\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"lowres\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for \"GetData\" function -->\n\n\t\t\t<xsd:complexType name=\"VSOGetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"request\" type=\"VSO:GetDataRequest\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"GetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"method\"
+        type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"info\"
+        type=\"VSO:Info\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"datacontainer\"
+        type=\"VSO:DataContainer\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"MethodItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"methodtype\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Info\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"email\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"host\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"user\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"directory\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"password\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"address\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"required\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"site\" type=\"xsd:string\" minOccurs=\"0\"/>\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"DataContainer\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"datarequestitem\"
+        type=\"VSO:DataRequestItem\" \n\t\t\t\t\tminOccurs='0' maxOccurs=\"unbounded\"
+        />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataRequestItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"FileidItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fileid\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t
+        \       <!-- for \"GetData\" function Response -->\n                        <xsd:complexType
+        name=\"VSOGetDataResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"getdataresponseitem\" type=\"VSO:GetDataResponseItem\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataResponseItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"version\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"info\" minOccurs=\"0\">\n\t\t\t\t\t\t<xsd:complexType>\n\t\t\t\t\t\t\t<xsd:sequence>\n\t\t\t\t\t\t\t\t<xsd:element
+        name=\"infoitem\" type=\"xsd:string\"\n\t\t\t\t\t\t\t\t maxOccurs=\"unbounded\"
+        />\n\t\t\t\t\t\t\t</xsd:sequence>\n\t\t\t\t\t\t</xsd:complexType>\n\t\t\t\t\t</xsd:element>\n\t\t\t\t\t<xsd:element
+        name=\"provider\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"getdataitem\" type=\"VSO:GetDataItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"details\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"method\" type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"dataitem\"
+        type=\"VSO:DataItem\" minOccurs='0' \n\t\t\t\t\tmaxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\t\t\t\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"url\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t\t<!-- <xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        /> -->\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t</xsd:schema>\n\t</wsdl:types>\n\n\t<wsdl:message
+        name=\"QueryRequest\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:QueryRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"QueryResponse\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:QueryResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:message
+        name=\"GetDataInput\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:VSOGetDataRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"GetDataOutput\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:VSOGetDataResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:portType
+        name=\"VSOiPort\">\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<wsdl:input
+        message=\"VSO:QueryRequest\" />\n\t\t\t<wsdl:output message=\"VSO:QueryResponse\"
+        />\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation name=\"GetData\">\n\t\t\t<wsdl:input
+        message=\"VSO:GetDataInput\" />\n\t\t\t<wsdl:output message=\"VSO:GetDataOutput\"
+        />\n\t\t</wsdl:operation>\n\n\t</wsdl:portType>\n\n\t<wsdl:binding name=\"VSOiBinding\"
+        type=\"VSO:VSOiPort\">\n\t\t<soap:binding style=\"rpc\"\n\t\t\ttransport=\"http://schemas.xmlsoap.org/soap/http\"
+        />\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#Query\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation
+        name=\"GetData\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#GetData\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t</wsdl:binding>\n\n\t<wsdl:service
+        name=\"VSOiService\">\n\t\t<wsdl:port name=\"nsoTestVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://VSO.tuc.noao.edu/cgi-bin/VSO/DEV_SOAP/bin/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t\t<wsdl:port name=\"nsoVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t</wsdl:service>\n</wsdl:definitions>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '12090'
+      Content-Type:
+      - application/wsdl+xml
+      Date:
+      - Sat, 23 Apr 2022 19:39:59 GMT
+      ETag:
+      - '"101681-2f3a-591e53e1795cf"'
+      Last-Modified:
+      - Fri, 06 Sep 2019 16:50:58 GMT
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: GET
+    uri: http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>307 Temporary Redirect</title>
+
+        </head><body>
+
+        <h1>Temporary Redirect</h1>
+
+        <p>The document has moved <a href="http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.2.15 (CentOS) Server at docs.virtualsolar.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '359'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:39:59 GMT
+      Location:
+      - http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 307
+      message: Temporary Redirect
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: GET
+    uri: http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n\n<wsdl:definitions
+        xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n\txmlns:VSO=\"http://virtualsolar.org/VSO/VSOi\"
+        \n\txmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n\txmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+        \n\tname=\"VSO\"\n\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\t<wsdl:types>\n\n\t\t<xsd:schema
+        elementFormDefault=\"unqualified\"\n\t\t\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\n\t\t\t<!--
+        for VSO \"Query\" function -->\n\n\t\t\t<xsd:complexType name=\"QueryRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"block\" type=\"VSO:QueryRequestBlock\" \n\t\t\t\t\tminOccurs=\"1\"
+        maxOccurs=\"1\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"QueryRequestBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"time\"
+        type=\"VSO:Time\" minOccurs=\"1\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"source\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\"
+        type=\"xsd:string\" minOccurs=\"0\" />\t\t\n\t\t\t\t\t<xsd:element name=\"wave\"
+        type=\"VSO:Wave\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"extent\"
+        type=\"VSO:Extent\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"field\"
+        type=\"VSO:Field\" minOccurs=\"0\" />\n\t\t\t\t\t<!-- VSO extended Query elements:\n\t\t\t\t\tPlease
+        note that these elements might be handle differently\n\t\t\t\t\tor might take
+        different arguments depending on the provider.\n\t\t\t\t\tIn general we've
+        made an effort to standarize as much as possible.\n\t\t\t\t\t -->\n\t\t\t\t\t<xsd:element
+        name=\"pixels\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"level\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"resolution\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"detector\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"filter\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"sample\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"quicklook\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"pscale\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Time\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"start\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"end\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element
+        name=\"near\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        \ wavemin and wavemax are really type float. However sometimes\n\t\t\t providers
+        can't handle the decimal point and throw and error.\n\t\t\t By leaving the
+        field as string, we allow the developer some \n\t\t\t flexibility. e.g. passing
+        an integer as string -->\n\t\t\t<xsd:complexType name=\"Wave\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"wavemin\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"wavemax\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"waveunit\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"wavetype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!-- Currently not
+        fully implemented. Only \"type\" is. -->     \n\t\t\t<xsd:complexType name=\"Extent\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"x\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"y\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"width\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"length\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"type\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Field\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fielditem\"
+        type=\"xsd:string\" \n\t\t\t\t\tminOccurs=\"0\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for VSO \"Query\" function Response -->\n\t\t\t\n\t\t\t<xsd:complexType name=\"QueryResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"provideritem\" type=\"VSO:ProviderQueryResponse\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        provider response block (a bit late to rename it now) -->\n\t\t\t<xsd:complexType
+        name=\"ProviderQueryResponse\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_found\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_returned\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"record\"
+        type=\"VSO:QueryResponseBlockArray\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"error\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlockArray\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"recorditem\" type=\"VSO:QueryResponseBlock\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"source\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"time\" type=\"VSO:Time\"
+        />\n\t\t\t\t\t<xsd:element name=\"wave\" type=\"VSO:Wave\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extent\" type=\"VSO:Extent\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"size\" type=\"xsd:float\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extra\" type=\"VSO:Extra\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"info\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"datatype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileurl\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Extra\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"thumbnail\"
+        type=\"VSO:Thumbnail\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"flags\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Thumbnail\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"hires\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"lowres\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for \"GetData\" function -->\n\n\t\t\t<xsd:complexType name=\"VSOGetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"request\" type=\"VSO:GetDataRequest\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"GetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"method\"
+        type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"info\"
+        type=\"VSO:Info\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"datacontainer\"
+        type=\"VSO:DataContainer\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"MethodItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"methodtype\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Info\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"email\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"host\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"user\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"directory\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"password\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"address\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"required\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"site\" type=\"xsd:string\" minOccurs=\"0\"/>\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"DataContainer\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"datarequestitem\"
+        type=\"VSO:DataRequestItem\" \n\t\t\t\t\tminOccurs='0' maxOccurs=\"unbounded\"
+        />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataRequestItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"FileidItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fileid\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t
+        \       <!-- for \"GetData\" function Response -->\n                        <xsd:complexType
+        name=\"VSOGetDataResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"getdataresponseitem\" type=\"VSO:GetDataResponseItem\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataResponseItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"version\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"info\" minOccurs=\"0\">\n\t\t\t\t\t\t<xsd:complexType>\n\t\t\t\t\t\t\t<xsd:sequence>\n\t\t\t\t\t\t\t\t<xsd:element
+        name=\"infoitem\" type=\"xsd:string\"\n\t\t\t\t\t\t\t\t maxOccurs=\"unbounded\"
+        />\n\t\t\t\t\t\t\t</xsd:sequence>\n\t\t\t\t\t\t</xsd:complexType>\n\t\t\t\t\t</xsd:element>\n\t\t\t\t\t<xsd:element
+        name=\"provider\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"getdataitem\" type=\"VSO:GetDataItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"details\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"method\" type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"dataitem\"
+        type=\"VSO:DataItem\" minOccurs='0' \n\t\t\t\t\tmaxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\t\t\t\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"url\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t\t<!-- <xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        /> -->\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t</xsd:schema>\n\t</wsdl:types>\n\n\t<wsdl:message
+        name=\"QueryRequest\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:QueryRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"QueryResponse\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:QueryResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:message
+        name=\"GetDataInput\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:VSOGetDataRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"GetDataOutput\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:VSOGetDataResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:portType
+        name=\"VSOiPort\">\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<wsdl:input
+        message=\"VSO:QueryRequest\" />\n\t\t\t<wsdl:output message=\"VSO:QueryResponse\"
+        />\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation name=\"GetData\">\n\t\t\t<wsdl:input
+        message=\"VSO:GetDataInput\" />\n\t\t\t<wsdl:output message=\"VSO:GetDataOutput\"
+        />\n\t\t</wsdl:operation>\n\n\t</wsdl:portType>\n\n\t<wsdl:binding name=\"VSOiBinding\"
+        type=\"VSO:VSOiPort\">\n\t\t<soap:binding style=\"rpc\"\n\t\t\ttransport=\"http://schemas.xmlsoap.org/soap/http\"
+        />\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#Query\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation
+        name=\"GetData\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#GetData\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t</wsdl:binding>\n\n\t<wsdl:service
+        name=\"VSOiService\">\n\t\t<wsdl:port name=\"nsoTestVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://VSO.tuc.noao.edu/cgi-bin/VSO/DEV_SOAP/bin/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t\t<wsdl:port name=\"nsoVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t</wsdl:service>\n</wsdl:definitions>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '12090'
+      Content-Type:
+      - application/wsdl+xml
+      Date:
+      - Sat, 23 Apr 2022 19:39:59 GMT
+      ETag:
+      - '"101681-2f3a-591e53e1795cf"'
+      Last-Modified:
+      - Fri, 06 Sep 2019 16:50:58 GMT
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '<?xml version=''1.0'' encoding=''utf-8''?>
+
+      <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"
+      xmlns:VSO="http://virtualsolar.org/VSO/VSOi"><soap-env:Body><VSO:Query><body><block><time><start>20120101000000</start><end>20120105000000</end></time><instrument>LYRA</instrument></block></body></VSO:Query></soap-env:Body></soap-env:Envelope>'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '360'
+      Content-Type:
+      - text/xml; charset=utf-8
+      SOAPAction:
+      - '"http://virtualsolar.org/VSO/VSOi#Query"'
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: POST
+    uri: http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi
+  response:
+    body:
+      string: <?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:VSO="http://virtualsolar.org/VSO/VSOi"
+        xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><VSO:QueryResponse><body><s-gensym3><version>0.8</version><error>VSO-V300
+        Empty Request - No match found in VSO Registry for search critera</error></s-gensym3></body></VSO:QueryResponse></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '477'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sat, 23 Apr 2022 19:39:59 GMT
+      Keep-Alive:
+      - timeout=5, max=100
+      SOAPServer:
+      - SOAP::Lite/Perl/1.27
+      Server:
+      - Apache/2.4.6 (CentOS)
+    status:
+      code: 200
+      message: OK
+version: 1
