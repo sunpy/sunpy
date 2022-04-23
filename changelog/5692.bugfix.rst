@@ -1,8 +1,0 @@
-Added automatic conversion of some common but non-standard unit strings in CDF
-files to astropy unit objects. If sunpy does not recognise the unit string for
-a particular column, units of ``u.dimensionless_unscaled`` are applied to that
-column and a warning raised.
-
-If you think a given unit should not be dimensionless and support should be
-added for it in sunpy, please raise an issue at
-https://github.com/sunpy/sunpy/issues.

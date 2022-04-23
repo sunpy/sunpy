@@ -1,2 +1,0 @@
-Fixed a bug where custom values in the ``plot_settings`` dictionary were not being propagated
-to new map instances created when calling map methods (e.g. ``.submap``).

@@ -1,1 +1,0 @@
-Fixed bugs with the rebinning and per-keV calculation for Fermi/GBM summary lightcurves (`~sunpy.timeseries.sources.GBMSummaryTimeSeries`).

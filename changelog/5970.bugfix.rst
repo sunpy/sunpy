@@ -1,1 +1,0 @@
-Fixed unit handling issue with `.GenericMap` and lowercasing the unit before it submits it to `astropy.units`.

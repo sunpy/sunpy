@@ -1,3 +1,0 @@
-The ``__repr__`` of several `sunpy.database` classes have been updated to remove angular
-brackets and add equals signs. As an example, ``'<DatabaseEntry(id 3)>'`` has changed to
-``'DatabaseEntry(id=3)'``

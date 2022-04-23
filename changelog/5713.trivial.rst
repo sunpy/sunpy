@@ -1,1 +1,0 @@
-Added `packaging <https://pypi.org/project/packaging/>`__ as a core depedency as distutils is now deprecated.

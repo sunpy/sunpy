@@ -1,1 +1,0 @@
-Added support for ``"%Y.%m.%d_%H:%M:%S_UTC"`` and ``"%Y.%m.%d_%H:%M:%S"`` time formats in `sunpy.time.parse_time`.

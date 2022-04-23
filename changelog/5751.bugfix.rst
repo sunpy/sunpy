@@ -1,2 +1,0 @@
-Reading a series of CDF files where at least one of them is empty no longer
-raises an error. A message for each empty file is logged at the DEBUG level.

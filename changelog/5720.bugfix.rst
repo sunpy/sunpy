@@ -1,1 +1,0 @@
-Updated the ``plot`` methods on some timeseries classes to correctly label and format the time axis.

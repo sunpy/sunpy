@@ -1,1 +1,0 @@
-Fixed compatability with ``h5netcdf>0.14`` when loading GOES netcdf files.

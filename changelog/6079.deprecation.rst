@@ -1,2 +1,0 @@
-Deprecated using `sunpy.map.GenericMap.draw_limb` on an Axes that is not a
-WCSAxes.

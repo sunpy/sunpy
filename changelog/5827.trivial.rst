@@ -1,3 +1,0 @@
-Running the tests now requires the ``pytest-xdist`` package. By
-default tests are *not* run in parallel, but can be configured to do so
-using ``pytest-xdist`` command line options.

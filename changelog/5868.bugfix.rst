@@ -1,1 +1,0 @@
-When getting IRIS files from the VSO, Fido was incorrectly labelling them as XML files.

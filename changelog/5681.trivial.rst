@@ -1,2 +1,0 @@
-Sped up the parsing of results from the VSO. For large queries this significantly
-reduces the time needed to perform a query to the VSO.

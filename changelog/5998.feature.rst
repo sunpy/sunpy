@@ -1,1 +1,0 @@
-Added a Maxwell unit and any places where a conversion to Gauss occurs has been removed.

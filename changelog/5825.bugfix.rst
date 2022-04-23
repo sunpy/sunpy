@@ -1,1 +1,0 @@
-Symmetric colorbar limits are no longer set on intensity images from MDI.
