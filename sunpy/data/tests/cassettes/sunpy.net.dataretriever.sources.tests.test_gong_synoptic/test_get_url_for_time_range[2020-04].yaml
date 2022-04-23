@@ -1,0 +1,208 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - gong2.nso.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://gong2.nso.edu/oQR/zqs/202004/mrzqs200421/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /oQR/zqs/202004/mrzqs200421</title>\n </head>\n
+        <body>\n<h1>Index of /oQR/zqs/202004/mrzqs200421</h1>\n  <table>\n   <tr><th
+        valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th><th><a
+        href=\"?C=D;O=A\">Description</a></th></tr>\n   <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/back.gif\" alt=\"[PARENTDIR]\"></td><td><a
+        href=\"/oQR/zqs/202004/\">Parent Directory</a></td><td>&nbsp;</td><td align=\"right\">
+        \ - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img src=\"/icons/compressed.gif\"
+        alt=\"[   ]\"></td><td><a href=\"mrzqs200421t0004c2230_348.fits.gz\">mrzqs200421t0004c2230_348.fits.gz</a></td><td
+        align=\"right\">2020-04-20 18:07  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t0054c2230_348.fits.gz\">mrzqs200421t0054c2230_348.fits.gz</a></td><td
+        align=\"right\">2020-04-20 19:03  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t0204c2230_347.fits.gz\">mrzqs200421t0204c2230_347.fits.gz</a></td><td
+        align=\"right\">2020-04-20 20:05  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t0304c2230_346.fits.gz\">mrzqs200421t0304c2230_346.fits.gz</a></td><td
+        align=\"right\">2020-04-20 21:07  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t0354c2230_346.fits.gz\">mrzqs200421t0354c2230_346.fits.gz</a></td><td
+        align=\"right\">2020-04-20 22:04  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t0424c2230_346.fits.gz\">mrzqs200421t0424c2230_346.fits.gz</a></td><td
+        align=\"right\">2020-04-21 00:07  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t0644c2230_344.fits.gz\">mrzqs200421t0644c2230_344.fits.gz</a></td><td
+        align=\"right\">2020-04-21 01:04  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t0804c2230_344.fits.gz\">mrzqs200421t0804c2230_344.fits.gz</a></td><td
+        align=\"right\">2020-04-21 02:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t0904c2230_343.fits.gz\">mrzqs200421t0904c2230_343.fits.gz</a></td><td
+        align=\"right\">2020-04-21 03:03  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1014c2230_342.fits.gz\">mrzqs200421t1014c2230_342.fits.gz</a></td><td
+        align=\"right\">2020-04-21 04:05  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1104c2230_342.fits.gz\">mrzqs200421t1104c2230_342.fits.gz</a></td><td
+        align=\"right\">2020-04-21 05:07  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1204c2230_341.fits.gz\">mrzqs200421t1204c2230_341.fits.gz</a></td><td
+        align=\"right\">2020-04-21 06:04  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1304c2230_341.fits.gz\">mrzqs200421t1304c2230_341.fits.gz</a></td><td
+        align=\"right\">2020-04-21 07:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1414c2230_340.fits.gz\">mrzqs200421t1414c2230_340.fits.gz</a></td><td
+        align=\"right\">2020-04-21 08:07  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1514c2230_340.fits.gz\">mrzqs200421t1514c2230_340.fits.gz</a></td><td
+        align=\"right\">2020-04-21 09:04  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1604c2230_339.fits.gz\">mrzqs200421t1604c2230_339.fits.gz</a></td><td
+        align=\"right\">2020-04-21 10:05  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1714c2230_339.fits.gz\">mrzqs200421t1714c2230_339.fits.gz</a></td><td
+        align=\"right\">2020-04-21 11:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1814c2230_338.fits.gz\">mrzqs200421t1814c2230_338.fits.gz</a></td><td
+        align=\"right\">2020-04-21 12:03  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t1904c2230_338.fits.gz\">mrzqs200421t1904c2230_338.fits.gz</a></td><td
+        align=\"right\">2020-04-21 13:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t2004c2230_337.fits.gz\">mrzqs200421t2004c2230_337.fits.gz</a></td><td
+        align=\"right\">2020-04-21 14:09  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t2114c2230_336.fits.gz\">mrzqs200421t2114c2230_336.fits.gz</a></td><td
+        align=\"right\">2020-04-21 15:04  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t2214c2230_336.fits.gz\">mrzqs200421t2214c2230_336.fits.gz</a></td><td
+        align=\"right\">2020-04-21 16:04  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200421t2314c2230_335.fits.gz\">mrzqs200421t2314c2230_335.fits.gz</a></td><td
+        align=\"right\">2020-04-21 17:05  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n<address>Apache/2.4.37
+        (AlmaLinux) OpenSSL/1.1.1k SVN/1.10.2 Server at gong2.nso.edu Port 443</address>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '6577'
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:06:15 GMT
+      Server:
+      - Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k SVN/1.10.2
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - gong2.nso.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://gong2.nso.edu/oQR/zqs/202004/mrzqs200422/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /oQR/zqs/202004/mrzqs200422</title>\n </head>\n
+        <body>\n<h1>Index of /oQR/zqs/202004/mrzqs200422</h1>\n  <table>\n   <tr><th
+        valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th><th><a
+        href=\"?C=D;O=A\">Description</a></th></tr>\n   <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/back.gif\" alt=\"[PARENTDIR]\"></td><td><a
+        href=\"/oQR/zqs/202004/\">Parent Directory</a></td><td>&nbsp;</td><td align=\"right\">
+        \ - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img src=\"/icons/compressed.gif\"
+        alt=\"[   ]\"></td><td><a href=\"mrzqs200422t0014c2230_335.fits.gz\">mrzqs200422t0014c2230_335.fits.gz</a></td><td
+        align=\"right\">2020-04-21 18:05  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t0104c2230_334.fits.gz\">mrzqs200422t0104c2230_334.fits.gz</a></td><td
+        align=\"right\">2020-04-21 19:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t0214c2230_334.fits.gz\">mrzqs200422t0214c2230_334.fits.gz</a></td><td
+        align=\"right\">2020-04-21 20:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t0314c2230_333.fits.gz\">mrzqs200422t0314c2230_333.fits.gz</a></td><td
+        align=\"right\">2020-04-21 21:08  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t0404c2230_333.fits.gz\">mrzqs200422t0404c2230_333.fits.gz</a></td><td
+        align=\"right\">2020-04-21 22:05  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t0514c2230_332.fits.gz\">mrzqs200422t0514c2230_332.fits.gz</a></td><td
+        align=\"right\">2020-04-21 23:07  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t0604c2230_332.fits.gz\">mrzqs200422t0604c2230_332.fits.gz</a></td><td
+        align=\"right\">2020-04-22 00:04  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t0714c2230_331.fits.gz\">mrzqs200422t0714c2230_331.fits.gz</a></td><td
+        align=\"right\">2020-04-22 01:08  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t0804c2230_330.fits.gz\">mrzqs200422t0804c2230_330.fits.gz</a></td><td
+        align=\"right\">2020-04-22 02:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t0824c2230_330.fits.gz\">mrzqs200422t0824c2230_330.fits.gz</a></td><td
+        align=\"right\">2020-04-22 06:08  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t1304c2230_328.fits.gz\">mrzqs200422t1304c2230_328.fits.gz</a></td><td
+        align=\"right\">2020-04-22 07:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t1414c2230_327.fits.gz\">mrzqs200422t1414c2230_327.fits.gz</a></td><td
+        align=\"right\">2020-04-22 08:07  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t1504c2230_327.fits.gz\">mrzqs200422t1504c2230_327.fits.gz</a></td><td
+        align=\"right\">2020-04-22 09:04  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t1614c2230_326.fits.gz\">mrzqs200422t1614c2230_326.fits.gz</a></td><td
+        align=\"right\">2020-04-22 10:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t1704c2230_326.fits.gz\">mrzqs200422t1704c2230_326.fits.gz</a></td><td
+        align=\"right\">2020-04-22 11:03  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t1804c2230_325.fits.gz\">mrzqs200422t1804c2230_325.fits.gz</a></td><td
+        align=\"right\">2020-04-22 12:05  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t1914c2230_324.fits.gz\">mrzqs200422t1914c2230_324.fits.gz</a></td><td
+        align=\"right\">2020-04-22 13:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t2004c2230_324.fits.gz\">mrzqs200422t2004c2230_324.fits.gz</a></td><td
+        align=\"right\">2020-04-22 14:03  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t2104c2230_323.fits.gz\">mrzqs200422t2104c2230_323.fits.gz</a></td><td
+        align=\"right\">2020-04-22 15:05  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t2214c2230_323.fits.gz\">mrzqs200422t2214c2230_323.fits.gz</a></td><td
+        align=\"right\">2020-04-22 16:06  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs200422t2314c2230_322.fits.gz\">mrzqs200422t2314c2230_322.fits.gz</a></td><td
+        align=\"right\">2020-04-22 17:03  </td><td align=\"right\">236K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n<address>Apache/2.4.37
+        (AlmaLinux) OpenSSL/1.1.1k SVN/1.10.2 Server at gong2.nso.edu Port 443</address>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '6077'
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:06:15 GMT
+      Server:
+      - Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k SVN/1.10.2
+    status:
+      code: 200
+      message: OK
+version: 1

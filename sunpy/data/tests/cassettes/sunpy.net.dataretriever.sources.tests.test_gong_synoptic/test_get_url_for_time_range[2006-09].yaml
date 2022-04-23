@@ -1,0 +1,48 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - gong2.nso.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://gong2.nso.edu/oQR/zqs/200609/mrzqs060919/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /oQR/zqs/200609/mrzqs060919</title>\n </head>\n
+        <body>\n<h1>Index of /oQR/zqs/200609/mrzqs060919</h1>\n  <table>\n   <tr><th
+        valign=\"top\"><img src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th><th><a
+        href=\"?C=D;O=A\">Description</a></th></tr>\n   <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/back.gif\" alt=\"[PARENTDIR]\"></td><td><a
+        href=\"/oQR/zqs/200609/\">Parent Directory</a></td><td>&nbsp;</td><td align=\"right\">
+        \ - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img src=\"/icons/compressed.gif\"
+        alt=\"[   ]\"></td><td><a href=\"mrzqs060919t1154c2048_323.fits.gz\">mrzqs060919t1154c2048_323.fits.gz</a></td><td
+        align=\"right\">2012-11-28 17:14  </td><td align=\"right\">104K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs060919t1754c2048_320.fits.gz\">mrzqs060919t1754c2048_320.fits.gz</a></td><td
+        align=\"right\">2012-11-28 17:14  </td><td align=\"right\">106K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"mrzqs060919t2354c2048_317.fits.gz\">mrzqs060919t2354c2048_317.fits.gz</a></td><td
+        align=\"right\">2012-11-28 17:14  </td><td align=\"right\"> 56K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n<address>Apache/2.4.37
+        (AlmaLinux) OpenSSL/1.1.1k SVN/1.10.2 Server at gong2.nso.edu Port 443</address>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1577'
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:06:16 GMT
+      Server:
+      - Apache/2.4.37 (AlmaLinux) OpenSSL/1.1.1k SVN/1.10.2
+    status:
+      code: 200
+      message: OK
+version: 1
