@@ -2,6 +2,7 @@ import os
 import logging
 import tempfile
 import importlib
+from pathlib import Path
 
 import pytest
 
@@ -164,3 +165,9 @@ def pytest_runtest_teardown(item):
         console_logger.info(f"Removing {len(plt.get_fignums())} pyplot figure(s) "
                             f"left open by {item.name}")
         plt.close('all')
+
+
+@pytest.fixture(scope='module')
+def vcr_cassette_dir(request):
+    # Put all cassettes in vhs/{module}/{test}.yaml
+    return str(Path(__file__).parent / 'data' / 'tests' / 'cassettes' / request.module.__name__)

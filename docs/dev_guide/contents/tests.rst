@@ -87,6 +87,16 @@ or::
 
     $ pytest --remote-data=any
 
+
+Mocked remote data tests
+------------------------
+Some of our remote data tests are run using `vcrpy <https://vcrpy.readthedocs.io/en/latest/>`_, which saves a copy of any HTTP requests made within the test so a remote request doesn't have to be run on subsequent test runs.
+To use ``vcrpy`` on a test add the ``@pytest.mark.vcrpy()`` decorator to the test.
+These should only be used to test search requests, and **not** data download requests, to avoid storing large files in the git repository.
+To re-generate the HTTP responses run::
+
+    $ pytest --remote-data=yes --vcr-record=all
+
 Figure tests
 ------------
 In order to avoid changes in figures due to different package versions, we recommend using tox to run the figure tests::
