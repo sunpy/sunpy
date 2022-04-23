@@ -156,14 +156,14 @@ def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_
     assert len(urls) == expected_num_files
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize("start, end ,wave, expected_num_files",
-                         [('2019/05/25 00:50', '2019/05/25 00:54', 94, 6),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 131, 3),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 171, 2),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 195, 7),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 284, 2),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 304, 4)]
+                         [pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 94, 6, id='94'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 131, 3, id='131'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 171, 2, id='171'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 195, 7, id='195'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 284, 2, id='284'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 304, 4, id='304')]
                          )
 def test_fido_onewave_level1b(start, end, wave, expected_num_files):
     goes_sat = a.goes.SatelliteNumber.sixteen
@@ -172,14 +172,14 @@ def test_fido_onewave_level1b(start, end, wave, expected_num_files):
     assert result.file_num == expected_num_files
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize("start, end, wave1, wave2, expected_num_files",
-                         [('2019/05/25 00:50', '2019/05/25 00:54', 1, 100, 6),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 150, 9),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 180, 11),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 200, 18),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 300, 20),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 310, 24)]
+                         [pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 1, 100, 6, id='100'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 1, 150, 9, id='150'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 1, 180, 11, id='180'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 1, 200, 18, id='200'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 1, 300, 20, id='300'),
+                          pytest.param('2019/05/25 00:50', '2019/05/25 00:54', 1, 310, 24, id='310')]
                          )
 def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
     """check that we get all wavelengths if no wavelength is given"""
