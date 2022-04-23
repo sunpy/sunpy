@@ -1,0 +1,228 @@
+interactions:
+- request:
+    body: '<?xml version=''1.0'' encoding=''utf-8''?>
+
+      <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><soap-env:Body><ns0:getTableNames
+      xmlns:ns0="http://helio-vo.eu/xml/QueryService/v0.1"/></soap-env:Body></soap-env:Envelope>'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '241'
+      Content-Type:
+      - text/xml; charset=utf-8
+      SOAPAction:
+      - '""'
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: POST
+    uri: http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><helio:queryResponse
+        xmlns:helio=\"http://helio-vo.eu/xml/QueryService/v0.1\"><VOTABLE xmlns=\"http://www.ivoa.net/xml/VOTable/v1.1\"
+        version=\"1.1\">\n<RESOURCE>\n<DESCRIPTION />\n<INFO name=\"QUERY_STATUS\"
+        value=\"OK\" />\n<INFO name=\"EXECUTED_AT\" value=\"2022-04-23 19:26:23\"
+        />\n<TABLE name=\"Table Names\">\n<FIELD arraysize=\"*\" datatype=\"char\"
+        name=\"table_names\">\n  <DESCRIPTION>Names of tables for this service. Input
+        as 'FROM' in functions</DESCRIPTION>\n</FIELD>\n<DATA>\n<TABLEDATA>\n  <TR>\n
+        \   <TD>timed_see_flare</TD>\n  </TR>\n  <TR>\n    <TD>hi_event</TD>\n  </TR>\n
+        \ <TR>\n    <TD>yohkoh_flare_list</TD>\n  </TR>\n  <TR>\n    <TD>wind_mfi_bs_crossing_time</TD>\n
+        \ </TR>\n  <TR>\n    <TD>seeds_soho</TD>\n  </TR>\n  <TR>\n    <TD>seeds_stb</TD>\n
+        \ </TR>\n  <TR>\n    <TD>seeds_sta</TD>\n  </TR>\n  <TR>\n    <TD>hi_cme_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>sdemon_dimming</TD>\n  </TR>\n  <TR>\n    <TD>imp8_solar_wind_times</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_imf_mag_cloud</TD>\n  </TR>\n  <TR>\n    <TD>ngdc_apstar_storm</TD>\n
+        \ </TR>\n  <TR>\n    <TD>hec_catalogue</TD>\n  </TR>\n  <TR>\n    <TD>wind_typeii_soho_cme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereob_impactplastic_shock</TD>\n  </TR>\n  <TR>\n
+        \   <TD>gevloc_flares</TD>\n  </TR>\n  <TR>\n    <TD>kso_flare</TD>\n  </TR>\n
+        \ <TR>\n    <TD>yohkoh_hxr_flare</TD>\n  </TR>\n  <TR>\n    <TD>seeds_cme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>lasco_cme_cat</TD>\n  </TR>\n  <TR>\n    <TD>goes_sxr_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereoa_impactplastic_sir</TD>\n  </TR>\n  <TR>\n
+        \   <TD>stereob_let_sir</TD>\n  </TR>\n  <TR>\n    <TD>noaa_active_region_summary</TD>\n
+        \ </TR>\n  <TR>\n    <TD>goes_flare_sep_event</TD>\n  </TR>\n  <TR>\n    <TD>cactus_soho_cme_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>icme_earth_cycle23</TD>\n  </TR>\n  <TR>\n    <TD>stereob_let_sep</TD>\n
+        \ </TR>\n  <TR>\n    <TD>ssc_list</TD>\n  </TR>\n  <TR>\n    <TD>goes_proton_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cme_forbush_event</TD>\n  </TR>\n  <TR>\n    <TD>goes_flare_no_sep_radio_cme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>apstar_list</TD>\n  </TR>\n  <TR>\n    <TD>wind_sw_crossing_time</TD>\n
+        \ </TR>\n  <TR>\n    <TD>aad_gle</TD>\n  </TR>\n  <TR>\n    <TD>ngdc_aastar_storm</TD>\n
+        \ </TR>\n  <TR>\n    <TD>sdemon_flare</TD>\n  </TR>\n  <TR>\n    <TD>mars_earth_icme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>gle_list</TD>\n  </TR>\n  <TR>\n    <TD>ngdc_halpha_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereoa_impactplastic_icme</TD>\n  </TR>\n  <TR>\n
+        \   <TD>wind_stereo_ii_iv_radioburst</TD>\n  </TR>\n  <TR>\n    <TD>yohkoh_sxt_trace_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>dsd_list</TD>\n  </TR>\n  <TR>\n    <TD>cactus_all</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_hi_sw_transient</TD>\n  </TR>\n  <TR>\n    <TD>cactus_stereob_flow</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_mfi_ip_shock</TD>\n  </TR>\n  <TR>\n    <TD>ngdc_ssc</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cactus_stereoa_cme</TD>\n  </TR>\n  <TR>\n    <TD>cactus_stb_flow_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>imp8_sw_crossing_time</TD>\n  </TR>\n  <TR>\n    <TD>istp_sw_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_euvi_event</TD>\n  </TR>\n  <TR>\n    <TD>goes_xray_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_euvi_catalog</TD>\n  </TR>\n  <TR>\n    <TD>noaa_proton_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereob_impactplastic_icme</TD>\n  </TR>\n  <TR>\n
+        \   <TD>gevloc_sxr_flare</TD>\n  </TR>\n  <TR>\n    <TD />\n  </TR>\n  <TR>\n
+        \   <TD>aastar_list</TD>\n  </TR>\n  <TR>\n    <TD>srs_list</TD>\n  </TR>\n
+        \ <TR>\n    <TD>nmdb_gle_list</TD>\n  </TR>\n  <TR>\n    <TD>catalogues</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_wave_typeii</TD>\n  </TR>\n  <TR>\n    <TD>halpha_flares_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_ace_sir</TD>\n  </TR>\n  <TR>\n    <TD>soho_lasco_cme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>lasco_cme_list</TD>\n  </TR>\n  <TR>\n    <TD>drao_10cm_flux</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_hi_cme</TD>\n  </TR>\n  <TR>\n    <TD>stereoa_het_sep</TD>\n
+        \ </TR>\n  <TR>\n    <TD>sidc_sunspot_number</TD>\n  </TR>\n  <TR>\n    <TD>cactus_sta_cme_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereoa_impactplastic_shock</TD>\n  </TR>\n  <TR>\n
+        \   <TD>wind_imf_bow_shock</TD>\n  </TR>\n  <TR>\n    <TD>ulysses_swoops_icme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>soho_camp</TD>\n  </TR>\n  <TR>\n    <TD>bas_magnetic_storms</TD>\n
+        \ </TR>\n  <TR>\n    <TD>msl_rad_sep</TD>\n  </TR>\n  <TR>\n    <TD>ulysses_hxr_flare_farside</TD>\n
+        \ </TR>\n  <TR>\n    <TD>soho_eit_wave_transient</TD>\n  </TR>\n  <TR>\n    <TD>solar_wind_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>istp_solar_wind_cat</TD>\n  </TR>\n  <TR>\n    <TD>cactus_stb_cme_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cactus_stereob_cme</TD>\n  </TR>\n  <TR>\n    <TD>soho_pm_ip_shock</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cme_inner_heliosphere</TD>\n  </TR>\n  <TR>\n    <TD>latest_gev_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>mgs_er_sep</TD>\n  </TR>\n  <TR>\n    <TD>kso_halpha_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>ulysses_hxr_flare</TD>\n  </TR>\n  <TR>\n    <TD>tsrs_solar_radio_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>sgas_event</TD>\n  </TR>\n  <TR>\n    <TD>seeds_all</TD>\n
+        \ </TR>\n  <TR>\n    <TD>hfc_wind_waves</TD>\n  </TR>\n  <TR>\n    <TD>wind_imf_ips</TD>\n
+        \ </TR>\n  <TR>\n    <TD>halo_cme_flare_magnetic_storm</TD>\n  </TR>\n  <TR>\n
+        \   <TD>eit_list</TD>\n  </TR>\n  <TR>\n    <TD>wind_mfi_mag_cloud</TD>\n
+        \ </TR>\n  <TR>\n    <TD>ulysses_grb_xray_flare</TD>\n  </TR>\n  <TR>\n    <TD>hessi_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_impactplastic_icme</TD>\n  </TR>\n  <TR>\n
+        \   <TD>stereoa_let_sir</TD>\n  </TR>\n  <TR>\n    <TD>noaa_energetic_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cactus_cme_list</TD>\n  </TR>\n  <TR>\n    <TD>cactus_stereoa_flow</TD>\n
+        \ </TR>\n  <TR>\n    <TD>pippo</TD>\n  </TR>\n  <TR>\n    <TD>gradual_sep</TD>\n
+        \ </TR>\n  <TR>\n    <TD>solar_sep_event</TD>\n  </TR>\n  <TR>\n    <TD>noaa_daily_solar_data</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_waves_type_ii_burst</TD>\n  </TR>\n  <TR>\n
+        \   <TD>stereoa_let_sep</TD>\n  </TR>\n  <TR>\n    <TD>cactus_sta_flow_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>soho_pm_ips</TD>\n  </TR>\n  <TR>\n    <TD>stereob_impactplastic_sir</TD>\n
+        \ </TR>\n  <TR>\n    <TD>waves_exp_wind_stereo</TD>\n  </TR>\n  <TR>\n    <TD>forbush_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>tsrs_event_list</TD>\n  </TR>\n  <TR>\n    <TD>cactus_soho_flow_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_solar_wind_times</TD>\n  </TR>\n  <TR>\n    <TD>hfc_level3_wind_waves</TD>\n
+        \ </TR>\n  <TR>\n    <TD>rhessi_hxr_flare</TD>\n  </TR>\n  <TR>\n    <TD>cactus_soho_flow</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cactus_soho_cme</TD>\n  </TR>\n  <TR>\n    <TD>stereob_het_sep</TD>\n
+        \ </TR>\n</TABLEDATA>\n</DATA>\n</TABLE>\n</RESOURCE>\n</VOTABLE>\n</helio:queryResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sat, 23 Apr 2022 19:26:22 GMT
+      Server:
+      - Apache-Coyote/1.1
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '<?xml version=''1.0'' encoding=''utf-8''?>
+
+      <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><soap-env:Body><ns0:getTableNames
+      xmlns:ns0="http://helio-vo.eu/xml/QueryService/v0.1"/></soap-env:Body></soap-env:Envelope>'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '241'
+      Content-Type:
+      - text/xml; charset=utf-8
+      SOAPAction:
+      - '""'
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: POST
+    uri: http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><helio:queryResponse
+        xmlns:helio=\"http://helio-vo.eu/xml/QueryService/v0.1\"><VOTABLE xmlns=\"http://www.ivoa.net/xml/VOTable/v1.1\"
+        version=\"1.1\">\n<RESOURCE>\n<DESCRIPTION />\n<INFO name=\"QUERY_STATUS\"
+        value=\"OK\" />\n<INFO name=\"EXECUTED_AT\" value=\"2022-04-23 19:26:23\"
+        />\n<TABLE name=\"Table Names\">\n<FIELD arraysize=\"*\" datatype=\"char\"
+        name=\"table_names\">\n  <DESCRIPTION>Names of tables for this service. Input
+        as 'FROM' in functions</DESCRIPTION>\n</FIELD>\n<DATA>\n<TABLEDATA>\n  <TR>\n
+        \   <TD>timed_see_flare</TD>\n  </TR>\n  <TR>\n    <TD>hi_event</TD>\n  </TR>\n
+        \ <TR>\n    <TD>yohkoh_flare_list</TD>\n  </TR>\n  <TR>\n    <TD>wind_mfi_bs_crossing_time</TD>\n
+        \ </TR>\n  <TR>\n    <TD>seeds_soho</TD>\n  </TR>\n  <TR>\n    <TD>seeds_stb</TD>\n
+        \ </TR>\n  <TR>\n    <TD>seeds_sta</TD>\n  </TR>\n  <TR>\n    <TD>hi_cme_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>sdemon_dimming</TD>\n  </TR>\n  <TR>\n    <TD>imp8_solar_wind_times</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_imf_mag_cloud</TD>\n  </TR>\n  <TR>\n    <TD>ngdc_apstar_storm</TD>\n
+        \ </TR>\n  <TR>\n    <TD>hec_catalogue</TD>\n  </TR>\n  <TR>\n    <TD>wind_typeii_soho_cme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereob_impactplastic_shock</TD>\n  </TR>\n  <TR>\n
+        \   <TD>gevloc_flares</TD>\n  </TR>\n  <TR>\n    <TD>kso_flare</TD>\n  </TR>\n
+        \ <TR>\n    <TD>yohkoh_hxr_flare</TD>\n  </TR>\n  <TR>\n    <TD>seeds_cme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>lasco_cme_cat</TD>\n  </TR>\n  <TR>\n    <TD>goes_sxr_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereoa_impactplastic_sir</TD>\n  </TR>\n  <TR>\n
+        \   <TD>stereob_let_sir</TD>\n  </TR>\n  <TR>\n    <TD>noaa_active_region_summary</TD>\n
+        \ </TR>\n  <TR>\n    <TD>goes_flare_sep_event</TD>\n  </TR>\n  <TR>\n    <TD>cactus_soho_cme_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>icme_earth_cycle23</TD>\n  </TR>\n  <TR>\n    <TD>stereob_let_sep</TD>\n
+        \ </TR>\n  <TR>\n    <TD>ssc_list</TD>\n  </TR>\n  <TR>\n    <TD>goes_proton_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cme_forbush_event</TD>\n  </TR>\n  <TR>\n    <TD>goes_flare_no_sep_radio_cme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>apstar_list</TD>\n  </TR>\n  <TR>\n    <TD>wind_sw_crossing_time</TD>\n
+        \ </TR>\n  <TR>\n    <TD>aad_gle</TD>\n  </TR>\n  <TR>\n    <TD>ngdc_aastar_storm</TD>\n
+        \ </TR>\n  <TR>\n    <TD>sdemon_flare</TD>\n  </TR>\n  <TR>\n    <TD>mars_earth_icme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>gle_list</TD>\n  </TR>\n  <TR>\n    <TD>ngdc_halpha_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereoa_impactplastic_icme</TD>\n  </TR>\n  <TR>\n
+        \   <TD>wind_stereo_ii_iv_radioburst</TD>\n  </TR>\n  <TR>\n    <TD>yohkoh_sxt_trace_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>dsd_list</TD>\n  </TR>\n  <TR>\n    <TD>cactus_all</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_hi_sw_transient</TD>\n  </TR>\n  <TR>\n    <TD>cactus_stereob_flow</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_mfi_ip_shock</TD>\n  </TR>\n  <TR>\n    <TD>ngdc_ssc</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cactus_stereoa_cme</TD>\n  </TR>\n  <TR>\n    <TD>cactus_stb_flow_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>imp8_sw_crossing_time</TD>\n  </TR>\n  <TR>\n    <TD>istp_sw_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_euvi_event</TD>\n  </TR>\n  <TR>\n    <TD>goes_xray_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_euvi_catalog</TD>\n  </TR>\n  <TR>\n    <TD>noaa_proton_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereob_impactplastic_icme</TD>\n  </TR>\n  <TR>\n
+        \   <TD>gevloc_sxr_flare</TD>\n  </TR>\n  <TR>\n    <TD />\n  </TR>\n  <TR>\n
+        \   <TD>aastar_list</TD>\n  </TR>\n  <TR>\n    <TD>srs_list</TD>\n  </TR>\n
+        \ <TR>\n    <TD>nmdb_gle_list</TD>\n  </TR>\n  <TR>\n    <TD>catalogues</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_wave_typeii</TD>\n  </TR>\n  <TR>\n    <TD>halpha_flares_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_ace_sir</TD>\n  </TR>\n  <TR>\n    <TD>soho_lasco_cme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>lasco_cme_list</TD>\n  </TR>\n  <TR>\n    <TD>drao_10cm_flux</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_hi_cme</TD>\n  </TR>\n  <TR>\n    <TD>stereoa_het_sep</TD>\n
+        \ </TR>\n  <TR>\n    <TD>sidc_sunspot_number</TD>\n  </TR>\n  <TR>\n    <TD>cactus_sta_cme_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereoa_impactplastic_shock</TD>\n  </TR>\n  <TR>\n
+        \   <TD>wind_imf_bow_shock</TD>\n  </TR>\n  <TR>\n    <TD>ulysses_swoops_icme</TD>\n
+        \ </TR>\n  <TR>\n    <TD>soho_camp</TD>\n  </TR>\n  <TR>\n    <TD>bas_magnetic_storms</TD>\n
+        \ </TR>\n  <TR>\n    <TD>msl_rad_sep</TD>\n  </TR>\n  <TR>\n    <TD>ulysses_hxr_flare_farside</TD>\n
+        \ </TR>\n  <TR>\n    <TD>soho_eit_wave_transient</TD>\n  </TR>\n  <TR>\n    <TD>solar_wind_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>istp_solar_wind_cat</TD>\n  </TR>\n  <TR>\n    <TD>cactus_stb_cme_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cactus_stereob_cme</TD>\n  </TR>\n  <TR>\n    <TD>soho_pm_ip_shock</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cme_inner_heliosphere</TD>\n  </TR>\n  <TR>\n    <TD>latest_gev_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>mgs_er_sep</TD>\n  </TR>\n  <TR>\n    <TD>kso_halpha_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>ulysses_hxr_flare</TD>\n  </TR>\n  <TR>\n    <TD>tsrs_solar_radio_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>sgas_event</TD>\n  </TR>\n  <TR>\n    <TD>seeds_all</TD>\n
+        \ </TR>\n  <TR>\n    <TD>hfc_wind_waves</TD>\n  </TR>\n  <TR>\n    <TD>wind_imf_ips</TD>\n
+        \ </TR>\n  <TR>\n    <TD>halo_cme_flare_magnetic_storm</TD>\n  </TR>\n  <TR>\n
+        \   <TD>eit_list</TD>\n  </TR>\n  <TR>\n    <TD>wind_mfi_mag_cloud</TD>\n
+        \ </TR>\n  <TR>\n    <TD>ulysses_grb_xray_flare</TD>\n  </TR>\n  <TR>\n    <TD>hessi_flare</TD>\n
+        \ </TR>\n  <TR>\n    <TD>stereo_impactplastic_icme</TD>\n  </TR>\n  <TR>\n
+        \   <TD>stereoa_let_sir</TD>\n  </TR>\n  <TR>\n    <TD>noaa_energetic_event</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cactus_cme_list</TD>\n  </TR>\n  <TR>\n    <TD>cactus_stereoa_flow</TD>\n
+        \ </TR>\n  <TR>\n    <TD>pippo</TD>\n  </TR>\n  <TR>\n    <TD>gradual_sep</TD>\n
+        \ </TR>\n  <TR>\n    <TD>solar_sep_event</TD>\n  </TR>\n  <TR>\n    <TD>noaa_daily_solar_data</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_waves_type_ii_burst</TD>\n  </TR>\n  <TR>\n
+        \   <TD>stereoa_let_sep</TD>\n  </TR>\n  <TR>\n    <TD>cactus_sta_flow_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>soho_pm_ips</TD>\n  </TR>\n  <TR>\n    <TD>stereob_impactplastic_sir</TD>\n
+        \ </TR>\n  <TR>\n    <TD>waves_exp_wind_stereo</TD>\n  </TR>\n  <TR>\n    <TD>forbush_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>tsrs_event_list</TD>\n  </TR>\n  <TR>\n    <TD>cactus_soho_flow_list</TD>\n
+        \ </TR>\n  <TR>\n    <TD>wind_solar_wind_times</TD>\n  </TR>\n  <TR>\n    <TD>hfc_level3_wind_waves</TD>\n
+        \ </TR>\n  <TR>\n    <TD>rhessi_hxr_flare</TD>\n  </TR>\n  <TR>\n    <TD>cactus_soho_flow</TD>\n
+        \ </TR>\n  <TR>\n    <TD>cactus_soho_cme</TD>\n  </TR>\n  <TR>\n    <TD>stereob_het_sep</TD>\n
+        \ </TR>\n</TABLEDATA>\n</DATA>\n</TABLE>\n</RESOURCE>\n</VOTABLE>\n</helio:queryResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sat, 23 Apr 2022 19:26:23 GMT
+      Server:
+      - Apache-Coyote/1.1
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,128 @@
+interactions:
+- request:
+    body: '<?xml version=''1.0'' encoding=''utf-8''?>
+
+      <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><soap-env:Body><ns0:TimeQuery
+      xmlns:ns0="http://helio-vo.eu/xml/QueryService/v0.1"><STARTTIME>2005-01-03T00:00:00.000</STARTTIME><ENDTIME>2005-12-03T00:00:00.000</ENDTIME><FROM>rhessi_hxr_flare</FROM><MAXRECORDS>10</MAXRECORDS></ns0:TimeQuery></soap-env:Body></soap-env:Envelope>'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '396'
+      Content-Type:
+      - text/xml; charset=utf-8
+      SOAPAction:
+      - '""'
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: POST
+    uri: http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><helio:queryResponse
+        xmlns:helio=\"http://helio-vo.eu/xml/QueryService/v0.1\"><VOTABLE xmlns=\"http://www.ivoa.net/xml/VOTable/v1.1\"
+        version=\"1.1\">\n<RESOURCE>\n<DESCRIPTION />\n<INFO name=\"QUERY_STATUS\"
+        value=\"OK\" />\n<INFO name=\"EXECUTED_AT\" value=\"2022-04-23 19:26:23\"
+        />\n<INFO name=\"MAX_RECORD_ALLOWED\" value=\"20000\" />\n<INFO name=\"QUERY_STRING\">SELECT
+        rhessi_hxr_flare.HEC_id,rhessi_hxr_flare.time_start,rhessi_hxr_flare.time_peak,rhessi_hxr_flare.time_end,rhessi_hxr_flare.nar,rhessi_hxr_flare.x_cart,rhessi_hxr_flare.y_cart,rhessi_hxr_flare.radial_arcsec,rhessi_hxr_flare.duration,rhessi_hxr_flare.count_sec_peak,rhessi_hxr_flare.total_count,rhessi_hxr_flare.energy_kev,rhessi_hxr_flare.flare_number
+        FROM rhessi_hxr_flare WHERE  '2005-12-03T00:00:00.000'>=time_start AND '2005-01-03T00:00:00.000'&lt;=time_end
+        \   LIMIT 10</INFO>\n<INFO name=\"QUERY_URL\">http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioQueryService?STARTTIME=2005-01-03T00:00:00.000&amp;ENDTIME=2005-12-03T00:00:00.000&amp;FROM=rhessi_hxr_flare</INFO>\n<INFO
+        name=\"TABLE_NAME\" value=\"rhessi_hxr_flare\" /><TABLE name=\"hec-rhessi_hxr_flare\">\n<FIELD
+        datatype=\"int\" name=\"hec_id\" ucd=\"meta.record\">\n<DESCRIPTION>Event
+        identification number (HEC internal number)</DESCRIPTION>\n<VALUES null=\"-2147483648\"
+        />\n</FIELD>\n<FIELD arraysize=\"*\" datatype=\"char\" name=\"time_start\"
+        ucd=\"time.start\" utype=\"helio:time_period.time_start\" xtype=\"iso8601\">\n<DESCRIPTION>Start
+        time determined from when the flux rate in the 6-12 keV band exceeds 3*sigma
+        above the background level calcualted on a 60s running average.</DESCRIPTION>\n</FIELD>\n<FIELD
+        arraysize=\"*\" datatype=\"char\" name=\"time_peak\" ucd=\"time.phase\" utype=\"helio:time.time_peak\"
+        xtype=\"iso8601\">\n<DESCRIPTION>The time of the peak flux for the flare in
+        the energy range greater than 6 keV</DESCRIPTION>\n</FIELD>\n<FIELD arraysize=\"*\"
+        datatype=\"char\" name=\"time_end\" ucd=\"time.end\" utype=\"helio:time_period.time_end\"
+        xtype=\"iso8601\">\n<DESCRIPTION>End time determined from when the flux rate
+        in the 6-12 keV band drops below 3*sigma of the background level calcualted
+        on a 60s running average.</DESCRIPTION>\n</FIELD>\n<FIELD datatype=\"int\"
+        name=\"nar\" ucd=\"meta.id.cross\" utype=\"helio:flare.nar\">\n<DESCRIPTION>The
+        number for the closest NOAA active region index</DESCRIPTION>\n<VALUES null=\"-2147483648\"
+        />\n</FIELD>\n<FIELD datatype=\"double\" name=\"x_cart\" ucd=\"pos.cartesian.x;pos.bodyrc;pos.heliocentric/heliographic
+        ?\" utype=\"helio:location.x_cart\">\n<DESCRIPTION>Position in arcsecs from
+        centre of the sun.</DESCRIPTION>\n</FIELD>\n<FIELD datatype=\"double\" name=\"y_cart\"
+        ucd=\"pos.cartesian.y;pos.bodyrc;pos.heliocentric/heliographic ?\" utype=\"helio:location.y_cart\">\n<DESCRIPTION>Position
+        in arcsecs from centre of the sun.</DESCRIPTION>\n</FIELD>\n<FIELD datatype=\"double\"
+        name=\"radial_arcsec\" ucd=\"pos.heliographic/heliocentric?;pos.distance\"
+        utype=\"helio:location.radial_arcsec\">\n<DESCRIPTION>Radial distance in arcsecs
+        from the centre of the Sun.</DESCRIPTION>\n</FIELD>\n<FIELD datatype=\"int\"
+        name=\"duration\" ucd=\"time.duration\" utype=\"helio:flare.duration\">\n<DESCRIPTION>Duration
+        of the flare in seconds</DESCRIPTION>\n<VALUES null=\"-2147483648\" />\n</FIELD>\n<FIELD
+        datatype=\"int\" name=\"count_sec_peak\" ucd=\"phot.count\" utype=\"helio:flare.magnitude.hard_xray_quantifier.hard_xray_count\">\n<DESCRIPTION>Peak
+        counts/second in energy range 12-25 keV, averaged over active collimators,
+        including background.</DESCRIPTION>\n<VALUES null=\"-2147483648\" />\n</FIELD>\n<FIELD
+        datatype=\"int\" name=\"total_count\" ucd=\"meta.number\" utype=\"helio:flare.magnitude.hard_xray_quantifier.hard_xray_count\">\n<DESCRIPTION>Total
+        counts in energy range 12-25 keV integrated over duration of flare summed
+        over all subcollimators, including background.</DESCRIPTION>\n<VALUES null=\"-2147483648\"
+        />\n</FIELD>\n<FIELD datatype=\"int\" name=\"energy_kev\" ucd=\"phys.energy\"
+        utype=\"helio:flare.magnitude.hard_xray_quantifier.energy_keV\">\n<DESCRIPTION>The
+        highest energy band in which the flare was observed.</DESCRIPTION>\n<VALUES
+        null=\"-2147483648\" />\n</FIELD>\n<FIELD datatype=\"int\" name=\"flare_number\"
+        ucd=\"meta.id\" utype=\"helio:flare.rhessi_flare_number\">\n<DESCRIPTION>An
+        ID number, ymmddnn, e.g., 2042101 is the first flare found for 21-Apr-2002.
+        These numbers are not time ordered, e.g., flare 2042129 occurred before 2042104.
+        Also all sorts of problems have been noted since 2010 has started, and the
+        energy range has been changed, resulting in more than 100 flares in certain
+        days. Flare_ids for 2010 and beyond start with a 2 digit year, and there can
+        be 3 digits for the flare number in a given day e.g., 100601102.</DESCRIPTION>\n<VALUES
+        null=\"-2147483648\" />\n</FIELD>\n<DATA>\n<TABLEDATA>\n  <TR>\n    <TD>31463</TD>\n
+        \   <TD>2005-01-03T01:37:36</TD>\n    <TD>2005-01-03T01:37:54</TD>\n    <TD>2005-01-03T01:39:00</TD>\n
+        \   <TD>717</TD>\n    <TD>982.0</TD>\n    <TD>113.0</TD>\n    <TD>989.0</TD>\n
+        \   <TD>84</TD>\n    <TD>22</TD>\n    <TD>9456</TD>\n    <TD>6</TD>\n    <TD>5010320</TD>\n
+        \ </TR>\n  <TR>\n    <TD>31464</TD>\n    <TD>2005-01-03T01:51:36</TD>\n    <TD>2005-01-03T01:59:18</TD>\n
+        \   <TD>2005-01-03T02:17:24</TD>\n    <TD>717</TD>\n    <TD>989.0</TD>\n    <TD>117.0</TD>\n
+        \   <TD>996.0</TD>\n    <TD>1548</TD>\n    <TD>656</TD>\n    <TD>2286912</TD>\n
+        \   <TD>12</TD>\n    <TD>5010301</TD>\n  </TR>\n  <TR>\n    <TD>31465</TD>\n
+        \   <TD>2005-01-03T03:26:28</TD>\n    <TD>2005-01-03T03:42:50</TD>\n    <TD>2005-01-03T03:46:04</TD>\n
+        \   <TD>717</TD>\n    <TD>994.0</TD>\n    <TD>117.0</TD>\n    <TD>1001.0</TD>\n
+        \   <TD>1176</TD>\n    <TD>38</TD>\n    <TD>157800</TD>\n    <TD>6</TD>\n
+        \   <TD>5010332</TD>\n  </TR>\n  <TR>\n    <TD>31466</TD>\n    <TD>2005-01-03T03:46:04</TD>\n
+        \   <TD>2005-01-03T04:07:10</TD>\n    <TD>2005-01-03T04:07:52</TD>\n    <TD>715</TD>\n
+        \   <TD>-154.0</TD>\n    <TD>124.0</TD>\n    <TD>198.0</TD>\n    <TD>1308</TD>\n
+        \   <TD>1328</TD>\n    <TD>2049360</TD>\n    <TD>12</TD>\n    <TD>5010302</TD>\n
+        \ </TR>\n  <TR>\n    <TD>31467</TD>\n    <TD>2005-01-03T05:00:24</TD>\n    <TD>2005-01-03T05:00:30</TD>\n
+        \   <TD>2005-01-03T05:19:36</TD>\n    <TD>715</TD>\n    <TD>-139.0</TD>\n
+        \   <TD>107.0</TD>\n    <TD>176.0</TD>\n    <TD>1152</TD>\n    <TD>224</TD>\n
+        \   <TD>894816</TD>\n    <TD>6</TD>\n    <TD>5010313</TD>\n  </TR>\n  <TR>\n
+        \   <TD>31468</TD>\n    <TD>2005-01-03T06:40:48</TD>\n    <TD>2005-01-03T06:42:46</TD>\n
+        \   <TD>2005-01-03T06:50:12</TD>\n    <TD>717</TD>\n    <TD>990.0</TD>\n    <TD>105.0</TD>\n
+        \   <TD>996.0</TD>\n    <TD>564</TD>\n    <TD>23</TD>\n    <TD>50782</TD>\n
+        \   <TD>6</TD>\n    <TD>5010314</TD>\n  </TR>\n  <TR>\n    <TD>31469</TD>\n
+        \   <TD>2005-01-03T08:27:56</TD>\n    <TD>2005-01-03T08:28:26</TD>\n    <TD>2005-01-03T08:29:08</TD>\n
+        \   <TD>717</TD>\n    <TD>971.0</TD>\n    <TD>104.0</TD>\n    <TD>977.0</TD>\n
+        \   <TD>72</TD>\n    <TD>36</TD>\n    <TD>11197</TD>\n    <TD>6</TD>\n    <TD>5010334</TD>\n
+        \ </TR>\n  <TR>\n    <TD>31470</TD>\n    <TD>2005-01-03T09:31:00</TD>\n    <TD>2005-01-03T09:33:34</TD>\n
+        \   <TD>2005-01-03T09:34:52</TD>\n    <TD>717</TD>\n    <TD>960.0</TD>\n    <TD>99.0</TD>\n
+        \   <TD>965.0</TD>\n    <TD>232</TD>\n    <TD>108</TD>\n    <TD>56486</TD>\n
+        \   <TD>6</TD>\n    <TD>5010322</TD>\n  </TR>\n  <TR>\n    <TD>31471</TD>\n
+        \   <TD>2005-01-03T09:34:52</TD>\n    <TD>2005-01-03T09:59:46</TD>\n    <TD>2005-01-03T10:06:04</TD>\n
+        \   <TD>717</TD>\n    <TD>994.0</TD>\n    <TD>108.0</TD>\n    <TD>1000.0</TD>\n
+        \   <TD>1872</TD>\n    <TD>40</TD>\n    <TD>55920</TD>\n    <TD>6</TD>\n    <TD>5010336</TD>\n
+        \ </TR>\n  <TR>\n    <TD>31472</TD>\n    <TD>2005-01-03T11:06:48</TD>\n    <TD>2005-01-03T11:07:18</TD>\n
+        \   <TD>2005-01-03T11:15:56</TD>\n    <TD>717</TD>\n    <TD>974.0</TD>\n    <TD>116.0</TD>\n
+        \   <TD>981.0</TD>\n    <TD>548</TD>\n    <TD>2160</TD>\n    <TD>2240376</TD>\n
+        \   <TD>12</TD>\n    <TD>5010304</TD>\n  </TR>\n</TABLEDATA>\n</DATA>\n</TABLE>\n</RESOURCE>\n</VOTABLE>\n</helio:queryResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sat, 23 Apr 2022 19:26:23 GMT
+      Server:
+      - Apache-Coyote/1.1
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1

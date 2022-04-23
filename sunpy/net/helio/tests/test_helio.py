@@ -72,7 +72,7 @@ def hec_urls():
     '''
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_webservice_parser():
     result = webservice_parser()
     assert isinstance(result, list)
@@ -217,14 +217,14 @@ def test_wsdl_retriever_wsdl(mock_taverna_parser, mock_webservice_parser, mock_l
         wsdl_retriever()
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_link_test():
     assert b"# SunPy Sample Data" in link_test('http://data.sunpy.org/sunpy/README.md')
 
 # The following two tests for `link_test` have empty URLs as arguments. This is because
 # when running the tests under Py2.7, I was getting the following error:
 #
-# "An attempt was made to connect to the internet by a test that was not marked `remote_data`"
+# "An attempt was made to connect to the internet by a test that was not marked `vcr()`"
 #
 # The empty URLs in no way invalidate the tests.
 
@@ -257,7 +257,7 @@ def client():
         pytest.xfail("No HELIO working links found.")
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_get_table_names(client):
     tables = client.get_table_names()
     assert len(tables) == 126
@@ -266,7 +266,7 @@ def test_get_table_names(client):
     assert table == 'timed_see_flare'
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_select_table(client, monkeypatch):
     monkeypatch.setattr('builtins.input', lambda x: "11")
     assert isinstance(client.select_table(), str)
@@ -274,7 +274,7 @@ def test_select_table(client, monkeypatch):
     assert client.select_table() is None
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_client_search(client):
     start = '2005/01/03'
     end = '2005/12/03'
@@ -283,7 +283,7 @@ def test_client_search(client):
     assert len(res) == 10
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_HECResponse_iter(client):
     start = '2005/01/03'
     end = '2005/12/03'

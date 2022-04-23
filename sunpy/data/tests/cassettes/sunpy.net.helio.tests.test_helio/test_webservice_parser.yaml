@@ -1,0 +1,114 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - registry.helio-vo.eu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://registry.helio-vo.eu/helio_registry/viewResourceEntry_body.jsp?XML=true&IVORN=ivo://helio-vo.eu/hec
+  response:
+    body:
+      string: "\n<ri:Resource created=\"2011-03-03T16:38:59\" status=\"active\" updated=\"2018-01-29T15:53:51\"
+        xmlns:cea=\"http://www.ivoa.net/xml/CEA/v1.0rc1\" xmlns:htxs=\"http://www.helio-vo.eu/xml/HELIO-TAP/v1.0\"
+        xmlns:ri=\"http://www.ivoa.net/xml/RegistryInterface/v1.0\" xmlns:va=\"http://www.ivoa.net/xml/VOApplication/v1.0rc1\"
+        xmlns:vr=\"http://www.ivoa.net/xml/VOResource/v1.0\" xmlns:vs=\"http://www.ivoa.net/xml/VODataService/v1.1\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"vs:CatalogService\">\n
+        \       <title>Heliophysics Event Catalogue</title>\n        <shortName>HEC</shortName>\n
+        \       <identifier>ivo://helio-vo.eu/hec</identifier>\n        <curation>\n
+        \           <publisher>HELIO</publisher>\n            <creator>\n                <name>INAF,
+        Obs. Trieste</name>\n            </creator>\n            <contributor>UCL-MSSL</contributor>\n
+        \           <contributor>STFC-RAL</contributor>\n            <contact>\n                <name>Helio
+        Archivist</name>\n                <email>archivist@helio-vo.eu</email>\n            </contact>\n
+        \       </curation>\n        <content>\n            <subject>HELIO, HEC, Event
+        lists</subject>\n            <subject>solar, heliospheric, planetary, geoscience,
+        in-situ, remote</subject>\n            <subject>CME, flare, proton, GLE, solar
+        wind</subject>\n            <description>Database of lists of events from
+        various heliophysical domains</description>\n            <referenceURL>http://helio-vo.eu/documents/help/more/service_description.html#hec</referenceURL>\n
+        \           <type>Catalog</type>\n            <contentLevel>Research</contentLevel>\n
+        \       </content>\n        <capability standardID=\"ivo://helio-vo.eu/std/FullQuery/v0.2\">\n
+        \           <interface xsi:type=\"vs:ParamHTTP\">\n                <accessURL
+        use=\"full\">http://helio.mssl.ucl.ac.uk/helio-hec/HelioQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://voparis-helio.obspm.fr/helio-hec/HelioQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://hec.helio-vo.eu/helio-hec/HelioQueryService</accessURL>\n
+        \           </interface>\n            <interface xsi:type=\"vr:WebService\">\n
+        \               <accessURL use=\"full\">http://helio.mssl.ucl.ac.uk/helio-hec/HelioService</accessURL>\n
+        \               <accessURL use=\"full\">http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioService</accessURL>\n
+        \               <accessURL use=\"full\">http://voparis-helio.obspm.fr/helio-hec/HelioService</accessURL>\n
+        \               <accessURL use=\"full\">http://hec.helio-vo.eu/helio-hec/HelioService</accessURL>\n
+        \           </interface>\n        </capability>\n        <capability standardID=\"ivo://ivoa.net/std/VOSI#capabilities\">\n
+        \           <interface xsi:type=\"vs:ParamHTTP\">\n                <accessURL
+        use=\"full\">http://helio.mssl.ucl.ac.uk/helio-hec/VOSI/capabilities</accessURL>\n
+        \               <queryType>GET</queryType>\n                <resultType>application/xml</resultType>\n
+        \           </interface>\n        </capability>\n        <capability standardID=\"ivo://helio-vo.eu/std/FullQuery/Soap/v1.0\">\n
+        \           <interface xsi:type=\"vr:WebService\">\n                <accessURL
+        use=\"full\">http://helio.mssl.ucl.ac.uk/helio-hec/HelioService</accessURL>\n
+        \               <accessURL use=\"full\">http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioService</accessURL>\n
+        \               <accessURL use=\"full\">http://voparis-helio.obspm.fr/helio-hec/HelioService</accessURL>\n
+        \               <accessURL use=\"full\">http://hec.helio-vo.eu/helio-hec/HelioService</accessURL>\n
+        \           </interface>\n        </capability>\n        <capability standardID=\"ivo://helio-vo.eu/std/FullQuery/v1.0\">\n
+        \           <interface xsi:type=\"vs:ParamHTTP\">\n                <accessURL
+        use=\"full\">http://helio.mssl.ucl.ac.uk/helio-hec/HelioQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://voparis-helio.obspm.fr/helio-hec/HelioQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://hec.helio-vo.eu/helio-hec/HelioQueryService</accessURL>\n
+        \           </interface>\n        </capability>\n        <capability standardID=\"ivo://helio-vo.eu/std/LongFullQuery/Soap/v1.0\">\n
+        \           <interface xsi:type=\"vr:WebService\">\n                <accessURL
+        use=\"full\">http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://voparis-helio.obspm.fr/helio-hec/HelioLongQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://hec.helio-vo.eu/helio-hec/HelioLongQueryService</accessURL>\n
+        \           </interface>\n        </capability>\n        <capability standardID=\"ivo://helio-vo.eu/std/LongFullQuery/v1.0\">\n
+        \           <interface xsi:type=\"vs:ParamHTTP\">\n                <accessURL
+        use=\"full\">http://helio.mssl.ucl.ac.uk/helio-hec/LongRunningQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://msslkk.mssl.ucl.ac.uk/helio-hec/LongRunningQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://voparis-helio.obspm.fr/helio-hec/LongRunningQueryService</accessURL>\n
+        \               <accessURL use=\"full\">http://hec.helio-vo.eu/helio-hec/LongRunningQueryService</accessURL>\n
+        \           </interface>\n        </capability>\n        <capability standardID=\"ivo://helio-vo.eu/service/stilts\">\n
+        \           <interface xsi:type=\"vs:ParamHTTP\">\n                <accessURL
+        use=\"full\">http://hec.helio-vo.eu/vmstilts/</accessURL>\n                <accessURL
+        use=\"full\">http://msslkk.mssl.ucl.ac.uk/vmstilts/</accessURL>\n                <accessURL
+        use=\"full\">http://voparis-helio.obspm.fr/helio-hec/stilts/</accessURL>\n
+        \           </interface>\n        </capability>\n        <capability standardID=\"ivo://helio-vo.eu/std/HELIO-TAP\"
+        xsi:type=\"htxs:HELIOTAP\">\n            <interface>\n                <accessURL
+        asyncservice=\"false\" sqlenabled=\"true\" status=\"active\" use=\"full\">http://helio.mssl.ucl.ac.uk/helio-hec/HelioQueryService</accessURL>\n
+        \               <accessURL asyncservice=\"false\" sqlenabled=\"true\" status=\"active\"
+        use=\"full\">http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioQueryService</accessURL>\n
+        \               <accessURL asyncservice=\"true\" sqlenabled=\"true\" status=\"active\"
+        use=\"webservice\">http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService</accessURL>\n
+        \               <accessURL asyncservice=\"true\" sqlenabled=\"true\" status=\"active\"
+        use=\"webservice\">http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService</accessURL>\n
+        \               <accessURL asyncservice=\"true\" sqlenabled=\"true\" status=\"active\"
+        use=\"full\">http://helio.mssl.ucl.ac.uk/helio-hec/LongRunningQueryService</accessURL>\n
+        \               <accessURL asyncservice=\"true\" sqlenabled=\"true\" status=\"active\"
+        use=\"full\">http://msslkk.mssl.ucl.ac.uk/helio-hec/LongRunningQueryService</accessURL>\n
+        \               <accessURL asyncservice=\"false\" sqlenabled=\"true\" status=\"active\"
+        use=\"full\">http://voparis-helio.obspm.fr/helio-hec/HelioQueryService</accessURL>\n
+        \               <accessURL asyncservice=\"true\" sqlenabled=\"true\" status=\"inactive\"
+        use=\"webservice\">http://voparis-helio.obspm.fr/helio-hec/HelioLongQueryService</accessURL>\n
+        \               <accessURL asyncservice=\"false\" sqlenabled=\"true\" status=\"active\"
+        use=\"webservice\">http://helio.mssl.ucl.ac.uk/helio-hec/HelioService</accessURL>\n
+        \               <accessURL asyncservice=\"false\" sqlenabled=\"true\" status=\"active\"
+        use=\"webservice\">http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioService</accessURL>\n
+        \           </interface>\n        </capability>\n    </ri:Resource>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:24:42 GMT
+      Server:
+      - Apache-Coyote/1.1
+      Set-Cookie:
+      - JSESSIONID=289EB6BD1745470810DAD7717807BBE6; Path=/helio_registry; HttpOnly
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1

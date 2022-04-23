@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - data.sunpy.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://data.sunpy.org/sunpy/README.md
+  response:
+    body:
+      string: '# SunPy Sample Data
+
+
+        This is the current SunPy sample data.
+
+
+        Version number folders should be incremented every time a file is _deleted_
+        so that past versions of SunPy can continue to rely on the existence of files
+        that were present when they were released.
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '258'
+      Content-Type:
+      - text/markdown; charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:24:44 GMT
+      ETag:
+      - '"ebf64e6513763df9713272563d6ef88c"'
+      Last-Modified:
+      - Mon, 05 Apr 2021 11:11:07 GMT
+      Server:
+      - AmazonS3
+      x-amz-id-2:
+      - xF+g4ZVkfI0V8deDQLqNt/G7kmgcYHK2PhzI5RiAvE09Q8BNvMZeM5oZ/355xkhTaIOgwb0ePi0=
+      x-amz-meta-etag:
+      - owTG16QO0xYM31lap7WjIA==
+      x-amz-request-id:
+      - JHD0X7STXWS6JVZM
+    status:
+      code: 200
+      message: OK
+version: 1
