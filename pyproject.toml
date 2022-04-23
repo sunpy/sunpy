@@ -37,6 +37,10 @@ build-backend = 'setuptools.build_meta'
 
     number_incorrect_long = "The number in the changelog file you added does not match the number of this pull request. Please rename the file."
 
+  [ tool.gilesbot.milestones ]
+    enabled = true
+    missing_message_long = "This pull request does not have a milestone assigned to it. Only maintainers can change this, so you don't need to worry about it. :smile:"
+
 [tool.towncrier]
     package = "sunpy"
     filename = "CHANGELOG.rst"
