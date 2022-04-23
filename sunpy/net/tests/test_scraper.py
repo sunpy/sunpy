@@ -204,7 +204,7 @@ def testFilesRange_sameDirectory_months_remote():
     assert len(s.filelist(timerange)) == 2
 
 
-@pytest.mark.vcr()
+@pytest.mark.remote_data
 def test_ftp():
     pattern = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/tca%y%m%d'
     s = Scraper(pattern)
@@ -257,7 +257,7 @@ def test_regex_data():
     assert len(s.filelist(timerange)) == 37
 
 
-@pytest.mark.vcr()
+@pytest.mark.remote_data
 def test_extract_files_meta():
     baseurl0 = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
     extractpattern0 = '{}/tcx/{year:4d}/{month:2d}/{wave}{:4d}{day:2d}'
