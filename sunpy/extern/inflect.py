@@ -1,41 +1,42 @@
 """
-    inflect.py: correctly generate plurals, ordinals, indefinite articles;
-                convert numbers to words
-    Copyright (C) 2010 Paul Dyson
+correctly generate plurals, ordinals, indefinite articles;
+convert numbers to words
 
-    Based upon the Perl module Lingua::EN::Inflect by Damian Conway.
+Copyright (C) 2010 Paul Dyson
 
-    The original Perl module Lingua::EN::Inflect by Damian Conway is
-    available from http://search.cpan.org/~dconway/
+Based upon the Perl module Lingua::EN::Inflect by Damian Conway.
 
-    This module can be downloaded at http://pypi.org/project/inflect
+The original Perl module Lingua::EN::Inflect by Damian Conway is
+available from http://search.cpan.org/~dconway/
+
+This module can be downloaded at http://pypi.org/project/inflect
 
 methods:
-          classical inflect
-          plural plural_noun plural_verb plural_adj singular_noun no num a an
-          compare compare_nouns compare_verbs compare_adjs
-          present_participle
-          ordinal
-          number_to_words
-          join
-          defnoun defverb defadj defa defan
+      classical inflect
+      plural plural_noun plural_verb plural_adj singular_noun no num a an
+      compare compare_nouns compare_verbs compare_adjs
+      present_participle
+      ordinal
+      number_to_words
+      join
+      defnoun defverb defadj defa defan
 
-    INFLECTIONS:    classical inflect
-          plural plural_noun plural_verb plural_adj singular_noun compare
-          no num a an present_participle
+INFLECTIONS:    classical inflect
+      plural plural_noun plural_verb plural_adj singular_noun compare
+      no num a an present_participle
 
-    PLURALS:   classical inflect
-          plural plural_noun plural_verb plural_adj singular_noun no num
-          compare compare_nouns compare_verbs compare_adjs
+PLURALS:   classical inflect
+      plural plural_noun plural_verb plural_adj singular_noun no num
+      compare compare_nouns compare_verbs compare_adjs
 
-    COMPARISONS:    classical
-          compare compare_nouns compare_verbs compare_adjs
+COMPARISONS:    classical
+      compare compare_nouns compare_verbs compare_adjs
 
-    ARTICLES:   classical inflect num a an
+ARTICLES:   classical inflect num a an
 
-    NUMERICAL:      ordinal number_to_words
+NUMERICAL:      ordinal number_to_words
 
-    USER_DEFINED:   defnoun defverb defadj defa defan
+USER_DEFINED:   defnoun defverb defadj defa defan
 
 Exceptions:
  UnknownClassicalModeError
@@ -50,7 +51,18 @@ Exceptions:
 
 import ast
 import re
-from typing import Dict, Union, Optional, Iterable, List, Match, Tuple, Callable
+from typing import (
+    Dict,
+    Union,
+    Optional,
+    Iterable,
+    List,
+    Match,
+    Tuple,
+    Callable,
+    Sequence,
+    cast,
+)
 
 
 class UnknownClassicalModeError(Exception):
@@ -84,7 +96,7 @@ class BadGenderError(Exception):
 STDOUT_ON = False
 
 
-def print3(txt: str):
+def print3(txt: str) -> None:
     if STDOUT_ON:
         print(txt)
 
@@ -135,14 +147,18 @@ def make_pl_si_lists(
 ):
     """
     given a list of singular words: lst
+
     an ending to append to make the plural: plending
+
     the number of characters to remove from the singular
-        before appending plending: siendingsize
+    before appending plending: siendingsize
+
     a flag whether to create a joinstem: dojoinstem
 
     return:
     a list of pluralised words: si_list (called si because this is what you need to
-                                         look for to make the singular)
+    look for to make the singular)
+
     the pluralised words as a dict of sets sorted by word length: si_bysize
     the singular words as a dict of sets sorted by word length: pl_bysize
     if dojoinstem is True: a regular expression that matches any of the stems: stem
@@ -204,7 +220,6 @@ pl_sb_irregular = {
     "jerry": "jerries",
     "mary": "maries",
     "talouse": "talouses",
-    "blouse": "blouses",
     "rom": "roma",
     "carmen": "carmina",
 }
@@ -846,6 +861,14 @@ pl_sb_U_man_mans_caps_list = """
     pl_sb_U_man_mans_caps_bysize,
 ) = make_pl_si_lists(pl_sb_U_man_mans_caps_list, "s", None, dojoinstem=False)
 
+# UNCONDITIONAL "..louse" -> "..lice"
+pl_sb_U_louse_lice_list = ("booklouse", "grapelouse", "louse", "woodlouse")
+
+(
+    si_sb_U_louse_lice_list,
+    si_sb_U_louse_lice_bysize,
+    pl_sb_U_louse_lice_bysize,
+) = make_pl_si_lists(pl_sb_U_louse_lice_list, "lice", 5, dojoinstem=False)
 
 pl_sb_uninflected_s_complete = [
     # PAIRS OR GROUPS SUBSUMED TO A SINGULAR...
@@ -991,6 +1014,7 @@ pl_sb_uninflected_endings = [
     # UNCOUNTABLE NOUNS
     "butter",
     "cash",
+    "furniture",
     "information",
     # SOME FISH AND HERD ANIMALS
     "fish",
@@ -1293,7 +1317,7 @@ si_sb_ies_ie = (
     "curies",
     "cutesies",
     "dogies",
-    "eyrie",
+    "eyries",
     "floozies",
     "footsies",
     "freebies",
@@ -1413,6 +1437,7 @@ si_sb_ches_che = (
     "quiches",
     "stomachaches",
     "toothaches",
+    "tranches",
 )
 
 si_sb_xes_xe = ("annexes", "axes", "deluxes", "pickaxes")
@@ -1658,7 +1683,7 @@ si_pron_acc_keys = enclose("|".join(si_pron["acc"]))
 si_pron_acc_keys_bysize = bysize(si_pron["acc"])
 
 
-def get_si_pron(thecase, word, gender):
+def get_si_pron(thecase, word, gender) -> str:
     try:
         sing = si_pron[thecase][word]
     except KeyError:
@@ -1666,7 +1691,7 @@ def get_si_pron(thecase, word, gender):
     try:
         return sing[gender]  # has several types due to gender
     except TypeError:
-        return sing  # answer independent of gender
+        return cast(str, sing)  # answer independent of gender
 
 
 # These dictionaries group verbs by first, second and third person
@@ -1848,6 +1873,7 @@ nth = {
     12: "th",
     13: "th",
 }
+nth_suff = set(nth.values())
 
 ordinal = dict(
     ty="tieth",
@@ -1985,31 +2011,39 @@ DIGIT = re.compile(r"\d")
 
 
 class Words(str):
-    lower: str  # type: ignore
-    split: List[str]  # type: ignore
+    lowered: str
+    split_: List[str]
     first: str
     last: str
 
-    def __init__(self, orig):
-        self.lower = self.lower()
-        self.split = self.split()
-        self.first = self.split[0]
-        self.last = self.split[-1]
+    def __init__(self, orig) -> None:
+        self.lowered = self.lower()
+        self.split_ = self.split()
+        self.first = self.split_[0]
+        self.last = self.split_[-1]
 
 
 class engine:
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.classical_dict = def_classical.copy()
-        self.persistent_count = None
+        self.persistent_count: Optional[int] = None
         self.mill_count = 0
-        self.pl_sb_user_defined = []
-        self.pl_v_user_defined = []
-        self.pl_adj_user_defined = []
-        self.si_sb_user_defined = []
-        self.A_a_user_defined = []
+        self.pl_sb_user_defined: List[str] = []
+        self.pl_v_user_defined: List[str] = []
+        self.pl_adj_user_defined: List[str] = []
+        self.si_sb_user_defined: List[str] = []
+        self.A_a_user_defined: List[str] = []
         self.thegender = "neuter"
-        self._number_args = None
+        self.__number_args: Optional[Dict[str, str]] = None
+
+    @property
+    def _number_args(self):
+        return cast(Dict[str, str], self.__number_args)
+
+    @_number_args.setter
+    def _number_args(self, val):
+        self.__number_args = val
 
     deprecated_methods = dict(
         pl="plural",
@@ -2071,7 +2105,7 @@ class engine:
 
     def defa(self, pattern: str) -> int:
         """
-        Define the indefinate article as 'a' for words matching pattern.
+        Define the indefinite article as 'a' for words matching pattern.
 
         """
         self.checkpat(pattern)
@@ -2080,14 +2114,14 @@ class engine:
 
     def defan(self, pattern: str) -> int:
         """
-        Define the indefinate article as 'an' for words matching pattern.
+        Define the indefinite article as 'an' for words matching pattern.
 
         """
         self.checkpat(pattern)
         self.A_a_user_defined.extend((pattern, "an"))
         return 1
 
-    def checkpat(self, pattern: Optional[str]):
+    def checkpat(self, pattern: Optional[str]) -> None:
         """
         check for errors in a regex pattern
         """
@@ -2099,7 +2133,7 @@ class engine:
             print3(f"\nBad user-defined singular pattern:\n\t{pattern}\n")
             raise BadUserDefinedPatternError
 
-    def checkpatplural(self, pattern: str):
+    def checkpatplural(self, pattern: str) -> None:
         """
         check for errors in a regex replace pattern
         """
@@ -2117,7 +2151,7 @@ class engine:
                 return mo.expand(pl)
         return None
 
-    def classical(self, **kwargs):
+    def classical(self, **kwargs) -> None:
         """
         turn classical mode on and off for various categories
 
@@ -2132,7 +2166,7 @@ class engine:
 
         By default all classical modes are off except names.
 
-        unknown value in args or key in kwargs rasies
+        unknown value in args or key in kwargs raises
         exception: UnknownClasicalModeError
 
         """
@@ -2173,7 +2207,7 @@ class engine:
             self.persistent_count = None
         return ""
 
-    def gender(self, gender: str):
+    def gender(self, gender: str) -> None:
         """
         set the gender for the singular of plural pronouns
 
@@ -2326,6 +2360,7 @@ class engine:
 
         If count supplied, then return text if count is one of:
             1, a, an, one, each, every, this, that
+
         otherwise return the plural.
 
         Whitespace at the start and end is preserved.
@@ -2348,6 +2383,7 @@ class engine:
 
         If count supplied, then return text if count is one of:
             1, a, an, one, each, every, this, that
+
         otherwise return the plural.
 
         Whitespace at the start and end is preserved.
@@ -2365,6 +2401,7 @@ class engine:
 
         If count supplied, then return text if count is one of:
             1, a, an, one, each, every, this, that
+
         otherwise return the plural.
 
         Whitespace at the start and end is preserved.
@@ -2385,6 +2422,7 @@ class engine:
 
         If count supplied, then return text if count is one of:
             1, a, an, one, each, every, this, that
+
         otherwise return the plural.
 
         Whitespace at the start and end is preserved.
@@ -2470,6 +2508,7 @@ class engine:
 
         If count supplied, then return the singular if count is one of:
             1, a, an, one, each, every, this, that or if count is None
+
         otherwise return text unchanged.
 
         Whitespace at the start and end is preserved.
@@ -2626,7 +2665,7 @@ class engine:
             return word
 
         for k, v in pl_sb_uninflected_bysize.items():
-            if word.lower[-k:] in v:
+            if word.lowered[-k:] in v:
                 return word
 
         if self.classical_dict["herd"] and word.last.lower() in pl_sb_uninflected_herd:
@@ -2638,7 +2677,7 @@ class engine:
         if mo and mo.group(2) != "":
             return f"{self._plnoun(mo.group(1), 2)}{mo.group(2)}"
 
-        if " a " in word.lower or "-a-" in word.lower:
+        if " a " in word.lowered or "-a-" in word.lowered:
             mo = PL_SB_PREP_DUAL_COMPOUND_RE.search(word)
             if mo and mo.group(2) != "" and mo.group(3) != "":
                 return (
@@ -2647,17 +2686,17 @@ class engine:
                     f"{self._plnoun(mo.group(3))}"
                 )
 
-        if len(word.split) >= 3:
-            for numword in range(1, len(word.split) - 1):
-                if word.split[numword] in pl_prep_list_da:
+        if len(word.split_) >= 3:
+            for numword in range(1, len(word.split_) - 1):
+                if word.split_[numword] in pl_prep_list_da:
                     return " ".join(
-                        word.split[: numword - 1]
-                        + [self._plnoun(word.split[numword - 1], 2)]
-                        + word.split[numword:]
+                        word.split_[: numword - 1]
+                        + [self._plnoun(word.split_[numword - 1], 2)]
+                        + word.split_[numword:]
                     )
 
         # only pluralize denominators in units
-        mo = DENOMINATOR.search(word.lower)
+        mo = DENOMINATOR.search(word.lowered)
         if mo:
             index = len(mo.group("denominator"))
             return f"{self._plnoun(word[:index])}{word[index:]}"
@@ -2666,10 +2705,10 @@ class engine:
         # there is no more than one word following)
         # degree Celsius => degrees Celsius but degree
         # fahrenheit hour => degree fahrenheit hours
-        if len(word.split) >= 2 and word.split[-2] == "degree":
-            return " ".join([self._plnoun(word.first)] + word.split[1:])
+        if len(word.split_) >= 2 and word.split_[-2] == "degree":
+            return " ".join([self._plnoun(word.first)] + word.split_[1:])
 
-        lowered_split = word.lower.split("-")
+        lowered_split = word.lowered.split("-")
         if len(lowered_split) >= 3:
             for numword in range(1, len(lowered_split) - 1):
                 if lowered_split[numword] in pl_prep_list_da:
@@ -2681,25 +2720,28 @@ class engine:
                             + lowered_split[numword]
                             + "-"
                         ]
-                    ) + " ".join(lowered_split[(numword + 1):])
+                    ) + " ".join(lowered_split[(numword + 1) :])
 
         # HANDLE PRONOUNS
 
         for k, v in pl_pron_acc_keys_bysize.items():
-            if word.lower[-k:] in v:  # ends with accusivate pronoun
+            if word.lowered[-k:] in v:  # ends with accusative pronoun
                 for pk, pv in pl_prep_bysize.items():
-                    if word.lower[:pk] in pv:  # starts with a prep
-                        if word.lower.split() == [word.lower[:pk], word.lower[-k:]]:
+                    if word.lowered[:pk] in pv:  # starts with a prep
+                        if word.lowered.split() == [
+                            word.lowered[:pk],
+                            word.lowered[-k:],
+                        ]:
                             # only whitespace in between
-                            return word.lower[:-k] + pl_pron_acc[word.lower[-k:]]
+                            return word.lowered[:-k] + pl_pron_acc[word.lowered[-k:]]
 
         try:
-            return pl_pron_nom[word.lower]
+            return pl_pron_nom[word.lowered]
         except KeyError:
             pass
 
         try:
-            return pl_pron_acc[word.lower]
+            return pl_pron_acc[word.lowered]
         except KeyError:
             pass
 
@@ -2723,10 +2765,10 @@ class engine:
                 f"{pl_sb_irregular_compound[(' '.join(lowered_split[-2:])).lower()]}"
             )
 
-        if word.lower[-3:] == "quy":
+        if word.lowered[-3:] == "quy":
             return f"{word[:-1]}ies"
 
-        if word.lower[-6:] == "person":
+        if word.lowered[-6:] == "person":
             if self.classical_dict["persons"]:
                 return f"{word}s"
             else:
@@ -2734,37 +2776,40 @@ class engine:
 
         # HANDLE FAMILIES OF IRREGULAR PLURALS
 
-        if word.lower[-3:] == "man":
+        if word.lowered[-3:] == "man":
             for k, v in pl_sb_U_man_mans_bysize.items():
-                if word.lower[-k:] in v:
+                if word.lowered[-k:] in v:
                     return f"{word}s"
             for k, v in pl_sb_U_man_mans_caps_bysize.items():
                 if word[-k:] in v:
                     return f"{word}s"
             return f"{word[:-3]}men"
-        if word.lower[-5:] == "mouse":
+        if word.lowered[-5:] == "mouse":
             return f"{word[:-5]}mice"
-        if word.lower[-5:] == "louse":
-            return f"{word[:-5]}lice"
-        if word.lower[-5:] == "goose":
+        if word.lowered[-5:] == "louse":
+            v = pl_sb_U_louse_lice_bysize.get(len(word))
+            if v and word.lowered in v:
+                return f"{word[:-5]}lice"
+            return f"{word}s"
+        if word.lowered[-5:] == "goose":
             return f"{word[:-5]}geese"
-        if word.lower[-5:] == "tooth":
+        if word.lowered[-5:] == "tooth":
             return f"{word[:-5]}teeth"
-        if word.lower[-4:] == "foot":
+        if word.lowered[-4:] == "foot":
             return f"{word[:-4]}feet"
-        if word.lower[-4:] == "taco":
+        if word.lowered[-4:] == "taco":
             return f"{word[:-5]}tacos"
 
-        if word.lower == "die":
+        if word.lowered == "die":
             return "dice"
 
         # HANDLE UNASSIMILATED IMPORTS
 
-        if word.lower[-4:] == "ceps":
+        if word.lowered[-4:] == "ceps":
             return word
-        if word.lower[-4:] == "zoon":
+        if word.lowered[-4:] == "zoon":
             return f"{word[:-2]}a"
-        if word.lower[-3:] in ("cis", "sis", "xis"):
+        if word.lowered[-3:] in ("cis", "sis", "xis"):
             return f"{word[:-2]}es"
 
         for lastlet, d, numend, post in (
@@ -2776,19 +2821,19 @@ class engine:
             ("n", pl_sb_U_on_a_bysize, -2, "a"),
             ("a", pl_sb_U_a_ae_bysize, None, "e"),
         ):
-            if word.lower[-1] == lastlet:  # this test to add speed
+            if word.lowered[-1] == lastlet:  # this test to add speed
                 for k, v in d.items():
-                    if word.lower[-k:] in v:
+                    if word.lowered[-k:] in v:
                         return word[:numend] + post
 
         # HANDLE INCOMPLETELY ASSIMILATED IMPORTS
 
         if self.classical_dict["ancient"]:
-            if word.lower[-4:] == "trix":
+            if word.lowered[-4:] == "trix":
                 return f"{word[:-1]}ces"
-            if word.lower[-3:] in ("eau", "ieu"):
+            if word.lowered[-3:] in ("eau", "ieu"):
                 return f"{word}x"
-            if word.lower[-3:] in ("ynx", "inx", "anx") and len(word) > 4:
+            if word.lowered[-3:] in ("ynx", "inx", "anx") and len(word) > 4:
                 return f"{word[:-1]}ges"
 
             for lastlet, d, numend, post in (
@@ -2804,9 +2849,9 @@ class engine:
                 ("o", pl_sb_C_o_i_bysize, -1, "i"),
                 ("n", pl_sb_C_on_a_bysize, -2, "a"),
             ):
-                if word.lower[-1] == lastlet:  # this test to add speed
+                if word.lowered[-1] == lastlet:  # this test to add speed
                     for k, v in d.items():
-                        if word.lower[-k:] in v:
+                        if word.lowered[-k:] in v:
                             return word[:numend] + post
 
             for d, numend, post in (
@@ -2814,7 +2859,7 @@ class engine:
                 (pl_sb_C_im_bysize, None, "im"),
             ):
                 for k, v in d.items():
-                    if word.lower[-k:] in v:
+                    if word.lowered[-k:] in v:
                         return word[:numend] + post
 
         # HANDLE SINGULAR NOUNS ENDING IN ...s OR OTHER SILIBANTS
@@ -2823,47 +2868,47 @@ class engine:
             return f"{word}es"
 
         for k, v in pl_sb_singular_s_bysize.items():
-            if word.lower[-k:] in v:
+            if word.lowered[-k:] in v:
                 return f"{word}es"
 
-        if word.lower[-2:] == "es" and word[0] == word[0].upper():
+        if word.lowered[-2:] == "es" and word[0] == word[0].upper():
             return f"{word}es"
 
-        if word.lower[-1] == "z":
+        if word.lowered[-1] == "z":
             for k, v in pl_sb_z_zes_bysize.items():
-                if word.lower[-k:] in v:
+                if word.lowered[-k:] in v:
                     return f"{word}es"
 
-            if word.lower[-2:-1] != "z":
+            if word.lowered[-2:-1] != "z":
                 return f"{word}zes"
 
-        if word.lower[-2:] == "ze":
+        if word.lowered[-2:] == "ze":
             for k, v in pl_sb_ze_zes_bysize.items():
-                if word.lower[-k:] in v:
+                if word.lowered[-k:] in v:
                     return f"{word}s"
 
-        if word.lower[-2:] in ("ch", "sh", "zz", "ss") or word.lower[-1] == "x":
+        if word.lowered[-2:] in ("ch", "sh", "zz", "ss") or word.lowered[-1] == "x":
             return f"{word}es"
 
         # HANDLE ...f -> ...ves
 
-        if word.lower[-3:] in ("elf", "alf", "olf"):
+        if word.lowered[-3:] in ("elf", "alf", "olf"):
             return f"{word[:-1]}ves"
-        if word.lower[-3:] == "eaf" and word.lower[-4:-3] != "d":
+        if word.lowered[-3:] == "eaf" and word.lowered[-4:-3] != "d":
             return f"{word[:-1]}ves"
-        if word.lower[-4:] in ("nife", "life", "wife"):
+        if word.lowered[-4:] in ("nife", "life", "wife"):
             return f"{word[:-2]}ves"
-        if word.lower[-3:] == "arf":
+        if word.lowered[-3:] == "arf":
             return f"{word[:-1]}ves"
 
         # HANDLE ...y
 
-        if word.lower[-1] == "y":
-            if word.lower[-2:-1] in "aeiou" or len(word) == 1:
+        if word.lowered[-1] == "y":
+            if word.lowered[-2:-1] in "aeiou" or len(word) == 1:
                 return f"{word}s"
 
             if self.classical_dict["names"]:
-                if word.lower[-1] == "y" and word[0] == word[0].upper():
+                if word.lowered[-1] == "y" and word[0] == word[0].upper():
                     return f"{word}s"
 
             return f"{word[:-1]}ies"
@@ -2874,13 +2919,13 @@ class engine:
             return f"{word}s"
 
         for k, v in pl_sb_U_o_os_bysize.items():
-            if word.lower[-k:] in v:
+            if word.lowered[-k:] in v:
                 return f"{word}s"
 
-        if word.lower[-2:] in ("ao", "eo", "io", "oo", "uo"):
+        if word.lowered[-2:] in ("ao", "eo", "io", "oo", "uo"):
             return f"{word}s"
 
-        if word.lower[-1] == "o":
+        if word.lowered[-1] == "o":
             return f"{word}es"
 
         # OTHERWISE JUST ADD ...s
@@ -2937,29 +2982,29 @@ class engine:
         if WHITESPACE.search(word):
             return False
 
-        if words.lower == "quizzes":
+        if words.lowered == "quizzes":
             return "quiz"
 
         # HANDLE STANDARD 3RD PERSON (CHOP THE ...(e)s OFF SINGLE WORDS)
 
         if (
-            words.lower[-4:] in ("ches", "shes", "zzes", "sses")
-            or words.lower[-3:] == "xes"
+            words.lowered[-4:] in ("ches", "shes", "zzes", "sses")
+            or words.lowered[-3:] == "xes"
         ):
             return words[:-2]
 
-        if words.lower[-3:] == "ies" and len(words) > 3:
-            return words.lower[:-3] + "y"
+        if words.lowered[-3:] == "ies" and len(words) > 3:
+            return words.lowered[:-3] + "y"
 
         if (
             words.last.lower() in pl_v_oes_oe
-            or words.lower[-4:] in pl_v_oes_oe_endings_size4
-            or words.lower[-5:] in pl_v_oes_oe_endings_size5
+            or words.lowered[-4:] in pl_v_oes_oe_endings_size4
+            or words.lowered[-5:] in pl_v_oes_oe_endings_size5
         ):
             return words[:-1]
 
-        if words.lower.endswith("oes") and len(words) > 3:
-            return words.lower[:-2]
+        if words.lowered.endswith("oes") and len(words) > 3:
+            return words.lowered[:-2]
 
         mo = ENDS_WITH_S.search(words)
         if mo:
@@ -3076,7 +3121,7 @@ class engine:
             return word
 
         for k, v in pl_sb_uninflected_bysize.items():
-            if words.lower[-k:] in v:
+            if words.lowered[-k:] in v:
                 return word
 
         if self.classical_dict["herd"] and words.last.lower() in pl_sb_uninflected_herd:
@@ -3091,7 +3136,7 @@ class engine:
         if mo and mo.group(2) != "":
             return f"{self._sinoun(mo.group(1), 1, gender=gender)}{mo.group(2)}"
 
-        space_split = words.lower.split(" ")
+        space_split = words.lowered.split(" ")
         if len(space_split) >= 3:
             for numword in range(1, len(space_split) - 1):
                 if space_split[numword] in pl_prep_list_da:
@@ -3106,7 +3151,7 @@ class engine:
                         space_split[: numword - 1] + sinoun_box + space_split[numword:]
                     )
 
-        dash_split = words.lower.split("-")
+        dash_split = words.lowered.split("-")
         if len(dash_split) >= 3:
             for numword in range(1, len(dash_split) - 1):
                 if dash_split[numword] in pl_prep_list_da:
@@ -3116,28 +3161,31 @@ class engine:
                     sinoun_box = [f"{sinoun}-{dash_split[numword]}-"]
 
                     return " ".join(dash_split[: numword - 1] + sinoun_box) + " ".join(
-                        dash_split[(numword + 1):]
+                        dash_split[(numword + 1) :]
                     )
 
         # HANDLE PRONOUNS
 
         for k, v in si_pron_acc_keys_bysize.items():
-            if words.lower[-k:] in v:  # ends with accusivate pronoun
+            if words.lowered[-k:] in v:  # ends with accusative pronoun
                 for pk, pv in pl_prep_bysize.items():
-                    if words.lower[:pk] in pv:  # starts with a prep
-                        if words.lower.split() == [words.lower[:pk], words.lower[-k:]]:
+                    if words.lowered[:pk] in pv:  # starts with a prep
+                        if words.lowered.split() == [
+                            words.lowered[:pk],
+                            words.lowered[-k:],
+                        ]:
                             # only whitespace in between
-                            return words.lower[:-k] + get_si_pron(
-                                "acc", words.lower[-k:], gender
+                            return words.lowered[:-k] + get_si_pron(
+                                "acc", words.lowered[-k:], gender
                             )
 
         try:
-            return get_si_pron("nom", words.lower, gender)
+            return get_si_pron("nom", words.lowered, gender)
         except KeyError:
             pass
 
         try:
-            return get_si_pron("acc", words.lower, gender)
+            return get_si_pron("acc", words.lowered, gender)
         except KeyError:
             pass
 
@@ -3160,44 +3208,46 @@ class engine:
                 si_sb_irregular_compound[(" ".join(dash_split[-2:])).lower()],
             )
 
-        if words.lower[-5:] == "quies":
+        if words.lowered[-5:] == "quies":
             return word[:-3] + "y"
 
-        if words.lower[-7:] == "persons":
+        if words.lowered[-7:] == "persons":
             return word[:-1]
-        if words.lower[-6:] == "people":
+        if words.lowered[-6:] == "people":
             return word[:-4] + "rson"
 
         # HANDLE FAMILIES OF IRREGULAR PLURALS
 
-        if words.lower[-4:] == "mans":
+        if words.lowered[-4:] == "mans":
             for k, v in si_sb_U_man_mans_bysize.items():
-                if words.lower[-k:] in v:
+                if words.lowered[-k:] in v:
                     return word[:-1]
             for k, v in si_sb_U_man_mans_caps_bysize.items():
                 if word[-k:] in v:
                     return word[:-1]
-        if words.lower[-3:] == "men":
+        if words.lowered[-3:] == "men":
             return word[:-3] + "man"
-        if words.lower[-4:] == "mice":
+        if words.lowered[-4:] == "mice":
             return word[:-4] + "mouse"
-        if words.lower[-4:] == "lice":
-            return word[:-4] + "louse"
-        if words.lower[-5:] == "geese":
+        if words.lowered[-4:] == "lice":
+            v = si_sb_U_louse_lice_bysize.get(len(word))
+            if v and words.lowered in v:
+                return word[:-4] + "louse"
+        if words.lowered[-5:] == "geese":
             return word[:-5] + "goose"
-        if words.lower[-5:] == "teeth":
+        if words.lowered[-5:] == "teeth":
             return word[:-5] + "tooth"
-        if words.lower[-4:] == "feet":
+        if words.lowered[-4:] == "feet":
             return word[:-4] + "foot"
 
-        if words.lower == "dice":
+        if words.lowered == "dice":
             return "die"
 
         # HANDLE UNASSIMILATED IMPORTS
 
-        if words.lower[-4:] == "ceps":
+        if words.lowered[-4:] == "ceps":
             return word
-        if words.lower[-3:] == "zoa":
+        if words.lowered[-3:] == "zoa":
             return word[:-1] + "on"
 
         for lastlet, d, unass_numend, post in (
@@ -3209,20 +3259,20 @@ class engine:
             ("a", si_sb_U_on_a_bysize, -1, "on"),
             ("e", si_sb_U_a_ae_bysize, -1, ""),
         ):
-            if words.lower[-1] == lastlet:  # this test to add speed
+            if words.lowered[-1] == lastlet:  # this test to add speed
                 for k, v in d.items():
-                    if words.lower[-k:] in v:
+                    if words.lowered[-k:] in v:
                         return word[:unass_numend] + post
 
         # HANDLE INCOMPLETELY ASSIMILATED IMPORTS
 
         if self.classical_dict["ancient"]:
 
-            if words.lower[-6:] == "trices":
+            if words.lowered[-6:] == "trices":
                 return word[:-3] + "x"
-            if words.lower[-4:] in ("eaux", "ieux"):
+            if words.lowered[-4:] in ("eaux", "ieux"):
                 return word[:-1]
-            if words.lower[-5:] in ("ynges", "inges", "anges") and len(word) > 6:
+            if words.lowered[-5:] in ("ynges", "inges", "anges") and len(word) > 6:
                 return word[:-3] + "x"
 
             for lastlet, d, class_numend, post in (
@@ -3240,15 +3290,15 @@ class engine:
                 ("m", si_sb_C_im_bysize, -2, ""),
                 ("i", si_sb_C_i_bysize, -1, ""),
             ):
-                if words.lower[-1] == lastlet:  # this test to add speed
+                if words.lowered[-1] == lastlet:  # this test to add speed
                     for k, v in d.items():
-                        if words.lower[-k:] in v:
+                        if words.lowered[-k:] in v:
                             return word[:class_numend] + post
 
         # HANDLE PLURLS ENDING IN uses -> use
 
         if (
-            words.lower[-6:] == "houses"
+            words.lowered[-6:] == "houses"
             or word in si_sb_uses_use_case
             or words.last.lower() in si_sb_uses_use
         ):
@@ -3262,7 +3312,7 @@ class engine:
         # HANDLE PLURLS ENDING IN oes -> oe
 
         if (
-            words.lower[-5:] == "shoes"
+            words.lowered[-5:] == "shoes"
             or word in si_sb_oes_oe_case
             or words.last.lower() in si_sb_oes_oe
         ):
@@ -3277,10 +3327,10 @@ class engine:
             return word[:-2]
 
         for k, v in si_sb_singular_s_bysize.items():
-            if words.lower[-k:] in v:
+            if words.lowered[-k:] in v:
                 return word[:-2]
 
-        if words.lower[-4:] == "eses" and word[0] == word[0].upper():
+        if words.lowered[-4:] == "eses" and word[0] == word[0].upper():
             return word[:-2]
 
         if words.last.lower() in si_sb_z_zes:
@@ -3289,19 +3339,19 @@ class engine:
         if words.last.lower() in si_sb_zzes_zz:
             return word[:-2]
 
-        if words.lower[-4:] == "zzes":
+        if words.lowered[-4:] == "zzes":
             return word[:-3]
 
         if word in si_sb_ches_che_case or words.last.lower() in si_sb_ches_che:
             return word[:-1]
 
-        if words.lower[-4:] in ("ches", "shes"):
+        if words.lowered[-4:] in ("ches", "shes"):
             return word[:-2]
 
         if words.last.lower() in si_sb_xes_xe:
             return word[:-1]
 
-        if words.lower[-3:] == "xes":
+        if words.lowered[-3:] == "xes":
             return word[:-2]
 
         # HANDLE ...f -> ...ves
@@ -3309,44 +3359,44 @@ class engine:
         if word in si_sb_ves_ve_case or words.last.lower() in si_sb_ves_ve:
             return word[:-1]
 
-        if words.lower[-3:] == "ves":
-            if words.lower[-5:-3] in ("el", "al", "ol"):
+        if words.lowered[-3:] == "ves":
+            if words.lowered[-5:-3] in ("el", "al", "ol"):
                 return word[:-3] + "f"
-            if words.lower[-5:-3] == "ea" and word[-6:-5] != "d":
+            if words.lowered[-5:-3] == "ea" and word[-6:-5] != "d":
                 return word[:-3] + "f"
-            if words.lower[-5:-3] in ("ni", "li", "wi"):
+            if words.lowered[-5:-3] in ("ni", "li", "wi"):
                 return word[:-3] + "fe"
-            if words.lower[-5:-3] == "ar":
+            if words.lowered[-5:-3] == "ar":
                 return word[:-3] + "f"
 
         # HANDLE ...y
 
-        if words.lower[-2:] == "ys":
-            if len(words.lower) > 2 and words.lower[-3] in "aeiou":
+        if words.lowered[-2:] == "ys":
+            if len(words.lowered) > 2 and words.lowered[-3] in "aeiou":
                 return word[:-1]
 
             if self.classical_dict["names"]:
-                if words.lower[-2:] == "ys" and word[0] == word[0].upper():
+                if words.lowered[-2:] == "ys" and word[0] == word[0].upper():
                     return word[:-1]
 
-        if words.lower[-3:] == "ies":
+        if words.lowered[-3:] == "ies":
             return word[:-3] + "y"
 
         # HANDLE ...o
 
-        if words.lower[-2:] == "os":
+        if words.lowered[-2:] == "os":
 
             if words.last.lower() in si_sb_U_o_os_complete:
                 return word[:-1]
 
             for k, v in si_sb_U_o_os_bysize.items():
-                if words.lower[-k:] in v:
+                if words.lowered[-k:] in v:
                     return word[:-1]
 
-            if words.lower[-3:] in ("aos", "eos", "ios", "oos", "uos"):
+            if words.lowered[-3:] in ("aos", "eos", "ios", "oos", "uos"):
                 return word[:-1]
 
-        if words.lower[-3:] == "oes":
+        if words.lowered[-3:] == "oes":
             return word[:-2]
 
         # UNASSIMILATED IMPORTS FINAL RULE
@@ -3356,7 +3406,7 @@ class engine:
 
         # OTHERWISE JUST REMOVE ...s
 
-        if words.lower[-1] == "s":
+        if words.lowered[-1] == "s":
             return word[:-1]
 
         # COULD NOT FIND SINGULAR
@@ -3448,7 +3498,7 @@ class engine:
 
         If count is one of:
             1, a, an, one, each, every, this, that
-        return count followed by text.
+            return count followed by text.
 
         Otherwise return count follow by the plural of text.
 
@@ -3546,7 +3596,7 @@ class engine:
     def unitfn(self, units: int, mindex: int = 0) -> str:
         return f"{unit[units]}{self.millfn(mindex)}"
 
-    def tenfn(self, tens, units, mindex=0):
+    def tenfn(self, tens, units, mindex=0) -> str:
         if tens != 1:
             tens_part = ten[tens]
             if tens and units:
@@ -3672,8 +3722,11 @@ class engine:
 
         group = 1, 2 or 3 to group numbers before turning into words
         comma: define comma
-        andword: word for 'and'. Can be set to ''.
+
+        andword:
+            word for 'and'. Can be set to ''.
             e.g. "one hundred and one" vs "one hundred one"
+
         zero: word for '0'
         one: word for '1'
         decimal: word for decimal point
@@ -3706,7 +3759,10 @@ class engine:
         else:
             sign = ""
 
-        myord = num[-2:] in ("st", "nd", "rd", "th")
+        if num in nth_suff:
+            num = zero
+
+        myord = num[-2:] in nth_suff
         if myord:
             num = num[:-2]
         finalpoint = False
@@ -3773,7 +3829,7 @@ class engine:
         if finalpoint:
             numchunks.append(decimal)
 
-        # wantlist: Perl list context. can explictly specify in Python
+        # wantlist: Perl list context. can explicitly specify in Python
         if wantlist:
             if sign:
                 numchunks = [sign] + numchunks
@@ -3802,7 +3858,7 @@ class engine:
 
     def join(
         self,
-        words: Optional[List[str]],
+        words: Optional[Sequence[str]],
         sep: Optional[str] = None,
         sep_spaced: bool = True,
         final_sep: Optional[str] = None,
