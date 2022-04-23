@@ -117,19 +117,19 @@ def test_dtype(generic_map):
 
 
 def test_min(generic_map):
-    assert generic_map.min() == 1
+    assert generic_map.min() == 0
 
 
 def test_max(generic_map):
-    assert generic_map.max() == 1
+    assert generic_map.max() == 35
 
 
 def test_mean(generic_map):
-    assert generic_map.mean() == 1
+    assert generic_map.mean() == 17.5
 
 
 def test_std(generic_map):
-    assert generic_map.std() == 0
+    np.testing.assert_allclose(generic_map.std(), 10.388294694831615)
 
 
 def test_unit(generic_map):
