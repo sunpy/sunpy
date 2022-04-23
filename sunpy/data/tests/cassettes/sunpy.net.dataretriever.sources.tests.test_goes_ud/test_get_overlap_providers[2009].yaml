@@ -1,0 +1,1057 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - umbra.nascom.nasa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://umbra.nascom.nasa.gov/goes/fits/2009/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /goes/fits/2009</title>\n </head>\n <body>\n<h1>Index
+        of /goes/fits/2009</h1>\n  <table>\n   <tr><th valign=\"top\"><img src=\"/icons/blank.gif\"
+        alt=\"[ICO]\"></th><th><a href=\"?C=N;O=D\">Name</a></th><th><a href=\"?C=M;O=A\">Last
+        modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th><th><a href=\"?C=D;O=A\">Description</a></th></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td valign=\"top\"><img src=\"/icons/back.gif\"
+        alt=\"[PARENTDIR]\"></td><td><a href=\"/goes/fits/\">Parent Directory</a>
+        \      </td><td>&nbsp;</td><td align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090101.fits\">go1020090101.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090102.fits\">go1020090102.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090103.fits\">go1020090103.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090104.fits\">go1020090104.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090105.fits\">go1020090105.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090106.fits\">go1020090106.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090107.fits\">go1020090107.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090108.fits\">go1020090108.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090109.fits\">go1020090109.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090110.fits\">go1020090110.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090111.fits\">go1020090111.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090112.fits\">go1020090112.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090113.fits\">go1020090113.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090114.fits\">go1020090114.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090115.fits\">go1020090115.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090116.fits\">go1020090116.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090117.fits\">go1020090117.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090118.fits\">go1020090118.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090119.fits\">go1020090119.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090120.fits\">go1020090120.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090121.fits\">go1020090121.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090122.fits\">go1020090122.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090123.fits\">go1020090123.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090124.fits\">go1020090124.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090125.fits\">go1020090125.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090126.fits\">go1020090126.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090127.fits\">go1020090127.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090128.fits\">go1020090128.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090129.fits\">go1020090129.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090130.fits\">go1020090130.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">450K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090131.fits\">go1020090131.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090201.fits\">go1020090201.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090202.fits\">go1020090202.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090203.fits\">go1020090203.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090204.fits\">go1020090204.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090205.fits\">go1020090205.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090206.fits\">go1020090206.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090207.fits\">go1020090207.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090208.fits\">go1020090208.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090209.fits\">go1020090209.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">464K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090210.fits\">go1020090210.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090211.fits\">go1020090211.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090212.fits\">go1020090212.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090213.fits\">go1020090213.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090214.fits\">go1020090214.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090215.fits\">go1020090215.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090216.fits\">go1020090216.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090217.fits\">go1020090217.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">473K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090218.fits\">go1020090218.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">473K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090219.fits\">go1020090219.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090220.fits\">go1020090220.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090221.fits\">go1020090221.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090222.fits\">go1020090222.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090223.fits\">go1020090223.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090224.fits\">go1020090224.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090225.fits\">go1020090225.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090226.fits\">go1020090226.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090227.fits\">go1020090227.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090228.fits\">go1020090228.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090301.fits\">go1020090301.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090302.fits\">go1020090302.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090303.fits\">go1020090303.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090304.fits\">go1020090304.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">487K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090305.fits\">go1020090305.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">487K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090306.fits\">go1020090306.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090307.fits\">go1020090307.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090308.fits\">go1020090308.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090309.fits\">go1020090309.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090310.fits\">go1020090310.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">489K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090311.fits\">go1020090311.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090312.fits\">go1020090312.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090313.fits\">go1020090313.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090314.fits\">go1020090314.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090315.fits\">go1020090315.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090316.fits\">go1020090316.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090317.fits\">go1020090317.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">487K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090318.fits\">go1020090318.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090319.fits\">go1020090319.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090320.fits\">go1020090320.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090321.fits\">go1020090321.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090322.fits\">go1020090322.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090323.fits\">go1020090323.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090324.fits\">go1020090324.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">487K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090325.fits\">go1020090325.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090326.fits\">go1020090326.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090327.fits\">go1020090327.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090328.fits\">go1020090328.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090329.fits\">go1020090329.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090330.fits\">go1020090330.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090331.fits\">go1020090331.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090401.fits\">go1020090401.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090402.fits\">go1020090402.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090403.fits\">go1020090403.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">473K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090404.fits\">go1020090404.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090405.fits\">go1020090405.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090406.fits\">go1020090406.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090407.fits\">go1020090407.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090408.fits\">go1020090408.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090409.fits\">go1020090409.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090410.fits\">go1020090410.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090411.fits\">go1020090411.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090412.fits\">go1020090412.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090413.fits\">go1020090413.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090414.fits\">go1020090414.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">495K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090415.fits\">go1020090415.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090416.fits\">go1020090416.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090417.fits\">go1020090417.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090418.fits\">go1020090418.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">368K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090419.fits\">go1020090419.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090420.fits\">go1020090420.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">489K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090421.fits\">go1020090421.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090422.fits\">go1020090422.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090423.fits\">go1020090423.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090424.fits\">go1020090424.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090425.fits\">go1020090425.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090426.fits\">go1020090426.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090427.fits\">go1020090427.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090428.fits\">go1020090428.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090429.fits\">go1020090429.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090430.fits\">go1020090430.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090501.fits\">go1020090501.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090502.fits\">go1020090502.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090503.fits\">go1020090503.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090504.fits\">go1020090504.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090505.fits\">go1020090505.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090506.fits\">go1020090506.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090507.fits\">go1020090507.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090508.fits\">go1020090508.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090509.fits\">go1020090509.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090510.fits\">go1020090510.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090511.fits\">go1020090511.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090512.fits\">go1020090512.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090513.fits\">go1020090513.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090514.fits\">go1020090514.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090515.fits\">go1020090515.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090516.fits\">go1020090516.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090517.fits\">go1020090517.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090518.fits\">go1020090518.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090519.fits\">go1020090519.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090520.fits\">go1020090520.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090521.fits\">go1020090521.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090522.fits\">go1020090522.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090523.fits\">go1020090523.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090524.fits\">go1020090524.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090525.fits\">go1020090525.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090526.fits\">go1020090526.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090527.fits\">go1020090527.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">461K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090528.fits\">go1020090528.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090529.fits\">go1020090529.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090530.fits\">go1020090530.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090531.fits\">go1020090531.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090601.fits\">go1020090601.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090602.fits\">go1020090602.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090603.fits\">go1020090603.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090604.fits\">go1020090604.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090605.fits\">go1020090605.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090606.fits\">go1020090606.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">464K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090607.fits\">go1020090607.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090608.fits\">go1020090608.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090609.fits\">go1020090609.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090610.fits\">go1020090610.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090611.fits\">go1020090611.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">450K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090612.fits\">go1020090612.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090613.fits\">go1020090613.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090614.fits\">go1020090614.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090615.fits\">go1020090615.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090616.fits\">go1020090616.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090617.fits\">go1020090617.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090618.fits\">go1020090618.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">433K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090619.fits\">go1020090619.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090620.fits\">go1020090620.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090621.fits\">go1020090621.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090622.fits\">go1020090622.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090623.fits\">go1020090623.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">487K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090624.fits\">go1020090624.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090625.fits\">go1020090625.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090626.fits\">go1020090626.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090627.fits\">go1020090627.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090628.fits\">go1020090628.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090629.fits\">go1020090629.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090630.fits\">go1020090630.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090701.fits\">go1020090701.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090702.fits\">go1020090702.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090703.fits\">go1020090703.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090704.fits\">go1020090704.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090705.fits\">go1020090705.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090706.fits\">go1020090706.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090707.fits\">go1020090707.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090708.fits\">go1020090708.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090709.fits\">go1020090709.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090710.fits\">go1020090710.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090711.fits\">go1020090711.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090712.fits\">go1020090712.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090713.fits\">go1020090713.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090714.fits\">go1020090714.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090715.fits\">go1020090715.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090716.fits\">go1020090716.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">411K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090717.fits\">go1020090717.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090718.fits\">go1020090718.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090719.fits\">go1020090719.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090720.fits\">go1020090720.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090721.fits\">go1020090721.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090722.fits\">go1020090722.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090723.fits\">go1020090723.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090724.fits\">go1020090724.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090725.fits\">go1020090725.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090726.fits\">go1020090726.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090727.fits\">go1020090727.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090728.fits\">go1020090728.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090729.fits\">go1020090729.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090730.fits\">go1020090730.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090731.fits\">go1020090731.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090801.fits\">go1020090801.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090802.fits\">go1020090802.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090803.fits\">go1020090803.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090804.fits\">go1020090804.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090805.fits\">go1020090805.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090806.fits\">go1020090806.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090807.fits\">go1020090807.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090808.fits\">go1020090808.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090809.fits\">go1020090809.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090810.fits\">go1020090810.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090811.fits\">go1020090811.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090812.fits\">go1020090812.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090813.fits\">go1020090813.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090814.fits\">go1020090814.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090815.fits\">go1020090815.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090816.fits\">go1020090816.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090817.fits\">go1020090817.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090818.fits\">go1020090818.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090819.fits\">go1020090819.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090820.fits\">go1020090820.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090821.fits\">go1020090821.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">473K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090822.fits\">go1020090822.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090823.fits\">go1020090823.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090824.fits\">go1020090824.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090825.fits\">go1020090825.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090826.fits\">go1020090826.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090827.fits\">go1020090827.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090828.fits\">go1020090828.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090829.fits\">go1020090829.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090830.fits\">go1020090830.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090831.fits\">go1020090831.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">425K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090901.fits\">go1020090901.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">487K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090902.fits\">go1020090902.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090903.fits\">go1020090903.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090904.fits\">go1020090904.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090905.fits\">go1020090905.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090906.fits\">go1020090906.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090907.fits\">go1020090907.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090908.fits\">go1020090908.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">489K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090909.fits\">go1020090909.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090910.fits\">go1020090910.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090911.fits\">go1020090911.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090912.fits\">go1020090912.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090913.fits\">go1020090913.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090914.fits\">go1020090914.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090915.fits\">go1020090915.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">487K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090916.fits\">go1020090916.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090917.fits\">go1020090917.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090918.fits\">go1020090918.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090919.fits\">go1020090919.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090920.fits\">go1020090920.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090921.fits\">go1020090921.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090922.fits\">go1020090922.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">487K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090923.fits\">go1020090923.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090924.fits\">go1020090924.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090925.fits\">go1020090925.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090926.fits\">go1020090926.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090927.fits\">go1020090927.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090928.fits\">go1020090928.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090929.fits\">go1020090929.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">484K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020090930.fits\">go1020090930.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091001.fits\">go1020091001.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091002.fits\">go1020091002.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">478K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091003.fits\">go1020091003.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091004.fits\">go1020091004.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091005.fits\">go1020091005.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091006.fits\">go1020091006.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">475K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091007.fits\">go1020091007.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091008.fits\">go1020091008.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091009.fits\">go1020091009.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091010.fits\">go1020091010.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091011.fits\">go1020091011.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091012.fits\">go1020091012.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091013.fits\">go1020091013.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091014.fits\">go1020091014.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091015.fits\">go1020091015.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091016.fits\">go1020091016.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091017.fits\">go1020091017.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091018.fits\">go1020091018.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091019.fits\">go1020091019.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091020.fits\">go1020091020.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">489K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091021.fits\">go1020091021.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091022.fits\">go1020091022.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091023.fits\">go1020091023.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091024.fits\">go1020091024.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091025.fits\">go1020091025.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091026.fits\">go1020091026.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091027.fits\">go1020091027.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091028.fits\">go1020091028.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">411K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091029.fits\">go1020091029.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091030.fits\">go1020091030.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">447K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091031.fits\">go1020091031.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091101.fits\">go1020091101.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091102.fits\">go1020091102.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091103.fits\">go1020091103.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091104.fits\">go1020091104.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">458K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091105.fits\">go1020091105.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091106.fits\">go1020091106.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091107.fits\">go1020091107.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091108.fits\">go1020091108.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091109.fits\">go1020091109.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091110.fits\">go1020091110.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091111.fits\">go1020091111.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091112.fits\">go1020091112.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091113.fits\">go1020091113.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091114.fits\">go1020091114.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091115.fits\">go1020091115.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091116.fits\">go1020091116.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">411K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091117.fits\">go1020091117.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091118.fits\">go1020091118.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091119.fits\">go1020091119.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091120.fits\">go1020091120.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091121.fits\">go1020091121.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091122.fits\">go1020091122.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091123.fits\">go1020091123.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091124.fits\">go1020091124.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">470K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091125.fits\">go1020091125.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091126.fits\">go1020091126.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091127.fits\">go1020091127.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091128.fits\">go1020091128.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091129.fits\">go1020091129.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091130.fits\">go1020091130.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">467K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1020091201.fits\">go1020091201.fits</a>
+        \     </td><td align=\"right\">2011-05-23 17:58  </td><td align=\"right\">658K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091202.fits\">go1420091202.fits</a>
+        \     </td><td align=\"right\">2012-06-25 16:25  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091203.fits\">go1420091203.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:01  </td><td align=\"right\">675K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091204.fits\">go1420091204.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:01  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091205.fits\">go1420091205.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:01  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091206.fits\">go1420091206.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:01  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091207.fits\">go1420091207.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:01  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091208.fits\">go1420091208.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:02  </td><td align=\"right\">540K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091209.fits\">go1420091209.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:02  </td><td align=\"right\">664K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091210.fits\">go1420091210.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:02  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091211.fits\">go1420091211.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:02  </td><td align=\"right\">675K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091212.fits\">go1420091212.fits</a>
+        \     </td><td align=\"right\">2012-06-26 16:02  </td><td align=\"right\">675K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091213.fits\">go1420091213.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:02  </td><td align=\"right\">624K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091214.fits\">go1420091214.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:02  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091215.fits\">go1420091215.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:02  </td><td align=\"right\">616K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091216.fits\">go1420091216.fits</a>
+        \     </td><td align=\"right\">2012-06-26 18:05  </td><td align=\"right\">537K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091217.fits\">go1420091217.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:02  </td><td align=\"right\">675K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091218.fits\">go1420091218.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">675K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091219.fits\">go1420091219.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091220.fits\">go1420091220.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091221.fits\">go1420091221.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">669K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091222.fits\">go1420091222.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">481K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091223.fits\">go1420091223.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091224.fits\">go1420091224.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">675K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091225.fits\">go1420091225.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091226.fits\">go1420091226.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091227.fits\">go1420091227.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:03  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091228.fits\">go1420091228.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:40  </td><td align=\"right\">636K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091229.fits\">go1420091229.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:41  </td><td align=\"right\">487K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091230.fits\">go1420091230.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:41  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/image2.gif\" alt=\"[IMG]\"></td><td><a href=\"go1420091231.fits\">go1420091231.fits</a>
+        \     </td><td align=\"right\">2012-06-25 18:41  </td><td align=\"right\">678K</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 18:12:36 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - satdat.ngdc.noaa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes13/gxrs-l2-irrad_science/2009/09/
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>404 Not Found</title>
+
+        </head><body>
+
+        <h1>Not Found</h1>
+
+        <p>The requested URL /sem/goes/data/science/xrs/goes13/gxrs-l2-irrad_science/2009/09/
+        was not found on this server.</p>
+
+        <hr>
+
+        <address>Apache Server at <a href="mailto:ngdc.linux-admin@noaa.gov">satdat-vip.ngdc.noaa.gov</a>
+        Port 443</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '383'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 18:12:38 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000;
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - satdat.ngdc.noaa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/2009/09/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/2009/09</title>\n
+        </head>\n <body>\n<!-- BEGIN HEADER  -->\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD
+        XHTML 1.0 Transitional//EN\"\"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html
+        xmlns=\"https://www.w3.org/1999/xhtml\">\r\n<head>\r\n  <title>Direct Access
+        to GOES and POES Data | NCEI</title>\r\n  <link rel=\"stylesheet\" type=\"text/css\"
+        href=\"https://www.ngdc.noaa.gov/ngdcbasicstyle.css\" title=\"default\"/>\r\n
+        \ <link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.ngdc.noaa.gov/stp/stpbasicstyle.css\"
+        title=\"default\"/>\r\n  <link rel=\"shortcut icon\" href=\"https://www.ngdc.noaa.gov/favicon.ico\"/>\r\n
+        \ <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n
+        \ <meta name=\"operator\" content=\"ncei.info\"/>\r\n  <meta name=\"questions\"
+        content=\"ncei.info\"/>\r\n  <meta name=\"return\" content=\"space\"/>\r\n
+        \ <meta name=\"DC.title\" content=\"Solar and Terrestrial Physics\"/>\r\n
+        \ <meta name=\"DC.creator\" content=\"National Geophysical Data Center\"/>\r\n
+        \ <meta name=\"DC.date.created\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.date.reviewed\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.language\" scheme=\"DCTERMS.RFC1766\" content=\"EN-US\"/>\r\n
+        \ <meta name=\"DC.subject\" scheme=\"ISO19115\" content=\"geoscientificInformation\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"U.S. Department of Commerce\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"National Oceanic and Atmospheric Administration
+        (NOAA)\"/>\r\n  <meta name=\"DC.publisher\" content=\"National Environmental
+        Satellite, Data, and Information Service (NESDIS)\"/>\r\n  <meta name=\"DC.publisher\"
+        content=\"National Centers for Environmental Information (NCEI)\"/>\r\n  <meta
+        name=\"description\" content=\"World Data Service for Geophysics, operated
+        by NOAA/NCEI, archives &amp; offers data from the Solar and Upper Atmosphere,
+        Ionosphere, and space environment, including Earth observations from space.\"/>\r\n
+        \ <meta name=\"keywords\" content=\"\r\nmagnetometer, goes magnetometer, geomagnetism,
+        geomagnetic field, magnetic field,\r\nenergetic particles, goes particles,
+        goes energetic particles, goes eps, eps, sep, goes sep, ion event, particle
+        event, CME, solar protons, solar particles,\r\nx-rays, xrays, goes x-rays,
+        xrs, goes xrs, solar x-rays, solar xrays,\r\nsem, goes sem, space environment
+        monitor, flares, NGDC, NOAA.\">\r\n</head>\r\n<body>\r\n<!-- skip navigation
+        link for 508 compliance -->\r\n<a name=\"skip_navigation\"></a>\r\n<div id=\"container\">\r\n
+        \ <table class=\"stppage\" summary=\"layout table\">\r\n    <tbody>\r\n    <tr>\r\n
+        \     <!-- BEGIN NESDIS HEADER-->\r\n      <td align=\"center\" class=\"navlink\"
+        colspan=\"3\">\r\n        <iframe src=\"https://www.ngdc.noaa.gov/stp/include/stp_swtopnav.html?breadcrumb=space\"
+        scrolling=\"no\" frameborder=\"0\" class=\"topnavIframe\">\r\n          <div
+        align=\"center\"> [<a href=\"https://www.ngdc.noaa.gov/stp/include/stp_swtopnav.html?breadcrumb=space\">The
+        header and web page search is in an undisplayed frame - follow this link to
+        view it</a>]<br/>\r\n            <br/>\r\n          </div>\r\n        </iframe>\r\n
+        \     </td>\r\n      <!-- END NESDIS HEADER-->\r\n    </tr>\r\n    </tbody>\r\n
+        \ </table>\r\n \r\n</div>\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body>\r\n</html>\r\n<!--
+        END HEADER  -->\r\n  <table>\n   <tr><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n<tr><td><a href=\"/sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/2009/\">Parent
+        Directory</a></td><td>&nbsp;</td><td align=\"right\">  - </td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090901_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090901_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">307K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090902_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090902_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">832K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090904_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090904_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">329K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090905_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090905_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">831K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090906_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090906_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">830K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090907_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090907_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">829K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090908_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090908_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">831K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090909_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090909_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">828K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090910_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090910_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">773K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090911_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090911_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">792K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090912_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090912_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">826K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090913_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090913_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">826K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090914_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090914_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">825K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090915_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090915_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">825K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090916_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090916_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">826K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090917_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090917_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">825K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090918_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090918_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">824K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090919_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090919_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">821K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090920_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090920_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">821K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090921_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090921_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">821K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090922_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090922_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">824K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090923_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090923_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">821K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090924_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090924_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">821K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090925_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090925_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">824K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090926_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090926_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">820K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090927_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090927_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">820K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090928_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090928_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">821K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_d20090929_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_d20090929_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">820K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g14_m200909_v0-0-0.nc\">sci_gxrs-l2-irrad_g14_m200909_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:38  </td><td align=\"right\">1.3M</td></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n</table>\n<!-- BEGIN FOOTER  -->\r\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html
+        xmlns=\"https://www.w3.org/1999/xhtml\">\r\n\r\n<head>\r\n  <title>Direct
+        Access to GOES and POES Data | NCEI</title>\r\n  <link rel=\"stylesheet\"
+        type=\"text/css\" href=\"https://www.ngdc.noaa.gov/ngdcbasicstyle.css\" title=\"default\"/>\r\n
+        \ <link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.ngdc.noaa.gov/stp/stpbasicstyle.css\"
+        title=\"default\"/>\r\n  <link rel=\"shortcut icon\" href=\"https://www.ngdc.noaa.gov/favicon.ico\"/>\r\n
+        \ <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n
+        \ <meta name=\"operator\" content=\"ncei.info\"/>\r\n  <meta name=\"questions\"
+        content=\"ncei.info\"/>\r\n  <meta name=\"return\" content=\"space\"/>\r\n
+        \ <meta name=\"DC.title\" content=\"Solar and Terrestrial Physics\"/>\r\n
+        \ <meta name=\"DC.creator\" content=\"National Geophysical Data Center\"/>\r\n
+        \ <meta name=\"DC.date.created\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.date.reviewed\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.language\" scheme=\"DCTERMS.RFC1766\" content=\"EN-US\"/>\r\n
+        \ <meta name=\"DC.subject\" scheme=\"ISO19115\" content=\"geoscientificInformation\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"U.S. Department of Commerce\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"National Oceanic and Atmospheric Administration
+        (NOAA)\"/>\r\n  <meta name=\"DC.publisher\" content=\"National Environmental
+        Satellite, Data, and Information Service (NESDIS)\"/>\r\n  <meta name=\"DC.publisher\"
+        content=\"National Centers for Environmental Information (NCEI)\"/>\r\n  <meta
+        name=\"description\" content=\"World Data Service for Geophysics, operated
+        by NOAA/NCEI, archives &amp; offers data from the Solar and Upper Atmosphere,
+        Ionosphere, and space environment, including Earth observations from space.\"/>\r\n
+        \ <meta name=\"keywords\" content=\"\r\nmagnetometer, goes magnetometer, geomagnetism,
+        geomagnetic field, magnetic field,\r\nenergetic particles, goes particles,
+        goes energetic particles, goes eps, eps, sep, goes sep, ion event, particle
+        event, CME, solar protons, solar particles,\r\nx-rays, xrays, goes x-rays,
+        xrs, goes xrs, solar x-rays, solar xrays,\r\nsem, goes sem, space environment
+        monitor, flares, NGDC, NOAA.\">\r\n</head>\r\n<body>\r\n<!-- skip navigation
+        link for 508 compliance -->\r\n<a name=\"skip_navigation\"></a>\r\n<div id=\"container\">\r\n
+        \r\n  <!-- BEGIN CALL TO STANDARD FOOTER, EDIT NOSCRIPT IF NECESSARY -->\r\n
+        \ <div align=\"center\" class=\"footltbg\">\r\n    <script type=\"text/javascript\"
+        src=\"https://www.ngdc.noaa.gov/bin/ngdcmetafooter.js\"></script>\r\n    <noscript>\r\n
+        \     <div align=\"center\">\r\n        <a href=\"https://www.ngdc.noaa.gov/ngdc.html\">Home</a>
+        |\r\n        <a href=\"https://www.ngdc.noaa.gov/ngdcinfo/privacy.html\">disclaimers</a>
+        |\r\n        <a href=\"mailto:ncei.info@noaa.gov\">questions</a>\r\n        <hr/>\r\n
+        \       Website of the US Dept of Commerce/NOAA/NESDIS/NCEI<br/>\r\n      </div>\r\n
+        \   </noscript>\r\n  </div>\r\n  <!-- END CALL TO STANDARD FOOTER -->\r\n</div>\r\n<script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body>\r\n</html>\r\n<!--
+        END FOOTER  -->\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 18:12:39 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000;
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - satdat.ngdc.noaa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/2009/09/
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>404 Not Found</title>
+
+        </head><body>
+
+        <h1>Not Found</h1>
+
+        <p>The requested URL /sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/2009/09/
+        was not found on this server.</p>
+
+        <hr>
+
+        <address>Apache Server at <a href="mailto:ngdc.linux-admin@noaa.gov">satdat-vip.ngdc.noaa.gov</a>
+        Port 443</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '383'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 18:12:39 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000;
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 404
+      message: Not Found
+version: 1

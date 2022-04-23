@@ -1,0 +1,256 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - data.ngdc.noaa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/xrsf-l2-flx1s_science/2020/08/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /platforms/solar-space-observing-satellites/goes/goes16/l2/data/xrsf-l2-flx1s_science/2020/08</title>\n
+        </head>\n <body>\n<!-- BEGIN HEADER  -->\r\n<div id=\"left_image\" style=\"width:440;
+        postion:absolute; left:0px; top:0px;\">\r\n <a href=\"https://www.ngdc.noaa.gov/ngdc.html\"
+        target=\"_top\" title=\"go to NOAA National Centers for Environmental Information
+        (formerly the National Geophysical Data Center) home\"><img src=\"https://www.ngdc.noaa.gov/image/nesdisngdcleft.gif\"
+        alt=\"Logo\" title=\"go to NOAA National Centers for Environmental Information
+        (formerly the National Geophysical Data Center) home\" border=\"0\" width=\"440\"
+        height=\"50\"></a>\r\n</div>\r\n<div id=\"right_image\" style=\"width:121;
+        position:absolute; right:0px; top:0px\">\r\n <a href=\"https://www.ngdc.noaa.gov/ngdcinfo/privacy.html\"
+        title=\"go to privacy policy, disclaimer, and copyright notices\"><img src=\"https://www.ngdc.noaa.gov/image/ngdcbanner_right.gif\"
+        alt=\"U.S. Department of Commerce logo\" border=\"0\" width=\"121\" height=\"50\"></a>\r\n</div>\r\n<br
+        />\r\n<!-- END HEADER  -->\r\n<div id=\"main_text\" style=\"clear:both; width:100%;
+        margin-left:auto; margin-right:auto\">\r\n  <table>\n   <tr><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n<tr><td><a href=\"/platforms/solar-space-observing-satellites/goes/goes16/l2/data/xrsf-l2-flx1s_science/2020/\">Parent
+        Directory</a></td><td>&nbsp;</td><td align=\"right\">  - </td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200801_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200801_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200802_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200802_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200803_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200803_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200804_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200804_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200805_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200805_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200806_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200806_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200807_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200807_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200808_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200808_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200809_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200809_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200810_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200810_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200811_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200811_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200812_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200812_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200813_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200813_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200814_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200814_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200815_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200815_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200816_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200816_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200817_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200817_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200818_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200818_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200819_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200819_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200820_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200820_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200821_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200821_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200822_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200822_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200823_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200823_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200824_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200824_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200825_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200825_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200826_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200826_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200827_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200827_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200828_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200828_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:24  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200829_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200829_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200830_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200830_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g16_d20200831_v2-1-0.nc\">sci_xrsf-l2-flx1s_g16_d20200831_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n</table>\n<!-- BEGIN FOOTER  -->\r\n
+        <a href=\"/ngdc.html\">Home</a> | <a href=\"/ngdcinfo/privacy.html\">privacy
+        policy</a> | <a href=\"mailto:ncei.info@noaa.gov\">questions</a>\r\n <br />\r\n
+        <br />\r\n Website of the <a href=\"http://www.commerce.gov\" title=\"external
+        link to the US Department of Commerce\">US Department of Commerce</a> / <a
+        href=\"http://www.noaa.gov/\" title=\"external link to the National Oceanic
+        and Atmospheric Administration (NOAA)\">NOAA</a> / <a href=\"http://www.nesdis.noaa.gov/\"
+        title=\"external link to the NOAA Satellite and Information Service (NESDIS)\">NESDIS</a>
+        / <a href=\"https://www.ngdc.noaa.gov/\" title=\"go Home\">Home</a><br />\r\n<!--
+        END FOOTER  -->\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body></html>\n"
+    headers:
+      Access-Control-Allow-Headers:
+      - X-Requested-With, Content-Type
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - private, max-age=0, must-revalidate
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 18:12:33 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000;
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - data.ngdc.noaa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes17/l2/data/xrsf-l2-flx1s_science/2020/08/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /platforms/solar-space-observing-satellites/goes/goes17/l2/data/xrsf-l2-flx1s_science/2020/08</title>\n
+        </head>\n <body>\n<!-- BEGIN HEADER  -->\r\n<div id=\"left_image\" style=\"width:440;
+        postion:absolute; left:0px; top:0px;\">\r\n <a href=\"https://www.ngdc.noaa.gov/ngdc.html\"
+        target=\"_top\" title=\"go to NOAA National Centers for Environmental Information
+        (formerly the National Geophysical Data Center) home\"><img src=\"https://www.ngdc.noaa.gov/image/nesdisngdcleft.gif\"
+        alt=\"Logo\" title=\"go to NOAA National Centers for Environmental Information
+        (formerly the National Geophysical Data Center) home\" border=\"0\" width=\"440\"
+        height=\"50\"></a>\r\n</div>\r\n<div id=\"right_image\" style=\"width:121;
+        position:absolute; right:0px; top:0px\">\r\n <a href=\"https://www.ngdc.noaa.gov/ngdcinfo/privacy.html\"
+        title=\"go to privacy policy, disclaimer, and copyright notices\"><img src=\"https://www.ngdc.noaa.gov/image/ngdcbanner_right.gif\"
+        alt=\"U.S. Department of Commerce logo\" border=\"0\" width=\"121\" height=\"50\"></a>\r\n</div>\r\n<br
+        />\r\n<!-- END HEADER  -->\r\n<div id=\"main_text\" style=\"clear:both; width:100%;
+        margin-left:auto; margin-right:auto\">\r\n  <table>\n   <tr><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n<tr><td><a href=\"/platforms/solar-space-observing-satellites/goes/goes17/l2/data/xrsf-l2-flx1s_science/2020/\">Parent
+        Directory</a></td><td>&nbsp;</td><td align=\"right\">  - </td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200801_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200801_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200802_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200802_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200803_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200803_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200804_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200804_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.9M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200805_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200805_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:21  </td><td align=\"right\">4.9M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200806_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200806_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.9M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200807_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200807_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.9M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200808_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200808_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.9M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200809_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200809_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.9M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200810_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200810_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.9M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200811_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200811_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200812_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200812_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200813_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200813_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200814_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200814_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200815_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200815_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200816_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200816_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200817_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200817_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200818_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200818_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200819_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200819_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200820_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200820_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200821_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200821_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:22  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200822_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200822_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200823_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200823_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200824_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200824_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200825_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200825_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:24  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200826_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200826_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200827_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200827_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200828_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200828_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200829_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200829_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:24  </td><td align=\"right\">4.8M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200830_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200830_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:23  </td><td align=\"right\">4.9M</td></tr>\n<tr><td><a
+        href=\"sci_xrsf-l2-flx1s_g17_d20200831_v2-1-0.nc\">sci_xrsf-l2-flx1s_g17_d20200831_v2-1-0.nc</a></td><td
+        align=\"right\">2021-03-26 21:24  </td><td align=\"right\">4.9M</td></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n</table>\n<!-- BEGIN FOOTER  -->\r\n
+        <a href=\"/ngdc.html\">Home</a> | <a href=\"/ngdcinfo/privacy.html\">privacy
+        policy</a> | <a href=\"mailto:ncei.info@noaa.gov\">questions</a>\r\n <br />\r\n
+        <br />\r\n Website of the <a href=\"http://www.commerce.gov\" title=\"external
+        link to the US Department of Commerce\">US Department of Commerce</a> / <a
+        href=\"http://www.noaa.gov/\" title=\"external link to the National Oceanic
+        and Atmospheric Administration (NOAA)\">NOAA</a> / <a href=\"http://www.nesdis.noaa.gov/\"
+        title=\"external link to the NOAA Satellite and Information Service (NESDIS)\">NESDIS</a>
+        / <a href=\"https://www.ngdc.noaa.gov/\" title=\"go Home\">Home</a><br />\r\n<!--
+        END FOOTER  -->\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body></html>\n"
+    headers:
+      Access-Control-Allow-Headers:
+      - X-Requested-With, Content-Type
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - private, max-age=0, must-revalidate
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 18:12:34 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000;
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 200
+      message: OK
+version: 1

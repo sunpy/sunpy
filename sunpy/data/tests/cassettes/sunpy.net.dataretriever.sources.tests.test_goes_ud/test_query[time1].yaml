@@ -1,0 +1,497 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - satdat.ngdc.noaa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes13/gxrs-l2-irrad_science/2016/02/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /sem/goes/data/science/xrs/goes13/gxrs-l2-irrad_science/2016/02</title>\n
+        </head>\n <body>\n<!-- BEGIN HEADER  -->\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD
+        XHTML 1.0 Transitional//EN\"\"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html
+        xmlns=\"https://www.w3.org/1999/xhtml\">\r\n<head>\r\n  <title>Direct Access
+        to GOES and POES Data | NCEI</title>\r\n  <link rel=\"stylesheet\" type=\"text/css\"
+        href=\"https://www.ngdc.noaa.gov/ngdcbasicstyle.css\" title=\"default\"/>\r\n
+        \ <link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.ngdc.noaa.gov/stp/stpbasicstyle.css\"
+        title=\"default\"/>\r\n  <link rel=\"shortcut icon\" href=\"https://www.ngdc.noaa.gov/favicon.ico\"/>\r\n
+        \ <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n
+        \ <meta name=\"operator\" content=\"ncei.info\"/>\r\n  <meta name=\"questions\"
+        content=\"ncei.info\"/>\r\n  <meta name=\"return\" content=\"space\"/>\r\n
+        \ <meta name=\"DC.title\" content=\"Solar and Terrestrial Physics\"/>\r\n
+        \ <meta name=\"DC.creator\" content=\"National Geophysical Data Center\"/>\r\n
+        \ <meta name=\"DC.date.created\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.date.reviewed\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.language\" scheme=\"DCTERMS.RFC1766\" content=\"EN-US\"/>\r\n
+        \ <meta name=\"DC.subject\" scheme=\"ISO19115\" content=\"geoscientificInformation\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"U.S. Department of Commerce\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"National Oceanic and Atmospheric Administration
+        (NOAA)\"/>\r\n  <meta name=\"DC.publisher\" content=\"National Environmental
+        Satellite, Data, and Information Service (NESDIS)\"/>\r\n  <meta name=\"DC.publisher\"
+        content=\"National Centers for Environmental Information (NCEI)\"/>\r\n  <meta
+        name=\"description\" content=\"World Data Service for Geophysics, operated
+        by NOAA/NCEI, archives &amp; offers data from the Solar and Upper Atmosphere,
+        Ionosphere, and space environment, including Earth observations from space.\"/>\r\n
+        \ <meta name=\"keywords\" content=\"\r\nmagnetometer, goes magnetometer, geomagnetism,
+        geomagnetic field, magnetic field,\r\nenergetic particles, goes particles,
+        goes energetic particles, goes eps, eps, sep, goes sep, ion event, particle
+        event, CME, solar protons, solar particles,\r\nx-rays, xrays, goes x-rays,
+        xrs, goes xrs, solar x-rays, solar xrays,\r\nsem, goes sem, space environment
+        monitor, flares, NGDC, NOAA.\">\r\n</head>\r\n<body>\r\n<!-- skip navigation
+        link for 508 compliance -->\r\n<a name=\"skip_navigation\"></a>\r\n<div id=\"container\">\r\n
+        \ <table class=\"stppage\" summary=\"layout table\">\r\n    <tbody>\r\n    <tr>\r\n
+        \     <!-- BEGIN NESDIS HEADER-->\r\n      <td align=\"center\" class=\"navlink\"
+        colspan=\"3\">\r\n        <iframe src=\"https://www.ngdc.noaa.gov/stp/include/stp_swtopnav.html?breadcrumb=space\"
+        scrolling=\"no\" frameborder=\"0\" class=\"topnavIframe\">\r\n          <div
+        align=\"center\"> [<a href=\"https://www.ngdc.noaa.gov/stp/include/stp_swtopnav.html?breadcrumb=space\">The
+        header and web page search is in an undisplayed frame - follow this link to
+        view it</a>]<br/>\r\n            <br/>\r\n          </div>\r\n        </iframe>\r\n
+        \     </td>\r\n      <!-- END NESDIS HEADER-->\r\n    </tr>\r\n    </tbody>\r\n
+        \ </table>\r\n \r\n</div>\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body>\r\n</html>\r\n<!--
+        END HEADER  -->\r\n  <table>\n   <tr><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n<tr><td><a href=\"/sem/goes/data/science/xrs/goes13/gxrs-l2-irrad_science/2016/\">Parent
+        Directory</a></td><td>&nbsp;</td><td align=\"right\">  - </td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160201_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160201_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">794K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160202_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160202_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">796K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160203_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160203_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">799K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160204_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160204_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">810K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160205_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160205_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">801K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160206_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160206_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">799K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160207_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160207_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">801K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160208_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160208_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">795K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160209_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160209_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">794K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160210_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160210_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">765K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160211_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160211_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">802K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160212_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160212_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">813K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160213_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160213_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">814K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160214_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160214_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">821K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160215_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160215_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">852K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160216_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160216_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">823K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160217_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160217_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">831K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160218_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160218_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">800K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160219_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160219_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">795K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160220_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160220_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">785K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160221_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160221_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">787K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160222_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160222_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">789K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160223_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160223_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">787K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160224_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160224_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">785K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160225_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160225_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">789K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160226_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160226_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">787K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160227_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160227_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">793K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160228_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160228_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">790K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_d20160229_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_d20160229_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">786K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g13_m201602_v0-0-0.nc\">sci_gxrs-l2-irrad_g13_m201602_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 18:37  </td><td align=\"right\">1.2M</td></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n</table>\n<!-- BEGIN FOOTER  -->\r\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html
+        xmlns=\"https://www.w3.org/1999/xhtml\">\r\n\r\n<head>\r\n  <title>Direct
+        Access to GOES and POES Data | NCEI</title>\r\n  <link rel=\"stylesheet\"
+        type=\"text/css\" href=\"https://www.ngdc.noaa.gov/ngdcbasicstyle.css\" title=\"default\"/>\r\n
+        \ <link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.ngdc.noaa.gov/stp/stpbasicstyle.css\"
+        title=\"default\"/>\r\n  <link rel=\"shortcut icon\" href=\"https://www.ngdc.noaa.gov/favicon.ico\"/>\r\n
+        \ <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n
+        \ <meta name=\"operator\" content=\"ncei.info\"/>\r\n  <meta name=\"questions\"
+        content=\"ncei.info\"/>\r\n  <meta name=\"return\" content=\"space\"/>\r\n
+        \ <meta name=\"DC.title\" content=\"Solar and Terrestrial Physics\"/>\r\n
+        \ <meta name=\"DC.creator\" content=\"National Geophysical Data Center\"/>\r\n
+        \ <meta name=\"DC.date.created\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.date.reviewed\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.language\" scheme=\"DCTERMS.RFC1766\" content=\"EN-US\"/>\r\n
+        \ <meta name=\"DC.subject\" scheme=\"ISO19115\" content=\"geoscientificInformation\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"U.S. Department of Commerce\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"National Oceanic and Atmospheric Administration
+        (NOAA)\"/>\r\n  <meta name=\"DC.publisher\" content=\"National Environmental
+        Satellite, Data, and Information Service (NESDIS)\"/>\r\n  <meta name=\"DC.publisher\"
+        content=\"National Centers for Environmental Information (NCEI)\"/>\r\n  <meta
+        name=\"description\" content=\"World Data Service for Geophysics, operated
+        by NOAA/NCEI, archives &amp; offers data from the Solar and Upper Atmosphere,
+        Ionosphere, and space environment, including Earth observations from space.\"/>\r\n
+        \ <meta name=\"keywords\" content=\"\r\nmagnetometer, goes magnetometer, geomagnetism,
+        geomagnetic field, magnetic field,\r\nenergetic particles, goes particles,
+        goes energetic particles, goes eps, eps, sep, goes sep, ion event, particle
+        event, CME, solar protons, solar particles,\r\nx-rays, xrays, goes x-rays,
+        xrs, goes xrs, solar x-rays, solar xrays,\r\nsem, goes sem, space environment
+        monitor, flares, NGDC, NOAA.\">\r\n</head>\r\n<body>\r\n<!-- skip navigation
+        link for 508 compliance -->\r\n<a name=\"skip_navigation\"></a>\r\n<div id=\"container\">\r\n
+        \r\n  <!-- BEGIN CALL TO STANDARD FOOTER, EDIT NOSCRIPT IF NECESSARY -->\r\n
+        \ <div align=\"center\" class=\"footltbg\">\r\n    <script type=\"text/javascript\"
+        src=\"https://www.ngdc.noaa.gov/bin/ngdcmetafooter.js\"></script>\r\n    <noscript>\r\n
+        \     <div align=\"center\">\r\n        <a href=\"https://www.ngdc.noaa.gov/ngdc.html\">Home</a>
+        |\r\n        <a href=\"https://www.ngdc.noaa.gov/ngdcinfo/privacy.html\">disclaimers</a>
+        |\r\n        <a href=\"mailto:ncei.info@noaa.gov\">questions</a>\r\n        <hr/>\r\n
+        \       Website of the US Dept of Commerce/NOAA/NESDIS/NCEI<br/>\r\n      </div>\r\n
+        \   </noscript>\r\n  </div>\r\n  <!-- END CALL TO STANDARD FOOTER -->\r\n</div>\r\n<script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body>\r\n</html>\r\n<!--
+        END FOOTER  -->\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 18:12:55 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000;
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - satdat.ngdc.noaa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/2016/02/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/2016/02</title>\n
+        </head>\n <body>\n<!-- BEGIN HEADER  -->\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD
+        XHTML 1.0 Transitional//EN\"\"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html
+        xmlns=\"https://www.w3.org/1999/xhtml\">\r\n<head>\r\n  <title>Direct Access
+        to GOES and POES Data | NCEI</title>\r\n  <link rel=\"stylesheet\" type=\"text/css\"
+        href=\"https://www.ngdc.noaa.gov/ngdcbasicstyle.css\" title=\"default\"/>\r\n
+        \ <link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.ngdc.noaa.gov/stp/stpbasicstyle.css\"
+        title=\"default\"/>\r\n  <link rel=\"shortcut icon\" href=\"https://www.ngdc.noaa.gov/favicon.ico\"/>\r\n
+        \ <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n
+        \ <meta name=\"operator\" content=\"ncei.info\"/>\r\n  <meta name=\"questions\"
+        content=\"ncei.info\"/>\r\n  <meta name=\"return\" content=\"space\"/>\r\n
+        \ <meta name=\"DC.title\" content=\"Solar and Terrestrial Physics\"/>\r\n
+        \ <meta name=\"DC.creator\" content=\"National Geophysical Data Center\"/>\r\n
+        \ <meta name=\"DC.date.created\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.date.reviewed\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.language\" scheme=\"DCTERMS.RFC1766\" content=\"EN-US\"/>\r\n
+        \ <meta name=\"DC.subject\" scheme=\"ISO19115\" content=\"geoscientificInformation\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"U.S. Department of Commerce\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"National Oceanic and Atmospheric Administration
+        (NOAA)\"/>\r\n  <meta name=\"DC.publisher\" content=\"National Environmental
+        Satellite, Data, and Information Service (NESDIS)\"/>\r\n  <meta name=\"DC.publisher\"
+        content=\"National Centers for Environmental Information (NCEI)\"/>\r\n  <meta
+        name=\"description\" content=\"World Data Service for Geophysics, operated
+        by NOAA/NCEI, archives &amp; offers data from the Solar and Upper Atmosphere,
+        Ionosphere, and space environment, including Earth observations from space.\"/>\r\n
+        \ <meta name=\"keywords\" content=\"\r\nmagnetometer, goes magnetometer, geomagnetism,
+        geomagnetic field, magnetic field,\r\nenergetic particles, goes particles,
+        goes energetic particles, goes eps, eps, sep, goes sep, ion event, particle
+        event, CME, solar protons, solar particles,\r\nx-rays, xrays, goes x-rays,
+        xrs, goes xrs, solar x-rays, solar xrays,\r\nsem, goes sem, space environment
+        monitor, flares, NGDC, NOAA.\">\r\n</head>\r\n<body>\r\n<!-- skip navigation
+        link for 508 compliance -->\r\n<a name=\"skip_navigation\"></a>\r\n<div id=\"container\">\r\n
+        \ <table class=\"stppage\" summary=\"layout table\">\r\n    <tbody>\r\n    <tr>\r\n
+        \     <!-- BEGIN NESDIS HEADER-->\r\n      <td align=\"center\" class=\"navlink\"
+        colspan=\"3\">\r\n        <iframe src=\"https://www.ngdc.noaa.gov/stp/include/stp_swtopnav.html?breadcrumb=space\"
+        scrolling=\"no\" frameborder=\"0\" class=\"topnavIframe\">\r\n          <div
+        align=\"center\"> [<a href=\"https://www.ngdc.noaa.gov/stp/include/stp_swtopnav.html?breadcrumb=space\">The
+        header and web page search is in an undisplayed frame - follow this link to
+        view it</a>]<br/>\r\n            <br/>\r\n          </div>\r\n        </iframe>\r\n
+        \     </td>\r\n      <!-- END NESDIS HEADER-->\r\n    </tr>\r\n    </tbody>\r\n
+        \ </table>\r\n \r\n</div>\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body>\r\n</html>\r\n<!--
+        END HEADER  -->\r\n  <table>\n   <tr><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n<tr><td><a href=\"/sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/2016/\">Parent
+        Directory</a></td><td>&nbsp;</td><td align=\"right\">  - </td></tr>\n   <tr><th
+        colspan=\"3\"><hr></th></tr>\n</table>\n<!-- BEGIN FOOTER  -->\r\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html
+        xmlns=\"https://www.w3.org/1999/xhtml\">\r\n\r\n<head>\r\n  <title>Direct
+        Access to GOES and POES Data | NCEI</title>\r\n  <link rel=\"stylesheet\"
+        type=\"text/css\" href=\"https://www.ngdc.noaa.gov/ngdcbasicstyle.css\" title=\"default\"/>\r\n
+        \ <link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.ngdc.noaa.gov/stp/stpbasicstyle.css\"
+        title=\"default\"/>\r\n  <link rel=\"shortcut icon\" href=\"https://www.ngdc.noaa.gov/favicon.ico\"/>\r\n
+        \ <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n
+        \ <meta name=\"operator\" content=\"ncei.info\"/>\r\n  <meta name=\"questions\"
+        content=\"ncei.info\"/>\r\n  <meta name=\"return\" content=\"space\"/>\r\n
+        \ <meta name=\"DC.title\" content=\"Solar and Terrestrial Physics\"/>\r\n
+        \ <meta name=\"DC.creator\" content=\"National Geophysical Data Center\"/>\r\n
+        \ <meta name=\"DC.date.created\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.date.reviewed\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.language\" scheme=\"DCTERMS.RFC1766\" content=\"EN-US\"/>\r\n
+        \ <meta name=\"DC.subject\" scheme=\"ISO19115\" content=\"geoscientificInformation\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"U.S. Department of Commerce\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"National Oceanic and Atmospheric Administration
+        (NOAA)\"/>\r\n  <meta name=\"DC.publisher\" content=\"National Environmental
+        Satellite, Data, and Information Service (NESDIS)\"/>\r\n  <meta name=\"DC.publisher\"
+        content=\"National Centers for Environmental Information (NCEI)\"/>\r\n  <meta
+        name=\"description\" content=\"World Data Service for Geophysics, operated
+        by NOAA/NCEI, archives &amp; offers data from the Solar and Upper Atmosphere,
+        Ionosphere, and space environment, including Earth observations from space.\"/>\r\n
+        \ <meta name=\"keywords\" content=\"\r\nmagnetometer, goes magnetometer, geomagnetism,
+        geomagnetic field, magnetic field,\r\nenergetic particles, goes particles,
+        goes energetic particles, goes eps, eps, sep, goes sep, ion event, particle
+        event, CME, solar protons, solar particles,\r\nx-rays, xrays, goes x-rays,
+        xrs, goes xrs, solar x-rays, solar xrays,\r\nsem, goes sem, space environment
+        monitor, flares, NGDC, NOAA.\">\r\n</head>\r\n<body>\r\n<!-- skip navigation
+        link for 508 compliance -->\r\n<a name=\"skip_navigation\"></a>\r\n<div id=\"container\">\r\n
+        \r\n  <!-- BEGIN CALL TO STANDARD FOOTER, EDIT NOSCRIPT IF NECESSARY -->\r\n
+        \ <div align=\"center\" class=\"footltbg\">\r\n    <script type=\"text/javascript\"
+        src=\"https://www.ngdc.noaa.gov/bin/ngdcmetafooter.js\"></script>\r\n    <noscript>\r\n
+        \     <div align=\"center\">\r\n        <a href=\"https://www.ngdc.noaa.gov/ngdc.html\">Home</a>
+        |\r\n        <a href=\"https://www.ngdc.noaa.gov/ngdcinfo/privacy.html\">disclaimers</a>
+        |\r\n        <a href=\"mailto:ncei.info@noaa.gov\">questions</a>\r\n        <hr/>\r\n
+        \       Website of the US Dept of Commerce/NOAA/NESDIS/NCEI<br/>\r\n      </div>\r\n
+        \   </noscript>\r\n  </div>\r\n  <!-- END CALL TO STANDARD FOOTER -->\r\n</div>\r\n<script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body>\r\n</html>\r\n<!--
+        END FOOTER  -->\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 18:12:56 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000;
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - satdat.ngdc.noaa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/2016/02/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/2016/02</title>\n
+        </head>\n <body>\n<!-- BEGIN HEADER  -->\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD
+        XHTML 1.0 Transitional//EN\"\"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html
+        xmlns=\"https://www.w3.org/1999/xhtml\">\r\n<head>\r\n  <title>Direct Access
+        to GOES and POES Data | NCEI</title>\r\n  <link rel=\"stylesheet\" type=\"text/css\"
+        href=\"https://www.ngdc.noaa.gov/ngdcbasicstyle.css\" title=\"default\"/>\r\n
+        \ <link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.ngdc.noaa.gov/stp/stpbasicstyle.css\"
+        title=\"default\"/>\r\n  <link rel=\"shortcut icon\" href=\"https://www.ngdc.noaa.gov/favicon.ico\"/>\r\n
+        \ <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n
+        \ <meta name=\"operator\" content=\"ncei.info\"/>\r\n  <meta name=\"questions\"
+        content=\"ncei.info\"/>\r\n  <meta name=\"return\" content=\"space\"/>\r\n
+        \ <meta name=\"DC.title\" content=\"Solar and Terrestrial Physics\"/>\r\n
+        \ <meta name=\"DC.creator\" content=\"National Geophysical Data Center\"/>\r\n
+        \ <meta name=\"DC.date.created\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.date.reviewed\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.language\" scheme=\"DCTERMS.RFC1766\" content=\"EN-US\"/>\r\n
+        \ <meta name=\"DC.subject\" scheme=\"ISO19115\" content=\"geoscientificInformation\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"U.S. Department of Commerce\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"National Oceanic and Atmospheric Administration
+        (NOAA)\"/>\r\n  <meta name=\"DC.publisher\" content=\"National Environmental
+        Satellite, Data, and Information Service (NESDIS)\"/>\r\n  <meta name=\"DC.publisher\"
+        content=\"National Centers for Environmental Information (NCEI)\"/>\r\n  <meta
+        name=\"description\" content=\"World Data Service for Geophysics, operated
+        by NOAA/NCEI, archives &amp; offers data from the Solar and Upper Atmosphere,
+        Ionosphere, and space environment, including Earth observations from space.\"/>\r\n
+        \ <meta name=\"keywords\" content=\"\r\nmagnetometer, goes magnetometer, geomagnetism,
+        geomagnetic field, magnetic field,\r\nenergetic particles, goes particles,
+        goes energetic particles, goes eps, eps, sep, goes sep, ion event, particle
+        event, CME, solar protons, solar particles,\r\nx-rays, xrays, goes x-rays,
+        xrs, goes xrs, solar x-rays, solar xrays,\r\nsem, goes sem, space environment
+        monitor, flares, NGDC, NOAA.\">\r\n</head>\r\n<body>\r\n<!-- skip navigation
+        link for 508 compliance -->\r\n<a name=\"skip_navigation\"></a>\r\n<div id=\"container\">\r\n
+        \ <table class=\"stppage\" summary=\"layout table\">\r\n    <tbody>\r\n    <tr>\r\n
+        \     <!-- BEGIN NESDIS HEADER-->\r\n      <td align=\"center\" class=\"navlink\"
+        colspan=\"3\">\r\n        <iframe src=\"https://www.ngdc.noaa.gov/stp/include/stp_swtopnav.html?breadcrumb=space\"
+        scrolling=\"no\" frameborder=\"0\" class=\"topnavIframe\">\r\n          <div
+        align=\"center\"> [<a href=\"https://www.ngdc.noaa.gov/stp/include/stp_swtopnav.html?breadcrumb=space\">The
+        header and web page search is in an undisplayed frame - follow this link to
+        view it</a>]<br/>\r\n            <br/>\r\n          </div>\r\n        </iframe>\r\n
+        \     </td>\r\n      <!-- END NESDIS HEADER-->\r\n    </tr>\r\n    </tbody>\r\n
+        \ </table>\r\n \r\n</div>\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body>\r\n</html>\r\n<!--
+        END HEADER  -->\r\n  <table>\n   <tr><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n<tr><td><a href=\"/sem/goes/data/science/xrs/goes15/gxrs-l2-irrad_science/2016/\">Parent
+        Directory</a></td><td>&nbsp;</td><td align=\"right\">  - </td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160201_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160201_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">735K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160202_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160202_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">737K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160203_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160203_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">747K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160204_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160204_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">765K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160205_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160205_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">751K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160206_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160206_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">748K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160207_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160207_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">750K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160208_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160208_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">737K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160209_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160209_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">741K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160210_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160210_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">740K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160211_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160211_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">756K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160212_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160212_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">732K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160213_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160213_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">766K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160214_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160214_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">778K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160215_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160215_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">820K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160216_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160216_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">752K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160217_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160217_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">797K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160218_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160218_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">754K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160219_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160219_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">757K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160220_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160220_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">735K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160221_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160221_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">731K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160222_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160222_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">730K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160223_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160223_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">701K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160224_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160224_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">735K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160225_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160225_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">729K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160226_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160226_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">726K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160227_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160227_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">735K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160228_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160228_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">729K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_d20160229_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_d20160229_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">726K</td></tr>\n<tr><td><a
+        href=\"sci_gxrs-l2-irrad_g15_m201602_v0-0-0.nc\">sci_gxrs-l2-irrad_g15_m201602_v0-0-0.nc</a></td><td
+        align=\"right\">2020-05-27 19:03  </td><td align=\"right\">1.3M</td></tr>\n
+        \  <tr><th colspan=\"3\"><hr></th></tr>\n</table>\n<!-- BEGIN FOOTER  -->\r\n<!DOCTYPE
+        html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html
+        xmlns=\"https://www.w3.org/1999/xhtml\">\r\n\r\n<head>\r\n  <title>Direct
+        Access to GOES and POES Data | NCEI</title>\r\n  <link rel=\"stylesheet\"
+        type=\"text/css\" href=\"https://www.ngdc.noaa.gov/ngdcbasicstyle.css\" title=\"default\"/>\r\n
+        \ <link rel=\"stylesheet\" type=\"text/css\" href=\"https://www.ngdc.noaa.gov/stp/stpbasicstyle.css\"
+        title=\"default\"/>\r\n  <link rel=\"shortcut icon\" href=\"https://www.ngdc.noaa.gov/favicon.ico\"/>\r\n
+        \ <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n
+        \ <meta name=\"operator\" content=\"ncei.info\"/>\r\n  <meta name=\"questions\"
+        content=\"ncei.info\"/>\r\n  <meta name=\"return\" content=\"space\"/>\r\n
+        \ <meta name=\"DC.title\" content=\"Solar and Terrestrial Physics\"/>\r\n
+        \ <meta name=\"DC.creator\" content=\"National Geophysical Data Center\"/>\r\n
+        \ <meta name=\"DC.date.created\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.date.reviewed\" scheme=\"ISO8601\" content=\"2009-09-16\"/>\r\n
+        \ <meta name=\"DC.language\" scheme=\"DCTERMS.RFC1766\" content=\"EN-US\"/>\r\n
+        \ <meta name=\"DC.subject\" scheme=\"ISO19115\" content=\"geoscientificInformation\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"U.S. Department of Commerce\"/>\r\n
+        \ <meta name=\"DC.publisher\" content=\"National Oceanic and Atmospheric Administration
+        (NOAA)\"/>\r\n  <meta name=\"DC.publisher\" content=\"National Environmental
+        Satellite, Data, and Information Service (NESDIS)\"/>\r\n  <meta name=\"DC.publisher\"
+        content=\"National Centers for Environmental Information (NCEI)\"/>\r\n  <meta
+        name=\"description\" content=\"World Data Service for Geophysics, operated
+        by NOAA/NCEI, archives &amp; offers data from the Solar and Upper Atmosphere,
+        Ionosphere, and space environment, including Earth observations from space.\"/>\r\n
+        \ <meta name=\"keywords\" content=\"\r\nmagnetometer, goes magnetometer, geomagnetism,
+        geomagnetic field, magnetic field,\r\nenergetic particles, goes particles,
+        goes energetic particles, goes eps, eps, sep, goes sep, ion event, particle
+        event, CME, solar protons, solar particles,\r\nx-rays, xrays, goes x-rays,
+        xrs, goes xrs, solar x-rays, solar xrays,\r\nsem, goes sem, space environment
+        monitor, flares, NGDC, NOAA.\">\r\n</head>\r\n<body>\r\n<!-- skip navigation
+        link for 508 compliance -->\r\n<a name=\"skip_navigation\"></a>\r\n<div id=\"container\">\r\n
+        \r\n  <!-- BEGIN CALL TO STANDARD FOOTER, EDIT NOSCRIPT IF NECESSARY -->\r\n
+        \ <div align=\"center\" class=\"footltbg\">\r\n    <script type=\"text/javascript\"
+        src=\"https://www.ngdc.noaa.gov/bin/ngdcmetafooter.js\"></script>\r\n    <noscript>\r\n
+        \     <div align=\"center\">\r\n        <a href=\"https://www.ngdc.noaa.gov/ngdc.html\">Home</a>
+        |\r\n        <a href=\"https://www.ngdc.noaa.gov/ngdcinfo/privacy.html\">disclaimers</a>
+        |\r\n        <a href=\"mailto:ncei.info@noaa.gov\">questions</a>\r\n        <hr/>\r\n
+        \       Website of the US Dept of Commerce/NOAA/NESDIS/NCEI<br/>\r\n      </div>\r\n
+        \   </noscript>\r\n  </div>\r\n  <!-- END CALL TO STANDARD FOOTER -->\r\n</div>\r\n<script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body>\r\n</html>\r\n<!--
+        END FOOTER  -->\r\n<script id=\"_fed_an_ua_tag\" type=\"text/javascript\"
+        src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script><script
+        id=\"_fed_an_ua_tag\" type=\"text/javascript\" src=\"/scripts/federated-analytics.js?agency=DOC&subagency=NOAA&pua=UA-44375312-1\"></script></body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 18:12:56 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000;
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 200
+      message: OK
+version: 1
