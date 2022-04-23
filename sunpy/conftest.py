@@ -3,6 +3,7 @@ import logging
 import pathlib
 import tempfile
 import importlib
+from pathlib import Path
 
 import pytest
 
@@ -212,3 +213,9 @@ def waveunit_fits_directory(tmp_path_factory):
     for f in header_files:
         _ = write_image_file_from_header_file(f, waveunit_dir)
     return pathlib.Path(waveunit_dir)
+
+
+@pytest.fixture(scope='module')
+def vcr_cassette_dir(request):
+    # Put all cassettes in vhs/{module}/{test}.yaml
+    return str(Path(__file__).parent / 'data' / 'tests' / 'cassettes' / request.module.__name__)
