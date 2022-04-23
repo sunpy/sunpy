@@ -1,0 +1,510 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - solarmonitor.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://solarmonitor.org/data/2014/05/14/fits/swap/
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>301 Moved Permanently</title>
+
+        </head><body>
+
+        <h1>Moved Permanently</h1>
+
+        <p>The document has moved <a href="https://solarmonitor.org/data/2014/05/14/fits/swap/">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.4.53 (Debian) Server at solarmonitor.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '341'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:45:20 GMT
+      Location:
+      - https://solarmonitor.org/data/2014/05/14/fits/swap/
+      Server:
+      - Apache/2.4.53 (Debian)
+    status:
+      code: 301
+      message: Moved Permanently
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - solarmonitor.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://solarmonitor.org/data/2014/05/14/fits/swap/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /data/2014/05/14/fits/swap</title>\n </head>\n <body>\n<h1>Index
+        of /data/2014/05/14/fits/swap</h1>\n  <table>\n   <tr><th valign=\"top\"><img
+        src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th><th><a
+        href=\"?C=D;O=A\">Description</a></th></tr>\n   <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/back.gif\" alt=\"[PARENTDIR]\"></td><td><a
+        href=\"/data/2014/05/14/fits/\">Parent Directory</a></td><td>&nbsp;</td><td
+        align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img
+        src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a href=\"swap_00174_ar_12053_20140514_014304.fts.gz\">swap_00174_ar_12053_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12053_20140514_062904.fts.gz\">swap_00174_ar_12053_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12053_20140514_131835.fts.gz\">swap_00174_ar_12053_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12053_20140514_182405.fts.gz\">swap_00174_ar_12053_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12053_20140514_200135.fts.gz\">swap_00174_ar_12053_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_014304.fts.gz\">swap_00174_ar_12054_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_062904.fts.gz\">swap_00174_ar_12054_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_131835.fts.gz\">swap_00174_ar_12054_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_182405.fts.gz\">swap_00174_ar_12054_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_200135.fts.gz\">swap_00174_ar_12054_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_014304.fts.gz\">swap_00174_ar_12055_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_062904.fts.gz\">swap_00174_ar_12055_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_131835.fts.gz\">swap_00174_ar_12055_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\">100K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_182405.fts.gz\">swap_00174_ar_12055_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_200135.fts.gz\">swap_00174_ar_12055_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\">100K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_014304.fts.gz\">swap_00174_ar_12056_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_062904.fts.gz\">swap_00174_ar_12056_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_131835.fts.gz\">swap_00174_ar_12056_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\">100K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_182405.fts.gz\">swap_00174_ar_12056_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_200135.fts.gz\">swap_00174_ar_12056_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_014304.fts.gz\">swap_00174_ar_12057_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_062904.fts.gz\">swap_00174_ar_12057_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_131835.fts.gz\">swap_00174_ar_12057_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_182405.fts.gz\">swap_00174_ar_12057_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_200135.fts.gz\">swap_00174_ar_12057_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_014304.fts.gz\">swap_00174_ar_12058_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_062904.fts.gz\">swap_00174_ar_12058_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_131835.fts.gz\">swap_00174_ar_12058_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_182405.fts.gz\">swap_00174_ar_12058_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_200135.fts.gz\">swap_00174_ar_12058_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_014304.fts.gz\">swap_00174_ar_12059_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_062904.fts.gz\">swap_00174_ar_12059_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_131835.fts.gz\">swap_00174_ar_12059_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_182405.fts.gz\">swap_00174_ar_12059_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_200135.fts.gz\">swap_00174_ar_12059_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_014304.fts.gz\">swap_00174_ar_12060_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_062904.fts.gz\">swap_00174_ar_12060_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_131835.fts.gz\">swap_00174_ar_12060_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_182405.fts.gz\">swap_00174_ar_12060_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_200135.fts.gz\">swap_00174_ar_12060_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_014304.fts.gz\">swap_00174_ar_12061_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_062904.fts.gz\">swap_00174_ar_12061_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 96K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_131835.fts.gz\">swap_00174_ar_12061_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_182405.fts.gz\">swap_00174_ar_12061_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_200135.fts.gz\">swap_00174_ar_12061_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 96K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_014304.fts.gz\">swap_00174_ar_12062_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_062904.fts.gz\">swap_00174_ar_12062_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_131835.fts.gz\">swap_00174_ar_12062_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_182405.fts.gz\">swap_00174_ar_12062_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\">100K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_200135.fts.gz\">swap_00174_ar_12062_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_014304.fts.gz\">swap_00174_fd_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:35  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_062904.fts.gz\">swap_00174_fd_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:35  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_131835.fts.gz\">swap_00174_fd_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:00  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_182405.fts.gz\">swap_00174_fd_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:35  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_200135.fts.gz\">swap_00174_fd_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:35  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n<address>Apache/2.4.53
+        (Debian) Server at solarmonitor.org Port 443</address>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:45:20 GMT
+      Server:
+      - Apache/2.4.53 (Debian)
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - solarmonitor.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://solarmonitor.org/data/2014/05/14/fits/swap/
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>301 Moved Permanently</title>
+
+        </head><body>
+
+        <h1>Moved Permanently</h1>
+
+        <p>The document has moved <a href="https://solarmonitor.org/data/2014/05/14/fits/swap/">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.4.53 (Debian) Server at solarmonitor.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '341'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:45:20 GMT
+      Location:
+      - https://solarmonitor.org/data/2014/05/14/fits/swap/
+      Server:
+      - Apache/2.4.53 (Debian)
+    status:
+      code: 301
+      message: Moved Permanently
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - solarmonitor.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://solarmonitor.org/data/2014/05/14/fits/swap/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /data/2014/05/14/fits/swap</title>\n </head>\n <body>\n<h1>Index
+        of /data/2014/05/14/fits/swap</h1>\n  <table>\n   <tr><th valign=\"top\"><img
+        src=\"/icons/blank.gif\" alt=\"[ICO]\"></th><th><a href=\"?C=N;O=D\">Name</a></th><th><a
+        href=\"?C=M;O=A\">Last modified</a></th><th><a href=\"?C=S;O=A\">Size</a></th><th><a
+        href=\"?C=D;O=A\">Description</a></th></tr>\n   <tr><th colspan=\"5\"><hr></th></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/back.gif\" alt=\"[PARENTDIR]\"></td><td><a
+        href=\"/data/2014/05/14/fits/\">Parent Directory</a></td><td>&nbsp;</td><td
+        align=\"right\">  - </td><td>&nbsp;</td></tr>\n<tr><td valign=\"top\"><img
+        src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a href=\"swap_00174_ar_12053_20140514_014304.fts.gz\">swap_00174_ar_12053_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12053_20140514_062904.fts.gz\">swap_00174_ar_12053_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12053_20140514_131835.fts.gz\">swap_00174_ar_12053_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12053_20140514_182405.fts.gz\">swap_00174_ar_12053_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12053_20140514_200135.fts.gz\">swap_00174_ar_12053_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_014304.fts.gz\">swap_00174_ar_12054_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_062904.fts.gz\">swap_00174_ar_12054_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_131835.fts.gz\">swap_00174_ar_12054_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_182405.fts.gz\">swap_00174_ar_12054_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12054_20140514_200135.fts.gz\">swap_00174_ar_12054_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_014304.fts.gz\">swap_00174_ar_12055_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_062904.fts.gz\">swap_00174_ar_12055_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_131835.fts.gz\">swap_00174_ar_12055_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\">100K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_182405.fts.gz\">swap_00174_ar_12055_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12055_20140514_200135.fts.gz\">swap_00174_ar_12055_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\">100K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_014304.fts.gz\">swap_00174_ar_12056_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_062904.fts.gz\">swap_00174_ar_12056_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_131835.fts.gz\">swap_00174_ar_12056_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\">100K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_182405.fts.gz\">swap_00174_ar_12056_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12056_20140514_200135.fts.gz\">swap_00174_ar_12056_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_014304.fts.gz\">swap_00174_ar_12057_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_062904.fts.gz\">swap_00174_ar_12057_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_131835.fts.gz\">swap_00174_ar_12057_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_182405.fts.gz\">swap_00174_ar_12057_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12057_20140514_200135.fts.gz\">swap_00174_ar_12057_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_014304.fts.gz\">swap_00174_ar_12058_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_062904.fts.gz\">swap_00174_ar_12058_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_131835.fts.gz\">swap_00174_ar_12058_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_182405.fts.gz\">swap_00174_ar_12058_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12058_20140514_200135.fts.gz\">swap_00174_ar_12058_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_014304.fts.gz\">swap_00174_ar_12059_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_062904.fts.gz\">swap_00174_ar_12059_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_131835.fts.gz\">swap_00174_ar_12059_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_182405.fts.gz\">swap_00174_ar_12059_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12059_20140514_200135.fts.gz\">swap_00174_ar_12059_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_014304.fts.gz\">swap_00174_ar_12060_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_062904.fts.gz\">swap_00174_ar_12060_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_131835.fts.gz\">swap_00174_ar_12060_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_182405.fts.gz\">swap_00174_ar_12060_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12060_20140514_200135.fts.gz\">swap_00174_ar_12060_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 98K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_014304.fts.gz\">swap_00174_ar_12061_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_062904.fts.gz\">swap_00174_ar_12061_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 96K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_131835.fts.gz\">swap_00174_ar_12061_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_182405.fts.gz\">swap_00174_ar_12061_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\"> 97K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12061_20140514_200135.fts.gz\">swap_00174_ar_12061_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 96K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_014304.fts.gz\">swap_00174_ar_12062_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_062904.fts.gz\">swap_00174_ar_12062_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:51  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_131835.fts.gz\">swap_00174_ar_12062_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:11  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_182405.fts.gz\">swap_00174_ar_12062_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:50  </td><td align=\"right\">100K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_ar_12062_20140514_200135.fts.gz\">swap_00174_ar_12062_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:50  </td><td align=\"right\"> 99K</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_014304.fts.gz\">swap_00174_fd_20140514_014304.fts.gz</a></td><td
+        align=\"right\">2014-05-14 04:35  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_062904.fts.gz\">swap_00174_fd_20140514_062904.fts.gz</a></td><td
+        align=\"right\">2014-05-14 08:35  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_131835.fts.gz\">swap_00174_fd_20140514_131835.fts.gz</a></td><td
+        align=\"right\">2014-05-14 18:00  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_182405.fts.gz\">swap_00174_fd_20140514_182405.fts.gz</a></td><td
+        align=\"right\">2014-05-14 20:35  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n<tr><td
+        valign=\"top\"><img src=\"/icons/compressed.gif\" alt=\"[   ]\"></td><td><a
+        href=\"swap_00174_fd_20140514_200135.fts.gz\">swap_00174_fd_20140514_200135.fts.gz</a></td><td
+        align=\"right\">2014-05-15 00:35  </td><td align=\"right\">2.2M</td><td>&nbsp;</td></tr>\n
+        \  <tr><th colspan=\"5\"><hr></th></tr>\n</table>\n<address>Apache/2.4.53
+        (Debian) Server at solarmonitor.org Port 443</address>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:45:20 GMT
+      Server:
+      - Apache/2.4.53 (Debian)
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+    status:
+      code: 200
+      message: OK
+version: 1

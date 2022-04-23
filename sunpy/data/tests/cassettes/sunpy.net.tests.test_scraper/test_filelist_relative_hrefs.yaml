@@ -1,0 +1,121 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - www.bbso.njit.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://www.bbso.njit.edu/pub/archive/2016/05/18/
+  response:
+    body:
+      string: "<HTML>\n<HEAD>\n<TITLE>BBSO FTP Data Archive - 20160518</TITLE>\n<BODY
+        BGCOLOR=#ffffff>\n<TABLE BGCOLOR=gray WIDTH=100%>\n<TR><TD ALIGN=right WIDTH=30%></TD>\n
+        \   <TD ALIGN=right WIDTH=70%>\n    <A NAME=\"#TOP\"><FONT SIZE=7 COLOR=white><B>BBSO
+        FTP Data Archive - 20160518</B></FONT></A></TD>\n</TR>\n</TABLE>\n<P><HR ALIGN=center
+        SIZE=2>\n<TABLE WIDTH=100%>\n<TR><TD ALIGN=left  WIDTH=30%>\n<A HREF=\"http://www.bbso.njit.edu/pub/archive/2016/05/17\">Previous
+        Day</A></TD>\n<TD ALIGN=center  WIDTH=30%>\n<A HREF=\"http://www.solarmonitor.org/index.php?date=20160518\"
+        TARGET=\"new_winz\">\nActive Region Monitor</A></TD>\n    <TD ALIGN=right
+        WIDTH=30%>\n<A HREF=\"http://www.bbso.njit.edu/pub/archive/2016/05/19\">Next
+        Day</A></TD>\n</TR>\n</TABLE>\n<CENTER>\n<A HREF=\"#GHN\">GHN Images</A> |\n<A
+        HREF=\"#GONG\">GONG Images</A> |\n<A HREF=\"/pub/archive/2016/05/18/bbso_logs_20160518.html\"
+        TARGET=\"new_winz\">\nBBSO Observing Log |</A>\n<A HREF=\"#cats\">Catalogs</A>
+        |\n<P><HR ALIGN=center SIZE=2>\n<P>\n<A NAME=\"GHN\"><FONT SIZE=4><B>Daily
+        Images from Global Halpha Network</B></FONT></A>\n<TABLE>\n<TR>\n<TD ALIGN=\"center\">\n<A
+        HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_172714.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/bbso_halph_fl_20160518_172714.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_172714</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_204439.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/bbso_halph_fl_20160518_204439.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_204439</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_172714.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/bbso_halph_fr_20160518_172714.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_172714</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_204439.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/bbso_halph_fr_20160518_204439.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_204439</TD>\n</TR>\n</TABLE>\nAvailable
+        Full Disk Halpha FITS Images:<BR>\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_150017.fts\">bbso_halph_fl_20160518_150017.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_153025.fts\">bbso_halph_fl_20160518_153025.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_160033.fts\">bbso_halph_fl_20160518_160033.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_163046.fts\">bbso_halph_fl_20160518_163046.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_170056.fts\">bbso_halph_fl_20160518_170056.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_172714.fts\">bbso_halph_fl_20160518_172714.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_172834.fts\">bbso_halph_fl_20160518_172834.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_180149.fts\">bbso_halph_fl_20160518_180149.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_181659.fts\">bbso_halph_fl_20160518_181659.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_190034.fts\">bbso_halph_fl_20160518_190034.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_193044.fts\">bbso_halph_fl_20160518_193044.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_194416.fts\">bbso_halph_fl_20160518_194416.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_201843.fts\">bbso_halph_fl_20160518_201843.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_204439.fts\">bbso_halph_fl_20160518_204439.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_210028.fts\">bbso_halph_fl_20160518_210028.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fl_20160518_210933.fts\">bbso_halph_fl_20160518_210933.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_150017.fts\">bbso_halph_fr_20160518_150017.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_153025.fts\">bbso_halph_fr_20160518_153025.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_160033.fts\">bbso_halph_fr_20160518_160033.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_163046.fts\">bbso_halph_fr_20160518_163046.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_170056.fts\">bbso_halph_fr_20160518_170056.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_172714.fts\">bbso_halph_fr_20160518_172714.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_172834.fts\">bbso_halph_fr_20160518_172834.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_180149.fts\">bbso_halph_fr_20160518_180149.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_181659.fts\">bbso_halph_fr_20160518_181659.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_190034.fts\">bbso_halph_fr_20160518_190034.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_193044.fts\">bbso_halph_fr_20160518_193044.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_194416.fts\">bbso_halph_fr_20160518_194416.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_201843.fts\">bbso_halph_fr_20160518_201843.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_204439.fts\">bbso_halph_fr_20160518_204439.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_210028.fts\">bbso_halph_fr_20160518_210028.fts</A>
+        |\n<A HREF=\"/pub/archive/2016/05/18/bbso_halph_fr_20160518_210933.fts\">bbso_halph_fr_20160518_210933.fts</A>
+        |\n<P>\n<BR><A HREF=\"#TOP\">Top</A>\n<P>\n<A NAME=\"GONG\"><FONT SIZE=4><B>GONG
+        Full Disk Magnetograms</B></FONT></A>\n<TABLE>\n<TR>\n<TD ALIGN=\"center\">\n<A
+        HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_002103.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_002103.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_002103</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_012103.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_012103.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_012103</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_142103.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_142103.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_142103</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_152103.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_152103.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_152103</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_162103.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_162103.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_162103</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_172203.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_172203.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_172203</TD>\n</TR><TR>\n<TD ALIGN=\"center\">\n<A
+        HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_182103.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_182103.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_182103</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_192203.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_192203.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_192203</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_202103.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_202103.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_202103</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_212203.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_212203.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_212203</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_222203.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_222203.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_222203</TD>\n<TD ALIGN=\"center\">\n<A HREF=\"/pub/archive/2016/05/18/gong_magxx_fd_20160518_232203.jpg\">\n<IMG
+        SRC=\"/pub/archive/2016/05/18/icons/gong_magxx_fd_20160518_232203.png\" WIDTH=\"100\"
+        HEIGHT=\"100\"></A>\n<BR>20160518_232203</TD>\n</TR><TR>\n</TR>\n</TABLE>\n<P>\n<BR><A
+        HREF=\"#TOP\">Top</A>\n<P>\n<A NAME=\"cats\">Available Catalogs:</A><BR>\n<A
+        HREF=\"/pub/archive/2016/05/18/pulnix_catalog\">BBSO Halpha Full Disk Image
+        List</A> |\n<A HREF=\"http://www.bbso.njit.edu/Research/Halpha/ha_arch.html\"
+        TARGET=\"new_winz\">GHN Catalogs</A>\n<P>\n<BR><A HREF=\"#TOP\">Top</A>\n</CENTER>\n</HEAD>\n</HTML>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '8556'
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 19:38:38 GMT
+      ETag:
+      - '"216c-5332c50a32500"'
+      Last-Modified:
+      - Thu, 19 May 2016 06:45:08 GMT
+      Server:
+      - Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/5.4.16
+    status:
+      code: 200
+      message: OK
+version: 1

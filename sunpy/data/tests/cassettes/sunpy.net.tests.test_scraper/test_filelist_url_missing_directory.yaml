@@ -1,0 +1,140 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - lasp.colorado.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/1960/001/
+  response:
+    body:
+      string: "<html>\r\n<head><title>302 Found</title></head>\r\n<body bgcolor=\"white\">\r\n<center><h1>302
+        Found</h1></center>\r\n<hr><center>Avi Vantage/</center>\r\n</body>\r\n</html>\r\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '161'
+      Content-Type:
+      - text/html
+      Location:
+      - https://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/1960/001/
+    status:
+      code: 302
+      message: Moved Temporarily
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - lasp.colorado.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/1960/001/
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>404 Not Found</title>
+
+        </head><body>
+
+        <h1>Not Found</h1>
+
+        <p>The requested URL was not found on this server.</p>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '196'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:45:28 GMT
+      Server:
+      - Apache/2.4.41 (Unix) OpenSSL/1.0.2k-fips PHP/7.4.0
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - lasp.colorado.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/1960/002/
+  response:
+    body:
+      string: "<html>\r\n<head><title>302 Found</title></head>\r\n<body bgcolor=\"white\">\r\n<center><h1>302
+        Found</h1></center>\r\n<hr><center>Avi Vantage/</center>\r\n</body>\r\n</html>\r\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '161'
+      Content-Type:
+      - text/html
+      Location:
+      - https://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/1960/002/
+    status:
+      code: 302
+      message: Moved Temporarily
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - lasp.colorado.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/1960/002/
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>404 Not Found</title>
+
+        </head><body>
+
+        <h1>Not Found</h1>
+
+        <p>The requested URL was not found on this server.</p>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '196'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:45:29 GMT
+      Server:
+      - Apache/2.4.41 (Unix) OpenSSL/1.0.2k-fips PHP/7.4.0
+    status:
+      code: 404
+      message: Not Found
+version: 1
