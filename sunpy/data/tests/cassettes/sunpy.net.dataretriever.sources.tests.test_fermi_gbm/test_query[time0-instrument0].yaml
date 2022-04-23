@@ -1,0 +1,1081 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - heasarc.gsfc.nasa.gov
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2012/08/09/current/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /FTP/fermi/data/gbm/daily/2012/08/09/current</title>\n
+        </head>\n <body>\n<h1>Index of /FTP/fermi/data/gbm/daily/2012/08/09/current</h1>\n<pre><img
+        src=\"/icons/blank.gif\" alt=\"Icon \"> <a href=\"?C=N;O=D\">Name</a>                                  <a
+        href=\"?C=M;O=A\">Last modified</a>      <a href=\"?C=S;O=A\">Size</a>  <a
+        href=\"?C=D;O=A\">Description</a><hr><img src=\"/icons/back.gif\" alt=\"[DIR]\">
+        <a href=\"/FTP/fermi/data/gbm/daily/2012/08/09/\">Parent Directory</a>                                           -
+        \  \n<img src=\"/icons/unknown.gif\" alt=\"[   ]\"> <a href=\"glg_cspec_b0_120809_v00.pha\">glg_cspec_b0_120809_v00.pha</a>
+        \          10-Aug-2012 03:20  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_b1_120809_v00.pha\">glg_cspec_b1_120809_v00.pha</a>
+        \          10-Aug-2012 03:20  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n0_120809_v00.pha\">glg_cspec_n0_120809_v00.pha</a>
+        \          10-Aug-2012 03:20  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n1_120809_v00.pha\">glg_cspec_n1_120809_v00.pha</a>
+        \          10-Aug-2012 03:20  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n2_120809_v00.pha\">glg_cspec_n2_120809_v00.pha</a>
+        \          10-Aug-2012 03:20  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n3_120809_v00.pha\">glg_cspec_n3_120809_v00.pha</a>
+        \          10-Aug-2012 03:21  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n4_120809_v00.pha\">glg_cspec_n4_120809_v00.pha</a>
+        \          10-Aug-2012 03:21  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n5_120809_v00.pha\">glg_cspec_n5_120809_v00.pha</a>
+        \          10-Aug-2012 03:21  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n6_120809_v00.pha\">glg_cspec_n6_120809_v00.pha</a>
+        \          10-Aug-2012 03:21  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n7_120809_v00.pha\">glg_cspec_n7_120809_v00.pha</a>
+        \          10-Aug-2012 03:21  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n8_120809_v00.pha\">glg_cspec_n8_120809_v00.pha</a>
+        \          10-Aug-2012 03:21  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_n9_120809_v00.pha\">glg_cspec_n9_120809_v00.pha</a>
+        \          10-Aug-2012 03:22  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_na_120809_v00.pha\">glg_cspec_na_120809_v00.pha</a>
+        \          10-Aug-2012 03:22  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_cspec_nb_120809_v00.pha\">glg_cspec_nb_120809_v00.pha</a>
+        \          10-Aug-2012 03:22  5.0M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_b0_120809_v00.pha\">glg_ctime_b0_120809_v00.pha</a>
+        \          10-Aug-2012 03:22   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_b1_120809_v00.pha\">glg_ctime_b1_120809_v00.pha</a>
+        \          10-Aug-2012 03:22   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n0_120809_v00.pha\">glg_ctime_n0_120809_v00.pha</a>
+        \          10-Aug-2012 03:23   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n1_120809_v00.pha\">glg_ctime_n1_120809_v00.pha</a>
+        \          10-Aug-2012 03:23   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n2_120809_v00.pha\">glg_ctime_n2_120809_v00.pha</a>
+        \          10-Aug-2012 03:23   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n3_120809_v00.pha\">glg_ctime_n3_120809_v00.pha</a>
+        \          10-Aug-2012 03:23   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n4_120809_v00.pha\">glg_ctime_n4_120809_v00.pha</a>
+        \          10-Aug-2012 03:23   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n5_120809_v00.pha\">glg_ctime_n5_120809_v00.pha</a>
+        \          10-Aug-2012 03:23   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n6_120809_v00.pha\">glg_ctime_n6_120809_v00.pha</a>
+        \          10-Aug-2012 03:24   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n7_120809_v00.pha\">glg_ctime_n7_120809_v00.pha</a>
+        \          10-Aug-2012 03:24   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n8_120809_v00.pha\">glg_ctime_n8_120809_v00.pha</a>
+        \          10-Aug-2012 03:24   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_n9_120809_v00.pha\">glg_ctime_n9_120809_v00.pha</a>
+        \          10-Aug-2012 03:24   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_na_120809_v00.pha\">glg_ctime_na_120809_v00.pha</a>
+        \          10-Aug-2012 03:24   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_ctime_nb_120809_v00.pha\">glg_ctime_nb_120809_v00.pha</a>
+        \          10-Aug-2012 03:24   11M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_poshist_all_120809_v01.fit\">glg_poshist_all_120809_v01.fit</a>
+        \       14-Dec-2020 16:21  8.8M  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_b0_120809_v00.fit\">glg_spechist_b0_120809_v00.fit</a>
+        \       10-Aug-2012 03:25   14K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_b1_120809_v00.fit\">glg_spechist_b1_120809_v00.fit</a>
+        \       10-Aug-2012 03:25   14K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n0_120809_v00.fit\">glg_spechist_n0_120809_v00.fit</a>
+        \       10-Aug-2012 03:25   14K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n1_120809_v00.fit\">glg_spechist_n1_120809_v00.fit</a>
+        \       10-Aug-2012 03:25   17K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n2_120809_v00.fit\">glg_spechist_n2_120809_v00.fit</a>
+        \       10-Aug-2012 03:25   17K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n3_120809_v00.fit\">glg_spechist_n3_120809_v00.fit</a>
+        \       10-Aug-2012 03:26   17K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n4_120809_v00.fit\">glg_spechist_n4_120809_v00.fit</a>
+        \       10-Aug-2012 03:26   17K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n5_120809_v00.fit\">glg_spechist_n5_120809_v00.fit</a>
+        \       10-Aug-2012 03:26   17K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n6_120809_v00.fit\">glg_spechist_n6_120809_v00.fit</a>
+        \       10-Aug-2012 03:26   17K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n7_120809_v00.fit\">glg_spechist_n7_120809_v00.fit</a>
+        \       10-Aug-2012 03:26   14K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n8_120809_v00.fit\">glg_spechist_n8_120809_v00.fit</a>
+        \       10-Aug-2012 03:26   17K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_n9_120809_v00.fit\">glg_spechist_n9_120809_v00.fit</a>
+        \       10-Aug-2012 03:27   14K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_na_120809_v00.fit\">glg_spechist_na_120809_v00.fit</a>
+        \       10-Aug-2012 03:27   17K  \n<img src=\"/icons/unknown.gif\" alt=\"[
+        \  ]\"> <a href=\"glg_spechist_nb_120809_v00.fit\">glg_spechist_nb_120809_v00.fit</a>
+        \       10-Aug-2012 03:27   17K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809041_v00.fit.gz\">glg_tte_b0_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:21  7.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809051_v00.fit.gz\">glg_tte_b0_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:02  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809061_v00.fit.gz\">glg_tte_b0_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:02  5.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809112_v00.fit.gz\">glg_tte_b0_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:06   11M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809182_v00.fit.gz\">glg_tte_b0_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:06  8.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809227_v00.fit.gz\">glg_tte_b0_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:07  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809229_v00.fit.gz\">glg_tte_b0_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:07  2.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809254_v00.fit.gz\">glg_tte_b0_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 04:59  6.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809297_v00.fit.gz\">glg_tte_b0_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 04:59  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809360_v00.fit.gz\">glg_tte_b0_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:22  3.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809370_v00.fit.gz\">glg_tte_b0_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:23  4.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809393_v00.fit.gz\">glg_tte_b0_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:23  2.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809396_v00.fit.gz\">glg_tte_b0_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:07  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809422_v00.fit.gz\">glg_tte_b0_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:07  7.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809440_v00.fit.gz\">glg_tte_b0_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:07  4.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809461_v00.fit.gz\">glg_tte_b0_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:08  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809491_v00.fit.gz\">glg_tte_b0_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:49  9.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809511_v00.fit.gz\">glg_tte_b0_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:49  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809560_v00.fit.gz\">glg_tte_b0_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:49  9.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809582_v00.fit.gz\">glg_tte_b0_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:27  5.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809630_v00.fit.gz\">glg_tte_b0_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:27  5.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809653_v00.fit.gz\">glg_tte_b0_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:31  4.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809693_v00.fit.gz\">glg_tte_b0_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:31  1.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809723_v00.fit.gz\">glg_tte_b0_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:10  2.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809758_v00.fit.gz\">glg_tte_b0_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:10  5.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809823_v00.fit.gz\">glg_tte_b0_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:10  754K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809827_v00.fit.gz\">glg_tte_b0_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:10  6.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809857_v00.fit.gz\">glg_tte_b0_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:11  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809890_v00.fit.gz\">glg_tte_b0_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:11  2.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809896_v00.fit.gz\">glg_tte_b0_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:12  7.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809915_v00.fit.gz\">glg_tte_b0_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:12  6.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809959_v00.fit.gz\">glg_tte_b0_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:43  883K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809966_v00.fit.gz\">glg_tte_b0_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:43  8.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b0_120809985_v00.fit.gz\">glg_tte_b0_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:43  6.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809041_v00.fit.gz\">glg_tte_b1_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:21  9.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809051_v00.fit.gz\">glg_tte_b1_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:03  2.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809061_v00.fit.gz\">glg_tte_b1_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:03  6.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809112_v00.fit.gz\">glg_tte_b1_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:07   12M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809182_v00.fit.gz\">glg_tte_b1_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:07   10M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809227_v00.fit.gz\">glg_tte_b1_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:07  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809229_v00.fit.gz\">glg_tte_b1_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:07  2.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809254_v00.fit.gz\">glg_tte_b1_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 04:59  6.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809297_v00.fit.gz\">glg_tte_b1_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:00  6.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809360_v00.fit.gz\">glg_tte_b1_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:23  4.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809370_v00.fit.gz\">glg_tte_b1_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:23  6.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809393_v00.fit.gz\">glg_tte_b1_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:23  3.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809396_v00.fit.gz\">glg_tte_b1_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:08  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809422_v00.fit.gz\">glg_tte_b1_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:08   12M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809440_v00.fit.gz\">glg_tte_b1_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:08  6.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809461_v00.fit.gz\">glg_tte_b1_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:08  2.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809491_v00.fit.gz\">glg_tte_b1_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:49   14M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809511_v00.fit.gz\">glg_tte_b1_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:49  7.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809560_v00.fit.gz\">glg_tte_b1_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:50   13M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809582_v00.fit.gz\">glg_tte_b1_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:27  7.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809630_v00.fit.gz\">glg_tte_b1_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:27  7.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809653_v00.fit.gz\">glg_tte_b1_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:32  5.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809693_v00.fit.gz\">glg_tte_b1_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:32  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809723_v00.fit.gz\">glg_tte_b1_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:11  2.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809758_v00.fit.gz\">glg_tte_b1_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:11  7.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809823_v00.fit.gz\">glg_tte_b1_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:11  1.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809827_v00.fit.gz\">glg_tte_b1_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:11  8.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809857_v00.fit.gz\">glg_tte_b1_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:12  2.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809890_v00.fit.gz\">glg_tte_b1_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:12  3.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809896_v00.fit.gz\">glg_tte_b1_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:12  9.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809915_v00.fit.gz\">glg_tte_b1_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:12  7.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809959_v00.fit.gz\">glg_tte_b1_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:44  1.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809966_v00.fit.gz\">glg_tte_b1_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:44   10M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_b1_120809985_v00.fit.gz\">glg_tte_b1_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:44  7.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809041_v00.fit.gz\">glg_tte_n0_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:22  5.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809051_v00.fit.gz\">glg_tte_n0_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:03  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809061_v00.fit.gz\">glg_tte_n0_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:03  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809112_v00.fit.gz\">glg_tte_n0_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:08  6.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809182_v00.fit.gz\">glg_tte_n0_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:08  6.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809227_v00.fit.gz\">glg_tte_n0_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:08  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809229_v00.fit.gz\">glg_tte_n0_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:08  2.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809254_v00.fit.gz\">glg_tte_n0_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:00  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809297_v00.fit.gz\">glg_tte_n0_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:00  2.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809360_v00.fit.gz\">glg_tte_n0_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:24  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809370_v00.fit.gz\">glg_tte_n0_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:24  2.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809393_v00.fit.gz\">glg_tte_n0_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:24  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809396_v00.fit.gz\">glg_tte_n0_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:09  638K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809422_v00.fit.gz\">glg_tte_n0_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:09  3.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809440_v00.fit.gz\">glg_tte_n0_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:09  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809461_v00.fit.gz\">glg_tte_n0_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:09  1.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809491_v00.fit.gz\">glg_tte_n0_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:50  5.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809511_v00.fit.gz\">glg_tte_n0_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:50  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809560_v00.fit.gz\">glg_tte_n0_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:50  3.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809582_v00.fit.gz\">glg_tte_n0_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:28  2.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809630_v00.fit.gz\">glg_tte_n0_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:28  2.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809653_v00.fit.gz\">glg_tte_n0_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:32  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809693_v00.fit.gz\">glg_tte_n0_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:32  1.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809723_v00.fit.gz\">glg_tte_n0_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:11  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809758_v00.fit.gz\">glg_tte_n0_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:11  3.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809823_v00.fit.gz\">glg_tte_n0_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:12  510K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809827_v00.fit.gz\">glg_tte_n0_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:12  4.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809857_v00.fit.gz\">glg_tte_n0_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:13  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809890_v00.fit.gz\">glg_tte_n0_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:13  1.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809896_v00.fit.gz\">glg_tte_n0_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:13  4.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809915_v00.fit.gz\">glg_tte_n0_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:13  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809959_v00.fit.gz\">glg_tte_n0_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:45  651K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809966_v00.fit.gz\">glg_tte_n0_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:45  5.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n0_120809985_v00.fit.gz\">glg_tte_n0_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:45  4.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809041_v00.fit.gz\">glg_tte_n1_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:23  5.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809051_v00.fit.gz\">glg_tte_n1_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:03  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809061_v00.fit.gz\">glg_tte_n1_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:03  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809112_v00.fit.gz\">glg_tte_n1_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:08  7.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809182_v00.fit.gz\">glg_tte_n1_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:08  6.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809227_v00.fit.gz\">glg_tte_n1_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:08  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809229_v00.fit.gz\">glg_tte_n1_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:09  2.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809254_v00.fit.gz\">glg_tte_n1_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:00  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809297_v00.fit.gz\">glg_tte_n1_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:00  3.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809360_v00.fit.gz\">glg_tte_n1_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:24  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809370_v00.fit.gz\">glg_tte_n1_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:24  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809393_v00.fit.gz\">glg_tte_n1_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:25  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809396_v00.fit.gz\">glg_tte_n1_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:09  634K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809422_v00.fit.gz\">glg_tte_n1_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:10  3.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809440_v00.fit.gz\">glg_tte_n1_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:10  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809461_v00.fit.gz\">glg_tte_n1_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:10  1.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809491_v00.fit.gz\">glg_tte_n1_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:50  6.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809511_v00.fit.gz\">glg_tte_n1_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:51  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809560_v00.fit.gz\">glg_tte_n1_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:51  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809582_v00.fit.gz\">glg_tte_n1_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:28  2.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809630_v00.fit.gz\">glg_tte_n1_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:28  2.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809653_v00.fit.gz\">glg_tte_n1_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:32  2.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809693_v00.fit.gz\">glg_tte_n1_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:32  1.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809723_v00.fit.gz\">glg_tte_n1_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:12  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809758_v00.fit.gz\">glg_tte_n1_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:12  3.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809823_v00.fit.gz\">glg_tte_n1_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:12  566K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809827_v00.fit.gz\">glg_tte_n1_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:12  4.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809857_v00.fit.gz\">glg_tte_n1_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:13  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809890_v00.fit.gz\">glg_tte_n1_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:13  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809896_v00.fit.gz\">glg_tte_n1_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:14  5.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809915_v00.fit.gz\">glg_tte_n1_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:14  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809959_v00.fit.gz\">glg_tte_n1_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:46  718K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809966_v00.fit.gz\">glg_tte_n1_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:46  5.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n1_120809985_v00.fit.gz\">glg_tte_n1_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:46  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809041_v00.fit.gz\">glg_tte_n2_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:23  4.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809051_v00.fit.gz\">glg_tte_n2_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:04  1.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809061_v00.fit.gz\">glg_tte_n2_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:04  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809112_v00.fit.gz\">glg_tte_n2_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:09  7.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809182_v00.fit.gz\">glg_tte_n2_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:09  5.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809227_v00.fit.gz\">glg_tte_n2_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:09  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809229_v00.fit.gz\">glg_tte_n2_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:09  1.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809254_v00.fit.gz\">glg_tte_n2_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:00  3.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809297_v00.fit.gz\">glg_tte_n2_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:01  3.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809360_v00.fit.gz\">glg_tte_n2_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:25  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809370_v00.fit.gz\">glg_tte_n2_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:25  2.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809393_v00.fit.gz\">glg_tte_n2_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:25  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809396_v00.fit.gz\">glg_tte_n2_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:10  565K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809422_v00.fit.gz\">glg_tte_n2_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:11  3.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809440_v00.fit.gz\">glg_tte_n2_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:11  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809461_v00.fit.gz\">glg_tte_n2_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:11  1.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809491_v00.fit.gz\">glg_tte_n2_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:51  4.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809511_v00.fit.gz\">glg_tte_n2_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:51  2.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809560_v00.fit.gz\">glg_tte_n2_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:51  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809582_v00.fit.gz\">glg_tte_n2_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:28  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809630_v00.fit.gz\">glg_tte_n2_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:28  3.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809653_v00.fit.gz\">glg_tte_n2_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:33  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809693_v00.fit.gz\">glg_tte_n2_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:33  1.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809723_v00.fit.gz\">glg_tte_n2_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:13  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809758_v00.fit.gz\">glg_tte_n2_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:13  4.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809823_v00.fit.gz\">glg_tte_n2_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:13  578K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809827_v00.fit.gz\">glg_tte_n2_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:13  4.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809857_v00.fit.gz\">glg_tte_n2_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:14  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809890_v00.fit.gz\">glg_tte_n2_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:14  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809896_v00.fit.gz\">glg_tte_n2_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:14  5.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809915_v00.fit.gz\">glg_tte_n2_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:15  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809959_v00.fit.gz\">glg_tte_n2_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:47  719K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809966_v00.fit.gz\">glg_tte_n2_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:47  5.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n2_120809985_v00.fit.gz\">glg_tte_n2_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:47  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809041_v00.fit.gz\">glg_tte_n3_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:24  5.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809051_v00.fit.gz\">glg_tte_n3_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:04  1.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809061_v00.fit.gz\">glg_tte_n3_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:05  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809112_v00.fit.gz\">glg_tte_n3_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:09  6.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809182_v00.fit.gz\">glg_tte_n3_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:10  7.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809227_v00.fit.gz\">glg_tte_n3_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:10  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809229_v00.fit.gz\">glg_tte_n3_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:10  2.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809254_v00.fit.gz\">glg_tte_n3_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:01  4.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809297_v00.fit.gz\">glg_tte_n3_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:01  3.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809360_v00.fit.gz\">glg_tte_n3_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:25  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809370_v00.fit.gz\">glg_tte_n3_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:26  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809393_v00.fit.gz\">glg_tte_n3_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:26  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809396_v00.fit.gz\">glg_tte_n3_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:11  733K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809422_v00.fit.gz\">glg_tte_n3_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:11  3.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809440_v00.fit.gz\">glg_tte_n3_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:11  2.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809461_v00.fit.gz\">glg_tte_n3_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:12  1.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809491_v00.fit.gz\">glg_tte_n3_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:51  5.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809511_v00.fit.gz\">glg_tte_n3_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:51  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809560_v00.fit.gz\">glg_tte_n3_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:52  3.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809582_v00.fit.gz\">glg_tte_n3_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:29  3.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809630_v00.fit.gz\">glg_tte_n3_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:29  3.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809653_v00.fit.gz\">glg_tte_n3_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:33  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809693_v00.fit.gz\">glg_tte_n3_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:33  1.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809723_v00.fit.gz\">glg_tte_n3_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:13  1.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809758_v00.fit.gz\">glg_tte_n3_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:13  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809823_v00.fit.gz\">glg_tte_n3_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:14  584K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809827_v00.fit.gz\">glg_tte_n3_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:14  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809857_v00.fit.gz\">glg_tte_n3_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:15  1.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809890_v00.fit.gz\">glg_tte_n3_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:15  2.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809896_v00.fit.gz\">glg_tte_n3_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:15  5.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809915_v00.fit.gz\">glg_tte_n3_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:15  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809959_v00.fit.gz\">glg_tte_n3_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:48  730K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809966_v00.fit.gz\">glg_tte_n3_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:48  5.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n3_120809985_v00.fit.gz\">glg_tte_n3_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:48  5.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809041_v00.fit.gz\">glg_tte_n4_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:25  5.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809051_v00.fit.gz\">glg_tte_n4_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:05  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809061_v00.fit.gz\">glg_tte_n4_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:05  3.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809112_v00.fit.gz\">glg_tte_n4_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:10  5.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809182_v00.fit.gz\">glg_tte_n4_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:10  6.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809227_v00.fit.gz\">glg_tte_n4_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:10  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809229_v00.fit.gz\">glg_tte_n4_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:11  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809254_v00.fit.gz\">glg_tte_n4_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:01  3.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809297_v00.fit.gz\">glg_tte_n4_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:01  3.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809360_v00.fit.gz\">glg_tte_n4_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:26  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809370_v00.fit.gz\">glg_tte_n4_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:26  1.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809393_v00.fit.gz\">glg_tte_n4_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:26  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809396_v00.fit.gz\">glg_tte_n4_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:12  668K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809422_v00.fit.gz\">glg_tte_n4_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:12  3.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809440_v00.fit.gz\">glg_tte_n4_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:12  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809461_v00.fit.gz\">glg_tte_n4_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:12  915K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809491_v00.fit.gz\">glg_tte_n4_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:52  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809511_v00.fit.gz\">glg_tte_n4_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:52  1.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809560_v00.fit.gz\">glg_tte_n4_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:52  3.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809582_v00.fit.gz\">glg_tte_n4_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:29  2.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809630_v00.fit.gz\">glg_tte_n4_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:29  2.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809653_v00.fit.gz\">glg_tte_n4_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:33  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809693_v00.fit.gz\">glg_tte_n4_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:33  1.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809723_v00.fit.gz\">glg_tte_n4_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:14  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809758_v00.fit.gz\">glg_tte_n4_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:14  3.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809823_v00.fit.gz\">glg_tte_n4_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:14  550K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809827_v00.fit.gz\">glg_tte_n4_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:15  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809857_v00.fit.gz\">glg_tte_n4_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:16  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809890_v00.fit.gz\">glg_tte_n4_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:16  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809896_v00.fit.gz\">glg_tte_n4_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:16  4.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809915_v00.fit.gz\">glg_tte_n4_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:16  3.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809959_v00.fit.gz\">glg_tte_n4_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:49  696K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809966_v00.fit.gz\">glg_tte_n4_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:49  5.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n4_120809985_v00.fit.gz\">glg_tte_n4_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:49  4.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809041_v00.fit.gz\">glg_tte_n5_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:25  5.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809051_v00.fit.gz\">glg_tte_n5_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:05  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809061_v00.fit.gz\">glg_tte_n5_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:05  3.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809112_v00.fit.gz\">glg_tte_n5_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:11  6.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809182_v00.fit.gz\">glg_tte_n5_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:11  5.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809227_v00.fit.gz\">glg_tte_n5_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:11  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809229_v00.fit.gz\">glg_tte_n5_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:11  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809254_v00.fit.gz\">glg_tte_n5_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:02  3.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809297_v00.fit.gz\">glg_tte_n5_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:02  3.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809360_v00.fit.gz\">glg_tte_n5_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:27  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809370_v00.fit.gz\">glg_tte_n5_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:27  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809393_v00.fit.gz\">glg_tte_n5_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:27  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809396_v00.fit.gz\">glg_tte_n5_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:13  577K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809422_v00.fit.gz\">glg_tte_n5_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:13  3.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809440_v00.fit.gz\">glg_tte_n5_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:13  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809461_v00.fit.gz\">glg_tte_n5_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:13  823K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809491_v00.fit.gz\">glg_tte_n5_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:52  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809511_v00.fit.gz\">glg_tte_n5_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:52  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809560_v00.fit.gz\">glg_tte_n5_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:53  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809582_v00.fit.gz\">glg_tte_n5_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:29  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809630_v00.fit.gz\">glg_tte_n5_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:29  3.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809653_v00.fit.gz\">glg_tte_n5_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:33  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809693_v00.fit.gz\">glg_tte_n5_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:34  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809723_v00.fit.gz\">glg_tte_n5_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:15  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809758_v00.fit.gz\">glg_tte_n5_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:15  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809823_v00.fit.gz\">glg_tte_n5_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:15  601K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809827_v00.fit.gz\">glg_tte_n5_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:15  4.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809857_v00.fit.gz\">glg_tte_n5_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:16  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809890_v00.fit.gz\">glg_tte_n5_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:16  2.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809896_v00.fit.gz\">glg_tte_n5_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:17  5.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809915_v00.fit.gz\">glg_tte_n5_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:17  3.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809959_v00.fit.gz\">glg_tte_n5_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:50  754K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809966_v00.fit.gz\">glg_tte_n5_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:50  5.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n5_120809985_v00.fit.gz\">glg_tte_n5_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:50  3.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809041_v00.fit.gz\">glg_tte_n6_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:26  6.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809051_v00.fit.gz\">glg_tte_n6_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:05  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809061_v00.fit.gz\">glg_tte_n6_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:06  4.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809112_v00.fit.gz\">glg_tte_n6_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:11  7.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809182_v00.fit.gz\">glg_tte_n6_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:11  7.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809227_v00.fit.gz\">glg_tte_n6_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:12  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809229_v00.fit.gz\">glg_tte_n6_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:12  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809254_v00.fit.gz\">glg_tte_n6_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:02  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809297_v00.fit.gz\">glg_tte_n6_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:02  3.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809360_v00.fit.gz\">glg_tte_n6_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:27  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809370_v00.fit.gz\">glg_tte_n6_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:27  2.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809393_v00.fit.gz\">glg_tte_n6_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:27  1.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809396_v00.fit.gz\">glg_tte_n6_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:14  758K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809422_v00.fit.gz\">glg_tte_n6_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:14  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809440_v00.fit.gz\">glg_tte_n6_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:14  3.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809461_v00.fit.gz\">glg_tte_n6_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:14  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809491_v00.fit.gz\">glg_tte_n6_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:53  4.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809511_v00.fit.gz\">glg_tte_n6_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:53  2.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809560_v00.fit.gz\">glg_tte_n6_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:53  5.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809582_v00.fit.gz\">glg_tte_n6_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:29  3.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809630_v00.fit.gz\">glg_tte_n6_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:30  3.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809653_v00.fit.gz\">glg_tte_n6_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:34  2.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809693_v00.fit.gz\">glg_tte_n6_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:34  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809723_v00.fit.gz\">glg_tte_n6_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:15  1.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809758_v00.fit.gz\">glg_tte_n6_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:15  3.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809823_v00.fit.gz\">glg_tte_n6_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:16  634K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809827_v00.fit.gz\">glg_tte_n6_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:16  5.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809857_v00.fit.gz\">glg_tte_n6_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:17  1.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809890_v00.fit.gz\">glg_tte_n6_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:17  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809896_v00.fit.gz\">glg_tte_n6_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:17  5.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809915_v00.fit.gz\">glg_tte_n6_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:17  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809959_v00.fit.gz\">glg_tte_n6_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:51  817K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809966_v00.fit.gz\">glg_tte_n6_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:51  7.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n6_120809985_v00.fit.gz\">glg_tte_n6_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:51  5.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809041_v00.fit.gz\">glg_tte_n7_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:26  7.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809051_v00.fit.gz\">glg_tte_n7_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:06  1.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809061_v00.fit.gz\">glg_tte_n7_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:06  5.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809112_v00.fit.gz\">glg_tte_n7_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:12  8.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809182_v00.fit.gz\">glg_tte_n7_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:12  8.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809227_v00.fit.gz\">glg_tte_n7_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:12  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809229_v00.fit.gz\">glg_tte_n7_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:12  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809254_v00.fit.gz\">glg_tte_n7_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:02  5.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809297_v00.fit.gz\">glg_tte_n7_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:02  4.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809360_v00.fit.gz\">glg_tte_n7_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:27  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809370_v00.fit.gz\">glg_tte_n7_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:28  2.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809393_v00.fit.gz\">glg_tte_n7_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:28  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809396_v00.fit.gz\">glg_tte_n7_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:14  860K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809422_v00.fit.gz\">glg_tte_n7_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:14  4.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809440_v00.fit.gz\">glg_tte_n7_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:14  3.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809461_v00.fit.gz\">glg_tte_n7_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:15  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809491_v00.fit.gz\">glg_tte_n7_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:53  4.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809511_v00.fit.gz\">glg_tte_n7_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:53  2.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809560_v00.fit.gz\">glg_tte_n7_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:53  5.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809582_v00.fit.gz\">glg_tte_n7_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:30  3.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809630_v00.fit.gz\">glg_tte_n7_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:30  3.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809653_v00.fit.gz\">glg_tte_n7_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:34  3.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809693_v00.fit.gz\">glg_tte_n7_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:34  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809723_v00.fit.gz\">glg_tte_n7_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:16  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809758_v00.fit.gz\">glg_tte_n7_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:16  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809823_v00.fit.gz\">glg_tte_n7_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:16  723K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809827_v00.fit.gz\">glg_tte_n7_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:16  6.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809857_v00.fit.gz\">glg_tte_n7_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:17  2.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809890_v00.fit.gz\">glg_tte_n7_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:17  2.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809896_v00.fit.gz\">glg_tte_n7_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:18  5.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809915_v00.fit.gz\">glg_tte_n7_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:18  5.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809959_v00.fit.gz\">glg_tte_n7_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:52  943K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809966_v00.fit.gz\">glg_tte_n7_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:52  8.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n7_120809985_v00.fit.gz\">glg_tte_n7_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:52  6.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809041_v00.fit.gz\">glg_tte_n8_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:27  6.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809051_v00.fit.gz\">glg_tte_n8_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:06  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809061_v00.fit.gz\">glg_tte_n8_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:06  5.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809112_v00.fit.gz\">glg_tte_n8_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:13  7.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809182_v00.fit.gz\">glg_tte_n8_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:13  7.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809227_v00.fit.gz\">glg_tte_n8_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:13  1.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809229_v00.fit.gz\">glg_tte_n8_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:13  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809254_v00.fit.gz\">glg_tte_n8_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:02  4.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809297_v00.fit.gz\">glg_tte_n8_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:03  3.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809360_v00.fit.gz\">glg_tte_n8_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:28  1.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809370_v00.fit.gz\">glg_tte_n8_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:28  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809393_v00.fit.gz\">glg_tte_n8_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:28  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809396_v00.fit.gz\">glg_tte_n8_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:15  833K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809422_v00.fit.gz\">glg_tte_n8_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:15  3.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809440_v00.fit.gz\">glg_tte_n8_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:15  2.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809461_v00.fit.gz\">glg_tte_n8_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:15  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809491_v00.fit.gz\">glg_tte_n8_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:54  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809511_v00.fit.gz\">glg_tte_n8_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:54  2.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809560_v00.fit.gz\">glg_tte_n8_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:54  4.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809582_v00.fit.gz\">glg_tte_n8_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:30  3.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809630_v00.fit.gz\">glg_tte_n8_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:30  2.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809653_v00.fit.gz\">glg_tte_n8_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:34  2.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809693_v00.fit.gz\">glg_tte_n8_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:34  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809723_v00.fit.gz\">glg_tte_n8_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:16  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809758_v00.fit.gz\">glg_tte_n8_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:16  3.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809823_v00.fit.gz\">glg_tte_n8_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:17  597K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809827_v00.fit.gz\">glg_tte_n8_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:17  5.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809857_v00.fit.gz\">glg_tte_n8_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:18  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809890_v00.fit.gz\">glg_tte_n8_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:18  1.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809896_v00.fit.gz\">glg_tte_n8_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:18  4.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809915_v00.fit.gz\">glg_tte_n8_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:18  4.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809959_v00.fit.gz\">glg_tte_n8_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:52  776K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809966_v00.fit.gz\">glg_tte_n8_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:52  7.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n8_120809985_v00.fit.gz\">glg_tte_n8_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:53  5.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809041_v00.fit.gz\">glg_tte_n9_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:28  6.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809051_v00.fit.gz\">glg_tte_n9_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:06  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809061_v00.fit.gz\">glg_tte_n9_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:06  4.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809112_v00.fit.gz\">glg_tte_n9_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:13  8.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809182_v00.fit.gz\">glg_tte_n9_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:13  7.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809227_v00.fit.gz\">glg_tte_n9_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:13  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809229_v00.fit.gz\">glg_tte_n9_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:14  1.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809254_v00.fit.gz\">glg_tte_n9_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:03  5.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809297_v00.fit.gz\">glg_tte_n9_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:03  3.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809360_v00.fit.gz\">glg_tte_n9_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:28  1.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809370_v00.fit.gz\">glg_tte_n9_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:28  2.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809393_v00.fit.gz\">glg_tte_n9_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:29  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809396_v00.fit.gz\">glg_tte_n9_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:15  891K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809422_v00.fit.gz\">glg_tte_n9_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:15  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809440_v00.fit.gz\">glg_tte_n9_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:16  3.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809461_v00.fit.gz\">glg_tte_n9_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:16  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809491_v00.fit.gz\">glg_tte_n9_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:54  4.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809511_v00.fit.gz\">glg_tte_n9_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:54  3.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809560_v00.fit.gz\">glg_tte_n9_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:54  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809582_v00.fit.gz\">glg_tte_n9_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:30  3.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809630_v00.fit.gz\">glg_tte_n9_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:30  3.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809653_v00.fit.gz\">glg_tte_n9_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:34  3.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809693_v00.fit.gz\">glg_tte_n9_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:35  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809723_v00.fit.gz\">glg_tte_n9_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:17  1.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809758_v00.fit.gz\">glg_tte_n9_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:17  4.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809823_v00.fit.gz\">glg_tte_n9_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:17  608K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809827_v00.fit.gz\">glg_tte_n9_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:17  5.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809857_v00.fit.gz\">glg_tte_n9_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:18  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809890_v00.fit.gz\">glg_tte_n9_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:18  2.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809896_v00.fit.gz\">glg_tte_n9_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:19  6.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809915_v00.fit.gz\">glg_tte_n9_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:19  5.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809959_v00.fit.gz\">glg_tte_n9_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:53  761K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809966_v00.fit.gz\">glg_tte_n9_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:53  7.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_n9_120809985_v00.fit.gz\">glg_tte_n9_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:53  5.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809041_v00.fit.gz\">glg_tte_na_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:28  5.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809051_v00.fit.gz\">glg_tte_na_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:06  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809061_v00.fit.gz\">glg_tte_na_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:07  5.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809112_v00.fit.gz\">glg_tte_na_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:14   10M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809182_v00.fit.gz\">glg_tte_na_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:14  6.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809227_v00.fit.gz\">glg_tte_na_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:14  1.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809229_v00.fit.gz\">glg_tte_na_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:14  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809254_v00.fit.gz\">glg_tte_na_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:03  6.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809297_v00.fit.gz\">glg_tte_na_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:03  2.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809360_v00.fit.gz\">glg_tte_na_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:29  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809370_v00.fit.gz\">glg_tte_na_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:29  3.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809393_v00.fit.gz\">glg_tte_na_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:29  2.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809396_v00.fit.gz\">glg_tte_na_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:16  1.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809422_v00.fit.gz\">glg_tte_na_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:16  3.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809440_v00.fit.gz\">glg_tte_na_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:16  2.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809461_v00.fit.gz\">glg_tte_na_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:16  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809491_v00.fit.gz\">glg_tte_na_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:54  4.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809511_v00.fit.gz\">glg_tte_na_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:54  3.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809560_v00.fit.gz\">glg_tte_na_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:55  4.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809582_v00.fit.gz\">glg_tte_na_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:31  2.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809630_v00.fit.gz\">glg_tte_na_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:31  4.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809653_v00.fit.gz\">glg_tte_na_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:35  3.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809693_v00.fit.gz\">glg_tte_na_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:35  1.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809723_v00.fit.gz\">glg_tte_na_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:17  1.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809758_v00.fit.gz\">glg_tte_na_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:18  4.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809823_v00.fit.gz\">glg_tte_na_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:18  537K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809827_v00.fit.gz\">glg_tte_na_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:18  4.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809857_v00.fit.gz\">glg_tte_na_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:19  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809890_v00.fit.gz\">glg_tte_na_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:19  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809896_v00.fit.gz\">glg_tte_na_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:19  7.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809915_v00.fit.gz\">glg_tte_na_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:19  6.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809959_v00.fit.gz\">glg_tte_na_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:54  628K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809966_v00.fit.gz\">glg_tte_na_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:54  5.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_na_120809985_v00.fit.gz\">glg_tte_na_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:54  5.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809041_v00.fit.gz\">glg_tte_nb_120809041_v00.fit.gz</a>
+        \      09-Aug-2012 00:29  5.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809051_v00.fit.gz\">glg_tte_nb_120809051_v00.fit.gz</a>
+        \      09-Aug-2012 01:07  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809061_v00.fit.gz\">glg_tte_nb_120809061_v00.fit.gz</a>
+        \      09-Aug-2012 01:07  4.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809112_v00.fit.gz\">glg_tte_nb_120809112_v00.fit.gz</a>
+        \      09-Aug-2012 03:14  8.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809182_v00.fit.gz\">glg_tte_nb_120809182_v00.fit.gz</a>
+        \      09-Aug-2012 03:14  7.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809227_v00.fit.gz\">glg_tte_nb_120809227_v00.fit.gz</a>
+        \      09-Aug-2012 03:15  941K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809229_v00.fit.gz\">glg_tte_nb_120809229_v00.fit.gz</a>
+        \      09-Aug-2012 03:15  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809254_v00.fit.gz\">glg_tte_nb_120809254_v00.fit.gz</a>
+        \      09-Aug-2012 05:03  5.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809297_v00.fit.gz\">glg_tte_nb_120809297_v00.fit.gz</a>
+        \      09-Aug-2012 05:04  3.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809360_v00.fit.gz\">glg_tte_nb_120809360_v00.fit.gz</a>
+        \      09-Aug-2012 06:29  1.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809370_v00.fit.gz\">glg_tte_nb_120809370_v00.fit.gz</a>
+        \      09-Aug-2012 06:29  2.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809393_v00.fit.gz\">glg_tte_nb_120809393_v00.fit.gz</a>
+        \      09-Aug-2012 06:29  1.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809396_v00.fit.gz\">glg_tte_nb_120809396_v00.fit.gz</a>
+        \      09-Aug-2012 08:17  865K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809422_v00.fit.gz\">glg_tte_nb_120809422_v00.fit.gz</a>
+        \      09-Aug-2012 08:17  3.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809440_v00.fit.gz\">glg_tte_nb_120809440_v00.fit.gz</a>
+        \      09-Aug-2012 08:17  2.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809461_v00.fit.gz\">glg_tte_nb_120809461_v00.fit.gz</a>
+        \      09-Aug-2012 08:17  1.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809491_v00.fit.gz\">glg_tte_nb_120809491_v00.fit.gz</a>
+        \      09-Aug-2012 10:55  3.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809511_v00.fit.gz\">glg_tte_nb_120809511_v00.fit.gz</a>
+        \      09-Aug-2012 10:55  2.9M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809560_v00.fit.gz\">glg_tte_nb_120809560_v00.fit.gz</a>
+        \      09-Aug-2012 10:55  4.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809582_v00.fit.gz\">glg_tte_nb_120809582_v00.fit.gz</a>
+        \      09-Aug-2012 12:31  3.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809630_v00.fit.gz\">glg_tte_nb_120809630_v00.fit.gz</a>
+        \      09-Aug-2012 12:31  3.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809653_v00.fit.gz\">glg_tte_nb_120809653_v00.fit.gz</a>
+        \      09-Aug-2012 15:35  3.1M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809693_v00.fit.gz\">glg_tte_nb_120809693_v00.fit.gz</a>
+        \      09-Aug-2012 15:35  1.0M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809723_v00.fit.gz\">glg_tte_nb_120809723_v00.fit.gz</a>
+        \      09-Aug-2012 18:18  1.7M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809758_v00.fit.gz\">glg_tte_nb_120809758_v00.fit.gz</a>
+        \      09-Aug-2012 18:18  3.4M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809823_v00.fit.gz\">glg_tte_nb_120809823_v00.fit.gz</a>
+        \      09-Aug-2012 18:18  462K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809827_v00.fit.gz\">glg_tte_nb_120809827_v00.fit.gz</a>
+        \      09-Aug-2012 18:18  4.6M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809857_v00.fit.gz\">glg_tte_nb_120809857_v00.fit.gz</a>
+        \      09-Aug-2012 20:19  1.8M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809890_v00.fit.gz\">glg_tte_nb_120809890_v00.fit.gz</a>
+        \      09-Aug-2012 20:20  1.5M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809896_v00.fit.gz\">glg_tte_nb_120809896_v00.fit.gz</a>
+        \      09-Aug-2012 20:20  5.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809915_v00.fit.gz\">glg_tte_nb_120809915_v00.fit.gz</a>
+        \      09-Aug-2012 20:20  5.2M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809959_v00.fit.gz\">glg_tte_nb_120809959_v00.fit.gz</a>
+        \      10-Aug-2012 03:55  589K  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809966_v00.fit.gz\">glg_tte_nb_120809966_v00.fit.gz</a>
+        \      10-Aug-2012 03:55  6.3M  \n<img src=\"/icons/compressed.gif\" alt=\"[CMP]\">
+        <a href=\"glg_tte_nb_120809985_v00.fit.gz\">glg_tte_nb_120809985_v00.fit.gz</a>
+        \      10-Aug-2012 03:55  5.5M  \n<hr></pre>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Security-Policy:
+      - frame-ancestors 'self' cms.nasa.gov www.nasa.gov;
+      - upgrade-insecure-requests
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 17:54:54 GMT
+      Server:
+      - WebServer/1.0
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - sameorigin
+    status:
+      code: 200
+      message: OK
+version: 1
