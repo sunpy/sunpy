@@ -28,7 +28,7 @@ def test_input_error():
         core_attrs.Time('2012/1/1')
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_simpleattr_create(client):
     a = attr.ValueAttr({('instrument', ): 'eit'})
     assert va._walker.create(a, client.api)[0].instrument == 'eit'
@@ -61,7 +61,7 @@ def test_complexattr_apply():
     assert dct['test'] == {'foo': 'a', 'bar': 'b'}
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
     assert va._walker.create(a, client.api)[0].time['start'] == 'test'

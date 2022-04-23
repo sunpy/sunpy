@@ -297,7 +297,7 @@ def test_can_handle_query(query, handle):
     assert VSOClient._can_handle_query(*query) is handle
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_vso_attrs(client):
     """
     Check that the dict is correctly filled.
@@ -314,7 +314,7 @@ def test_vso_attrs(client):
             assert len(val) == 2
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_vso_repr(client):
     """
     Repr check (it is really long)
@@ -323,7 +323,7 @@ def test_vso_repr(client):
     assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nProvides access to qu'
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_response_block_properties(client):
     res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
                         a.Wavelength(171 * u.angstrom),
@@ -352,7 +352,7 @@ def test_row_to_table(mocker, mock_build_client, client, mock_table_response):
     assert as_table.called
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_iris_filename(client):
     pattern = "/home/yolo/sunpy/data/{file}"
     url = "https://www.lmsal.com/solarsoft/irisa/data/level2_compressed/2018/01/02/20180102_153155_3610108077/iris_l2_20180102_153155_3610108077_SJI_1330_t000.fits.gz"
