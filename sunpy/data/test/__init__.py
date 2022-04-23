@@ -112,15 +112,6 @@ def write_image_file_from_header_file(header_file, fits_directory):
     if 'BITPIX' in header:
         data = data.astype(bitpix_to_dtype(header['BITPIX']))
     hdu = astropy.io.fits.PrimaryHDU(data=data, header=header, do_not_scale_image_data=True, scale_back=True)
-    # Scale back so that the FITS headers preserve the BZERO and BSCALE keys
-    # if 'BSCALE' in header and 'BZERO' in header:
-    #    hdu.scale(bscale=header['BSCALE'], bzero=header['BZERO'])
-    #    # .scale() does not include BSCALE if it is 1 and BZERO if it is 0
-    #    # since they have no effect. However, we still want to preserve them in
-    #    # the header for testing purposes so we add them in manually
-    #    if header['BSCALE'] == 1 and header['BZERO'] == 0:
-    #        hdu.header['BSCALE'] = header['BSCALE']
-    #        hdu.header['BZERO'] = header['BZERO']
     fits_file = os.fspath(fits_directory.joinpath(header_file.with_suffix('.fits').name))
     hdu.writeto(fits_file)
     return fits_file
