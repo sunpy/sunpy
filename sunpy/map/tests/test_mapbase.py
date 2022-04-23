@@ -1205,10 +1205,10 @@ def test_quicklook(aia171_test_map):
         assert aia171_test_map._repr_html_() in html_string
 
 
-def test_dask_array(aia171_test_map):
+def test_dask_array(generic_map):
     dask_array = pytest.importorskip('dask.array')
-    da = dask_array.from_array(aia171_test_map.data, chunks=(1, 1))
-    pair_map = sunpy.map.Map(da, aia171_test_map.meta)
+    da = dask_array.from_array(generic_map.data, chunks=(1, 1))
+    pair_map = sunpy.map.Map(da, generic_map.meta)
 
     # Check that _repr_html_ functions for a dask array
     html_dask_repr = pair_map._repr_html_(compute_dask=False)
