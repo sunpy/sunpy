@@ -1,0 +1,1832 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - docs.virtualsolar.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>307 Temporary Redirect</title>
+
+        </head><body>
+
+        <h1>Temporary Redirect</h1>
+
+        <p>The document has moved <a href="http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.2.15 (CentOS) Server at docs.virtualsolar.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '359'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 17:53:19 GMT
+      Location:
+      - http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 307
+      message: Temporary Redirect
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - netdrms01.nispdc.nso.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n\n<wsdl:definitions
+        xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n\txmlns:VSO=\"http://virtualsolar.org/VSO/VSOi\"
+        \n\txmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n\txmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+        \n\tname=\"VSO\"\n\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\t<wsdl:types>\n\n\t\t<xsd:schema
+        elementFormDefault=\"unqualified\"\n\t\t\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\n\t\t\t<!--
+        for VSO \"Query\" function -->\n\n\t\t\t<xsd:complexType name=\"QueryRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"block\" type=\"VSO:QueryRequestBlock\" \n\t\t\t\t\tminOccurs=\"1\"
+        maxOccurs=\"1\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"QueryRequestBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"time\"
+        type=\"VSO:Time\" minOccurs=\"1\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"source\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\"
+        type=\"xsd:string\" minOccurs=\"0\" />\t\t\n\t\t\t\t\t<xsd:element name=\"wave\"
+        type=\"VSO:Wave\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"extent\"
+        type=\"VSO:Extent\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"field\"
+        type=\"VSO:Field\" minOccurs=\"0\" />\n\t\t\t\t\t<!-- VSO extended Query elements:\n\t\t\t\t\tPlease
+        note that these elements might be handle differently\n\t\t\t\t\tor might take
+        different arguments depending on the provider.\n\t\t\t\t\tIn general we've
+        made an effort to standarize as much as possible.\n\t\t\t\t\t -->\n\t\t\t\t\t<xsd:element
+        name=\"pixels\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"level\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"resolution\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"detector\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"filter\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"sample\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"quicklook\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"pscale\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Time\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"start\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"end\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element
+        name=\"near\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        \ wavemin and wavemax are really type float. However sometimes\n\t\t\t providers
+        can't handle the decimal point and throw and error.\n\t\t\t By leaving the
+        field as string, we allow the developer some \n\t\t\t flexibility. e.g. passing
+        an integer as string -->\n\t\t\t<xsd:complexType name=\"Wave\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"wavemin\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"wavemax\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"waveunit\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"wavetype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!-- Currently not
+        fully implemented. Only \"type\" is. -->     \n\t\t\t<xsd:complexType name=\"Extent\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"x\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"y\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"width\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"length\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"type\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Field\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fielditem\"
+        type=\"xsd:string\" \n\t\t\t\t\tminOccurs=\"0\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for VSO \"Query\" function Response -->\n\t\t\t\n\t\t\t<xsd:complexType name=\"QueryResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"provideritem\" type=\"VSO:ProviderQueryResponse\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        provider response block (a bit late to rename it now) -->\n\t\t\t<xsd:complexType
+        name=\"ProviderQueryResponse\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_found\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_returned\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"record\"
+        type=\"VSO:QueryResponseBlockArray\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"error\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlockArray\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"recorditem\" type=\"VSO:QueryResponseBlock\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"source\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"time\" type=\"VSO:Time\"
+        />\n\t\t\t\t\t<xsd:element name=\"wave\" type=\"VSO:Wave\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extent\" type=\"VSO:Extent\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"size\" type=\"xsd:float\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extra\" type=\"VSO:Extra\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"info\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"datatype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileurl\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Extra\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"thumbnail\"
+        type=\"VSO:Thumbnail\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"flags\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Thumbnail\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"hires\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"lowres\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for \"GetData\" function -->\n\n\t\t\t<xsd:complexType name=\"VSOGetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"request\" type=\"VSO:GetDataRequest\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"GetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"method\"
+        type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"info\"
+        type=\"VSO:Info\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"datacontainer\"
+        type=\"VSO:DataContainer\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"MethodItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"methodtype\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Info\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"email\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"host\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"user\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"directory\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"password\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"address\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"required\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"site\" type=\"xsd:string\" minOccurs=\"0\"/>\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"DataContainer\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"datarequestitem\"
+        type=\"VSO:DataRequestItem\" \n\t\t\t\t\tminOccurs='0' maxOccurs=\"unbounded\"
+        />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataRequestItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"FileidItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fileid\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t
+        \       <!-- for \"GetData\" function Response -->\n                        <xsd:complexType
+        name=\"VSOGetDataResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"getdataresponseitem\" type=\"VSO:GetDataResponseItem\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataResponseItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"version\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"info\" minOccurs=\"0\">\n\t\t\t\t\t\t<xsd:complexType>\n\t\t\t\t\t\t\t<xsd:sequence>\n\t\t\t\t\t\t\t\t<xsd:element
+        name=\"infoitem\" type=\"xsd:string\"\n\t\t\t\t\t\t\t\t maxOccurs=\"unbounded\"
+        />\n\t\t\t\t\t\t\t</xsd:sequence>\n\t\t\t\t\t\t</xsd:complexType>\n\t\t\t\t\t</xsd:element>\n\t\t\t\t\t<xsd:element
+        name=\"provider\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"getdataitem\" type=\"VSO:GetDataItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"details\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"method\" type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"dataitem\"
+        type=\"VSO:DataItem\" minOccurs='0' \n\t\t\t\t\tmaxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\t\t\t\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"url\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t\t<!-- <xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        /> -->\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t</xsd:schema>\n\t</wsdl:types>\n\n\t<wsdl:message
+        name=\"QueryRequest\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:QueryRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"QueryResponse\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:QueryResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:message
+        name=\"GetDataInput\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:VSOGetDataRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"GetDataOutput\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:VSOGetDataResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:portType
+        name=\"VSOiPort\">\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<wsdl:input
+        message=\"VSO:QueryRequest\" />\n\t\t\t<wsdl:output message=\"VSO:QueryResponse\"
+        />\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation name=\"GetData\">\n\t\t\t<wsdl:input
+        message=\"VSO:GetDataInput\" />\n\t\t\t<wsdl:output message=\"VSO:GetDataOutput\"
+        />\n\t\t</wsdl:operation>\n\n\t</wsdl:portType>\n\n\t<wsdl:binding name=\"VSOiBinding\"
+        type=\"VSO:VSOiPort\">\n\t\t<soap:binding style=\"rpc\"\n\t\t\ttransport=\"http://schemas.xmlsoap.org/soap/http\"
+        />\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#Query\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation
+        name=\"GetData\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#GetData\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t</wsdl:binding>\n\n\t<wsdl:service
+        name=\"VSOiService\">\n\t\t<wsdl:port name=\"nsoTestVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://VSO.tuc.noao.edu/cgi-bin/VSO/DEV_SOAP/bin/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t\t<wsdl:port name=\"nsoVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t</wsdl:service>\n</wsdl:definitions>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '12090'
+      Content-Type:
+      - application/wsdl+xml
+      Date:
+      - Sat, 23 Apr 2022 17:53:19 GMT
+      ETag:
+      - '"101681-2f3a-591e53e1795cf"'
+      Last-Modified:
+      - Fri, 06 Sep 2019 16:50:58 GMT
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: GET
+    uri: http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>307 Temporary Redirect</title>
+
+        </head><body>
+
+        <h1>Temporary Redirect</h1>
+
+        <p>The document has moved <a href="http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.2.15 (CentOS) Server at docs.virtualsolar.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '359'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 17:53:20 GMT
+      Location:
+      - http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 307
+      message: Temporary Redirect
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: GET
+    uri: http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n\n<wsdl:definitions
+        xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n\txmlns:VSO=\"http://virtualsolar.org/VSO/VSOi\"
+        \n\txmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n\txmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+        \n\tname=\"VSO\"\n\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\t<wsdl:types>\n\n\t\t<xsd:schema
+        elementFormDefault=\"unqualified\"\n\t\t\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\n\t\t\t<!--
+        for VSO \"Query\" function -->\n\n\t\t\t<xsd:complexType name=\"QueryRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"block\" type=\"VSO:QueryRequestBlock\" \n\t\t\t\t\tminOccurs=\"1\"
+        maxOccurs=\"1\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"QueryRequestBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"time\"
+        type=\"VSO:Time\" minOccurs=\"1\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"source\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\"
+        type=\"xsd:string\" minOccurs=\"0\" />\t\t\n\t\t\t\t\t<xsd:element name=\"wave\"
+        type=\"VSO:Wave\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"extent\"
+        type=\"VSO:Extent\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"field\"
+        type=\"VSO:Field\" minOccurs=\"0\" />\n\t\t\t\t\t<!-- VSO extended Query elements:\n\t\t\t\t\tPlease
+        note that these elements might be handle differently\n\t\t\t\t\tor might take
+        different arguments depending on the provider.\n\t\t\t\t\tIn general we've
+        made an effort to standarize as much as possible.\n\t\t\t\t\t -->\n\t\t\t\t\t<xsd:element
+        name=\"pixels\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"level\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"resolution\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"detector\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"filter\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"sample\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"quicklook\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"pscale\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Time\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"start\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"end\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element
+        name=\"near\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        \ wavemin and wavemax are really type float. However sometimes\n\t\t\t providers
+        can't handle the decimal point and throw and error.\n\t\t\t By leaving the
+        field as string, we allow the developer some \n\t\t\t flexibility. e.g. passing
+        an integer as string -->\n\t\t\t<xsd:complexType name=\"Wave\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"wavemin\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"wavemax\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"waveunit\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"wavetype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!-- Currently not
+        fully implemented. Only \"type\" is. -->     \n\t\t\t<xsd:complexType name=\"Extent\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"x\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"y\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"width\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"length\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"type\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Field\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fielditem\"
+        type=\"xsd:string\" \n\t\t\t\t\tminOccurs=\"0\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for VSO \"Query\" function Response -->\n\t\t\t\n\t\t\t<xsd:complexType name=\"QueryResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"provideritem\" type=\"VSO:ProviderQueryResponse\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        provider response block (a bit late to rename it now) -->\n\t\t\t<xsd:complexType
+        name=\"ProviderQueryResponse\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_found\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_returned\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"record\"
+        type=\"VSO:QueryResponseBlockArray\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"error\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlockArray\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"recorditem\" type=\"VSO:QueryResponseBlock\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"source\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"time\" type=\"VSO:Time\"
+        />\n\t\t\t\t\t<xsd:element name=\"wave\" type=\"VSO:Wave\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extent\" type=\"VSO:Extent\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"size\" type=\"xsd:float\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extra\" type=\"VSO:Extra\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"info\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"datatype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileurl\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Extra\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"thumbnail\"
+        type=\"VSO:Thumbnail\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"flags\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Thumbnail\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"hires\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"lowres\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for \"GetData\" function -->\n\n\t\t\t<xsd:complexType name=\"VSOGetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"request\" type=\"VSO:GetDataRequest\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"GetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"method\"
+        type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"info\"
+        type=\"VSO:Info\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"datacontainer\"
+        type=\"VSO:DataContainer\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"MethodItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"methodtype\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Info\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"email\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"host\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"user\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"directory\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"password\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"address\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"required\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"site\" type=\"xsd:string\" minOccurs=\"0\"/>\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"DataContainer\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"datarequestitem\"
+        type=\"VSO:DataRequestItem\" \n\t\t\t\t\tminOccurs='0' maxOccurs=\"unbounded\"
+        />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataRequestItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"FileidItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fileid\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t
+        \       <!-- for \"GetData\" function Response -->\n                        <xsd:complexType
+        name=\"VSOGetDataResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"getdataresponseitem\" type=\"VSO:GetDataResponseItem\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataResponseItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"version\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"info\" minOccurs=\"0\">\n\t\t\t\t\t\t<xsd:complexType>\n\t\t\t\t\t\t\t<xsd:sequence>\n\t\t\t\t\t\t\t\t<xsd:element
+        name=\"infoitem\" type=\"xsd:string\"\n\t\t\t\t\t\t\t\t maxOccurs=\"unbounded\"
+        />\n\t\t\t\t\t\t\t</xsd:sequence>\n\t\t\t\t\t\t</xsd:complexType>\n\t\t\t\t\t</xsd:element>\n\t\t\t\t\t<xsd:element
+        name=\"provider\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"getdataitem\" type=\"VSO:GetDataItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"details\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"method\" type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"dataitem\"
+        type=\"VSO:DataItem\" minOccurs='0' \n\t\t\t\t\tmaxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\t\t\t\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"url\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t\t<!-- <xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        /> -->\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t</xsd:schema>\n\t</wsdl:types>\n\n\t<wsdl:message
+        name=\"QueryRequest\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:QueryRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"QueryResponse\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:QueryResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:message
+        name=\"GetDataInput\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:VSOGetDataRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"GetDataOutput\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:VSOGetDataResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:portType
+        name=\"VSOiPort\">\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<wsdl:input
+        message=\"VSO:QueryRequest\" />\n\t\t\t<wsdl:output message=\"VSO:QueryResponse\"
+        />\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation name=\"GetData\">\n\t\t\t<wsdl:input
+        message=\"VSO:GetDataInput\" />\n\t\t\t<wsdl:output message=\"VSO:GetDataOutput\"
+        />\n\t\t</wsdl:operation>\n\n\t</wsdl:portType>\n\n\t<wsdl:binding name=\"VSOiBinding\"
+        type=\"VSO:VSOiPort\">\n\t\t<soap:binding style=\"rpc\"\n\t\t\ttransport=\"http://schemas.xmlsoap.org/soap/http\"
+        />\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#Query\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation
+        name=\"GetData\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#GetData\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t</wsdl:binding>\n\n\t<wsdl:service
+        name=\"VSOiService\">\n\t\t<wsdl:port name=\"nsoTestVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://VSO.tuc.noao.edu/cgi-bin/VSO/DEV_SOAP/bin/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t\t<wsdl:port name=\"nsoVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t</wsdl:service>\n</wsdl:definitions>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '12090'
+      Content-Type:
+      - application/wsdl+xml
+      Date:
+      - Sat, 23 Apr 2022 17:53:20 GMT
+      ETag:
+      - '"101681-2f3a-591e53e1795cf"'
+      Last-Modified:
+      - Fri, 06 Sep 2019 16:50:58 GMT
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '<?xml version=''1.0'' encoding=''utf-8''?>
+
+      <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"
+      xmlns:VSO="http://virtualsolar.org/VSO/VSOi"><soap-env:Body><VSO:Query><body><block><time><start>20121004000000</start><end>20121006000000</end></time><instrument>EVE</instrument><level>1</level></block></body></VSO:Query></soap-env:Body></soap-env:Envelope>'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '375'
+      Content-Type:
+      - text/xml; charset=utf-8
+      SOAPAction:
+      - '"http://virtualsolar.org/VSO/VSOi#Query"'
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: POST
+    uri: http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi
+  response:
+    body:
+      string: <?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:VSO="http://virtualsolar.org/VSO/VSOi"
+        xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><VSO:QueryResponse><body><provideritem><version>1</version><no_of_records_found>15</no_of_records_found><record><recorditem><wave><wavemin>1</wavemin><wavemax>304</wavemax><wavetype
+        xsi:nil="true" /><waveunit>Angstrom</waveunit></wave><fileid>EVE_L1_esp_2012278_00</fileid><source>SDO</source><extent><type>FULLDISK</type></extent><time><end>20121005000000</end><start>20121004000000</start></time><physobs>irradiance</physobs><instrument>EVE</instrument><provider>LASP</provider><info>L1ESP
+        (ESP)</info><size>-1</size></recorditem><recorditem><info>L1ESP (ESP)</info><size>-1</size><physobs>irradiance</physobs><instrument>EVE</instrument><provider>LASP</provider><time><start>20121005000000</start><end>20121006000000</end></time><fileid>EVE_L1_esp_2012279_00</fileid><wave><wavemax>304</wavemax><wavemin>1</wavemin><wavetype
+        xsi:nil="true" /><waveunit>Angstrom</waveunit></wave><source>SDO</source><extent><type>FULLDISK</type></extent></recorditem><recorditem><provider>LASP</provider><physobs>irradiance</physobs><instrument>EVE</instrument><size>-1</size><info>L1ESP
+        (ESP)</info><source>SDO</source><extent><type>FULLDISK</type></extent><wave><wavemin>1</wavemin><wavemax>304</wavemax><waveunit>Angstrom</waveunit><wavetype
+        xsi:nil="true" /></wave><fileid>EVE_L1_esp_2012280_00</fileid><time><end>20121007000000</end><start>20121006000000</start></time></recorditem></record><provider>LASP</provider><no_of_records_returned>3</no_of_records_returned></provideritem></body></VSO:QueryResponse></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '1789'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sat, 23 Apr 2022 17:53:20 GMT
+      Keep-Alive:
+      - timeout=5, max=100
+      SOAPServer:
+      - SOAP::Lite/Perl/1.27
+      Server:
+      - Apache/2.4.6 (CentOS)
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - lasp.colorado.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/
+  response:
+    body:
+      string: "<html>\r\n<head><title>302 Found</title></head>\r\n<body bgcolor=\"white\">\r\n<center><h1>302
+        Found</h1></center>\r\n<hr><center>Avi Vantage/</center>\r\n</body>\r\n</html>\r\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '161'
+      Content-Type:
+      - text/html
+      Location:
+      - https://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/
+    status:
+      code: 302
+      message: Moved Temporarily
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - lasp.colorado.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n<html>\n
+        <head>\n  <title>Index of /eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012</title>\n
+        </head>\n <body>\n<h1>Index of /eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012</h1>\n<ul><li><a
+        href=\"/eve/data_access/evewebdata/quicklook/L0CS/SpWx/\"> Parent Directory</a></li>\n<li><a
+        href=\"20120101_EVE_L0CS_DIODES_1m.txt\"> 20120101_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120101_EVE_L0CS_DIODES_1m_counts.txt\"> 20120101_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120102_EVE_L0CS_DIODES_1m.txt\"> 20120102_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120102_EVE_L0CS_DIODES_1m_counts.txt\"> 20120102_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120103_EVE_L0CS_DIODES_1m.txt\"> 20120103_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120103_EVE_L0CS_DIODES_1m_counts.txt\"> 20120103_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120104_EVE_L0CS_DIODES_1m.txt\"> 20120104_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120104_EVE_L0CS_DIODES_1m_counts.txt\"> 20120104_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120105_EVE_L0CS_DIODES_1m.txt\"> 20120105_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120105_EVE_L0CS_DIODES_1m_counts.txt\"> 20120105_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120106_EVE_L0CS_DIODES_1m.txt\"> 20120106_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120106_EVE_L0CS_DIODES_1m_counts.txt\"> 20120106_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120107_EVE_L0CS_DIODES_1m.txt\"> 20120107_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120107_EVE_L0CS_DIODES_1m_counts.txt\"> 20120107_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120108_EVE_L0CS_DIODES_1m.txt\"> 20120108_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120108_EVE_L0CS_DIODES_1m_counts.txt\"> 20120108_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120109_EVE_L0CS_DIODES_1m.txt\"> 20120109_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120109_EVE_L0CS_DIODES_1m_counts.txt\"> 20120109_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120110_EVE_L0CS_DIODES_1m.txt\"> 20120110_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120110_EVE_L0CS_DIODES_1m_counts.txt\"> 20120110_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120111_EVE_L0CS_DIODES_1m.txt\"> 20120111_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120111_EVE_L0CS_DIODES_1m_counts.txt\"> 20120111_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120112_EVE_L0CS_DIODES_1m.txt\"> 20120112_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120112_EVE_L0CS_DIODES_1m_counts.txt\"> 20120112_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120113_EVE_L0CS_DIODES_1m.txt\"> 20120113_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120113_EVE_L0CS_DIODES_1m_counts.txt\"> 20120113_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120114_EVE_L0CS_DIODES_1m.txt\"> 20120114_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120114_EVE_L0CS_DIODES_1m_counts.txt\"> 20120114_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120115_EVE_L0CS_DIODES_1m.txt\"> 20120115_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120115_EVE_L0CS_DIODES_1m_counts.txt\"> 20120115_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120116_EVE_L0CS_DIODES_1m.txt\"> 20120116_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120116_EVE_L0CS_DIODES_1m_counts.txt\"> 20120116_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120117_EVE_L0CS_DIODES_1m.txt\"> 20120117_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120117_EVE_L0CS_DIODES_1m_counts.txt\"> 20120117_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120118_EVE_L0CS_DIODES_1m.txt\"> 20120118_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120118_EVE_L0CS_DIODES_1m_counts.txt\"> 20120118_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120119_EVE_L0CS_DIODES_1m.txt\"> 20120119_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120119_EVE_L0CS_DIODES_1m_counts.txt\"> 20120119_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120120_EVE_L0CS_DIODES_1m.txt\"> 20120120_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120120_EVE_L0CS_DIODES_1m_counts.txt\"> 20120120_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120121_EVE_L0CS_DIODES_1m.txt\"> 20120121_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120121_EVE_L0CS_DIODES_1m_counts.txt\"> 20120121_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120122_EVE_L0CS_DIODES_1m.txt\"> 20120122_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120122_EVE_L0CS_DIODES_1m_counts.txt\"> 20120122_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120123_EVE_L0CS_DIODES_1m.txt\"> 20120123_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120123_EVE_L0CS_DIODES_1m_counts.txt\"> 20120123_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120124_EVE_L0CS_DIODES_1m.txt\"> 20120124_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120124_EVE_L0CS_DIODES_1m_counts.txt\"> 20120124_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120125_EVE_L0CS_DIODES_1m.txt\"> 20120125_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120125_EVE_L0CS_DIODES_1m_counts.txt\"> 20120125_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120126_EVE_L0CS_DIODES_1m.txt\"> 20120126_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120126_EVE_L0CS_DIODES_1m_counts.txt\"> 20120126_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120127_EVE_L0CS_DIODES_1m.txt\"> 20120127_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120127_EVE_L0CS_DIODES_1m_counts.txt\"> 20120127_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120128_EVE_L0CS_DIODES_1m.txt\"> 20120128_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120128_EVE_L0CS_DIODES_1m_counts.txt\"> 20120128_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120129_EVE_L0CS_DIODES_1m.txt\"> 20120129_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120129_EVE_L0CS_DIODES_1m_counts.txt\"> 20120129_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120130_EVE_L0CS_DIODES_1m.txt\"> 20120130_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120130_EVE_L0CS_DIODES_1m_counts.txt\"> 20120130_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120131_EVE_L0CS_DIODES_1m.txt\"> 20120131_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120131_EVE_L0CS_DIODES_1m_counts.txt\"> 20120131_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120201_EVE_L0CS_DIODES_1m.txt\"> 20120201_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120201_EVE_L0CS_DIODES_1m_counts.txt\"> 20120201_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120202_EVE_L0CS_DIODES_1m.txt\"> 20120202_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120202_EVE_L0CS_DIODES_1m_counts.txt\"> 20120202_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120203_EVE_L0CS_DIODES_1m.txt\"> 20120203_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120203_EVE_L0CS_DIODES_1m_counts.txt\"> 20120203_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120204_EVE_L0CS_DIODES_1m.txt\"> 20120204_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120204_EVE_L0CS_DIODES_1m_counts.txt\"> 20120204_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120205_EVE_L0CS_DIODES_1m.txt\"> 20120205_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120205_EVE_L0CS_DIODES_1m_counts.txt\"> 20120205_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120206_EVE_L0CS_DIODES_1m.txt\"> 20120206_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120206_EVE_L0CS_DIODES_1m_counts.txt\"> 20120206_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120207_EVE_L0CS_DIODES_1m.txt\"> 20120207_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120207_EVE_L0CS_DIODES_1m_counts.txt\"> 20120207_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120208_EVE_L0CS_DIODES_1m.txt\"> 20120208_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120208_EVE_L0CS_DIODES_1m_counts.txt\"> 20120208_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120209_EVE_L0CS_DIODES_1m.txt\"> 20120209_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120209_EVE_L0CS_DIODES_1m_counts.txt\"> 20120209_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120210_EVE_L0CS_DIODES_1m.txt\"> 20120210_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120210_EVE_L0CS_DIODES_1m_counts.txt\"> 20120210_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120211_EVE_L0CS_DIODES_1m.txt\"> 20120211_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120211_EVE_L0CS_DIODES_1m_counts.txt\"> 20120211_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120212_EVE_L0CS_DIODES_1m.txt\"> 20120212_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120212_EVE_L0CS_DIODES_1m_counts.txt\"> 20120212_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120213_EVE_L0CS_DIODES_1m.txt\"> 20120213_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120213_EVE_L0CS_DIODES_1m_counts.txt\"> 20120213_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120214_EVE_L0CS_DIODES_1m.txt\"> 20120214_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120214_EVE_L0CS_DIODES_1m_counts.txt\"> 20120214_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120215_EVE_L0CS_DIODES_1m.txt\"> 20120215_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120215_EVE_L0CS_DIODES_1m_counts.txt\"> 20120215_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120216_EVE_L0CS_DIODES_1m.txt\"> 20120216_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120216_EVE_L0CS_DIODES_1m_counts.txt\"> 20120216_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120217_EVE_L0CS_DIODES_1m.txt\"> 20120217_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120217_EVE_L0CS_DIODES_1m_counts.txt\"> 20120217_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120218_EVE_L0CS_DIODES_1m.txt\"> 20120218_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120218_EVE_L0CS_DIODES_1m_counts.txt\"> 20120218_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120219_EVE_L0CS_DIODES_1m.txt\"> 20120219_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120219_EVE_L0CS_DIODES_1m_counts.txt\"> 20120219_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120220_EVE_L0CS_DIODES_1m.txt\"> 20120220_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120220_EVE_L0CS_DIODES_1m_counts.txt\"> 20120220_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120221_EVE_L0CS_DIODES_1m.txt\"> 20120221_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120221_EVE_L0CS_DIODES_1m_counts.txt\"> 20120221_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120222_EVE_L0CS_DIODES_1m.txt\"> 20120222_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120222_EVE_L0CS_DIODES_1m_counts.txt\"> 20120222_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120223_EVE_L0CS_DIODES_1m.txt\"> 20120223_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120223_EVE_L0CS_DIODES_1m_counts.txt\"> 20120223_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120224_EVE_L0CS_DIODES_1m.txt\"> 20120224_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120224_EVE_L0CS_DIODES_1m_counts.txt\"> 20120224_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120225_EVE_L0CS_DIODES_1m.txt\"> 20120225_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120225_EVE_L0CS_DIODES_1m_counts.txt\"> 20120225_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120226_EVE_L0CS_DIODES_1m.txt\"> 20120226_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120226_EVE_L0CS_DIODES_1m_counts.txt\"> 20120226_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120227_EVE_L0CS_DIODES_1m.txt\"> 20120227_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120227_EVE_L0CS_DIODES_1m_counts.txt\"> 20120227_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120228_EVE_L0CS_DIODES_1m.txt\"> 20120228_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120228_EVE_L0CS_DIODES_1m_counts.txt\"> 20120228_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120229_EVE_L0CS_DIODES_1m.txt\"> 20120229_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120229_EVE_L0CS_DIODES_1m_counts.txt\"> 20120229_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120301_EVE_L0CS_DIODES_1m.txt\"> 20120301_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120301_EVE_L0CS_DIODES_1m_counts.txt\"> 20120301_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120302_EVE_L0CS_DIODES_1m.txt\"> 20120302_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120302_EVE_L0CS_DIODES_1m_counts.txt\"> 20120302_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120303_EVE_L0CS_DIODES_1m.txt\"> 20120303_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120303_EVE_L0CS_DIODES_1m_counts.txt\"> 20120303_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120304_EVE_L0CS_DIODES_1m.txt\"> 20120304_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120304_EVE_L0CS_DIODES_1m_counts.txt\"> 20120304_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120305_EVE_L0CS_DIODES_1m.txt\"> 20120305_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120305_EVE_L0CS_DIODES_1m_counts.txt\"> 20120305_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120306_EVE_L0CS_DIODES_1m.txt\"> 20120306_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120306_EVE_L0CS_DIODES_1m_counts.txt\"> 20120306_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120307_EVE_L0CS_DIODES_1m.txt\"> 20120307_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120307_EVE_L0CS_DIODES_1m_counts.txt\"> 20120307_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120308_EVE_L0CS_DIODES_1m.txt\"> 20120308_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120308_EVE_L0CS_DIODES_1m_counts.txt\"> 20120308_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120309_EVE_L0CS_DIODES_1m.txt\"> 20120309_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120309_EVE_L0CS_DIODES_1m_counts.txt\"> 20120309_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120310_EVE_L0CS_DIODES_1m.txt\"> 20120310_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120310_EVE_L0CS_DIODES_1m_counts.txt\"> 20120310_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120311_EVE_L0CS_DIODES_1m.txt\"> 20120311_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120311_EVE_L0CS_DIODES_1m_counts.txt\"> 20120311_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120312_EVE_L0CS_DIODES_1m.txt\"> 20120312_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120312_EVE_L0CS_DIODES_1m_counts.txt\"> 20120312_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120313_EVE_L0CS_DIODES_1m.txt\"> 20120313_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120313_EVE_L0CS_DIODES_1m_counts.txt\"> 20120313_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120314_EVE_L0CS_DIODES_1m.txt\"> 20120314_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120314_EVE_L0CS_DIODES_1m_counts.txt\"> 20120314_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120315_EVE_L0CS_DIODES_1m.txt\"> 20120315_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120315_EVE_L0CS_DIODES_1m_counts.txt\"> 20120315_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120316_EVE_L0CS_DIODES_1m.txt\"> 20120316_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120316_EVE_L0CS_DIODES_1m_counts.txt\"> 20120316_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120317_EVE_L0CS_DIODES_1m.txt\"> 20120317_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120317_EVE_L0CS_DIODES_1m_counts.txt\"> 20120317_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120318_EVE_L0CS_DIODES_1m.txt\"> 20120318_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120318_EVE_L0CS_DIODES_1m_counts.txt\"> 20120318_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120319_EVE_L0CS_DIODES_1m.txt\"> 20120319_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120319_EVE_L0CS_DIODES_1m_counts.txt\"> 20120319_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120320_EVE_L0CS_DIODES_1m.txt\"> 20120320_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120320_EVE_L0CS_DIODES_1m_counts.txt\"> 20120320_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120321_EVE_L0CS_DIODES_1m.txt\"> 20120321_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120321_EVE_L0CS_DIODES_1m_counts.txt\"> 20120321_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120322_EVE_L0CS_DIODES_1m.txt\"> 20120322_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120322_EVE_L0CS_DIODES_1m_counts.txt\"> 20120322_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120323_EVE_L0CS_DIODES_1m.txt\"> 20120323_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120323_EVE_L0CS_DIODES_1m_counts.txt\"> 20120323_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120324_EVE_L0CS_DIODES_1m.txt\"> 20120324_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120324_EVE_L0CS_DIODES_1m_counts.txt\"> 20120324_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120325_EVE_L0CS_DIODES_1m.txt\"> 20120325_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120325_EVE_L0CS_DIODES_1m_counts.txt\"> 20120325_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120326_EVE_L0CS_DIODES_1m.txt\"> 20120326_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120326_EVE_L0CS_DIODES_1m_counts.txt\"> 20120326_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120327_EVE_L0CS_DIODES_1m.txt\"> 20120327_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120327_EVE_L0CS_DIODES_1m_counts.txt\"> 20120327_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120328_EVE_L0CS_DIODES_1m.txt\"> 20120328_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120328_EVE_L0CS_DIODES_1m_counts.txt\"> 20120328_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120329_EVE_L0CS_DIODES_1m.txt\"> 20120329_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120329_EVE_L0CS_DIODES_1m_counts.txt\"> 20120329_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120330_EVE_L0CS_DIODES_1m.txt\"> 20120330_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120330_EVE_L0CS_DIODES_1m_counts.txt\"> 20120330_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120331_EVE_L0CS_DIODES_1m.txt\"> 20120331_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120331_EVE_L0CS_DIODES_1m_counts.txt\"> 20120331_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120401_EVE_L0CS_DIODES_1m.txt\"> 20120401_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120401_EVE_L0CS_DIODES_1m_counts.txt\"> 20120401_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120402_EVE_L0CS_DIODES_1m.txt\"> 20120402_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120402_EVE_L0CS_DIODES_1m_counts.txt\"> 20120402_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120403_EVE_L0CS_DIODES_1m.txt\"> 20120403_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120403_EVE_L0CS_DIODES_1m_counts.txt\"> 20120403_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120404_EVE_L0CS_DIODES_1m.txt\"> 20120404_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120404_EVE_L0CS_DIODES_1m_counts.txt\"> 20120404_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120405_EVE_L0CS_DIODES_1m.txt\"> 20120405_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120405_EVE_L0CS_DIODES_1m_counts.txt\"> 20120405_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120406_EVE_L0CS_DIODES_1m.txt\"> 20120406_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120406_EVE_L0CS_DIODES_1m_counts.txt\"> 20120406_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120407_EVE_L0CS_DIODES_1m.txt\"> 20120407_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120407_EVE_L0CS_DIODES_1m_counts.txt\"> 20120407_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120408_EVE_L0CS_DIODES_1m.txt\"> 20120408_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120408_EVE_L0CS_DIODES_1m_counts.txt\"> 20120408_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120409_EVE_L0CS_DIODES_1m.txt\"> 20120409_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120409_EVE_L0CS_DIODES_1m_counts.txt\"> 20120409_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120410_EVE_L0CS_DIODES_1m.txt\"> 20120410_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120410_EVE_L0CS_DIODES_1m_counts.txt\"> 20120410_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120411_EVE_L0CS_DIODES_1m.txt\"> 20120411_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120411_EVE_L0CS_DIODES_1m_counts.txt\"> 20120411_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120412_EVE_L0CS_DIODES_1m.txt\"> 20120412_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120412_EVE_L0CS_DIODES_1m_counts.txt\"> 20120412_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120413_EVE_L0CS_DIODES_1m.txt\"> 20120413_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120413_EVE_L0CS_DIODES_1m_counts.txt\"> 20120413_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120414_EVE_L0CS_DIODES_1m.txt\"> 20120414_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120414_EVE_L0CS_DIODES_1m_counts.txt\"> 20120414_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120415_EVE_L0CS_DIODES_1m.txt\"> 20120415_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120415_EVE_L0CS_DIODES_1m_counts.txt\"> 20120415_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120416_EVE_L0CS_DIODES_1m.txt\"> 20120416_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120416_EVE_L0CS_DIODES_1m_counts.txt\"> 20120416_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120417_EVE_L0CS_DIODES_1m.txt\"> 20120417_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120417_EVE_L0CS_DIODES_1m_counts.txt\"> 20120417_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120418_EVE_L0CS_DIODES_1m.txt\"> 20120418_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120418_EVE_L0CS_DIODES_1m_counts.txt\"> 20120418_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120419_EVE_L0CS_DIODES_1m.txt\"> 20120419_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120419_EVE_L0CS_DIODES_1m_counts.txt\"> 20120419_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120420_EVE_L0CS_DIODES_1m.txt\"> 20120420_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120420_EVE_L0CS_DIODES_1m_counts.txt\"> 20120420_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120421_EVE_L0CS_DIODES_1m.txt\"> 20120421_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120421_EVE_L0CS_DIODES_1m_counts.txt\"> 20120421_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120422_EVE_L0CS_DIODES_1m.txt\"> 20120422_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120422_EVE_L0CS_DIODES_1m_counts.txt\"> 20120422_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120423_EVE_L0CS_DIODES_1m.txt\"> 20120423_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120423_EVE_L0CS_DIODES_1m_counts.txt\"> 20120423_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120424_EVE_L0CS_DIODES_1m.txt\"> 20120424_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120424_EVE_L0CS_DIODES_1m_counts.txt\"> 20120424_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120425_EVE_L0CS_DIODES_1m.txt\"> 20120425_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120425_EVE_L0CS_DIODES_1m_counts.txt\"> 20120425_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120426_EVE_L0CS_DIODES_1m.txt\"> 20120426_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120426_EVE_L0CS_DIODES_1m_counts.txt\"> 20120426_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120427_EVE_L0CS_DIODES_1m.txt\"> 20120427_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120427_EVE_L0CS_DIODES_1m_counts.txt\"> 20120427_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120428_EVE_L0CS_DIODES_1m.txt\"> 20120428_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120428_EVE_L0CS_DIODES_1m_counts.txt\"> 20120428_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120429_EVE_L0CS_DIODES_1m.txt\"> 20120429_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120429_EVE_L0CS_DIODES_1m_counts.txt\"> 20120429_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120430_EVE_L0CS_DIODES_1m.txt\"> 20120430_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120430_EVE_L0CS_DIODES_1m_counts.txt\"> 20120430_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120501_EVE_L0CS_DIODES_1m.txt\"> 20120501_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120501_EVE_L0CS_DIODES_1m_counts.txt\"> 20120501_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120502_EVE_L0CS_DIODES_1m.txt\"> 20120502_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120502_EVE_L0CS_DIODES_1m_counts.txt\"> 20120502_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120503_EVE_L0CS_DIODES_1m.txt\"> 20120503_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120503_EVE_L0CS_DIODES_1m_counts.txt\"> 20120503_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120504_EVE_L0CS_DIODES_1m.txt\"> 20120504_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120504_EVE_L0CS_DIODES_1m_counts.txt\"> 20120504_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120505_EVE_L0CS_DIODES_1m.txt\"> 20120505_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120505_EVE_L0CS_DIODES_1m_counts.txt\"> 20120505_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120506_EVE_L0CS_DIODES_1m.txt\"> 20120506_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120506_EVE_L0CS_DIODES_1m_counts.txt\"> 20120506_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120507_EVE_L0CS_DIODES_1m.txt\"> 20120507_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120507_EVE_L0CS_DIODES_1m_counts.txt\"> 20120507_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120508_EVE_L0CS_DIODES_1m.txt\"> 20120508_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120508_EVE_L0CS_DIODES_1m_counts.txt\"> 20120508_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120509_EVE_L0CS_DIODES_1m.txt\"> 20120509_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120509_EVE_L0CS_DIODES_1m_counts.txt\"> 20120509_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120510_EVE_L0CS_DIODES_1m.txt\"> 20120510_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120510_EVE_L0CS_DIODES_1m_counts.txt\"> 20120510_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120511_EVE_L0CS_DIODES_1m.txt\"> 20120511_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120511_EVE_L0CS_DIODES_1m_counts.txt\"> 20120511_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120512_EVE_L0CS_DIODES_1m.txt\"> 20120512_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120512_EVE_L0CS_DIODES_1m_counts.txt\"> 20120512_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120513_EVE_L0CS_DIODES_1m.txt\"> 20120513_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120513_EVE_L0CS_DIODES_1m_counts.txt\"> 20120513_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120514_EVE_L0CS_DIODES_1m.txt\"> 20120514_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120514_EVE_L0CS_DIODES_1m_counts.txt\"> 20120514_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120515_EVE_L0CS_DIODES_1m.txt\"> 20120515_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120515_EVE_L0CS_DIODES_1m_counts.txt\"> 20120515_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120516_EVE_L0CS_DIODES_1m.txt\"> 20120516_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120516_EVE_L0CS_DIODES_1m_counts.txt\"> 20120516_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120517_EVE_L0CS_DIODES_1m.txt\"> 20120517_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120517_EVE_L0CS_DIODES_1m_counts.txt\"> 20120517_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120518_EVE_L0CS_DIODES_1m.txt\"> 20120518_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120518_EVE_L0CS_DIODES_1m_counts.txt\"> 20120518_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120519_EVE_L0CS_DIODES_1m.txt\"> 20120519_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120519_EVE_L0CS_DIODES_1m_counts.txt\"> 20120519_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120520_EVE_L0CS_DIODES_1m.txt\"> 20120520_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120520_EVE_L0CS_DIODES_1m_counts.txt\"> 20120520_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120521_EVE_L0CS_DIODES_1m.txt\"> 20120521_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120521_EVE_L0CS_DIODES_1m_counts.txt\"> 20120521_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120522_EVE_L0CS_DIODES_1m.txt\"> 20120522_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120522_EVE_L0CS_DIODES_1m_counts.txt\"> 20120522_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120523_EVE_L0CS_DIODES_1m.txt\"> 20120523_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120523_EVE_L0CS_DIODES_1m_counts.txt\"> 20120523_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120524_EVE_L0CS_DIODES_1m.txt\"> 20120524_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120524_EVE_L0CS_DIODES_1m_counts.txt\"> 20120524_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120525_EVE_L0CS_DIODES_1m.txt\"> 20120525_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120525_EVE_L0CS_DIODES_1m_counts.txt\"> 20120525_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120526_EVE_L0CS_DIODES_1m.txt\"> 20120526_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120526_EVE_L0CS_DIODES_1m_counts.txt\"> 20120526_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120527_EVE_L0CS_DIODES_1m.txt\"> 20120527_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120527_EVE_L0CS_DIODES_1m_counts.txt\"> 20120527_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120528_EVE_L0CS_DIODES_1m.txt\"> 20120528_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120528_EVE_L0CS_DIODES_1m_counts.txt\"> 20120528_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120529_EVE_L0CS_DIODES_1m.txt\"> 20120529_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120529_EVE_L0CS_DIODES_1m_counts.txt\"> 20120529_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120530_EVE_L0CS_DIODES_1m.txt\"> 20120530_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120530_EVE_L0CS_DIODES_1m_counts.txt\"> 20120530_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120531_EVE_L0CS_DIODES_1m.txt\"> 20120531_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120531_EVE_L0CS_DIODES_1m_counts.txt\"> 20120531_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120601_EVE_L0CS_DIODES_1m.txt\"> 20120601_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120601_EVE_L0CS_DIODES_1m_counts.txt\"> 20120601_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120602_EVE_L0CS_DIODES_1m.txt\"> 20120602_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120602_EVE_L0CS_DIODES_1m_counts.txt\"> 20120602_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120603_EVE_L0CS_DIODES_1m.txt\"> 20120603_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120603_EVE_L0CS_DIODES_1m_counts.txt\"> 20120603_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120604_EVE_L0CS_DIODES_1m.txt\"> 20120604_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120604_EVE_L0CS_DIODES_1m_counts.txt\"> 20120604_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120605_EVE_L0CS_DIODES_1m.txt\"> 20120605_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120605_EVE_L0CS_DIODES_1m_counts.txt\"> 20120605_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120606_EVE_L0CS_DIODES_1m.txt\"> 20120606_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120606_EVE_L0CS_DIODES_1m_counts.txt\"> 20120606_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120607_EVE_L0CS_DIODES_1m.txt\"> 20120607_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120607_EVE_L0CS_DIODES_1m_counts.txt\"> 20120607_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120608_EVE_L0CS_DIODES_1m.txt\"> 20120608_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120608_EVE_L0CS_DIODES_1m_counts.txt\"> 20120608_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120609_EVE_L0CS_DIODES_1m.txt\"> 20120609_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120609_EVE_L0CS_DIODES_1m_counts.txt\"> 20120609_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120610_EVE_L0CS_DIODES_1m.txt\"> 20120610_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120610_EVE_L0CS_DIODES_1m_counts.txt\"> 20120610_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120611_EVE_L0CS_DIODES_1m.txt\"> 20120611_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120611_EVE_L0CS_DIODES_1m_counts.txt\"> 20120611_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120612_EVE_L0CS_DIODES_1m.txt\"> 20120612_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120612_EVE_L0CS_DIODES_1m_counts.txt\"> 20120612_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120613_EVE_L0CS_DIODES_1m.txt\"> 20120613_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120613_EVE_L0CS_DIODES_1m_counts.txt\"> 20120613_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120614_EVE_L0CS_DIODES_1m.txt\"> 20120614_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120614_EVE_L0CS_DIODES_1m_counts.txt\"> 20120614_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120615_EVE_L0CS_DIODES_1m.txt\"> 20120615_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120615_EVE_L0CS_DIODES_1m_counts.txt\"> 20120615_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120616_EVE_L0CS_DIODES_1m.txt\"> 20120616_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120616_EVE_L0CS_DIODES_1m_counts.txt\"> 20120616_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120617_EVE_L0CS_DIODES_1m.txt\"> 20120617_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120617_EVE_L0CS_DIODES_1m_counts.txt\"> 20120617_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120618_EVE_L0CS_DIODES_1m.txt\"> 20120618_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120618_EVE_L0CS_DIODES_1m_counts.txt\"> 20120618_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120619_EVE_L0CS_DIODES_1m.txt\"> 20120619_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120619_EVE_L0CS_DIODES_1m_counts.txt\"> 20120619_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120620_EVE_L0CS_DIODES_1m.txt\"> 20120620_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120620_EVE_L0CS_DIODES_1m_counts.txt\"> 20120620_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120621_EVE_L0CS_DIODES_1m.txt\"> 20120621_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120621_EVE_L0CS_DIODES_1m_counts.txt\"> 20120621_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120622_EVE_L0CS_DIODES_1m.txt\"> 20120622_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120622_EVE_L0CS_DIODES_1m_counts.txt\"> 20120622_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120623_EVE_L0CS_DIODES_1m.txt\"> 20120623_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120623_EVE_L0CS_DIODES_1m_counts.txt\"> 20120623_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120624_EVE_L0CS_DIODES_1m.txt\"> 20120624_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120624_EVE_L0CS_DIODES_1m_counts.txt\"> 20120624_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120625_EVE_L0CS_DIODES_1m.txt\"> 20120625_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120625_EVE_L0CS_DIODES_1m_counts.txt\"> 20120625_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120626_EVE_L0CS_DIODES_1m.txt\"> 20120626_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120626_EVE_L0CS_DIODES_1m_counts.txt\"> 20120626_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120627_EVE_L0CS_DIODES_1m.txt\"> 20120627_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120627_EVE_L0CS_DIODES_1m_counts.txt\"> 20120627_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120628_EVE_L0CS_DIODES_1m.txt\"> 20120628_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120628_EVE_L0CS_DIODES_1m_counts.txt\"> 20120628_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120629_EVE_L0CS_DIODES_1m.txt\"> 20120629_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120629_EVE_L0CS_DIODES_1m_counts.txt\"> 20120629_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120630_EVE_L0CS_DIODES_1m.txt\"> 20120630_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120630_EVE_L0CS_DIODES_1m_counts.txt\"> 20120630_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120701_EVE_L0CS_DIODES_1m.txt\"> 20120701_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120701_EVE_L0CS_DIODES_1m_counts.txt\"> 20120701_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120702_EVE_L0CS_DIODES_1m.txt\"> 20120702_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120702_EVE_L0CS_DIODES_1m_counts.txt\"> 20120702_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120703_EVE_L0CS_DIODES_1m.txt\"> 20120703_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120703_EVE_L0CS_DIODES_1m_counts.txt\"> 20120703_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120704_EVE_L0CS_DIODES_1m.txt\"> 20120704_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120704_EVE_L0CS_DIODES_1m_counts.txt\"> 20120704_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120705_EVE_L0CS_DIODES_1m.txt\"> 20120705_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120705_EVE_L0CS_DIODES_1m_counts.txt\"> 20120705_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120706_EVE_L0CS_DIODES_1m.txt\"> 20120706_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120706_EVE_L0CS_DIODES_1m_counts.txt\"> 20120706_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120707_EVE_L0CS_DIODES_1m.txt\"> 20120707_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120707_EVE_L0CS_DIODES_1m_counts.txt\"> 20120707_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120708_EVE_L0CS_DIODES_1m.txt\"> 20120708_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120708_EVE_L0CS_DIODES_1m_counts.txt\"> 20120708_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120709_EVE_L0CS_DIODES_1m.txt\"> 20120709_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120709_EVE_L0CS_DIODES_1m_counts.txt\"> 20120709_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120710_EVE_L0CS_DIODES_1m.txt\"> 20120710_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120710_EVE_L0CS_DIODES_1m_counts.txt\"> 20120710_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120711_EVE_L0CS_DIODES_1m.txt\"> 20120711_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120711_EVE_L0CS_DIODES_1m_counts.txt\"> 20120711_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120712_EVE_L0CS_DIODES_1m.txt\"> 20120712_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120712_EVE_L0CS_DIODES_1m_counts.txt\"> 20120712_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120713_EVE_L0CS_DIODES_1m.txt\"> 20120713_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120713_EVE_L0CS_DIODES_1m_counts.txt\"> 20120713_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120714_EVE_L0CS_DIODES_1m.txt\"> 20120714_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120714_EVE_L0CS_DIODES_1m_counts.txt\"> 20120714_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120715_EVE_L0CS_DIODES_1m.txt\"> 20120715_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120715_EVE_L0CS_DIODES_1m_counts.txt\"> 20120715_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120716_EVE_L0CS_DIODES_1m.txt\"> 20120716_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120716_EVE_L0CS_DIODES_1m_counts.txt\"> 20120716_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120717_EVE_L0CS_DIODES_1m.txt\"> 20120717_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120717_EVE_L0CS_DIODES_1m_counts.txt\"> 20120717_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120718_EVE_L0CS_DIODES_1m.txt\"> 20120718_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120718_EVE_L0CS_DIODES_1m_counts.txt\"> 20120718_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120719_EVE_L0CS_DIODES_1m.txt\"> 20120719_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120719_EVE_L0CS_DIODES_1m_counts.txt\"> 20120719_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120720_EVE_L0CS_DIODES_1m.txt\"> 20120720_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120720_EVE_L0CS_DIODES_1m_counts.txt\"> 20120720_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120721_EVE_L0CS_DIODES_1m.txt\"> 20120721_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120721_EVE_L0CS_DIODES_1m_counts.txt\"> 20120721_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120722_EVE_L0CS_DIODES_1m.txt\"> 20120722_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120722_EVE_L0CS_DIODES_1m_counts.txt\"> 20120722_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120723_EVE_L0CS_DIODES_1m.txt\"> 20120723_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120723_EVE_L0CS_DIODES_1m_counts.txt\"> 20120723_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120724_EVE_L0CS_DIODES_1m.txt\"> 20120724_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120724_EVE_L0CS_DIODES_1m_counts.txt\"> 20120724_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120725_EVE_L0CS_DIODES_1m.txt\"> 20120725_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120725_EVE_L0CS_DIODES_1m_counts.txt\"> 20120725_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120726_EVE_L0CS_DIODES_1m.txt\"> 20120726_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120726_EVE_L0CS_DIODES_1m_counts.txt\"> 20120726_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120727_EVE_L0CS_DIODES_1m.txt\"> 20120727_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120727_EVE_L0CS_DIODES_1m_counts.txt\"> 20120727_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120728_EVE_L0CS_DIODES_1m.txt\"> 20120728_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120728_EVE_L0CS_DIODES_1m_counts.txt\"> 20120728_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120729_EVE_L0CS_DIODES_1m.txt\"> 20120729_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120729_EVE_L0CS_DIODES_1m_counts.txt\"> 20120729_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120730_EVE_L0CS_DIODES_1m.txt\"> 20120730_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120730_EVE_L0CS_DIODES_1m_counts.txt\"> 20120730_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120731_EVE_L0CS_DIODES_1m.txt\"> 20120731_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120731_EVE_L0CS_DIODES_1m_counts.txt\"> 20120731_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120801_EVE_L0CS_DIODES_1m.txt\"> 20120801_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120801_EVE_L0CS_DIODES_1m_counts.txt\"> 20120801_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120802_EVE_L0CS_DIODES_1m.txt\"> 20120802_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120802_EVE_L0CS_DIODES_1m_counts.txt\"> 20120802_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120803_EVE_L0CS_DIODES_1m.txt\"> 20120803_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120803_EVE_L0CS_DIODES_1m_counts.txt\"> 20120803_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120804_EVE_L0CS_DIODES_1m.txt\"> 20120804_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120804_EVE_L0CS_DIODES_1m_counts.txt\"> 20120804_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120805_EVE_L0CS_DIODES_1m.txt\"> 20120805_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120805_EVE_L0CS_DIODES_1m_counts.txt\"> 20120805_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120806_EVE_L0CS_DIODES_1m.txt\"> 20120806_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120806_EVE_L0CS_DIODES_1m_counts.txt\"> 20120806_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120807_EVE_L0CS_DIODES_1m.txt\"> 20120807_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120807_EVE_L0CS_DIODES_1m_counts.txt\"> 20120807_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120808_EVE_L0CS_DIODES_1m.txt\"> 20120808_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120808_EVE_L0CS_DIODES_1m_counts.txt\"> 20120808_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120809_EVE_L0CS_DIODES_1m.txt\"> 20120809_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120809_EVE_L0CS_DIODES_1m_counts.txt\"> 20120809_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120810_EVE_L0CS_DIODES_1m.txt\"> 20120810_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120810_EVE_L0CS_DIODES_1m_counts.txt\"> 20120810_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120811_EVE_L0CS_DIODES_1m.txt\"> 20120811_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120811_EVE_L0CS_DIODES_1m_counts.txt\"> 20120811_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120812_EVE_L0CS_DIODES_1m.txt\"> 20120812_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120812_EVE_L0CS_DIODES_1m_counts.txt\"> 20120812_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120813_EVE_L0CS_DIODES_1m.txt\"> 20120813_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120813_EVE_L0CS_DIODES_1m_counts.txt\"> 20120813_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120814_EVE_L0CS_DIODES_1m.txt\"> 20120814_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120814_EVE_L0CS_DIODES_1m_counts.txt\"> 20120814_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120815_EVE_L0CS_DIODES_1m.txt\"> 20120815_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120815_EVE_L0CS_DIODES_1m_counts.txt\"> 20120815_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120816_EVE_L0CS_DIODES_1m.txt\"> 20120816_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120816_EVE_L0CS_DIODES_1m_counts.txt\"> 20120816_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120817_EVE_L0CS_DIODES_1m.txt\"> 20120817_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120817_EVE_L0CS_DIODES_1m_counts.txt\"> 20120817_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120818_EVE_L0CS_DIODES_1m.txt\"> 20120818_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120818_EVE_L0CS_DIODES_1m_counts.txt\"> 20120818_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120819_EVE_L0CS_DIODES_1m.txt\"> 20120819_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120819_EVE_L0CS_DIODES_1m_counts.txt\"> 20120819_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120820_EVE_L0CS_DIODES_1m.txt\"> 20120820_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120820_EVE_L0CS_DIODES_1m_counts.txt\"> 20120820_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120821_EVE_L0CS_DIODES_1m.txt\"> 20120821_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120821_EVE_L0CS_DIODES_1m_counts.txt\"> 20120821_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120822_EVE_L0CS_DIODES_1m.txt\"> 20120822_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120822_EVE_L0CS_DIODES_1m_counts.txt\"> 20120822_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120823_EVE_L0CS_DIODES_1m.txt\"> 20120823_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120823_EVE_L0CS_DIODES_1m_counts.txt\"> 20120823_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120824_EVE_L0CS_DIODES_1m.txt\"> 20120824_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120824_EVE_L0CS_DIODES_1m_counts.txt\"> 20120824_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120825_EVE_L0CS_DIODES_1m.txt\"> 20120825_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120825_EVE_L0CS_DIODES_1m_counts.txt\"> 20120825_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120826_EVE_L0CS_DIODES_1m.txt\"> 20120826_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120826_EVE_L0CS_DIODES_1m_counts.txt\"> 20120826_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120827_EVE_L0CS_DIODES_1m.txt\"> 20120827_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120827_EVE_L0CS_DIODES_1m_counts.txt\"> 20120827_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120828_EVE_L0CS_DIODES_1m.txt\"> 20120828_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120828_EVE_L0CS_DIODES_1m_counts.txt\"> 20120828_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120829_EVE_L0CS_DIODES_1m.txt\"> 20120829_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120829_EVE_L0CS_DIODES_1m_counts.txt\"> 20120829_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120830_EVE_L0CS_DIODES_1m.txt\"> 20120830_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120830_EVE_L0CS_DIODES_1m_counts.txt\"> 20120830_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120831_EVE_L0CS_DIODES_1m.txt\"> 20120831_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120831_EVE_L0CS_DIODES_1m_counts.txt\"> 20120831_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120901_EVE_L0CS_DIODES_1m.txt\"> 20120901_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120901_EVE_L0CS_DIODES_1m_counts.txt\"> 20120901_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120902_EVE_L0CS_DIODES_1m.txt\"> 20120902_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120902_EVE_L0CS_DIODES_1m_counts.txt\"> 20120902_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120903_EVE_L0CS_DIODES_1m.txt\"> 20120903_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120903_EVE_L0CS_DIODES_1m_counts.txt\"> 20120903_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120904_EVE_L0CS_DIODES_1m.txt\"> 20120904_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120904_EVE_L0CS_DIODES_1m_counts.txt\"> 20120904_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120905_EVE_L0CS_DIODES_1m.txt\"> 20120905_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120905_EVE_L0CS_DIODES_1m_counts.txt\"> 20120905_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120906_EVE_L0CS_DIODES_1m.txt\"> 20120906_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120906_EVE_L0CS_DIODES_1m_counts.txt\"> 20120906_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120907_EVE_L0CS_DIODES_1m.txt\"> 20120907_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120907_EVE_L0CS_DIODES_1m_counts.txt\"> 20120907_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120908_EVE_L0CS_DIODES_1m.txt\"> 20120908_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120908_EVE_L0CS_DIODES_1m_counts.txt\"> 20120908_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120909_EVE_L0CS_DIODES_1m.txt\"> 20120909_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120909_EVE_L0CS_DIODES_1m_counts.txt\"> 20120909_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120910_EVE_L0CS_DIODES_1m.txt\"> 20120910_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120910_EVE_L0CS_DIODES_1m_counts.txt\"> 20120910_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120911_EVE_L0CS_DIODES_1m.txt\"> 20120911_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120911_EVE_L0CS_DIODES_1m_counts.txt\"> 20120911_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120912_EVE_L0CS_DIODES_1m.txt\"> 20120912_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120912_EVE_L0CS_DIODES_1m_counts.txt\"> 20120912_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120913_EVE_L0CS_DIODES_1m.txt\"> 20120913_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120913_EVE_L0CS_DIODES_1m_counts.txt\"> 20120913_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120914_EVE_L0CS_DIODES_1m.txt\"> 20120914_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120914_EVE_L0CS_DIODES_1m_counts.txt\"> 20120914_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120915_EVE_L0CS_DIODES_1m.txt\"> 20120915_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120915_EVE_L0CS_DIODES_1m_counts.txt\"> 20120915_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120916_EVE_L0CS_DIODES_1m.txt\"> 20120916_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120916_EVE_L0CS_DIODES_1m_counts.txt\"> 20120916_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120917_EVE_L0CS_DIODES_1m.txt\"> 20120917_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120917_EVE_L0CS_DIODES_1m_counts.txt\"> 20120917_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120918_EVE_L0CS_DIODES_1m.txt\"> 20120918_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120918_EVE_L0CS_DIODES_1m_counts.txt\"> 20120918_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120919_EVE_L0CS_DIODES_1m.txt\"> 20120919_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120919_EVE_L0CS_DIODES_1m_counts.txt\"> 20120919_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120920_EVE_L0CS_DIODES_1m.txt\"> 20120920_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120920_EVE_L0CS_DIODES_1m_counts.txt\"> 20120920_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120921_EVE_L0CS_DIODES_1m.txt\"> 20120921_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120921_EVE_L0CS_DIODES_1m_counts.txt\"> 20120921_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120922_EVE_L0CS_DIODES_1m.txt\"> 20120922_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120922_EVE_L0CS_DIODES_1m_counts.txt\"> 20120922_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120923_EVE_L0CS_DIODES_1m.txt\"> 20120923_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120923_EVE_L0CS_DIODES_1m_counts.txt\"> 20120923_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120924_EVE_L0CS_DIODES_1m.txt\"> 20120924_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120924_EVE_L0CS_DIODES_1m_counts.txt\"> 20120924_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120925_EVE_L0CS_DIODES_1m.txt\"> 20120925_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120925_EVE_L0CS_DIODES_1m_counts.txt\"> 20120925_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120926_EVE_L0CS_DIODES_1m.txt\"> 20120926_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120926_EVE_L0CS_DIODES_1m_counts.txt\"> 20120926_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120927_EVE_L0CS_DIODES_1m.txt\"> 20120927_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120927_EVE_L0CS_DIODES_1m_counts.txt\"> 20120927_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120928_EVE_L0CS_DIODES_1m.txt\"> 20120928_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120928_EVE_L0CS_DIODES_1m_counts.txt\"> 20120928_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120929_EVE_L0CS_DIODES_1m.txt\"> 20120929_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120929_EVE_L0CS_DIODES_1m_counts.txt\"> 20120929_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20120930_EVE_L0CS_DIODES_1m.txt\"> 20120930_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20120930_EVE_L0CS_DIODES_1m_counts.txt\"> 20120930_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121001_EVE_L0CS_DIODES_1m.txt\"> 20121001_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121001_EVE_L0CS_DIODES_1m_counts.txt\"> 20121001_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121002_EVE_L0CS_DIODES_1m.txt\"> 20121002_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121002_EVE_L0CS_DIODES_1m_counts.txt\"> 20121002_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121003_EVE_L0CS_DIODES_1m.txt\"> 20121003_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121003_EVE_L0CS_DIODES_1m_counts.txt\"> 20121003_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121004_EVE_L0CS_DIODES_1m.txt\"> 20121004_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121004_EVE_L0CS_DIODES_1m_counts.txt\"> 20121004_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121005_EVE_L0CS_DIODES_1m.txt\"> 20121005_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121005_EVE_L0CS_DIODES_1m_counts.txt\"> 20121005_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121006_EVE_L0CS_DIODES_1m.txt\"> 20121006_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121006_EVE_L0CS_DIODES_1m_counts.txt\"> 20121006_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121007_EVE_L0CS_DIODES_1m.txt\"> 20121007_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121007_EVE_L0CS_DIODES_1m_counts.txt\"> 20121007_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121008_EVE_L0CS_DIODES_1m.txt\"> 20121008_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121008_EVE_L0CS_DIODES_1m_counts.txt\"> 20121008_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121009_EVE_L0CS_DIODES_1m.txt\"> 20121009_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121009_EVE_L0CS_DIODES_1m_counts.txt\"> 20121009_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121010_EVE_L0CS_DIODES_1m.txt\"> 20121010_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121010_EVE_L0CS_DIODES_1m_counts.txt\"> 20121010_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121011_EVE_L0CS_DIODES_1m.txt\"> 20121011_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121011_EVE_L0CS_DIODES_1m_counts.txt\"> 20121011_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121012_EVE_L0CS_DIODES_1m.txt\"> 20121012_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121012_EVE_L0CS_DIODES_1m_counts.txt\"> 20121012_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121013_EVE_L0CS_DIODES_1m.txt\"> 20121013_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121013_EVE_L0CS_DIODES_1m_counts.txt\"> 20121013_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121014_EVE_L0CS_DIODES_1m.txt\"> 20121014_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121014_EVE_L0CS_DIODES_1m_counts.txt\"> 20121014_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121015_EVE_L0CS_DIODES_1m.txt\"> 20121015_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121015_EVE_L0CS_DIODES_1m_counts.txt\"> 20121015_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121016_EVE_L0CS_DIODES_1m.txt\"> 20121016_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121016_EVE_L0CS_DIODES_1m_counts.txt\"> 20121016_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121017_EVE_L0CS_DIODES_1m.txt\"> 20121017_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121017_EVE_L0CS_DIODES_1m_counts.txt\"> 20121017_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121018_EVE_L0CS_DIODES_1m.txt\"> 20121018_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121018_EVE_L0CS_DIODES_1m_counts.txt\"> 20121018_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121019_EVE_L0CS_DIODES_1m.txt\"> 20121019_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121019_EVE_L0CS_DIODES_1m_counts.txt\"> 20121019_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121020_EVE_L0CS_DIODES_1m.txt\"> 20121020_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121020_EVE_L0CS_DIODES_1m_counts.txt\"> 20121020_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121021_EVE_L0CS_DIODES_1m.txt\"> 20121021_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121021_EVE_L0CS_DIODES_1m_counts.txt\"> 20121021_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121022_EVE_L0CS_DIODES_1m.txt\"> 20121022_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121022_EVE_L0CS_DIODES_1m_counts.txt\"> 20121022_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121023_EVE_L0CS_DIODES_1m.txt\"> 20121023_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121023_EVE_L0CS_DIODES_1m_counts.txt\"> 20121023_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121024_EVE_L0CS_DIODES_1m.txt\"> 20121024_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121024_EVE_L0CS_DIODES_1m_counts.txt\"> 20121024_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121025_EVE_L0CS_DIODES_1m.txt\"> 20121025_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121025_EVE_L0CS_DIODES_1m_counts.txt\"> 20121025_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121026_EVE_L0CS_DIODES_1m.txt\"> 20121026_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121026_EVE_L0CS_DIODES_1m_counts.txt\"> 20121026_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121027_EVE_L0CS_DIODES_1m.txt\"> 20121027_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121027_EVE_L0CS_DIODES_1m_counts.txt\"> 20121027_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121028_EVE_L0CS_DIODES_1m.txt\"> 20121028_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121028_EVE_L0CS_DIODES_1m_counts.txt\"> 20121028_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121029_EVE_L0CS_DIODES_1m.txt\"> 20121029_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121029_EVE_L0CS_DIODES_1m_counts.txt\"> 20121029_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121030_EVE_L0CS_DIODES_1m.txt\"> 20121030_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121030_EVE_L0CS_DIODES_1m_counts.txt\"> 20121030_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121031_EVE_L0CS_DIODES_1m.txt\"> 20121031_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121031_EVE_L0CS_DIODES_1m_counts.txt\"> 20121031_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121101_EVE_L0CS_DIODES_1m.txt\"> 20121101_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121101_EVE_L0CS_DIODES_1m_counts.txt\"> 20121101_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121102_EVE_L0CS_DIODES_1m.txt\"> 20121102_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121102_EVE_L0CS_DIODES_1m_counts.txt\"> 20121102_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121103_EVE_L0CS_DIODES_1m.txt\"> 20121103_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121103_EVE_L0CS_DIODES_1m_counts.txt\"> 20121103_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121104_EVE_L0CS_DIODES_1m.txt\"> 20121104_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121104_EVE_L0CS_DIODES_1m_counts.txt\"> 20121104_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121105_EVE_L0CS_DIODES_1m.txt\"> 20121105_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121105_EVE_L0CS_DIODES_1m_counts.txt\"> 20121105_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121106_EVE_L0CS_DIODES_1m.txt\"> 20121106_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121106_EVE_L0CS_DIODES_1m_counts.txt\"> 20121106_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121107_EVE_L0CS_DIODES_1m.txt\"> 20121107_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121107_EVE_L0CS_DIODES_1m_counts.txt\"> 20121107_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121108_EVE_L0CS_DIODES_1m.txt\"> 20121108_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121108_EVE_L0CS_DIODES_1m_counts.txt\"> 20121108_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121109_EVE_L0CS_DIODES_1m.txt\"> 20121109_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121109_EVE_L0CS_DIODES_1m_counts.txt\"> 20121109_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121110_EVE_L0CS_DIODES_1m.txt\"> 20121110_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121110_EVE_L0CS_DIODES_1m_counts.txt\"> 20121110_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121111_EVE_L0CS_DIODES_1m.txt\"> 20121111_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121111_EVE_L0CS_DIODES_1m_counts.txt\"> 20121111_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121112_EVE_L0CS_DIODES_1m.txt\"> 20121112_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121112_EVE_L0CS_DIODES_1m_counts.txt\"> 20121112_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121113_EVE_L0CS_DIODES_1m.txt\"> 20121113_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121113_EVE_L0CS_DIODES_1m_counts.txt\"> 20121113_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121114_EVE_L0CS_DIODES_1m.txt\"> 20121114_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121114_EVE_L0CS_DIODES_1m_counts.txt\"> 20121114_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121115_EVE_L0CS_DIODES_1m.txt\"> 20121115_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121115_EVE_L0CS_DIODES_1m_counts.txt\"> 20121115_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121116_EVE_L0CS_DIODES_1m.txt\"> 20121116_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121116_EVE_L0CS_DIODES_1m_counts.txt\"> 20121116_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121117_EVE_L0CS_DIODES_1m.txt\"> 20121117_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121117_EVE_L0CS_DIODES_1m_counts.txt\"> 20121117_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121118_EVE_L0CS_DIODES_1m.txt\"> 20121118_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121118_EVE_L0CS_DIODES_1m_counts.txt\"> 20121118_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121119_EVE_L0CS_DIODES_1m.txt\"> 20121119_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121119_EVE_L0CS_DIODES_1m_counts.txt\"> 20121119_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121120_EVE_L0CS_DIODES_1m.txt\"> 20121120_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121120_EVE_L0CS_DIODES_1m_counts.txt\"> 20121120_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121121_EVE_L0CS_DIODES_1m.txt\"> 20121121_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121121_EVE_L0CS_DIODES_1m_counts.txt\"> 20121121_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121122_EVE_L0CS_DIODES_1m.txt\"> 20121122_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121122_EVE_L0CS_DIODES_1m_counts.txt\"> 20121122_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121123_EVE_L0CS_DIODES_1m.txt\"> 20121123_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121123_EVE_L0CS_DIODES_1m_counts.txt\"> 20121123_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121124_EVE_L0CS_DIODES_1m.txt\"> 20121124_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121124_EVE_L0CS_DIODES_1m_counts.txt\"> 20121124_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121125_EVE_L0CS_DIODES_1m.txt\"> 20121125_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121125_EVE_L0CS_DIODES_1m_counts.txt\"> 20121125_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121126_EVE_L0CS_DIODES_1m.txt\"> 20121126_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121126_EVE_L0CS_DIODES_1m_counts.txt\"> 20121126_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121127_EVE_L0CS_DIODES_1m.txt\"> 20121127_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121127_EVE_L0CS_DIODES_1m_counts.txt\"> 20121127_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121128_EVE_L0CS_DIODES_1m.txt\"> 20121128_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121128_EVE_L0CS_DIODES_1m_counts.txt\"> 20121128_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121129_EVE_L0CS_DIODES_1m.txt\"> 20121129_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121129_EVE_L0CS_DIODES_1m_counts.txt\"> 20121129_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121130_EVE_L0CS_DIODES_1m.txt\"> 20121130_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121130_EVE_L0CS_DIODES_1m_counts.txt\"> 20121130_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121201_EVE_L0CS_DIODES_1m.txt\"> 20121201_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121201_EVE_L0CS_DIODES_1m_counts.txt\"> 20121201_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121202_EVE_L0CS_DIODES_1m.txt\"> 20121202_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121202_EVE_L0CS_DIODES_1m_counts.txt\"> 20121202_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121203_EVE_L0CS_DIODES_1m.txt\"> 20121203_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121203_EVE_L0CS_DIODES_1m_counts.txt\"> 20121203_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121204_EVE_L0CS_DIODES_1m.txt\"> 20121204_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121204_EVE_L0CS_DIODES_1m_counts.txt\"> 20121204_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121205_EVE_L0CS_DIODES_1m.txt\"> 20121205_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121205_EVE_L0CS_DIODES_1m_counts.txt\"> 20121205_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121206_EVE_L0CS_DIODES_1m.txt\"> 20121206_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121206_EVE_L0CS_DIODES_1m_counts.txt\"> 20121206_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121207_EVE_L0CS_DIODES_1m.txt\"> 20121207_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121207_EVE_L0CS_DIODES_1m_counts.txt\"> 20121207_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121208_EVE_L0CS_DIODES_1m.txt\"> 20121208_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121208_EVE_L0CS_DIODES_1m_counts.txt\"> 20121208_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121209_EVE_L0CS_DIODES_1m.txt\"> 20121209_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121209_EVE_L0CS_DIODES_1m_counts.txt\"> 20121209_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121210_EVE_L0CS_DIODES_1m.txt\"> 20121210_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121210_EVE_L0CS_DIODES_1m_counts.txt\"> 20121210_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121211_EVE_L0CS_DIODES_1m.txt\"> 20121211_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121211_EVE_L0CS_DIODES_1m_counts.txt\"> 20121211_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121212_EVE_L0CS_DIODES_1m.txt\"> 20121212_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121212_EVE_L0CS_DIODES_1m_counts.txt\"> 20121212_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121213_EVE_L0CS_DIODES_1m.txt\"> 20121213_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121213_EVE_L0CS_DIODES_1m_counts.txt\"> 20121213_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121214_EVE_L0CS_DIODES_1m.txt\"> 20121214_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121214_EVE_L0CS_DIODES_1m_counts.txt\"> 20121214_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121215_EVE_L0CS_DIODES_1m.txt\"> 20121215_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121215_EVE_L0CS_DIODES_1m_counts.txt\"> 20121215_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121216_EVE_L0CS_DIODES_1m.txt\"> 20121216_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121216_EVE_L0CS_DIODES_1m_counts.txt\"> 20121216_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121217_EVE_L0CS_DIODES_1m.txt\"> 20121217_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121217_EVE_L0CS_DIODES_1m_counts.txt\"> 20121217_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121218_EVE_L0CS_DIODES_1m.txt\"> 20121218_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121218_EVE_L0CS_DIODES_1m_counts.txt\"> 20121218_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121219_EVE_L0CS_DIODES_1m.txt\"> 20121219_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121219_EVE_L0CS_DIODES_1m_counts.txt\"> 20121219_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121220_EVE_L0CS_DIODES_1m.txt\"> 20121220_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121220_EVE_L0CS_DIODES_1m_counts.txt\"> 20121220_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121221_EVE_L0CS_DIODES_1m.txt\"> 20121221_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121221_EVE_L0CS_DIODES_1m_counts.txt\"> 20121221_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121222_EVE_L0CS_DIODES_1m.txt\"> 20121222_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121222_EVE_L0CS_DIODES_1m_counts.txt\"> 20121222_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121223_EVE_L0CS_DIODES_1m.txt\"> 20121223_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121223_EVE_L0CS_DIODES_1m_counts.txt\"> 20121223_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121224_EVE_L0CS_DIODES_1m.txt\"> 20121224_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121224_EVE_L0CS_DIODES_1m_counts.txt\"> 20121224_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121225_EVE_L0CS_DIODES_1m.txt\"> 20121225_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121225_EVE_L0CS_DIODES_1m_counts.txt\"> 20121225_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121226_EVE_L0CS_DIODES_1m.txt\"> 20121226_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121226_EVE_L0CS_DIODES_1m_counts.txt\"> 20121226_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121227_EVE_L0CS_DIODES_1m.txt\"> 20121227_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121227_EVE_L0CS_DIODES_1m_counts.txt\"> 20121227_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121228_EVE_L0CS_DIODES_1m.txt\"> 20121228_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121228_EVE_L0CS_DIODES_1m_counts.txt\"> 20121228_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121229_EVE_L0CS_DIODES_1m.txt\"> 20121229_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121229_EVE_L0CS_DIODES_1m_counts.txt\"> 20121229_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121230_EVE_L0CS_DIODES_1m.txt\"> 20121230_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121230_EVE_L0CS_DIODES_1m_counts.txt\"> 20121230_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n<li><a
+        href=\"20121231_EVE_L0CS_DIODES_1m.txt\"> 20121231_EVE_L0CS_DIODES_1m.txt</a></li>\n<li><a
+        href=\"20121231_EVE_L0CS_DIODES_1m_counts.txt\"> 20121231_EVE_L0CS_DIODES_1m_counts.txt</a></li>\n</ul>\n</body></html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 17:53:22 GMT
+      Server:
+      - Apache/2.4.41 (Unix) OpenSSL/1.0.2k-fips PHP/7.4.0
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - docs.virtualsolar.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>307 Temporary Redirect</title>
+
+        </head><body>
+
+        <h1>Temporary Redirect</h1>
+
+        <p>The document has moved <a href="http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.2.15 (CentOS) Server at docs.virtualsolar.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '359'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 17:53:23 GMT
+      Location:
+      - http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 307
+      message: Temporary Redirect
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - netdrms01.nispdc.nso.edu
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n\n<wsdl:definitions
+        xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n\txmlns:VSO=\"http://virtualsolar.org/VSO/VSOi\"
+        \n\txmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n\txmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+        \n\tname=\"VSO\"\n\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\t<wsdl:types>\n\n\t\t<xsd:schema
+        elementFormDefault=\"unqualified\"\n\t\t\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\n\t\t\t<!--
+        for VSO \"Query\" function -->\n\n\t\t\t<xsd:complexType name=\"QueryRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"block\" type=\"VSO:QueryRequestBlock\" \n\t\t\t\t\tminOccurs=\"1\"
+        maxOccurs=\"1\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"QueryRequestBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"time\"
+        type=\"VSO:Time\" minOccurs=\"1\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"source\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\"
+        type=\"xsd:string\" minOccurs=\"0\" />\t\t\n\t\t\t\t\t<xsd:element name=\"wave\"
+        type=\"VSO:Wave\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"extent\"
+        type=\"VSO:Extent\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"field\"
+        type=\"VSO:Field\" minOccurs=\"0\" />\n\t\t\t\t\t<!-- VSO extended Query elements:\n\t\t\t\t\tPlease
+        note that these elements might be handle differently\n\t\t\t\t\tor might take
+        different arguments depending on the provider.\n\t\t\t\t\tIn general we've
+        made an effort to standarize as much as possible.\n\t\t\t\t\t -->\n\t\t\t\t\t<xsd:element
+        name=\"pixels\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"level\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"resolution\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"detector\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"filter\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"sample\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"quicklook\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"pscale\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Time\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"start\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"end\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element
+        name=\"near\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        \ wavemin and wavemax are really type float. However sometimes\n\t\t\t providers
+        can't handle the decimal point and throw and error.\n\t\t\t By leaving the
+        field as string, we allow the developer some \n\t\t\t flexibility. e.g. passing
+        an integer as string -->\n\t\t\t<xsd:complexType name=\"Wave\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"wavemin\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"wavemax\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"waveunit\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"wavetype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!-- Currently not
+        fully implemented. Only \"type\" is. -->     \n\t\t\t<xsd:complexType name=\"Extent\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"x\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"y\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"width\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"length\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"type\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Field\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fielditem\"
+        type=\"xsd:string\" \n\t\t\t\t\tminOccurs=\"0\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for VSO \"Query\" function Response -->\n\t\t\t\n\t\t\t<xsd:complexType name=\"QueryResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"provideritem\" type=\"VSO:ProviderQueryResponse\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        provider response block (a bit late to rename it now) -->\n\t\t\t<xsd:complexType
+        name=\"ProviderQueryResponse\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_found\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_returned\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"record\"
+        type=\"VSO:QueryResponseBlockArray\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"error\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlockArray\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"recorditem\" type=\"VSO:QueryResponseBlock\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"source\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"time\" type=\"VSO:Time\"
+        />\n\t\t\t\t\t<xsd:element name=\"wave\" type=\"VSO:Wave\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extent\" type=\"VSO:Extent\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"size\" type=\"xsd:float\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extra\" type=\"VSO:Extra\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"info\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"datatype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileurl\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Extra\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"thumbnail\"
+        type=\"VSO:Thumbnail\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"flags\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Thumbnail\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"hires\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"lowres\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for \"GetData\" function -->\n\n\t\t\t<xsd:complexType name=\"VSOGetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"request\" type=\"VSO:GetDataRequest\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"GetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"method\"
+        type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"info\"
+        type=\"VSO:Info\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"datacontainer\"
+        type=\"VSO:DataContainer\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"MethodItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"methodtype\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Info\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"email\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"host\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"user\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"directory\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"password\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"address\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"required\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"site\" type=\"xsd:string\" minOccurs=\"0\"/>\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"DataContainer\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"datarequestitem\"
+        type=\"VSO:DataRequestItem\" \n\t\t\t\t\tminOccurs='0' maxOccurs=\"unbounded\"
+        />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataRequestItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"FileidItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fileid\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t
+        \       <!-- for \"GetData\" function Response -->\n                        <xsd:complexType
+        name=\"VSOGetDataResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"getdataresponseitem\" type=\"VSO:GetDataResponseItem\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataResponseItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"version\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"info\" minOccurs=\"0\">\n\t\t\t\t\t\t<xsd:complexType>\n\t\t\t\t\t\t\t<xsd:sequence>\n\t\t\t\t\t\t\t\t<xsd:element
+        name=\"infoitem\" type=\"xsd:string\"\n\t\t\t\t\t\t\t\t maxOccurs=\"unbounded\"
+        />\n\t\t\t\t\t\t\t</xsd:sequence>\n\t\t\t\t\t\t</xsd:complexType>\n\t\t\t\t\t</xsd:element>\n\t\t\t\t\t<xsd:element
+        name=\"provider\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"getdataitem\" type=\"VSO:GetDataItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"details\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"method\" type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"dataitem\"
+        type=\"VSO:DataItem\" minOccurs='0' \n\t\t\t\t\tmaxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\t\t\t\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"url\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t\t<!-- <xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        /> -->\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t</xsd:schema>\n\t</wsdl:types>\n\n\t<wsdl:message
+        name=\"QueryRequest\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:QueryRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"QueryResponse\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:QueryResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:message
+        name=\"GetDataInput\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:VSOGetDataRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"GetDataOutput\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:VSOGetDataResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:portType
+        name=\"VSOiPort\">\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<wsdl:input
+        message=\"VSO:QueryRequest\" />\n\t\t\t<wsdl:output message=\"VSO:QueryResponse\"
+        />\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation name=\"GetData\">\n\t\t\t<wsdl:input
+        message=\"VSO:GetDataInput\" />\n\t\t\t<wsdl:output message=\"VSO:GetDataOutput\"
+        />\n\t\t</wsdl:operation>\n\n\t</wsdl:portType>\n\n\t<wsdl:binding name=\"VSOiBinding\"
+        type=\"VSO:VSOiPort\">\n\t\t<soap:binding style=\"rpc\"\n\t\t\ttransport=\"http://schemas.xmlsoap.org/soap/http\"
+        />\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#Query\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation
+        name=\"GetData\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#GetData\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t</wsdl:binding>\n\n\t<wsdl:service
+        name=\"VSOiService\">\n\t\t<wsdl:port name=\"nsoTestVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://VSO.tuc.noao.edu/cgi-bin/VSO/DEV_SOAP/bin/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t\t<wsdl:port name=\"nsoVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t</wsdl:service>\n</wsdl:definitions>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '12090'
+      Content-Type:
+      - application/wsdl+xml
+      Date:
+      - Sat, 23 Apr 2022 17:53:23 GMT
+      ETag:
+      - '"101681-2f3a-591e53e1795cf"'
+      Last-Modified:
+      - Fri, 06 Sep 2019 16:50:58 GMT
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: GET
+    uri: http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>307 Temporary Redirect</title>
+
+        </head><body>
+
+        <h1>Temporary Redirect</h1>
+
+        <p>The document has moved <a href="http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl">here</a>.</p>
+
+        <hr>
+
+        <address>Apache/2.2.15 (CentOS) Server at docs.virtualsolar.org Port 80</address>
+
+        </body></html>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '359'
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Sat, 23 Apr 2022 17:53:24 GMT
+      Location:
+      - http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 307
+      message: Temporary Redirect
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: GET
+    uri: http://netdrms01.nispdc.nso.edu/VSO/WSDL/VSOi_rpc_literal.wsdl
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n\n<wsdl:definitions
+        xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n\txmlns:VSO=\"http://virtualsolar.org/VSO/VSOi\"
+        \n\txmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n\txmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+        \n\tname=\"VSO\"\n\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\t<wsdl:types>\n\n\t\t<xsd:schema
+        elementFormDefault=\"unqualified\"\n\t\t\ttargetNamespace=\"http://virtualsolar.org/VSO/VSOi\">\n\n\t\t\t<!--
+        for VSO \"Query\" function -->\n\n\t\t\t<xsd:complexType name=\"QueryRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"block\" type=\"VSO:QueryRequestBlock\" \n\t\t\t\t\tminOccurs=\"1\"
+        maxOccurs=\"1\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"QueryRequestBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"time\"
+        type=\"VSO:Time\" minOccurs=\"1\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"source\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\"
+        type=\"xsd:string\" minOccurs=\"0\" />\t\t\n\t\t\t\t\t<xsd:element name=\"wave\"
+        type=\"VSO:Wave\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"extent\"
+        type=\"VSO:Extent\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"field\"
+        type=\"VSO:Field\" minOccurs=\"0\" />\n\t\t\t\t\t<!-- VSO extended Query elements:\n\t\t\t\t\tPlease
+        note that these elements might be handle differently\n\t\t\t\t\tor might take
+        different arguments depending on the provider.\n\t\t\t\t\tIn general we've
+        made an effort to standarize as much as possible.\n\t\t\t\t\t -->\n\t\t\t\t\t<xsd:element
+        name=\"pixels\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"level\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"resolution\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"detector\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"filter\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"sample\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"quicklook\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"pscale\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Time\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"start\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"end\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element
+        name=\"near\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        \ wavemin and wavemax are really type float. However sometimes\n\t\t\t providers
+        can't handle the decimal point and throw and error.\n\t\t\t By leaving the
+        field as string, we allow the developer some \n\t\t\t flexibility. e.g. passing
+        an integer as string -->\n\t\t\t<xsd:complexType name=\"Wave\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"wavemin\" type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"wavemax\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"waveunit\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"wavetype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!-- Currently not
+        fully implemented. Only \"type\" is. -->     \n\t\t\t<xsd:complexType name=\"Extent\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"x\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"y\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"width\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"length\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"type\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Field\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fielditem\"
+        type=\"xsd:string\" \n\t\t\t\t\tminOccurs=\"0\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for VSO \"Query\" function Response -->\n\t\t\t\n\t\t\t<xsd:complexType name=\"QueryResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"provideritem\" type=\"VSO:ProviderQueryResponse\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<!--
+        provider response block (a bit late to rename it now) -->\n\t\t\t<xsd:complexType
+        name=\"ProviderQueryResponse\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:float\" />\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_found\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"no_of_records_returned\"
+        type=\"xsd:int\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"record\"
+        type=\"VSO:QueryResponseBlockArray\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"error\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlockArray\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"recorditem\" type=\"VSO:QueryResponseBlock\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"QueryResponseBlock\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"source\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"instrument\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"physobs\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"time\" type=\"VSO:Time\"
+        />\n\t\t\t\t\t<xsd:element name=\"wave\" type=\"VSO:Wave\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extent\" type=\"VSO:Extent\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"size\" type=\"xsd:float\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"extra\" type=\"VSO:Extra\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"info\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"datatype\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileurl\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Extra\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"thumbnail\"
+        type=\"VSO:Thumbnail\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"flags\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"Thumbnail\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"hires\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"lowres\"
+        type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\n\t\t\t<!--
+        for \"GetData\" function -->\n\n\t\t\t<xsd:complexType name=\"VSOGetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element
+        name=\"version\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"request\" type=\"VSO:GetDataRequest\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"GetDataRequest\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"method\"
+        type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"info\"
+        type=\"VSO:Info\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"datacontainer\"
+        type=\"VSO:DataContainer\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"MethodItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"methodtype\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"Info\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"email\" type=\"xsd:string\"
+        />\n\t\t\t\t\t<xsd:element name=\"host\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"user\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"directory\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"password\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"address\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"required\" type=\"xsd:string\" minOccurs=\"0\"
+        />\n\t\t\t\t\t<xsd:element name=\"site\" type=\"xsd:string\" minOccurs=\"0\"/>\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t\t<xsd:complexType
+        name=\"DataContainer\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"datarequestitem\"
+        type=\"VSO:DataRequestItem\" \n\t\t\t\t\tminOccurs='0' maxOccurs=\"unbounded\"
+        />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataRequestItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"FileidItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"fileid\"
+        type=\"xsd:string\" maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\n\n\t\t
+        \       <!-- for \"GetData\" function Response -->\n                        <xsd:complexType
+        name=\"VSOGetDataResponse\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element
+        name=\"getdataresponseitem\" type=\"VSO:GetDataResponseItem\" \n\t\t\t\t\tminOccurs=\"0\"
+        maxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataResponseItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"version\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"info\" minOccurs=\"0\">\n\t\t\t\t\t\t<xsd:complexType>\n\t\t\t\t\t\t\t<xsd:sequence>\n\t\t\t\t\t\t\t\t<xsd:element
+        name=\"infoitem\" type=\"xsd:string\"\n\t\t\t\t\t\t\t\t maxOccurs=\"unbounded\"
+        />\n\t\t\t\t\t\t\t</xsd:sequence>\n\t\t\t\t\t\t</xsd:complexType>\n\t\t\t\t\t</xsd:element>\n\t\t\t\t\t<xsd:element
+        name=\"provider\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"getdataitem\" type=\"VSO:GetDataItem\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"status\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"debug\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"details\" type=\"xsd:string\" minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element
+        name=\"method\" type=\"VSO:MethodItem\" minOccurs=\"0\" />\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"GetDataItem\">\n\t\t\t\t<xsd:sequence>\n\t\t\t\t\t<xsd:element name=\"dataitem\"
+        type=\"VSO:DataItem\" minOccurs='0' \n\t\t\t\t\tmaxOccurs=\"unbounded\" />\n\t\t\t\t</xsd:sequence>\n\t\t\t</xsd:complexType>\t\t\t\n\t\t\t\n\t\t\t<xsd:complexType
+        name=\"DataItem\">\n\t\t\t\t<xsd:all>\n\t\t\t\t\t<xsd:element name=\"provider\"
+        type=\"xsd:string\" />\n\t\t\t\t\t<xsd:element name=\"url\" type=\"xsd:string\"
+        minOccurs=\"0\" />\n\t\t\t\t\t<xsd:element name=\"fileiditem\" type=\"VSO:FileidItem\"
+        />\n\t\t\t\t\t<!-- <xsd:element name=\"fileid\" type=\"xsd:string\" minOccurs=\"0\"
+        /> -->\n\t\t\t\t</xsd:all>\n\t\t\t</xsd:complexType>\n\n\t\t</xsd:schema>\n\t</wsdl:types>\n\n\t<wsdl:message
+        name=\"QueryRequest\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:QueryRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"QueryResponse\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:QueryResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:message
+        name=\"GetDataInput\">\n\t\t<wsdl:part name=\"body\" type=\"VSO:VSOGetDataRequest\"
+        />\n\t</wsdl:message>\n\n\t<wsdl:message name=\"GetDataOutput\">\n\t\t<wsdl:part
+        name=\"body\" type=\"VSO:VSOGetDataResponse\" />\n\t</wsdl:message>\n\n\t<wsdl:portType
+        name=\"VSOiPort\">\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<wsdl:input
+        message=\"VSO:QueryRequest\" />\n\t\t\t<wsdl:output message=\"VSO:QueryResponse\"
+        />\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation name=\"GetData\">\n\t\t\t<wsdl:input
+        message=\"VSO:GetDataInput\" />\n\t\t\t<wsdl:output message=\"VSO:GetDataOutput\"
+        />\n\t\t</wsdl:operation>\n\n\t</wsdl:portType>\n\n\t<wsdl:binding name=\"VSOiBinding\"
+        type=\"VSO:VSOiPort\">\n\t\t<soap:binding style=\"rpc\"\n\t\t\ttransport=\"http://schemas.xmlsoap.org/soap/http\"
+        />\n\t\t<wsdl:operation name=\"Query\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#Query\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t\t<wsdl:operation
+        name=\"GetData\">\n\t\t\t<soap:operation soapAction=\"http://virtualsolar.org/VSO/VSOi#GetData\"
+        />\n\t\t\t<wsdl:input>\n\t\t\t\t<soap:body use=\"literal\" namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\"
+        />\n\t\t\t</wsdl:input>\n\t\t\t<wsdl:output>\n\t\t\t\t<soap:body use=\"literal\"
+        namespace=\"http://virtualsolar.org/VSO/VSOi\"\n\t\t\t\t\tparts=\"body\" />\n\t\t\t</wsdl:output>\n\t\t</wsdl:operation>\n\n\t</wsdl:binding>\n\n\t<wsdl:service
+        name=\"VSOiService\">\n\t\t<wsdl:port name=\"nsoTestVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://VSO.tuc.noao.edu/cgi-bin/VSO/DEV_SOAP/bin/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t\t<wsdl:port name=\"nsoVSOi\" binding=\"VSO:VSOiBinding\">\n\t\t\t<soap:address\n\t\t\t\tlocation=\"http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi\"
+        />\n\t\t</wsdl:port>\n\t</wsdl:service>\n</wsdl:definitions>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '12090'
+      Content-Type:
+      - application/wsdl+xml
+      Date:
+      - Sat, 23 Apr 2022 17:53:24 GMT
+      ETag:
+      - '"101681-2f3a-591e53e1795cf"'
+      Last-Modified:
+      - Fri, 06 Sep 2019 16:50:58 GMT
+      Server:
+      - Apache/2.2.15 (CentOS)
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '<?xml version=''1.0'' encoding=''utf-8''?>
+
+      <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"
+      xmlns:VSO="http://virtualsolar.org/VSO/VSOi"><soap-env:Body><VSO:Query><body><block><time><start>20121004000000</start><end>20121006000000</end></time><instrument>EVE</instrument><level>0</level></block></body></VSO:Query></soap-env:Body></soap-env:Envelope>'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '375'
+      Content-Type:
+      - text/xml; charset=utf-8
+      SOAPAction:
+      - '"http://virtualsolar.org/VSO/VSOi#Query"'
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: POST
+    uri: http://vso.nso.edu/cgi-bin/VSO/PROD/vsoi_wsdl.cgi
+  response:
+    body:
+      string: <?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:VSO="http://virtualsolar.org/VSO/VSOi"
+        xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><VSO:QueryResponse><body><provideritem><version>1</version><no_of_records_returned>0</no_of_records_returned><no_of_records_found>0</no_of_records_found><provider>LASP</provider><record
+        /></provideritem></body></VSO:QueryResponse></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '521'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sat, 23 Apr 2022 17:53:24 GMT
+      Keep-Alive:
+      - timeout=5, max=100
+      SOAPServer:
+      - SOAP::Lite/Perl/1.27
+      Server:
+      - Apache/2.4.6 (CentOS)
+    status:
+      code: 200
+      message: OK
+version: 1
