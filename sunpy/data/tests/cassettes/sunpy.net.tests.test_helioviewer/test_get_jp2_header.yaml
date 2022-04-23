@@ -1,0 +1,368 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - api.helioviewer.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://api.helioviewer.org/v2/getDataSources/
+  response:
+    body:
+      string: '{"SDO":{"HMI":{"continuum":{"sourceId":18,"nickname":"HMI Int","layeringOrder":1,"start":"2010-12-06
+        06:53:41","end":"2022-04-23 15:54:33","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"HMI"},{"label":"Measurement","name":"continuum"}]},"magnetogram":{"sourceId":19,"nickname":"HMI
+        Mag","layeringOrder":1,"start":"2010-12-06 06:53:41","end":"2022-04-23 15:56:03","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"HMI"},{"label":"Measurement","name":"magnetogram"}]}},"AIA":{"4500":{"sourceId":17,"nickname":"AIA
+        4500","layeringOrder":1,"start":"2010-06-02 00:05:44","end":"2022-04-23 19:00:06","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"4500"}]},"1700":{"sourceId":16,"nickname":"AIA
+        1700","layeringOrder":1,"start":"2010-06-23 00:00:31","end":"2022-04-23 19:06:53","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"1700"}]},"1600":{"sourceId":15,"nickname":"AIA
+        1600","layeringOrder":1,"start":"2010-06-02 00:05:30","end":"2022-04-23 19:09:02","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"1600"}]},"335":{"sourceId":14,"nickname":"AIA
+        335","layeringOrder":1,"start":"2010-06-02 00:05:28","end":"2022-04-23 19:05:37","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"335"}]},"304":{"sourceId":13,"nickname":"AIA
+        304","layeringOrder":1,"start":"2010-06-02 00:05:39","end":"2022-04-23 19:06:05","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"304"}]},"211":{"sourceId":12,"nickname":"AIA
+        211","layeringOrder":1,"start":"2010-06-02 00:05:37","end":"2022-04-23 19:04:34","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"211"}]},"94":{"sourceId":8,"nickname":"AIA
+        94","layeringOrder":1,"start":"2010-06-02 00:05:33","end":"2022-04-23 19:00:47","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"94"}]},"131":{"sourceId":9,"nickname":"AIA
+        131","layeringOrder":1,"start":"2010-06-02 00:05:34","end":"2022-04-23 19:02:07","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"131"}]},"171":{"sourceId":10,"nickname":"AIA
+        171","layeringOrder":1,"start":"2010-06-02 00:05:36","end":"2022-04-23 19:03:45","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"171"}]},"193":{"sourceId":11,"nickname":"AIA
+        193","layeringOrder":1,"start":"2010-06-02 00:05:31","end":"2022-04-23 19:03:29","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"193"}]}}},"SOHO":{"EIT":{"195":{"sourceId":1,"nickname":"EIT
+        195","layeringOrder":1,"start":"1996-01-15 20:51:47","end":"2013-08-07 01:13:50","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"EIT"},{"label":"Measurement","name":"195"}]},"304":{"sourceId":3,"nickname":"EIT
+        304","layeringOrder":1,"start":"1996-01-15 22:00:17","end":"2013-08-07 01:19:42","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"EIT"},{"label":"Measurement","name":"304"}]},"284":{"sourceId":2,"nickname":"EIT
+        284","layeringOrder":1,"start":"1996-01-15 21:04:17","end":"2013-08-07 13:06:09","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"EIT"},{"label":"Measurement","name":"284"}]},"171":{"sourceId":0,"nickname":"EIT
+        171","layeringOrder":1,"start":"1996-01-15 21:39:21","end":"2013-08-07 13:00:13","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"EIT"},{"label":"Measurement","name":"171"}]}},"MDI":{"continuum":{"sourceId":7,"nickname":"MDI
+        Int","layeringOrder":1,"start":"1996-05-19 19:08:35","end":"2011-01-11 22:39:00","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"MDI"},{"label":"Measurement","name":"continuum"}]},"magnetogram":{"sourceId":6,"nickname":"MDI
+        Mag","layeringOrder":1,"start":"1996-04-21 00:30:04","end":"2011-01-11 22:39:00","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"MDI"},{"label":"Measurement","name":"magnetogram"}]}},"LASCO":{"C2":{"white-light":{"sourceId":4,"nickname":"LASCO
+        C2","layeringOrder":2,"start":"1996-04-01 01:12:15","end":"2022-04-23 16:36:07","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"LASCO"},{"label":"Detector","name":"C2"},{"label":"Measurement","name":"white-light"}]}},"C3":{"white-light":{"sourceId":5,"nickname":"LASCO
+        C3","layeringOrder":3,"start":"1996-04-14 09:48:18","end":"2022-04-23 16:18:08","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"LASCO"},{"label":"Detector","name":"C3"},{"label":"Measurement","name":"white-light"}]}}}},"STEREO_A":{"SECCHI":{"EUVI":{"304":{"sourceId":23,"nickname":"EUVI-A
+        304","layeringOrder":1,"start":"2006-12-04 13:56:31","end":"2022-04-08 19:23:15","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"304"}]},"284":{"sourceId":22,"nickname":"EUVI-A
+        284","layeringOrder":1,"start":"2006-12-04 13:43:29","end":"2022-04-08 19:18:30","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"284"}]},"195":{"sourceId":21,"nickname":"EUVI-A
+        195","layeringOrder":1,"start":"2006-11-07 19:07:34","end":"2022-04-08 19:22:30","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"195"}]},"171":{"sourceId":20,"nickname":"EUVI-A
+        171","layeringOrder":1,"start":"2006-11-11 19:31:22","end":"2022-04-08 19:24:15","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"171"}]}},"COR1":{"white-light":{"sourceId":28,"nickname":"COR1-A","layeringOrder":2,"start":"2006-12-04
+        17:35:55","end":"2022-04-08 19:21:00","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"COR1"},{"label":"Measurement","name":"white-light"}]}},"COR2":{"white-light":{"sourceId":29,"nickname":"COR2-A","layeringOrder":3,"start":"2006-12-29
+        02:10:00","end":"2022-04-07 23:53:30","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"COR2"},{"label":"Measurement","name":"white-light"}]}}}},"STEREO_B":{"SECCHI":{"EUVI":{"195":{"sourceId":25,"nickname":"EUVI-B
+        195","layeringOrder":1,"start":"2006-11-11 17:08:41","end":"2014-09-27 15:56:05","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"195"}]},"284":{"sourceId":26,"nickname":"EUVI-B
+        284","layeringOrder":1,"start":"2006-12-13 12:09:58","end":"2014-09-27 14:17:03","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"284"}]},"304":{"sourceId":27,"nickname":"EUVI-B
+        304","layeringOrder":1,"start":"2006-12-13 12:15:26","end":"2014-09-27 15:56:48","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"304"}]},"171":{"sourceId":24,"nickname":"EUVI-B
+        171","layeringOrder":1,"start":"2006-11-11 17:14:00","end":"2014-09-27 14:14:33","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"171"}]}},"COR1":{"white-light":{"sourceId":30,"nickname":"COR1-B","layeringOrder":2,"start":"2006-12-12
+        17:34:56","end":"2014-09-27 15:55:33","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"COR1"},{"label":"Measurement","name":"white-light"}]}},"COR2":{"white-light":{"sourceId":31,"nickname":"COR2-B","layeringOrder":3,"start":"2007-01-10
+        02:10:02","end":"2014-09-27 15:54:34","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"COR2"},{"label":"Measurement","name":"white-light"}]}}}},"TRACE":{"195":{"sourceId":76,"nickname":"TRACE
+        195","layeringOrder":1,"start":"2008-06-02 00:52:00","end":"2010-06-17 03:05:17","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"195"}]},"1550":{"sourceId":79,"nickname":"TRACE
+        1550","layeringOrder":1,"start":"2008-06-02 00:08:08","end":"2010-06-17 01:59:16","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"1550"}]},"1600":{"sourceId":80,"nickname":"TRACE
+        1600","layeringOrder":1,"start":"2008-06-01 00:06:21","end":"2010-06-17 23:43:10","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"1600"}]},"1700":{"sourceId":81,"nickname":"TRACE
+        1700","layeringOrder":1,"start":"2008-06-02 00:08:16","end":"2010-06-17 01:59:24","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"1700"}]},"white-light":{"sourceId":82,"nickname":"TRACE
+        white-light","layeringOrder":1,"start":"2008-06-01 00:06:24","end":"2010-06-17
+        23:43:14","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"white-light"}]},"1216":{"sourceId":78,"nickname":"TRACE
+        1216","layeringOrder":1,"start":"2008-06-01 00:06:32","end":"2010-06-17 01:59:35","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"1216"}]},"284":{"sourceId":77,"nickname":"TRACE
+        284","layeringOrder":1,"start":"2008-06-02 00:52:18","end":"2010-06-17 03:04:04","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"284"}]},"171":{"sourceId":75,"nickname":"TRACE
+        171","layeringOrder":1,"start":"2008-06-01 00:01:18","end":"2010-06-17 23:59:27","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"171"}]}},"Yohkoh":{"SXT":{"thin-Al":{"sourceId":34,"nickname":"SXT
+        thin-Al","layeringOrder":1,"start":"1991-09-13 21:49:24","end":"2001-12-14
+        08:20:43","uiLabels":[{"label":"Observatory","name":"Yohkoh"},{"label":"Instrument","name":"SXT"},{"label":"Measurement","name":"thin-Al"}]},"white-light":{"sourceId":35,"nickname":"SXT
+        white-light","layeringOrder":1,"start":"1991-09-11 23:02:54","end":"1992-11-13
+        17:05:32","uiLabels":[{"label":"Observatory","name":"Yohkoh"},{"label":"Instrument","name":"SXT"},{"label":"Measurement","name":"white-light"}]},"AlMgMn":{"sourceId":33,"nickname":"SXT
+        AlMgMn","layeringOrder":1,"start":"1991-09-13 21:53:40","end":"2001-12-14
+        20:58:33","uiLabels":[{"label":"Observatory","name":"Yohkoh"},{"label":"Instrument","name":"SXT"},{"label":"Filter","name":"AlMgMn"}]}}},"Hinode":{"XRT":{"Any":{"Any":{"sourceId":10001,"nickname":"XRT
+        Any\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Any"}]},"Al_thick":{"sourceId":10003,"nickname":"XRT
+        Any\/Al_thick","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Al_thick"}]},"Al_mesh":{"sourceId":10002,"nickname":"XRT
+        Any\/Al_mesh","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Al_mesh"}]},"Be_thick":{"sourceId":10004,"nickname":"XRT
+        Any\/Be_thick","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Be_thick"}]},"Gband":{"sourceId":10005,"nickname":"XRT
+        Any\/Gband","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Gband"}]},"Open":{"sourceId":10006,"nickname":"XRT
+        Any\/Open","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Open"}]},"Ti_poly":{"sourceId":10007,"nickname":"XRT
+        Any\/Ti_poly","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Ti_poly"}]}},"Al_med":{"Any":{"sourceId":10008,"nickname":"XRT
+        Al_med\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Any"}]},"Ti_poly":{"sourceId":43,"nickname":"XRT
+        Al_med\/Ti_poly","layeringOrder":1,"start":"2010-09-25 08:40:03","end":"2010-11-18
+        14:09:51","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Ti_poly"}]},"Open":{"sourceId":42,"nickname":"XRT
+        Al_med\/Open","layeringOrder":1,"start":"2006-11-07 12:01:22","end":"2022-03-08
+        06:23:22","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Open"}]},"Be_thick":{"sourceId":40,"nickname":"XRT
+        Al_med\/Be_thick","layeringOrder":1,"start":"2009-11-13 09:01:14","end":"2009-11-13
+        09:01:14","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Be_thick"}]},"Al_thick":{"sourceId":39,"nickname":"XRT
+        Al_med\/Al_thick","layeringOrder":1,"start":"2008-09-04 07:33:28","end":"2017-09-10
+        16:15:37","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Al_thick"}]}},"Al_poly":{"Any":{"sourceId":10009,"nickname":"XRT
+        Al_poly\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Any"}]},"Be_thick":{"sourceId":46,"nickname":"XRT
+        Al_poly\/Be_thick","layeringOrder":1,"start":"2007-02-03 10:52:25","end":"2013-04-12
+        22:29:33","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Be_thick"}]},"Ti_poly":{"sourceId":49,"nickname":"XRT
+        Al_poly\/Ti_poly","layeringOrder":1,"start":"2006-12-20 22:27:07","end":"2022-03-08
+        06:24:11","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Ti_poly"}]},"Open":{"sourceId":48,"nickname":"XRT
+        Al_poly\/Open","layeringOrder":1,"start":"2006-10-28 10:30:55","end":"2022-03-14
+        23:59:24","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Open"}]},"Al_thick":{"sourceId":45,"nickname":"XRT
+        Al_poly\/Al_thick","layeringOrder":1,"start":"2006-12-16 16:05:11","end":"2017-09-10
+        16:15:55","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Al_thick"}]},"Al_mesh":{"sourceId":44,"nickname":"XRT
+        Al_poly\/Al_mesh","layeringOrder":1,"start":"2007-02-03 10:51:52","end":"2020-10-23
+        22:27:02","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Al_mesh"}]}},"Be_med":{"Any":{"sourceId":10010,"nickname":"XRT
+        Be_med\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Be_med"},{"label":"Filter Wheel 2","name":"Any"}]},"Open":{"sourceId":54,"nickname":"XRT
+        Be_med\/Open","layeringOrder":1,"start":"2006-11-07 12:00:19","end":"2022-03-14
+        22:05:33","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Be_med"},{"label":"Filter Wheel 2","name":"Open"}]}},"Be_thin":{"Any":{"sourceId":10011,"nickname":"XRT
+        Be_thin\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Be_thin"},{"label":"Filter Wheel 2","name":"Any"}]},"Open":{"sourceId":60,"nickname":"XRT
+        Be_thin\/Open","layeringOrder":1,"start":"2006-11-06 10:43:52","end":"2022-03-14
+        22:05:29","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Be_thin"},{"label":"Filter Wheel 2","name":"Open"}]}},"C_poly":{"Any":{"sourceId":10012,"nickname":"XRT
+        C_poly\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Any"}]},"Al_mesh":{"sourceId":62,"nickname":"XRT
+        C_poly\/Al_mesh","layeringOrder":1,"start":"2007-03-23 23:55:51","end":"2007-03-24
+        05:57:22","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Al_mesh"}]},"Al_thick":{"sourceId":63,"nickname":"XRT
+        C_poly\/Al_thick","layeringOrder":1,"start":"2006-12-15 12:43:08","end":"2015-03-12
+        00:39:17","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Al_thick"}]},"Open":{"sourceId":66,"nickname":"XRT
+        C_poly\/Open","layeringOrder":1,"start":"2006-11-06 10:43:37","end":"2021-05-21
+        18:23:56","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Open"}]},"Ti_poly":{"sourceId":67,"nickname":"XRT
+        C_poly\/Ti_poly","layeringOrder":1,"start":"2007-05-13 16:23:38","end":"2014-12-11
+        21:58:53","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Ti_poly"}]}},"Open":{"Any":{"sourceId":10013,"nickname":"XRT
+        Open\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:15","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Any"}]},"Al_mesh":{"sourceId":69,"nickname":"XRT
+        Open\/Al_mesh","layeringOrder":1,"start":"2006-10-26 22:55:52","end":"2022-03-14
+        21:58:26","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Al_mesh"}]},"Al_thick":{"sourceId":70,"nickname":"XRT
+        Open\/Al_thick","layeringOrder":1,"start":"2006-10-27 04:10:53","end":"2022-03-14
+        08:46:37","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Al_thick"}]},"Be_thick":{"sourceId":71,"nickname":"XRT
+        Open\/Be_thick","layeringOrder":1,"start":"2006-10-27 04:22:32","end":"2022-03-14
+        22:05:39","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Be_thick"}]},"Ti_poly":{"sourceId":74,"nickname":"XRT
+        Open\/Ti_poly","layeringOrder":1,"start":"2006-10-26 22:56:37","end":"2017-08-08
+        18:02:24","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Ti_poly"}]}}}},"MLSO":{"COSMO":{"KCor":{"735":{"sourceId":83,"nickname":"COSMO
+        KCor","layeringOrder":1,"start":"2018-11-29 00:00:03","end":"2022-04-20 20:04:38","uiLabels":[{"label":"Observatory","name":"MLSO"},{"label":"Instrument","name":"COSMO"},{"label":"Detector","name":"KCor"},{"label":"Measurement","name":"735"}]}}}},"PROBA2":{"SWAP":{"174":{"sourceId":32,"nickname":"SWAP
+        174","layeringOrder":1,"start":"2010-01-04 17:00:50","end":"2022-04-22 00:58:51","uiLabels":[{"label":"Observatory","name":"PROBA2"},{"label":"Instrument","name":"SWAP"},{"label":"Measurement","name":"174"}]}}}}'
+    headers:
+      -X-Frame-Options:
+      - DENY
+      Connection:
+      - close
+      Content-Type:
+      - application/json;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 20:11:15 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains;
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Frame-Options:
+      - allow-from https://www.pbs.org/wgbh/nova/labs/lab/sun/research
+    status:
+      code: 200
+      message: OK
+- request:
+    body: action=getDataSources
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '21'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Host:
+      - api.helioviewer.org
+      User-Agent:
+      - Python-urllib/3.10
+    method: POST
+    uri: https://api.helioviewer.org/
+  response:
+    body:
+      string: '{"SDO":{"HMI":{"continuum":{"sourceId":18,"nickname":"HMI Int","layeringOrder":1,"start":"2010-12-06
+        06:53:41","end":"2022-04-23 15:54:33","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"HMI"},{"label":"Measurement","name":"continuum"}]},"magnetogram":{"sourceId":19,"nickname":"HMI
+        Mag","layeringOrder":1,"start":"2010-12-06 06:53:41","end":"2022-04-23 15:56:03","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"HMI"},{"label":"Measurement","name":"magnetogram"}]}},"AIA":{"4500":{"sourceId":17,"nickname":"AIA
+        4500","layeringOrder":1,"start":"2010-06-02 00:05:44","end":"2022-04-23 19:00:06","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"4500"}]},"1700":{"sourceId":16,"nickname":"AIA
+        1700","layeringOrder":1,"start":"2010-06-23 00:00:31","end":"2022-04-23 19:06:53","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"1700"}]},"1600":{"sourceId":15,"nickname":"AIA
+        1600","layeringOrder":1,"start":"2010-06-02 00:05:30","end":"2022-04-23 19:09:02","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"1600"}]},"335":{"sourceId":14,"nickname":"AIA
+        335","layeringOrder":1,"start":"2010-06-02 00:05:28","end":"2022-04-23 19:05:37","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"335"}]},"304":{"sourceId":13,"nickname":"AIA
+        304","layeringOrder":1,"start":"2010-06-02 00:05:39","end":"2022-04-23 19:06:05","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"304"}]},"211":{"sourceId":12,"nickname":"AIA
+        211","layeringOrder":1,"start":"2010-06-02 00:05:37","end":"2022-04-23 19:04:34","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"211"}]},"94":{"sourceId":8,"nickname":"AIA
+        94","layeringOrder":1,"start":"2010-06-02 00:05:33","end":"2022-04-23 19:00:47","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"94"}]},"131":{"sourceId":9,"nickname":"AIA
+        131","layeringOrder":1,"start":"2010-06-02 00:05:34","end":"2022-04-23 19:02:07","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"131"}]},"171":{"sourceId":10,"nickname":"AIA
+        171","layeringOrder":1,"start":"2010-06-02 00:05:36","end":"2022-04-23 19:03:45","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"171"}]},"193":{"sourceId":11,"nickname":"AIA
+        193","layeringOrder":1,"start":"2010-06-02 00:05:31","end":"2022-04-23 19:03:29","uiLabels":[{"label":"Observatory","name":"SDO"},{"label":"Instrument","name":"AIA"},{"label":"Measurement","name":"193"}]}}},"SOHO":{"EIT":{"195":{"sourceId":1,"nickname":"EIT
+        195","layeringOrder":1,"start":"1996-01-15 20:51:47","end":"2013-08-07 01:13:50","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"EIT"},{"label":"Measurement","name":"195"}]},"304":{"sourceId":3,"nickname":"EIT
+        304","layeringOrder":1,"start":"1996-01-15 22:00:17","end":"2013-08-07 01:19:42","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"EIT"},{"label":"Measurement","name":"304"}]},"284":{"sourceId":2,"nickname":"EIT
+        284","layeringOrder":1,"start":"1996-01-15 21:04:17","end":"2013-08-07 13:06:09","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"EIT"},{"label":"Measurement","name":"284"}]},"171":{"sourceId":0,"nickname":"EIT
+        171","layeringOrder":1,"start":"1996-01-15 21:39:21","end":"2013-08-07 13:00:13","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"EIT"},{"label":"Measurement","name":"171"}]}},"MDI":{"continuum":{"sourceId":7,"nickname":"MDI
+        Int","layeringOrder":1,"start":"1996-05-19 19:08:35","end":"2011-01-11 22:39:00","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"MDI"},{"label":"Measurement","name":"continuum"}]},"magnetogram":{"sourceId":6,"nickname":"MDI
+        Mag","layeringOrder":1,"start":"1996-04-21 00:30:04","end":"2011-01-11 22:39:00","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"MDI"},{"label":"Measurement","name":"magnetogram"}]}},"LASCO":{"C2":{"white-light":{"sourceId":4,"nickname":"LASCO
+        C2","layeringOrder":2,"start":"1996-04-01 01:12:15","end":"2022-04-23 16:36:07","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"LASCO"},{"label":"Detector","name":"C2"},{"label":"Measurement","name":"white-light"}]}},"C3":{"white-light":{"sourceId":5,"nickname":"LASCO
+        C3","layeringOrder":3,"start":"1996-04-14 09:48:18","end":"2022-04-23 16:18:08","uiLabels":[{"label":"Observatory","name":"SOHO"},{"label":"Instrument","name":"LASCO"},{"label":"Detector","name":"C3"},{"label":"Measurement","name":"white-light"}]}}}},"STEREO_A":{"SECCHI":{"EUVI":{"304":{"sourceId":23,"nickname":"EUVI-A
+        304","layeringOrder":1,"start":"2006-12-04 13:56:31","end":"2022-04-08 19:23:15","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"304"}]},"284":{"sourceId":22,"nickname":"EUVI-A
+        284","layeringOrder":1,"start":"2006-12-04 13:43:29","end":"2022-04-08 19:18:30","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"284"}]},"195":{"sourceId":21,"nickname":"EUVI-A
+        195","layeringOrder":1,"start":"2006-11-07 19:07:34","end":"2022-04-08 19:22:30","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"195"}]},"171":{"sourceId":20,"nickname":"EUVI-A
+        171","layeringOrder":1,"start":"2006-11-11 19:31:22","end":"2022-04-08 19:24:15","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"171"}]}},"COR1":{"white-light":{"sourceId":28,"nickname":"COR1-A","layeringOrder":2,"start":"2006-12-04
+        17:35:55","end":"2022-04-08 19:21:00","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"COR1"},{"label":"Measurement","name":"white-light"}]}},"COR2":{"white-light":{"sourceId":29,"nickname":"COR2-A","layeringOrder":3,"start":"2006-12-29
+        02:10:00","end":"2022-04-07 23:53:30","uiLabels":[{"label":"Observatory","name":"STEREO_A"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"COR2"},{"label":"Measurement","name":"white-light"}]}}}},"STEREO_B":{"SECCHI":{"EUVI":{"195":{"sourceId":25,"nickname":"EUVI-B
+        195","layeringOrder":1,"start":"2006-11-11 17:08:41","end":"2014-09-27 15:56:05","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"195"}]},"284":{"sourceId":26,"nickname":"EUVI-B
+        284","layeringOrder":1,"start":"2006-12-13 12:09:58","end":"2014-09-27 14:17:03","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"284"}]},"304":{"sourceId":27,"nickname":"EUVI-B
+        304","layeringOrder":1,"start":"2006-12-13 12:15:26","end":"2014-09-27 15:56:48","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"304"}]},"171":{"sourceId":24,"nickname":"EUVI-B
+        171","layeringOrder":1,"start":"2006-11-11 17:14:00","end":"2014-09-27 14:14:33","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"EUVI"},{"label":"Measurement","name":"171"}]}},"COR1":{"white-light":{"sourceId":30,"nickname":"COR1-B","layeringOrder":2,"start":"2006-12-12
+        17:34:56","end":"2014-09-27 15:55:33","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"COR1"},{"label":"Measurement","name":"white-light"}]}},"COR2":{"white-light":{"sourceId":31,"nickname":"COR2-B","layeringOrder":3,"start":"2007-01-10
+        02:10:02","end":"2014-09-27 15:54:34","uiLabels":[{"label":"Observatory","name":"STEREO_B"},{"label":"Instrument","name":"SECCHI"},{"label":"Detector","name":"COR2"},{"label":"Measurement","name":"white-light"}]}}}},"TRACE":{"195":{"sourceId":76,"nickname":"TRACE
+        195","layeringOrder":1,"start":"2008-06-02 00:52:00","end":"2010-06-17 03:05:17","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"195"}]},"1550":{"sourceId":79,"nickname":"TRACE
+        1550","layeringOrder":1,"start":"2008-06-02 00:08:08","end":"2010-06-17 01:59:16","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"1550"}]},"1600":{"sourceId":80,"nickname":"TRACE
+        1600","layeringOrder":1,"start":"2008-06-01 00:06:21","end":"2010-06-17 23:43:10","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"1600"}]},"1700":{"sourceId":81,"nickname":"TRACE
+        1700","layeringOrder":1,"start":"2008-06-02 00:08:16","end":"2010-06-17 01:59:24","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"1700"}]},"white-light":{"sourceId":82,"nickname":"TRACE
+        white-light","layeringOrder":1,"start":"2008-06-01 00:06:24","end":"2010-06-17
+        23:43:14","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"white-light"}]},"1216":{"sourceId":78,"nickname":"TRACE
+        1216","layeringOrder":1,"start":"2008-06-01 00:06:32","end":"2010-06-17 01:59:35","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"1216"}]},"284":{"sourceId":77,"nickname":"TRACE
+        284","layeringOrder":1,"start":"2008-06-02 00:52:18","end":"2010-06-17 03:04:04","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"284"}]},"171":{"sourceId":75,"nickname":"TRACE
+        171","layeringOrder":1,"start":"2008-06-01 00:01:18","end":"2010-06-17 23:59:27","uiLabels":[{"label":"Observatory","name":"TRACE"},{"label":"Measurement","name":"171"}]}},"Yohkoh":{"SXT":{"thin-Al":{"sourceId":34,"nickname":"SXT
+        thin-Al","layeringOrder":1,"start":"1991-09-13 21:49:24","end":"2001-12-14
+        08:20:43","uiLabels":[{"label":"Observatory","name":"Yohkoh"},{"label":"Instrument","name":"SXT"},{"label":"Measurement","name":"thin-Al"}]},"white-light":{"sourceId":35,"nickname":"SXT
+        white-light","layeringOrder":1,"start":"1991-09-11 23:02:54","end":"1992-11-13
+        17:05:32","uiLabels":[{"label":"Observatory","name":"Yohkoh"},{"label":"Instrument","name":"SXT"},{"label":"Measurement","name":"white-light"}]},"AlMgMn":{"sourceId":33,"nickname":"SXT
+        AlMgMn","layeringOrder":1,"start":"1991-09-13 21:53:40","end":"2001-12-14
+        20:58:33","uiLabels":[{"label":"Observatory","name":"Yohkoh"},{"label":"Instrument","name":"SXT"},{"label":"Filter","name":"AlMgMn"}]}}},"Hinode":{"XRT":{"Any":{"Any":{"sourceId":10001,"nickname":"XRT
+        Any\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Any"}]},"Al_thick":{"sourceId":10003,"nickname":"XRT
+        Any\/Al_thick","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Al_thick"}]},"Al_mesh":{"sourceId":10002,"nickname":"XRT
+        Any\/Al_mesh","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Al_mesh"}]},"Be_thick":{"sourceId":10004,"nickname":"XRT
+        Any\/Be_thick","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Be_thick"}]},"Gband":{"sourceId":10005,"nickname":"XRT
+        Any\/Gband","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Gband"}]},"Open":{"sourceId":10006,"nickname":"XRT
+        Any\/Open","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Open"}]},"Ti_poly":{"sourceId":10007,"nickname":"XRT
+        Any\/Ti_poly","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Any"},{"label":"Filter Wheel 2","name":"Ti_poly"}]}},"Al_med":{"Any":{"sourceId":10008,"nickname":"XRT
+        Al_med\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Any"}]},"Ti_poly":{"sourceId":43,"nickname":"XRT
+        Al_med\/Ti_poly","layeringOrder":1,"start":"2010-09-25 08:40:03","end":"2010-11-18
+        14:09:51","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Ti_poly"}]},"Open":{"sourceId":42,"nickname":"XRT
+        Al_med\/Open","layeringOrder":1,"start":"2006-11-07 12:01:22","end":"2022-03-08
+        06:23:22","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Open"}]},"Be_thick":{"sourceId":40,"nickname":"XRT
+        Al_med\/Be_thick","layeringOrder":1,"start":"2009-11-13 09:01:14","end":"2009-11-13
+        09:01:14","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Be_thick"}]},"Al_thick":{"sourceId":39,"nickname":"XRT
+        Al_med\/Al_thick","layeringOrder":1,"start":"2008-09-04 07:33:28","end":"2017-09-10
+        16:15:37","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_med"},{"label":"Filter Wheel 2","name":"Al_thick"}]}},"Al_poly":{"Any":{"sourceId":10009,"nickname":"XRT
+        Al_poly\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Any"}]},"Be_thick":{"sourceId":46,"nickname":"XRT
+        Al_poly\/Be_thick","layeringOrder":1,"start":"2007-02-03 10:52:25","end":"2013-04-12
+        22:29:33","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Be_thick"}]},"Ti_poly":{"sourceId":49,"nickname":"XRT
+        Al_poly\/Ti_poly","layeringOrder":1,"start":"2006-12-20 22:27:07","end":"2022-03-08
+        06:24:11","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Ti_poly"}]},"Open":{"sourceId":48,"nickname":"XRT
+        Al_poly\/Open","layeringOrder":1,"start":"2006-10-28 10:30:55","end":"2022-03-14
+        23:59:24","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Open"}]},"Al_thick":{"sourceId":45,"nickname":"XRT
+        Al_poly\/Al_thick","layeringOrder":1,"start":"2006-12-16 16:05:11","end":"2017-09-10
+        16:15:55","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Al_thick"}]},"Al_mesh":{"sourceId":44,"nickname":"XRT
+        Al_poly\/Al_mesh","layeringOrder":1,"start":"2007-02-03 10:51:52","end":"2020-10-23
+        22:27:02","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Al_poly"},{"label":"Filter Wheel 2","name":"Al_mesh"}]}},"Be_med":{"Any":{"sourceId":10010,"nickname":"XRT
+        Be_med\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Be_med"},{"label":"Filter Wheel 2","name":"Any"}]},"Open":{"sourceId":54,"nickname":"XRT
+        Be_med\/Open","layeringOrder":1,"start":"2006-11-07 12:00:19","end":"2022-03-14
+        22:05:33","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Be_med"},{"label":"Filter Wheel 2","name":"Open"}]}},"Be_thin":{"Any":{"sourceId":10011,"nickname":"XRT
+        Be_thin\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Be_thin"},{"label":"Filter Wheel 2","name":"Any"}]},"Open":{"sourceId":60,"nickname":"XRT
+        Be_thin\/Open","layeringOrder":1,"start":"2006-11-06 10:43:52","end":"2022-03-14
+        22:05:29","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Be_thin"},{"label":"Filter Wheel 2","name":"Open"}]}},"C_poly":{"Any":{"sourceId":10012,"nickname":"XRT
+        C_poly\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Any"}]},"Al_mesh":{"sourceId":62,"nickname":"XRT
+        C_poly\/Al_mesh","layeringOrder":1,"start":"2007-03-23 23:55:51","end":"2007-03-24
+        05:57:22","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Al_mesh"}]},"Al_thick":{"sourceId":63,"nickname":"XRT
+        C_poly\/Al_thick","layeringOrder":1,"start":"2006-12-15 12:43:08","end":"2015-03-12
+        00:39:17","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Al_thick"}]},"Open":{"sourceId":66,"nickname":"XRT
+        C_poly\/Open","layeringOrder":1,"start":"2006-11-06 10:43:37","end":"2021-05-21
+        18:23:56","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Open"}]},"Ti_poly":{"sourceId":67,"nickname":"XRT
+        C_poly\/Ti_poly","layeringOrder":1,"start":"2007-05-13 16:23:38","end":"2014-12-11
+        21:58:53","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"C_poly"},{"label":"Filter Wheel 2","name":"Ti_poly"}]}},"Open":{"Any":{"sourceId":10013,"nickname":"XRT
+        Open\/Any","layeringOrder":1,"start":"1991-09-11 00:00:00","end":"2022-04-23
+        20:11:16","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Any"}]},"Al_mesh":{"sourceId":69,"nickname":"XRT
+        Open\/Al_mesh","layeringOrder":1,"start":"2006-10-26 22:55:52","end":"2022-03-14
+        21:58:26","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Al_mesh"}]},"Al_thick":{"sourceId":70,"nickname":"XRT
+        Open\/Al_thick","layeringOrder":1,"start":"2006-10-27 04:10:53","end":"2022-03-14
+        08:46:37","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Al_thick"}]},"Be_thick":{"sourceId":71,"nickname":"XRT
+        Open\/Be_thick","layeringOrder":1,"start":"2006-10-27 04:22:32","end":"2022-03-14
+        22:05:39","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Be_thick"}]},"Ti_poly":{"sourceId":74,"nickname":"XRT
+        Open\/Ti_poly","layeringOrder":1,"start":"2006-10-26 22:56:37","end":"2017-08-08
+        18:02:24","uiLabels":[{"label":"Observatory","name":"Hinode"},{"label":"Instrument","name":"XRT"},{"label":"Filter
+        Wheel 1","name":"Open"},{"label":"Filter Wheel 2","name":"Ti_poly"}]}}}},"MLSO":{"COSMO":{"KCor":{"735":{"sourceId":83,"nickname":"COSMO
+        KCor","layeringOrder":1,"start":"2018-11-29 00:00:03","end":"2022-04-20 20:04:38","uiLabels":[{"label":"Observatory","name":"MLSO"},{"label":"Instrument","name":"COSMO"},{"label":"Detector","name":"KCor"},{"label":"Measurement","name":"735"}]}}}},"PROBA2":{"SWAP":{"174":{"sourceId":32,"nickname":"SWAP
+        174","layeringOrder":1,"start":"2010-01-04 17:00:50","end":"2022-04-22 00:58:51","uiLabels":[{"label":"Observatory","name":"PROBA2"},{"label":"Instrument","name":"SWAP"},{"label":"Measurement","name":"174"}]}}}}'
+    headers:
+      -X-Frame-Options:
+      - DENY
+      Connection:
+      - close
+      Content-Type:
+      - application/json;charset=UTF-8
+      Date:
+      - Sat, 23 Apr 2022 20:11:16 GMT
+      Server:
+      - Apache
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains;
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Frame-Options:
+      - allow-from https://www.pbs.org/wgbh/nova/labs/lab/sun/research
+    status:
+      code: 200
+      message: OK
+version: 1

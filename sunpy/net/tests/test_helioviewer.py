@@ -27,7 +27,7 @@ def client():
                     "HelioViewer.".format(e.code, e.args))
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_get_datasources(client):
     """
     Tests get_data_sources and data_sources and that they match.
@@ -43,7 +43,7 @@ def test_get_datasources(client):
     assert aia_4500_id == aia_4500_id_copy
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_keyvalue_all(client):
     """
     Checks that we raise the correct error for these functions.
@@ -54,7 +54,7 @@ def test_keyvalue_all(client):
         client.download_jp2("2012/01/01")
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_get_closest_image(client):
     """Tests getClosestImage API method"""
 
@@ -84,7 +84,7 @@ def test_download_jp2(client):
     os.remove(filepath)
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_get_jp2_header(client):
     """
     Tests getJP2Header API method
