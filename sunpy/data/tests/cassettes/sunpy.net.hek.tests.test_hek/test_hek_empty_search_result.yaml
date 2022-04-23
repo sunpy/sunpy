@@ -1,0 +1,55 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - www.lmsal.com
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://www.lmsal.com/hek/her?cosec=2&cmd=search&type=column&event_type=FL&x1=-5000&y1=-5000&x2=5000&y2=5000&event_coordsys=helioprojective&event_starttime=1985-05-04T00%3A00%3A00&event_endtime=1985-05-04T00%3A00%3A00&page=1
+  response:
+    body:
+      string: "\n       {\n\"result\":[\n],\n\"association\": [\n],\n\"overmax\":
+        false\n}  \n"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Connection:
+      - close
+      Content-Security-Policy:
+      - 'default-src ''self''; script-src ''self'' ''unsafe-inline'' ''unsafe-eval''
+        http://*.lmsal.com https://*.lmsal.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net
+        https://www.purpleair.com; style-src ''self'' ''unsafe-inline'' http://*.lmsal.com
+        https://*.lmsal.com https://fonts.googleapis.com; img-src ''self'' blob: data:
+        http://*.lmsal.com https://*.lmsal.com http://sdc.uio.no https://sdc.uio.no
+        http://solarb.mssl.ucl.ac.uk https://solarb.mssl.ucl.ac.uk https://epic.gsfc.nasa.gov;
+        frame-src ''self'' http://*.lmsal.com https://*.lmsal.com https://*.google.com  http://www.youtube.com
+        https://www.youtube.com; connect-src https://*.lmsal.com  http://*.lmsal.com
+        wss://www.lmsal.com http://localhost:8000 https://localhost:8443 https://api.cdnjs.com
+        https://epic.gsfc.nasa.gov; media-src http://*.lmsal.com https://*.lmsal.com;
+        frame-ancestors http://*.lmsal.com https://*.lmsal.com http://127.0.0.1:8888;
+        font-src https://*.lmsal.com https://fonts.gstatic.com https://cdnjs.cloudflare.com'
+      Content-Type:
+      - application/json;charset=ISO-8859-1
+      Date:
+      - Sat, 23 Apr 2022 19:21:19 GMT
+      Set-Cookie:
+      - TS016c429e=0138b389956297891cefd5b278c732f7323da151ef85ebb75717fb2b0fd98266c6b63c8708944bc3dd4fb295a56f80c5d8783b2c1e;
+        Path=/; Domain=.lmsal.com; Secure; HTTPOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - 1; mode=block
+      vary:
+      - Origin
+    status:
+      code: 200
+      message: ''
+version: 1
