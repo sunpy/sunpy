@@ -237,6 +237,11 @@ Tests may often be run from directories where users do not have write permission
 This can be done with the `pytest tmpdir function argument <https://pytest.org/en/latest/tmpdir.html>`_ or with Python's built-in `tempfile module
 <https://docs.python.org/3/library/tempfile.html#module-tempfile>`_.
 
+To regenerate the VCR cassettes, run::
+
+    rm -r sunpy/data/tests/cassettes
+    pytest -m vcr --remote-data=any --vcr-record=all
+
 Tests that use test data
 ------------------------
 
