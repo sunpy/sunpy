@@ -223,23 +223,22 @@ def add_rotation_function(name, *, allowed_orders,
                 size = 2*int(np.ceil(order/2))+1
 
                 t = time.perf_counter()
-                expanded_nans = convolve2d(isnan.astype(int),
-                                           np.ones((size, size)).astype(int),
+                expanded_nans = convolve2d(isnan.astype(float),
+                                           np.ones((size, size)),
                                            mode='same')
                 log.debug(f"{name} expanding image NaNs: {time.perf_counter() - t:.3f} s")
 
                 t = time.perf_counter()
-                rotated_nans = scipy.ndimage.affine_transform(expanded_nans.T, matrix,
-                                                              offset=shift, order=1,
-                                                              mode='nearest').T
+                rotated_nans = rotation_function(expanded_nans, matrix, shift, order=min(order, 1),
+                                                 missing=0, clip=False)
                 rotated_image[rotated_nans > 0] = np.nan
                 log.debug(f"{name} rotating image NaNs: {time.perf_counter() - t:.3f} s")
 
             if needs_missing_handling:
                 t = time.perf_counter()
                 # Rotate a constant image to determine where to apply the NaNs for `missing`
-                constant = scipy.ndimage.affine_transform(np.ones_like(image).T.astype(int), matrix,
-                                                          offset=shift, order=0, mode='constant').T
+                constant = rotation_function(np.ones_like(image), matrix, shift, order=1,
+                                             missing=0, clip=False)
                 rotated_image[constant < 1] = np.nan
                 log.debug(f"{name} applying NaN missing: {time.perf_counter() - t:.3f} s")
 
