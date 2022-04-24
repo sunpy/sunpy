@@ -223,9 +223,16 @@ def add_rotation_function(name, *, allowed_orders,
                 size = 2*int(np.ceil(order/2))+1
 
                 t = time.perf_counter()
-                expanded_nans = convolve2d(isnan.astype(float),
-                                           np.ones((size, size)),
-                                           mode='same')
+                try:
+                    # If OpenCV is installed, its convolution function is much faster
+                    import cv2
+                    expanded_nans = cv2.filter2D(isnan.astype(float), -1,
+                                                 np.ones((size, size)),
+                                                 borderType=cv2.BORDER_CONSTANT)
+                except ImportError:
+                    expanded_nans = convolve2d(isnan.astype(float),
+                                               np.ones((size, size)),
+                                               mode='same')
                 log.debug(f"{name} expanding image NaNs: {time.perf_counter() - t:.3f} s")
 
                 t = time.perf_counter()
