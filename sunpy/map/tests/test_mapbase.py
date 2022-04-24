@@ -117,19 +117,19 @@ def test_dtype(generic_map):
 
 
 def test_min(generic_map):
-    assert generic_map.min() == 1
+    assert generic_map.min() == 0
 
 
 def test_max(generic_map):
-    assert generic_map.max() == 1
+    assert generic_map.max() == 35
 
 
 def test_mean(generic_map):
-    assert generic_map.mean() == 1
+    assert generic_map.mean() == 17.5
 
 
 def test_std(generic_map):
-    assert generic_map.std() == 0
+    np.testing.assert_allclose(generic_map.std(), 10.388294694831615)
 
 
 def test_unit(generic_map):
@@ -1205,10 +1205,10 @@ def test_quicklook(aia171_test_map):
         assert aia171_test_map._repr_html_() in html_string
 
 
-def test_dask_array(aia171_test_map):
+def test_dask_array(generic_map):
     dask_array = pytest.importorskip('dask.array')
-    da = dask_array.from_array(aia171_test_map.data, chunks=(1, 1))
-    pair_map = sunpy.map.Map(da, aia171_test_map.meta)
+    da = dask_array.from_array(generic_map.data, chunks=(1, 1))
+    pair_map = sunpy.map.Map(da, generic_map.meta)
 
     # Check that _repr_html_ functions for a dask array
     html_dask_repr = pair_map._repr_html_(compute_dask=False)
