@@ -270,20 +270,25 @@ try:
                                 'html.parser')
     cv_namespace = stable_docs.find("a", string="cv").attrs['href']
 
-    # Find the relative URL for warpAffine in the `cv` namespace
+    # Find the relative URL for warpAffine/filter2D in the `cv` namespace
     all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text,
                            'html.parser')
     warpAffine = all_cv.find("a", string="warpAffine").attrs['href'][6:]  # strip leading "../../"
+    filter2D = all_cv.find("a", string="filter2D").attrs['href'][6:]  # strip leading "../../"
 
-    # Construct the full URL for warpAffine
+    # Construct the full URL for warpAffine/filter2D
     warpAffine_full = f"{base_url}/{version}/{warpAffine}"
+    filter2D_full = f"{base_url}/{version}/{filter2D}"
 except:
     # In the event of any failure (e.g., no network connectivity)
     warpAffine_full = ""
+    filter2D_full = ""
 
 rst_epilog = f"""
 .. |cv2_warpAffine| replace:: **cv2.warpAffine()**
 .. _cv2_warpAffine: {warpAffine_full}
+.. |cv2_filter2D| replace:: **cv2.filter2D()**
+.. _cv2_filter2D: {filter2D_full}
 """
 
 
