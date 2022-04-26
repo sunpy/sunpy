@@ -76,21 +76,6 @@ def test_data_filenames():
     return test_data_filenames_list
 
 
-def bitpix_to_dtype(bitpix):
-    """
-    Lookup table for converting ``BITPIX`` values from FITS headers
-    to `~numpy.dtype` objects
-    """
-    return {
-        8: np.uint8,  # note it is an UNsigned integer
-        16: np.int16,
-        32: np.int32,
-        64: np.int64,
-        -32: np.float32,
-        -64: np.float64,
-    }[int(bitpix)]
-
-
 def write_image_file_from_header_file(header_file, fits_directory):
     """
     Given a header-only file ``header_file``, write a dummy FITS file
@@ -110,7 +95,7 @@ def write_image_file_from_header_file(header_file, fits_directory):
     shape = [header[f'naxis{i+1}'] for i in range(header['naxis'])]
     data = np.random.rand(*shape[::-1])
     if 'BITPIX' in header:
-        data = data.astype(bitpix_to_dtype(header['BITPIX']))
+        data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
     hdu = astropy.io.fits.PrimaryHDU(data=data, header=header, do_not_scale_image_data=True, scale_back=True)
     fits_file = os.fspath(fits_directory.joinpath(header_file.with_suffix('.fits').name))
     hdu.writeto(fits_file)
@@ -128,7 +113,7 @@ def get_dummy_map_from_header(filename):
     header = astropy.io.fits.Header.fromtextfile(filepath)
     data = np.random.rand(header['naxis2'], header['naxis1'])
     if 'BITPIX' in header:
-        data = data.astype(bitpix_to_dtype(header['BITPIX']))
+        data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
     # NOTE: by reading straight from the data header pair, we are skipping
     # the fixes that are applied in sunpy.io.fits, e.g. the waveunit fix
     # Would it be better to write this whole map back to a temporary file and then
