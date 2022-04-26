@@ -1638,7 +1638,7 @@ class GenericMap(NDData):
         will be set to NaN, with the size of the pixel region affected depending on the
         interpolation order.  All currently implemented rotation methods require a
         convolution step to handle image NaNs.  This convolution normally uses
-        :func:`scipy.ndimage.convolve2d`, but if `OpenCV <https://opencv.org>`__ is
+        :func:`scipy.signal.convolve2d`, but if `OpenCV <https://opencv.org>`__ is
         installed, the faster |cv2_filter2D|_ is used instead.
 
         See :func:`sunpy.image.transform.affine_transform` for details on each of the
