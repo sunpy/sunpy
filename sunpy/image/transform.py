@@ -198,18 +198,21 @@ def add_rotation_function(name, *, allowed_orders,
 
             clip_to_use = clip if handles_clipping else False
 
-            # If missing cannot be used directly, use a value in the input range of the image
+            # Check if missing is NaN and needs to be externally handled
             needs_missing_handling = not handles_nan_missing and np.isnan(missing)
-            missing_to_use = missing if not needs_missing_handling else np.nanmin(image)
 
+            # Check if there are any NaNs in the image that need to be externally handled
             if not handles_image_nans:
                 isnan = np.isnan(image)
                 needs_nan_handling = np.any(isnan)
             else:
                 needs_nan_handling = False
 
-            # If needed, set any image NaNs to a value that is in the range of the input image
-            image_to_use = np.nan_to_num(image, nan=np.nanmin(image)) if needs_nan_handling else image
+            # If either is needed, change the NaNs to the median of the input image
+            if needs_missing_handling or needs_nan_handling:
+                substitute = np.nanmedian(image)
+            missing_to_use = substitute if needs_missing_handling else missing
+            image_to_use = np.nan_to_num(image, nan=substitute) if needs_nan_handling else image
 
             t = time.perf_counter()
             rotated_image = rotation_function(image_to_use, matrix, shift, order,
