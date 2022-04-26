@@ -22,15 +22,3 @@ There is not anything we can do to fix this on our side.
 `The specific section of the SDO users guide explaining this <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/sdoguidese4.html#x9-240004.2.4>`__.
 
 `Reference issue <https://github.com/sunpy/sunpy/issues/5447>`__.
-
-``scikit-image`` versions used to rotate/transform maps
-=======================================================
-sunpy requires a version of ``scikit-image < 0.19`` to be installed for
-rotating or transforming maps using ``scikit-image``. This is due to
-`changes in version 0.19 <https://github.com/scikit-image/scikit-image/issues/6093>`__.
-that are backwards incompatible with earlier ``scikit-image`` versions.
-
-It is anticipated that the default package used to transform or rotate maps will
-be changed from ``scikit-image`` to ``scipy`` in sunpy 4.0.
-
-`Reference issue <https://github.com/sunpy/sunpy/issues/5750>`__.
