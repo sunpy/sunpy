@@ -1583,13 +1583,8 @@ class GenericMap(NDData):
 
         Specify either a rotation angle or a rotation matrix, but not both. If
         neither an angle or a rotation matrix are specified, the map will be
-        rotated by the rotation angle in the metadata.
-
-        The map will be rotated around the reference coordinate defined in the
-        meta data.
-
-        This method also updates the ``rotation_matrix`` attribute and any
-        appropriate header data so that they correctly describe the new map.
+        rotated by the rotation information in the metadata, which should derotate
+        the map so that the pixel axes are aligned with world-coordinate axes.
 
         Parameters
         ----------
@@ -1604,7 +1599,7 @@ class GenericMap(NDData):
         scale : float
             A scale factor for the image, default is no scaling
         recenter : bool
-            If True, position the axis of rotation at the center of the new map
+            If `True`, position the reference coordinate at the center of the new map
             Default: `False`
         missing : float
             The value to use for pixels in the output map that are beyond the extent
@@ -1630,8 +1625,10 @@ class GenericMap(NDData):
 
         Notes
         -----
-        This function will remove old CROTA keywords from the header.
-        This function will also convert a CDi_j matrix to a PCi_j matrix.
+        The rotation information in the metadata of the new map is modified
+        appropriately from that of the original map to account for the applied rotation.
+        It will solely be in the form of a PCi_j matrix, even if the original map used
+        the CROTA2 keyword or a CDi_j matrix.
 
         If the map does not already contain pixels with `numpy.nan` values, setting
         ``missing`` to an appropriate number for the data (e.g., zero) will reduce the
