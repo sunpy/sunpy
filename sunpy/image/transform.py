@@ -218,20 +218,21 @@ def add_rotation_function(name, *, allowed_orders,
 
             # If needed, restore the NaNs
             if needs_nan_handling:
-                # Use a convolution to find all pixels that are affected by NaNs
-                # We want a kernel size that is an odd number that is at least order+1
-                size = 2*int(np.ceil(order/2))+1
+                # Use a convolution to find all pixels that are appreciably affected by NaNs
+                # The kernel size depends on the interpolation order, but are empirically defined
+                # because a given pixel can affect every other pixel under spline interpolation
+                sizes = [1, 1, 5, 5, 7, 7]
 
                 t = time.perf_counter()
                 try:
                     # If OpenCV is installed, its convolution function is much faster
                     import cv2
                     expanded_nans = cv2.filter2D(isnan.astype(float), -1,
-                                                 np.ones((size, size)),
+                                                 np.ones((sizes[order], sizes[order])),
                                                  borderType=cv2.BORDER_CONSTANT)
                 except ImportError:
                     expanded_nans = convolve2d(isnan.astype(float),
-                                               np.ones((size, size)),
+                                               np.ones((sizes[order], sizes[order])),
                                                mode='same')
                 log.debug(f"{name} expanding image NaNs: {time.perf_counter() - t:.3f} s")
 
