@@ -4,21 +4,20 @@
 Adding a new rotation method
 ****************************
 
-If you want to add a new rotation method that can be used by `sunpy.map.GenericMap.rotate`, you can do the following:
+It is possible to select from a number of rotation methods when using :func:`sunpy.image.transform.affine_transform` and :meth:sunpy.map.GenericMap.rotate`.
+You can add a custom rotation method using the decorator :func:`sunpy.image.transform.add_rotation_function`:
 
 .. code-block:: python
 
     from sunpy.image.transform import add_rotation_function
 
-    @add_rotation_function("my_rotate", handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
+    @add_rotation_function("my_rotate", allowed_orders={0, 1, 3},
+                           handles_clipping=False, handles_image_nans=False, handles_nan_missing=False)
     def _rotation_mine(image, matrix, shift, order, missing, clip):
         # Rotation code goes here
         return rotated_image
 
-The best explanation of the arguments is found from the detailed function documentation:
-
-.. autofunction:: sunpy.image.transform.add_rotation_function
-   :noindex:
+See the docstring for :func:`~sunpy.image.transform.add_rotation_function` for a detailed explanation of each of the decorator parameters and each of the required input parameters to the rotation function
 
 Then you can do:
 
@@ -31,16 +30,5 @@ Then you can do:
 
     rot_map = hmi_map.rotate(order=3, recenter=True, method="my_rotate")
 
-It is important to know what keywords from `sunpy.map.GenericMap.rotate` are used by the underlying rotation function.
 
-* ``angle`` - This is passed to `sunpy.image.transform.affine_transform` as a rotation matrix.
-* ``rmatrix`` - This is passed to `sunpy.image.transform.affine_transform`
-* ``order`` - This is passed to `sunpy.image.transform.affine_transform`
-* ``scale`` - This is passed to `sunpy.image.transform.affine_transform`
-* ``recenter`` - This is passed to `sunpy.image.transform.affine_transform`
-* ``missing`` - This is passed to `sunpy.image.transform.affine_transform`
-* ``use_scipy`` - This is passed to `sunpy.image.transform.affine_transform`, it is deprecated and removal is planned for sunpy 4.1, you should use ``method`` instead.
-* ``method`` - This is passed to `sunpy.image.transform.affine_transform`
-* ``clip`` - This is passed to `sunpy.image.transform.affine_transform`
-
-The methods that ``sunpy`` use are defined in `sunpy/image/transform.py <https://github.com/sunpy/sunpy/blob/main/sunpy/image/transform.py>`__`.
+The available rotation methods are all implemented using the :func:`~sunpy.image.transform.add_rotation_function` decorator, so you can look in `sunpy/image/transform.py <https://github.com/sunpy/sunpy/blob/main/sunpy/image/transform.py>`__ for examples of how to use this decorator.
