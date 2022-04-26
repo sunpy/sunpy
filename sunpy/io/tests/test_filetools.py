@@ -38,6 +38,16 @@ def test_read_file_fits():
     assert isinstance(aiapair[0][1], sunpy.io.header.FileHeader)
 
 
+def test_read_file_fits_multple_hdu():
+    pairs = sunpy.io.read_file(RHESSI_IMAGE)
+    assert isinstance(pairs, list)
+    assert len(pairs) == 4
+    assert all([len(p) == 2 for p in pairs])
+    assert all([isinstance(p[0], np.ndarray) for p in pairs])
+    assert all([isinstance(p[1],
+                           sunpy.io.header.FileHeader) for p in pairs])
+
+
 def test_read_file_fits_gzip():
     # Test read gzipped fits file
     for fits_extension in [".fts", ".fit", ".fits"]:
