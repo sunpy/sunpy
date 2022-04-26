@@ -2,6 +2,7 @@
 Functions for geometrical image transformation and warping.
 """
 import sys
+import time
 import numbers
 from functools import wraps
 from collections import namedtuple
@@ -10,6 +11,7 @@ import numpy as np
 import scipy.ndimage
 from scipy.signal import convolve2d
 
+from sunpy import log
 from sunpy.util.exceptions import warn_deprecated, warn_user
 
 __all__ = ['add_rotation_function', 'affine_transform']
@@ -22,6 +24,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     This function supports NaN values in the input image and supports using NaN for
     pixels in the output image that are beyond the extent of the input image.
+    Handling NaN values in the input image requires additional computation time.
 
     Parameters
     ----------
@@ -60,8 +63,11 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     Notes
     -----
     For each NaN pixel in the input image, one or more pixels in the output image
-    will be set to NaN, with the number of pixels affected depending on the
-    interpolation order.
+    will be set to NaN, with the size of the pixel region affected depending on the
+    interpolation order.  All currently implemented rotation methods require a
+    convolution step to handle image NaNs.  This convolution normally uses
+    :func:`scipy.signal.convolve2d`, but if `OpenCV <https://opencv.org>`__ is
+    installed, the faster |cv2_filter2D|_ is used instead.
 
     See :func:`~sunpy.image.transform.add_rotation_function` for how to add a
     different rotation function.
@@ -183,9 +189,12 @@ def add_rotation_function(name, *, allowed_orders,
 
     If the decorator is handling image NaNs on behalf of the rotation function
     (i.e., ``handles_image_nans=False``), pixels in the output image will be set to
-    NaN if they are within a number of pixels equal to half of the ``order``
+    NaN if they are within a certain neighborhood size that depends on the ``order``
     parameter.  This step requires an additional image convolution, which might be
     avoidable if the rotation function were able to internally handle image NaNs.
+    This convolution normally uses :func:`scipy.ndimage.convolve2d`, but if
+    `OpenCV <https://opencv.org>`__ is installed, the faster |cv2_filter2D|_ is
+    used instead.
     """
     def decorator(rotation_function):
         @wraps(rotation_function)
@@ -196,42 +205,63 @@ def add_rotation_function(name, *, allowed_orders,
 
             clip_to_use = clip if handles_clipping else False
 
-            # If missing cannot be used directly, use a value in the input range of the image
+            # Check if missing is NaN and needs to be externally handled
             needs_missing_handling = not handles_nan_missing and np.isnan(missing)
-            missing_to_use = missing if not needs_missing_handling else np.nanmin(image)
 
+            # Check if there are any NaNs in the image that need to be externally handled
             if not handles_image_nans:
                 isnan = np.isnan(image)
                 needs_nan_handling = np.any(isnan)
             else:
                 needs_nan_handling = False
 
-            # If needed, set any image NaNs to a value that is in the range of the input image
-            image_to_use = np.nan_to_num(image, nan=np.nanmin(image)) if needs_nan_handling else image
+            # If either is needed, change the NaNs to the median of the input image
+            if needs_missing_handling or needs_nan_handling:
+                substitute = np.nanmedian(image)
+            missing_to_use = substitute if needs_missing_handling else missing
+            image_to_use = np.nan_to_num(image, nan=substitute) if needs_nan_handling else image
 
+            t = time.perf_counter()
             rotated_image = rotation_function(image_to_use, matrix, shift, order,
                                               missing_to_use, clip_to_use)
+            log.debug(f"{name} rotating image: {time.perf_counter() - t:.3f} s")
 
             # If needed, restore the NaNs
             if needs_nan_handling:
-                # Use a convolution to find all pixels that are affected by NaNs
-                # We want a kernel size that is an odd number that is at least order+1
-                size = 2*int(np.ceil(order/2))+1
-                expanded_nans = convolve2d(isnan.astype(int),
-                                           np.ones((size, size)).astype(int),
-                                           mode='same')
-                rotated_nans = scipy.ndimage.affine_transform(expanded_nans.T, matrix,
-                                                              offset=shift, order=1,
-                                                              mode='nearest').T
+                # Use a convolution to find all pixels that are appreciably affected by NaNs
+                # The kernel size depends on the interpolation order, but are empirically defined
+                # because a given pixel can affect every other pixel under spline interpolation
+                sizes = [1, 1, 5, 5, 7, 7]
+
+                t = time.perf_counter()
+                try:
+                    # If OpenCV is installed, its convolution function is much faster
+                    import cv2
+                    expanded_nans = cv2.filter2D(isnan.astype(float), -1,
+                                                 np.ones((sizes[order], sizes[order])),
+                                                 borderType=cv2.BORDER_CONSTANT)
+                except ImportError:
+                    expanded_nans = convolve2d(isnan.astype(float),
+                                               np.ones((sizes[order], sizes[order])),
+                                               mode='same')
+                log.debug(f"{name} expanding image NaNs: {time.perf_counter() - t:.3f} s")
+
+                t = time.perf_counter()
+                rotated_nans = rotation_function(expanded_nans, matrix, shift, order=min(order, 1),
+                                                 missing=0, clip=False)
                 rotated_image[rotated_nans > 0] = np.nan
+                log.debug(f"{name} rotating image NaNs: {time.perf_counter() - t:.3f} s")
 
             if needs_missing_handling:
+                t = time.perf_counter()
                 # Rotate a constant image to determine where to apply the NaNs for `missing`
-                constant = scipy.ndimage.affine_transform(np.ones_like(image).T.astype(int), matrix,
-                                                          offset=shift, order=0, mode='constant').T
+                constant = rotation_function(np.ones_like(image), matrix, shift, order=1,
+                                             missing=0, clip=False)
                 rotated_image[constant < 1] = np.nan
+                log.debug(f"{name} applying NaN missing: {time.perf_counter() - t:.3f} s")
 
             if not handles_clipping and clip and not np.all(np.isnan(rotated_image)):
+                t = time.perf_counter()
                 # Clip the image to the input range
                 if np.isnan(missing):
                     # If `missing` is NaN, clipping to the input range is straightforward
@@ -241,6 +271,7 @@ def add_rotation_function(name, *, allowed_orders,
                     lower = np.nanmin([np.max([missing, np.nanmin(rotated_image)]), np.nanmin(image)])
                     upper = np.nanmax([np.min([missing, np.nanmax(rotated_image)]), np.nanmax(image)])
                     rotated_image.clip(lower, upper, out=rotated_image)
+                log.debug(f"{name} clipping image: {time.perf_counter() - t:.3f} s")
 
             return rotated_image
 

@@ -1633,6 +1633,17 @@ class GenericMap(NDData):
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
+        If the map does not already contain pixels with `numpy.nan` values, setting
+        ``missing`` to an appropriate number for the data (e.g., zero) will reduce the
+        computation time.
+
+        For each NaN pixel in the input image, one or more pixels in the output image
+        will be set to NaN, with the size of the pixel region affected depending on the
+        interpolation order.  All currently implemented rotation methods require a
+        convolution step to handle image NaNs.  This convolution normally uses
+        :func:`scipy.ndimage.convolve2d`, but if `OpenCV <https://opencv.org>`__ is
+        installed, the faster |cv2_filter2D|_ is used instead.
+
         See :func:`sunpy.image.transform.affine_transform` for details on each of the
         rotation functions.
         """
