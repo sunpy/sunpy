@@ -24,6 +24,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     This function supports NaN values in the input image and supports using NaN for
     pixels in the output image that are beyond the extent of the input image.
+    Handling NaN values in the input image requires additional computation time.
 
     Parameters
     ----------
@@ -62,8 +63,11 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     Notes
     -----
     For each NaN pixel in the input image, one or more pixels in the output image
-    will be set to NaN, with the number of pixels affected depending on the
-    interpolation order.
+    will be set to NaN, with the size of the pixel region affected depending on the
+    interpolation order.  All currently implemented rotation methods require a
+    convolution step to handle image NaNs.  This convolution normally uses
+    :func:`scipy.signal.convolve2d`, but if `OpenCV <https://opencv.org>`__ is
+    installed, the faster |cv2_filter2D|_ is used instead.
 
     See :func:`~sunpy.image.transform.add_rotation_function` for how to add a
     different rotation function.
@@ -185,9 +189,12 @@ def add_rotation_function(name, *, allowed_orders,
 
     If the decorator is handling image NaNs on behalf of the rotation function
     (i.e., ``handles_image_nans=False``), pixels in the output image will be set to
-    NaN if they are within a number of pixels equal to half of the ``order``
+    NaN if they are within a certain neighborhood size that depends on the ``order``
     parameter.  This step requires an additional image convolution, which might be
     avoidable if the rotation function were able to internally handle image NaNs.
+    This convolution normally uses :func:`scipy.ndimage.convolve2d`, but if
+    `OpenCV <https://opencv.org>`__ is installed, the faster |cv2_filter2D|_ is
+    used instead.
     """
     def decorator(rotation_function):
         @wraps(rotation_function)
