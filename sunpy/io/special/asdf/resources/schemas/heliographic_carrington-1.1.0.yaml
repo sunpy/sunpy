@@ -40,7 +40,7 @@ allOf:
         properties:
           observer:
             anyOf:
-              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.1.0"
+              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.0.0"
               - type: string
           obstime:
             tag: "tag:stsci.edu:asdf/time/time-1.1.0"
