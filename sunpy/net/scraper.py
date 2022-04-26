@@ -14,8 +14,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
 
-import astropy.units as u
-from astropy.time import Time, TimeDelta
+from astropy.time import Time
 
 from sunpy import log
 from sunpy.extern.parse import parse
