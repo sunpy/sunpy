@@ -6,7 +6,7 @@ import re
 import calendar
 from time import sleep
 from ftplib import FTP
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
@@ -14,8 +14,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
 
-import astropy.units as u
-from astropy.time import Time, TimeDelta
+from astropy.time import Time
 
 from sunpy import log
 from sunpy.extern.parse import parse
@@ -32,6 +31,11 @@ TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
                     '%H': r'\d{2}', '%I': r'\d{2}',
                     '%M': r'\d{2}',
                     '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
+TIME_QUANTITIES = {'day': timedelta(days=1),
+                   'hour': timedelta(hours=1),
+                   'minute': timedelta(minutes=1),
+                   'second': timedelta(seconds=1),
+                   'millisecond': timedelta(milliseconds=1)}
 
 
 class Scraper:
@@ -467,30 +471,32 @@ def get_timerange_from_exdict(exdict):
     `~sunpy.time.TimeRange`
         The time range of the file.
     """
+    # This function deliberately does NOT use astropy.time because it is not
+    # needed, and the performance overheads in dealing with astropy.time.Time
+    # objects are large
     datetypes = ['year', 'month', 'day']
     timetypes = ['hour', 'minute', 'second', 'millisecond']
     dtlist = [int(exdict.get(d, 1)) for d in datetypes]
     dtlist.extend([int(exdict.get(t, 0)) for t in timetypes])
-    startTime = Time(datetime(*dtlist))
+    startTime = datetime(*dtlist)
 
-    tdelta = 1*u.millisecond
-    if "year" in exdict:
-        if calendar.isleap(int(exdict['year'])):
-            tdelta = 366*u.day
-        else:
-            tdelta = 365*u.day
-    if "month" in exdict:
-        days_in_month = calendar.monthrange(int(exdict['year']), int(exdict['month']))[1]
-        tdelta = days_in_month*u.day
-    if "day" in exdict:
-        tdelta = 1*u.day
-    if "hour" in exdict:
-        tdelta = 1*u.hour
-    if "minute" in exdict:
-        tdelta = 1*u.minute
+    tdelta = TIME_QUANTITIES['millisecond']
     if "second" in exdict:
-        tdelta = 1*u.second
+        tdelta = TIME_QUANTITIES['second']
+    elif "minute" in exdict:
+        tdelta = TIME_QUANTITIES['minute']
+    elif "hour" in exdict:
+        tdelta = TIME_QUANTITIES['hour']
+    elif "day" in exdict:
+        tdelta = TIME_QUANTITIES['day']
+    elif "month" in exdict:
+        days_in_month = calendar.monthrange(int(exdict['year']), int(exdict['month']))[1]
+        tdelta = days_in_month*TIME_QUANTITIES['day']
+    elif "year" in exdict:
+        if calendar.isleap(int(exdict['year'])):
+            tdelta = 366*TIME_QUANTITIES['day']
+        else:
+            tdelta = 365*TIME_QUANTITIES['day']
 
-    endTime = startTime + TimeDelta(tdelta) - TimeDelta(1*u.millisecond)
-    file_timerange = TimeRange(startTime, endTime)
-    return file_timerange
+    endTime = startTime + tdelta - TIME_QUANTITIES['millisecond']
+    return TimeRange(startTime, endTime)
