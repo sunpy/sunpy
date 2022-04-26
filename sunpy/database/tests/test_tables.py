@@ -14,6 +14,7 @@ import astropy.units as u
 from astropy import conf
 
 from sunpy.data.test import get_test_filepath
+from sunpy.data.test import rootdir as testdir
 from sunpy.database import Database
 from sunpy.database.tables import (
     DatabaseEntry,
