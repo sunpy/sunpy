@@ -192,7 +192,7 @@ def add_rotation_function(name, *, allowed_orders,
     NaN if they are within a certain neighborhood size that depends on the ``order``
     parameter.  This step requires an additional image convolution, which might be
     avoidable if the rotation function were able to internally handle image NaNs.
-    This convolution normally uses :func:`scipy.ndimage.convolve2d`, but if
+    This convolution normally uses :func:`scipy.signal.convolve2d`, but if
     `OpenCV <https://opencv.org>`__ is installed, the faster |cv2_filter2D|_ is
     used instead.
     """
