@@ -13,7 +13,7 @@ import pytest
 import astropy.units as u
 from astropy import conf
 
-from sunpy.data.test import rootdir as testdir
+from sunpy.data.test import get_test_filepath
 from sunpy.database import Database
 from sunpy.database.tables import (
     DatabaseEntry,
@@ -31,8 +31,8 @@ from sunpy.net import Fido
 from sunpy.net import attrs as net_attrs
 from sunpy.net import vso
 
-RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
-GOES_DATA = os.path.join(testdir, 'go1520110607.fits')
+RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
+GOES_DATA = get_test_filepath('go1520110607.fits')
 
 
 @pytest.fixture
