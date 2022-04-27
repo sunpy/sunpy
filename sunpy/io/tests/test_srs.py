@@ -1,4 +1,3 @@
-import os
 
 import pytest
 
@@ -6,10 +5,8 @@ import astropy.units as u
 from astropy.table import Column, MaskedColumn, Table
 from astropy.tests.helper import assert_quantity_allclose
 
-import sunpy.data.test
+from sunpy.data.test import get_test_filepath
 from sunpy.io.special import srs
-
-testpath = sunpy.data.test.rootdir
 
 filenames = [{'file': '20150906SRS.txt', 'rows': 5},
              {'file': '20150306SRS.txt', 'rows': 4},
@@ -31,9 +28,10 @@ LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name=
 
 
 @pytest.mark.filterwarnings('ignore:dropping mask in Quantity column')
-@pytest.mark.parametrize("path, number_of_rows",
-                         [(os.path.join(testpath, elem['file']), elem['rows'])
-                          for elem in filenames])
+@pytest.mark.parametrize(
+    "path, number_of_rows",
+    [(get_test_filepath(elem['file']), elem['rows']) for elem in filenames]
+)
 def test_number_of_rows(path, number_of_rows):
     table = srs.read_srs(path)
     assert len(table) == number_of_rows

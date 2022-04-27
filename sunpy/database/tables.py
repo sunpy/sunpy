@@ -749,7 +749,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     >>> eitdir = os.path.join(fitsdir, 'EIT')
     >>> entries = list(entries_from_dir(eitdir, default_waveunit='angstrom'))
     >>> len(entries)
-    13
+    2
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):

@@ -14,29 +14,27 @@ from astropy.io import fits
 from astropy.wcs import WCS
 
 import sunpy
-import sunpy.data.test
 import sunpy.map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath, rootdir, test_data_filenames
 from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
 
-filepath = pathlib.Path(sunpy.data.test.rootdir)
-a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]
-a_fname = a_list_of_many[0]
+a_list_of_many = [f for f in test_data_filenames() if 'efz' in f.name]
 
-
-AIA_171_IMAGE = os.path.join(filepath, 'aia_171_level1.fits')
-RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
+AIA_171_IMAGE = get_test_filepath('aia_171_level1.fits')
+RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
 
 amap = sunpy.map.Map(AIA_171_IMAGE)
 
-valid_map_inputs = [(a_fname, ),
-                    (pathlib.Path(a_fname), ),
-                    (filepath / "EIT", ),
-                    (os.fspath(filepath / "EIT"), ),
-                    (filepath / "EIT" / "*", ),
-                    (amap, ),
-                    (amap.data, amap.meta),
-                    ((amap.data, amap.meta), ),
-                    ]
+valid_map_inputs = [
+    (AIA_171_IMAGE, ),
+    (pathlib.Path(AIA_171_IMAGE), ),
+    (rootdir / "EIT", ),
+    (os.fspath(rootdir / "EIT"), ),
+    (rootdir / "EIT" / "*.fits", ),
+    (amap, ),
+    (amap.data, amap.meta),
+    ((amap.data, amap.meta), ),
+]
 
 
 @pytest.mark.parametrize('args1', valid_map_inputs)
@@ -55,14 +53,14 @@ def test_two_map_inputs(args1, args2):
 
 
 class TestMap:
-    def test_mapsequence(self):
+    def test_mapsequence(self, eit_fits_directory):
         # Test making a MapSequence
-        sequence = sunpy.map.Map(a_list_of_many, sequence=True)
+        sequence = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')), sequence=True)
         assert isinstance(sequence, sunpy.map.MapSequence)
 
-    def test_mapsequence_sortby(self):
+    def test_mapsequence_sortby(self, eit_fits_directory):
         # Test making a MapSequence with sortby kwarg
-        sequence = sunpy.map.Map(a_list_of_many, sequence=True, sortby=None)
+        sequence = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')), sequence=True, sortby=None)
         assert isinstance(sequence, sunpy.map.MapSequence)
 
     def test_composite(self):
@@ -73,33 +71,32 @@ class TestMap:
     # Want to check that patterns work, so ignore this warning that comes from
     # the AIA test data
     @pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
-    def test_patterns(self):
+    def test_patterns(self, eit_fits_directory):
         # Test different Map pattern matching
 
         # File name
-        eitmap = sunpy.map.Map(a_fname)
-        assert isinstance(eitmap, sunpy.map.GenericMap)
+        aiamap = sunpy.map.Map(AIA_171_IMAGE)
+        assert isinstance(aiamap, sunpy.map.GenericMap)
 
         # Directory
-        directory = pathlib.Path(filepath, "EIT")
-        maps = sunpy.map.Map(os.fspath(directory))
+        maps = sunpy.map.Map(os.fspath(eit_fits_directory))
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Test that returned maps are sorted
-        files_sorted = sorted(list(directory.glob('*')))
+        files_sorted = sorted(list(eit_fits_directory.glob('*')))
         maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
 
         # Pathlib
-        path = pathlib.Path(a_fname)
-        eitmap = sunpy.map.Map(path)
-        assert isinstance(eitmap, sunpy.map.GenericMap)
-        maps = sunpy.map.Map(directory)
+        path = pathlib.Path(AIA_171_IMAGE)
+        aiamap = sunpy.map.Map(path)
+        assert isinstance(aiamap, sunpy.map.GenericMap)
+        maps = sunpy.map.Map(eit_fits_directory)
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
         # Glob
-        pattern = os.path.join(filepath, "EIT", "*")
+        pattern = os.path.join(eit_fits_directory, "*")
         maps = sunpy.map.Map(pattern)
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
@@ -108,13 +105,13 @@ class TestMap:
         maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
         # Single character wildcard (?)
-        pattern = os.path.join(filepath, "EIT", "efz20040301.0?0010_s.fits")
+        pattern = os.path.join(eit_fits_directory, "efz20040301.0?0010_s.fits")
         maps = sunpy.map.Map(pattern)
         assert isinstance(maps, list)
         assert len(maps) == 7
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Character ranges
-        pattern = os.path.join(filepath, "EIT", "efz20040301.0[2-6]0010_s.fits")
+        pattern = os.path.join(eit_fits_directory, "efz20040301.0[2-6]0010_s.fits")
         maps = sunpy.map.Map(pattern)
         assert isinstance(maps, list)
         assert len(maps) == 4
@@ -125,7 +122,7 @@ class TestMap:
         assert isinstance(amap, sunpy.map.GenericMap)
 
         # A list of filenames
-        maps = sunpy.map.Map(a_list_of_many)
+        maps = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')))
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
@@ -146,7 +143,7 @@ class TestMap:
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
         # Data-header from FITS
-        with fits.open(a_fname) as hdul:
+        with fits.open(AIA_171_IMAGE) as hdul:
             data = hdul[0].data
             header = hdul[0].header
         pair_map = sunpy.map.Map((data, header))
@@ -179,7 +176,7 @@ class TestMap:
     def test_errors(self, tmpdir):
         # If directory doesn't exist, make sure it's listed in the error msg
         nonexist_dir = 'nonexist'
-        directory = pathlib.Path(filepath, nonexist_dir)
+        directory = pathlib.Path(tmpdir, nonexist_dir)
         with pytest.raises(ValueError, match=nonexist_dir):
             sunpy.map.Map(os.fspath(directory))
 
@@ -205,7 +202,7 @@ class TestMap:
         data = np.arange(0, 100).reshape(10, 10)
         header = {}
         with pytest.raises(error, match=match):
-            pair_map = sunpy.map.Map(data, header, silence_errors=silence)
+            _ = sunpy.map.Map(data, header, silence_errors=silence)
 
     # requires dask array to run properly
     def test_dask_array(self):
@@ -220,7 +217,7 @@ class TestMap:
         pytest.importorskip('sqlalchemy')
         sunpy_database = pytest.importorskip('sunpy.database')
         db = sunpy_database.Database(url='sqlite://', default_waveunit='angstrom')
-        db.add_from_file(a_fname)
+        db.add_from_file(AIA_171_IMAGE)
         res = db.get_entry_by_id(1)
         db_map = sunpy.map.Map(res)
         assert isinstance(db_map, sunpy.map.GenericMap)
@@ -233,12 +230,12 @@ class TestMap:
 
     def test_save(self):
         # Test save out
-        eitmap = sunpy.map.Map(a_fname)
+        aiamap = sunpy.map.Map(AIA_171_IMAGE)
         afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-        with pytest.warns(SunpyMetadataWarning, match='The meta key  is not valid ascii'):
-            eitmap.save(afilename, filetype='fits', overwrite=True)
+        with pytest.warns(fits.verify.VerifyWarning, match="Invalid 'BLANK' keyword in header."):
+            aiamap.save(afilename, filetype='fits', overwrite=True)
         backin = sunpy.map.Map(afilename)
-        assert isinstance(backin, sunpy.map.sources.EITMap)
+        assert isinstance(backin, sunpy.map.sources.AIAMap)
 
 
 @pytest.mark.remote_data
@@ -256,23 +253,26 @@ def test_map_list_urls_cache():
 #
 # Catch Hinode/XRT warning
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
-@pytest.mark.parametrize('file, mapcls',
-                         [[filepath / 'EIT' / "efz20040301.000010_s.fits", sunpy.map.sources.EITMap],
-                          [filepath / "lasco_c2_25299383_s.fts", sunpy.map.sources.LASCOMap],
-                          [filepath / "mdi.fd_Ic.20101015_230100_TAI.data.fits", sunpy.map.sources.MDIMap],
-                          [filepath / "mdi.fd_M_96m_lev182.20101015_191200_TAI.data.fits", sunpy.map.sources.MDIMap],
-                          [filepath / "euvi_20090615_000900_n4euA_s.fts", sunpy.map.sources.EUVIMap],
-                          [filepath / "cor1_20090615_000500_s4c1A.fts", sunpy.map.sources.CORMap],
-                          [filepath / "hi_20110910_114721_s7h2A.fts", sunpy.map.sources.HIMap],
-                          [AIA_171_IMAGE, sunpy.map.sources.AIAMap],
-                          [RHESSI_IMAGE, sunpy.map.sources.RHESSIMap],
-                          [filepath / "FGMG4_20110214_030443.7.fits", sunpy.map.sources.SOTMap],
-                          [filepath / "swap_lv1_20140606_000113.fits", sunpy.map.sources.SWAPMap],
-                          [filepath / "HinodeXRT.fits", sunpy.map.sources.XRTMap]
-                          ]
-                         )
+@pytest.mark.parametrize('file, mapcls', [
+    ["EIT_header/efz20040301.000010_s.header", sunpy.map.sources.EITMap],
+    ["lasco_c2_25299383_s.header", sunpy.map.sources.LASCOMap],
+    ["mdi.fd_Ic.20101015_230100_TAI.data.header", sunpy.map.sources.MDIMap],
+    ["mdi.fd_M_96m_lev182.20101015_191200_TAI.data.header", sunpy.map.sources.MDIMap],
+    ["euvi_20090615_000900_n4euA_s.header", sunpy.map.sources.EUVIMap],
+    ["cor1_20090615_000500_s4c1A.header", sunpy.map.sources.CORMap],
+    ["hi_20110910_114721_s7h2A.header", sunpy.map.sources.HIMap],
+    [AIA_171_IMAGE, sunpy.map.sources.AIAMap],
+    [RHESSI_IMAGE, sunpy.map.sources.RHESSIMap],
+    ["FGMG4_20110214_030443.7.header", sunpy.map.sources.SOTMap],
+    ["swap_lv1_20140606_000113.header", sunpy.map.sources.SWAPMap],
+    ["HinodeXRT.header", sunpy.map.sources.XRTMap],
+])
 def test_sources(file, mapcls):
-    m = sunpy.map.Map(file)
+    p = pathlib.Path(get_test_filepath(file))
+    if p.suffix == '.header':
+        m = get_dummy_map_from_header(p)
+    else:
+        m = sunpy.map.Map(p)
     assert isinstance(m, mapcls)
 
 

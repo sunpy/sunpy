@@ -1,5 +1,4 @@
 import os
-import glob
 import logging
 import datetime
 from pathlib import Path
@@ -14,11 +13,10 @@ from astropy.io import fits
 from astropy.table import Table
 from astropy.time import TimeDelta
 
-import sunpy.data.test
 import sunpy.io
 import sunpy.net.attrs as a
 import sunpy.timeseries
-from sunpy.data.test import get_test_filepath
+from sunpy.data.test import get_test_filepath, rootdir, test_data_filenames
 from sunpy.net import Fido
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
@@ -26,10 +24,12 @@ from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.metadata import MetaDict
 
 eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
-eve_many_filepath = glob.glob(os.path.join(sunpy.data.test.rootdir, "eve", "*"))
+eve_many_filepath = [f for f in test_data_filenames()
+                     if f.parents[0].relative_to(f.parents[1]).name == 'eve']
 goes_filepath = get_test_filepath('go1520110607.fits')
 psp_filepath = get_test_filepath('psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
 swa_filepath = get_test_filepath('solo_L1_swa-pas-mom_20200706_V01.cdf')
+fermi_gbm_filepath = get_test_filepath('gbm.fits')
 
 
 @pytest.mark.filterwarnings('ignore:Unknown units')
@@ -39,7 +39,7 @@ def test_factory_concatenate_same_source():
     assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
     ts_from_folder = sunpy.timeseries.TimeSeries(
-        os.path.join(sunpy.data.test.rootdir, "eve"), source='EVE', concatenate=True)
+        eve_many_filepath[0].parent, source='EVE', concatenate=True)
     assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
     # text the two methods get identical dataframes
     assert ts_from_list == ts_from_folder
@@ -54,7 +54,7 @@ def test_factory_concatenate_different_source():
     ts_from_list = sunpy.timeseries.TimeSeries(eve_many_filepath, source='EVE', concatenate=True)
     assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
     ts_from_folder = sunpy.timeseries.TimeSeries(
-        os.path.join(sunpy.data.test.rootdir, "eve"), source='EVE', concatenate=True)
+        eve_many_filepath[0].parent, source='EVE', concatenate=True)
     assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
     # text the two methods get identical dataframes
     assert ts_from_list == ts_from_folder
@@ -76,14 +76,14 @@ def test_factory_generate_list_of_ts():
 def test_factory_generate_from_glob():
     # Test making a TimeSeries from a glob
     ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(
-        sunpy.data.test.rootdir, "eve", "*"), source='EVE', concatenate=True)
+        rootdir, "eve", "*"), source='EVE', concatenate=True)
     assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
 
 @pytest.mark.filterwarnings('ignore:Unknown units')
 def test_factory_generate_from_pathlib():
     # Test making a TimeSeries from a : pathlib.PosixPath
-    ts_from_pathlib = sunpy.timeseries.TimeSeries(Path(sunpy.data.test.rootdir).joinpath("gbm.fits"),
+    ts_from_pathlib = sunpy.timeseries.TimeSeries(Path(fermi_gbm_filepath),
                                                   source="GBMSummary")
     assert isinstance(ts_from_pathlib, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
@@ -370,7 +370,7 @@ def test_invalid_manual_data():
 
 
 def test_invalid_filepath():
-    invalid_filepath = os.path.join(sunpy.data.test.rootdir, 'invalid_filepath_here')
+    invalid_filepath = os.path.join(rootdir, 'invalid_filepath_here')
     with pytest.raises(ValueError, match='Did not find any files'):
         sunpy.timeseries.TimeSeries(invalid_filepath)
     # Now with silence_errors kwarg set
@@ -379,7 +379,7 @@ def test_invalid_filepath():
 
 
 def test_invalid_file():
-    invalid_filepath = os.path.join(sunpy.data.test.rootdir, 'annotation_ppt.db')
+    invalid_filepath = os.path.join(rootdir, 'annotation_ppt.db')
     with pytest.raises(NoMatchError):
         sunpy.timeseries.TimeSeries(invalid_filepath)
     # Now with silence_errors kwarg set

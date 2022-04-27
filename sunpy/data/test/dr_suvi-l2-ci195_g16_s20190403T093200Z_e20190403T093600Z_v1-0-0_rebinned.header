@@ -1,0 +1,108 @@
+SIMPLE  =                    T / conforms to FITS standard                      
+BITPIX  =                  -64 / array data type                                
+NAXIS   =                    2 / number of array dimensions                     
+NAXIS1  =                   40                                                  
+NAXIS2  =                   40                                                  
+EMPTY   =                    F / file is empty (not a valid data product)       
+DEGRADED=                    T / file includes degraded data                    
+LONGSTRN= 'OGIP 1.0'           / The HEASARC Long String Convention may be used.
+TIMESYS = 'UTC     '           / principal time system                          
+DATE-BEG= '2019-04-03T09:32:33.340000' / sun observation start time on sat      
+DATE-OBS= '2019-04-03T09:32:33.340' / sun observation reference time on sat     
+DATE-END= '2019-04-03T09:35:43.348000' / sun observation end time on sat        
+DATE    = '2019-04-03T09:42:06.849195' / file generation time                   
+EXPTIME =                  1.0 / [s] actual imaging exposure time               
+OBSGEO-X=           10772670.0 / [m] observing platform ECEF X coordinate       
+OBSGEO-Y=          -40769030.0 / [m] observing platform ECEF Y coordinate       
+OBSGEO-Z=             2310.224 / [m] observing platform ECEF Z coordinate       
+HGLT_OBS=   -6.438351961004259 / [deg] observing platform heliographic latitude 
+HGLN_OBS=                  0.0 / [deg] observing platform heliographic longitude
+DSUN_OBS=    149564385444.2639 / [m] distance to center of sun                  
+WAVEUNIT= 'angstrom'           / solar image wavelength units                   
+WAVELNTH=                  195 / [angstrom] solar image wavelength              
+YAW_FLIP=                    0 / [1] 0=false 1=true                             
+ECLIPSE =                    0 / [1] sun obscured: 0=false 1=true               
+WCSNAME = 'Helioprojective-cartesian' / solar image coordinate system type      
+CTYPE1  = 'HPLN-TAN'           / 1st axis coordinate system name                
+CTYPE2  = 'HPLT-TAN'           / 2nd axis coordinate system name                
+CUNIT1  = 'arcsec  '           / 1st axis detector plate scale units            
+CUNIT2  = 'arcsec  '           / 2nd axis detector plate scale units            
+PC1_1   =                  1.0 / [1] 1st row, 1st col 2D transformation matrix  
+PC1_2   =                  0.0 / [1] 1st row, 2nd col 2D transformation matrix  
+PC2_1   =                  0.0 / [1] 2nd row, 1st col 2D transformation matrix  
+PC2_2   =                  1.0 / [1] 2nd row, 2nd col 2D transformation matrix  
+CDELT1  =                 80.0 / [arcsec] 1st axis detector plate scale @ref pix
+CDELT2  =                 80.0 / [arcsec] 2nd axis detector plate scale @ref pix
+CRVAL1  =     1.24999999996996 / [degree] longitude of sun center for HPLN-TAN  
+CRVAL2  =    1.249999999959637 / [degree] latitude of sun center for HPLT-TAN   
+CRPIX1  =                 20.5 / [1] center of sun pixel in image along 1st axis
+CRPIX2  =                 20.5 / [1] center of sun pixel in image along 2nd axis
+DIAM_SUN=    767.8878999999999 / [pixels] solar diameter in pixels              
+LONPOLE =                180.0 / [degree] longitude of celestial north pole     
+CROTA   =                  0.0 / [degree] solar north pole angular offset       
+SOLAR_B0=    6.438351961004259 / [degree] solar equator angular offset          
+ORIENT  = 'SESW    '           / orientation of image                           
+OBJECT  = 'SUN     '           / object being viewed                            
+IMG_MIN =   -1.534929135325052 / [W m-2 sr-1] minimum radiance in image         
+IMG_MAX =    245.9738473718426 / [W m-2 sr-1] maximum radiance in image         
+IMG_MEAN=   0.2201410841614308 / [W m-2 sr-1] mean radiance in image            
+SAT_THR =              12000.0 / [W m-2 sr-1] CCD saturation point              
+IMGTII  = 5.29847380118942E-05 / [W m-2] total irradiance of image              
+IMGTIR  =    360679.1522900882 / [W m-2 sr-1] total radiance of image           
+IMG_SDEV=   0.5465047098786959 / [W m-2 sr-1] std dev of radiance in image      
+BUNIT   = 'W m-2 sr-1'                                                          
+TITLE   = 'SUVI Level 2 Composite Image' / image title                          
+REF_IMG = 'OR_SUVI-L1b-Fe195_G16_s20190930932333_e20190930932343_c201909309325&'
+CONTINUE  '75.fits&'                                                            
+CONTINUE  '' / reference image                                                  
+NUM_IMGS=                    7 / [count] number of source images for this file  
+N_LONG  =                    4 / [count] number of long exposure source images  
+N_SHORT =                    3 / [count] number of short exposure source images 
+N_SH_FL =                    0 / [count] number of short flare exposure source i
+MRG_MTHD= 'ci_std_merge'       / image merge method                             
+PRODSITE= 'WCDAS   '                                                            
+FILENAME= 'dr_suvi-l2-ci195_g16_s20190403T093200Z_e20190403T093600Z_v1-0-0.fits'
+PROJECT = 'GOES    '                                                            
+INSTRUME= 'GOES-R Series Solar Ultraviolet Imager'                              
+LEVEL   = 'National Aeronautics and Space Administration (NASA) L1b'            
+PROD_ENV= 'OE      '                                                            
+DATA_SRC= 'Realtime'                                                            
+VERSION = '1-0-0   '           / NCEI SUVI L1b test file version                
+DOI     = 'https://doi.org/10.25921/D60Q-G238'                                  
+CHECKSUM= 'L7FeO4CcL4CcL4Cc'   / HDU checksum updated 2019-04-03T09:42:07       
+DATASUM = '3840834525'         / data unit checksum updated 2019-04-03T09:42:07 
+DETECTOR= 'SUVI    '                                                            
+TELESCOP= 'GOES-R  '                                                            
+COMMENT ------------------------------------------------------------------------
+COMMENT   This FITS file may contain long string keyword values that are  contin
+COMMENT ued over multiple keywords.  The HEASARC convention uses the &  characte
+COMMENT r at the end of each substring which is then continued  on the next keyw
+COMMENT ord which has the name CONTINUE.----------------------------------------
+COMMENT --------------------------------ABOUT SUVI LEVEL-2 FILES FROM NCEI------
+COMMENT ------------------------------------------------------------------  This
+COMMENT  FITS file is a SUVI Level-2 file produced by NOAA's National  Centers f
+COMMENT or Environmental Information in Boulder, Colorado. The data  content of 
+COMMENT this file is a weighted average of SUVI L1b Operational  files for the p
+COMMENT urpose of producing high dynamic range images.  This file was produced i
+COMMENT n near-real time, and may have only one source  file which might cause e
+COMMENT rrors in the final product. This file should  be considered an experimen
+COMMENT tal product, and as such should not be  expected to be archived at any N
+COMMENT OAA site.  For additional information about SUVI files from NCEI  see th
+COMMENT e SUVI README file, which is available with these data at:  https://data
+COMMENT .ngdc.noaa.gov/platforms/solar-space-observing-satellites/  Contact goes
+COMMENT r.suvi@noaa.gov regarding any questions about these  files or with feedb
+COMMENT ack regarding their data or metadata content.---------------------------
+COMMENT ---------------------------------------------TEMPORAL INFORMATION-------
+COMMENT ------------------------------------------------------------------------
+COMMENT -----------------------------------------------------------------INSTRUM
+COMMENT ENT & SPACECRAFT STATE DURING OBSERVATION-------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT -----------------------------------------POINTING & PROJECTION----------
+COMMENT ------------------------------------------------------------------------
+COMMENT --------------------------------------------------------------IMAGE PROP
+COMMENT ERTIES------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ------FILE PROVENANCE---------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ---------------------                                                   
+HISTORY                                                                         

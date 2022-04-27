@@ -1,53 +1,50 @@
-"""Test cases for PROBA2 Map subclasses.
-This particular test file pertains to SWAPMap.
-@Author: Pritish C. (VaticanCameos)
 """
-
-import os
-import glob
-
+Test cases for PROBA2 SWAPMap subclass.
+"""
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-from sunpy.map import Map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.proba2 import SWAPMap
 
-path = sunpy.data.test.rootdir
-fitslist = glob.glob(os.path.join(path, "SWAP", "*"))
+header_files = [
+    'SWAP/resampled0_swap.header',
+    'SWAP/resampled1_swap.header',
+    'SWAP/resampled2_swap.header',
+    'SWAP/resampled3_swap.header',
+]
+
+__author__ = 'Pritish C. (VaticanCameos)'
 
 
-@pytest.fixture(scope="module", params=fitslist)
-def createSWAP(request):
-    """Creates an SWAPMap from a FITS file."""
-    return Map(request.param)
-
-# SWAP Tests
+@pytest.fixture(scope="module", params=header_files)
+def swap_map(request):
+    return get_dummy_map_from_header(get_test_filepath(request.param))
 
 
-def test_fitstoSWAP(createSWAP):
+def test_fitstoSWAP(swap_map):
     """Tests the creation of SWAPMap using FITS."""
-    assert isinstance(createSWAP, SWAPMap)
+    assert isinstance(swap_map, SWAPMap)
 
 
-def test_is_datasource_for(createSWAP):
+def test_is_datasource_for(swap_map):
     """Test the is_datasource_for method of SWAPMap.
     Note that header data to be provided as an argument
     can be a MetaDict object."""
-    assert createSWAP.is_datasource_for(createSWAP.data, createSWAP.meta)
+    assert swap_map.is_datasource_for(swap_map.data, swap_map.meta)
 
 
-def test_observatory(createSWAP):
+def test_observatory(swap_map):
     """Tests the observatory property of the SWAPMap object."""
-    assert createSWAP.observatory == "PROBA2"
+    assert swap_map.observatory == "PROBA2"
 
 
-def test_measurement(createSWAP):
+def test_measurement(swap_map):
     """Tests the measurement property of the SWAPMap object."""
-    assert createSWAP.measurement.value == 174
+    assert swap_map.measurement.value == 174
 
 
-def test_wcs(createSWAP):
+def test_wcs(swap_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    createSWAP.pixel_to_world(0*u.pix, 0*u.pix)
+    swap_map.pixel_to_world(0*u.pix, 0*u.pix)

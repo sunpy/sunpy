@@ -1,62 +1,56 @@
-"""Test cases for SOHO Map subclasses.
-This particular test file pertains to EITMap.
-@Author: Pritish C. (VaticanCameos)
 """
-
-import os
-import glob
-
+Test cases for SOHO EITMap subclass
+"""
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-from sunpy.map import Map
+from sunpy.data.test import get_dummy_map_from_header, test_data_filenames
 from sunpy.map.sources.soho import EITMap
 
-path = sunpy.data.test.rootdir
-fitslist = glob.glob(os.path.join(path, "EIT", "*"))
+header_list = [f for f in test_data_filenames() if 'efz' in f.name and '.header' in f.name]
+
+__author__ = "Pritish C. (VaticanCameos)"
 
 
-@pytest.fixture(scope="module", params=fitslist)
-def createEIT(request):
+@pytest.fixture(scope="module", params=header_list)
+def eit_map(request):
     """Creates an EITMap from a FITS file."""
-    return Map(request.param)
+    return get_dummy_map_from_header(request.param)
 
 
-# EIT Tests
-def test_fitstoEIT(createEIT):
+def test_fitstoEIT(eit_map):
     """Tests the creation of EITMap using FITS."""
-    assert isinstance(createEIT, EITMap)
+    assert isinstance(eit_map, EITMap)
 
 
-def test_is_datasource_for(createEIT):
+def test_is_datasource_for(eit_map):
     """Test the is_datasource_for method of EITMap.
     Note that header data to be provided as an argument
     can be a MetaDict object."""
-    assert createEIT.is_datasource_for(createEIT.data, createEIT.meta)
+    assert eit_map.is_datasource_for(eit_map.data, eit_map.meta)
 
 
-def test_observatory(createEIT):
+def test_observatory(eit_map):
     """Tests the observatory property of the EITMap object."""
-    assert createEIT.observatory == "SOHO"
+    assert eit_map.observatory == "SOHO"
 
 
-def test_measurement(createEIT):
+def test_measurement(eit_map):
     """Tests the measurement property of the EITMap object."""
-    assert createEIT.measurement.value in [195, 171]
+    assert eit_map.measurement.value in [195, 171]
 
 
-def test_rsun(createEIT):
+def test_rsun(eit_map):
     """Tests the measurement property of the EITMap object."""
-    assert u.allclose(createEIT.rsun_obs, 979.0701*u.arcsec)
+    assert u.allclose(eit_map.rsun_obs, 979.0701*u.arcsec)
 
 
-def test_norm_clip(createEIT):
+def test_norm_clip(eit_map):
     # Tests that the default normalizer has clipping disabled
-    assert not createEIT.plot_settings['norm'].clip
+    assert not eit_map.plot_settings['norm'].clip
 
 
-def test_wcs(createEIT):
+def test_wcs(eit_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    createEIT.pixel_to_world(0*u.pix, 0*u.pix)
+    eit_map.pixel_to_world(0*u.pix, 0*u.pix)
