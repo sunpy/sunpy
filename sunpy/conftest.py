@@ -218,4 +218,4 @@ def waveunit_fits_directory(tmp_path_factory):
 @pytest.fixture(scope='module')
 def vcr_cassette_dir(request):
     # Put all cassettes in vhs/{module}/{test}.yaml
-    return str(Path(__file__).parent / 'data' / 'tests' / 'cassettes' / request.module.__name__)
+    return str(Path(__file__).parent.parent / 'cassettes' / request.module.__name__)
