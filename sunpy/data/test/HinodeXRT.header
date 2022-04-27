@@ -1,0 +1,208 @@
+SIMPLE  =                    T / Written by IDL:  Fri Oct 16 15:48:36 2015
+BITPIX  =                  -32 / Real*4 (floating point)
+NAXIS   =                    2
+NAXIS1  =                  256
+NAXIS2  =                  256
+DATE    = '2007-05-22T23:22:53.000'
+DATE_RF0= '2007-05-22T23:22:53.000'
+DATE_RF1= '2015-03-12T15:54:28.004'
+SATELLIT=                   33
+TELESCOP= 'HINODE  '
+INSTRUME= 'XRT     '
+TIMESYS = 'UTC (TBR)'
+MDP_CLK =           2223257772
+FILEORIG= '2007_0522_230839.sci'
+P1ROW   =                    0
+P2ROW   =                 2047
+P1COL   =                    0
+P2COL   =                 2047
+TR_MODE = 'TR1     '
+IMG_MODE=                    3
+AEC_FLG = 'off     '
+AEC_TNUM=                    0
+AEC_RSLT=                    3
+ORIGIN  = 'JAXA/ISAS, SIRIUS'
+DATA_LEV=                    1
+ORIG_RF0= 'JAXA/ISAS, SIRIUS'
+VER_RF0 = '1.33    '
+ORIG_RF1= '        '
+VER_RF1 = 'v2014-Oct-20'
+PROG_VER=                    0
+SEQN_VER=                    0
+PARM_VER=                    0
+PROG_NO =                    0
+SUBR_NO =                    0
+SEQN_NO =                    0
+MAIN_CNT=                    0
+MAIN_RPT=                    0
+MAIN_POS=                    0
+SUBR_CNT=                    0
+SUBR_RPT=                    0
+SUBR_POS=                    0
+SEQN_CNT=                    0
+SEQN_RPT=                    0
+SEQN_POS=                    0
+OBSTITLE= '        '
+TARGET  = '        '
+SCI_OBJ = '        '
+SCI_OBS = 'TBD     '
+OBS_DEC = '        '
+JOIN_SB = '        '
+OBS_NUM =                    0
+JOP_ID  =                    0
+NOAA_NUM=                    0
+OBSERVER= '        '
+PLANNER = '        '
+TOHBANS = '        '
+DATATYPE= 'SCI     '
+SAA     = 'OUT     '
+HLZ     = 'OUT     '
+FLFLG   = 'NON     '
+S_INSTRU=                    4
+S_DAT_ID=                    1
+S_DAT_M =                    1
+S_SP_SIZ=               131168
+EC_ID   =                 9913
+EC_INDEX=                   13
+EC_EINDE=                   13
+EC_CD_MO=                    0
+EC_CD_M_= 'safe    '
+EC_IMTYP=                    0
+EC_IMTY_= 'normal  '
+EC_FW1  =                    3
+EC_FW1_ = 'Be_thin '
+EC_FW2  =                    0
+EC_FW2_ = 'Open    '
+EC_VL   =                    0
+EC_VL_  = 'closed  '
+E_SCLOCK=           2223257772
+E_LCLOCK=           1487347100
+E_SH_OPE=           1489515100
+E_SH_CLO=           1489688600
+EXCCDEX =              1000000
+OBT_TIME=           2223258882
+OBT_END =           2223258971
+E_SH_POS=                   72
+E_SH_WA =                    0
+E_SH_WB =                    0
+E_SH_WC =                    0
+E_SH_CW =                    0
+E_SH_CCW=                    0
+E_VLO   =                    0
+E_VLO_  = 'not fully open'
+E_VLC   =                    1
+E_VLC_  = 'fully closed'
+E_SH_ERR=                    0
+E_FW1_PO=                   33
+E_FW1_ST=                    3
+E_FW2_PO=                    6
+E_FW2_ST=                   12
+E_ETIM_E=                    0
+E_ETIM_M=                32348
+E_ETIM  =              1000000
+EXPTIME =       0.129392000000
+E_TTN   =                    0
+EXPMPAS = '        '
+E_FW1_P = '        '
+E_FW2_P = '        '
+CCD_TEMP=                   47
+CCD_TMPC=       -69.6939000000
+CCD_READ=                    0
+READPORT= 'R       '
+CHIP_SUM=                    8
+CAL_INFO=                    0
+CALIMAGE= 'OBS     '
+POS_COL =                    0
+POS_ROW =                    0
+ROI_H_SI=                   32
+SIZ_COL =                 2048
+ROI_V_SI=                   32
+SIZ_ROW =                 2048
+RECTIFY =                    0
+RPOS_COL=                    0
+RPOS_ROW=                    0
+RSIZ_COL=                 2048
+RSIZ_ROW=                 2048
+EFFPORT = 'Right   '
+FOC_POS =                 -161
+BITCOMP1=                    0
+IMGCOMP1=                    3
+QTABLE1 =                    0
+BITC_VER=                    0
+ACHF_VER=                40961
+DCHF_VER=                53249
+QTAB_VER=                57360
+PCK_SN0 =                30057
+PCK_SN1 =                30057
+NUM_PCKS=                    2
+HKTSYNC =                    1
+DATE_OBS= '2006-11-11T00:00:19.141'
+TIME-OBS= '00:00:19.141'
+CTIME   = 'Sat Nov 11 00:00:19 2006'
+DATE_END= '2006-11-11T00:00:19.314'
+CRPIX1  =              128.500
+CRPIX2  =              128.500
+SC_ATTX =       -704.484000000
+SC_ATTY =       -134.155000000
+CRVAL1  =       -698.872314453
+CRVAL2  =       -134.842651367
+CDELT1  =        8.22879981995
+CDELT2  =        8.22879981995
+CUNIT1  = 'arcsec  '
+CUNIT2  = 'arcsec  '
+CTYPE1  = 'Solar-X '
+CTYPE2  = 'Solar-Y '
+DSUN_OBS=        148225639084.
+RSUN_REF=        696000000.000
+RSUN_OBS=        968.529018191
+SOLAR_B0=        3.33047459129
+SAT_ROT =    0.000128746000000
+INST_ROT=       0.700000000000
+CROTA1  =      -0.303224116564
+CROTA2  =      -0.303224116564
+XCEN    =       -698.872314453
+YCEN    =       -134.842651367
+CALTYPE =                    3
+XSCALE  =        8.22879981995
+YSCALE  =        8.22879981995
+FOVX    =              2106.57
+FOVY    =              2106.57
+PLATESCL=        8.22879981995
+BYTECNT =                39648
+PIXCNT  =                65536
+BITSPP  =              4.83984
+OBS_MODE= 'QT      '
+HISTORY FITSHEAD2STRUCT run at: Thu Feb 23 05:08:50 2012
+HISTORY XRT_FIX_HEAD ver V1.0 run on 2012-02-23. Keywords updated:
+HISTORY platescl, cdelt1, cdelt2, xscale, yscale, fovx, fovy
+HISTORY p1row, p1col, p2row, p2col, crpix1, crpix2, flflg, obs_mode
+HISTORY READ_XRT v2014-May-27: (12-Mar-2015 11:54:16) Read header + data. Origin
+HISTORY (cont'd) file: XRT20061111_000019.1.fits
+HISTORY LEVEL1_PREP v2014.Feb.21 NOTE: No spot correction done for this image;
+HISTORY (cont'd) XRT_SPOTCOR information applies to associated jpeg files only
+HISTORY XRT_SPOTCOR v2014-Apr-14: (12-Mar-2015 11:54:27) Dust corrected with
+HISTORY (cont'd) thin plate splines.
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) (XRT_MISSING_PIXELS)
+HISTORY (cont'd) Replaced 0 missing pixels with -999.
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) (XRT_SATURATED_PIXELS)
+HISTORY (cont'd) Replaced 142 saturated pixels with value = 2500.
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) XRT_CLEAN_RO: Running
+HISTORY (cont'd) v2014.Feb.06
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) XRT_CLEAN_RO: Remove
+HISTORY (cont'd) Nyquist ringing Remove large-scale background ramp via median
+HISTORY (cont'd) adjusted model dark [default]. [Default]
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) XRT_CLEAN_RO: clean_type =
+HISTORY (cont'd) 0 Full Fourier preclean/clean [default]
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) XRT_CLEAN_RO: nmed =
+HISTORY (cont'd) 3.50000 [default] nsigma = 4.50000 [default]
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) (XRT_RO_CORRECTION)
+HISTORY (cont'd) Successful.
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) XRT_VIGNETTING: vignetting
+HISTORY (cont'd) correction performed
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) (XRT_UNC_REL) Calculated
+HISTORY (cont'd) photometric uncertainty.
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) (XRT_RENORMALIZE)
+HISTORY (cont'd) Normalized from 0.12939200 sec --> 1.00 sec.
+HISTORY XRT_PREP v2014-Oct-20: (12-Mar-2015 11:54:27) (XRT_READ_COALDB)
+HISTORY (cont'd) Coaligned using UFSS data. Calib. type: 3
+END

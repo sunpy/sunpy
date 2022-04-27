@@ -1,31 +1,23 @@
-"""Test cases for SJIMap.
-This particular test file pertains to SJIMap.
-@Author: Pritish C. (VaticanCameos)
 """
-
-import os
-import glob
-
+Test cases for IRIS SJIMap
+"""
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-from sunpy.map import Map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.iris import SJIMap
-from sunpy.util.exceptions import SunpyMetadataWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyMetadataWarning
+
+__author__ = 'Pritish C. (VaticanCameos)'
 
 
 @pytest.fixture
 def irismap():
-    path = sunpy.data.test.rootdir
-    fitspath = glob.glob(os.path.join(
-        path, "iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits"))
-    with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions'):
-        return Map(fitspath, silence_errors=True)
+    header = get_test_filepath("iris_l2_20130801_074720_4040000014_SJI_1400_t000.header")
+    return get_dummy_map_from_header(header)
 
 
-# IRIS Tests
 def test_fitstoIRIS(irismap):
     """Tests the creation of SJIMap using FITS."""
     assert (isinstance(irismap, SJIMap))

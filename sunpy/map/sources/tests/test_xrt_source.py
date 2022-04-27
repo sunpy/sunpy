@@ -1,25 +1,17 @@
-"""Test cases for HINODE Map subclasses.
-This particular test file pertains to XRTMap.
-@Author: Pritish C. (VaticanCameos)
 """
-
-import os
-import glob
-
+Test cases for HINODE XRTMap subclass.
+"""
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-from sunpy.map import Map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.hinode import XRTMap
 
 
 @pytest.fixture
 def xrt_map():
-    path = sunpy.data.test.rootdir
-    fitspath = glob.glob(os.path.join(path, "HinodeXRT.fits"))
-    return Map(fitspath)
+    return get_dummy_map_from_header(get_test_filepath("HinodeXRT.header"))
 
 
 def test_fits_to_xrt(xrt_map):
@@ -41,11 +33,11 @@ def test_observatory(xrt_map):
 
 def test_measurement(xrt_map):
     """Tests the measurement property of the XRTMap object."""
-    assert xrt_map.measurement == 'Open-Al mesh'
+    assert xrt_map.measurement == 'Be thin-Open'
 
 
 def test_level_number(xrt_map):
-    assert xrt_map.processing_level == 0
+    assert xrt_map.processing_level == 1
 
 
 def test_heliographic_longitude(xrt_map):

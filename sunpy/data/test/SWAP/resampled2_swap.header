@@ -1,0 +1,138 @@
+SIMPLE  =                    T / conforms to FITS standard                      
+BITPIX  =                  -64 / array data type                                
+NAXIS   =                    2 / number of array dimensions                     
+NAXIS1  =                  100                                                  
+NAXIS2  =                  100                                                  
+DSUN_OBS=       149633372797.0 / [m]   s/c distance from Sun                    
+TRAPELEC=                  0.0 / [ct/cm^2/s] AE-8 MAX >  1MeV @ 725km model     
+OBJECT  = 'Sun EUV '           / object observed                                
+COMPRESS= 'jpeg    '           / (off,lzw,jpeg) on-board compression algorithm  
+GSEZ_OBS=        3260687.32487 / [m]   s/c Geocentric   Solar Ecliptic Z        
+PGA_OFFS=                   59 / PGA offset                                     
+DATASUM = '2176922697'         / data unit checksum updated 2011-10-05T02:30:30 
+CREATOR = 'P2SW_PREP.PRO v1.3' / FITS creation software                         
+DTPLAR1 =               2000.0 / [s] predicted time to prev large angle rotation
+DTPLAR2 =               2000.0 / [s] predicted time to next large angle rotation
+READRDIV=                    0 / read-out rate divider                          
+GEOD_LON=        82.8116337307 / [deg] s/c sub-point longitude                  
+SWXCEN  =               503.46 / [pixel] axis 1 location of solar center in lv0 
+LEVEL   =                    1 / data processing level                          
+SWYCEN  =               517.61 / [pixel] axis 2 location of solar center in lv0 
+IS_PROC =                    1 / on-board image processing                      
+LED_SEL = 'a       '           / calibration LED selection                      
+TEMP1DET=                -0.65 / [Celsius] detector temperature (SW HK T CF)    
+CD2_1   =                  0.0 / WCS coordinate description matrix              
+GSEX_OBS=       -802363.143401 / [m]   s/c Geocentric   Solar Ecliptic X        
+CD2_2   =        3.16226783969 / WCS coordinate description matrix              
+NPRESCR =                    0 / # preserved pixels - cosmic rays               
+NPRESLZW=                    0 / # preserved pixels - LZW decorrelation         
+CAP_MODE= 'CDS     '           / (DS,CDS) capture mode                          
+TRANTIME=       993438825472.0 / [OBET] transferring time                       
+HASBLACK=                    4 / HAS detector black  level                      
+CTYPE2  = 'HPLT-TAN'           / WCS axis Y                                     
+CTYPE1  = 'HPLN-TAN'           / WCS axis X                                     
+EXPTIME =                 10.0 / [s] commanded exposure time                    
+RECODING= 'fixed   '           / (off,fixed,adaptive) on-board recoding         
+CDELT1  =     32.3816226784256 / [arcsec] average pixel scale along axis 1      
+CDELT2  =     32.3816226784256 / [arcsec] average pixel scale along axis 2      
+P2_ROLL =    90.00505410709999 / [deg] s/c roll                                 
+SWAVINT =              15.4684 / [DN/s] average intensity in calibrated image   
+GEOD_LAT=        50.8624323792 / [deg] s/c sub-point geodetic latitude          
+DATE-OBS= '2011-10-04T23:58:31.224' / UTC time of observation                   
+HEEZ_OBS=        3260687.32488 / [m]   s/c Heliocentric Earth Ecliptic Z        
+FILENAME= 'swap_lv1_20111004_235831.fits' / FITS filename                       
+INSTRUME= 'SWAP    '           / instrument name                                
+PN      =                  131 / on-board priority number                       
+EACQTIME=       993438825472.0 / [OBET] end   acquisition time                  
+HEEY_OBS=        6255916.82254 / [m]   s/c Heliocentric Earth Ecliptic Y        
+TTEMP1  = '2011-10-04T23:58:22.000' / UTC time of detector temp 1st sample      
+TTEMP2  = '2011-10-04T23:58:52.000' / UTC time of detector temp 2nd sample      
+OBS_MODE= 'Variable off-pointing' / sun_cen, fix_off, var_off, cme_track        
+LANG_ROT=         0.7071067819 / commanded large angle rotation component       
+LAST_ROW=                 1024 / last  read-out detector row                    
+FILE_TMR= 'swap_00993438825472_f1a90915.fits' / SWTMR filename                  
+LAST_COL=                 1024 / last  read-out detector column                 
+CHECKSUM= 'YZEZaYCYSYCYYYCY'   / HDU checksum updated 2011-10-05T02:30:30       
+FILTER  = 'Al      '           / Aluminum filter                                
+LOS_ALT =    689898.6411679999 / [m]   s/c LOS altitude (1000000=no atmosphere) 
+OBSRVTRY= 'PROBA2  '                                                            
+FIRSTCOL=                    1 / first read-out detector column                 
+RECBIAS =                   10 / recoding lower limit                           
+FIRSTROW=                    1 / first read-out detector row                    
+CD1_2   =                  0.0 / WCS coordinate description matrix              
+CD1_1   =        3.16226783969 / WCS coordinate description matrix              
+HGLT_OBS=        6.54354038558 / [deg] s/c heliographic latitude                
+CUNIT1  = 'arcsec  '           / WCS axis X units                               
+TEMPDARK=      -0.674593319694 / [Celsius] temperature used in dark subtraction 
+CUNIT2  = 'arcsec  '           / WCS axis Y units                               
+ORIGIN  = 'ROB     '           / Royal Observatory of Belgium                   
+P2_Y0   =     0.00621535807393 / [deg] s/c pitch                                
+DATAMIN =                  0.0 / minimum valid physical value                   
+ARTEFX  = 'on      '           / (off,on,cosmic rays) on-board artefact removal 
+SOLAR_EP=        356.865170612 / [deg] s/c ecliptic North to solar North angle  
+LED_POW = 'off     '           / calibration LED power                          
+CRVAL2  =                  0.0 / [arcsec] reference point WCS axis Y            
+CRPIX1  =                 50.5 / [pixel] reference point axis 1                 
+CRPIX2  =                 50.5 / [pixel] reference point axis 2                 
+CRVAL1  =                  0.0 / [arcsec] reference point WCS axis X            
+TELESCOP= 'PROBA2  '           / satellite name                                 
+WAVELNTH=                  174 / [Angstrom] bandpass peak response              
+LONPOLE =                180.0 / [deg] native longitude of the celestial pole   
+TRAPPROT=                  0.0 / [ct/cm^2/s] AP-8 MAX > 10MeV @ 725km model     
+DATAMAX =              363.675 / maximum valid physical value                   
+HASSTDBY=                    0 / HAS detector standby mode                      
+RSUN_ARC=        959.406763065 / [arcsec] photospheric solar radius             
+WCSNAME = 'Helioprojective-cartesian' / aligned with solar North                
+P2_X0   =      0.0037807148592 / [deg] s/c yaw                                  
+GSEY_OBS=       -6255916.82254 / [m]   s/c Geocentric   Solar Ecliptic Y        
+HASOFFST=                   11 / HAS detector offset level                      
+DATE    = '2011-10-05T02:30:29' / UTC time of FITS file creation                
+REBIN   = 'off     '           / on-board rebin (2x2 pixel average)             
+SACQTIME=       993438596904.0 / [OBET] start acquisition time                  
+HGLN_OBS=     0.00247626951733 / [deg] s/c heliographic longitude               
+FILE_RAW= 'BINSWAP201110042358440000419658PROCESSED' / raw telemetry filename   
+LZWDECOR= 'off     '           / LZW decorrelation                              
+CROTA2  =                  0.0 / [deg] axis 2 to WCS rotation angle             
+CROTA1  =                  0.0 / [deg] axis 1 to WCS rotation angle             
+PAV_ROT1=                  0.0 / commanded paving rotation component 1          
+GEOD_ALT=        734855.288813 / [m]   s/c WGS84 altitude                       
+PGA_GAIN=                    1 / PGA gain                                       
+TEMP2DET=  -0.7299870000000001 / [Celsius] detector temperature (SW HK T CF)    
+SIZCOMPI=               635104 / size of on-board compressed image              
+WAVEUNIT= 'Angstrom'                                                            
+HEEX_OBS=       149633372630.0 / [m]   s/c Heliocentric Earth Ecliptic X        
+RECNUM  =                 3600 / recoding upper limit                           
+PAV_ROT0=                  0.0 / commanded paving rotation component 0          
+DETECTOR= 'SWAP    '           / HAS CMOS detector 1024x1024 pixels             
+FILE_TAR= 'BINSWAP_5894_SVA1_2011.10.05T02.11.39.tar' / raw telemetry package   
+BUNIT   = 'DN/s/pixel'         / unit of physical value                         
+COMMENT ------------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ------------------------------------------------------------------------
+COMMENT $Id: swap_fits_template 3732 2010-09-28 20:42:23Z bogdan $--------------
+COMMENT ------------------------------------------------------------------------
+COMMENT ----------------------------------------------------------This is a leve
+COMMENT l-1 SWAP FITS file produced by p2sw_prep v1.3 at the Royal  Observatory 
+COMMENT of Belgium. If you have difficulty with this file or wish  to make sugge
+COMMENT stions for improvements, please contact the SWAP  Instrument Team via em
+COMMENT ail at swap_lyra@oma.be.------------------------------------------------
+COMMENT ------------------------                                                
+HISTORY SWTMR 147831SWEDG 147835FITSHEAD2STRUCT run at: Wed Oct  5 02:30:23 2011
+HISTORY p2sw_hdrchk v1.3  Computed detector temp.: -0.67459332 Celsiusp2sw_pmcdi
+HISTORY v v1.3  Reverted wrt swap_pmc_20100308_164500.fitsp2sw_pixrep v1.3  Repl
+HISTORY aced wrt swap_satcds_20100113_152800.fitsp2sw_drksub v1.3  Subtracted mo
+HISTORY deled dark with coefficients inp2sw_drksub v1.3   swap_dark_coefs_201101
+HISTORY 01_000000.save usingp2sw_drksub v1.3   T=272.48 K, dt=10.0000 sp2sw_pmcr
+HISTORY ep v1.3  Reverted wrt swap_pmc_20100308_164500.fitsp2sw_ffcorr v1.3  Fla
+HISTORY t-field: swap_flatcds_20100308_164500.fitsp2sw_despike v1.3  Despiked at
+HISTORY  the 6.0-sigma level (6797 pix)p2sw_imgcor v1.3  Image centred on solar 
+HISTORY disk centrep2sw_imgcor v1.3  Image scaled to square pixelsp2sw_imgcor v1
+HISTORY .3  Image rotated to solar North upp2sw_expnorm v1.3  Exposure time norm
+HISTORY alized data (DN/s/pixel)                                                

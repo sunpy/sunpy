@@ -1,48 +1,46 @@
 """Test cases for STEREO Map subclasses.
 This particular test file pertains to HIMap.
 """
-
-import os
-import glob
+import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-from sunpy.map import Map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.stereo import HIMap
 
-path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "hi_20110910_114721_s7h2A.fts"))
-hi = Map(fitspath)
+
+@pytest.fixture
+def hi_map():
+    return get_dummy_map_from_header(get_test_filepath('hi_20110910_114721_s7h2A.header'))
 
 
-def test_fitstoHI():
+def test_fitstoHI(hi_map):
     """Tests the creation of HIMap to fits"""
-    assert isinstance(hi, HIMap)
+    assert isinstance(hi_map, HIMap)
 
 
-def test_is_datasource_for():
+def test_is_datasource_for(hi_map):
     """Test the is_data_source_for method of HIMap.
     Note that header data to be provided as an argument
     can be a MetaDict object."""
-    assert hi.is_datasource_for(hi.data, hi.meta)
+    assert hi_map.is_datasource_for(hi_map.data, hi_map.meta)
 
 
-def test_measurement():
+def test_measurement(hi_map):
     """Tests the measurement property of the HIMap object."""
-    assert hi.measurement == "white-light"
+    assert hi_map.measurement == "white-light"
 
 
-def test_observatory():
+def test_observatory(hi_map):
     """Tests the observatory property of the HIMap object."""
-    assert hi.observatory == "STEREO A"
+    assert hi_map.observatory == "STEREO A"
 
 
-def test_norm_clip():
+def test_norm_clip(hi_map):
     # Tests that the default normalizer has clipping disabled
-    assert not hi.plot_settings['norm'].clip
+    assert not hi_map.plot_settings['norm'].clip
 
 
-def test_wcs():
+def test_wcs(hi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    hi.pixel_to_world(0*u.pix, 0*u.pix)
+    hi_map.pixel_to_world(0*u.pix, 0*u.pix)

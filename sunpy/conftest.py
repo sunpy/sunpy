@@ -1,5 +1,6 @@
 import os
 import logging
+import pathlib
 import tempfile
 import importlib
 
@@ -10,6 +11,8 @@ import astropy.config.paths
 import astropy.io.fits
 from astropy.utils import iers
 
+from sunpy.data.test import get_test_filepath, test_data_filenames, write_image_file_from_header_file
+from sunpy.map import Map
 from sunpy.util import SunpyUserWarning
 
 # Force MPL to use non-gui backends for testing.
@@ -176,3 +179,35 @@ def pytest_runtest_teardown(item):
         console_logger.info(f"Removing {len(plt.get_fignums())} pyplot figure(s) "
                             f"left open by {item.name}")
         plt.close('all')
+
+
+@pytest.fixture(scope="session")
+def aia171_test_map():
+    return Map(get_test_filepath('aia_171_level1.fits'))
+
+
+@pytest.fixture(scope="session")
+def eit_fits_directory(tmp_path_factory):
+    # Create a temporary directory of dummy EIT FITS files
+    # from the header data. This directory is then used to
+    # test directory and glob patterns for the map factory
+    eit_dir = tmp_path_factory.mktemp('EIT')
+    eit_header_files = [f for f in test_data_filenames()
+                        if f.parents[0].relative_to(f.parents[1]).name == 'EIT_header'
+                        and f.suffix == '.header']
+    for f in eit_header_files:
+        _ = write_image_file_from_header_file(f, eit_dir)
+    return pathlib.Path(eit_dir)
+
+
+@pytest.fixture(scope="session")
+def waveunit_fits_directory(tmp_path_factory):
+    # Create a temporary directory of dummy FITS files
+    # from the header data. This directory is then used to
+    # test directory patterns for database
+    waveunit_dir = tmp_path_factory.mktemp('waveunit')
+    header_files = [f for f in test_data_filenames()
+                    if f.parents[0].relative_to(f.parents[1]).name == 'waveunit']
+    for f in header_files:
+        _ = write_image_file_from_header_file(f, waveunit_dir)
+    return pathlib.Path(waveunit_dir)
