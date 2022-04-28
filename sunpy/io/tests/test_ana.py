@@ -75,3 +75,12 @@ def test_f32c():
     afilename = tempfile.NamedTemporaryFile().name
     with pytest.raises(RuntimeError):
         ana.write(afilename, img_f32, 'testcase', 1)
+
+
+@skip_ana
+def test_memmap():
+    # Test if float 32 compressed functions
+    afilename = tempfile.NamedTemporaryFile().name
+    ana.write(afilename, img_f32, 'testcase', 0)
+    img_f32c_rec = ana.read(afilename, memmap=True)
+    assert np.sum(img_f32c_rec[0][0] - img_f32) == 0
