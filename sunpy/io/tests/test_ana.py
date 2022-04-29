@@ -78,7 +78,7 @@ def test_f32c():
 
 
 @skip_ana
-def test_memmap():
+def test_read_memmap():
     afilename = tempfile.NamedTemporaryFile().name
     ana.write(afilename, img_f32, 'testcase', 0)
     img_f32c_rec = ana.read(afilename, memmap=True)
