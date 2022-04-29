@@ -1,3 +1,4 @@
+from cgi import print_directory
 from pathlib import Path
 from collections import OrderedDict
 
@@ -176,3 +177,9 @@ def test_warn_longkey():
                                'goodkey': 'test'})
     assert 'GOODKEY' in fits.keys()
     assert 'BADLONGKEY' not in fits.keys()
+
+
+def test_read_memmap():
+    # Test that memmap is passed correctly to the FITS reader
+    data, header = sunpy.io._fits.read(AIA_171_IMAGE, memmap=True)
+    assert isinstance(data, np.memmap)
