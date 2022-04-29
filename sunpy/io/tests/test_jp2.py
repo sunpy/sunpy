@@ -36,3 +36,12 @@ def test_read_file():
     """
     map_ = Map(AIA_193_JP2)
     assert isinstance(map_, GenericMap)
+
+
+@skip_glymur
+def test_read_memmap():
+    """
+    Tests the reading of the JP2 file with a memmap argument.
+    """
+    map_ = Map(AIA_193_JP2, memmap=True)
+    assert isinstance(map_, GenericMap)
