@@ -19,7 +19,7 @@ EIT_195_IMAGE = get_test_filepath('EIT_header/efz20040301.000010_s.header')
 AIA_171_IMAGE = get_test_filepath('aia_171_level1.fits')
 SWAP_LEVEL1_IMAGE = get_test_filepath('SWAP/resampled1_swap.header')
 
-# Some of the tests iamges contain an invalid BLANK keyword; ignore the warning
+# Some of the tests images contain an invalid BLANK keyword; ignore the warning
 # raised by this
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
 
@@ -178,7 +178,14 @@ def test_warn_longkey():
     assert 'BADLONGKEY' not in fits.keys()
 
 
-def test_read_memmap():
+@pytest.mark.parametrize(
+    'fname, hdus, length',
+    [(RHESSI_IMAGE, None, 4),
+     (RHESSI_IMAGE, 1, 1),
+     (RHESSI_IMAGE, [1, 2], 2),
+     (RHESSI_IMAGE, range(0, 2), 2)]
+)
+def test_read_memmap(fname, hdus, length):
     # Test that memmap is passed correctly to the FITS reader
-    data, header = sunpy.io._fits.read(AIA_171_IMAGE, memmap=True)
+    data = sunpy.io._fits.read(fname, hdus=hdus, memmap=True)
     assert isinstance(data, np.memmap)
