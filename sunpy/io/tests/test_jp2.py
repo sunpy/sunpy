@@ -41,7 +41,7 @@ def test_read_file():
 @skip_glymur
 def test_read_memmap():
     """
-    Tests the reading of the JP2 file with a memmap argument.
+    Passing memmap as keyword argument should not raise an error.
     """
     map_ = Map(AIA_193_JP2, memmap=True)
     assert isinstance(map_, GenericMap)
