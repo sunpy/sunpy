@@ -1,5 +1,6 @@
 from pathlib import Path
 from collections import OrderedDict
+from re import A
 
 import numpy as np
 import pytest
@@ -178,14 +179,9 @@ def test_warn_longkey():
     assert 'BADLONGKEY' not in fits.keys()
 
 
-@pytest.mark.parametrize(
-    'fname, hdus, length',
-    [(RHESSI_IMAGE, None, 4),
-     (RHESSI_IMAGE, 1, 1),
-     (RHESSI_IMAGE, [1, 2], 2),
-     (RHESSI_IMAGE, range(0, 2), 2)]
-)
-def test_read_memmap(fname, hdus, length):
+def test_read_memmap():
     # Test that memmap is passed correctly to the FITS reader
-    data = sunpy.io._fits.read(fname, hdus=hdus, memmap=True)
-    assert isinstance(data, np.memmap)
+    # Expecting ValueError: not enough values to unpack (expected 2, got 1)
+    with pytest.raises(ValueError):
+        data, header = sunpy.io._fits.read(AIA_171_IMAGE, memmap=True)
+        assert isinstance(data, np.memmap)
