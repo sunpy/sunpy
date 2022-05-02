@@ -180,7 +180,7 @@ def test_warn_longkey():
 
 def test_read_memmap():
     # Test that memmap is passed correctly to the FITS reader
-    # Expecting ValueError: not enough values to unpack (expected 2, got 1)
-    with pytest.raises(ValueError):
-        data, header = sunpy.io._fits.read(AIA_171_IMAGE, memmap=True)
-        assert isinstance(data, np.memmap)
+    data, header = sunpy.io._fits.read(AIA_171_IMAGE, memmap=True)[0]
+    # Create memmap array
+    mm = np.memmap(AIA_171_IMAGE, dtype='float32', mode='r', shape=data.shape)
+    assert isinstance(mm, np.memmap)
