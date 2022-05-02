@@ -182,4 +182,4 @@ def test_read_memmap():
     # Test that memmap is passed correctly to the FITS reader
     data, header = sunpy.io._fits.read(AIA_171_IMAGE, memmap=True)[0]
     assert isinstance(data, np.ndarray)
-    assert isinstance(header, fits.Header)
+    assert isinstance(header, sunpy.io.header.FileHeader)
