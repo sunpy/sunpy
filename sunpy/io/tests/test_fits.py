@@ -184,6 +184,3 @@ def test_read_memmap():
     # Create memmap array with data and header
     mm = np.memmap(AIA_171_IMAGE, dtype=data.dtype, mode='r', shape=data.shape)
     assert isinstance(mm, np.memmap)
-
-
-test_read_memmap()
