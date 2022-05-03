@@ -43,8 +43,7 @@ class KCorMap(GenericMap):
 
     def _get_cmap_name(self):
         """Build the default color map name."""
-        cmap_string = self.meta['detector']
-        return cmap_string.lower()
+        return self.detector.lower()
 
     @property
     def observatory(self):
