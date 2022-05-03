@@ -1,0 +1,1 @@
+Fixed the ability to load in a KCor JPEG2000 file.
