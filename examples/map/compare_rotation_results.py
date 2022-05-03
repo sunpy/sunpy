@@ -5,7 +5,7 @@ Comparing Map Rotation Functions
 
 This example will compare between the current library implementations for `sunpy.map.GenericMap.rotate`.
 """
-import maptlotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 import astropy.units as u
 
