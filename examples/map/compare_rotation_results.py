@@ -5,7 +5,7 @@ Comparing Map Rotation Functions
 
 This example will compare between the current library implementations for `sunpy.map.GenericMap.rotate`.
 """
-import pylab as plt
+import maptlotlib.pyplot as plt
 
 import astropy.units as u
 
@@ -14,13 +14,11 @@ import sunpy.map
 
 ###############################################################################
 # Rotating a map in sunpy has a choice between three libraries: ``scipy`` (the default),
-# ``skimage`` and ``opencv2``. Furthermore, one can also create a custom rotation
-#  function and register it for use with `~sunpy.map.GenericMap.rotate`, see :ref:`map_rotate_custom`.
+# ``scikit-image`` and ``opencv``. Furthermore, one can also create a custom rotation
+# function and register it for use with :meth:`~sunpy.map.GenericMap.rotate`, see :ref:`map_rotate_custom`.
 #
-# Since all these options use different algorithms, we need a basis for comparison.
-#
-# The problem is, defining a acceptable margin of difference in the final, rotated data product
-# is difficult. This example will just compare the raw value differences.
+# Defining an appropriate metric to compare different algorithms is
+# challenging. This example will just compare the raw value differences.
 
 ###############################################################################
 # Using an HMI sample data, we will do a rotation to align the image to the north.
@@ -43,14 +41,14 @@ ax1.set_title("HMI Difference: scipy vs scikit-image")
 fig.colorbar(img1, ax=ax1)
 
 img2 = ax2.imshow(scipy_map.data - cv2_map.data, cmap='RdBu_r', vmin=-10, vmax=10)
-ax2.set_title("HMI Difference: scipy vs opencv2")
+ax2.set_title("HMI Difference: scipy vs opencv")
 fig.colorbar(img2, ax=ax2)
 
 plt.show()
 
 ###############################################################################
 # We can repeat this but for AIA data, using a 171 sample image.
-# Since there is no rotation in the FITS header, we will rotate by 30 degrees
+# We will rotate it by the large amount of 30 degrees.
 
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
