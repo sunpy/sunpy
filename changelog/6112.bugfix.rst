@@ -1,1 +1,2 @@
-Fixed the ability to load in a KCor JPEG2000 file.
+Constructing the color map name for a `~sunpy.map.sources.KCorMap` no longer requires the "detector" key in the metadata.
+This allows for reading files that are missing this keyword, as in the KCor JPEG2000 files.
