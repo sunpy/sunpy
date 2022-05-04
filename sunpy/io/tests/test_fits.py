@@ -179,7 +179,9 @@ def test_warn_longkey():
 
 
 def test_read_memmap():
-    # Test that memmap is passed correctly to the FITS reader
-    data, header = sunpy.io._fits.read(AIA_171_IMAGE, memmap=True)[0]
-    assert isinstance(data, np.ndarray)
-    assert isinstance(header, sunpy.io.header.FileHeader)
+    # Test that memmap=False gives the same data as memmap=True
+    data, header = sunpy.io.read_file(AIA_171_IMAGE, memmap=False)[0]
+    data_memmap, header_memmap = sunpy.io.read_file(AIA_171_IMAGE, memmap=True)[0]
+
+    assert np.all(data == data_memmap)
+    assert np.all(header == header_memmap)
