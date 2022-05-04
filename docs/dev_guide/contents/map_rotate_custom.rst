@@ -4,7 +4,7 @@
 Adding a new rotation method
 ****************************
 
-It is possible to select from a number of rotation methods when using :func:`sunpy.image.transform.affine_transform` and :meth:sunpy.map.GenericMap.rotate`.
+It is possible to select from a number of rotation methods when using :func:`sunpy.image.transform.affine_transform` and :meth:`sunpy.map.GenericMap.rotate`.
 You can add a custom rotation method using the decorator :func:`sunpy.image.transform.add_rotation_function`:
 
 .. code-block:: python
