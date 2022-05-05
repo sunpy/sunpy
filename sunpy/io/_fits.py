@@ -59,6 +59,8 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
         The fits file to be read.
     hdus : `int` or iterable
         The HDU indexes to read from the file.
+    **kwargs : `dict`, optional
+        Passed to `astropy.io.fits.open`.
 
     Returns
     -------
@@ -73,7 +75,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
     Also all comments in the original file are concatenated into a single
     "comment" key in the returned FileHeader.
     """
-    with fits.open(filepath, ignore_blank=True, memmap=memmap) as hdulist:
+    with fits.open(filepath, ignore_blank=True, memmap=memmap, **kwargs) as hdulist:
         if hdus is not None:
             if isinstance(hdus, int):
                 hdulist = hdulist[hdus]
