@@ -1,0 +1,1 @@
+We now correctly pass keyword arguments in our internal FITS reader to `astropy.io.fits.open`.
