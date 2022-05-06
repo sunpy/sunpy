@@ -121,26 +121,14 @@ jobs:
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
-  notify_pass:
+  notify:
     if: github.event_name == 'workflow_dispatch'
     needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/matrix
+      - uses: Cadair/matrix-notify-action@main
         with:
-          status: 'Succeeded'
-          token: ${{ secrets.matrix_access_token }}
+          matrix_token: ${{ secrets.matrix_access_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           homeserver: ${{ secrets.matrix_homeserver }}
-
-  notify_fail:
-    if: failure() && github.event_name == 'workflow_dispatch'
-    needs: [publish, online, cron]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/matrix
-        with:
-          status: 'Failed'
-          token: ${{ secrets.matrix_access_token }}
-          homeserver: ${{ secrets.matrix_homeserver }}
+          roomid: '!JYqfIVJjWANcHnfktY:cadair.com'
