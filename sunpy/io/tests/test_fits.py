@@ -179,13 +179,9 @@ def test_warn_longkey():
     assert 'BADLONGKEY' not in fits.keys()
 
 
-def is_memmap(data):
-    if data.base is None:
-        return False
-    return isinstance(data.base, mmap.mmap) or is_memmap(data.base)
-
-
 def test_read_memmap():
-    # Check that memmap is passed as an argument to read function doesnot raise an error.
+    # Check that memmap is read correctly from a file
     data, header = sunpy.io._fits.read(AIA_171_IMAGE, memmap=True)[0]
-    assert is_memmap(data)
+    if data.base is None:
+        assert False
+    assert isinstance(data.base, mmap.mmap) or isinstance(data.base, np.memmap)
