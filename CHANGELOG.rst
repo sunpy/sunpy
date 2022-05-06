@@ -1,3 +1,24 @@
+3.1.7 (2022-05-06)
+==================
+
+Bug Fixes
+---------
+
+- Fixed bugs with the rebinning and per-keV calculation for Fermi/GBM summary lightcurves (`~sunpy.timeseries.sources.GBMSummaryTimeSeries`). (`#5943 <https://github.com/sunpy/sunpy/pull/5943>`__)
+- Fixed the unintentionally slow parsing of Fermi/GBM files (`~sunpy.timeseries.sources.GBMSummaryTimeSeries`). (`#5943 <https://github.com/sunpy/sunpy/pull/5943>`__)
+- Relax condition check for a HMI Synoptic map source. (`#6018 <https://github.com/sunpy/sunpy/pull/6018>`__)
+- Fixed the inability to rotate images and maps with byte ordering that is different from the native byte order of the system (e.g., big-endian values on a little-endian system) for certain interpolation orders when internally using ``scikit-image``. (`#6064 <https://github.com/sunpy/sunpy/pull/6064>`__)
+- Constructing the color map name for a `~sunpy.map.sources.KCorMap` no longer requires the "detector" key in the metadata.
+  This allows for reading files that are missing this keyword, as in the KCor JPEG2000 files. (`#6112 <https://github.com/sunpy/sunpy/pull/6112>`__)
+
+
+Internal Changes
+----------------
+
+- Declare in our dependancies that we are not compatible with asdf 3.0.0 until we
+  are. (`#6077 <https://github.com/sunpy/sunpy/pull/6077>`__)
+
+
 3.1.6 (2022-04-05)
 ==================
 

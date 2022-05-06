@@ -1,1 +1,0 @@
-Fixed the inability to rotate images and maps with byte ordering that is different from the native byte order of the system (e.g., big-endian values on a little-endian system) for certain interpolation orders when internally using ``scikit-image``.
