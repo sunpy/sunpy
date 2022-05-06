@@ -1,3 +1,0 @@
-`sunpy.image.transform.affine_transform` and :meth:`sunpy.map.GenericMap.rotate`
-have both had their ``use_scipy`` arguments deprecated. Instead use the new
-``method`` argument to select from the available rotation methods.

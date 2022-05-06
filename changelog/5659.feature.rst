@@ -1,7 +1,0 @@
-Added the :meth:`~sunpy.net.base_client.QueryResponseTable.total_size`, which
-estimates the total size of the results from a Fido query. If this is supported
-by a client, the total size is printed alongside the results.
-
-To add support for this in external clients, make sure one column contains
-the individual filesizes as `~astropy.units.Quantity`, and set the
-``size_column`` class attribute to the name of this column.

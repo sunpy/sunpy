@@ -1,2 +1,0 @@
-Improved performance of the code that parses dates in clients that use the
-`~sunpy.net.scraper.Scraper` to get available files.

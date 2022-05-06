@@ -1,2 +1,0 @@
-The ``rsun`` argument to :func:`~sunpy.map.get_observer_meta` is now
-optional.

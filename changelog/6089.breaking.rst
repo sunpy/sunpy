@@ -1,2 +1,0 @@
-Changed the default interpolation order for :meth:`sunpy.map.GenericMap.rotate` from 4 to 3, with the precise meaning of these interpolation orders depending on the selected rotation method.
-For the default rotation method, which uses :func:`scipy.ndimage.affine_transform`, this changes the default interpolation from biquartic to bicubic, which reduces the computation time without reducing the quality of the output below what a typical user needs.

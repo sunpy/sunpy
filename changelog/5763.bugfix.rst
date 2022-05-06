@@ -1,2 +1,0 @@
-:func:`sunpy.map.make_fitswcs_header` now includes a PC_ij matrix in the returned
-header if no rotation is specified.

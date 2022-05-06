@@ -1,1 +1,0 @@
-Added the gallery example :ref:`sphx_glr_generated_gallery_map_transformations_projection_custom_origin.py`, which specifically showcases the azimuthal equidistant projection (also known as the Postel projection).

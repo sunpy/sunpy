@@ -1,2 +1,0 @@
-Tidy the API Reference section of the documentation and improve the landing
-page for the docs.
