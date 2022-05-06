@@ -42,17 +42,10 @@ class MapSequence:
     maps : `list`
         This attribute holds the list of Map instances obtained from parameter args.
 
-    Notes
-    -----
-    To coalign a mapsequence so that solar features remain on the same pixels,
-    please see the "Coalignment of MapSequences" note below.
-
     Examples
     --------
     >>> import sunpy.map
     >>> mapsequence = sunpy.map.Map('images/*.fits', sequence=True)   # doctest: +SKIP
-
-    MapSequences can be co-aligned using the routines in sunpy.image.coalignment.
     """
 
     def __init__(self, *args, sortby='date', derotate=False, **kwargs):
