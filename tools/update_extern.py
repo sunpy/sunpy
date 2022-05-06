@@ -45,12 +45,8 @@ for i in file_names:
             elif isinstance(node, ast.ImportFrom):
                 visit_from(node)
 
-# remove python modules from the list
-modules = [i for i in modules if i not in ['platform', 'warnings', 're', 'ctypes', 'os',
-                                           'shlex', 'functools', 'ast',
-                                           'datetime', 'logging', 'sys', 'com', 'decimal', 'argparse', '__future__', 'json', 'typing', 'subprocess', 'array']]
 modules = set(modules)
 print(modules)
 
 # Output:
-# {'win32api', 'win32com', 'winreg', '_winreg'}
+# {'functools', 'win32com', 'logging', '__future__', 'subprocess', 'typing', 'datetime', 'winreg', 'platform', 'array', 'os', 'json', 'shlex', 'sys', 'win32api', 'com', 'warnings', 'decimal', 'ast', 'ctypes', 're', '_winreg', 'argparse'}
