@@ -9,6 +9,7 @@ import pytest
 import astropy
 import astropy.config.paths
 import astropy.io.fits
+from astropy.utils import iers
 
 from sunpy.data.test import get_test_filepath, test_data_filenames, write_image_file_from_header_file
 from sunpy.map import Map
@@ -41,6 +42,17 @@ console_logger.setLevel('INFO')
 @pytest.fixture
 def jsoc_test_email():
     return "nabil.freij@gmail.com"
+
+
+@pytest.fixture(scope='session', autouse=True)
+def no_download_iers(request):
+    # Don't try and download IERS during tests
+    # See https://github.com/astropy/astropy/issues/12998 for issue that this
+    # sidesteps
+    old_value = iers.conf.auto_download
+    iers.conf.auto_download = False
+    yield
+    iers.conf.auto_download = old_value
 
 
 @pytest.fixture(scope='session', autouse=True)
