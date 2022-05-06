@@ -1,2 +1,0 @@
-`sunpy.map.GenericMap.wcs` now checks that the scale property has the correct
-units whilst constructing the WCS.

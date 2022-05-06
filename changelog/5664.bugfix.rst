@@ -1,2 +1,0 @@
-Fixed reading CDF files when a column has no entries. If this is the case the
-column will be ignored, and a message logged at DEBUG level.

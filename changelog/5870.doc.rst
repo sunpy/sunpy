@@ -1,2 +1,0 @@
-Edited entries in the example gallery to have a consistent plotting style.
-Added said style guidelines to the example gallery page in the dev guide.

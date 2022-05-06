@@ -1,3 +1,0 @@
-Deprecate `sunpy.image.coalignment` as the code has now been moved to
-`sunkit_image.coalignment` with an identical API.
-This module will be removed in sunpy 4.1.

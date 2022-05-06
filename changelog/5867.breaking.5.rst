@@ -1,2 +1,0 @@
-:func:`sunpy.image.transform.affine_transform` and :meth:`sunpy.map.GenericMap.rotate` now default to using NaN instead of zero for the ``missing`` value, the value used for pixels in the output array that have no corresponding pixel in the input array.
-To obtain the previous behavior, ``missing`` should be explicitly specified as zero.

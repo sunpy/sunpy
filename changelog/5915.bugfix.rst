@@ -1,1 +1,0 @@
-Fix parsing of the GOES/XRS netcdf files to ignore leap seconds.
