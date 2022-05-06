@@ -5,10 +5,10 @@ This script is used to update the files in `sunpy/extern` while making new relea
 """
 
 # TODO:
-# 1. Get list of all the packages imported in sunpy/extern
-# 2. Search for the source distribution of each package in `USER/home/sunpy/extern`
-# 3. Extract the source distribution to a temporary directory
-# 4. Update the python files in `sunpy/extern`
+# [x] Get list of all the packages imported in sunpy/extern
+# [] Search for the source distribution of each package in `USER/home/sunpy/extern`
+# [] Extract the source distribution to a temporary directory
+# [] Update the python files in `sunpy/extern`
 
 
 import ast
