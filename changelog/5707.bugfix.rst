@@ -1,5 +1,0 @@
-The default ``id_type`` in :func:`sunpy.coordinates.get_horizons_coord` is now
-`None` to match the deafult ``id_type`` in astroquery 0.4.4, which will search
-major bodies first, and if no major bodies are found, then search small bodies.
-For older versions of astroquery the default ``id_type`` used by
-:func:`~sunpy.coordinates.get_horizons_coord` is still ``'majorbody'``.

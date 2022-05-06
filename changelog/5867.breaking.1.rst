@@ -1,1 +1,0 @@
-When rotating images using the SciPy rotation method, the default behavior is now to clip the output range to the input range, which matches the default behavior of the scikit-image rotation method.

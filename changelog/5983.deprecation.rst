@@ -1,3 +1,0 @@
-The `sunpy.io.fits` module is deprecated, as it was designed for internal use
-only. Use the `astropy.io.fits` module instead for more generic functionality
-to read FITS files.

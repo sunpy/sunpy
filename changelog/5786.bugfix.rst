@@ -1,6 +1,0 @@
-Maps created from :meth:`~sunpy.map.GenericMap.resample` and
-:meth:`~sunpy.map.GenericMap.superpixel` have been fixed in the case where
-the resampling was not square, and the PCi_j matrix (often a rotation matrix)
-was not a multiple of the identity matrix. When the PCi_j or CDi_j formalisms
-are used in the metadata these are now correctly modified, and the CDELT values
-are left unchanged.

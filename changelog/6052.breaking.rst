@@ -1,1 +1,0 @@
-The `.JSOCClient` and every `sunpy.net.dataretriever.GenericClient` was passing all ``**kwargs`` to `parfive.Downloader.enqueue_file`, this was unintended and has been removed.

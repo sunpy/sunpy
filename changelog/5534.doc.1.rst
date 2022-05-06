@@ -1,1 +1,0 @@
-Fixed various plotting issues with the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_AIA_limb_STEREO.py`.

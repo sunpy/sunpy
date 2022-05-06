@@ -1,1 +1,0 @@
-Improved the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_SDO_to_STEREO_Coordinate_Conversion.py` to better illustrate how coordinate transformations interact with submaps and coordinate plotting.
