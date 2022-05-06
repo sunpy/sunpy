@@ -32,6 +32,7 @@ The people who have contributed to the code for this release are:
 -  Alex W  *
 -  Andy Tang  *
 -  Anubhav Sinha  *
+-  Chris Bard  *
 -  Conor MacBride
 -  Daniel Garcia Briseno  *
 -  David Stansby
@@ -52,8 +53,6 @@ The people who have contributed to the code for this release are:
 -  Tim Gates  *
 -  Will Barnes
 -  William Russell  *
--  cbard  *
--  pre-commit-ci[bot]  *
 
 Where a * indicates that this release contains their first contribution to sunpy.
 
