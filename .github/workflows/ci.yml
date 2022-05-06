@@ -122,3 +122,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           homeserver: ${{ secrets.matrix_homeserver }}
           roomid: '!JYqfIVJjWANcHnfktY:cadair.com'
+          ignore_pattern: '.*Load.*'
