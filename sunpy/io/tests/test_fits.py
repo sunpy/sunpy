@@ -1,3 +1,4 @@
+import mmap
 from pathlib import Path
 from collections import OrderedDict
 
@@ -178,10 +179,13 @@ def test_warn_longkey():
     assert 'BADLONGKEY' not in fits.keys()
 
 
-def test_read_memmap():
-    # Test that memmap=False gives the same data as memmap=True
-    data, header = sunpy.io.read_file(AIA_171_IMAGE, memmap=False)[0]
-    data_memmap, header_memmap = sunpy.io.read_file(AIA_171_IMAGE, memmap=True)[0]
+def is_memmap(data):
+    if data.base is None:
+        return False
+    return isinstance(data.base, mmap.mmap) or is_memmap(data.base)
 
-    assert np.all(data == data_memmap)
-    assert np.all(header == header_memmap)
+
+def test_read_memmap():
+    # Check that memmap is passed as an argument to read function doesnot raise an error.
+    data, header = sunpy.io._fits.read(AIA_171_IMAGE, memmap=True)[0]
+    assert is_memmap(data)
