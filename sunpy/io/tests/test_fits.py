@@ -182,14 +182,10 @@ def test_warn_longkey():
 def test_read_memmap():
     # Check that the FITS reader can read a memmap without memmap argument by default
     data, header = sunpy.io._fits.read(TEST_AIA_IMAGE)[0]
-    if data.base is None:
-        assert False
     assert isinstance(data.base, mmap.mmap)
 
     # Check that memmap=True does the same thing
     data, header = sunpy.io._fits.read(TEST_AIA_IMAGE, memmap=True)[0]
-    if data.base is None:
-        assert False
     assert isinstance(data.base, mmap.mmap)
 
     # Check that memmap=False doesn't do memory mapping
