@@ -56,6 +56,8 @@ def download_package(url, package):
         for chunk in response.iter_content(chunk_size=8192):
             if chunk:
                 f.write(chunk)
+            f.flush()
+        f.close()
 
 
 def unzip(filename):
@@ -68,12 +70,53 @@ def unzip(filename):
     os.remove(filename)
 
 
+def move_files(src: Path, dst: Path):
+    """
+    Move the files from the src to the dst.
+    """
+    # if dst already exists, remove it
+    if os.path.exists(dst):
+        print(f"Removing {dst}")
+    # move the files
+    # shutil.move(src, dst)
+    print(f"Moving {src} to {dst}")
+
+
 def extract_appdirs(destination):
     """
     Extract the appdirs package.
     """
-    # Get appdirs.py from the folder
-    print(destination)
+    # Print the path of appdirs.py
+
+    if os.path.exists(f"{destination}/appdirs.py"):
+        print(f"{destination}/appdirs.py")
+        # Move the file to the sunpy/extern directory
+        move_files(f"{destination}/appdirs.py", SUNPY_DIR / "extern" / "appdirs.py")
+
+
+def extract_distro(destination):
+    """
+    Extract the distro package.
+    """
+    # Print the path of distro.py
+    if os.path.exists(f"{destination}/src/distro/distro.py"):
+        print(f"{destination}/src/distro/distro.py")
+
+
+def extract_inflect(destination):
+    """
+    Extract the inflect package.
+    """
+    if os.path.exists(f"{destination}/inflect/__init__.py"):
+        print(f"{destination}/inflect/__init__.py")
+
+
+def extract_parse(destination):
+    """
+    Extract the parse package.
+    """
+    if os.path.exists(f"{destination}/parse.py"):
+        print(f"{destination}/parse.py")
 
 
 if __name__ == "__main__":
@@ -88,5 +131,21 @@ if __name__ == "__main__":
     # unzip(f"tmp/{package}.zip")
 
     # Extract the required files one by one
-    extract_appdirs(SUNPY_DIR / "appdirs")
-    # shutil.unpack_archive(f"{package}.zip", SUNPY_DIR / "temp")
+
+    folder_name = list()
+    for root, dirs, files in os.walk("tmp"):
+        folder_name = dirs
+        break
+    folder_name.sort()
+
+    # Extract the appdirs package
+    extract_appdirs(f"tmp/{folder_name[0]}")
+
+    # Extract the distro package
+    extract_distro(f"tmp/{folder_name[1]}")
+
+    # Extract the inflect package
+    extract_inflect(f"tmp/{folder_name[2]}")
+
+    # Extract the parse package
+    extract_parse(f"tmp/{folder_name[3]}")
