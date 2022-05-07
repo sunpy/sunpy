@@ -180,8 +180,12 @@ def test_warn_longkey():
 
 
 def test_read_memmap():
-    # Check that memmap is read correctly from a file
+    # Check that memmap=True does memory map to the file
     data, header = sunpy.io._fits.read(TEST_AIA_IMAGE, memmap=True)[0]
     if data.base is None:
         assert False
-    assert isinstance(data.base, mmap.mmap) or isinstance(data.base, np.memmap)
+    assert isinstance(data.base, mmap.mmap)
+
+    # Check that memmap=False doesn't do memory mapping
+    data, header = sunpy.io._fits.read(TEST_AIA_IMAGE, memmap=False)[0]
+    assert data.base is None
