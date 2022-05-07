@@ -3,6 +3,7 @@ import tempfile
 
 import numpy as np
 import pytest
+import mmap
 
 from sunpy.io import ana
 from sunpy.tests.helpers import skip_ana
@@ -84,3 +85,7 @@ def test_read_memmap():
     ana.write(afilename, img_f32, 'testcase', 0)
     img_f32c_rec = ana.read(afilename, memmap=True)
     assert np.sum(img_f32c_rec[0][0] - img_f32) == 0
+
+    # Test to check that passing memmap=False doesn't raise an error
+    img_f32c_rec = ana.read(afilename, memmap=False)
+    assert not isinstance(img_f32c_rec, mmap.mmap)
