@@ -48,11 +48,12 @@ def download_package(url, package):
     Download the package.
     """
     # Make a temporaty directory
-    if not os.path.exists("tmp"):
-        os.mkdir("tmp")
+    if not os.path.exists("extern_pkg"):
+        os.mkdir("extern_pkg")
 
     response = requests.get(url, stream=True)
-    with open(f"tmp/{package}.zip", "wb") as f:
+    with open(f"extern_pkg/{package}.zip", "wb") as f:
+        print(f"Downloading {package}")
         for chunk in response.iter_content(chunk_size=8192):
             if chunk:
                 f.write(chunk)
@@ -65,7 +66,7 @@ def unzip(filename):
     Extract the package.
     """
     with ZipFile(filename, "r") as zip_file:
-        zip_file.extractall("tmp")
+        zip_file.extractall("extern_pkg")
     # Remove the zip file
     os.remove(filename)
 
@@ -78,74 +79,91 @@ def move_files(src: Path, dst: Path):
     if os.path.exists(dst):
         print(f"Removing {dst}")
     # move the files
-    # shutil.move(src, dst)
+    shutil.move(src, dst)
     print(f"Moving {src} to {dst}")
 
 
 def extract_appdirs(destination):
     """
-    Extract the appdirs package.
+    Extract appdirs.py from the appdirs package.
     """
     # Print the path of appdirs.py
 
     if os.path.exists(f"{destination}/appdirs.py"):
         print(f"{destination}/appdirs.py")
         # Move the file to the sunpy/extern directory
-        move_files(f"{destination}/appdirs.py", SUNPY_DIR / "extern" / "appdirs.py")
+        move_files(f"{destination}/appdirs.py", SUNPY_DIR / "sunpy" / "extern" / "appdirs.py")
+        # Remove the directory
+        shutil.rmtree(destination)
 
 
 def extract_distro(destination):
     """
-    Extract the distro package.
+    Extract distro.py from the distro package.
     """
     # Print the path of distro.py
     if os.path.exists(f"{destination}/src/distro/distro.py"):
         print(f"{destination}/src/distro/distro.py")
+        # Move the file to the sunpy/extern directory
+        move_files(f"{destination}/src/distro/distro.py", SUNPY_DIR / "sunpy" / "extern" / "distro.py")
+        # Remove the directory
+        shutil.rmtree(destination)
 
 
 def extract_inflect(destination):
     """
-    Extract the inflect package.
+    Extract inflect.py from the inflect package.
     """
     if os.path.exists(f"{destination}/inflect/__init__.py"):
         print(f"{destination}/inflect/__init__.py")
+        # Rename the file to inflect.py
+        os.rename(f"{destination}/inflect/__init__.py", f"{destination}/inflect/inflect.py")
+        # Move the file to the sunpy/extern directory
+        move_files(f"{destination}/inflect/inflect.py", SUNPY_DIR / "sunpy" / "extern" / "inflect.py")
+        # Remove the directory
+        shutil.rmtree(destination)
 
 
 def extract_parse(destination):
     """
-    Extract the parse package.
+    Extract parse.py from the parse package.
     """
     if os.path.exists(f"{destination}/parse.py"):
         print(f"{destination}/parse.py")
+        # Move the file to the sunpy/extern directory
+        move_files(f"{destination}/parse.py", SUNPY_DIR / "sunpy" / "extern" / "parse.py")
+        # Remove the directory
+        shutil.rmtree(destination)
 
 
 if __name__ == "__main__":
-    # for package in PACKAGES:
-    # # get the url of the package
-    # url = get_download_url(package, get_latest_version(package))
+    for package in PACKAGES:
+        # get the url of the package
+        url = get_download_url(package, get_latest_version(package))
 
-    # # download the package
-    # download_package(url, package)
+        # download the package
+        download_package(url, package)
 
-    # Open the zip file
-    # unzip(f"tmp/{package}.zip")
-
-    # Extract the required files one by one
+        # Open the zip file
+        unzip(f"extern_pkg/{package}.zip")
 
     folder_name = list()
-    for root, dirs, files in os.walk("tmp"):
+    for root, dirs, files in os.walk("extern_pkg"):
         folder_name = dirs
         break
     folder_name.sort()
 
     # Extract the appdirs package
-    extract_appdirs(f"tmp/{folder_name[0]}")
+    extract_appdirs(f"extern_pkg/{folder_name[0]}")
 
     # Extract the distro package
-    extract_distro(f"tmp/{folder_name[1]}")
+    extract_distro(f"extern_pkg/{folder_name[1]}")
 
     # Extract the inflect package
-    extract_inflect(f"tmp/{folder_name[2]}")
+    extract_inflect(f"extern_pkg/{folder_name[2]}")
 
     # Extract the parse package
-    extract_parse(f"tmp/{folder_name[3]}")
+    extract_parse(f"extern_pkg/{folder_name[3]}")
+
+    # Remove the temporary directory
+    shutil.rmtree("extern_pkg")
