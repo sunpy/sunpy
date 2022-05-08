@@ -1,9 +1,9 @@
 
+import mmap
 import tempfile
 
 import numpy as np
 import pytest
-import mmap
 
 from sunpy.io import ana
 from sunpy.tests.helpers import skip_ana
