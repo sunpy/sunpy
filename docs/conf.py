@@ -38,11 +38,11 @@ from sunpy import __version__  # NOQA
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA
 from matplotlib import MatplotlibDeprecationWarning  # NOQA
 from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
+
 # -- Project information -------------------------------------------------------
 project = 'SunPy'
 author = 'The SunPy Community'
 copyright = '{}, {}'.format(datetime.datetime.now().year, author)
-
 
 # Register remote data option with doctest
 import doctest  # NOQA
@@ -92,9 +92,6 @@ ogp_custom_meta_tags = [
 # doctest extensions.
 suppress_warnings = ['app.add_directive', ]
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
 extensions = [
     'matplotlib.sphinxext.plot_directive',
     'sphinx_automodapi.automodapi',
@@ -119,16 +116,6 @@ extensions = [
 # Set automodapi to generate files inside the generated directory
 automodapi_toctreedirnm = "generated/api"
 
-# Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates']
-
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
-
-# Add any extra paths that contain custom files (such as robots.txt or
-# .htaccess) here, relative to this directory. These files are copied
-# directly to the root of the documentation.
 html_extra_path = ['robots.txt']
 
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -158,7 +145,7 @@ napoleon_use_param = False
 
 # Enable nitpicky mode, which forces links to be non-broken
 nitpicky = True
-# This is not used. See docs/nitpick-exceptions file for the actual listing.
+# See docs/nitpick-exceptions file for the actual listing.
 nitpick_ignore = []
 for line in open('nitpick-exceptions'):
     if line.strip() == "" or line.startswith("#"):
@@ -169,7 +156,6 @@ for line in open('nitpick-exceptions'):
 
 
 # -- Options for intersphinx extension -----------------------------------------
-# Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "python": (
         "https://docs.python.org/3/",
@@ -201,19 +187,10 @@ intersphinx_mapping = {
 }
 
 # -- Options for HTML output ---------------------------------------------------
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-
 from sunpy_sphinx_theme.conf import *  # NOQA
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
-
-# Render inheritance diagrams in SVG
+# -- Options for graphviz output -----------------------------------------------
 graphviz_output_format = "svg"
-
 graphviz_dot_args = [
     '-Nfontsize=10',
     '-Nfontname=Helvetica Neue, Helvetica, Arial, sans-serif',
@@ -224,7 +201,6 @@ graphviz_dot_args = [
 ]
 
 # -- Sphinx Gallery ------------------------------------------------------------
-# JSOC email os env
 os.environ["JSOC_EMAIL"] = "nabil.freij@gmail.com"
 sphinx_gallery_conf = {
     'backreferences_dir': os.path.join('generated', 'modules'),
@@ -246,7 +222,7 @@ sphinx_gallery_conf = {
     'gallery_dirs': os.path.join('generated', 'gallery'),
     'matplotlib_animations': True,
     # Comes from the theme.
-    "default_thumb_file": os.path.join(html_static_path[0], "img", "sunpy_icon_128x128.png"),
+    "default_thumb_file": png_icon,
     'abort_on_example_error': False,
     'plot_gallery': 'True',
     'remove_config_comments': True,
@@ -260,10 +236,10 @@ try:
     from bs4 import BeautifulSoup
 
     base_url = "https://docs.opencv.org"
-
     # The stable-version docs are the first item in the second list on the main page
     all_docs = BeautifulSoup(requests.get(base_url).text, 'html.parser')
-    version = all_docs.find_all('ul')[1].li.a.attrs['href'][2:]  # strip leading "./"
+    # We need to strip leading "./"
+    version = all_docs.find_all('ul')[1].li.a.attrs['href'][2:]
 
     # Find the relative URL to the page for the `cv` namespace
     stable_docs = BeautifulSoup(requests.get(f"{base_url}/{version}/namespaces.html").text,
@@ -273,8 +249,9 @@ try:
     # Find the relative URL for warpAffine/filter2D in the `cv` namespace
     all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text,
                            'html.parser')
-    warpAffine = all_cv.find("a", string="warpAffine").attrs['href'][6:]  # strip leading "../../"
-    filter2D = all_cv.find("a", string="filter2D").attrs['href'][6:]  # strip leading "../../"
+    # We need to strip leading "../../"
+    warpAffine = all_cv.find("a", string="warpAffine").attrs['href'][6:]
+    filter2D = all_cv.find("a", string="filter2D").attrs['href'][6:]
 
     # Construct the full URL for warpAffine/filter2D
     warpAffine_full = f"{base_url}/{version}/{warpAffine}"
