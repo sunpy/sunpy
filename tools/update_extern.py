@@ -19,11 +19,26 @@ PACKAGES = ["appdirs", "distro", "inflect", "parse"]
 
 # Dictionary to store the authors of the packages
 AUTHORS = {
-    "appdirs": "ActiveState",
-    "distro": "python-distro",
-    "inflect": "jaraco",
-    "parse": "r1chardj0n3s",
+    PACKAGES[0]: "ActiveState",
+    PACKAGES[1]: "python-distro",
+    PACKAGES[2]: "jaraco",
+    PACKAGES[3]: "r1chardj0n3s",
 }
+
+
+def package_exists(package):
+    """
+    Check if the package exists.
+    """
+    # this function checks if AUTHORS and PACKAGES correctly match
+    for package in PACKAGES:
+        # Get 200 response from github
+        response = requests.get(f"https://api.github.com/repos/{AUTHORS[package]}/{package}")
+        if response.status_code != 200:
+            print(f"{package} does not exist")
+            print(f"Or {AUTHORS[package]} does not exist")
+            return False
+    return True
 
 
 def get_latest_version(package):
@@ -122,6 +137,12 @@ def update_extern(destination):
 
 
 if __name__ == "__main__":
+
+    # Check if the packages exist
+    if not package_exists(PACKAGES):
+        print("Exiting...")
+        exit()
+
     for package in PACKAGES:
         # get the url of the package
         url = get_download_url(package, get_latest_version(package))
