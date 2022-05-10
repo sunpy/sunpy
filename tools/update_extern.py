@@ -8,7 +8,6 @@ from zipfile import ZipFile
 import requests
 from pathlib import Path
 
-# get parent directory of sunpy
 SUNPY_DIR = Path(__file__).parent.parent
 
 
