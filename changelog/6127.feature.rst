@@ -1,1 +1,1 @@
-Adds a script in the sunpy/tools that will be used to update vendor code automatically, by the person doing a release. Executing this script will update all python files in sunpy/sunpy/extern.
+Added a script in the ``sunpy/tools`` that will update all the Python libraries in ``sunpy/extern``.
