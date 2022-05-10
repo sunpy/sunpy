@@ -122,9 +122,9 @@ We will recreate the first example using the PNG function::
    >>> from sunpy.net.helioviewer import HelioviewerClient
    >>> import matplotlib.pyplot as plt
    >>> from matplotlib.image import imread
-   >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> file = hv.download_png('2020/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +REMOTE_DATA
-   >>> im = imread(file)  # doctest: +REMOTE_DATA
+   >>> hv = HelioviewerClient()  # doctest: +SKIP
+   >>> file = hv.download_png('2020/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +SKIP
+   >>> im = imread(file)  # doctest: +SKIP
    >>> plt.imshow(im)  # doctest: +SKIP
    >>> plt.axis('off')  # doctest: +SKIP
    >>> plt.show()  # doctest: +SKIP
@@ -159,7 +159,7 @@ The layer string is extended to include the additional data sources, and opacity
    >>> file = hv.download_png('2012/01/01', 6,
    ...                        "[SDO,AIA,304,1,100],[SDO,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]",
    ...                        x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +REMOTE_DATA
-   >>> im = imread(file)  # doctest: +REMOTE_DATA
+   >>> im = imread(file)  # doctest: +SKIP
    >>> plt.imshow(im)  # doctest: +SKIP
    >>> plt.axis('off')  # doctest: +SKIP
    >>> plt.show()  # doctest: +SKIP

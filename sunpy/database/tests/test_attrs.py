@@ -404,6 +404,7 @@ def test_walker_create_fitsheader_inverted(session):
 
 
 @pytest.mark.remote_data
+@pytest.mark.skip
 def test_walker_create_vso_instrument(vso_session):
     entries = walker.create(a.Instrument.rhessi, vso_session)
     expected = [tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
@@ -447,6 +448,7 @@ def test_walker_create_vso_instrument(vso_session):
 
 
 @pytest.mark.remote_data
+@pytest.mark.skip
 def test_walker_create_wave(vso_session):
     entries = walker.create(a.Wavelength(0 * u.AA, 10 * u.AA), vso_session)
     assert len(entries) == 2
@@ -455,6 +457,7 @@ def test_walker_create_wave(vso_session):
 
 
 @pytest.mark.remote_data
+@pytest.mark.skip
 def test_walker_create_time(vso_session):
     time = a.Time(
         datetime(2011, 9, 17, 0, 0, 0), datetime(2011, 9, 20, 0, 0, 0))
