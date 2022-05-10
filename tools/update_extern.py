@@ -155,5 +155,4 @@ if __name__ == "__main__":
     for folder in folders:
         update_extern(folder)
 
-    # Remove the temporary directory
     shutil.rmtree("extern_pkg")
