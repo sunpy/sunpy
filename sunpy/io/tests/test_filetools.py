@@ -10,8 +10,8 @@ import sunpy.io
 from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import skip_ana, skip_glymur
 
-RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
-AIA_171_IMAGE = get_test_filepath('aia_171_level1.fits')
+TEST_RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
+TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
 
 # Some of the tests images contain an invalid BLANK keyword;
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
@@ -19,7 +19,7 @@ pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in heade
 
 def test_read_file_network_fits():
     url = "https://hesperia.gsfc.nasa.gov/rhessi_extras/imagecube_fits/2015/12/20/20151220_2228_2248/hsi_imagecube_clean_20151220_2228_13tx3e.fits"
-    with patch("astropy.io.fits.file.download_file", return_value=AIA_171_IMAGE) as mock:
+    with patch("astropy.io.fits.file.download_file", return_value=TEST_AIA_IMAGE) as mock:
         data = sunpy.io.read_file(url)
         assert mock.call_args[0] == (url,)
     assert isinstance(data, list)
@@ -30,7 +30,7 @@ def test_read_file_network_fits():
 
 
 def test_read_file_fits():
-    aiapair = sunpy.io.read_file(AIA_171_IMAGE)
+    aiapair = sunpy.io.read_file(TEST_AIA_IMAGE)
     assert isinstance(aiapair, list)
     assert len(aiapair) == 1
     assert len(aiapair[0]) == 2
@@ -39,7 +39,7 @@ def test_read_file_fits():
 
 
 def test_read_file_fits_multple_hdu():
-    pairs = sunpy.io.read_file(RHESSI_IMAGE)
+    pairs = sunpy.io.read_file(TEST_RHESSI_IMAGE)
     assert isinstance(pairs, list)
     assert len(pairs) == 4
     assert all([len(p) == 2 for p in pairs])
@@ -81,7 +81,7 @@ def test_read_file_header_jp2():
 
 
 def test_read_file_header_fits():
-    hlist = sunpy.io.read_file_header(AIA_171_IMAGE)
+    hlist = sunpy.io.read_file_header(TEST_AIA_IMAGE)
     assert isinstance(hlist, list)
     assert len(hlist) == 1
     assert isinstance(hlist[0], sunpy.io.header.FileHeader)
@@ -128,22 +128,22 @@ def test_read_file_header_jp2():
 @pytest.mark.parametrize('fname', ['aia_171_image.fits',
                                    pathlib.Path('aia_171_image.fits')])
 def test_write_file_fits(fname):
-    aiapair = sunpy.io.read_file(AIA_171_IMAGE)[0]
+    aiapair = sunpy.io.read_file(TEST_AIA_IMAGE)[0]
     sunpy.io.write_file(fname, aiapair[0], aiapair[1],
                         overwrite=True)
     assert os.path.exists("aia_171_image.fits")
-    outpair = sunpy.io.read_file(AIA_171_IMAGE)[0]
+    outpair = sunpy.io.read_file(TEST_AIA_IMAGE)[0]
     assert np.all(np.equal(outpair[0], aiapair[0]))
     assert outpair[1] == aiapair[1]
     os.remove("aia_171_image.fits")
 
 
 def test_write_file_fits_bytes():
-    aiapair = sunpy.io.read_file(AIA_171_IMAGE)[0]
+    aiapair = sunpy.io.read_file(TEST_AIA_IMAGE)[0]
     with open("aia_171_image_bytes.fits", 'wb') as fileo:
         sunpy.io.write_file(fileo, aiapair[0], aiapair[1], filetype='fits')
     assert os.path.exists("aia_171_image_bytes.fits")
-    outpair = sunpy.io.read_file(AIA_171_IMAGE)[0]
+    outpair = sunpy.io.read_file(TEST_AIA_IMAGE)[0]
     assert np.all(np.equal(outpair[0], aiapair[0]))
     assert outpair[1] == aiapair[1]
     os.remove("aia_171_image_bytes.fits")

@@ -36,3 +36,12 @@ def test_read_file():
     """
     map_ = Map(AIA_193_JP2)
     assert isinstance(map_, GenericMap)
+
+
+@skip_glymur
+def test_read_memmap():
+    """
+    Passing memmap as keyword argument should not raise an error.
+    """
+    map_ = Map(AIA_193_JP2, memmap=True)
+    assert isinstance(map_, GenericMap)

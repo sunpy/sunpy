@@ -1,4 +1,5 @@
 
+import mmap
 import tempfile
 
 import numpy as np
@@ -75,3 +76,16 @@ def test_f32c():
     afilename = tempfile.NamedTemporaryFile().name
     with pytest.raises(RuntimeError):
         ana.write(afilename, img_f32, 'testcase', 1)
+
+
+@skip_ana
+def test_read_memmap():
+    # Test to check that passing memmap=True doesn't raise an error
+    afilename = tempfile.NamedTemporaryFile().name
+    ana.write(afilename, img_f32, 'testcase', 0)
+    img_f32c_rec = ana.read(afilename, memmap=True)
+    assert np.sum(img_f32c_rec[0][0] - img_f32) == 0
+
+    # Test to check that passing memmap=False doesn't raise an error
+    img_f32c_rec = ana.read(afilename, memmap=False)
+    assert not isinstance(img_f32c_rec, mmap.mmap)
