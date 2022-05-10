@@ -11,7 +11,6 @@ from pathlib import Path
 SUNPY_DIR = Path(__file__).parent.parent
 
 
-# Dictionary to store the authors of the packages
 PACKAGES = {
     "appdirs": "ActiveState",
     "distro": "python-distro",
