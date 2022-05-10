@@ -1,5 +1,3 @@
-#!/bin/env python
-
 """
 This script is used to update the files in `sunpy/extern` while making new releases.
 """
@@ -154,9 +152,6 @@ if __name__ == "__main__":
     for root, dirs, files in os.walk("extern_pkg"):
         folders = dirs
         break
-
-    # Sort the packages in alphabetical order
-    folders.sort()
 
     # Extract the files
     for folder in folders:
