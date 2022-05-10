@@ -83,57 +83,42 @@ def move_files(src: Path, dst: Path):
     print(f"Moving {src} to {dst}")
 
 
-def extract_appdirs(destination):
+def update_extern(destination):
     """
-    Extract appdirs.py from the appdirs package.
+    Update the files in the sunpy/extern directory.
     """
-    # Print the path of appdirs.py
+    # If the destination contains the appdirs package, extract the appdirs.py file
+    if destination.split("-")[0] == "appdirs":
+        if os.path.exists(f"extern_pkg/{destination}/appdirs.py"):
+            # Move the file to the sunpy/extern directory
+            move_files(f"extern_pkg/{destination}/appdirs.py", SUNPY_DIR / "sunpy" / "extern" / "appdirs.py")
 
-    if os.path.exists(f"{destination}/appdirs.py"):
-        print(f"{destination}/appdirs.py")
-        # Move the file to the sunpy/extern directory
-        move_files(f"{destination}/appdirs.py", SUNPY_DIR / "sunpy" / "extern" / "appdirs.py")
-        # Remove the directory
-        shutil.rmtree(destination)
+    # If the destination contains the distro package, extract the distro.py file
+    if destination.split("-")[0] == "distro":
+        # Print the path of distro.py
+        if os.path.exists(f"extern_pkg/{destination}/src/distro/distro.py"):
+            # Move the file to the sunpy/extern directory
+            move_files(f"extern_pkg/{destination}/src/distro/distro.py",
+                       SUNPY_DIR / "sunpy" / "extern" / "distro.py")
 
+    # If the destination contains the inflect package, extract the inflect.py file
+    if destination.split("-")[0] == "inflect":
+        if os.path.exists(f"extern_pkg/{destination}/inflect/__init__.py"):
+            # Rename the file to inflect.py
+            os.rename(f"extern_pkg/{destination}/inflect/__init__.py",
+                      f"extern_pkg/{destination}/inflect/inflect.py")
+            # Move the file to the sunpy/extern directory
+            move_files(f"extern_pkg/{destination}/inflect/inflect.py",
+                       SUNPY_DIR / "sunpy" / "extern" / "inflect.py")
 
-def extract_distro(destination):
-    """
-    Extract distro.py from the distro package.
-    """
-    # Print the path of distro.py
-    if os.path.exists(f"{destination}/src/distro/distro.py"):
-        print(f"{destination}/src/distro/distro.py")
-        # Move the file to the sunpy/extern directory
-        move_files(f"{destination}/src/distro/distro.py", SUNPY_DIR / "sunpy" / "extern" / "distro.py")
-        # Remove the directory
-        shutil.rmtree(destination)
+    # If the destination contains the parse package, extract the parse.py file
+    if destination.split("-")[0] == "parse":
+        if os.path.exists(f"extern_pkg/{destination}/parse.py"):
+            # Move the file to the sunpy/extern directory
+            move_files(f"extern_pkg/{destination}/parse.py", SUNPY_DIR / "sunpy" / "extern" / "parse.py")
 
-
-def extract_inflect(destination):
-    """
-    Extract inflect.py from the inflect package.
-    """
-    if os.path.exists(f"{destination}/inflect/__init__.py"):
-        print(f"{destination}/inflect/__init__.py")
-        # Rename the file to inflect.py
-        os.rename(f"{destination}/inflect/__init__.py", f"{destination}/inflect/inflect.py")
-        # Move the file to the sunpy/extern directory
-        move_files(f"{destination}/inflect/inflect.py", SUNPY_DIR / "sunpy" / "extern" / "inflect.py")
-        # Remove the directory
-        shutil.rmtree(destination)
-
-
-def extract_parse(destination):
-    """
-    Extract parse.py from the parse package.
-    """
-    if os.path.exists(f"{destination}/parse.py"):
-        print(f"{destination}/parse.py")
-        # Move the file to the sunpy/extern directory
-        move_files(f"{destination}/parse.py", SUNPY_DIR / "sunpy" / "extern" / "parse.py")
-        # Remove the directory
-        shutil.rmtree(destination)
+    # Remove the directory
+    shutil.rmtree(f"extern_pkg/{destination}")
 
 
 if __name__ == "__main__":
@@ -147,23 +132,17 @@ if __name__ == "__main__":
         # Open the zip file
         unzip(f"extern_pkg/{package}.zip")
 
-    folder_name = list()
+    folders = list()
     for root, dirs, files in os.walk("extern_pkg"):
-        folder_name = dirs
+        folders = dirs
         break
-    folder_name.sort()
 
-    # Extract the appdirs package
-    extract_appdirs(f"extern_pkg/{folder_name[0]}")
+    # Sort the packages in alphabetical order
+    folders.sort()
 
-    # Extract the distro package
-    extract_distro(f"extern_pkg/{folder_name[1]}")
-
-    # Extract the inflect package
-    extract_inflect(f"extern_pkg/{folder_name[2]}")
-
-    # Extract the parse package
-    extract_parse(f"extern_pkg/{folder_name[3]}")
+    # Extract the files
+    for folder in folders:
+        update_extern(folder)
 
     # Remove the temporary directory
     shutil.rmtree("extern_pkg")
