@@ -1,5 +1,5 @@
 """
-This script is used to update the files in `sunpy/extern` while making new releases.
+Updates all the libraries in ``sunpy/extern``
 """
 
 import os
