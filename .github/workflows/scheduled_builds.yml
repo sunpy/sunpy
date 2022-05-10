@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: gh workflow run ci.yml --repo sunpy/sunpy --ref main
-      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 3.1
-      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 3.0
+      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 4.0
     env:
       GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
