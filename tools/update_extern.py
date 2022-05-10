@@ -14,47 +14,44 @@ from pathlib import Path
 SUNPY_DIR = Path(__file__).parent.parent
 
 
-# List of packages to update
-PACKAGES = ["appdirs", "distro", "inflect", "parse"]
-
 # Dictionary to store the authors of the packages
-AUTHORS = {
-    PACKAGES[0]: "ActiveState",
-    PACKAGES[1]: "python-distro",
-    PACKAGES[2]: "jaraco",
-    PACKAGES[3]: "r1chardj0n3s",
+PACKAGES = {
+    "appdirs": "ActiveState",
+    "distro": "python-distro",
+    "inflect": "jaraco",
+    "parse": "r1chardj0n3s",
 }
 
 
-def package_exists(package):
+def package_exists():
     """
     Check if the package exists.
     """
-    # this function checks if AUTHORS and PACKAGES correctly match
+    # This function checks if AUTHORS and PACKAGES are correctly match
     for package in PACKAGES:
+        print(f"Checking {PACKAGES[package]}/{package}")
         # Get 200 response from github
-        response = requests.get(f"https://api.github.com/repos/{AUTHORS[package]}/{package}")
+        response = requests.get(f"https://api.github.com/repos/{PACKAGES[package]}/{package}")
         if response.status_code != 200:
-            print(f"{package} does not exist")
-            print(f"Or {AUTHORS[package]} does not exist")
+            print(f"{PACKAGES[package]}/{package} does not exist.")
             return False
     return True
 
 
-def get_latest_version(package):
+def get_latest_version(author, package):
     """
     Get the latest version of the package.
     """
-    url = f"https://api.github.com/repos/{AUTHORS[package]}/{package}/releases/latest"
+    url = f"https://api.github.com/repos/{author}/{package}/releases/latest"
     response = requests.get(url)
     return response.json()["tag_name"]
 
 
-def get_download_url(package, version):
+def get_download_url(author, package, version):
     """
     Get the download url for the package.
     """
-    url = f"https://github.com/{AUTHORS[package]}/{package}/archive/refs/tags/{version}.zip"
+    url = f"https://github.com/{author}/{package}/archive/refs/tags/{version}.zip"
     return url
 
 
@@ -139,13 +136,13 @@ def update_extern(destination):
 if __name__ == "__main__":
 
     # Check if the packages exist
-    if not package_exists(PACKAGES):
+    if not package_exists():
         print("Exiting...")
         exit()
 
     for package in PACKAGES:
         # get the url of the package
-        url = get_download_url(package, get_latest_version(package))
+        url = get_download_url(PACKAGES[package], package, get_latest_version(PACKAGES[package], package))
 
         # download the package
         download_package(url, package)
