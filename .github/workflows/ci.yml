@@ -11,11 +11,6 @@ on:
       - '!*pre*'
       - '!*post*'
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - labeled
   # Allow manual runs through the web UI
   workflow_dispatch:
 
@@ -25,17 +20,6 @@ concurrency:
 
 jobs:
   core:
-    if: |
-      github.event_name != 'pull_request' || (
-        github.event_name == 'pull_request' && (
-          github.event.action != 'labeled' || (
-            github.event.action == 'labeled' && (
-              github.event.label.name == 'Run cron' ||
-              github.event.label.name == 'Run publish'
-            )
-          )
-        )
-      )
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       submodules: false
@@ -91,13 +75,9 @@ jobs:
 
   cron:
     if: |
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'pull_request' && (
-        (
-          github.event.action == 'labeled' &&
-          github.event.label.name == 'Run cron'
-        ) ||
-        contains(github.event.pull_request.labels.*.name, 'Run cron')
+      github.event_name == 'workflow_dispatch' || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
       )
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
@@ -119,14 +99,13 @@ jobs:
     # Build wheels when pushing to any branch except main
     # publish.yml will only publish if tagged ^v.*
     if: |
-      github.event_name != 'pull_request' && (
-        github.ref_name != 'main' ||
-        github.event_name == 'workflow_dispatch' ) ||
-      github.event_name == 'pull_request' && (
-        (
-          github.event.action == 'labeled' &&
-          github.event.label.name == 'Run publish'
-        ) ||
+      (
+        github.event_name != 'pull_request' && (
+          github.ref_name != 'main' ||
+          github.event_name == 'workflow_dispatch'
+        )
+      ) || (
+        github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test]
