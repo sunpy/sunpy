@@ -74,7 +74,11 @@ jobs:
         - linux: py39-online
 
   cron:
-    if: github.event_name == 'workflow_dispatch'
+    if: |
+      github.event_name == 'workflow_dispatch' || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
+      )
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       default_python: '3.8'
@@ -95,9 +99,15 @@ jobs:
     # Build wheels when pushing to any branch except main
     # publish.yml will only publish if tagged ^v.*
     if: |
-      github.event_name != 'pull_request' && (
-        github.ref_name != 'main' ||
-        github.event_name == 'workflow_dispatch' )
+      (
+        github.event_name != 'pull_request' && (
+          github.ref_name != 'main' ||
+          github.event_name == 'workflow_dispatch'
+        )
+      ) || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run publish')
+      )
     needs: [test]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
