@@ -12,50 +12,34 @@ SUNPY_DIR = Path(__file__).parent.parent
 
 
 PACKAGES = {
-    "appdirs": "ActiveState",
-    "distro": "python-distro",
-    "inflect": "jaraco",
-    "parse": "r1chardj0n3s",
+    "appdirs": ["ActiveState", "appdirs.py"],
+    "distro": ["python-distro", "src/distro/distro.py"],
+    "inflect": ["jaraco", "inflect/__init__.py"],
+    "parse": ["r1chardj0n3s", "parse.py"],
 }
 
 
-def package_exists():
+def download_package(package: str):
     """
-    Check if the package exists.
+    Download the latest version of package using Github release tags.
+
+    Args:
+        package: The name of the package to download.
     """
-    # This function checks if AUTHORS and PACKAGES are correctly match
     for package in PACKAGES:
-        print(f"Checking {PACKAGES[package]}/{package}")
+        print(f"Checking {PACKAGES[package][0]}/{package}")
         # Get 200 response from github
-        response = requests.get(f"https://api.github.com/repos/{PACKAGES[package]}/{package}")
+        response = requests.get(f"https://api.github.com/repos/{PACKAGES[package][0]}/{package}")
         if response.status_code != 200:
             print(f"{PACKAGES[package]}/{package} does not exist.")
-            return False
-    return True
+            exit()
 
-
-def get_latest_version(author, package):
-    """
-    Get the latest version of the package.
-    """
+    author = PACKAGES[package][0]
     url = f"https://api.github.com/repos/{author}/{package}/releases/latest"
     response = requests.get(url)
-    return response.json()["tag_name"]
-
-
-def get_download_url(author, package, version):
-    """
-    Get the download url for the package.
-    """
+    version = response.json()["tag_name"]
     url = f"https://github.com/{author}/{package}/archive/refs/tags/{version}.zip"
-    return url
 
-
-def download_package(url, package):
-    """
-    Download the package.
-    """
-    # Make a temporaty directory
     if not os.path.exists("extern_pkg"):
         os.mkdir("extern_pkg")
 
@@ -69,90 +53,64 @@ def download_package(url, package):
         f.close()
 
 
-def unzip(filename):
+def unzip(folder: str):
     """
-    Extract the package.
+    This function unzips the zip file and moves the files to the sunpy/extern folder.
+
+    Args:
+        folder: The name of the parent folder of the zip file.
     """
-    with ZipFile(filename, "r") as zip_file:
-        zip_file.extractall("extern_pkg")
-    # Remove the zip file
-    os.remove(filename)
+    package = folder.split("-")[0]
+    with ZipFile(f"extern_pkg/{package}.zip", "r") as zip_file:
+        zip_file.extract(f"{folder}/{PACKAGES[package][1]}", "extern_pkg")
+    # os.remove(f"extern_pkg/{package}.zip")
 
 
-def move_files(src: Path, dst: Path):
+def move(src: Path, dst: Path):
     """
     Move the files from the src to the dst.
+
+    Args:
+        src: The path to the files to be moved.
+        dst: The path where the files will be moved.
     """
-    # if dst already exists, remove it
     if os.path.exists(dst):
-        print(f"Removing {dst}")
-    # move the files
+        os.remove(dst)
     shutil.move(src, dst)
-    print(f"Moving {src} to {dst}")
 
 
-def update_extern(destination):
+def get_zip_file():
     """
-    Update the files in the sunpy/extern directory.
+    This function returns a list of parent folders of each zip file inside the temporary folder.
     """
-    # If the destination contains the appdirs package, extract the appdirs.py file
-    if destination.split("-")[0] == "appdirs":
-        if os.path.exists(f"extern_pkg/{destination}/appdirs.py"):
-            # Move the file to the sunpy/extern directory
-            move_files(f"extern_pkg/{destination}/appdirs.py", SUNPY_DIR / "sunpy" / "extern" / "appdirs.py")
 
-    # If the destination contains the distro package, extract the distro.py file
-    if destination.split("-")[0] == "distro":
-        # Print the path of distro.py
-        if os.path.exists(f"extern_pkg/{destination}/src/distro/distro.py"):
-            # Move the file to the sunpy/extern directory
-            move_files(f"extern_pkg/{destination}/src/distro/distro.py",
-                       SUNPY_DIR / "sunpy" / "extern" / "distro.py")
-
-    # If the destination contains the inflect package, extract the inflect.py file
-    if destination.split("-")[0] == "inflect":
-        if os.path.exists(f"extern_pkg/{destination}/inflect/__init__.py"):
-            # Rename the file to inflect.py
-            os.rename(f"extern_pkg/{destination}/inflect/__init__.py",
-                      f"extern_pkg/{destination}/inflect/inflect.py")
-            # Move the file to the sunpy/extern directory
-            move_files(f"extern_pkg/{destination}/inflect/inflect.py",
-                       SUNPY_DIR / "sunpy" / "extern" / "inflect.py")
-
-    # If the destination contains the parse package, extract the parse.py file
-    if destination.split("-")[0] == "parse":
-        if os.path.exists(f"extern_pkg/{destination}/parse.py"):
-            # Move the file to the sunpy/extern directory
-            move_files(f"extern_pkg/{destination}/parse.py", SUNPY_DIR / "sunpy" / "extern" / "parse.py")
-
-    # Remove the directory
-    shutil.rmtree(f"extern_pkg/{destination}")
+    folders = list()
+    for root, dirs, files in os.walk("extern_pkg"):
+        for folder in files:
+            with ZipFile(f"extern_pkg/{folder}", "r") as zip_file:
+                file_name = zip_file.namelist()
+                folders.append(file_name[0].split("/")[0])
+        folders.sort()
+    return folders
 
 
 if __name__ == "__main__":
 
-    # Check if the packages exist
-    if not package_exists():
-        print("Exiting...")
-        exit()
-
     for package in PACKAGES:
-        # get the url of the package
-        url = get_download_url(PACKAGES[package], package, get_latest_version(PACKAGES[package], package))
+        download_package(package)
 
-        # download the package
-        download_package(url, package)
-
-        # Open the zip file
-        unzip(f"extern_pkg/{package}.zip")
-
-    folders = list()
-    for root, dirs, files in os.walk("extern_pkg"):
-        folders = dirs
-        break
-
-    # Extract the files
+    folders = get_zip_file()
     for folder in folders:
-        update_extern(folder)
+        unzip(folder)
+
+    for root, dirs, files in os.walk("extern_pkg"):
+        for file in files:
+            if file.endswith(".py"):
+                if file == "__init__.py":
+                    package = root.split("/")[-1]
+                    move(os.path.join(root, file), os.path.join(
+                        SUNPY_DIR, "sunpy", "extern", f"{package}.py"))
+                else:
+                    move(os.path.join(root, file), os.path.join(SUNPY_DIR, "sunpy", "extern", file))
 
     shutil.rmtree("extern_pkg")
