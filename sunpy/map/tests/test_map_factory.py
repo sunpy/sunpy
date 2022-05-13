@@ -11,6 +11,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath, rootdir, test_data_filenames
+from sunpy.tests.helpers import skip_glymur
 from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
 
 a_list_of_many = [f for f in test_data_filenames() if 'efz' in f.name]
@@ -185,8 +186,6 @@ def test_errors(tmpdir):
     with pytest.raises(OSError, match=(fr"Failed to read *")):
         sunpy.map.Map(files)
 
-# We want to check errors, so ignore warnings that are thrown
-
 
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
 @pytest.mark.parametrize('silence,error,match',
@@ -200,8 +199,6 @@ def test_silence_errors(silence, error, match):
     with pytest.raises(error, match=match):
         _ = sunpy.map.Map(data, header, silence_errors=silence)
 
-# requires dask array to run properly
-
 
 def test_dask_array():
     dask_array = pytest.importorskip('dask.array')
@@ -209,8 +206,6 @@ def test_dask_array():
     da = dask_array.from_array(amap.data, chunks=(1, 1))
     pair_map = sunpy.map.Map(da, amap.meta)
     assert isinstance(pair_map, sunpy.map.GenericMap)
-
-# requires sqlalchemy to run properly
 
 
 def test_databaseentry():
@@ -249,8 +244,6 @@ def test_map_list_urls_cache():
             'http://jsoc.stanford.edu/SUM79/D136597240/S00000/image_lev1.fits']
     sunpy.map.Map(urls)
 
-# Catch Hinode/XRT warning
-
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
 @pytest.mark.parametrize('file, mapcls', [
@@ -287,3 +280,22 @@ def test_no_2d_hdus(tmpdir):
 
     with pytest.warns(SunpyUserWarning, match='One of the arguments failed to parse'):
         sunpy.map.Map([tmp_fpath, AIA_171_IMAGE], silence_errors=True)
+
+
+@skip_glymur
+def test_map_jp2():
+    jp2_map = sunpy.map.Map(AIA_193_JP2, memmap=False)
+    assert isinstance(jp2_map, sunpy.map.GenericMap)
+    assert jp2_map.data.base is not None
+    jp2_map = sunpy.map.Map(AIA_193_JP2, memmap=True)
+    assert isinstance(jp2_map, sunpy.map.GenericMap)
+    assert jp2_map.data.base is not None
+
+
+def test_map_fits():
+    fits_map = sunpy.map.Map(AIA_171_IMAGE, memmap=False)
+    assert isinstance(fits_map, sunpy.map.GenericMap)
+    assert fits_map.data.base is None
+    fits_map = sunpy.map.Map(AIA_171_IMAGE, memmap=True)
+    assert isinstance(fits_map, sunpy.map.GenericMap)
+    assert fits_map.data.base is not None

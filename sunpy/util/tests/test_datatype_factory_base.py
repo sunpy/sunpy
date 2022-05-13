@@ -48,7 +48,6 @@ class UnvalidatedWidget(BaseWidget):
 
 
 class MissingClassMethodWidget(BaseWidget):
-    @classmethod
     def _factory_validation_function(cls, *args, **kwargs):
         return kwargs.get('style') == 'missing'
 
@@ -60,7 +59,6 @@ class DifferentValidationWidget(BaseWidget):
 
 
 class MissingClassMethodDifferentValidationWidget(BaseWidget):
-    @classmethod
     def different_validation_function(cls, *args, **kwargs):
         return kwargs.get('style') == 'missing-different'
 
