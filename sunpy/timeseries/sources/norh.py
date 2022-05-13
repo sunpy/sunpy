@@ -63,7 +63,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes : `matplotlib.axes.Axes`, optional
             The axes on which to plot the TimeSeries. Defaults to current axes.
         columns : list[str], optional
-            To maintain uniformity among plot methods.
+            Unused, but there to maintain uniformity among plot methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -105,7 +105,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         title : `str`, optional
             The title of the plot. Defaults to "Nobeyama Radioheliograph".
         columns : list[str], optional
-            To maintain uniformity among peek methods.
+            Unused, but there to maintain uniformity among peek methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.

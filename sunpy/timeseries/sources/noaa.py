@@ -68,7 +68,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         plot_type : {``"sunspot SWO"``, ``"sunspot RI"``, ``"sunspot compare"``, ``"radio"``, ``"geo"``}, optional
             The type of plot required. Defaults to ``"sunspot SWO"``.
         columns : list[str], optional
-            To maintain uniformity among plot methods.
+            Unused, but there to maintain uniformity among plot methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -132,7 +132,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         plot_type : {``"sunspot SWO"``, ``"sunspot RI"``, ``"sunspot compare"``, ``"radio"``, ``"geo"``}, optional
             The type of plot required. Defaults to ``"sunspot SWO"``.
         columns : list[str], optional
-            To maintain uniformity among peek methods.
+            Unused, but there to maintain uniformity among peek methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -242,7 +242,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes : `matplotlib.axes.Axes`, optional
             The axes on which to plot the TimeSeries.
         columns : list[str], optional
-            To maintain uniformity among plot methods.
+            Unused, but there to maintain uniformity among plot methods.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -284,7 +284,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         title : `str`, optional
             The title of the plot. Defaults to "Solar Cycle Sunspot Number Prediction".
         columns : list[str], optional
-            To maintain uniformity among peek methods.
+            Unused, but there to maintain uniformity among peek methods.
         **plot_args : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
