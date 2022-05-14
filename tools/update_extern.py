@@ -107,11 +107,8 @@ if __name__ == "__main__":
     for root, dirs, files in os.walk("extern_pkg"):
         for file in files:
             if file.endswith(".py"):
-                if file == "__init__.py":
-                    package = root.split("/")[-1]
-                    move(os.path.join(root, file), os.path.join(
-                        SUNPY_DIR, "sunpy", "extern", f"{package}.py"))
-                else:
-                    move(os.path.join(root, file), os.path.join(SUNPY_DIR, "sunpy", "extern", file))
+                package = root.split("/")[-1]
+                move(os.path.join(root, file), os.path.join(
+                    SUNPY_DIR, "sunpy", "extern", f"{package}.py"))
 
     shutil.rmtree("extern_pkg")
