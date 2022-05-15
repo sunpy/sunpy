@@ -1,7 +1,10 @@
 import os
 import glob
 import pathlib
+import collections
 import urllib.request
+
+HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 
 
 def parse_path(path, f, **kwargs):
@@ -77,3 +80,11 @@ def is_url(obj):
     except Exception:
         return False
     return True
+
+
+def string_is_float(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False

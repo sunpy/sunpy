@@ -1,15 +1,13 @@
 """
 This module provides a JPEG 2000 file reader.
 """
-import collections
 from xml.etree import cElementTree as ET
 
 from sunpy.io.header import FileHeader
+from sunpy.util.io import HDPair, string_is_float
 from sunpy.util.xml import xml_to_dict
 
 __all__ = ['read', 'get_header', 'write']
-
-HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 
 
 def read(filepath, **kwargs):
@@ -20,20 +18,19 @@ def read(filepath, **kwargs):
     ----------
     filepath : `str`
         The file to be read.
+    **kwargs : `dict`
+        Unused.
 
     Returns
     -------
-    pairs : `list`
+    `list`
         A list of (data, header) tuples.
     """
     # Put import here to speed up sunpy.io import time
     from glymur import Jp2k
+
     header = get_header(filepath)
-
-    data = Jp2k(filepath)[...]
-    # For some reason Jp2k doesn't like [::-1], so do directly on the array
-    data = data[::-1]
-
+    data = Jp2k(filepath)[...][::-1]
     return [HDPair(data, header[0])]
 
 
@@ -48,8 +45,8 @@ def get_header(filepath):
 
     Returns
     -------
-    headers : list
-        A list of headers read from the file.
+    `list`
+        A list of one header read from the file.
     """
     # Put import here to speed up sunpy.io import time
     from glymur import Jp2k
@@ -62,7 +59,7 @@ def get_header(filepath):
     for k, v in pydict.items():
         if v.isdigit():
             pydict[k] = int(v)
-        elif _is_float(v):
+        elif string_is_float(v):
             pydict[k] = float(v)
 
     # Remove newlines from comment
@@ -76,18 +73,4 @@ def get_header(filepath):
 
 
 def write(fname, data, header):
-    """
-    Place holder for required file writer.
-    """
     raise NotImplementedError("No jp2 writer is implemented.")
-
-
-def _is_float(s):
-    """
-    Check to see if a string value is a valid float.
-    """
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False

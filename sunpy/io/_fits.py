@@ -43,10 +43,9 @@ from astropy.io import fits
 
 from sunpy.io.header import FileHeader
 from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.io import HDPair
 
 __all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit', 'format_comments_and_history']
-
-HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 
 
 def read(filepath, hdus=None, memmap=None, **kwargs):
@@ -64,7 +63,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
 
     Returns
     -------
-    pairs : `list`
+    `list`
         A list of (data, header) tuples
 
     Notes
@@ -114,7 +113,7 @@ def get_header(afile):
 
     Returns
     -------
-    headers : `list`
+    `list`
         A list of `sunpy.io.header.FileHeader` headers.
     """
     if isinstance(afile, fits.HDUList):
@@ -144,10 +143,11 @@ def format_comments_and_history(input_header):
     Parameters
     ----------
     input_header : `~astropy.io.fits.Header`
+        The header to be processed.
 
     Returns
     -------
-    header : `sunpy.io.header.FileHeader`
+    `sunpy.io.header.FileHeader`
     """
     try:
         comment = "".join(input_header['COMMENT']).strip()
@@ -195,8 +195,7 @@ def write(fname, data, header, hdu_type=None, **kwargs):
         Additional keyword arguments are given to
         `~astropy.io.fits.HDUList.writeto`.
     """
-    # Copy header so the one in memory is left alone while changing it for
-    # write.
+    # Copy header so the one in memory is left alone
     header = header.copy()
 
     fits_header = header_to_fits(header)
@@ -211,13 +210,11 @@ def write(fname, data, header, hdu_type=None, **kwargs):
         hdu_type = fits.PrimaryHDU
 
     if isinstance(hdu_type, (fits.PrimaryHDU, fits.hdu.base.ExtensionHDU)):
-        hdu = hdu_type  # HDU already initialised
-
+        hdu = hdu_type  # HDU already initialized
         # Merge `header` into HDU's header
         # Values in `header` take priority, including cards such as
         # 'SIMPLE' and 'BITPIX'.
         hdu.header.extend(fits_header, strip=False, update=True)
-
         # Set the HDU's data
         hdu.data = data
     else:
@@ -283,7 +280,6 @@ def header_to_fits(header):
             if k in fits_header:
                 fits_header.comments[k] = v
     elif key_comments:
-
         raise TypeError("KEYCOMMENTS must be a dictionary")
 
     return fits_header
@@ -302,7 +298,7 @@ def extract_waveunit(header):
 
     Returns
     -------
-    waveunit : `str`
+    `str`
         The wavelength unit that could be found or ``None`` otherwise.
 
     Examples

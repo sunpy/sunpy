@@ -63,91 +63,84 @@ class MissingClassMethodDifferentValidationWidget(BaseWidget):
         return kwargs.get('style') == 'missing-different'
 
 
-class TestBasicRegistrationFactory:
+def test_default_factory():
+    DefaultFactory = BasicRegistrationFactory()
 
-    def test_default_factory(self):
+    DefaultFactory.register(DefaultWidget, is_default=True)
+    assert DefaultFactory.default_widget_type == DefaultWidget
 
-        DefaultFactory = BasicRegistrationFactory()
+    DefaultFactory.register(StandardWidget)
+    DefaultFactory.register(FancyWidget)
+    DefaultFactory.register(ExternallyValidatedWidget,
+                            validation_function=external_validation_function)
 
-        DefaultFactory.register(DefaultWidget, is_default=True)
-        assert DefaultFactory.default_widget_type == DefaultWidget
+    assert type(DefaultFactory()) is DefaultWidget
+    assert type(DefaultFactory(style='standard')) is StandardWidget
+    assert type(DefaultFactory(style='fancy')) is DefaultWidget
+    assert type(DefaultFactory(style='fancy', feature="present")) is FancyWidget
+    assert type(DefaultFactory(style='external')) is ExternallyValidatedWidget
 
-        DefaultFactory.register(StandardWidget)
-        DefaultFactory.register(FancyWidget)
-        DefaultFactory.register(ExternallyValidatedWidget,
-                                validation_function=external_validation_function)
+    with pytest.raises(ValidationFunctionError):
+        DefaultFactory.register(UnvalidatedWidget)
 
-        assert type(DefaultFactory()) is DefaultWidget
-        assert type(DefaultFactory(style='standard')) is StandardWidget
-        assert type(DefaultFactory(style='fancy')) is DefaultWidget
-        assert type(DefaultFactory(style='fancy', feature="present")) is FancyWidget
-        assert type(DefaultFactory(style='external')) is ExternallyValidatedWidget
+    with pytest.raises(ValidationFunctionError):
+        DefaultFactory.register(MissingClassMethodWidget)
 
-        with pytest.raises(ValidationFunctionError):
-            DefaultFactory.register(UnvalidatedWidget)
+    DefaultFactory.unregister(StandardWidget)
+    assert type(DefaultFactory(style='standard')) is not StandardWidget
 
-        with pytest.raises(ValidationFunctionError):
-            DefaultFactory.register(MissingClassMethodWidget)
 
-        DefaultFactory.unregister(StandardWidget)
-        assert type(DefaultFactory(style='standard')) is not StandardWidget
+def test_validation_fun_not_callable():
+    TestFactory = BasicRegistrationFactory()
 
-    def test_validation_fun_not_callable(self):
-        TestFactory = BasicRegistrationFactory()
+    with pytest.raises(AttributeError):
+        TestFactory.register(StandardWidget, validation_function='not_callable')
 
-        with pytest.raises(AttributeError):
-            TestFactory.register(StandardWidget, validation_function='not_callable')
 
-    def test_no_default_factory(self):
+def test_no_default_factory():
+    NoDefaultFactory = BasicRegistrationFactory()
+    NoDefaultFactory.register(StandardWidget)
+    NoDefaultFactory.register(FancyWidget)
 
-        NoDefaultFactory = BasicRegistrationFactory()
+    with pytest.raises(NoMatchError):
+        NoDefaultFactory()
 
-        NoDefaultFactory.register(StandardWidget)
-        NoDefaultFactory.register(FancyWidget)
+    # Raises because all requirements are not met for FancyWidget and no
+    # default is present.
+    with pytest.raises(NoMatchError):
+        NoDefaultFactory(style='fancy')
 
-        with pytest.raises(NoMatchError):
-            NoDefaultFactory()
+    assert type(NoDefaultFactory(style='standard')) is StandardWidget
+    assert type(NoDefaultFactory(style='fancy', feature='present')) is FancyWidget
 
-        # Raises because all requirements are not met for FancyWidget and no
-        # default is present.
-        with pytest.raises(NoMatchError):
-            NoDefaultFactory(style='fancy')
 
-        assert type(NoDefaultFactory(style='standard')) is StandardWidget
-        assert type(NoDefaultFactory(style='fancy', feature='present')) is FancyWidget
+def test_with_external_registry():
+    external_registry = {}
 
-    def test_with_external_registry(self):
-        external_registry = {}
+    FactoryWithExternalRegistry = BasicRegistrationFactory(registry=external_registry)
+    assert len(external_registry) == 0
 
-        FactoryWithExternalRegistry = \
-            BasicRegistrationFactory(registry=external_registry)
+    FactoryWithExternalRegistry.register(StandardWidget)
+    assert type(FactoryWithExternalRegistry(style='standard')) is StandardWidget
 
-        assert len(external_registry) == 0
+    # Ensure the 'external_registry' is being populated see #1988
+    assert len(external_registry) == 1
 
-        FactoryWithExternalRegistry.register(StandardWidget)
-        assert type(FactoryWithExternalRegistry(style='standard')) is StandardWidget
 
-        # Ensure the 'external_registry' is being populated see #1988
-        assert len(external_registry) == 1
+def test_multiple_match_factory():
+    MultipleMatchFactory = BasicRegistrationFactory()
+    MultipleMatchFactory.register(StandardWidget)
+    MultipleMatchFactory.register(DuplicateStandardWidget)
 
-    def test_multiple_match_factory(self):
+    with pytest.raises(MultipleMatchError):
+        MultipleMatchFactory(style='standard')
 
-        MultipleMatchFactory = BasicRegistrationFactory()
 
-        MultipleMatchFactory.register(StandardWidget)
-        MultipleMatchFactory.register(DuplicateStandardWidget)
+def test_extra_validation_factory():
+    ExtraValidationFactory = BasicRegistrationFactory(
+        additional_validation_functions=['different_validation_function'])
+    ExtraValidationFactory.register(DifferentValidationWidget)
+    assert type(ExtraValidationFactory(style='different')) is DifferentValidationWidget
 
-        with pytest.raises(MultipleMatchError):
-            MultipleMatchFactory(style='standard')
-
-    def test_extra_validation_factory(self):
-        ExtraValidationFactory = \
-            BasicRegistrationFactory(
-                additional_validation_functions=['different_validation_function'])
-
-        ExtraValidationFactory.register(DifferentValidationWidget)
-
-        assert type(ExtraValidationFactory(style='different')) is DifferentValidationWidget
-
-        with pytest.raises(ValidationFunctionError):
-            ExtraValidationFactory.register(MissingClassMethodDifferentValidationWidget)
+    with pytest.raises(ValidationFunctionError):
+        ExtraValidationFactory.register(MissingClassMethodDifferentValidationWidget)
