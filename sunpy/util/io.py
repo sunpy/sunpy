@@ -82,7 +82,7 @@ def is_url(obj):
     return True
 
 
-def is_float(s):
+def string_is_float(s):
     try:
         float(s)
         return True

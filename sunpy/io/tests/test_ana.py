@@ -83,8 +83,10 @@ def test_read_memmap():
     ana.write(afilename, img_f32, 'testcase', 0)
 
     # Memmap is not supported by ana
-    data, _ = ana.read(afilename, memmap=True)[0]
-    assert data.base is None
+    data_memmap, _ = ana.read(afilename, memmap=True)[0]
+    assert data_memmap.base is None
 
     data, _ = ana.read(afilename, memmap=False)[0]
     assert data.base is None
+
+    assert np.sum(data_memmap - data) == 0

@@ -286,6 +286,8 @@ def test_no_2d_hdus(tmpdir):
 def test_map_jp2():
     jp2_map = sunpy.map.Map(AIA_193_JP2, memmap=False)
     assert isinstance(jp2_map, sunpy.map.GenericMap)
+    # The base of an array that owns its memory is None
+    # For some reason JP2 doesn't own its own memory but are not type of memmaps.
     assert jp2_map.data.base is not None
     jp2_map = sunpy.map.Map(AIA_193_JP2, memmap=True)
     assert isinstance(jp2_map, sunpy.map.GenericMap)
@@ -295,6 +297,7 @@ def test_map_jp2():
 def test_map_fits():
     fits_map = sunpy.map.Map(AIA_171_IMAGE, memmap=False)
     assert isinstance(fits_map, sunpy.map.GenericMap)
+    # The base of an array that owns its memory is None
     assert fits_map.data.base is None
     fits_map = sunpy.map.Map(AIA_171_IMAGE, memmap=True)
     assert isinstance(fits_map, sunpy.map.GenericMap)

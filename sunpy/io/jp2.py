@@ -4,7 +4,7 @@ This module provides a JPEG 2000 file reader.
 from xml.etree import cElementTree as ET
 
 from sunpy.io.header import FileHeader
-from sunpy.util.io import HDPair, is_float
+from sunpy.util.io import HDPair, string_is_float
 from sunpy.util.xml import xml_to_dict
 
 __all__ = ['read', 'get_header', 'write']
@@ -59,7 +59,7 @@ def get_header(filepath):
     for k, v in pydict.items():
         if v.isdigit():
             pydict[k] = int(v)
-        elif is_float(v):
+        elif string_is_float(v):
             pydict[k] = float(v)
 
     # Remove newlines from comment
