@@ -164,19 +164,17 @@ def write(fname, data, header, **kwargs):
     """
     from glymur import Jp2k
 
-    # Create an initial jp2 file with the given data
     tmpname = fname + "tmp.jp2"
     jp2_data = np.uint8(data)
     jp2 = Jp2k(tmpname, jp2_data, **kwargs)
 
-    # Append the XML data to the header information
+    # Append the XML data to the header information stored in jp2.box
     meta_boxes = jp2.box
     target_index = len(meta_boxes) - 1
     fits_box = generate_jp2_xmlbox(header)
     meta_boxes.insert(target_index, fits_box)
 
-    # Rewrite the jp2 file with the xml data in the header
+    # Rewrites the jp2 file on disk with the xml data in the header
     jp2.wrap(fname, boxes=meta_boxes)
 
-    # Remove the initial temporary file
     os.remove(tmpname)
