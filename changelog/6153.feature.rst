@@ -1,1 +1,1 @@
-Add support for saving maps as jp2 files.
+Add support for saving `~sunpy.map.GenericMap` as JPEG 2000 files.
