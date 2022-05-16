@@ -39,3 +39,7 @@ def test_simple_write(tmpdir):
     jp2.write(str(outfile), data, header)
     assert outfile.exists()
 
+    # Sanity check that reading back the jp2 returns coherent data
+    jp2_readback = jp2.read(outfile)
+    assert header['DATE'] == jp2_readback[0].header['DATE']
+
