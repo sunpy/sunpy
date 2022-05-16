@@ -24,24 +24,26 @@ from sunpy.net import attrs as a
 # First, query a full frame AIA image.
 
 t0 = astropy.time.Time('2012-09-24T14:56:03', scale='utc', format='isot')
-q = Fido.search(
+query = Fido.search(
     a.Instrument.aia,
     a.Physobs.intensity,
     a.Wavelength(171*u.angstrom),
     a.Time(t0, t0 + 13*u.s),
 )
-m = sunpy.map.Map(Fido.fetch(q))
+files = Fido.fetch(query)
+amap = sunpy.map.Map(files)
 
 #####################################################
 # Next, we will create a submap from this image. We will
 # crop the field of view to active region NOAA 11575.
 
-m_cutout = m.submap(
-    SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=m.coordinate_frame),
-    top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=m.coordinate_frame),
+cutouts = amap.submap(
+    SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=amap.coordinate_frame),
+    top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=amap.coordinate_frame),
 )
 plt.figure()
-m_cutout.plot()
+cutouts.plot()
+
 plt.show()
 
 #####################################################
@@ -54,8 +56,8 @@ plt.show()
 # above using the `~sunpy.net.jsoc.attrs.Cutout` attribute.
 
 cutout = a.jsoc.Cutout(
-    m_cutout.bottom_left_coord,
-    top_right=m_cutout.top_right_coord,
+    cutouts.bottom_left_coord,
+    top_right=cutouts.top_right_coord,
     tracking=True
 )
 
@@ -75,9 +77,9 @@ jsoc_email = os.environ["JSOC_EMAIL"]
 # centered on the time of the above cutout.
 # We request one image every 2 hours.
 
-q = Fido.search(
-    a.Time(m_cutout.date - 6*u.h, m_cutout.date + 6*u.h),
-    a.Wavelength(m_cutout.wavelength),
+query = Fido.search(
+    a.Time(cutouts.date - 6*u.h, cutouts.date + 6*u.h),
+    a.Wavelength(cutouts.wavelength),
     a.Sample(2*u.h),
     a.jsoc.Series.aia_lev1_euv_12s,
     a.jsoc.Notify(jsoc_email),
@@ -88,14 +90,14 @@ q = Fido.search(
 #####################################################
 # Submit the export request and download the data.
 
-files = Fido.fetch(q)
+files = Fido.fetch(query)
 files.sort()
 
 #####################################################
 # Now that we've downloaded the files, we can create
 # a `~sunpy.map.MapSequence` from them.
 
-m_seq = sunpy.map.Map(files, sequence=True)
+sequence = sunpy.map.Map(files, sequence=True)
 
 #####################################################
 # Finally, we can construct an animation in time from
@@ -104,8 +106,9 @@ m_seq = sunpy.map.Map(files, sequence=True)
 # settings on each image to ensure the colorbar is the
 # same at each time step.
 
-for m in m_seq:
-    m.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
+for each_map in sequence:
+    each_map.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
 plt.figure()
-ani = m_seq.plot()
+ani = sequence.plot()
+
 plt.show()

@@ -176,10 +176,9 @@ def test_hpc_distance_off_limb():
     assert hpc1.Tx == 1500 * u.arcsec
     assert hpc1.Ty == 0 * u.arcsec
 
-    hpc2 = hpc1.make_3d()
-
+    with pytest.warns(SunpyUserWarning, match="is all NaNs"):
+        hpc2 = hpc1.make_3d()
     assert isinstance(hpc2._data, SphericalRepresentation)
-
     # Check the attrs are correct
     assert hpc2.Tx == 1500 * u.arcsec
     assert hpc2.Ty == 0 * u.arcsec
@@ -414,17 +413,14 @@ def test_skycoord_hpc(args, kwargs):
     Test that when instantiating a HPC frame with SkyCoord that make_3d
     still works.
     """
-
     sc = SkyCoord(*args, **kwargs, frame="helioprojective",
                   observer='earth', obstime="2011-01-01T00:00:00")
     # Test the transform to HGS because it will force a `make_3d` call.
-    #
-    # astropy emits some warnings here because of invalid NaN comparisons,
-    # which will be removed in a future astropy release
-    # (see https://github.com/astropy/astropy/pull/9843), so filter the warnings out.
+    # Only 1 of the 7 parameterized arguments actually emits the warning
     with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", message='invalid value encountered',
-                                category=RuntimeWarning)
+        warnings.filterwarnings("ignore", message=(
+            'The conversion of these 2D helioprojective coordinates to '
+        ), category=SunpyUserWarning)
         hgs = sc.transform_to("heliographic_stonyhurst")
 
     assert isinstance(hgs.frame, HeliographicStonyhurst)

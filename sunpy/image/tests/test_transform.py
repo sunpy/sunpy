@@ -6,7 +6,7 @@ from skimage import transform as tf
 
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
-from sunpy.image.transform import _rotation_function_registry, affine_transform
+from sunpy.image.transform import _rotation_registry, affine_transform
 from sunpy.tests.helpers import figure_test
 from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 
@@ -91,14 +91,14 @@ def test_skimage_rotation(original, angle, k):
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = affine_transform(original, rmatrix=rmatrix, method='skimage')
+    rot = affine_transform(original, rmatrix=rmatrix, method='scikit-image')
     assert compare_results(expected, rot, allclose=False)
 
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=derot_matrix, method='skimage')
+    derot = affine_transform(rot, rmatrix=derot_matrix, method='scikit-image')
     assert compare_results(original, derot, allclose=False)
 
 
@@ -218,7 +218,7 @@ def test_flat(identity):
 def test_nan_skimage(identity):
     # Test preservation of NaN values for scikit-image rotation
     in_arr = np.array([[np.nan, 0]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='skimage')
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='scikit-image')
     assert np.isnan(out_arr[0, 0])
 
 
@@ -233,7 +233,7 @@ def test_int(identity):
     # Test casting of integer array to float array
     in_arr = np.array([[100]], dtype=int)
     with pytest.warns(SunpyUserWarning, match='Integer input data has been cast to float64'):
-        out_arr = affine_transform(in_arr, rmatrix=identity, method='skimage')
+        out_arr = affine_transform(in_arr, rmatrix=identity, method='scikit-image')
     assert np.issubdtype(out_arr.dtype, np.floating)
 
 
@@ -256,8 +256,8 @@ def test_deprecated_args(identity):
     with pytest.raises(ValueError, match="Method blah not in supported methods"):
         out_arr = affine_transform(in_arr, rmatrix=identity, method='blah')
 
-    with pytest.warns(SunpyUserWarning, match="Using scipy instead of skimage for rotation"):
-        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True, method='skimage')
+    with pytest.warns(SunpyUserWarning, match="Using scipy instead of scikit-image for rotation"):
+        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True, method='scikit-image')
 
 
 def test_reproducible_matrix_multiplication():
@@ -285,10 +285,12 @@ def test_clipping(rot30):
     image = np.ones((20, 20))
     image[4:-4, 4:-4] = 2
 
-    fig = Figure(figsize=(12, 4))
-    axs = fig.subplots(2, 5)
+    num_methods = len(_rotation_registry.keys())
 
-    for i, method in enumerate(['scipy', 'skimage']):
+    fig = Figure(figsize=(12, 2*num_methods))
+    axs = fig.subplots(nrows=num_methods, ncols=5)
+
+    for i, method in enumerate(_rotation_registry.keys()):
         axs[i, 0].imshow(image, vmin=0, vmax=3)
         axs[i, 1].imshow(affine_transform(image, rot30, clip=False, method=method, missing=0),
                          vmin=0, vmax=3)
@@ -298,15 +300,13 @@ def test_clipping(rot30):
                          vmin=0, vmax=3)
         axs[i, 4].imshow(affine_transform(image, rot30, clip=True, method=method, missing=np.nan),
                          vmin=0, vmax=3)
+        axs[i, 0].set_ylabel(method)
 
     axs[0, 0].set_title('Original')
     axs[0, 1].set_title('no clip & missing=0')
     axs[0, 2].set_title('clip & missing=0')
     axs[0, 3].set_title('clip & missing=2')
     axs[0, 4].set_title('clip & missing=NaN')
-
-    axs[0, 0].set_ylabel('SciPy')
-    axs[1, 0].set_ylabel('scikit-image')
 
     return fig
 
@@ -319,32 +319,38 @@ def test_nans(rot30):
     image_with_nans[4:-4, 4:-4] = 2
     image_with_nans[9:-9, 9:-9] = np.nan
 
-    fig = Figure(figsize=(16, 4))
-    axs = fig.subplots(2, 7)
+    num_methods = len(_rotation_registry.keys())
+
+    fig = Figure(figsize=(16, 2*num_methods))
+    axs = fig.subplots(nrows=num_methods, ncols=7)
 
     axs[0, 0].set_title('Original (NaNs are white)')
-    axs[0, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
-    axs[1, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
 
-    for i in range(6):
-        axs[0, i+1].set_title(f'order={i}')
-        axs[0, i+1].imshow(affine_transform(image_with_nans, rot30,
-                                            order=i, method='scipy', missing=np.nan),
-                           vmin=-1.1, vmax=1.1)
-        axs[1, i+1].imshow(affine_transform(image_with_nans, rot30,
-                                            order=i, method='skimage', missing=np.nan),
-                           vmin=-1.1, vmax=1.1)
-
-    axs[0, 0].set_ylabel('SciPy')
-    axs[1, 0].set_ylabel('scikit-image')
+    for j in range(6):
+        axs[0, j+1].set_title(f'order={j}')
+    for i, method in enumerate(_rotation_registry.keys()):
+        axs[i, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
+        for j in range(6):
+            if j not in _rotation_registry[method].allowed_orders:
+                with pytest.raises(ValueError):
+                    affine_transform(image_with_nans, rot30, order=j, method=method, missing=np.nan)
+                axs[i, j+1].remove()
+            else:
+                axs[i, j+1].imshow(affine_transform(image_with_nans, rot30,
+                                                    order=j, method=method, missing=np.nan),
+                                   vmin=-1.1, vmax=1.1)
+        axs[i, 0].set_ylabel(method)
 
     return fig
 
 
 @pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
-@pytest.mark.parametrize('method', _rotation_function_registry.keys())
+@pytest.mark.parametrize('method', _rotation_registry.keys())
 @pytest.mark.parametrize('order', range(6))
 def test_endian(method, order, rot30):
+    if order not in _rotation_registry[method].allowed_orders:
+        return
+
     # Test that the rotation output values do not change with input byte order
     native = np.ones((10, 10))
     swapped = native.byteswap().newbyteorder()

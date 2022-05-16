@@ -1,1 +1,0 @@
-Fixed plotting and peeking NORH timeseries data with ``pandas`` 1.4.0.

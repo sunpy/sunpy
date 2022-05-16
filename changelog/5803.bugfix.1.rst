@@ -1,2 +1,0 @@
-Fixed a bug when rotating a map by a matrix that is not purely a rotation.
-The likely way to inadvertently encounter this bug was when de-rotating a map with rectangular pixels that were not aligned with the coordinate axes.

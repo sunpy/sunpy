@@ -492,7 +492,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return results
 
     def __repr__(self):
-        return object.__repr__(self) + "\n" + self._print_clients(visible_entries=15)
+        return object.__repr__(self) + "\n" + self._print_clients()
 
     def __str__(self):
         """
@@ -504,9 +504,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         This enables the "pretty" printing of the Fido Clients with html.
         """
-        return self._print_clients(visible_entries=15, html=True)
+        return self._print_clients(html=True)
 
-    def _print_clients(self, html=False, visible_entries=None):
+    def _print_clients(self, html=False, visible_entries=-1):
         width = -1 if html else get_width()
 
         t = Table(names=["Client", "Description"], dtype=["U80", "U120"])

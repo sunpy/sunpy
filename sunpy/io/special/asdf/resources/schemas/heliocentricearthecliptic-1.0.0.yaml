@@ -1,0 +1,30 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "asdf://sunpy.org/schemas/heliocentricearthecliptic-1.0.0"
+
+title: |
+  Represents a Heliocentric Earth Ecliptic (HEE) coordinate object from SunPy
+
+examples:
+  -
+    - A HeliocentricEarthEcliptic frame without data
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliocentricearthecliptic-1.0.0>
+          frame_attributes: {}
+  -
+    - A HeliocentricEarthEcliptic frame with an obstime
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliocentricearthecliptic-1.0.0>
+          frame_attributes: {obstime: !time/time-1.1.0 '2011-01-01T01:01:01.000'}
+
+allOf:
+  - $ref: "http://astropy.org/schemas/astropy/coordinates/frames/baseframe-1.0.0"
+  - properties:
+      frame_attributes:
+        type: object
+        properties:
+          obstime:
+            tag: "tag:stsci.edu:asdf/time/time-1.1.0"
+        additionalProperties: False
+...

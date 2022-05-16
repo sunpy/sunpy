@@ -67,15 +67,13 @@ def read_file(filepath, filetype=None, **kwargs):
     memmap : `bool`, optional
         Should memory mapping be used, i.e. keep data on disk rather than in RAM.
         This is currently only supported by the FITS reader.
+    **kwargs : `dict`
+        All extra keyword arguments are passed to ``.read`` for the file specific reader.
 
     Returns
     -------
     pairs : `list`
         A list of (data, header) tuples.
-
-    Notes
-    -----
-    Other keyword arguments are passed to the reader used.
     """
     # Convert Path objects to strings as the filepath can also be a URL
     filepath = str(filepath)
@@ -106,6 +104,8 @@ def read_file_header(filepath, filetype=None, **kwargs):
     filetype : `str`
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits').
+    **kwargs : `dict`
+        All extra keyword arguments are passed to ``.get_header`` for the file specific reader.
 
     Returns
     -------
@@ -141,10 +141,11 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     filetype : `str`, {'auto', 'fits', 'jp2'}, optional
         Filetype to save if ``auto`` the  filename extension will
         be detected, else specify a supported file extension.
+    **kwargs : `dict`
+        All extra keyword arguments are passed to ``.write`` for the file specific reader.
 
     Notes
     -----
-    * Other keyword arguments will be passes to the writer function used.
     * This routine currently only supports saving a single HDU.
     """
     if filetype == 'auto':

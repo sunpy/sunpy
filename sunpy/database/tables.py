@@ -287,27 +287,27 @@ class DatabaseEntry(DatabaseEntryType, Base):
         --------
         >>> from sunpy.net import vso, attrs as a
         >>> from sunpy.database.tables import DatabaseEntry
-        >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
+        >>> client = vso.VSOClient()  # doctest: +SKIP
         >>> qr = client.search(
         ...     a.Time('2001/1/1', '2001/1/2'),
         ...     a.Instrument.eit,
-        ...     response_format="legacy")  # doctest: +REMOTE_DATA
-        >>> entry = DatabaseEntry._from_query_result_block(qr.blocks[0])  # doctest: +REMOTE_DATA
-        >>> entry.source  # doctest: +REMOTE_DATA
+        ...     response_format="legacy")  # doctest: +SKIP
+        >>> entry = DatabaseEntry._from_query_result_block(qr.blocks[0])  # doctest: +SKIP
+        >>> entry.source  # doctest: +SKIP
         'SOHO'
-        >>> entry.provider  # doctest: +REMOTE_DATA
+        >>> entry.provider  # doctest: +SKIP
         'SDAC'
-        >>> entry.physobs  # doctest: +REMOTE_DATA
+        >>> entry.physobs  # doctest: +SKIP
         'intensity'
-        >>> entry.fileid  # doctest: +REMOTE_DATA
+        >>> entry.fileid  # doctest: +SKIP
         '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042'
-        >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
+        >>> entry.observation_time_start, entry.observation_time_end  # doctest: +SKIP
         (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
-        >>> entry.instrument  # doctest: +REMOTE_DATA
+        >>> entry.instrument  # doctest: +SKIP
         'EIT'
-        >>> entry.size  # doctest: +REMOTE_DATA
+        >>> entry.size  # doctest: +SKIP
         2059.0
-        >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
+        >>> entry.wavemin, entry.wavemax  # doctest: +SKIP
         (19.5, 19.5)
 
         """
@@ -502,28 +502,28 @@ def entries_from_query_result(qr, default_waveunit=None):
     --------
     >>> from sunpy.net import vso, attrs as a
     >>> from sunpy.database.tables import entries_from_query_result
-    >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
+    >>> client = vso.VSOClient()  # doctest: +SKIP
     >>> qr = client.search(
     ...     a.Time('2001/1/1', '2001/1/2'),
     ...     a.Instrument.eit,
-    ...     response_format="legacy")  # doctest: +REMOTE_DATA
-    >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
-    >>> entry = next(entries)  # doctest: +REMOTE_DATA
-    >>> entry.source  # doctest: +REMOTE_DATA
+    ...     response_format="legacy")  # doctest: +SKIP
+    >>> entries = entries_from_query_result(qr)  # doctest: +SKIP
+    >>> entry = next(entries)  # doctest: +SKIP
+    >>> entry.source  # doctest: +SKIP
     'SOHO'
-    >>> entry.provider  # doctest: +REMOTE_DATA
+    >>> entry.provider  # doctest: +SKIP
     'SDAC'
-    >>> entry.physobs  # doctest: +REMOTE_DATA
+    >>> entry.physobs  # doctest: +SKIP
     'intensity'
-    >>> entry.fileid  # doctest: +REMOTE_DATA
+    >>> entry.fileid  # doctest: +SKIP
     '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042'
-    >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
+    >>> entry.observation_time_start, entry.observation_time_end  # doctest: +SKIP
     (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
-    >>> entry.instrument  # doctest: +REMOTE_DATA
+    >>> entry.instrument  # doctest: +SKIP
     'EIT'
-    >>> entry.size  # doctest: +REMOTE_DATA
+    >>> entry.size  # doctest: +SKIP
     2059.0
-    >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
+    >>> entry.wavemin, entry.wavemax  # doctest: +SKIP
     (19.5, 19.5)
 
     """
@@ -555,20 +555,20 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> from sunpy.net import Fido, attrs
     >>> from sunpy.database.tables import entries_from_fido_search_result
     >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
-    ...     attrs.Instrument('lyra')) # doctest: +REMOTE_DATA
-    >>> entries = entries_from_fido_search_result(sr) # doctest: +REMOTE_DATA
-    >>> entry = next(entries) # doctest: +REMOTE_DATA
-    >>> entry.source # doctest: +REMOTE_DATA
+    ...     attrs.Instrument('lyra')) # doctest: +SKIP
+    >>> entries = entries_from_fido_search_result(sr) # doctest: +SKIP
+    >>> entry = next(entries) # doctest: +SKIP
+    >>> entry.source # doctest: +SKIP
     'PROBA2'
-    >>> entry.provider # doctest: +REMOTE_DATA
+    >>> entry.provider # doctest: +SKIP
     'ESA'
-    >>> entry.physobs # doctest: +REMOTE_DATA
+    >>> entry.physobs # doctest: +SKIP
     'irradiance'
-    >>> entry.fileid # doctest: +REMOTE_DATA
+    >>> entry.fileid # doctest: +SKIP
     'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
-    >>> entry.observation_time_start, entry.observation_time_end # doctest: +REMOTE_DATA
+    >>> entry.observation_time_start, entry.observation_time_end # doctest: +SKIP
     (datetime.datetime(2012, 1, 1, 0, 0),  datetime.datetime(2012, 1, 1, 23, 59, 59, 999000))
-    >>> entry.instrument # doctest: +REMOTE_DATA
+    >>> entry.instrument # doctest: +SKIP
     'LYRA'
 
     """
@@ -627,18 +627,18 @@ def entries_from_file(file, default_waveunit=None,
     Examples
     --------
     >>> from sunpy.database.tables import entries_from_file
-    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> entries = list(entries_from_file(sunpy.data.sample.SWAP_LEVEL1_IMAGE))  # doctest: +REMOTE_DATA
-    >>> len(entries)  # doctest: +REMOTE_DATA
+    >>> import sunpy.data.sample  # doctest: +SKIP
+    >>> entries = list(entries_from_file(sunpy.data.sample.SWAP_LEVEL1_IMAGE))  # doctest: +SKIP
+    >>> len(entries)  # doctest: +SKIP
     1
-    >>> entry = entries.pop()  # doctest: +REMOTE_DATA
-    >>> entry.instrument  # doctest: +REMOTE_DATA
+    >>> entry = entries.pop()  # doctest: +SKIP
+    >>> entry.instrument  # doctest: +SKIP
     'SWAP'
-    >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
+    >>> entry.observation_time_start, entry.observation_time_end  # doctest: +SKIP
     (datetime.datetime(2011, 6, 7, 6, 33, 29, 759000), None)
-    >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
+    >>> entry.wavemin, entry.wavemax  # doctest: +SKIP
     (17.400000000000002, 17.400000000000002)
-    >>> len(entry.fits_header_entries)  # doctest: +REMOTE_DATA
+    >>> len(entry.fits_header_entries)  # doctest: +SKIP
     110
 
     """
@@ -749,7 +749,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     >>> eitdir = os.path.join(fitsdir, 'EIT')
     >>> entries = list(entries_from_dir(eitdir, default_waveunit='angstrom'))
     >>> len(entries)
-    13
+    2
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):

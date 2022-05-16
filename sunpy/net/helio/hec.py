@@ -78,7 +78,7 @@ class HECClient(BaseClient):
         Examples
         --------
         >>> from sunpy.net.helio import hec
-        >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
+        >>> hc = hec.HECClient()  # doctest: +SKIP
         """
         if link is None:
             # The default wsdl file
@@ -188,8 +188,8 @@ class HECClient(BaseClient):
         Examples
         --------
         >>> from sunpy.net.helio import hec
-        >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> print(hc.get_table_names())  # doctest: +REMOTE_DATA
+        >>> hc = hec.HECClient()  # doctest: +SKIP
+        >>> print(hc.get_table_names())  # doctest: +SKIP
         [('timed_see_flare',) ('hi_event',) ('yohkoh_flare_list',)
          ('wind_mfi_bs_crossing_time',) ('seeds_soho',) ('seeds_stb',)
          ...

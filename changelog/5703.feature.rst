@@ -1,2 +1,0 @@
-Added the ability to specify the use of Carrington coordinates with
-:meth:`sunpy.map.GenericMap.draw_grid`.

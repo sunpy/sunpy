@@ -23,10 +23,11 @@ from astropy.visualization import wcsaxes
 
 import sunpy
 import sunpy.coordinates
-import sunpy.data.test
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
@@ -37,19 +38,17 @@ from sunpy.util.metadata import ModifiedItem
 from .conftest import make_simple_map
 from .strategies import matrix_meta
 
-testpath = sunpy.data.test.rootdir
-
 
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        data = fits.open(testpath / 'aia_171_level1.fits')[0].data
+        data = fits.open(get_test_filepath('aia_171_level1.fits'))[0].data
     np.testing.assert_allclose(aia171_test_map.data, data)
 
 
 def test_header_fits_io():
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        with fits.open(testpath / 'aia_171_level1.fits') as hdu:
+        with fits.open(get_test_filepath('aia_171_level1.fits')) as hdu:
             AIAMap(hdu[0].data, hdu[0].header)
 
 
@@ -116,19 +115,19 @@ def test_dtype(generic_map):
 
 
 def test_min(generic_map):
-    assert generic_map.min() == 1
+    assert generic_map.min() == 0
 
 
 def test_max(generic_map):
-    assert generic_map.max() == 1
+    assert generic_map.max() == 35
 
 
 def test_mean(generic_map):
-    assert generic_map.mean() == 1
+    assert generic_map.mean() == 17.5
 
 
 def test_std(generic_map):
-    assert generic_map.std() == 0
+    np.testing.assert_allclose(generic_map.std(), 10.388294694831615)
 
 
 def test_unit(generic_map):
@@ -364,7 +363,7 @@ def test_rotation_matrix_cd_cdelt_square():
 
 
 def test_swap_cd():
-    amap = sunpy.map.Map(testpath / 'swap_lv1_20140606_000113.fits')
+    amap = get_dummy_map_from_header(get_test_filepath('swap_lv1_20140606_000113.header'))
     np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
 
 
@@ -464,6 +463,19 @@ def test_save_compressed(aia171_test_map):
     assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
 
 
+DEP_WARNING_SHIFTED_VAL = (
+    'ignore:`sunpy.map.GenericMap.shifted_value` is deprecated and will be removed in sunpy 4.1. '
+    'Use ``sunpy.map.GenericMap.meta.modified_items`` to see how the reference coordinate has been '
+    'modified.:sunpy.util.exceptions.SunpyDeprecationWarning'
+)
+DEP_WARNING_SHIFT = (
+    'ignore:The shift function is deprecated and may be removed in version 4.1.'
+    r'\s+Use `sunpy.map.GenericMap.shift_reference_coord` instead.'
+    ':sunpy.util.exceptions.SunpyDeprecationWarning'
+)
+
+
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFTED_VAL)
 def test_default_shift():
     """Test that the default shift is zero"""
     data = np.ones([6, 6], dtype=np.float64)
@@ -490,6 +502,8 @@ def test_default_shift():
     assert cd_map.shifted_value[1].value == 0
 
 
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFT)
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFTED_VAL)
 def test_shift_applied(generic_map):
     """Test that adding a shift actually updates the reference coordinate"""
     original_reference_coord = (generic_map.reference_coordinate.Tx,
@@ -500,23 +514,28 @@ def test_shift_applied(generic_map):
     assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
     assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
     crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units[0] +
-               shifted_map.shifted_value[0]).to(shifted_map.spatial_units[0])).value
+               x_shift).to(shifted_map.spatial_units[0])).value
     assert shifted_map.meta.get('crval1') == crval1
     crval2 = ((generic_map.meta.get('crval2') * generic_map.spatial_units[1] +
-               shifted_map.shifted_value[1]).to(shifted_map.spatial_units[1])).value
+               y_shift).to(shifted_map.spatial_units[1])).value
     assert shifted_map.meta.get('crval2') == crval2
 
 
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFT)
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFTED_VAL)
 def test_set_shift(generic_map):
     """Test that previously applied shift is stored in the shifted_value property"""
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
-    resultant_shift = shifted_map.shifted_value
-    assert resultant_shift[0] == x_shift
-    assert resultant_shift[1] == y_shift
+    mod_crval1 = shifted_map.meta.modified_items['crval1']
+    mod_crval2 = shifted_map.meta.modified_items['crval2']
+    assert x_shift == (mod_crval1.current - mod_crval1.original) * shifted_map.spatial_units[0]
+    assert y_shift == (mod_crval2.current - mod_crval2.original) * shifted_map.spatial_units[1]
 
 
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFT)
+@pytest.mark.filterwarnings(DEP_WARNING_SHIFTED_VAL)
 def test_shift_history(generic_map):
     """Test the shifted_value is added to a non-zero previous shift"""
     x_shift1 = 5 * u.arcsec
@@ -527,9 +546,12 @@ def test_shift_history(generic_map):
     y_shift2 = 120 * u.arcsec
     final_shifted_map = shifted_map1.shift(x_shift2, y_shift2)
 
-    resultant_shift = final_shifted_map.shifted_value
-    assert resultant_shift[0] == x_shift1 + x_shift2
-    assert resultant_shift[1] == y_shift1 + y_shift2
+    mod_crval1 = final_shifted_map.meta.modified_items['crval1']
+    mod_crval2 = final_shifted_map.meta.modified_items['crval2']
+    delta_crval1 = (mod_crval1.current - mod_crval1.original) * final_shifted_map.spatial_units[0]
+    delta_crval2 = (mod_crval2.current - mod_crval2.original) * final_shifted_map.spatial_units[1]
+    assert x_shift1 + x_shift2 == delta_crval1
+    assert y_shift1 + y_shift2 == delta_crval2
 
 
 def test_corners(simple_map):
@@ -1181,6 +1203,17 @@ def test_quicklook(aia171_test_map):
         assert aia171_test_map._repr_html_() in html_string
 
 
+def test_dask_array(generic_map):
+    dask_array = pytest.importorskip('dask.array')
+    da = dask_array.from_array(generic_map.data, chunks=(1, 1))
+    pair_map = sunpy.map.Map(da, generic_map.meta)
+
+    # Check that _repr_html_ functions for a dask array
+    html_dask_repr = pair_map._repr_html_(compute_dask=False)
+    html_computed_repr = pair_map._repr_html_(compute_dask=True)
+    assert html_dask_repr != html_computed_repr
+
+
 @pytest.fixture
 def generic_map2(generic_map):
     generic_map.meta["CTYPE1"] = "HPLN-TAN"
@@ -1431,13 +1464,14 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map.peek()
 
 
+@pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test
-def test_derotating_nonpurerotation_pcij(aia171_test_map):
+def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
     # The following map has a a PCij matrix that is not a pure rotation
     weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)
 
     # De-rotating the map by its PCij matrix should result in a normal-looking map
-    derotated_map = weird_map.rotate()
+    derotated_map = weird_map.rotate(method=method)
 
     fig = Figure(figsize=(8, 4))
 
@@ -1445,7 +1479,7 @@ def test_derotating_nonpurerotation_pcij(aia171_test_map):
     weird_map.plot(axes=ax1, title='Map with a non-pure-rotation PCij matrix')
 
     ax2 = fig.add_subplot(122, projection=derotated_map)
-    derotated_map.plot(axes=ax2, title='De-rotated map')
+    derotated_map.plot(axes=ax2, title=f'De-rotated map via {method}')
 
     return fig
 

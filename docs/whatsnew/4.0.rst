@@ -15,7 +15,47 @@ SunPy 4.0 also includes a large number of smaller improvements and bug fixes, wh
 
 By the numbers:
 
-TODO: fill this in at release time.
+This release of sunpy contains 1310 commits in 182 merged pull requests closing 83 issues from 29 people, 19 of which are first-time contributors to sunpy.
+
+* 1310 commits have been added since 3.1
+* 83 issues have been closed since 3.1
+* 182 pull requests have been merged since 3.1
+* 29 people have contributed since 3.1
+* 19 of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+-  Akash Verma  *
+-  Alasdair Wilson  *
+-  Albert Y. Shih
+-  Alex Kaszynski  *
+-  Alex W  *
+-  Andy Tang  *
+-  Anubhav Sinha  *
+-  Conor MacBride
+-  Daniel Garcia Briseno  *
+-  David Stansby
+-  Devansh Shukla  *
+-  Jan Gieseler  *
+-  Jeffrey Aaron Paul
+-  Jia Qing  *
+-  Karthikeyan Singaravelan  *
+-  Krish Agrawal  *
+-  Laura Hayes
+-  Lazar Zivadinovic
+-  Nabil Freij
+-  Noah Altunian  *
+-  Rohan Sharma  *
+-  Samriddhi Agarwal
+-  Stuart Mumford
+-  Thomas Braccia  *
+-  Tim Gates  *
+-  Will Barnes
+-  William Russell  *
+-  cbard  *
+-  pre-commit-ci[bot]  *
+
+Where a * indicates that this release contains their first contribution to sunpy.
 
 Increase in required package versions
 =====================================
@@ -30,9 +70,13 @@ Most notably, there is now comprehensive support for having not-a-number (NaN) v
 Accordingly, the default behavior for these functions has been changed to use NaN for the pixels in the output image that are beyond the extent of the input image.
 To obtain the prior behavior, which used zero by default for such pixels, the ``missing`` needs to be explicitly set to zero.
 
-The default rotation function used internally has been switched to :func:`scipy.ndimage.affine_transform` from :func:`skimage.transform.warp` due to changes in the latest release of `skimage`, although the differences between the rotation results are small.
+The default rotation function used internally has been switched to :func:`scipy.ndimage.affine_transform` from :func:`skimage.transform.warp` due to changes in the latest release of ``scikit-image``, although the differences between the rotation results are small.
+Since bicubic interpolation by :func:`scipy.ndimage.affine_transform` is sufficient in quality for the typical user, we have changed the default interpolation order for :meth:`sunpy.map.GenericMap.rotate` to bicubic interpolation (``order=3``) instead of biquartic interpolation (``order=4``) for improved performance under default settings.
+:func:`sunpy.image.transform.affine_transform` has always defaulted to bicubic interpolation (``order=3``).
+
+Also, there is now the option to rotate using `OpenCV <https://opencv.org>`__.
 The rotation function to use can be selected via the ``method`` keyword argument.
-New rotation functions beyond these two can be added using the new decorator :func:`~sunpy.image.transform.add_rotation_function`.
+New rotation functions beyond these three can be added using the new decorator :func:`~sunpy.image.transform.add_rotation_function`.
 
 Improved return types of HEK queries
 ====================================
@@ -83,6 +127,31 @@ Deprecation of `sunpy.physics.solar_rotation`
 `sunpy.physics.solar_rotation.calculate_solar_rotate_shift` and `sunpy.physics.solar_rotation.mapsequence_solar_derotate` have been deprecated and will be removed in version 4.1.
 Both of these functions have been moved to `sunkit_image.coalignment` and have identical functionality and API.
 Note that `~sunpy.physics.solar_rotation.mapsequence_solar_derotate` has been renamed to `~sunkit_image.coalignment.mapsequence_coalign_by_rotation` to more accurately reflect its functionality.
+
+New dependency on ``asdf-astropy`` for ASDF support
+===================================================
+With the 4.0 release of sunpy the `asdf` plugin has been updated to support future versions of the `asdf` Python library.
+This has lead to no significant changes to how ASDF files are handled on save or load, however the plugin code is significantly simpler.
+
+When updating sunpy to 4.0 **it is important that the asdf-astropy package is installed if asdf is installed**.
+If installing sunpy with ``sunpy[all]`` or ``sunpy[asdf]`` when using pip this will happen automatically, however, if you update sunpy with ``pip install -U sunpy`` and you have previously installed asdf (implicitly or explicitly) you will need to install the ``asdf-astropy`` package.
+If you have installed sunpy with conda, you don't need to do anything as the conda package has been updated to depend on `asdf` and ``asdf-astropy``.
+If ``asdf-astropy`` is not installed then sunpy's asdf plugin will fail to load and emit a warning, this will happen every time for *any* ASDF file irrespective of if it contains a sunpy object in its tree.
+
+Deprecation of `~sunpy.map.GenericMap.shift` and `~sunpy.map.GenericMap.shifted_value`
+======================================================================================
+The method `sunpy.map.GenericMap.shift` has been renamed
+`sunpy.map.GenericMap.shift_reference_coord` and `~sunpy.map.GenericMap.shift` has been
+deprecated.
+The method has been renamed to make it clear that it is the reference coordinate that is
+being shifted and not the image itself.
+Additionally, the `sunpy.map.GenericMap.shifted_value` property, which keeps track of
+the shifts applied by `~sunpy.map.GenericMap.shift`, has been deprecated.
+Users should instead use the ``CRVAL1`` and ``CRVAL2`` keys in
+``sunpy.map.GenericMap.meta.modified_items`` to see how the reference coordinate has been
+modified.
+Note that `~sunpy.map.GenericMap.shift_reference_coord` does not modify
+`~sunpy.map.GenericMap.shifted_value`.
 
 Contributors to this Release
 ============================

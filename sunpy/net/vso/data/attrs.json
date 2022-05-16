@@ -221,6 +221,10 @@
       "Grazing Incidence Spectrometer"
     ],
     [
+      "SuFI",
+      "None"
+    ],
+    [
       "Fairchild 2020 scientific CMOS sensor",
       "None"
     ],
@@ -287,6 +291,10 @@
     [
       "HSTOF",
       ""
+    ],
+    [
+      "IMaX",
+      "None"
     ],
     [
       "SEPT",
@@ -447,6 +455,10 @@
       "Shortwave EUV observation of Sun with EUNIS (2006 flight)"
     ],
     [
+      "dpm",
+      "Digital Prominence Monitor"
+    ],
+    [
       "LASCO",
       "Large Angle and Spectrometric Coronagraph"
     ],
@@ -467,16 +479,16 @@
       "Improved Solar Observing Optical Network"
     ],
     [
+      "chp",
+      "Chromospheric Helium-I Imaging Photometer"
+    ],
+    [
       "60-ft SHG",
       "60-foot Tower Spectroheliograph"
     ],
     [
       "HMI",
       "Helioseismic and Magnetic Imager"
-    ],
-    [
-      "Cooke",
-      "None"
     ],
     [
       "PTMC",
@@ -515,12 +527,12 @@
       "Very High Angular Resolution Ultraviolet Telescope (2014 flight)"
     ],
     [
-      "IVM",
-      "None"
-    ],
-    [
       "vsm",
       "Vector SpecroMagnetograph"
+    ],
+    [
+      "IVM",
+      "None"
     ],
     [
       "SECCHI",
@@ -587,12 +599,20 @@
       "Michelson Doppler Imager"
     ],
     [
+      "mk4",
+      "Mk. IV coronagraph"
+    ],
+    [
       "IRIS",
       "Interface Region Imaging Spectrograph"
     ],
     [
       "GOLF",
       "Global Oscillations at Low Frequencies"
+    ],
+    [
+      "SuFI",
+      "Sunrise Filter Imager"
     ],
     [
       "SJ",
@@ -617,6 +637,10 @@
     [
       "UVCS",
       "Ultraviolet Coronagraph Spectrometer"
+    ],
+    [
+      "K-Cor",
+      "None"
     ],
     [
       "SXT",
@@ -649,6 +673,10 @@
     [
       "SOT",
       "Solar Optical Telescope"
+    ],
+    [
+      "IMaX",
+      "Imaging Magnetograph eXperiment"
     ],
     [
       "El Teide",
@@ -693,6 +721,10 @@
     [
       "FOXSI",
       "Focusing Optics X-ray Solar Imager"
+    ],
+    [
+      "Cook",
+      "None"
     ],
     [
       "SWAP",
@@ -861,12 +893,12 @@
       "Solar Data Analysis Center, NASA/Goddard"
     ],
     [
-      "JSOC",
-      "SDO Joint Science Operations Center"
-    ],
-    [
       "MSFC",
       "Marshall Space Flight Center"
+    ],
+    [
+      "JSOC",
+      "SDO Joint Science Operations Center"
     ],
     [
       "HAO",
@@ -897,16 +929,20 @@
       "U.S. Naval Research Laboratory"
     ],
     [
+      "OBSPM",
+      "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris"
+    ],
+    [
+      "MPS",
+      "Max Planck Institute for Solar System Research"
+    ],
+    [
       "MWSPADP",
       "Mount Wilson Solar Archive Digitization Project"
     ],
     [
       "INAF-OACT",
       "Istituto Nazionale di Astrofisica, Osservatorio Astrofisico di Catania"
-    ],
-    [
-      "OBSPM",
-      "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris"
     ],
     [
       "NOAA",
@@ -947,6 +983,10 @@
       "None"
     ],
     [
+      "MLSO",
+      "Mauna Loa Solar Observatory"
+    ],
+    [
       "SMM",
       "Solar Maximum Mission"
     ],
@@ -957,6 +997,10 @@
     [
       "SOHO",
       "Solar and Heliospheric Observatory"
+    ],
+    [
+      "SUNRISE2",
+      "Sunrise Balloon Flight #2 (June 12-17, 2013)"
     ],
     [
       "Hinode",
@@ -1015,6 +1059,10 @@
       "Improved Solar Observing Optical Network"
     ],
     [
+      "SO2",
+      "None"
+    ],
+    [
       "PSP",
       "Parker Solar Probe"
     ],
@@ -1041,6 +1089,10 @@
     [
       "IVM",
       "None"
+    ],
+    [
+      "SUNRISE1",
+      "Sunrise Balloon Flight #1 (June 9-13, 2009)"
     ],
     [
       "FOXSI3",

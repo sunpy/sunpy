@@ -1,2 +1,0 @@
-The colorbar limits on HMI magnetic field maps are now automatically
-set to be symmetric about zero.

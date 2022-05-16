@@ -475,8 +475,9 @@ class JSOCClient(BaseClient):
         c = drms.Client()
 
         # Private communication from JSOC say we should not use more than one connection.
-        if kwargs.get('max_splits'):
-            log.info(f"max_splits keyword was passed and set to 1.")
+        max_splits = kwargs.get('max_splits', 1)
+        if max_splits != 1:
+            log.info(f"Setting max_splits to it's maximum allowed value of 1 for requests made by the JSOCClient.")
         kwargs['max_splits'] = 1
 
         # Convert Responses to a list if not already
@@ -544,7 +545,7 @@ class JSOCClient(BaseClient):
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
                 print(print_message.format(len(urls), request._d['size']))
             for aurl, fname in zip(urls, paths):
-                downloader.enqueue_file(aurl, filename=fname, **kwargs)
+                downloader.enqueue_file(aurl, filename=fname)
 
         if dl_set and not wait:
             return Results()
@@ -803,6 +804,7 @@ class JSOCClient(BaseClient):
         for series in data_sources:
             info = client.series(rf'{series}\.')
             for item in info:
+                print(f'🛰 Getting info for {series}: {item}')
                 data = client.info(item)
                 series_store.append((data.name, data.note))
                 if not data.segments.empty:

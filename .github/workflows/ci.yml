@@ -14,6 +14,10 @@ on:
   # Allow manual runs through the web UI
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   core:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
@@ -70,7 +74,11 @@ jobs:
         - linux: py39-online
 
   cron:
-    if: github.event_name == 'workflow_dispatch'
+    if: |
+      github.event_name == 'workflow_dispatch' || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
+      )
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       default_python: '3.8'
@@ -91,9 +99,15 @@ jobs:
     # Build wheels when pushing to any branch except main
     # publish.yml will only publish if tagged ^v.*
     if: |
-      github.event_name != 'pull_request' && (
-        github.ref_name != 'main' ||
-        github.event_name == 'workflow_dispatch' )
+      (
+        github.event_name != 'pull_request' && (
+          github.ref_name != 'main' ||
+          github.event_name == 'workflow_dispatch'
+        )
+      ) || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run publish')
+      )
     needs: [test]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
@@ -107,26 +121,15 @@ jobs:
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
-  notify_pass:
-    if: github.event_name == 'workflow_dispatch'
+  notify:
+    if: always() && github.event_name == 'workflow_dispatch'
     needs: [publish, online, cron]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/matrix
+      - uses: Cadair/matrix-notify-action@main
         with:
-          status: 'Succeeded'
-          token: ${{ secrets.matrix_access_token }}
+          matrix_token: ${{ secrets.matrix_access_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           homeserver: ${{ secrets.matrix_homeserver }}
-
-  notify_fail:
-    if: failure() && github.event_name == 'workflow_dispatch'
-    needs: [publish, online, cron]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/matrix
-        with:
-          status: 'Failed'
-          token: ${{ secrets.matrix_access_token }}
-          homeserver: ${{ secrets.matrix_homeserver }}
+          roomid: '!JYqfIVJjWANcHnfktY:cadair.com'
+          ignore_pattern: '.*Load.*'

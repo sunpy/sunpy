@@ -23,7 +23,7 @@ authors = [author.split('\t')[1] for author in authors]
 # Remove initials
 authors = [remove_initials(auth) for auth in authors]
 # List of authors to ignore because they are bots
-manual_ignore = ['codetriage-readme-bot', 'sunpy-backport[bot]']
+manual_ignore = ['codetriage-readme-bot', 'sunpy-backport[bot]', 'pre-commit-ci[bot]']
 authors = [auth for auth in authors if auth not in manual_ignore]
 
 # Get list of current authors in zenodo.yml

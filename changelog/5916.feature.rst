@@ -1,5 +1,0 @@
-`sunpy.image.transform.affine_transform` and :meth:`sunpy.map.GenericMap.rotate`
-have both had their ``use_scipy`` arguments deprecated. Instead use the new
-``method`` argument, which can currently be set to either ``'skimage'``
-(the default) or ``'scipy'``. In the future we hope to use this new argument
-to support generic user supplied transformation functions.

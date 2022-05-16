@@ -17,7 +17,6 @@ from astropy.table import Table
 from astropy.time import Time
 
 import sunpy
-from sunpy.io._fits import HDPair
 from sunpy.io.file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
 from sunpy.io.header import FileHeader
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
@@ -30,7 +29,7 @@ from sunpy.util.datatype_factory_base import (
     ValidationFunctionError,
 )
 from sunpy.util.functools import seconddispatch
-from sunpy.util.io import is_url, parse_path, possibly_a_path
+from sunpy.util.io import HDPair, is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
 

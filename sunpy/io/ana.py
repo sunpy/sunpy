@@ -8,9 +8,9 @@ This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
     The reading and writing of ana files is not supported under Windows.
 """
 import os
-import collections
 
 from sunpy.io.header import FileHeader
+from sunpy.util.io import HDPair
 
 try:
     from sunpy.io import _pyana
@@ -19,8 +19,6 @@ except ImportError:
 
 
 __all__ = ['read', 'get_header', 'write']
-
-HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 
 
 def read(filename, debug=False, **kwargs):
@@ -34,10 +32,12 @@ def read(filename, debug=False, **kwargs):
         Name of file to be read.
     debug : `bool`, optional
         Prints verbose debug information.
+    **kwargs : `dict`
+        Unused.
 
     Returns
     -------
-    out : `list`
+    `list`
         A list of (data, header) tuples
 
     Examples
@@ -69,7 +69,7 @@ def get_header(filename, debug=False):
 
     Returns
     -------
-    out : `list`
+    `list`
         A list of `~sunpy.io.header.FileHeader` headers.
 
     Examples
@@ -103,7 +103,7 @@ def write(filename, data, comments=False, compress=True, debug=False):
 
     Returns
     -------
-    out: ANA compressed archive
+    `str`
         A new ANA compressed archive containing the data and header.
 
     Examples

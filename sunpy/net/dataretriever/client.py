@@ -269,13 +269,10 @@ class GenericClient(BaseClient):
         wait : `bool`, optional
             If `False` ``downloader.download()`` will not be called. Only has
             any effect if ``downloader`` is not `None`.
-        **kwargs : dict, optional
-            Passed to `parfive.Downloader.enqueue_file`.
 
         Returns
         -------
-        results: `parfive.Results`
-
+        `parfive.Results`
         """
         if path is not None:
             path = Path(path)
@@ -297,7 +294,7 @@ class GenericClient(BaseClient):
             downloader = Downloader(progress=progress, overwrite=overwrite)
 
         for url, filename in zip(urls, paths):
-            downloader.enqueue_file(url, filename=filename, **kwargs)
+            downloader.enqueue_file(url, filename=filename)
 
         if dl_set and not wait:
             return

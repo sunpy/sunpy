@@ -67,7 +67,7 @@ class XRSTimeSeries(GenericTimeSeries):
     if h5netcdf_version >= packaging.version.parse("0.10"):
         _netcdf_read_kw['decode_vlen_strings'] = True
 
-    def plot(self, axes=None, columns=["xrsa", "xrsb"], **kwargs):
+    def plot(self, axes=None, columns=None, **kwargs):
         """
         Plots the GOES XRS light curve.
 
@@ -75,8 +75,8 @@ class XRSTimeSeries(GenericTimeSeries):
         ----------
         axes : `matplotlib.axes.Axes`, optional
             The axes on which to plot the TimeSeries. Defaults to current axes.
-        columns : `list` of {'xrsa', 'xrsb'}, optional
-            The channels to display. Defaults to ``["xrsa", "xrsb"]``.
+        columns : list[str], optional
+            If provided, only plot the specified columns.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -88,6 +88,8 @@ class XRSTimeSeries(GenericTimeSeries):
         """
         if not axes:
             axes = plt.gca()
+        if columns is None:
+            columns = ["xrsa", "xrsb"]
         self._validate_data_for_plotting()
         plot_settings = {"xrsa": ["blue", r"0.5--4.0 $\AA$"], "xrsb": ["red", r"1.0--8.0 $\AA$"]}
         data = self.to_dataframe()
@@ -148,7 +150,7 @@ class XRSTimeSeries(GenericTimeSeries):
         return None
 
     @peek_show
-    def peek(self, title="GOES X-ray flux", **kwargs):
+    def peek(self, columns=None, title="GOES X-ray flux", **kwargs):
         """
         Displays the GOES XRS light curve by calling `~sunpy.timeseries.sources.goes.XRSTimeSeries.plot`.
 
@@ -161,6 +163,8 @@ class XRSTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
+        columns : list[str], optional
+            If provided, only plot the specified columns.
         title : `str`, optional
             The title of the plot. Defaults to "GOES X-ray flux".
         **kwargs : `dict`
@@ -168,7 +172,7 @@ class XRSTimeSeries(GenericTimeSeries):
             functions.
         """
         fig, ax = plt.subplots()
-        axes = self.plot(axes=ax, **kwargs)
+        axes = self.plot(columns=columns, axes=ax, **kwargs)
         axes.set_title(title)
         fig.autofmt_xdate()
         return fig

@@ -1,7 +1,6 @@
 #
 # Testing functions for a mapsequence solar derotation functionality.
 #
-import os
 from copy import deepcopy
 
 import numpy as np
@@ -12,18 +11,11 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 
-import sunpy.data.test
 import sunpy.map
 from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapsequence_solar_derotate
 
 DEP_WARNING = r'''ignore:The {} function is deprecated and may be removed in version 4.1.
 \s+Use `sunkit_image.coalignment.{}` instead.:sunpy.util.exceptions.SunpyDeprecationWarning'''
-
-
-@pytest.fixture
-def aia171_test_map():
-    testpath = sunpy.data.test.rootdir
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
 
 @pytest.fixture

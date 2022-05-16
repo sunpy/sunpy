@@ -137,7 +137,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     _source = 'rhessi'
     _url = "https://hesperia.gsfc.nasa.gov/rhessi3/index.html"
 
-    def plot(self, axes=None, **kwargs):
+    def plot(self, axes=None, columns=None, **kwargs):
         """
         Plots RHESSI count rate light curve.
 
@@ -145,6 +145,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         ----------
         axes : `matplotlib.axes.Axes`, optional
             The axes on which to plot the TimeSeries. Defaults to current axes.
+        columns : list[str], optional
+            If provided, only plot the specified columns.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
             functions.
@@ -157,14 +159,16 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         self._validate_data_for_plotting()
         if axes is None:
             axes = plt.gca()
+        if columns is None:
+            columns = self._data.columns
         # These are a matplotlib version of the default RHESSI color cycle
         default_colors = ('black', 'tab:pink', 'tab:green', 'tab:cyan',
                           'tab:olive', 'tab:red', 'tab:blue', 'tab:orange',
                           'tab:brown')
         colors = kwargs.pop('colors', default_colors)
         for color, (item, frame) in zip(itertools.cycle(colors),
-                                        self.to_dataframe().items()):
-            axes.plot(self.to_dataframe().index, frame.values,
+                                        self._data[columns].items()):
+            axes.plot(self.to_dataframe()[columns].index, frame.values,
                       color=color, label=item, **kwargs)
         axes.set_yscale("log")
         axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
@@ -178,7 +182,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         return axes
 
     @peek_show
-    def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
+    def peek(self, columns=None, title="RHESSI Observing Summary Count Rate", **kwargs):
         """
         Displays the RHESSI Count Rate light curve by calling
         `~sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries.plot`.
@@ -192,6 +196,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
+        columns : list[str], optional
+            If provided, only plot the specified columns.
         title : `str`
             The title of the plot. Defaults to "RHESSI Observing Summary Count Rate".
         **kwargs : `dict`
@@ -199,7 +205,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
             functions.
         """
         fig, ax = plt.subplots()
-        axes = self.plot(axes=ax, **kwargs)
+        axes = self.plot(axes=ax, columns=columns, **kwargs)
         axes.set_title(title)
         fig.autofmt_xdate()
         return fig

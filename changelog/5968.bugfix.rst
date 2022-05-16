@@ -1,4 +1,0 @@
-Fixes a bug in `~sunpy.map.sources.SJIMap` where undefined variable was
-used when parsing the wavelength.
-Also fixes the unit parsing by removing the "corrected" string from the
-``BUNIT`` keyword as "corrected DN" cannot be parsed as a valid FITS unit.

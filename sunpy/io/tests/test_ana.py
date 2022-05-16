@@ -7,7 +7,6 @@ import pytest
 from sunpy.io import ana
 from sunpy.tests.helpers import skip_ana
 
-# Create a test image, store it, reread it and compare
 img_size = (456, 345)
 img_src = np.arange(np.product(img_size))
 img_src.shape = img_size
@@ -75,3 +74,19 @@ def test_f32c():
     afilename = tempfile.NamedTemporaryFile().name
     with pytest.raises(RuntimeError):
         ana.write(afilename, img_f32, 'testcase', 1)
+
+
+@skip_ana
+def test_read_memmap():
+    # Test to check that passing memmap doesn't raise an error
+    afilename = tempfile.NamedTemporaryFile().name
+    ana.write(afilename, img_f32, 'testcase', 0)
+
+    # Memmap is not supported by ana
+    data_memmap, _ = ana.read(afilename, memmap=True)[0]
+    assert data_memmap.base is None
+
+    data, _ = ana.read(afilename, memmap=False)[0]
+    assert data.base is None
+
+    assert np.sum(data_memmap - data) == 0

@@ -1,0 +1,124 @@
+SIMPLE  =                    T / conforms to FITS standard                      
+BITPIX  =                  -64 / array data type                                
+NAXIS   =                    2 / number of array dimensions                     
+NAXIS1  =                  128                                                  
+NAXIS2  =                  128                                                  
+DATE-OBS= '2018-12-09T18:03:05' / UTC observation start                         
+DATE-END= '2018-12-09T18:03:20' / UTC observation end                           
+TIMESYS = 'UTC     '           / date/time system: Coordinated Universal Time   
+DATE_HST= '2018-12-09T08:03:05' / MLSO observation date [HST]                   
+LOCATION= 'MLSO    '           / Mauna Loa Solar Observatory, Hawaii            
+ORIGIN  = 'NCAR/HAO'           / Nat.Ctr.Atmos.Res. High Altitude Observatory   
+TELESCOP= 'COSMO K-Coronagraph' / COSMO: COronal Solar Magnetism Observatory    
+INSTRUME= 'COSMO K-Coronagraph'                                                 
+OBJECT  = 'Solar K-Corona'     / white light polarization brightness            
+DATATYPE= 'science '           / type of data acquired                          
+OBSERVER= 'Rose    '           / name of Mauna Loa observer                     
+DARKSHUT= 'out     '           / dark shutter open(out) or closed(in)           
+COVER   = 'out     '           / cover in or out of the light beam              
+DIFFUSER= 'out     '           / diffuser in or out of the light beam           
+CALPOL  = 'out     '           / calibration polarizer in or out of beam        
+CALPANG =                360.0 / calibration polarizer angle                    
+EXPTIME =               0.0025 / [s] exposure time for each frame               
+NUMSUM  =                  512 / # frames summed per L0 img for each pol state  
+QUALITY = 'ok      '           / Image quality                                  
+LEVEL   = 'L1.5    '           / Level 1.5 pB Intensity is fully-calibrated     
+DATE_DP = '2018-12-09T18:22:11' / L1.5 processing date (UTC)                    
+DPSWID  = '1.5.9 [3e62439]'    / L1.5 data processing software (2018-11-28)     
+RCAMCORR= 'camera_calibration_MV-D1024E-CL-13891_02.5000_lut20160716.ncdf'      
+TCAMCORR= 'camera_calibration_MV-D1024E-CL-13890_02.5000_lut20160716.ncdf'      
+CALFILE = '20181207_194126_kcor_cal_v21_1.5.9_2.5ms.ncdf' / calibration file    
+DISTORT = 'dist_coeff_20170522_205121.sav' / distortion file                    
+SKYTRANS=                1.037 / sky transmission correction normalized to gain 
+BIASCORR=                3E-09 / bias added after sky polarization correction   
+ROLLCORR=                  0.5 / [deg] clockwise offset for spar polar axis alig
+DMODSWID= '2016-05-26'         / date of demodulation software                  
+OBSSWID = '' / version of the observing software                                
+BUNIT   = 'B/Bsun  '           / brightness with respect to solar disk          
+BOPAL   =             1.38E-05 / [B/Bsun] Opal Transmission by Elmore at 775nm  
+DATAMIN =    -1.5948684636E-05 / minimum  value of  data                        
+DATAMAX = 9.14042089884999E-06 / maximum  value of  data                        
+DISPMIN =               -2E-08 / minimum  value for display                     
+DISPMAX =                7E-07 / maximum  value for display                     
+DISPEXP =                  0.7 / exponent value for display (d=b^DISPEXP)       
+DISPGAM =                  0.6 / gamma value for color table correction         
+WCSNAME = 'helioprojective-cartesian' / World Coordinate System (WCS) name      
+CTYPE1  = 'HPLN-TAN'           / [deg] helioprojective west angle: solar X      
+CRPIX1  =                 64.5 / [pixel]  solar X center (index origin=1)       
+CRVAL1  =    2.821499999826771 / [arcsec] solar X sun center                    
+CDELT1  =               45.144 / [arcsec/pix] solar X increment = platescale    
+CUNIT1  = 'arcsec  '                                                            
+CTYPE2  = 'HPLT-TAN'           / [deg] helioprojective north angle: solar Y     
+CRPIX2  =                 64.5 / [pixel]  solar Y center (index origin=1)       
+CRVAL2  =    2.821499999575429 / [arcsec] solar Y sun center                    
+CDELT2  =               45.144 / [arcsec/pix] solar Y increment = platescale    
+CUNIT2  = 'arcsec  '                                                            
+INST_ROT=                  0.0 / [deg] rotation of the image wrt solar north    
+PC1_1   =                  1.0 / coord transform matrix element (1, 1) WCS std. 
+PC1_2   =                  0.0 / coord transform matrix element (1, 2) WCS std. 
+PC2_1   =                  0.0 / coord transform matrix element (2, 1) WCS std. 
+PC2_2   =                  1.0 / coord transform matrix element (2, 2) WCS std. 
+RCAMXCEN=    513.3099999999999 / [pixel] camera 0 raw X-coord occulting center  
+RCAMYCEN=               514.28 / [pixel] camera 0 raw Y-coord occulting center  
+RCAM_RAD=               180.42 / [pixel] camera 0 raw occulter radius           
+RCAM_DCX=               513.79 / [pixel] camera 0 dist cor occulter X center    
+RCAM_DCY=               511.84 / [pixel] camera 0 dist cor occulter Y center    
+RCAM_DCR=               182.71 / [pixel] camera 0 dist corrected occulter radius
+TCAMXCEN=               515.09 / [pixel] camera 1 raw X-coord occulting center  
+TCAMYCEN=               514.58 / [pixel] camera 1 raw Y-coord occulting center  
+TCAM_RAD=               182.53 / [pixel] camera 1 raw occulter radius           
+TCAM_DCX=    514.0599999999999 / [pixel] camera 1 dist cor occulter X center    
+TCAM_DCY=                512.9 / [pixel] camera 1 dist cor occulter Y center    
+TCAM_DCR=               182.21 / [pixel] camera 1 dist corrected occulter radius
+RSUN_OBS=              973.672 / [arcsec] solar radius                          
+RSUN    =              973.672 / [arcsec] solar radius (old standard keyword)   
+R_SUN   =               172.55 / [pixel] solar radius                           
+SOLAR_P0=               12.562 / [deg] solar P angle                            
+CRLT_OBS=                 -0.2 / [deg] solar B angle: Carrington latitude       
+CRLN_OBS=              141.545 / [deg] solar L angle: Carrington longitude      
+CAR_ROT =                 2211 / Carrington rotation number                     
+SOLAR_RA=              256.544 / [h]   solar Right Ascension (hours)            
+SOLARDEC=               -22.86 / [deg] solar Declination (deg)                  
+WAVELNTH=                  735 / [nm] center wavelength   of bandpass filter    
+WAVEFWHM=                   30 / [nm] full width half max of bandpass filter    
+O1FOCS  =              135.291 / [mm] objective lens (01) focus position        
+RCAMFOCS=                  0.0 / [mm] camera 0 focus position                   
+TCAMFOCS=                  0.0 / [mm] camera 1 focus position                   
+MODLTRT =                 35.1 / [deg C] modulator temperature                  
+SGSDIMV =    8.516999999999999 / [V] mean Spar Guider Sys. (SGS) DIM signal     
+SGSDIMS =             0.008683 / [V] SGS DIM signal standard deviation          
+SGSSUMV =    8.518000000000001 / [V] mean SGS sum signal                        
+SGSRAV  =            -0.000321 / [V] mean SGS RA error signal                   
+SGSRAS  =              0.01398 / [V] mean SGS RA error standard deviation       
+SGSRAZR =                 15.0 / [arcsec] SGS RA zeropoint offset               
+SGSDECV =            -0.000121 / [V] mean SGS DEC error signal                  
+SGSDECS =              0.01408 / [V] mean SGS DEC error standard deviation      
+SGSDECZR=                 -5.0 / [arcsec] SGS DEC zeropoint offset              
+SGSSCINT=                1.957 / [arcsec] SGS scintillation seeing estimate     
+SGSLOOP =                    1 / SGS loop closed fraction                       
+SGSSUMS =             0.007424 / [V] SGS sum signal standard deviation          
+CALPOLID= 'AP38-006T-1'        / ID polarizer                                   
+DIFFSRID= 'mk4-opal'           / ID diffuser                                    
+FILTERID= 'ANDV13425-01'       / ID bandpass filter                             
+O1ID    = 'Optimax '           / ID objective (O1) lens                         
+LYOTSTOP= '35mm    '           / Specifies if the 2nd lyot stop is in the beam  
+OCCLTRID= 'OC-1018.9"'         / ID occulter                                    
+MODLTRID= 'A       '           / ID modulator                                   
+RCAMID  = 'MV-D1024E-CL-13891' / ID camera 0 (reflected)                        
+TCAMID  = 'MV-D1024E-CL-13890' / ID camera 1 (transmitted)                      
+RCAMLUT = '13891_20160716'     / ID LUT for camera 0                            
+TCAMLUT = '13890_20160716'     / ID LUT for camera 1                            
+DATACITE= 'https://doi.org/10.5065/D69G5JV8' / URL for DOI                      
+WAVEUNIT= 'nanometer'                                                           
+HIERARCH observatory = 'MLSO    '                                               
+DETECTOR= 'KCor    '                                                            
+DSUN_OBS=    147338601352.7484                                                  
+COMMENT The COSMO K-coronagraph is a 20-cm aperture, internally occulted coronag
+COMMENT raph, which observes the polarization brightness of the corona with a fi
+COMMENT eld-of-view from ~1.05 to 3 solar radii in a wavelength range from 720 t
+COMMENT o 750 nm. Nominal time cadence is 15 seconds.                           
+HISTORY Level 1.5 calibration and processing steps: dark current subtracted; gai
+HISTORY n correction; apply polarization demodulation matrix; applydistortion co
+HISTORY rrection ; align each camera to center, rotate to solarnorth and combine
+HISTORY  cameras ; coordinate transformation from cartesianto tangential polariz
+HISTORY ation; remove sky polarization; correct forsky transmission.            

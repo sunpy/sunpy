@@ -1,6 +1,4 @@
-import os
 import copy
-import glob
 import datetime
 from collections import OrderedDict
 from unittest import mock
@@ -18,8 +16,8 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
 
 import sunpy
-import sunpy.data.test
 import sunpy.timeseries
+from sunpy.data.test import get_test_filepath, test_data_filenames
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
@@ -30,23 +28,16 @@ from sunpy.util.metadata import MetaDict
 # TimeSeries Tests
 # =============================================================================
 
-filepath = sunpy.data.test.rootdir
-
-eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
-esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
-fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
-norh_filepath = os.path.join(filepath, 'tca110810_truncated')
-goes_filepath = os.path.join(filepath, 'goes.fits')
-lyra_filepath = os.path.join(filepath,
-                             'lyra_20150101-000000_lev3_std_truncated.fits.gz')
-rhessi_filepath = os.path.join(filepath,
-                               'hsi_obssumm_20120601_018_truncated.fits.gz')
-noaa_ind_json_filepath = os.path.join(filepath, 'observed-solar-cycle-indices-truncated.json')
-noaa_pre_json_filepath = os.path.join(filepath,
-                                      'predicted-solar-cycle-truncated.json')
-goes_filepath = os.path.join(filepath, 'go1520120601.fits.gz')
-
-a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
+eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
+esp_filepath = get_test_filepath('eve_l1_esp_2011046_00_truncated.fits')
+fermi_gbm_filepath = get_test_filepath('gbm.fits')
+norh_filepath = get_test_filepath('tca110810_truncated')
+lyra_filepath = get_test_filepath('lyra_20150101-000000_lev3_std_truncated.fits.gz')
+rhessi_filepath = get_test_filepath('hsi_obssumm_20120601_018_truncated.fits.gz')
+noaa_ind_json_filepath = get_test_filepath('observed-solar-cycle-indices-truncated.json')
+noaa_pre_json_filepath = get_test_filepath('predicted-solar-cycle-truncated.json')
+goes_filepath = get_test_filepath('go1520120601.fits.gz')
+a_list_of_many = [f for f in test_data_filenames() if f.parents[0].relative_to(f.parents[1]).name == 'eve']
 
 
 @pytest.fixture
@@ -762,6 +753,67 @@ def test_timeseries_array():
     with pytest.warns(SunpyUserWarning, match='Unknown units'):
         ts = sunpy.timeseries.TimeSeries(data, {})
         assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
+
+# =============================================================================
+# Test Source Plot columns keyword argument
+# =============================================================================
+
+
+def test_esp_plot_column(esp_test_ts):
+    axes = esp_test_ts.plot(columns=['QD', 'CH_18', 'CH_36'])
+    assert len(axes) == 3
+    assert '0.1-7nm' in axes[0].get_ylabel()
+    assert '18nm' in axes[1].get_ylabel()
+    assert '36nm' in axes[2].get_ylabel()
+
+
+def test_lyra_plot_column(lyra_test_ts):
+    axes = lyra_test_ts.plot(columns=['CHANNEL1', 'CHANNEL3'])
+    assert len(axes) == 2
+    assert 'Lyman alpha' in axes[0].get_ylabel()
+    assert 'Al filter' in axes[1].get_ylabel()
+
+
+def test_rhessi_plot_column(rhessi_test_ts):
+    ax = rhessi_test_ts.plot(columns=['3 - 6 keV', '25 - 50 keV', '100 - 300 keV'])
+    assert len(ax.lines) == 3
+    assert '3 - 6 keV' == ax.lines[0].get_label()
+    assert '25 - 50 keV' == ax.lines[1].get_label()
+    assert '100 - 300 keV' == ax.lines[2].get_label()
+
+
+def test_fermi_gbm_plot_column(fermi_gbm_test_ts):
+    ax = fermi_gbm_test_ts.plot(columns=['4-15 keV', '100-300 keV'])
+    assert len(ax.lines) == 2
+    assert '4-15 keV' == ax.lines[0].get_label()
+    assert '100-300 keV' == ax.lines[1].get_label()
+
+
+def test_goes_plot_column(goes_test_ts):
+    ax = goes_test_ts.plot(columns=['xrsa'])
+    assert len(ax.lines) == 1
+    assert '0.5--4.0' == ax.lines[0].get_label().split()[0]
+
+
+def test_norh_plot_column(norh_test_ts):
+    ax = norh_test_ts.plot(columns=['Correlation Coefficient'])
+    assert len(ax.lines) == 1
+    assert '17GHZ' == ax.lines[0].get_label()
+
+
+def test_noaa_json_ind_plot_column(noaa_ind_json_test_ts):
+    ax = noaa_ind_json_test_ts.plot(columns=['sunspot SWO', 'sunspot SWO smooth'])
+    assert len(ax.lines) == 2
+    assert 'sunspot SWO' == ax.lines[0].get_label()
+    assert 'sunspot SWO smooth' == ax.lines[1].get_label()
+
+
+def test_noaa_json_pre_plot_column(noaa_pre_json_test_ts):
+    ax = noaa_pre_json_test_ts.plot(columns=['sunspot', 'sunspot high', 'sunspot low'])
+    assert len(ax.lines) == 3
+    assert 'sunspot' == ax.lines[0].get_label()
+    assert 'sunspot high' == ax.lines[1].get_label()
+    assert 'sunspot low' == ax.lines[2].get_label()
 
 
 # TODO:

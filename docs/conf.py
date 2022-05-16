@@ -197,6 +197,7 @@ intersphinx_mapping = {
     "sunkit_image": ("https://docs.sunpy.org/projects/sunkit-image/en/stable/", None),
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
+    "asdf": ("https://asdf.readthedocs.io/en/stable/", None),
 }
 
 # -- Options for HTML output ---------------------------------------------------
@@ -245,13 +246,51 @@ sphinx_gallery_conf = {
     'gallery_dirs': os.path.join('generated', 'gallery'),
     'matplotlib_animations': True,
     # Comes from the theme.
-    "default_thumb_file": os.path.join(html_static_path[0], "img", "sunpy_icon_128x128.png"),
+    "default_thumb_file": png_icon,
     'abort_on_example_error': False,
     'plot_gallery': 'True',
     'remove_config_comments': True,
     'doc_module': ('sunpy'),
     'only_warn_on_example_error': True,
 }
+
+# -- Linking to OpenCV docs by using rst_epilog --------------------------------
+try:
+    import requests
+    from bs4 import BeautifulSoup
+
+    base_url = "https://docs.opencv.org"
+
+    # The stable-version docs are the first item in the second list on the main page
+    all_docs = BeautifulSoup(requests.get(base_url).text, 'html.parser')
+    version = all_docs.find_all('ul')[1].li.a.attrs['href'][2:]  # strip leading "./"
+
+    # Find the relative URL to the page for the `cv` namespace
+    stable_docs = BeautifulSoup(requests.get(f"{base_url}/{version}/namespaces.html").text,
+                                'html.parser')
+    cv_namespace = stable_docs.find("a", string="cv").attrs['href']
+
+    # Find the relative URL for warpAffine/filter2D in the `cv` namespace
+    all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text,
+                           'html.parser')
+    warpAffine = all_cv.find("a", string="warpAffine").attrs['href'][6:]  # strip leading "../../"
+    filter2D = all_cv.find("a", string="filter2D").attrs['href'][6:]  # strip leading "../../"
+
+    # Construct the full URL for warpAffine/filter2D
+    warpAffine_full = f"{base_url}/{version}/{warpAffine}"
+    filter2D_full = f"{base_url}/{version}/{filter2D}"
+except:
+    # In the event of any failure (e.g., no network connectivity)
+    warpAffine_full = ""
+    filter2D_full = ""
+
+rst_epilog = f"""
+.. |cv2_warpAffine| replace:: **cv2.warpAffine()**
+.. _cv2_warpAffine: {warpAffine_full}
+.. |cv2_filter2D| replace:: **cv2.filter2D()**
+.. _cv2_filter2D: {filter2D_full}
+"""
+
 
 # -- Stability Page ------------------------------------------------------------
 with open('./code_ref/sunpy_stability.yaml', 'r') as estability:

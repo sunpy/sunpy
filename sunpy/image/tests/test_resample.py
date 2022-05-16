@@ -1,20 +1,11 @@
-import os
 
 import numpy as np
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-import sunpy.map
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.util.exceptions import SunpyDeprecationWarning
-
-
-@pytest.fixture
-def aia171_test_map():
-    testpath = sunpy.data.test.rootdir
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
 
 @pytest.fixture
@@ -28,15 +19,10 @@ def resample_meta(aia171_test_map, dimensions, method, center, minusone):
 
 
 def resample_method(aia171_test_map, method):
-    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, False, False) == (512, 512)
-    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix,
-                         method, False, False) == (2056, 2056)
-    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, False, True) == (512, 512)
-    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, False, True) == (2056, 2056)
-    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, True, False) == (512, 512)
-    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, True, False) == (2056, 2056)
-    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, True, True) == (512, 512)
-    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, True, True) == (2056, 2056)
+    for shape in [(64, 64), (256, 256)]:
+        for center in [False, True]:
+            for minusone in [False, True]:
+                assert resample_meta(aia171_test_map, shape * u.pix, method, center, minusone) == shape
 
 
 def test_resample_neighbor(aia171_test_map):
