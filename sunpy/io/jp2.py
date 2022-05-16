@@ -80,7 +80,14 @@ def header_to_xml(header):
     Parameters
     ----------
     header : `MetaDict`
-        A header dictionary.
+        A header dictionary to convert to xml.
+
+    Returns
+    ----------
+    `lxml.etree._Element`
+        A fits element where each child is an xml element
+        in the form <key>value</key> derived from the key/value
+        pairs in the given header dictionary
     """
     # glymur uses lxml and will crash if trying to use
     # python's builtin xml.etree
@@ -118,6 +125,11 @@ def generate_jp2_xmlbox(header):
     ----------
     header : `MetaDict`
         A header dictionary.
+
+    Returns
+    ----------
+    `XMLBox`
+        XML box containing FITS metadata to be used in jp2 headers
     """
     # glymur uses lxml and will crash if trying to use
     # python's builtin xml.etree
@@ -132,8 +144,11 @@ def generate_jp2_xmlbox(header):
 
 def get_tmp_jp2_file_name(filename):
     """
-    Returns a temporary file name for jp2 files since creating
-    a JP2 file with the correct header takes 2 passes.
+    Returns
+    ---------
+    `str`
+        a temporary file name for jp2 files since creating
+        a JP2 file with the correct header takes 2 passes.
     """
     return filename + ".tmp.jp2"
 
