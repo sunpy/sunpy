@@ -2,9 +2,9 @@ import os
 
 import astropy.units as u
 import pytest
-
 import sunpy.map
-from sunpy.net import Fido, attrs as a
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 from sunpy.net.soar.client import SOARClient
@@ -27,7 +27,7 @@ def test_search():
     assert u.allclose(os.path.getsize(fname) * u.byte,
                       res[0, 0]['Filesize'], atol=1e-3*u.Mbyte)
     # Smoke test that we can read this into a map
-    eui_map = sunpy.map.Map(fname)
+    sunpy.map.Map(fname)
 
 
 def test_deprecated_identifier():
