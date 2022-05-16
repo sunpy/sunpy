@@ -33,6 +33,7 @@ def test_read_memmap():
     data, _ = read(AIA_193_JP2, memmap=False)[0]
     assert data.base is not None
 
+
 def test_simple_write(tmpdir):
     data, header = _fits.read(TEST_AIA_IMAGE)[0]
     outfile = tmpdir / "test.jp2"

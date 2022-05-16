@@ -72,6 +72,7 @@ def get_header(filepath):
 
     return [FileHeader(pydict)]
 
+
 def header_to_xml(header):
     """
     Converts image header metadata into an XML Tree that can be inserted into
@@ -117,6 +118,7 @@ def header_to_xml(header):
 
     return fits
 
+
 def generate_jp2_xmlbox(header):
     """
     Generates the JP2 XML box to be inserted into the jp2 file.
@@ -142,6 +144,7 @@ def generate_jp2_xmlbox(header):
     tree = ET.ElementTree(meta)
     return jp2box.XMLBox(xml=tree)
 
+
 def get_tmp_jp2_file_name(filename):
     """
     Returns
@@ -151,6 +154,7 @@ def get_tmp_jp2_file_name(filename):
         a JP2 file with the correct header takes 2 passes.
     """
     return filename + ".tmp.jp2"
+
 
 def write(fname, data, header):
     """
