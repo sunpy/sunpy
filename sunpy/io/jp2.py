@@ -169,7 +169,7 @@ def write(fname, data, header, **kwargs):
     jp2_data = np.uint8(data)
     jp2 = Jp2k(tmpname, jp2_data, **kwargs)
 
-    # Append the XML data to the headerp information
+    # Append the XML data to the header information
     meta_boxes = jp2.box
     target_index = len(meta_boxes) - 1
     fits_box = generate_jp2_xmlbox(header)

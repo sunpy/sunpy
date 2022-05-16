@@ -1,8 +1,7 @@
 import numpy as np
 
-import sunpy.io.jp2 as jp2
 from sunpy.data.test import get_test_filepath
-from sunpy.io import _fits
+from sunpy.io import _fits, jp2
 from sunpy.io.header import FileHeader
 from sunpy.tests.helpers import skip_glymur
 
