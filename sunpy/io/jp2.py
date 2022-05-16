@@ -147,7 +147,7 @@ def generate_jp2_xmlbox(header):
     return jp2box.XMLBox(xml=tree)
 
 
-def write(fname, data, header):
+def write(fname, data, header, **kwargs):
     """
     Take a data header pair and write a JP2 file.
 
@@ -159,13 +159,15 @@ def write(fname, data, header):
         n-dimensional data array.
     header : `dict`
         A header dictionary.
+    kwargs :
+        Additional keyword args are passed to the glymur.Jp2k constructor
     """
     from glymur import Jp2k
 
     # Create an initial jp2 file with the given data
     tmpname = fname + "tmp.jp2"
     jp2_data = np.uint8(data)
-    jp2 = Jp2k(tmpname, jp2_data)
+    jp2 = Jp2k(tmpname, jp2_data, **kwargs)
 
     # Append the XML data to the headerp information
     meta_boxes = jp2.box
