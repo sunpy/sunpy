@@ -145,17 +145,6 @@ def generate_jp2_xmlbox(header):
     return jp2box.XMLBox(xml=tree)
 
 
-def get_tmp_jp2_file_name(filename):
-    """
-    Returns
-    ---------
-    `str`
-        a temporary file name for jp2 files since creating
-        a JP2 file with the correct header takes 2 passes.
-    """
-    return filename + ".tmp.jp2"
-
-
 def write(fname, data, header):
     """
     Take a data header pair and write a JP2 file.
@@ -173,7 +162,7 @@ def write(fname, data, header):
     from glymur import Jp2k
 
     # Create an initial jp2 file with the given data
-    tmpname = get_tmp_jp2_file_name(fname)
+    tmpname = fname + "tmp.jp2"
     jp2_data = np.uint8(data)
     jp2 = Jp2k(tmpname, jp2_data)
 
