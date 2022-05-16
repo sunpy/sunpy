@@ -12,14 +12,14 @@ from sunpy.net.soar.client import SOARClient
 
 def test_search():
     id = a.Instrument('EUI')
-    time = a.Time('2021-02-01', '2021-02-02')
+    time = a.Time('2021-02-11', '2021-02-12')
     level = a.Level(1)
     product = a.soar.Product('EUI-FSI174-IMAGE')
 
     res = Fido.search(id, time, level, product)
     assert len(res) == 1
-    assert len(res[0]) == 43
-    assert u.allclose(res[0, 0]['Filesize'], 18.896*u.Mbyte)
+    assert len(res[0]) == 37
+    assert u.allclose(res[0, 0]['Filesize'], 3.574*u.Mbyte)
 
     files = Fido.fetch(res[0, 0])
     assert len(files) == 1
@@ -32,7 +32,7 @@ def test_search():
 
 def test_deprecated_identifier():
     id = a.Instrument('EUI')
-    time = a.Time('2021-02-01', '2021-02-02')
+    time = a.Time('2021-02-11', '2021-02-12')
     level = a.Level(1)
     with pytest.warns(SunpyDeprecationWarning):
         identifier = a.soar.Identifier('EUI-FSI174-IMAGE')
