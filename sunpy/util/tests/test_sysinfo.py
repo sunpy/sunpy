@@ -27,6 +27,7 @@ def test_find_dependencies():
                                                      'scikit-image',
                                                      'scipy',
                                                      'glymur',
+                                                     'lxml',
                                                      'matplotlib',
                                                      'mpl-animators',
                                                      'reproject',
