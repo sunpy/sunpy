@@ -17,6 +17,7 @@ class Identifier(Product):
     """
     The data product identifier to search for.
     """
+
     def __init__(self, *args, **kwargs):
         warnings.warn(
             "'a.soar.Identifier' is deprecated; use 'a.soar.Product' instead.",

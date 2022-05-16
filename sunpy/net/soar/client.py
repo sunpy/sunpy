@@ -1,16 +1,13 @@
-import requests
-
-import astropy.units as u
 import astropy.table
-
-from sunpy import log
+import astropy.units as u
+import requests
 import sunpy.net.attrs as a
+from sunpy import log
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.time import parse_time
 
 from sunpy.net.soar.attrs import Identifier, Product, walker
-
 
 __all__ = ['SOARClient']
 
@@ -19,6 +16,7 @@ class SOARClient(BaseClient):
     """
     Client to access the Solar Orbiter Archive (SOAR).
     """
+
     def search(self, *query, **kwargs):
         query = and_(*query)
         queries = walker.create(query)
