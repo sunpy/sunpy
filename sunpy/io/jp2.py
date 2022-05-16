@@ -2,6 +2,7 @@
 This module provides a JPEG 2000 file reader.
 """
 import os
+import numpy as np
 from xml.etree import cElementTree as ET
 
 from sunpy.io.header import FileHeader
@@ -158,7 +159,6 @@ def write(fname, data, header):
     header : `dict`
         A header dictionary.
     """
-    import numpy as np
     from glymur import Jp2k
 
     # Create an initial jp2 file with the given data
