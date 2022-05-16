@@ -70,3 +70,16 @@ def test_no_instrument():
     time = a.Time('2020-04-16', '2020-04-17')
     res = SOARClient().search(time)
     assert len(res) == 50
+
+
+def test_download_path(tmp_path):
+    # Check that we can download things to a custom path using
+    # the search parameters
+    id = a.Instrument('EUI')
+    time = a.Time('2021-02-01', '2021-02-02')
+    level = a.Level(1)
+    res = Fido.search(id & time & level)
+    files = Fido.fetch(res[0, 0], path=tmp_path / '{instrument}')
+    assert len(files) == 1
+    for f in files:
+        assert 'EUI' in f

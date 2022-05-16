@@ -31,19 +31,14 @@ class SOARClient(BaseClient):
         return qrt
 
     @staticmethod
-    def _do_search(query):
+    def _construct_url(query):
         """
-        Query the SOAR server with a single query.
+        Construct search URL.
 
         Parameters
         ----------
         query : list[str]
             List of query items.
-
-        Returns
-        -------
-        astropy.table.QTable
-            Query results.
         """
         base_url = ('http://soar.esac.esa.int/soar-sl-tap/tap/'
                     'sync?REQUEST=doQuery&')
@@ -63,7 +58,24 @@ class SOARClient(BaseClient):
         request_str = [f'{item}={request_dict[item]}' for item in request_dict]
         request_str = '&'.join(request_str)
 
-        url = base_url + request_str
+        return base_url + request_str
+
+    @staticmethod
+    def _do_search(query):
+        """
+        Query the SOAR server with a single query.
+
+        Parameters
+        ----------
+        query : list[str]
+            List of query items.
+
+        Returns
+        -------
+        astropy.table.QTable
+            Query results.
+        """
+        url = SOARClient._construct_url(query)
         log.debug(f'Getting request from URL: {url}')
         # Get request info
         r = requests.get(url)
@@ -113,7 +125,7 @@ class SOARClient(BaseClient):
 
         for row in query_results:
             url = base_url + row['Data item ID']
-            filepath = str(path).format(file=row['Filename'])
+            filepath = str(path).format(file=row['Filename'], **row.response_block_map)
             log.debug(f'Queing URL: {url}')
             downloader.enqueue_file(url, filename=filepath)
 
