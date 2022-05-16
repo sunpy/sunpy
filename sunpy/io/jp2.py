@@ -2,8 +2,9 @@
 This module provides a JPEG 2000 file reader.
 """
 import os
-import numpy as np
 from xml.etree import cElementTree as ET
+
+import numpy as np
 
 from sunpy.io.header import FileHeader
 from sunpy.util.io import HDPair, string_is_float
@@ -177,4 +178,3 @@ def write(fname, data, header):
 
     # Remove the initial temporary file
     os.remove(tmpname)
-
