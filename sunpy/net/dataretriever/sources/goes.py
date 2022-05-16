@@ -63,16 +63,15 @@ class XRSClient(GenericClient):
     <BLANKLINE>
 
     """
-    # GOES XRS data from NASA servers upto GOES 15. The reprocessed 13, 14, 15 data should be taken from NOAA server.
+    # GOES XRS data from NASA servers up to GOES 15.
+    # The reprocessed 13, 14, 15 data should be taken from NOAA server.
     baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
     pattern_old = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
-
     # GOES XRS 13, 14, 15 from NOAA (re-processed data)
     baseurl_new = (r"https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/"
                    r"goes{SatelliteNumber}/gxrs-l2-irrad_science/%Y/%m/sci_gxrs-l2-irrad_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
     pattern_new = ("{}/goes{SatelliteNumber:02d}/gxrs-l2-irrad_science/{year:4d}/"
                    "{month:2d}/sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
-
     # GOES XRS data for GOES-R Series - 16, 17
     baseurl_r = (r"https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber}"
                  r"/l2/data/xrsf-l2-flx1s_science/%Y/%m/sci_xrsf-l2-flx1s_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
@@ -81,7 +80,9 @@ class XRSClient(GenericClient):
 
     @property
     def info_url(self):
-        return 'https://umbra.nascom.nasa.gov/goes/fits'
+        return ("<13: https://umbra.nascom.nasa.gov/goes/fits \n"
+                "13, 14, 15: https://satdat.ngdc.noaa.gov/sem/goes/data/science/ \n"
+                "16, 17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/")
 
     def post_search_hook(self, i, matchdict):
         tr = get_timerange_from_exdict(i)
