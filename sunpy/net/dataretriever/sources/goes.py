@@ -51,7 +51,9 @@ class XRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the XRSClient:
-    Source: https://umbra.nascom.nasa.gov/goes/fits
+    Source: <13: https://umbra.nascom.nasa.gov/goes/fits
+    13, 14, 15: https://satdat.ngdc.noaa.gov/sem/goes/data/science/
+    16, 17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
     <BLANKLINE>
            Start Time               End Time        Instrument ... Source Provider
     ----------------------- ----------------------- ---------- ... ------ --------
@@ -80,7 +82,7 @@ class XRSClient(GenericClient):
 
     @property
     def info_url(self):
-        return ("<13: https://umbra.nascom.nasa.gov/goes/fits \n"
+        return ("\n <13: https://umbra.nascom.nasa.gov/goes/fits \n"
                 "13, 14, 15: https://satdat.ngdc.noaa.gov/sem/goes/data/science/ \n"
                 "16, 17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/")
 
