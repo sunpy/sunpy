@@ -82,7 +82,7 @@ class XRSClient(GenericClient):
 
     @property
     def info_url(self):
-        return ("\n <13: https://umbra.nascom.nasa.gov/goes/fits \n"
+        return ("<13: https://umbra.nascom.nasa.gov/goes/fits \n"
                 "13, 14, 15: https://satdat.ngdc.noaa.gov/sem/goes/data/science/ \n"
                 "16, 17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/")
 
