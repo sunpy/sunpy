@@ -394,9 +394,9 @@ class GenericTimeSeries:
         Example
         -------
         >>> from sunpy.timeseries import TimeSeries
-        >>> import sunpy.data.sample
-        >>> goes_lc = TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
-        >>> goes_lc.quicklook()
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> goes_lc = TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
+        >>> goes_lc.quicklook()  # doctest: +SKIP
         """
         with NamedTemporaryFile(
             "w", delete=False, prefix="sunpy.timeseries.", suffix=".html"
