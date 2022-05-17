@@ -109,6 +109,14 @@ def read_cdf(fname):
     return all_ts
 
 
+# Unfortunately (unlike e.g. FITS), there is no standard for the strings that
+# CDF files use to represent units. To allow for this we maintain a dictionary
+# mapping unit strings to their astropy unit equivalents.
+#
+# Please only add new entries if
+#   1. A user identifies which specific mission/data source they are needed for
+#   2. The mapping from the string to unit is un-ambiguous. If we get this
+#      wrong then users will silently have the wrong units in their data!
 _known_units = {'ratio': u.dimensionless_unscaled,
                 'NOTEXIST': u.dimensionless_unscaled,
                 'Unitless': u.dimensionless_unscaled,
