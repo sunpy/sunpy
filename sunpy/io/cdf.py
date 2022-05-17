@@ -175,7 +175,7 @@ _known_units = {'ratio': u.dimensionless_unscaled,
                 'milliseconds': u.ms,
 
                 '#/cm2-ster-eV-sec': 1 / (u.cm**2 * u.sr * u.eV * u.s),
-                '#/(cm^2*s*sr*MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                '#/(cm^2*s*sr*MeV/nuc)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '#/(cm^2*s*sr*Mev/nuc)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '#/(cm^2*s*sr*Mev/nucleon)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '#/(cm2-steradian-second-MeV/nucleon) ': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
