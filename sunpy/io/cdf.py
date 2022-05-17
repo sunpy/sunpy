@@ -196,7 +196,7 @@ _known_units = {'ratio': u.dimensionless_unscaled,
                 '1/(cm**2-s-sr)': 1 / (u.cm**2 * u.s * u.sr),
                 '1/(SQcm-ster-s)': 1 / (u.cm**2 * u.s * u.sr),
                 '1/(SQcm-ster-s)..': 1 / (u.cm**2 * u.s * u.sr),
-                
+
                 'photons cm^-2 s^-1': 1 / (u.cm**2 * u.s),
 
                 'Counts/256sec': 1 / (256 * u.s),
