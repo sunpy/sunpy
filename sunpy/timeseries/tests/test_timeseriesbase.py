@@ -1,7 +1,7 @@
 import copy
 import datetime
-from collections import OrderedDict
 from unittest import mock
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
@@ -735,14 +735,14 @@ def test_quicklook(generic_ts):
         h1 = html_string.find(name)
         h2 = html_string.find(" = new ImageChange")
         ident = html_string[h1:h2]
-        html_string = html_string.replace(ident,"same")
-        
+        html_string = html_string.replace(ident, "same")
+
         repr_html = generic_ts._repr_html_()
         h1 = repr_html.find(name)
         h2 = repr_html.find(" = new ImageChange")
         ident = repr_html[h1:h2]
-        repr_html = repr_html.replace(ident,"same")
-        
+        repr_html = repr_html.replace(ident, "same")
+
         assert repr_html in html_string
 
 

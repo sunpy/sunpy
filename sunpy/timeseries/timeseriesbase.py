@@ -4,16 +4,16 @@ This module provies `sunpy.timeseries.GenericTimeSeries` which all other
 """
 import copy
 import html
-import textwrap
 import time
+import textwrap
 import webbrowser
+from tempfile import NamedTemporaryFile
 from collections import OrderedDict
 from collections.abc import Iterable
-from tempfile import NamedTemporaryFile
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 import astropy
 import astropy.units as u
