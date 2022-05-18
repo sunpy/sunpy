@@ -58,14 +58,17 @@ jobs:
       submodules: false
       pytest: false
       toxdeps: tox-pypi-filter
-      cache-path: docs/_build/
+      cache-path: |
+        docs/_build/
+        docs/generated/
+        docs/sample_data/
       cache-key: docs-${{ github.run_id }}
       libraries: |
         apt:
           - libopenjp2-7
           - graphviz
       envs: |
-        - linux: build_docs
+        - linux: build_docs-ci
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -81,10 +84,13 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: build_docs-gallery
+        - linux: build_docs-gallery-ci
           posargs: ''
           pytest: false
-          cache-path: docs/_build/
+          cache-path: |
+            docs/_build/
+            docs/generated/
+            docs/sample_data/
           cache-key: docs-${{ github.run_id }}
           libraries:
             apt:
