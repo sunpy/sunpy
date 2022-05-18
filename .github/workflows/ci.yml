@@ -65,7 +65,7 @@ jobs:
           - libopenjp2-7
           - graphviz
       envs: |
-        - linux: build_docs-nogallery
+        - linux: build_docs
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -81,7 +81,7 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: build_docs
+        - linux: build_docs-gallery
           posargs: ''
           pytest: false
           cache-path: docs/_build/
