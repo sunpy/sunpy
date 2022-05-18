@@ -1,0 +1,1 @@
+Added automatic conversion of unit strings in CDF files to astropy unit objects for the following instruments: PSP/ISOIS, SOHO/CELIAS, SOHO/COSTEP-EPHIN, and SOHO/ERNE.
