@@ -50,9 +50,26 @@ jobs:
         - windows: py39
         - linux: py38-oldestdeps
 
+  docs:
+    needs: [core]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      default_python: '3.8'
+      submodules: false
+      pytest: false
+      toxdeps: tox-pypi-filter
+      cache-path: docs/_build/
+      cache-key: docs-${{ github.run_id }}
+      libraries: |
+        apt:
+          - libopenjp2-7
+          - graphviz
+      envs: |
+        - linux: build_docs-nogallery
+
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
-    needs: [core]
+    needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       default_python: '3.8'
@@ -64,9 +81,11 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: build_docs_ci
+        - linux: build_docs
           posargs: ''
           pytest: false
+          cache-path: docs/_build/
+          cache-key: docs-${{ github.run_id }}
           libraries:
             apt:
               - libopenjp2-7
