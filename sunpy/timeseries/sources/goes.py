@@ -55,8 +55,10 @@ class XRSTimeSeries(GenericTimeSeries):
     -----
     * https://umbra.nascom.nasa.gov/goes/fits/goes_fits_files_notes.txt
     """
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'xrs'
+    _url = "https://www.swpc.noaa.gov/products/goes-x-ray-flux"
 
     _netcdf_read_kw = {}
     h5netcdf_version = packaging.version.parse(h5netcdf.__version__)

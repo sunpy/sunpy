@@ -54,8 +54,10 @@ class LYRATimeSeries(GenericTimeSeries):
     * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`_
     * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
     """
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'lyra'
+    _url = "https://proba2.sidc.be/about/LYRA"
 
     def plot(self, axes=None, columns=None, names=3, **kwargs):
         """

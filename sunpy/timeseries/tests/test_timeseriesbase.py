@@ -1,5 +1,6 @@
 import copy
 import datetime
+from unittest import mock
 from collections import OrderedDict
 
 import numpy as np
@@ -706,6 +707,43 @@ def test_ts_shape(generic_ts):
 
 def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().to_dataframe().equals(generic_ts.to_dataframe().sort_index())
+
+
+def test_repr_html_(generic_ts):
+    html_string = generic_ts._repr_html_()
+    assert isinstance(html_string, str)
+
+
+def test_quicklook(generic_ts):
+    with mock.patch('webbrowser.open_new_tab') as mockwbopen:
+        generic_ts.quicklook()
+
+    # Check that the mock web browser was opened with a file URL
+    mockwbopen.assert_called_once()
+    file_url = mockwbopen.call_args[0][0]
+    assert file_url.startswith("file://")
+
+    # Open the file specified in the URL and confirm that it contains the HTML
+    with open(file_url[7:], 'r') as f:
+        html_string = f.read()
+        if generic_ts.source is None:
+            name = "None"
+        else:
+            name = generic_ts.source
+        # The two sections below remove a random name from the two strings
+        # before the assertion
+        h1 = html_string.find(name)
+        h2 = html_string.find(" = new ImageChange")
+        ident = html_string[h1:h2]
+        html_string = html_string.replace(ident, "same")
+
+        repr_html = generic_ts._repr_html_()
+        h1 = repr_html.find(name)
+        h2 = repr_html.find(" = new ImageChange")
+        ident = repr_html[h1:h2]
+        repr_html = repr_html.replace(ident, "same")
+
+        assert repr_html in html_string
 
 
 def test_timeseries_array():

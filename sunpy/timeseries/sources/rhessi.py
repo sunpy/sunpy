@@ -132,8 +132,10 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     * `Mission Paper. <https://doi.org/10.1023/A:1022428818870>`_
     """
 
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'rhessi'
+    _url = "https://hesperia.gsfc.nasa.gov/rhessi3/index.html"
 
     def plot(self, axes=None, columns=None, **kwargs):
         """

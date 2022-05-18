@@ -61,8 +61,10 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`_
     * `GBM Instrument Papers <https://gammaray.nsstc.nasa.gov/gbm/publications/instrument_journal_gbm.html>`_
     """
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'gbmsummary'
+    _url = "https://gammaray.nsstc.nasa.gov/gbm/#"
 
     def plot(self, axes=None, columns=None, **kwargs):
         """

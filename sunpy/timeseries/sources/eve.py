@@ -56,6 +56,7 @@ class ESPTimeSeries(GenericTimeSeries):
     """
 
     _source = 'esp'
+    _url = "http://lasp.colorado.edu/home/eve/"
 
     def plot(self, axes=None, columns=None, **kwargs):
         """
@@ -207,6 +208,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'
+    _url = "http://lasp.colorado.edu/home/eve/"
 
     @peek_show
     def peek(self, columns=None, **kwargs):

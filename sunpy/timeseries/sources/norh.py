@@ -48,8 +48,10 @@ class NoRHTimeSeries(GenericTimeSeries):
     * `Analysis Manual <https://solar.nro.nao.ac.jp/norh/doc/manuale/index.html>`_
     * `Nobeyama Correlation Plots <https://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
     """
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'norh'
+    _url = "https://solar.nro.nao.ac.jp/norh/"
 
     def __init__(self, data, header, units, **kwargs):
         super().__init__(data, header, units, **kwargs)
