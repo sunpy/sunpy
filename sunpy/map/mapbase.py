@@ -1498,7 +1498,8 @@ class GenericMap(NDData):
         Notes
         -----
         Saving with the jp2 extension will write a modified version
-        of the given data in order to support the jpeg 2000 format.
+        of the given data casted to uint8 values in order to support
+        the JPEG2000 format.
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)

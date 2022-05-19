@@ -164,8 +164,8 @@ def write(fname, data, header, **kwargs):
 
     Notes
     -----
-    Saving as a jpeg 2000 will modify the provided
-    data array to support the jpeg 2000 format.
+    Saving as a JPEG2000 will cast the data array to
+    uint8 values to support the JPEG2000 format.
     """
     from glymur import Jp2k
 
