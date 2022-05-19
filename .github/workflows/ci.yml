@@ -61,14 +61,14 @@ jobs:
       cache-path: |
         docs/_build/
         docs/generated/
-        docs/sample_data/
+        .tox/sample_data/
       cache-key: docs-${{ github.run_id }}
       libraries: |
         apt:
           - libopenjp2-7
           - graphviz
       envs: |
-        - linux: build_docs-ci
+        - linux: build_docs
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -84,13 +84,13 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: build_docs-gallery-ci
+        - linux: build_docs-gallery
           posargs: ''
           pytest: false
           cache-path: |
             docs/_build/
             docs/generated/
-            docs/sample_data/
+            .tox/sample_data/
           cache-key: docs-${{ github.run_id }}
           libraries:
             apt:
