@@ -127,20 +127,21 @@ The examples from the example gallery can be found in the "examples" folder.
 
 In the root directory run::
 
-    $ tox -e build_docs
+    $ tox -e build_docs-gallery
 
 This will generate HTML documentation for sunpy in the "docs/_build/html" directory.
 You can open the "index.html" file to browse the final product.
 The gallery examples are located under "docs/_build/html/generated/gallery".
 Sphinx builds documentation iteratively, only adding things that have changed.
 
-If you want to build the documentation without building the gallery, i.e. to reduce build times while working on other sections of the documentation you can run::
+If you want to build the documentation without executing the gallery examples, i.e. to reduce build times while working on other sections of the documentation you can run::
 
-    $ tox -e build_docs -- -D plot_gallery=False
+    $ tox -e build_docs
 
-If you'd like to start from scratch (i.e., remove the tox cache) then run::
+If you'd like to start from scratch (i.e., remove the tox cache) then change to the :file:`docs/` directory and run::
 
-    $ tox -e build_docs -- -aE
+    $ make clean
+    $ tox -r -e build_docs-gallery
 
 To build the documentation in your current python environment you must have all the dependencies specified in ``setup.cfg`` installed (``pip install -e .[docs]``).
 Then change to the :file:`docs/` directory and run::
