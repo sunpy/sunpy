@@ -65,7 +65,7 @@ or at the top under the "Checks" tab:
   Warnings are not checked on this build but under GitHub Actions (see below).
 
 * `CI (GitHub Actions) <https://github.com/sunpy/sunpy/actions>`_: Runs our test suite on multiple operating systems.
-  If the minimal "CI / core" tests are successful, the indepth "CI / test" and remote data "CI / online" tests will be run.
+  If the minimal "CI / core" tests are successful, the indepth "CI / test", documentation "CI / docs" test and remote data "CI / online" tests will be run.
   You will see multiple jobs within each group.
   Each job corresponds to a tox environment being run on a particular operating system.
 
