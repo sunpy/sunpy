@@ -1,0 +1,1 @@
+Add support for saving `~sunpy.map.GenericMap` as JPEG 2000 files.
