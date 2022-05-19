@@ -13,12 +13,15 @@ from .helpers import roundtrip_object
 def assert_roundtrip_map(old):
     new = roundtrip_object(old)
     np.testing.assert_allclose(old.data, new.data)
+
     # Test the meta by force!
     for ok, ov in old.meta.items():
         assert ok in new.meta
         assert new.meta[ok] == ov
+
     if old.mask is not None and new.mask is not None:
         np.testing.assert_allclose(old.mask, new.mask)
+
     assert old.unit == new.unit
 
 
