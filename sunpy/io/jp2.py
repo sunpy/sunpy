@@ -161,6 +161,11 @@ def write(fname, data, header, **kwargs):
         A header dictionary.
     kwargs :
         Additional keyword args are passed to the glymur.Jp2k constructor
+
+    Notes
+    -----
+    Saving as a jpeg 2000 will modify the provided
+    data array to support the jpeg 2000 format.
     """
     from glymur import Jp2k
 

@@ -1494,6 +1494,11 @@ class GenericMap(NDData):
         kwargs :
             Any additional keyword arguments are passed to
             `~sunpy.io.write_file`.
+
+        Notes
+        -----
+        Saving with the jp2 extension will write a modified version
+        of the given data in order to support the jpeg 2000 format.
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
