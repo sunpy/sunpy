@@ -16,7 +16,6 @@ PACKAGES = {
     "appdirs": ["ActiveState", "appdirs", "appdirs.py"],
     "distro": ["python-distro", "distro", "src/distro/distro.py"],
     "inflect": ["jaraco", "inflect", "inflect/__init__.py"],
-    "modest_image": ["glue-viz", "glue", "glue/external/modest_image.py"],
     "parse": ["r1chardj0n3s", "parse", "parse.py"],
 }
 
