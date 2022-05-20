@@ -28,37 +28,37 @@ def download_package(user: str, repo: str):
     Args:
         package: The name of the package to download.
     """
-    # print(f"Checking {user}/{repo}")
-    # response = requests.get(f"https://api.github.com/repos/{user}/{repo}")
-    # if response.status_code != 200:
-    #     print(f"{user}/{repo} does not exist.")
-    #     exit()
+    print(f"Checking {user}/{repo}")
+    response = requests.get(f"https://api.github.com/repos/{user}/{repo}")
+    if response.status_code != 200:
+        print(f"{user}/{repo} does not exist.")
+        exit()
 
-    # url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
-    # response = requests.get(url)
-    # if response.status_code != 200:
-    #     try:
-    #         url = f"https://api.github.com/repos/{user}/{repo}/tags"
-    #         response = requests.get(url)
-    #         version = response.json()[0]["name"]
-    #     except Exception as e:
-    #         print(e)
-    #         exit()
-    # else:
-    #     version = response.json()["tag_name"]
-    # url = f"https://github.com/{user}/{repo}/archive/refs/tags/{version}.zip"
+    url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
+    response = requests.get(url)
+    if response.status_code != 200:
+        try:
+            url = f"https://api.github.com/repos/{user}/{repo}/tags"
+            response = requests.get(url)
+            version = response.json()[0]["name"]
+        except Exception as e:
+            print(e)
+            exit()
+    else:
+        version = response.json()["tag_name"]
+    url = f"https://github.com/{user}/{repo}/archive/refs/tags/{version}.zip"
 
-    # if not os.path.exists("extern_pkg"):
-    #     os.mkdir("extern_pkg")
+    if not os.path.exists("extern_pkg"):
+        os.mkdir("extern_pkg")
 
-    # response = requests.get(url, stream=True)
-    # with open(f"extern_pkg/{repo}.zip", "wb") as f:
-    #     print(f"Downloading {package}")
-    #     for chunk in tqdm(response.iter_content(chunk_size=1024)):
-    #         if chunk:
-    #             f.write(chunk)
-    #         f.flush()
-    #     f.close()
+    response = requests.get(url, stream=True)
+    with open(f"extern_pkg/{repo}.zip", "wb") as f:
+        print(f"Downloading {package}")
+        for chunk in tqdm(response.iter_content(chunk_size=1024)):
+            if chunk:
+                f.write(chunk)
+            f.flush()
+        f.close()
     return f"extern_pkg/{repo}.zip"
 
 
@@ -82,8 +82,10 @@ def move(src: Path, dest: Path):
         src: The path to the files to be moved.
         dest: The path where the files will be moved.
     """
+    src = Path(src)
+    dest = Path(dest)
     if dest.exists():
-        shutil.rmtree(dest)
+        os.remove(dest)
     shutil.move(src, dest)
 
 
@@ -101,13 +103,13 @@ def get_zip_file():
 
 def download_github_file(user: str, repo: str, src: Path, dest: Path):
     zip_file = download_package(user, repo)
-    zip_path = zip_file
     folder = get_zip_file()
-    with ZipFile(zip_file, "r") as zip_file:
-        ext = zip_file.extract(f"{folder}/{src}", "extern_pkg")
-        move(ext, dest)
-        zip_file.close()
-    # os.remove(zip_path)
+    with ZipFile(zip_file, "r") as f:
+        ext = f.extract(f"{folder}/{src}", "extern_pkg")
+        file_name = ext.split("/")[-1]
+        move(ext, f"{dest}/{file_name}")
+        f.close()
+    os.remove(zip_file)
 
 
 if __name__ == "__main__":
@@ -115,4 +117,3 @@ if __name__ == "__main__":
     for package in PACKAGES:
         download_github_file(PACKAGES[package][0], PACKAGES[package][1],
                              PACKAGES[package][2], f"{SUNPY_DIR}/sunpy/extern")
-        break
