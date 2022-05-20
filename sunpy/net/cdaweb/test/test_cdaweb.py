@@ -5,6 +5,7 @@ from sunpy.net import Fido
 from sunpy.net.cdaweb.attrs import Dataset
 
 
+@pytest.mark.remote_data
 @pytest.mark.vcr()
 def test_query():
     res = Fido.search(a.Time('2018-11-01', '2018-11-01 01:00:00'),

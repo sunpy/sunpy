@@ -178,6 +178,7 @@ def testFilesRange_sameDirectory_local():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def testFilesRange_sameDirectory_remote():
     pattern = ('http://solarmonitor.org/data/%Y/%m/%d/'
                'fits/{instrument}/'
@@ -194,6 +195,7 @@ def testFilesRange_sameDirectory_remote():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def testFilesRange_sameDirectory_months_remote():
     pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
                'Ahead/1minute/AeH%y%b.1m')
@@ -205,6 +207,7 @@ def testFilesRange_sameDirectory_months_remote():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_ftp():
     pattern = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/tca%y%m%d'
     s = Scraper(pattern)
@@ -216,6 +219,7 @@ def test_ftp():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_filelist_url_missing_directory():
     # Asserts solution to ticket #2684.
     # Attempting to access data for the year 1960 results in a 404, so no files are returned.
@@ -226,6 +230,7 @@ def test_filelist_url_missing_directory():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_filelist_relative_hrefs():
     # the url opened by the scraper from below pattern contains some links which don't have hrefs
     pattern = 'http://www.bbso.njit.edu/pub/archive/%Y/%m/%d/bbso_halph_fr_%Y%m%d_%H%M%S.fts'
@@ -248,6 +253,7 @@ def test_regex(pattern, check_file):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_regex_data():
     prefix = r'https://gong2.nso.edu/oQR/zqs/'
     pattern = prefix + r'%Y%m/mrzqs%y%m%d/mrzqs%y%m%dt%H%Mc(\d){4}_(\d){3}\.fits.gz'
@@ -258,6 +264,7 @@ def test_regex_data():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_extract_files_meta():
     baseurl0 = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
     extractpattern0 = '{}/tcx/{year:4d}/{month:2d}/{wave}{:4d}{day:2d}'
