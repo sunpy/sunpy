@@ -242,4 +242,4 @@ result_images
 
 # vcrpy cassettes. These should be saved to the sunpy-vcr-cassettes repo,
 # not the main sunpy repo
-sunpy/data/tests/cassettes
+cassettes

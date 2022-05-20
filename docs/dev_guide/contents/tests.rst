@@ -123,11 +123,10 @@ or::
 Mocked remote data tests
 ------------------------
 Some of our remote data tests are run using `vcrpy <https://vcrpy.readthedocs.io/en/latest/>`_, which saves a copy of any HTTP requests made within the test so a remote request doesn't have to be run on subsequent test runs.
-To use ``vcrpy`` on a test add the ``@pytest.mark.vcrpy()`` decorator to the test.
+To use ``vcrpy`` on a test add the ``@pytest.mark.vcrpy()`` decorator to the test, and **keep the ``@pytest.mark.remote_data`` decorator**.
 These should only be used to test search requests, and **not** data download requests, to avoid storing large files in the git repository.
-To re-generate the HTTP responses run::
-
-    $ pytest --remote-data=yes --vcr-record=all
+Every week the ``sunpy-vcr-cassettes`` repository will update the cassettes from the sunpy core main branch.
+After this is done, the sunpy core remote data tests will use these cassettes to avoid remote requests in the future.
 
 Figure tests
 ------------
@@ -268,11 +267,6 @@ Tests that create files
 Tests may often be run from directories where users do not have write permissions so tests which create files should always do so in temporary directories.
 This can be done with the `pytest tmpdir function argument <https://pytest.org/en/latest/tmpdir.html>`_ or with Python's built-in `tempfile module
 <https://docs.python.org/3/library/tempfile.html#module-tempfile>`_.
-
-To regenerate the VCR cassettes, run::
-
-    rm -r sunpy/data/tests/cassettes
-    pytest -m vcr --remote-data=any --vcr-record=all
 
 Tests that use test data
 ------------------------
