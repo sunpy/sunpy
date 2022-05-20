@@ -23,17 +23,24 @@ Currently we have several stages of CI jobs, some run on a pull request and some
 
     * "oldestdeps" - Check the offline test suite with the oldest dependencies installed.
 
-3. "online" - Pull Request, Scheduled
+3. "docs" - Pull Request, Scheduled and Release
+    This runs a documentation build (without executing gallery examples) to test that the HTML documentation can be generated without any errors or warnings.
+    The build is cached and the gallery examples are then tested during the "online" stage.
+
+4. "online" - Pull Request, Scheduled
     This runs a full test suite on Linux for a version of Python.
     This build can fail (due to a range of reasons) and can take up to 45 minutes to run.
     We want to ensure that the offline tests are passing before we consider running this.
     Therefore this stage needs to wait for the "core" stage to complete.
-    In addition, we run the documentation build that can fail due to the same reasons as the online build.
+
+    In addition, we run the documentation build to execute the gallery examples which can fail due to the same reasons as the online build.
+    The documentation build from the "docs" stage is cached and restored for this documentation build.
+    Therefore this stage also needs to wait for the "docs" stage to complete.
 
     As these are not tested when we build the distribution or wheels, we skip these on a release.
     These should be checked based on the last commit for that release branch instead before a tag.
 
-4. "cron" - Scheduled
+5. "cron" - Scheduled
     Here we put builds that are useful to run on a schedule but not so useful on a pull request.
     This allows us to run more "exotic" or focused builds that day to day, should not affect a pull request.
 

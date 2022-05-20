@@ -109,6 +109,14 @@ def read_cdf(fname):
     return all_ts
 
 
+# Unfortunately (unlike e.g. FITS), there is no standard for the strings that
+# CDF files use to represent units. To allow for this we maintain a dictionary
+# mapping unit strings to their astropy unit equivalents.
+#
+# Please only add new entries if
+#   1. A user identifies which specific mission/data source they are needed for
+#   2. The mapping from the string to unit is un-ambiguous. If we get this
+#      wrong then users will silently have the wrong units in their data!
 _known_units = {'ratio': u.dimensionless_unscaled,
                 'NOTEXIST': u.dimensionless_unscaled,
                 'Unitless': u.dimensionless_unscaled,
@@ -182,7 +190,11 @@ _known_units = {'ratio': u.dimensionless_unscaled,
                 '1/(cm2 Sr sec MeV/nucleon)': 1 / (u.cm**2 * u.sr * u.s * u.MeV),
                 '1/(cm**2-s-sr-MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '1/(cm**2-s-sr-MeV/nuc.)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                '(cm^2 s sr MeV/n)^-1': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                'cm!E-2!Nsr!E-1!Nsec!E-1!N(MeV/nuc)!E-1!N': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                'cm!E-2!Nsr!E-1!Nsec!E-1!NMeV!E-1!N': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 '1/(cm^2 sec ster MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
+                '(cm^2 s sr MeV)^-1': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
                 'cnts/sec/sr/cm^2/MeV': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
 
                 'particles / (s cm^2 sr MeV)': 1 / (u.cm**2 * u.s * u.sr * u.MeV),
@@ -193,8 +205,13 @@ _known_units = {'ratio': u.dimensionless_unscaled,
                 '1/(SQcm-ster-s)': 1 / (u.cm**2 * u.s * u.sr),
                 '1/(SQcm-ster-s)..': 1 / (u.cm**2 * u.s * u.sr),
 
+                'photons cm^-2 s^-1': 1 / (u.cm**2 * u.s),
+
                 'Counts/256sec': 1 / (256 * u.s),
                 'Counts/hour': 1 / u.hr,
+                'counts/min': 1 / u.min,
                 'counts / s': 1/u.s,
+                'counts/s': 1/u.s,
                 'cnts/sec': 1/u.s,
+                'counts s!E-1!N': 1/u.s,
                 }

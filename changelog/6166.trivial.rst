@@ -1,0 +1,2 @@
+Add an environment variable ``SUNPY_NO_BUILD_ANA_EXTENSION`` which when present
+will cause sunpy to not compile the ANA C extension when building from source.
