@@ -315,10 +315,7 @@ class GenericTimeSeries:
                 if (dat[self.columns[i]].values < 0).any() is np.bool_(False):
                     axs[i].set_yscale("log")
                 axs[i].legend(frameon=False, handlelength=0)
-                if len(set(self.units.values())) == 1:
-                    fig.supylabel(self.units[self.columns[0]])
-                else:
-                    axs[i].set_ylabel(self.units[self.columns[i]])
+                axs[i].set_ylabel(self.units[self.columns[i]])
         plt.xticks(rotation=30)
         spc = _figure_to_base64(fig)
         plt.close(fig)
