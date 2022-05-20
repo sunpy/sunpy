@@ -1,7 +1,6 @@
 """
 Test mapsequence functionality
 """
-from unittest import mock
 
 import numpy as np
 import pytest
@@ -169,21 +168,18 @@ def test_repr_html(mapsequence_all_the_same):
         assert m._repr_html_() in html_string
 
 
-def test_quicklook(mapsequence_all_the_same):
-    with mock.patch('webbrowser.open_new_tab') as mockwbopen:
-        mapsequence_all_the_same.quicklook()
-
+def test_quicklook(mocker, mapsequence_all_the_same):
+    mockwbopen = mocker.patch('webbrowser.open_new_tab')
+    mapsequence_all_the_same.quicklook()
     # Check that the mock web browser was opened with a file URL
     mockwbopen.assert_called_once()
     file_url = mockwbopen.call_args[0][0]
     assert file_url.startswith('file://')
-
     # Open the file specified in the URL and confirm that it contains the HTML
     with open(file_url[7:], 'r') as f:
         html_string = f.read()
-
-        for m in mapsequence_all_the_same.maps:
-            assert m._repr_html_() in html_string
+    for m in mapsequence_all_the_same.maps:
+        assert m._repr_html_() in html_string
 
 
 @figure_test

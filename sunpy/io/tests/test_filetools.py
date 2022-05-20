@@ -1,6 +1,5 @@
 import os
 import pathlib
-from unittest.mock import patch
 
 import numpy as np
 import pytest
@@ -17,11 +16,11 @@ TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
 
 
-def test_read_file_network_fits():
+def test_read_file_network_fits(mocker):
     url = "https://hesperia.gsfc.nasa.gov/rhessi_extras/imagecube_fits/2015/12/20/20151220_2228_2248/hsi_imagecube_clean_20151220_2228_13tx3e.fits"
-    with patch("astropy.io.fits.file.download_file", return_value=TEST_AIA_IMAGE) as mock:
-        data = sunpy.io.read_file(url)
-        assert mock.call_args[0] == (url,)
+    mock = mocker.patch("astropy.io.fits.file.download_file", return_value=TEST_AIA_IMAGE)
+    data = sunpy.io.read_file(url)
+    assert mock.call_args[0] == (url,)
     assert isinstance(data, list)
     assert len(data) == 1
     assert len(data[0]) == 2

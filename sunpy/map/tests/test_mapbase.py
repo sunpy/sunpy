@@ -4,7 +4,6 @@ Test Generic Map
 import re
 import tempfile
 import contextlib
-from unittest import mock
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -1187,20 +1186,17 @@ def test_repr_html(aia171_test_map):
     assert "Bad pixels are shown in red: 1 infinite" in html_string
 
 
-def test_quicklook(aia171_test_map):
-    with mock.patch('webbrowser.open_new_tab') as mockwbopen:
-        aia171_test_map.quicklook()
-
+def test_quicklook(mocker, aia171_test_map):
+    mockwbopen = mocker.patch('webbrowser.open_new_tab')
+    aia171_test_map.quicklook()
     # Check that the mock web browser was opened with a file URL
     mockwbopen.assert_called_once()
     file_url = mockwbopen.call_args[0][0]
     assert file_url.startswith('file://')
-
     # Open the file specified in the URL and confirm that it contains the HTML
     with open(file_url[7:], 'r') as f:
         html_string = f.read()
-
-        assert aia171_test_map._repr_html_() in html_string
+    assert aia171_test_map._repr_html_() in html_string
 
 
 def test_dask_array(generic_map):
