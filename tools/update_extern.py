@@ -4,10 +4,10 @@ Updates all the libraries in ``sunpy/extern``
 
 import os
 import shutil
-from zipfile import ZipFile
 import requests
-from pathlib import Path
 from tqdm import tqdm
+from pathlib import Path
+from zipfile import ZipFile
 
 SUNPY_DIR = Path(__file__).parent.parent
 
@@ -61,18 +61,6 @@ def download_package(user: str, repo: str):
     return f"extern_pkg/{repo}.zip"
 
 
-def unzip(folder: str):
-    """
-    This function unzips the zip file and moves the files to the sunpy/extern folder.
-
-    Args:
-        folder: The name of the parent folder of the zip file.
-    """
-    package = folder.split("-")[0]
-    with ZipFile(f"extern_pkg/{package}.zip", "r") as zip_file:
-        zip_file.extract(f"{folder}/{PACKAGES[package][1]}", "extern_pkg")
-
-
 def move(src: Path, dest: Path):
     """
     Move the files from the src to the dst.
@@ -102,13 +90,14 @@ def get_zip_file():
 
 def download_github_file(user: str, repo: str, src: Path, dest: Path):
     zip_file = download_package(user, repo)
+    package_name = [key for key in PACKAGES if PACKAGES[key][2] == src][0]
     folder = get_zip_file()
     with ZipFile(zip_file, "r") as f:
         ext = f.extract(f"{folder}/{src}", "extern_pkg")
-        file_name = ext.split("/")[-1]
-        move(ext, f"{dest}/{file_name}")
+        move(ext, f"{dest}/{package_name}.py")
         f.close()
     os.remove(zip_file)
+    shutil.rmtree("extern_pkg")
 
 
 if __name__ == "__main__":
