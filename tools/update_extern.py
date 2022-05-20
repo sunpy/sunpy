@@ -52,7 +52,7 @@ def download_package(user: str, repo: str):
 
     response = requests.get(url, stream=True)
     with open(f"extern_pkg/{repo}.zip", "wb") as f:
-        print(f"Downloading {package}")
+        print(f"Downloading {repo}")
         for chunk in tqdm(response.iter_content(chunk_size=1024)):
             if chunk:
                 f.write(chunk)
@@ -90,7 +90,11 @@ def get_zip_file():
 
 def download_github_file(user: str, repo: str, src: Path, dest: Path):
     zip_file = download_package(user, repo)
-    package_name = [key for key in PACKAGES if PACKAGES[key][2] == src][0]
+    try:
+        package_name = [key for key in PACKAGES if PACKAGES[key][2] == src][0]
+    except Exception as e:
+        print(f"Error: {e}\nCannot find the package in dictionary")
+        package_name = str(input("Enter the name of the package: "))
     folder = get_zip_file()
     with ZipFile(zip_file, "r") as f:
         ext = f.extract(f"{folder}/{src}", "extern_pkg")
