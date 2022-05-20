@@ -7,10 +7,11 @@ import shutil
 from zipfile import ZipFile
 import requests
 from pathlib import Path
+from tqdm import tqdm
 
 SUNPY_DIR = Path(__file__).parent.parent
 
-
+# "file_name": ["user", "repository", "path_to_file"]
 PACKAGES = {
     "appdirs": ["ActiveState", "appdirs", "appdirs.py"],
     "distro": ["python-distro", "distro", "src/distro/distro.py"],
@@ -20,38 +21,45 @@ PACKAGES = {
 }
 
 
-def download_package(package: str):
+def download_package(user: str, repo: str):
     """
     Download the latest version of package using Github release tags.
 
     Args:
         package: The name of the package to download.
     """
-    for package in PACKAGES:
-        print(f"Checking {PACKAGES[package][0]}/{package}")
-        # Get 200 response from github
-        response = requests.get(f"https://api.github.com/repos/{PACKAGES[package][0]}/{package}")
-        if response.status_code != 200:
-            print(f"{PACKAGES[package]}/{package} does not exist.")
-            exit()
+    # print(f"Checking {user}/{repo}")
+    # response = requests.get(f"https://api.github.com/repos/{user}/{repo}")
+    # if response.status_code != 200:
+    #     print(f"{user}/{repo} does not exist.")
+    #     exit()
 
-    author = PACKAGES[package][0]
-    url = f"https://api.github.com/repos/{author}/{package}/releases/latest"
-    response = requests.get(url)
-    version = response.json()["tag_name"]
-    url = f"https://github.com/{author}/{package}/archive/refs/tags/{version}.zip"
+    # url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
+    # response = requests.get(url)
+    # if response.status_code != 200:
+    #     try:
+    #         url = f"https://api.github.com/repos/{user}/{repo}/tags"
+    #         response = requests.get(url)
+    #         version = response.json()[0]["name"]
+    #     except Exception as e:
+    #         print(e)
+    #         exit()
+    # else:
+    #     version = response.json()["tag_name"]
+    # url = f"https://github.com/{user}/{repo}/archive/refs/tags/{version}.zip"
 
-    if not os.path.exists("extern_pkg"):
-        os.mkdir("extern_pkg")
+    # if not os.path.exists("extern_pkg"):
+    #     os.mkdir("extern_pkg")
 
-    response = requests.get(url, stream=True)
-    with open(f"extern_pkg/{package}.zip", "wb") as f:
-        print(f"Downloading {package}")
-        for chunk in response.iter_content(chunk_size=8192):
-            if chunk:
-                f.write(chunk)
-            f.flush()
-        f.close()
+    # response = requests.get(url, stream=True)
+    # with open(f"extern_pkg/{repo}.zip", "wb") as f:
+    #     print(f"Downloading {package}")
+    #     for chunk in tqdm(response.iter_content(chunk_size=1024)):
+    #         if chunk:
+    #             f.write(chunk)
+    #         f.flush()
+    #     f.close()
+    return f"extern_pkg/{repo}.zip"
 
 
 def unzip(folder: str):
@@ -64,51 +72,47 @@ def unzip(folder: str):
     package = folder.split("-")[0]
     with ZipFile(f"extern_pkg/{package}.zip", "r") as zip_file:
         zip_file.extract(f"{folder}/{PACKAGES[package][1]}", "extern_pkg")
-    # os.remove(f"extern_pkg/{package}.zip")
 
 
-def move(src: Path, dst: Path):
+def move(src: Path, dest: Path):
     """
     Move the files from the src to the dst.
 
     Args:
         src: The path to the files to be moved.
-        dst: The path where the files will be moved.
+        dest: The path where the files will be moved.
     """
-    if os.path.exists(dst):
-        os.remove(dst)
-    shutil.move(src, dst)
+    if dest.exists():
+        shutil.rmtree(dest)
+    shutil.move(src, dest)
 
 
 def get_zip_file():
     """
-    This function returns a list of parent folders of each zip file inside the temporary folder.
+    This function returns name of the parent folders of zip file inside the temporary folder.
     """
 
-    folders = list()
     for root, dirs, files in os.walk("extern_pkg"):
         for folder in files:
             with ZipFile(f"extern_pkg/{folder}", "r") as zip_file:
                 file_name = zip_file.namelist()
-                folders.append(file_name[0].split("/")[0])
-        folders.sort()
-    return folders
+                return (file_name[0].split("/")[0])
+
+
+def download_github_file(user: str, repo: str, src: Path, dest: Path):
+    zip_file = download_package(user, repo)
+    zip_path = zip_file
+    folder = get_zip_file()
+    with ZipFile(zip_file, "r") as zip_file:
+        ext = zip_file.extract(f"{folder}/{src}", "extern_pkg")
+        move(ext, dest)
+        zip_file.close()
+    # os.remove(zip_path)
 
 
 if __name__ == "__main__":
 
     for package in PACKAGES:
-        download_package(package)
-
-    folders = get_zip_file()
-    for folder in folders:
-        unzip(folder)
-
-    for root, dirs, files in os.walk("extern_pkg"):
-        for file in files:
-            if file.endswith(".py"):
-                package = root.split("/")[-1]
-                move(os.path.join(root, file), os.path.join(
-                    SUNPY_DIR, "sunpy", "extern", f"{package}.py"))
-
-    shutil.rmtree("extern_pkg")
+        download_github_file(PACKAGES[package][0], PACKAGES[package][1],
+                             PACKAGES[package][2], f"{SUNPY_DIR}/sunpy/extern")
+        break
