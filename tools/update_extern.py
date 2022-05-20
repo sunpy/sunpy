@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 SUNPY_DIR = Path(__file__).parent.parent
 
-# "file_name": ["user", "repository", "path_to_file"]
+# "package_name": ["user", "repository", "path_to_file"]
 PACKAGES = {
     "appdirs": ["ActiveState", "appdirs", "appdirs.py"],
     "distro": ["python-distro", "distro", "src/distro/distro.py"],
