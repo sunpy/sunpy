@@ -217,5 +217,9 @@ def waveunit_fits_directory(tmp_path_factory):
 
 @pytest.fixture(scope='module')
 def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return str(Path(__file__).parent.parent / 'cassettes' / request.module.__name__)
+    if 'SUNPY_VCR_CASSETTE_DIR' in os.environ:
+        base_dir = Path(os.environ['SUNPY_VCR_CASSETTE_DIR'])
+    else:
+        base_dir = Path(__file__).parent.parent / 'cassettes'
+
+    return str(base_dir / request.module.__name__)
