@@ -8,6 +8,10 @@ requires = [
          ]
 build-backend = 'setuptools.build_meta'
 
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux_aarch64"
+test-command = "python -c 'import sunpy; print(sunpy.system_info())'"
+
 [ tool.gilesbot ]
   [ tool.gilesbot.circleci_artifacts ]
     enabled = true
