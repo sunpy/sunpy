@@ -36,13 +36,9 @@ def download_package(user: str, repo: str):
     url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
     response = requests.get(url)
     if response.status_code != 200:
-        try:
-            url = f"https://api.github.com/repos/{user}/{repo}/tags"
-            response = requests.get(url)
-            version = response.json()[0]["name"]
-        except Exception as e:
-            print(e)
-            exit()
+        url = f"https://api.github.com/repos/{user}/{repo}/tags"
+        response = requests.get(url)
+        version = response.json()[0]["name"]
     else:
         version = response.json()["tag_name"]
     url = f"https://github.com/{user}/{repo}/archive/refs/tags/{version}.zip"
