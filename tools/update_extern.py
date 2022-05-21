@@ -9,7 +9,7 @@ from tqdm import tqdm
 from pathlib import Path
 from zipfile import ZipFile
 
-SUNPY_DIR = Path(__file__).parent.parent
+SUNPY_EXTERN_DIR = Path(__file__).parent / "extern"
 
 # "package_name": ["user", "repository", "path_to_file"]
 PACKAGES = {
