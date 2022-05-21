@@ -89,16 +89,13 @@ def get_zip_file():
 
 def download_github_file(user: str, repo: str, src: Path, dest: Path):
     zip_file = download_package(user, repo)
-    try:
-        package_name = [key for key in PACKAGES if PACKAGES[key][2] == src][0]
-    except Exception as e:
-        print(f"Error: {e}\nCannot find the package in dictionary")
-        package_name = str(input("Enter the name of the package: "))
-    folder = get_zip_file()
     with ZipFile(zip_file, "r") as f:
-        ext = f.extract(f"{folder}/{src}", "extern_pkg")
-        move(ext, f"{dest}/{package_name}.py")
-        f.close()
+        folder = Path(f.namelist()[0]).parts[0]
+        ext = f.extract(Path(folder) / src, "extern_pkg")
+    dest = Path(dest)
+    if dest.exists() and dest.is_file():
+        os.remove(dest)
+    shutil.move(ext, dest)
     os.remove(zip_file)
     shutil.rmtree("extern_pkg")
 
