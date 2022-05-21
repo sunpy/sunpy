@@ -30,8 +30,7 @@ def download_package(user: str, repo: str):
     print(f"Checking {user}/{repo}")
     response = requests.get(f"https://api.github.com/repos/{user}/{repo}")
     if response.status_code != 200:
-        print(f"{user}/{repo} does not exist.")
-        exit()
+        raise ValueError(f"{user}/{repo} does not exist.")
 
     url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
     response = requests.get(url)
