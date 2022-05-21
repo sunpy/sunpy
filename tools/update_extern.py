@@ -57,7 +57,6 @@ def download_package(user: str, repo: str):
             if chunk:
                 f.write(chunk)
             f.flush()
-        f.close()
     return f"extern_pkg/{repo}.zip"
 
 
