@@ -102,6 +102,6 @@ def download_github_file(user: str, repo: str, src: Path, dest: Path):
 
 if __name__ == "__main__":
 
-    for package in PACKAGES:
-        download_github_file(PACKAGES[package][0], PACKAGES[package][1],
-                             PACKAGES[package][2], f"{SUNPY_DIR}/sunpy/extern")
+    for package, (user, repo, src) in PACKAGES.items():
+        dest = SUNPY_EXTERN_DIR / f"{package}.py"
+        download_github_file(user, repo, src, dest)
