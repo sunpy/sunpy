@@ -3,7 +3,7 @@ import numpy as np
 from sunpy.data.test import get_test_filepath
 from sunpy.io import _fits, jp2
 from sunpy.io.header import FileHeader
-from sunpy.tests.helpers import skip_glymur, skip_windows
+from sunpy.tests.helpers import skip_glymur
 
 AIA_193_JP2 = get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
 TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
@@ -33,7 +33,7 @@ def test_read_memmap():
     assert data.base is not None
 
 
-@skip_windows
+@skip_glymur
 def test_simple_write(tmpdir):
     data, header = _fits.read(TEST_AIA_IMAGE)[0]
     outfile = tmpdir / "test.jp2"
