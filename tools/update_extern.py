@@ -69,5 +69,4 @@ def download_github_file(user: str, repo: str, src: Path, dest: Path):
 
 if __name__ == "__main__":
     for package, (user, repo, src) in PACKAGES.items():
-        dest = SUNPY_EXTERN_DIR / f"{package}.py"
-        download_github_file(user, repo, src, dest)
+        download_github_file(user, repo, src, SUNPY_EXTERN_DIR / f"{package}.py")
