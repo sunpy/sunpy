@@ -5,6 +5,7 @@ Updates all the libraries in ``sunpy/extern``
 import os
 import json
 import shutil
+import tempfile
 import urllib.request
 from parfive import Downloader
 from pathlib import Path
@@ -30,26 +31,21 @@ def download_package(user: str, repo: str):
     if response.status != 200:
         raise ValueError(f"{user}/{repo} does not exist.")
 
-    url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
+    url = f"https://api.github.com/repos/{user}/{repo}/tags"
     response = urllib.request.urlopen(url)
     if response.status != 200:
-        url = f"https://api.github.com/repos/ActiveState/appdirs/tags"
-        response = urllib.request.urlopen(url)
-        response = json.load(response)
-        version = response[0]["name"]
-    else:
-        response = json.load(response)
-        version = response["tag_name"]
+        raise ValueError(f"tags for {user}/{repo} does not exist.")
+    response = json.load(response)
+    version = response[0]["name"]
     url = f"http://github.com/{user}/{repo}/archive/refs/tags/{version}.zip"
 
-    if not os.path.exists("extern_pkg"):
-        os.mkdir("extern_pkg")
+    temp_dir = tempfile.mkdtemp()
 
     print(f"Downloading {user}/{repo}:refs/tags/{version}")
     dl = Downloader()
-    dl.enqueue_file(url, path="extern_pkg", filename=f"{repo}.zip")
+    dl.enqueue_file(url, path=temp_dir, filename=f"{repo}.zip")
     files = dl.download()
-    return f"extern_pkg/{repo}.zip"
+    return files[0]
 
 
 def download_github_file(user: str, repo: str, src: Path, dest: Path):
@@ -57,15 +53,14 @@ def download_github_file(user: str, repo: str, src: Path, dest: Path):
     Download a file from Github.
     """
     zip_file = download_package(user, repo)
+    temp_dir = tempfile.mkdtemp()
     with ZipFile(zip_file, "r") as f:
         folder = Path(f.namelist()[0]).parts[0]
-        ext = f.extract(f"{folder}/{src}", "extern_pkg")
+        ext = f.extract(f"{folder}/{src}", temp_dir)
     dest = Path(dest)
     if dest.exists() and dest.is_file():
         os.remove(dest)
     shutil.move(ext, dest)
-    os.remove(zip_file)
-    shutil.rmtree("extern_pkg")
 
 
 if __name__ == "__main__":
