@@ -45,6 +45,7 @@ def download_package(user: str, repo: str):
     if not os.path.exists("extern_pkg"):
         os.mkdir("extern_pkg")
 
+    print(f"Downloading {user}/{repo}:refs/tags/{version}")
     dl = Downloader()
     dl.enqueue_file(url, path="extern_pkg", filename=f"{repo}.zip")
     files = dl.download()
