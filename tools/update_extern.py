@@ -24,10 +24,6 @@ PACKAGES = {
 def download_package(user: str, repo: str):
     """
     Download the latest version of package using Github release tags.
-
-    Args:
-        user: Github user name
-        repo: Github repository name
     """
     print(f"Checking {user}/{repo}")
     response = urllib.request.urlopen(f"https://api.github.com/repos/{user}/{repo}")
