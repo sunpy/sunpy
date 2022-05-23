@@ -64,7 +64,6 @@ def download_github_file(user: str, repo: str, src: Path, dest: Path):
         src: Path to file in the package
         dest: Path where the file should be extracted
     """
-
     zip_file = download_package(user, repo)
     with ZipFile(zip_file, "r") as f:
         folder = Path(f.namelist()[0]).parts[0]
