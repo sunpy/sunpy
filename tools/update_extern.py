@@ -15,16 +15,23 @@ SUNPY_EXTERN_DIR = Path(__file__).parent.parent / "sunpy" / "extern"
 
 # "package_name": ["user", "repository", "path_to_file"]
 PACKAGES = {
-    "appdirs": ["ActiveState", "appdirs", "appdirs.py"],
-    "distro": ["python-distro", "distro", "src/distro/distro.py"],
-    "inflect": ["jaraco", "inflect", "inflect/__init__.py"],
-    "parse": ["r1chardj0n3s", "parse", "parse.py"],
+    "appdirs.py": ["ActiveState", "appdirs", "appdirs.py"],
+    "distro.py": ["python-distro", "distro", "src/distro/distro.py"],
+    "inflect.py": ["jaraco", "inflect", "inflect/__init__.py"],
+    "parse.py": ["r1chardj0n3s", "parse", "parse.py"],
+}
+
+LICENSES = {
+    "appdirs_license.txt": ["ActiveState", "appdirs", "LICENSE.txt"],
+    "distro_license.rst": ["python-distro", "distro", "LICENSE"],
+    "inflect_license.txt": ["jaraco", "inflect", "LICENSE"],
+    "parse_license.txt": ["r1chardj0n3s", "parse", "LICENSE"],
 }
 
 
-def download_package(user: str, repo: str):
+def download_github_file(user: str, repo: str, src: Path, dest: Path):
     """
-    Download the latest version of package using Github release tags.
+    Download a file from Github.
     """
     print(f"Checking {user}/{repo}")
     response = urllib.request.urlopen(f"https://api.github.com/repos/{user}/{repo}")
@@ -37,32 +44,26 @@ def download_package(user: str, repo: str):
         raise ValueError(f"tags for {user}/{repo} does not exist.")
     response = json.load(response)
     version = response[0]["name"]
-    url = f"http://github.com/{user}/{repo}/archive/refs/tags/{version}.zip"
 
-    temp_dir = tempfile.mkdtemp()
+    url = f"https://raw.githubusercontent.com/{user}/{repo}/{version}/{src}"
+    response = urllib.request.urlopen(url)
+    if response.status != 200:
+        raise ValueError(f"{url} does not exist.")
 
-    print(f"Downloading {user}/{repo}:refs/tags/{version}")
-    dl = Downloader()
-    dl.enqueue_file(url, path=temp_dir, filename=f"{repo}.zip")
-    files = dl.download()
-    return files[0]
-
-
-def download_github_file(user: str, repo: str, src: Path, dest: Path):
-    """
-    Download a file from Github.
-    """
-    zip_file = download_package(user, repo)
-    temp_dir = tempfile.mkdtemp()
-    with ZipFile(zip_file, "r") as f:
-        folder = Path(f.namelist()[0]).parts[0]
-        ext = f.extract(f"{folder}/{src}", temp_dir)
-    dest = Path(dest)
-    if dest.exists() and dest.is_file():
-        os.remove(dest)
-    shutil.move(ext, dest)
+    with open(dest, "wb") as f:
+        print(f"Updating {user}/{repo}:refs/tags/{version}")
+        f.write(response.read())
+    # zip_file = download_package(user, repo)
+    # temp_dir = tempfile.mkdtemp()
+    # with ZipFile(zip_file, "r") as f:
+    #     folder = Path(f.namelist()[0]).parts[0]
+    #     ext = f.extract(f"{folder}/{src}", temp_dir)
+    # dest = Path(dest)
+    # if dest.exists() and dest.is_file():
+    #     os.remove(dest)
+    # shutil.move(ext, dest)
 
 
 if __name__ == "__main__":
-    for package, (user, repo, src) in PACKAGES.items():
-        download_github_file(user, repo, src, SUNPY_EXTERN_DIR / f"{package}.py")
+    for package, (user, repo, src) in LICENSES.items():
+        download_github_file(user, repo, src, SUNPY_EXTERN_DIR / package)
