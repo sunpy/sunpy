@@ -1,1 +1,1 @@
-Updated the ``info_url`` for the `sunpy.net.dataretriever.sources.XRSClient` to account for the different default sources that vary based on GOES satellite number.
+Updated the ``info_url`` for the `~sunpy.net.dataretriever.sources.goes.XRSClient` to account for the different default sources that vary based on GOES satellite number.
