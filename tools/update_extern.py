@@ -12,13 +12,10 @@ SUNPY_EXTERN_DIR = Path(__file__).parent.parent / "sunpy" / "extern"
 PACKAGES = {
     "appdirs.py": ["ActiveState", "appdirs", "appdirs.py"],
     "appdirs_license.txt": ["ActiveState", "appdirs", "LICENSE.txt"],
-
     "distro.py": ["python-distro", "distro", "src/distro/distro.py"],
     "distro_license.rst": ["python-distro", "distro", "LICENSE"],
-
     "inflect.py": ["jaraco", "inflect", "inflect/__init__.py"],
     "inflect_license.txt": ["jaraco", "inflect", "LICENSE"],
-
     "parse.py": ["r1chardj0n3s", "parse", "parse.py"],
     "parse_license.txt": ["r1chardj0n3s", "parse", "LICENSE"],
 }
