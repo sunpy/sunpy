@@ -1,0 +1,2 @@
+``sunpy`` now uses the `Limited Python API <https://docs.python.org/3/c-api/stable.html>`__.
+Therefore, one binary distribution (wheel) per platform is now published and it is compatible with all Python versions ``sunpy`` supports.
