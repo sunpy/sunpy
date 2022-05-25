@@ -8,18 +8,18 @@ from pathlib import Path
 
 SUNPY_EXTERN_DIR = Path(__file__).parent.parent / "sunpy" / "extern"
 
-# "package_name": ["user", "repository", "path_to_file"]
+# "filename": ["user", "repository", "path_to_file"]
 PACKAGES = {
     "appdirs.py": ["ActiveState", "appdirs", "appdirs.py"],
-    "distro.py": ["python-distro", "distro", "src/distro/distro.py"],
-    "inflect.py": ["jaraco", "inflect", "inflect/__init__.py"],
-    "parse.py": ["r1chardj0n3s", "parse", "parse.py"],
-}
-
-LICENSES = {
     "appdirs_license.txt": ["ActiveState", "appdirs", "LICENSE.txt"],
+
+    "distro.py": ["python-distro", "distro", "src/distro/distro.py"],
     "distro_license.rst": ["python-distro", "distro", "LICENSE"],
+
+    "inflect.py": ["jaraco", "inflect", "inflect/__init__.py"],
     "inflect_license.txt": ["jaraco", "inflect", "LICENSE"],
+
+    "parse.py": ["r1chardj0n3s", "parse", "parse.py"],
     "parse_license.txt": ["r1chardj0n3s", "parse", "LICENSE"],
 }
 
@@ -28,10 +28,11 @@ def download_github_file(user: str, repo: str, src: Path, dest: Path):
     """
     Download a file from Github.
     """
-    print(f"Checking {user}/{repo}")
-    response = urllib.request.urlopen(f"https://api.github.com/repos/{user}/{repo}")
-    if response.status != 200:
-        raise ValueError(f"{user}/{repo} does not exist.")
+    try:
+        response = urllib.request.urlopen(f"https://api.github.com/repos/{user}/{repo}")
+    except urllib.error.HTTPError as e:
+        print(f"Error: {e}")
+        return
 
     url = f"https://api.github.com/repos/{user}/{repo}/tags"
     response = urllib.request.urlopen(url)
@@ -46,7 +47,7 @@ def download_github_file(user: str, repo: str, src: Path, dest: Path):
         raise ValueError(f"{url} does not exist.")
 
     with open(dest, "wb") as f:
-        print(f"Updating {user}/{repo}:refs/tags/{version}")
+        print(f"Updating {dest} to {user}/{repo}:refs/tags/{version}")
         f.write(response.read())
 
 
