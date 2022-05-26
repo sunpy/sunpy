@@ -33,8 +33,7 @@ def test_transform(lon, lat):
     off = NorthOffsetFrame(north=north)
     t_north = SkyCoord(lon=0*u.deg, lat=90*u.deg, frame=off)
     t_north = t_north.transform_to('heliographic_stonyhurst')
-    assert_longitude_allclose(north.lon, t_north.lon, atol=1e-6*u.deg)
-    assert_quantity_allclose(north.lat, t_north.lat, atol=1e-6*u.deg)
+    assert_quantity_allclose(north.separation(t_north), 0*u.deg, atol=1e-6*u.deg)
 
 
 def test_south_pole():
