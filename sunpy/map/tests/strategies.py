@@ -1,5 +1,3 @@
-import warnings
-
 import hypothesis.strategies as st
 import numpy as np
 from hypothesis import assume
@@ -19,10 +17,8 @@ def matrix_meta(draw, key):
         float, (2, 2),
         elements=st.floats(min_value=-1, max_value=1, allow_nan=False))
     )
-    # Make sure matrix isn't singular
-    with warnings.catch_warnings():
-        warnings.filterwarnings(action='ignore', category=RuntimeWarning, module='numpy.linalg')
-        assume(np.abs(np.linalg.det(arr)) > 1e-8)
+    # Make sure matrix isn't singular by manually computing the determinant
+    assume(np.abs(arr[1, 1]*arr[0, 0] - arr[0, 1]*arr[1, 0]) > 1e-8)
     return {f'{key}1_1': arr[0, 0],
             f'{key}1_2': arr[0, 1],
             f'{key}2_1': arr[1, 0],
