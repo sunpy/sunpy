@@ -214,7 +214,7 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     desired_delta_lon1 = diff_rot((rotated_time1 - obstime).to(u.day), lat)
 
     assert_longitude_allclose(result1.lon, rsf1.lon + desired_delta_lon1, atol=1e-5*u.deg)
-    assert_quantity_allclose(base.lat, result1.lat)
+    assert_quantity_allclose(base.lat, result1.lat, atol=1e-10*u.deg)
     # Use the `spherical` property since the name of the component varies with frame
     assert_quantity_allclose(base.spherical.distance, result1.spherical.distance)
 
@@ -225,7 +225,7 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     desired_delta_lon2 = -diff_rot((rotated_time2 - obstime).to(u.day), lat)
 
     assert_longitude_allclose(result2.lon, rsf2.lon + desired_delta_lon2, atol=1e-5*u.deg)
-    assert_quantity_allclose(base.lat, result2.lat)
+    assert_quantity_allclose(base.lat, result2.lat, atol=1e-10*u.deg)
     # Use the `spherical` property since the name of the component varies with frame
     assert_quantity_allclose(base.spherical.distance, result2.spherical.distance)
 
@@ -235,7 +235,7 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     desired_delta_lon3 = desired_delta_lon1 + desired_delta_lon2
 
     assert_longitude_allclose(result3.lon, rsf1.lon + desired_delta_lon3, atol=1e-5*u.deg)
-    assert_quantity_allclose(result3.lat, result1.lat)
+    assert_quantity_allclose(result3.lat, result1.lat, atol=1e-10*u.deg)
     # Use the `spherical` property since the name of the component varies with frame
     assert_quantity_allclose(result3.spherical.distance, result1.spherical.distance)
 
