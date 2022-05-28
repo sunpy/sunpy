@@ -1,0 +1,2 @@
+Added configuration to run remote tests with pre-recorded remote responses
+using ``pytest-vcr``.
