@@ -27,19 +27,19 @@ def LCClient():
         'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits',
         'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits',
         id='2012-01'
-     ),
+    ),
     pytest.param(
         Time('2012/12/1', '2012/12/2'),
         'http://proba2.oma.be/lyra/data/bsd/2012/12/01/lyra_20121201-000000_lev2_std.fits',
         'http://proba2.oma.be/lyra/data/bsd/2012/12/02/lyra_20121202-000000_lev2_std.fits',
         id='2012-12'
-     ),
+    ),
     pytest.param(
         Time('2012/4/7', '2012/4/14'),
         'http://proba2.oma.be/lyra/data/bsd/2012/04/07/lyra_20120407-000000_lev2_std.fits',
         'http://proba2.oma.be/lyra/data/bsd/2012/04/14/lyra_20120414-000000_lev2_std.fits',
         id='2012-04'
-     )
+    )
 ])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange, a.Level.two)

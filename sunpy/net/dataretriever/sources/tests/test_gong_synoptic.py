@@ -21,19 +21,19 @@ def GSClient():
         'https://gong2.nso.edu/oQR/zqs/202001/mrzqs200130/mrzqs200130t0004c2227_349.fits.gz',
         'https://gong2.nso.edu/oQR/zqs/202001/mrzqs200131/mrzqs200131t2314c2227_323.fits.gz',
         id='2020-02'
-     ),
+    ),
     pytest.param(
         a.Time('2020/4/21', '2020/4/22'),
         'https://gong2.nso.edu/oQR/zqs/202004/mrzqs200421/mrzqs200421t0004c2230_348.fits.gz',
         'https://gong2.nso.edu/oQR/zqs/202004/mrzqs200421/mrzqs200421t2314c2230_335.fits.gz',
         id='2020-04'
-     ),
+    ),
     pytest.param(
         a.Time('2006/9/19', '2006/9/19 22:00'),
         'https://gong2.nso.edu/oQR/zqs/200609/mrzqs060919/mrzqs060919t1154c2048_323.fits.gz',
         'https://gong2.nso.edu/oQR/zqs/200609/mrzqs060919/mrzqs060919t1754c2048_320.fits.gz',
         id='2006-09'
-     )
+    )
 ])
 def test_get_url_for_time_range(GSClient, timerange, url_start, url_end):
     qresponse = GSClient.search(timerange)

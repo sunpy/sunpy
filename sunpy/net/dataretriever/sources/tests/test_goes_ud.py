@@ -52,10 +52,10 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 @pytest.mark.vcr()
 @pytest.mark.parametrize("timerange, url_start, url_end",
                          [pytest.param(
-                            a.Time('1999/01/10 00:10', '1999/01/20'),
-                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
-                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits',
-                            id='1999')])
+                             a.Time('1999/01/10 00:10', '1999/01/20'),
+                             'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
+                             'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits',
+                             id='1999')])
 def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange, a.goes.SatelliteNumber.ten)
     urls = [i['url'] for i in qresponse]
@@ -68,11 +68,11 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
 @pytest.mark.vcr()
 @pytest.mark.parametrize("timerange, url_start, url_end",
                          [pytest.param(
-                            a.Time("2009/08/30 00:10", "2009/09/02"),
-                            "https://umbra.nascom.nasa.gov/goes/fits/2009/go1020090830.fits",
-                            "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/"
-                            "2009/09/sci_gxrs-l2-irrad_g14_d20090902_v0-0-0.nc",
-                            id='2009')])
+                             a.Time("2009/08/30 00:10", "2009/09/02"),
+                             "https://umbra.nascom.nasa.gov/goes/fits/2009/go1020090830.fits",
+                             "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes14/gxrs-l2-irrad_science/"
+                             "2009/09/sci_gxrs-l2-irrad_g14_d20090902_v0-0-0.nc",
+                             id='2009')])
 def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
@@ -85,11 +85,11 @@ def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
 @pytest.mark.vcr()
 @pytest.mark.parametrize("timerange, url_old, url_new",
                          [pytest.param(
-                            a.Time('2013/10/28', '2013/10/29'),
-                            "https://umbra.nascom.nasa.gov/goes/fits/2013/go1520131028.fits",
-                            "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes13/gxrs-l2-irrad_science/"
-                            "2013/10/sci_gxrs-l2-irrad_g13_d20131028_v0-0-0.nc",
-                            id='2013')])
+                             a.Time('2013/10/28', '2013/10/29'),
+                             "https://umbra.nascom.nasa.gov/goes/fits/2013/go1520131028.fits",
+                             "https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes13/gxrs-l2-irrad_science/"
+                             "2013/10/sci_gxrs-l2-irrad_g13_d20131028_v0-0-0.nc",
+                             id='2013')])
 def test_old_data_access(timerange, url_old, url_new):
     # test first for old data
     qr = Fido.search(timerange, a.Instrument("XRS"), a.Provider("SDAC"))
