@@ -122,7 +122,7 @@ or::
 
 Mocked remote data tests
 ------------------------
-Some of our remote data tests are run using `vcrpy <https://vcrpy.readthedocs.io/en/latest/>`_, which saves a copy of any HTTP requests made within the test so a remote request doesn't have to be run on subsequent test runs.
+Some of our remote data tests are run using `vcrpy <https://vcrpy.readthedocs.io/en/latest/>`__, which saves a copy of any HTTP requests made within the test so a remote request doesn't have to be run on subsequent test runs.
 To use ``vcrpy`` on a test add the ``@pytest.mark.vcrpy()`` decorator to the test, and keep the ``@pytest.mark.remote_data`` decorator.
 These should only be used to test search requests, and **not** data download requests, to avoid storing large files in the git repository.
 Every week the ``sunpy-vcr-cassettes`` repository will update the cassettes from the sunpy core main branch.
