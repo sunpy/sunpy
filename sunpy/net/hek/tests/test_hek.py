@@ -116,11 +116,13 @@ def test_err_dummyattr_apply():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_hek_client(hek_result):
     assert type(hek_result) == hek.hek.HEKTable
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_hek_empty_search_result():
     startTime = '1985-05-04 00:00:00'
     endTime = '1985-05-04 00:00:00'
@@ -136,41 +138,48 @@ def test_hek_empty_search_result():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_getitem(hek_result):
     assert hek_result.__getitem__(0) == hek_result[0]
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_get_voevent(hek_result):
     ve = hek_result[0].get_voevent()
     assert len(ve['voe:VOEvent']) == 7
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_hek_time_col(hek_result):
     assert isinstance(hek_result[0]['event_starttime'], Time)
     assert isinstance(hek_result[0]['event_endtime'], Time)
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_vso_time(hek_result):
     ve = hek_result[0].vso_time
     assert type(ve) == attrs.Time
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_vso_instrument(hek_result):
     vc = hek_result[1].vso_instrument
     assert type(vc) == attrs.Instrument
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_HEKRow_get(hek_result):
     assert hek_result[0]['event_peaktime'] == hek_result[0].get('event_peaktime')
     assert hek_result[0].get('') is None
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_mixed_results_get():
     # To check that the following bug is fixed:
     # https://github.com/sunpy/sunpy/issues/3238
@@ -183,6 +192,7 @@ def test_mixed_results_get():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_mixed_results_get_2():
     # To check that the following bug is fixed:
     # # https://github.com/sunpy/sunpy/issues/3898
@@ -195,6 +205,7 @@ def test_mixed_results_get_2():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_mixed_results_get_angstrom():
     # To check that the following bug is fixed:
     # https://github.com/sunpy/sunpy/issues/4087
@@ -208,6 +219,7 @@ def test_mixed_results_get_angstrom():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_query_multiple_operators():
     event_type = "FL"
     tstart = "2013/10/28"

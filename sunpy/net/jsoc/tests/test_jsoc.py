@@ -47,6 +47,7 @@ def test_empty_jsoc_response():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_return_query_args(client):
     res = client.search(a.jsoc.PrimeKey('HARPNUM', 3604),
                         a.jsoc.Series('hmi.sharp_cea_720s'),
@@ -56,6 +57,7 @@ def test_return_query_args(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_query(client):
     Jresp = client.search(
         a.Time('2020/1/1T00:00:00', '2020/1/1T00:01:30'),
@@ -74,6 +76,7 @@ def test_show(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_post_notify_fail(client):
     responses = client.search(
         a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
@@ -83,6 +86,7 @@ def test_post_notify_fail(client):
 
 
 @pytest.mark.remote_data()
+@pytest.mark.vcr()
 def test_post_wave_series(client):
     with pytest.raises(TypeError, match="The series hmi.M_45s does not support wavelength attribute."):
         client.search(
@@ -131,6 +135,7 @@ def test_invalid_query(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_lookup_records_errors(client):
     d1 = {'end_time': astropy.time.Time('2020-01-01 01:00:35'),
           'start_time': astropy.time.Time('2020-01-01 00:00:35')}
@@ -170,6 +175,7 @@ def test_lookup_records_errors(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_make_recordset_errors(client):
     d1 = {'series': 'aia.lev1_euv_12s'}
     with pytest.raises(ValueError):
@@ -196,6 +202,7 @@ def test_make_recordset_errors(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_make_recordset(client):
     d1 = {'series': 'aia.lev1_euv_12s',
           'end_time': astropy.time.Time('2020-01-01 01:00:35', scale='tai'),
@@ -245,6 +252,7 @@ def test_make_recordset(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_request_data_error(client, jsoc_test_email):
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
@@ -325,6 +333,7 @@ def test_row_and_warning(mocker, client, jsoc_response_double):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_check_request_keywords(client):
     responses = client.search(
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),

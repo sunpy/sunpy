@@ -139,6 +139,7 @@ Factory Tests
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_unified_response():
     start = parse_time("2012/1/1")
     end = parse_time("2012/1/2")
@@ -149,6 +150,7 @@ def test_unified_response():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_no_match():
     with pytest.raises(DrmsQueryError):
         Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
@@ -178,6 +180,7 @@ UnifiedResponse Tests
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_unifiedresponse_slicing():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
@@ -186,6 +189,7 @@ def test_unifiedresponse_slicing():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
@@ -204,6 +208,7 @@ def test_vso_unifiedresponse(mock_build_client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_responses():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
@@ -215,6 +220,7 @@ def test_responses():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_repr():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
@@ -474,6 +480,7 @@ def test_fido_repr():
 
 @pytest.mark.xdist_group(name="jsoc")
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_fido_metadata_queries(jsoc_test_email):
     results = Fido.search(a.Time('2010/8/1 03:40', '2010/8/1 3:40:10'),
                           a.hek.FI | a.hek.FL & (a.hek.FL.PeakFlux > 1000) |

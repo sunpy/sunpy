@@ -19,12 +19,15 @@ def LCClient():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize("timerange,url_start,url_end",
-                         [(a.Time('2011/06/07', '2011/06/09'),
-                           'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/07/'
-                           'current/glg_cspec_n5_110607_v00.pha',
-                           'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/09/'
-                           'current/glg_cspec_n5_110609_v00.pha')])
+                         [pytest.param(
+                            a.Time('2011/06/07', '2011/06/09'),
+                            'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/07/'
+                            'current/glg_cspec_n5_110607_v00.pha',
+                            'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/09/'
+                            'current/glg_cspec_n5_110609_v00.pha',
+                            id='2011-06')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange, a.Detector.n5, a.Resolution.cspec)
     urls = [i['url'] for i in qresponse]
@@ -49,6 +52,7 @@ def test_can_handle_query(time):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize("time,instrument", [
     (a.Time('2012/8/9', '2012/8/9'), a.Instrument.gbm),
 ])

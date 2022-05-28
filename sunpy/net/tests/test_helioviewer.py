@@ -44,6 +44,7 @@ def test_get_datasources(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_keyvalue_all(client):
     """
     Checks that we raise the correct error for these functions.
@@ -55,6 +56,7 @@ def test_keyvalue_all(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_get_closest_image(client):
     """Tests getClosestImage API method"""
 
@@ -85,6 +87,7 @@ def test_download_jp2(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_get_jp2_header(client):
     """
     Tests getJP2Header API method

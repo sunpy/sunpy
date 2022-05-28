@@ -16,18 +16,25 @@ def LCClient():
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize("timerange,url_start,url_end", [
-    (Time('2012/4/21', '2012/4/21'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt'
+    pytest.param(
+        Time('2012/4/21', '2012/4/21'),
+        'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
+        'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
+        id='2012-04'
      ),
-    (Time('2012/5/5', '2012/5/6'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120505_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120506_EVE_L0CS_DIODES_1m.txt',
+    pytest.param(
+        Time('2012/5/5', '2012/5/6'),
+        'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120505_EVE_L0CS_DIODES_1m.txt',
+        'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120506_EVE_L0CS_DIODES_1m.txt',
+        id='2012-05'
      ),
-    (Time('2012/7/7', '2012/7/14'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120707_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt',
+    pytest.param(
+        Time('2012/7/7', '2012/7/14'),
+        'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120707_EVE_L0CS_DIODES_1m.txt',
+        'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt',
+        id='2012-07'
      )
 ])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
@@ -59,6 +66,7 @@ def test_can_handle_query(LCClient):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_query(LCClient):
     qr1 = LCClient.search(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
     assert isinstance(qr1, QueryResponse)
@@ -94,6 +102,7 @@ def test_fido(LCClient, query):
 
 
 @pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize(
     'time',
     [(a.Time('2012/10/4', '2012/10/6'))])
