@@ -16,7 +16,8 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
            'contains_limb', 'coordinate_is_on_solar_disk',
            'on_disk_bounding_coordinates',
-           'contains_coordinate', 'contains_solar_center']
+           'contains_coordinate', 'contains_solar_center',
+           'extract_along_coord']
 
 
 def all_pixel_indices_from_map(smap):
@@ -410,3 +411,85 @@ def contains_coordinate(smap, coordinates):
             (xc <= xs - point5pix) &
             (yc >= -point5pix) &
             (yc <= ys - point5pix))
+
+
+def _bresenham(x1, y1, x2, y2):
+    """
+    Returns an array of all pixel coordinates which the line defined by `x1, y1` and
+    `x2, y2` crosses. Uses Bresenham's line algorithm to enumerate the pixels along
+    a line. This was adapted from ginga.
+
+    Parameters
+    ----------
+    x1, y1, x2, y2 :`int`
+
+    References
+    ----------
+    * https://github.com/ejeschke/ginga/blob/c8ceaf8e559acc547bf25661842a53ed44a7b36f/ginga/BaseImage.py#L503
+    * http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+    """
+    for x in [x1, y1, x2, y2]:
+        if type(x) not in (int, np.int64):
+            raise TypeError('All pixel coordinates must be of type int')
+    dx = abs(x2 - x1)
+    dy = abs(y2 - y1)
+    sx = 1 if x1 < x2 else -1
+    sy = 1 if y1 < y2 else -1
+    err = dx - dy
+    res = []
+    x, y = x1, y1
+    while True:
+        res.append((x, y))
+        if (x == x2) and (y == y2):
+            break
+        e2 = 2 * err
+        if e2 > -dy:
+            err = err - dy
+            x += sx
+        if e2 < dx:
+            err = err + dx
+            y += sy
+    return np.array(res)
+
+
+def extract_along_coord(smap, coord):
+    """
+    Return the value of the image array in `smap` at every point along `coord`.
+
+    For a given coordinate `coord`, find all the pixels that cross the coordinate
+    and extract the values of the image array at this points. This is done by applying
+    `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`_
+    between the consecutive pairs of points in the coordinate and then indexing the data
+    array of `smap` at those points.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+    coord : `~astropy.coordinates.SkyCoord`
+        Coordinate along which to extract intensity
+
+    Returns
+    -------
+    intensity : `~astropy.units.Quantity`
+    loop_coord : `~astropy.coordinates.SkyCoord`
+    """
+    if not len(coord.shape) or coord.shape[0] < 2:
+        raise ValueError('At least two points are required for extracting intensity along a '
+                         'line. To extract points at single coordinates, use '
+                         'sunpy.map.maputils.sample_at_coords.')
+    # Find pixels between each loop segment
+    px, py = smap.wcs.world_to_array_index(coord)
+    pix = []
+    for i in range(len(px)-1):
+        b = _bresenham(px[i], py[i], px[i+1], py[i+1])
+        # Pop the last one, unless this is the final entry because the first point
+        # of the next section will be the same
+        if i < (len(px) - 2):
+            b = b[:-1]
+        pix.append(b)
+    pix = np.vstack(pix)
+
+    intensity = u.Quantity(smap.data[pix[:, 1], pix[:, 0]], smap.unit)
+    loop_coord = smap.pixel_to_world(pix[:, 0]*u.pix, pix[:, 1]*u.pix)
+
+    return intensity, loop_coord
