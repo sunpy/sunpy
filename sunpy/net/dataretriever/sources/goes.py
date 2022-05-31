@@ -39,7 +39,7 @@ class XRSClient(GenericClient):
         https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf
 
     * GOES-R 16, 17 :
-         https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/docs/GOES-R_XRS_L1b_Science-Quality_Data_Readme.pdf
+        https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/docs/GOES-R_EXIS_XRS_L1b_Science-Quality_Data_ReadMe.pdf
 
     Examples
     --------
