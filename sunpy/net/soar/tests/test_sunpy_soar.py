@@ -30,6 +30,19 @@ def test_search():
     sunpy.map.Map(fname)
 
 
+def test_search_low_latency():
+    time = a.Time('2020-11-13', '2020-11-14')
+    level = a.Level('LL02')
+    product = a.soar.Product('MAG')
+
+    res = Fido.search(time, level, product)
+    assert len(res) == 1
+    assert len(res[0]) == 1
+
+    files = Fido.fetch(res[0, 0])
+    assert len(files) == 1
+
+
 def test_deprecated_identifier():
     id = a.Instrument('EUI')
     time = a.Time('2021-02-11', '2021-02-12')

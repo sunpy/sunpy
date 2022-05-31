@@ -2,7 +2,7 @@ import warnings
 
 import sunpy.net.attrs as a
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
-from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 __all__ = ['Product']
 
@@ -95,8 +95,19 @@ def _(wlk, attr, params):
 
 @walker.add_applier(a.Level)
 def _(wlk, attr, params):
-    level = int(attr.value)
-    params.append(f"level='L{level}'")
+    level = attr.value
+    if isinstance(level, int):
+        level = f"L{level}"
+
+    level = level.upper()
+    allowed_levels = ('L0', 'L1', 'L2', 'L3', 'LL01', 'LL02', 'LL03')
+    if level not in allowed_levels:
+        warnings.warn(
+            f'level not in list of allowed levels for SOAR: {allowed_levels}',
+            SunpyUserWarning
+        )
+
+    params.append(f"level='{level}'")
 
 
 @walker.add_applier(a.Instrument)

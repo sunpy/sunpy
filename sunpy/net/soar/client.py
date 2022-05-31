@@ -49,7 +49,13 @@ class SOARClient(BaseClient):
 
         url_query = {}
         url_query['SELECT'] = '*'
+        # Assume science data by deafult
         url_query['FROM'] = 'v_sc_data_item'
+        for q in query:
+            if q.startswith('level') and q.split('=')[1][1:3] == 'LL':
+                # Low latency data
+                url_query['FROM'] = 'v_ll_data_item'
+
         url_query['WHERE'] = '+AND+'.join(query)
         request_dict['QUERY'] = '+'.join([f'{item}+{url_query[item]}' for
                                           item in url_query])
@@ -120,11 +126,16 @@ class SOARClient(BaseClient):
             Keyword arguments aren't used by this client.
         """
         base_url = ('http://soar.esac.esa.int/soar-sl-tap/data?'
-                    f'retrieval_type=LAST_PRODUCT&product_type=SCIENCE&'
-                    'data_item_id=')
+                    f'retrieval_type=LAST_PRODUCT')
 
         for row in query_results:
-            url = base_url + row['Data item ID']
+            url = base_url
+            if row['Level'].startswith('LL'):
+                url += '&product_type=LOW_LATENCY'
+            else:
+                url += '&product_type=SCIENCE'
+            id = row['Data item ID']
+            url += f'&data_item_id={id}'
             filepath = str(path).format(file=row['Filename'], **row.response_block_map)
             log.debug(f'Queing URL: {url}')
             downloader.enqueue_file(url, filename=filepath)
