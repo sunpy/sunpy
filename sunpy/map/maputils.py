@@ -489,7 +489,7 @@ def extract_along_coord(smap, coord):
         pix.append(b)
     pix = np.vstack(pix)
 
-    intensity = u.Quantity(smap.data[pix[:, 1], pix[:, 0]], smap.unit)
-    loop_coord = smap.pixel_to_world(pix[:, 0]*u.pix, pix[:, 1]*u.pix)
+    intensity = u.Quantity(smap.data[pix[:, 0], pix[:, 1]], smap.unit)
+    coord_new = smap.pixel_to_world(pix[:, 1]*u.pix, pix[:, 0]*u.pix)
 
-    return intensity, loop_coord
+    return intensity, coord_new
