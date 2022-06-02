@@ -289,3 +289,16 @@ def test_extract_along_coord(aia171_test_map):
     assert np.allclose(pix_diag[:, 0], line_discrete_pix.x.value)
     assert np.allclose(pix_diag[:, 1], line_discrete_pix.y.value)
     assert u.quantity.allclose(intensity_diag, intensity)
+
+
+def test_extract_along_coord_one_point_exception(aia171_test_map):
+    with pytest.raises(ValueError, match='At least two points are required*'):
+        _ = extract_along_coord(aia171_test_map, aia171_test_map.bottom_left_coord)
+    with pytest.raises(ValueError, match='At least two points are required*'):
+        _ = extract_along_coord(aia171_test_map, SkyCoord([aia171_test_map.bottom_left_coord]))
+
+
+def test_extract_along_coord_out_of_bounds_exception(aia171_test_map):
+    point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
+    with pytest.raises(ValueError, match='At least one coordinate is not within the bounds of the map.*'):
+        _ = extract_along_coord(aia171_test_map, point)
