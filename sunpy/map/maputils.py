@@ -477,6 +477,10 @@ def extract_along_coord(smap, coord):
         raise ValueError('At least two points are required for extracting intensity along a '
                          'line. To extract points at single coordinates, use '
                          'sunpy.map.maputils.sample_at_coords.')
+    if not all(contains_coordinate(smap, coord)):
+        raise ValueError('At least one coordinate is not within the bounds of the map.'
+                         'To extract the intensity along a coordinate, all points must fall within '
+                         'the bounds of the map.')
     # Find pixels between each loop segment
     px, py = smap.wcs.world_to_array_index(coord)
     pix = []
