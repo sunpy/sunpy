@@ -454,13 +454,13 @@ def _bresenham(x1, y1, x2, y2):
 
 def extract_along_coord(smap, coord):
     """
-    Return the value of the image array in `smap` at every point along `coord`.
+    Return the value of the image array at every point along the coordinate.
 
-    For a given coordinate `coord`, find all the pixels that cross the coordinate
-    and extract the values of the image array at this points. This is done by applying
+    For a given coordinate ``coord``, find all the pixels that cross the coordinate
+    and extract the values of the image array in ``smap`` at these points. This is done by applying
     `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`_
     between the consecutive pairs of points in the coordinate and then indexing the data
-    array of `smap` at those points.
+    array of ``smap`` at those points.
 
     Parameters
     ----------
