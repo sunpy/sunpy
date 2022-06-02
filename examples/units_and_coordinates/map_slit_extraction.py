@@ -5,7 +5,6 @@ Extracting intensity of a map between two coordinates
 
 In this example we will define a slit in world coordinates and then extract the intensity values of all the pixels that the path intersects with.
 """
-import numpy as np
 import matplotlib.pyplot as plt
 
 import astropy.units as u
@@ -20,7 +19,7 @@ aia_map = sunpy.map.Map(AIA_171_ROLL_IMAGE)
 
 
 ###############################################################################
-# Next we define a path in a `SkyCoord` object.
+# Next we define a path in a `~astropy.coordinates.SkyCoord` object.
 # In this example we are just going to use a straight line, however a path with
 # any number of points can be used, and the slit will be defined as straight
 # line segments between all the points.
@@ -32,8 +31,9 @@ line_limits = SkyCoord([-1024, -908], [20, 633], unit=(u.arcsec, u.arcsec),
 # Next we call the `sunpy.map.extract_along_coord` function with the map and
 # the coordinates we want to extract.
 # This function returns two items, the first is a numpy array of all the
-# intensities and the second is a `SkyCoord` object of the same length, which
-# describes the world coordinates of each pixel that has been extracted.
+# intensities and the second is a `~astropy.coordinates.SkyCoord` object of the
+# same length, which describes the world coordinates of each pixel that has
+# been extracted.
 intensity, coord = sunpy.map.extract_along_coord(aia_map, line_limits)
 
 
