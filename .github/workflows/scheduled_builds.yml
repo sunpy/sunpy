@@ -11,8 +11,13 @@ on:
     #        │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
     - cron: '0 7 * * *'  # Every day at 07:00 UTC
 
+permissions:
+  contents: read
+
 jobs:
   dispatch_workflows:
+    permissions:
+      contents: none
     runs-on: ubuntu-latest
     steps:
       - run: gh workflow run ci.yml --repo sunpy/sunpy --ref main

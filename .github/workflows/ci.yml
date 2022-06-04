@@ -20,6 +20,8 @@ concurrency:
 
 jobs:
   core:
+    permissions:
+      contents: none
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       submodules: false
@@ -33,6 +35,8 @@ jobs:
         - linux: py310
 
   test:
+    permissions:
+      contents: none
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
@@ -51,6 +55,8 @@ jobs:
         - linux: py38-oldestdeps
 
   docs:
+    permissions:
+      contents: none
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
@@ -71,6 +77,8 @@ jobs:
         - linux: build_docs
 
   online:
+    permissions:
+      contents: none
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
@@ -99,6 +107,8 @@ jobs:
         - linux: py39-online
 
   cron:
+    permissions:
+      contents: none
     if: |
       github.event_name == 'workflow_dispatch' || (
         github.event_name == 'pull_request' &&
@@ -123,6 +133,8 @@ jobs:
   publish:
     # Build wheels when pushing to any branch except main
     # publish.yml will only publish if tagged ^v.*
+    permissions:
+      contents: none
     if: |
       (
         github.event_name != 'pull_request' && (
