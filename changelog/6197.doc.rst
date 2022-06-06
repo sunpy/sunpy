@@ -1,0 +1,2 @@
+Updated gallery examples that use STEREO data to use sample data instead
+of searching for and downloading data via Fido.
