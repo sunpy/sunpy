@@ -1,0 +1,1 @@
+Added a script in the ``sunpy/tools`` that will update all the Python libraries in ``sunpy/extern``.

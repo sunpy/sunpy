@@ -23,5 +23,5 @@ def get_extensions():
                                           '-Wno-unused-result',
                                           '-Wno-sign-compare'])
 
-        e = Extension('sunpy.io._pyana', **cfg)
+        e = Extension('sunpy.io._pyana', py_limited_api=True, **cfg)
         return [e]
