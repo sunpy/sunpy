@@ -232,7 +232,7 @@ default plot in pixel coordinates, you can override this behavior and plot in
 .. code-block:: python
 
     >>> smap.plot()   # doctest: +SKIP
-    >>> ax.plot((100*u.arcsec).to(u.deg).value, (500*u.arcsec).to(u.deg).value,
+    >>> ax.plot((100*u.arcsec).to_value(u.deg), (500*u.arcsec).to_value(u.deg),
     ...         transform=ax.get_transform('world'))   # doctest: +SKIP
 
 Finally, here is a more complex example using sunpy maps, wcsaxes and Astropy
@@ -287,8 +287,8 @@ units to plot a AIA image and a zoomed in view of an active region.
 
     # Add some text
     ax2.text(
-        (-100*u.arcsec).to('deg').value,
-        (-300*u.arcsec).to('deg').value,
+        (-100*u.arcsec).to_value(u.deg),
+        (-300*u.arcsec).to_value(u.deg),
         'A point on the Sun',
         color="white",
         transform=ax2.get_transform('world')
