@@ -34,7 +34,6 @@ class EUIMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
-        self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LinearStretch()), clip=False)
 
