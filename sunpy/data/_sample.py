@@ -22,7 +22,7 @@ _BASE_URLS = (
 # the files should include necessary extensions
 _SAMPLE_DATA = {
     # Do roll image first because it's the largest file.
-    "AIA_171_ROLL_IMAGE": "aiacalibim5.fits.gz",
+    "AIA_171_ROLL_IMAGE": "aiacalibim5.fits",
     "HMI_LOS_IMAGE": "HMI20110607_063211_los_lowres.fits",
     "AIA_131_IMAGE": "AIA20110607_063301_0131_lowres.fits",
     "AIA_171_IMAGE": "AIA20110607_063302_0171_lowres.fits",
@@ -48,7 +48,7 @@ _SAMPLE_DATA = {
     "NORH_TIMESERIES": "tca110607.fits",
     "LOFAR_IMAGE": "LOFAR_70MHZ_20190409_131136.fits",
     "SRS_TABLE": "20110607SRS.txt",
-    "AIA_193_JUN2012": "aia_lev1_193a_2012_06_01t00_00_07_84z_image_lev1.fits",
+    "AIA_193_JUN2012": "AIA20120601_000007_0193_lowres.fits",
     "STEREO_A_195_JUN2012": "20120601_000530_n4eua.fits",
     "STEREO_B_195_JUN2012": "20120601_000530_n4eub.fits",
 }
