@@ -20,7 +20,7 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.data.sample import AIA_193_Jun2012, STEREO_A_195_Jun2012
+from sunpy.data.sample import AIA_193_JUN2012, STEREO_A_195_JUN2012
 
 ######################################################################
 # In this example we are going to make a lot of side by side figures, so
@@ -33,7 +33,7 @@ plt.rcParams['figure.figsize'] = (16, 8)
 # appropriate name attribute (i.e., "AIA" and "EUVI") so that the
 # order is reliable.
 
-map_list = sunpy.map.Map([AIA_193_Jun2012, STEREO_A_195_Jun2012])
+map_list = sunpy.map.Map([AIA_193_JUN2012, STEREO_A_195_JUN2012])
 map_list.sort(key=lambda m: m.detector)
 map_aia, map_euvi = map_list
 
