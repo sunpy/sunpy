@@ -8,8 +8,6 @@ How to find and plot the location of an active region on an HMI magnetogram.
 import matplotlib.pyplot as plt
 import numpy as np
 
-from astropy.coordinates import SkyCoord
-
 import sunpy.coordinates
 import sunpy.data.sample
 import sunpy.map
