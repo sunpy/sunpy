@@ -14,14 +14,14 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.coordinates.wcs_utils
 import sunpy.map
-from sunpy.data.sample import AIA_193_Jun2012, STEREO_B_195_Jun2012
+from sunpy.data.sample import AIA_193_JUN2012, STEREO_B_195_JUN2012
 
 ##############################################################################
 # Let's create a dictionary with the two maps, which we crop to full disk.
 
 maps = {m.detector: m.submap(SkyCoord([-1100, 1100], [-1100, 1100],
                                       unit=u.arcsec, frame=m.coordinate_frame))
-        for m in sunpy.map.Map([AIA_193_Jun2012, STEREO_B_195_Jun2012])}
+        for m in sunpy.map.Map([AIA_193_JUN2012, STEREO_B_195_JUN2012])}
 maps['AIA'].plot_settings['vmin'] = 0  # set the minimum plotted pixel value
 
 ##############################################################################
