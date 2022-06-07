@@ -59,9 +59,10 @@ class EUIMap(GenericMap):
 
     @property
     def waveunit(self):
-        # EUI maps don't have this in their metadata, but according to their
-        # metadata spec wavelengths are always in Angstrom
-        return u.Angstrom
+        # EUI JP2000 files don't have this in their metadata,
+        # the FITS files are ok, so we check if it exists, and if not,
+        # the metadata spec wavelengths are always in Angstrom
+        return super().waveunit or u.Angstrom
 
     @property
     def _supported_observer_coordinates(self):
