@@ -58,6 +58,14 @@ class EUIMap(GenericMap):
         return parse_time(t, scale=timesys.lower())
 
     @property
+    def waveunit(self):
+        # EUI JP2000 files do not have the WAVEUNIT key in the metadata.
+        # However, the FITS files do.
+        # The EUI metadata spec says the WAVELNTH key is always expressed
+        # in Angstroms so we assume this if the WAVEUNIT is missing.
+        return super().waveunit or u.Angstrom
+
+    @property
     def _supported_observer_coordinates(self):
         return [(('hcix_obs', 'hciy_obs', 'hciz_obs'),
                  {'x': self.meta.get('hcix_obs'),
