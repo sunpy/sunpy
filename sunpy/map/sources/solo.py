@@ -59,9 +59,10 @@ class EUIMap(GenericMap):
 
     @property
     def waveunit(self):
-        # EUI JP2000 files don't have this in their metadata,
-        # the FITS files are ok, so we check if it exists, and if not,
-        # the metadata spec wavelengths are always in Angstrom
+        # EUI JP2000 files do not have the WAVEUNIT key in the metadata.
+        # However, the FITS files do.
+        # The EUI metadata spec says the WAVELNTH key is always expressed
+        # in Angstroms so we assume this if the WAVEUNIT is missing.
         return super().waveunit or u.Angstrom
 
     @property
