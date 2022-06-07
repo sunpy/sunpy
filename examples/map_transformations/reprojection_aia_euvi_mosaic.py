@@ -23,12 +23,12 @@ from astropy.wcs import WCS
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.data.sample import AIA_193_Jun2012, STEREO_A_195_Jun2012, STEREO_B_195_Jun2012
+from sunpy.data.sample import AIA_193_JUN2012, STEREO_A_195_JUN2012, STEREO_B_195_JUN2012
 
 ######################################################################
 # First create a sunpy map for each of the files.
 
-maps = sunpy.map.Map(sorted([AIA_193_Jun2012, STEREO_A_195_Jun2012, STEREO_B_195_Jun2012]))
+maps = sunpy.map.Map(sorted([AIA_193_JUN2012, STEREO_A_195_JUN2012, STEREO_B_195_JUN2012]))
 
 ######################################################################
 # To reduce memory consumption we also downsample these maps before continuing,
