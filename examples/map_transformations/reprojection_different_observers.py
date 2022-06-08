@@ -20,8 +20,7 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.net import Fido
-from sunpy.net import attrs as a
+from sunpy.data.sample import AIA_193_JUN2012, STEREO_A_195_JUN2012
 
 ######################################################################
 # In this example we are going to make a lot of side by side figures, so
@@ -30,28 +29,11 @@ from sunpy.net import attrs as a
 plt.rcParams['figure.figsize'] = (16, 8)
 
 ######################################################################
-# Let's download an EUV image from both AIA and EUVI A, when the
-# two spacecraft were separated by approximately 120 degrees.
-
-euvi = (a.Source('STEREO_A') &
-        a.Instrument("EUVI") &
-        a.Time('2011-11-01', '2011-11-01T00:10:00'))
-
-aia = (a.Instrument.aia &
-       a.Sample(24 * u.hour) &
-       a.Time('2011-11-01', '2011-11-02'))
-
-wave = a.Wavelength(19.5 * u.nm, 19.5 * u.nm)
-
-res = Fido.search(wave, aia | euvi)
-files = Fido.fetch(res)
-
-######################################################################
 # Create a map for each image, after making sure to sort by the
 # appropriate name attribute (i.e., "AIA" and "EUVI") so that the
 # order is reliable.
 
-map_list = sunpy.map.Map(files)
+map_list = sunpy.map.Map([AIA_193_JUN2012, STEREO_A_195_JUN2012])
 map_list.sort(key=lambda m: m.detector)
 map_aia, map_euvi = map_list
 

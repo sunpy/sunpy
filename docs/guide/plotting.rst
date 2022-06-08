@@ -223,11 +223,16 @@ following ::
 when plotting on an `~astropy.visualization.wcsaxes.WCSAxes` axes, it will by
 default plot in pixel coordinates, you can override this behavior and plot in
 'world' coordinates by getting the transformation from the axes with
-``ax.get_transform('world')``. Note: World coordinates are always in **degrees**
-so you will have to convert to degrees.::
+``ax.get_transform('world')``.
+
+.. note::
+
+    World coordinates are always in **degrees** so you will have to convert to degrees.
+
+.. code-block:: python
 
     >>> smap.plot()   # doctest: +SKIP
-    >>> ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
+    >>> ax.plot((100*u.arcsec).to_value(u.deg), (500*u.arcsec).to_value(u.deg),
     ...         transform=ax.get_transform('world'))   # doctest: +SKIP
 
 Finally, here is a more complex example using sunpy maps, wcsaxes and Astropy
@@ -278,6 +283,15 @@ units to plot a AIA image and a zoomed in view of an active region.
     submap.draw_grid(grid_spacing=10*u.deg)
 
     # Change the title.
-    ax2.set_title('Zoomed View')
+    ax2.set_title('Zoomed View', pad=35)
+
+    # Add some text
+    ax2.text(
+        (-100*u.arcsec).to_value(u.deg),
+        (-300*u.arcsec).to_value(u.deg),
+        'A point on the Sun',
+        color="white",
+        transform=ax2.get_transform('world')
+    )
 
     plt.show()

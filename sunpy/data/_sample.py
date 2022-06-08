@@ -48,6 +48,9 @@ _SAMPLE_DATA = {
     "NORH_TIMESERIES": "tca110607.fits",
     "LOFAR_IMAGE": "LOFAR_70MHZ_20190409_131136.fits",
     "SRS_TABLE": "20110607SRS.txt",
+    "AIA_193_JUN2012": "aia_lev1_193a_2012_06_01t00_00_07_84z_image_lev1.fits",
+    "STEREO_A_195_JUN2012": "20120601_000530_n4eua.fits",
+    "STEREO_B_195_JUN2012": "20120601_000530_n4eub.fits",
 }
 
 # Reverse the dict because we want to use it backwards, but it is nicer to

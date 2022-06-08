@@ -17,17 +17,17 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout sunpy repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: "0"
       - name: Checkout sunpy-benchmarks repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: sunpy/sunpy-benchmarks
           ref: main
           path: asv_results
       - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: "3.9"
           architecture: "x64"
@@ -41,11 +41,11 @@ jobs:
         # On main the release of v1.1 is the 2.0dev tag
         run: taskset -c 0 asv run --skip-existing-successful v2.0.dev..
       - name: Install SSH Client 🔑
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.ASV_CI_KEY }}
       - name: Push results
-        uses: JamesIves/github-pages-deploy-action@4.1.5
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: main
           folder: asv_results

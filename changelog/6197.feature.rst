@@ -1,0 +1,7 @@
+Three new maps have been added to the sample data from STEREO A and STEREO B at
+195 Angstrom, and AIA at 193 Angstrom. These images are from a time when
+the three spacecraft were equally spaced around the Sun, and therefore form
+near complete instantaneous coverage of the solar surface.
+
+Users upgrading to this version will find this three files download when they
+use the sample data for the first time.

@@ -1475,17 +1475,15 @@ class GenericMap(NDData):
 # #### I/O routines #### #
 
     def save(self, filepath, filetype='auto', **kwargs):
-        """Saves the SunPy Map object to a file.
-
-        Currently SunPy can only save files in the FITS format. In the future
-        support will be added for saving to other formats.
+        """
+        Save a map to a file.
 
         Parameters
         ----------
-        filepath : str
+        filepath : `str`
             Location to save file to.
-        filetype : str, optional
-            Any supported file extension, defaults to ``auto"``.
+        filetype : `str`, optional
+            Any supported file extension, defaults to ``"auto"``.
         hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
             By default, a FITS file is written with the map in its primary HDU.
             If a type is given, a new HDU of this type will be created.
