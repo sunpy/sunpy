@@ -1489,9 +1489,18 @@ class GenericMap(NDData):
             If a type is given, a new HDU of this type will be created.
             If a HDU instance is given, its data and header will be updated from the map.
             Then that HDU instance will be written to the file.
+            The example below uses `astropy.io.fits.CompImageHDU` to compress the map.
         kwargs :
             Any additional keyword arguments are passed to
             `~sunpy.io.write_file`.
+
+        Examples
+        --------
+        >>> from astropy.io.fits import CompImageHDU
+        >>> from sunpy.map import Map
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
