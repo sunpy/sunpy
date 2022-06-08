@@ -45,7 +45,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.ASV_CI_KEY }}
       - name: Push results
-        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: main
           folder: asv_results
