@@ -1,0 +1,2 @@
+Updated the sample data file, ``AIA_171_ROLL_IMAGE`` to be rice compressed instead of gzip compressed.
+This means that the data is now stored in the second HDU.
