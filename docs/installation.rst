@@ -98,36 +98,3 @@ If you want to develop sunpy we would strongly recommend reading the `Newcomers'
     This error implies you have an incorrectly configured virtual environment or it is not activated.
 
     If you really do not want to use any virtual environment, you can always do ``pip install --user sunpy``.
-
-Testing sunpy
-=============
-
-sunpy provides a method to run the basic test suite that will check that the install has worked correctly.
-
-To run the basic test suite and ensure that your sunpy install is working correctly, use the :func:`sunpy.self_test`::
-
-    import sunpy
-    sunpy.self_test()
-
-You will see something like the following in your terminal::
-
-    Starting sunpy self test...
-    Checking for packages needed to run sunpy:
-    All required and optional sunpy dependencies are installed.
-    Starting the sunpy test suite:
-    ...
-
-    The tests will run and will report any fails.  You can report these through the `sunpy issue tracker <https://github.com/sunpy/sunpy/issues>`__ and we will strive to help.
-
-It is possible to run this command in a situation where not all packages are installed. If this is the case, you will see the following when you run the test suite::
-
-    Starting sunpy self test...
-    Checking for packages needed to run sunpy:
-    The following packages are not installed for the sunpy[database] requirement:
-    * sqlalchemy
-    ...
-    You do not have all the required dependencies installed to run the sunpy test suite.
-    If you want to run the sunpy tests install the 'tests' extra with `pip install "sunpy[all,tests]"`
-
-This does not mean sunpy is broken, but you will need to install the extra packages to ensure a "complete" installation of sunpy and run the entire test suite.
-It is quite likely that you will run into not having the tests dependencies installed.
