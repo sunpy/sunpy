@@ -1,5 +1,52 @@
-v4.0.0 (2022-05-06)
-===================
+4.0.1 (2022-06-09)
+==================
+
+Breaking Changes
+----------------
+
+- Updated the sample data file, ``AIA_171_ROLL_IMAGE`` to be rice compressed instead of gzip compressed.
+  This means that the data is now stored in the second HDU. (`#6221 <https://github.com/sunpy/sunpy/pull/6221>`__)
+
+
+New Features
+------------
+
+- Three new maps have been added to the sample data from STEREO A and STEREO B at
+  195 Angstrom, and AIA at 193 Angstrom. These images are from a time when
+  the three spacecraft were equally spaced around the Sun, and therefore form
+  near complete instantaneous coverage of the solar surface.
+
+  Users upgrading to this version will find this three files download when they
+  use the sample data for the first time. (`#6197 <https://github.com/sunpy/sunpy/pull/6197>`__)
+
+
+Bug Fixes
+---------
+
+- Fix a bug that prevented EUI maps with missing wavelength metadata loading. (`#6199 <https://github.com/sunpy/sunpy/pull/6199>`__)
+
+
+Documentation
+-------------
+
+- Improved annotations in the SRS active regions plotting example. (`#6196 <https://github.com/sunpy/sunpy/pull/6196>`__)
+- Updated gallery examples that use STEREO data to use sample data instead
+  of searching for and downloading data via Fido. (`#6197 <https://github.com/sunpy/sunpy/pull/6197>`__)
+
+
+Internal Changes
+----------------
+
+- Updated the ``info_url`` for the `~sunpy.net.dataretriever.sources.goes.XRSClient` to account for the different default sources that vary based on GOES satellite number. (`#6152 <https://github.com/sunpy/sunpy/pull/6152>`__)
+- Added automatic conversion of unit strings in CDF files to astropy unit objects for the following instruments: PSP/ISOIS, SOHO/CELIAS, SOHO/COSTEP-EPHIN, and SOHO/ERNE. (`#6159 <https://github.com/sunpy/sunpy/pull/6159>`__)
+- Add an environment variable ``SUNPY_NO_BUILD_ANA_EXTENSION`` which when present
+  will cause sunpy to not compile the ANA C extension when building from source. (`#6166 <https://github.com/sunpy/sunpy/pull/6166>`__)
+- ``sunpy`` now uses the `Limited Python API <https://docs.python.org/3/c-api/stable.html>`__.
+  Therefore, one binary distribution (wheel) per platform is now published and it is compatible with all Python versions ``sunpy`` supports. (`#6171 <https://github.com/sunpy/sunpy/pull/6171>`__)
+
+
+4.0.0 (2022-05-06)
+==================
 
 Breaking Changes
 ----------------
