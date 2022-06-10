@@ -6,5 +6,5 @@ It requires pandoc to be installed on your system.
 import subprocess
 from pathlib import Path
 
-res = subprocess.run(['pandoc', '--wrap=none', '-t', 'markdown_strict', str(Path(__file__).parent.parent / "CHANGELOG.rst")], capture_output=True)
+res = subprocess.run(['pandoc', '--wrap=none', '-t', 'gfm', str(Path(__file__).parent.parent / "CHANGELOG.rst")], capture_output=True)
 print(res.stdout.decode('ascii').split('\n# ')[0])
