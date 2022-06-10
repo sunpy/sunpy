@@ -11,19 +11,13 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 from astropy.coordinates import SkyCoord, solar_system_ephemeris
 
-import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.net import Fido
-from sunpy.net import attrs as a
+from sunpy.data.sample_doc import fetch_venus_transit_map
 
 ###############################################################################
 # Let's download an image of the Venus transit.
 
-result = Fido.search(a.Time('2012/06/06 04:07:25', '2012/06/06 04:07:35'),
-                     a.Instrument.aia,
-                     a.Wavelength(1600*u.angstrom))
-files = Fido.fetch(result)
-aiamap = sunpy.map.Map(files[0])
+aiamap = fetch_venus_transit_map()
 
 ###############################################################################
 # For this example, we require high-precision ephemeris information. The built-in
