@@ -263,6 +263,8 @@ class XRSTimeSeries(GenericTimeSeries):
             if "a_flux" in d.variables:
                 xrsa = np.array(d["a_flux"])
                 xrsb = np.array(d["b_flux"])
+                quality_xrsb = np.array(d['b_flags'])
+                quality_xrsa = np.array(d['a_flags'])
 
                 start_time_str = d["time"].attrs["units"]
                 if not isinstance(start_time_str, str):
@@ -274,6 +276,9 @@ class XRSTimeSeries(GenericTimeSeries):
             elif "xrsa_flux" in d.variables:
                 xrsa = np.array(d["xrsa_flux"])
                 xrsb = np.array(d["xrsb_flux"])
+                quality_xrsb = np.array(d['xrsa_flags'])
+                quality_xrsa = np.array(d['xrsb_flags'])
+
                 start_time_str = d["time"].attrs["units"]
                 if not isinstance(start_time_str, str):
                     # For h5netcdf<0.14
@@ -285,12 +290,19 @@ class XRSTimeSeries(GenericTimeSeries):
             else:
                 raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
 
-        data = DataFrame({"xrsa": xrsa, "xrsb": xrsb}, index=times.datetime)
-        data = data.replace(-9999, np.nan)
+        not_leap_seconds = np.char.find(times.iso, ":60.") == -1
+        # Drop all timestamps with leap seconds as they cannot be converted into a Python datetime used in Pandas
+        times = times[not_leap_seconds]
+        data = {"xrsa": xrsa[not_leap_seconds], "xrsb": xrsb[not_leap_seconds], "quality_xrsb": quality_xrsb[not_leap_seconds],  "quality_xrsa": quality_xrsa[not_leap_seconds]}
+        
+        df = DataFrame(data, index=times.datetime)
+        df = df.replace(-9999, np.nan)
         units = OrderedDict([("xrsa", u.W/u.m**2),
-                             ("xrsb", u.W/u.m**2)])
+                             ("xrsb", u.W/u.m**2),
+                             ("quality_xrsa", int),
+                             ("quality_xrsb", int)])
 
-        return data, header, units
+        return df, header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
