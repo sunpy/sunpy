@@ -164,6 +164,18 @@ def test_quadrangle_aia17_pix_top_right_different_axes(aia171_test_map):
 
 
 @figure_test
+def test_draw_equator_aia171(aia171_test_map):
+    aia171_test_map.plot()
+    aia171_test_map.draw_equator()
+
+
+@figure_test
+def test_draw_prime_meridian_aia171(aia171_test_map):
+    aia171_test_map.plot()
+    aia171_test_map.draw_prime_meridian()
+
+
+@figure_test
 def test_plot_masked_aia171(aia171_test_map_with_mask):
     aia171_test_map_with_mask.plot()
 
