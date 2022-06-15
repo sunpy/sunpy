@@ -364,7 +364,7 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     201 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
     <BLANKLINE>
-           Start Time       Instrument  Physobs   Wavelength [2]
+           Start Time       Instrument  Physobs     Wavelength
                                                      Angstrom
     ----------------------- ---------- --------- ----------------
     2020-01-01 00:00:00.000        AIA intensity   335.0 .. 335.0
@@ -393,7 +393,7 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     21 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
     <BLANKLINE>
-           Start Time       Instrument      Physobs        Wavelength [2]
+           Start Time       Instrument      Physobs          Wavelength
                                                               Angstrom
     ----------------------- ---------- ------------------ ----------------
     2020-01-01 00:00:22.000        HMI          intensity 6173.0 .. 6174.0
@@ -432,8 +432,8 @@ We can use boolean indexing to match the value of the ``"Physobs"`` column::
     >>> hmi_los = hmi[hmi["Physobs"] == "LOS_magnetic_field"]  # doctest: +REMOTE_DATA
     >>> hmi_los.show("Start Time", "Instrument", "Wavelength", "Physobs")  # doctest: +REMOTE_DATA
     <sunpy.net.vso.table_response.VSOQueryResponseTable object at ...>
-           Start Time       Instrument  Wavelength [2]       Physobs
-                                          Angstrom
+           Start Time       Instrument    Wavelength         Physobs
+                                           Angstrom
     ----------------------- ---------- ---------------- ------------------
     2020-01-01 00:00:22.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
     2020-01-01 00:01:07.000        HMI 6173.0 .. 6174.0 LOS_magnetic_field
@@ -448,30 +448,30 @@ To match the ``"Wavelength"`` column we need to account for the fact that VSO re
     >>> aia_94 = aia[aia["Wavelength"][:, 0] == 94 * u.AA]  # doctest: +REMOTE_DATA
     >>> aia_94.show("Start Time", "Instrument", "Wavelength", "Physobs")  # doctest: +REMOTE_DATA
     <sunpy.net.vso.table_response.VSOQueryResponseTable object at ...>
-           Start Time       Instrument Wavelength [2]  Physobs
-                                          Angstrom
-    ----------------------- ---------- -------------- ---------
-    2020-01-01 00:00:11.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:00:23.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:00:35.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:00:47.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:00:59.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:01:11.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:01:23.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:01:35.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:01:47.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:01:59.000        AIA   94.0 .. 94.0 intensity
-                        ...        ...            ...       ...
-    2020-01-01 00:03:11.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:03:23.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:03:35.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:03:47.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:03:59.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:04:11.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:04:23.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:04:35.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:04:47.000        AIA   94.0 .. 94.0 intensity
-    2020-01-01 00:04:59.000        AIA   94.0 .. 94.0 intensity
+           Start Time       Instrument  Wavelength   Physobs
+                                         Angstrom
+    ----------------------- ---------- ------------ ---------
+    2020-01-01 00:00:11.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:00:23.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:00:35.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:00:47.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:00:59.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:01:11.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:01:23.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:01:35.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:01:47.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:01:59.000        AIA 94.0 .. 94.0 intensity
+                        ...        ...          ...       ...
+    2020-01-01 00:03:11.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:03:23.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:03:35.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:03:47.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:03:59.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:04:11.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:04:23.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:04:35.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:04:47.000        AIA 94.0 .. 94.0 intensity
+    2020-01-01 00:04:59.000        AIA 94.0 .. 94.0 intensity
     Length = 25 rows
 
 These can then be passed to `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
