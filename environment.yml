@@ -1,0 +1,8 @@
+name: sunpy_rtd
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - openjpeg
+  - graphviz!=2.42.*,!=2.43.*
