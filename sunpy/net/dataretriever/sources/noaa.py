@@ -162,6 +162,7 @@ class SRSClient(GenericClient):
     """
     baseurl = r'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/%Y/%m/%Y%m%dSRS.txt'
     pattern = '{}/{year:4d}/{month:2d}/{year:4d}{month:2d}{day:2d}SRS.txt'
+    # Server does not support the normal aioftp passive command.
     enqueue_file_kwargs = {"passive_commands": ["pasv"]}
 
     @classmethod
