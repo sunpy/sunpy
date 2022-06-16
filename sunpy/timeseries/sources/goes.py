@@ -222,50 +222,36 @@ class XRSTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
-        filepath : `~str`
+        filepath : `str`
             The path of the file to parse
         """
-        with h5netcdf.File(filepath, mode="r", **XRSTimeSeries._netcdf_read_kw) as d:
+        with h5netcdf.File(filepath, mode="r", **XRSTimeSeries._netcdf_read_kw) as h5nc:
+            header = MetaDict(OrderedDict(h5nc.attrs))
+            flux_name = h5nc.variables.get("a_flux") or h5nc.variables.get("xrsa_flux")
+            if flux_name is None:
+                raise ValueError(f"No flux data (either a_flux or xrsa_flux) found in file: {filepath}")
+            flux_name = flux_name.name
+            xrsa = np.array(h5nc[flux_name])
+            xrsb = np.array(h5nc[flux_name.replace("a", "b")])
+            xrsa_quality = np.array(h5nc[flux_name.replace("flux", "flags")])
+            xrsb_quality = np.array(h5nc[flux_name.replace("a", "b").replace("flux", "flags")])
+            start_time_str = h5nc["time"].attrs["units"]
+            # h5netcdf < 0.14 return bytes instead of a str
+            if isinstance(start_time_str, bytes):
+                start_time_str = start_time_str.decode("utf-8")
+            start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC").strip()
+            times = Time(parse_time(start_time_str).unix + h5nc["time"], format="unix").datetime
 
-            header = MetaDict(OrderedDict(d.attrs))
-            if "a_flux" in d.variables:
-                xrsa = np.array(d["a_flux"])
-                xrsb = np.array(d["b_flux"])
-                xrsa_quality = np.array(d['a_flags'])
-                xrsb_quality = np.array(d['b_flags'])
-
-                start_time_str = d["time"].attrs["units"]
-                if not isinstance(start_time_str, str):
-                    # For h5netcdf<0.14
-                    start_time_str = start_time_str.astype(str)
-                start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC")
-                # Perform the time addition in UTime format to ignore leap seconds
-                times = Time(parse_time(start_time_str).utime + d["time"], format="utime")
-            elif "xrsa_flux" in d.variables:
-                xrsa = np.array(d["xrsa_flux"])
-                xrsb = np.array(d["xrsb_flux"])
-                xrsa_quality = np.array(d['xrsa_flags'])
-                xrsb_quality = np.array(d['xrsb_flags'])
-
-                start_time_str = d["time"].attrs["units"]
-                if not isinstance(start_time_str, str):
-                    # For h5netcdf<0.14
-                    start_time_str = start_time_str.astype(str)
-                start_time_str = start_time_str.lstrip("seconds since")
-                # Perform the time addition in UTime format to ignore leap seconds
-                times = Time(parse_time(start_time_str).utime + d["time"], format="utime")
-
-            else:
-                raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
-
-        data = DataFrame({"xrsa": xrsa, "xrsb": xrsb, "xrsa_quality": xrsa_quality,
-                         "xrsb_quality": xrsb_quality}, index=times.datetime)
+        data = DataFrame({"xrsa": xrsa, "xrsb": xrsb, "xrsa_quality": xrsa_quality, "xrsb_quality": xrsb_quality}, index=times)
         data = data.replace(-9999, np.nan)
-        units = OrderedDict([("xrsa", u.W/u.m**2),
-                             ("xrsb", u.W/u.m**2),
-                             ("xrsa_quality", int),
-                             ("xrsb_quality", int)])
-
+        units = OrderedDict(
+            [
+                ("xrsa", u.W/u.m**2),
+                ("xrsb", u.W/u.m**2),
+                ("xrsa_quality", int),
+                ("xrsb_quality", int),
+            ]
+        )
         return data, header, units
 
     @classmethod
