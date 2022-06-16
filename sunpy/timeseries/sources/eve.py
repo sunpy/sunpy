@@ -81,7 +81,7 @@ class ESPTimeSeries(GenericTimeSeries):
                         "CH_26": "Flux \n 26nm", "CH_30": "Flux \n 30nm", "CH_36": "Flux \n 36nm"}
         predefined_axes = False
         if columns is None:
-            columns = self._data.columns
+            columns = self.columns
         if isinstance(axes, np.ndarray):
             predefined_axes = True
         elif axes is None:

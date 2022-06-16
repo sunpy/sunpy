@@ -86,7 +86,7 @@ class LYRATimeSeries(GenericTimeSeries):
                       'CHANNEL3': '17-80nm + <5nm', 'CHANNEL4': '6-20nm + <2nm'})
         predefined_axes = False
         if columns is None:
-            columns = self._data.columns
+            columns = self.columns
         if isinstance(axes, np.ndarray):
             predefined_axes = True
         elif axes is None:

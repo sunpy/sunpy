@@ -456,7 +456,7 @@ class GenericTimeSeries:
         units = copy.copy(self.units)
 
         # Add the unit to the units dictionary if already there.
-        if not (colname in self._data.columns):
+        if not (colname in self.columns):
             units[colname] = unit
 
         # Convert the given quantity into values for given units if necessary.
@@ -465,7 +465,7 @@ class GenericTimeSeries:
             values = values.to(units[colname]).value
 
         # Update or add the data.
-        if not (colname in self._data.columns) or overwrite:
+        if not (colname in self.columns) or overwrite:
             data[colname] = values
 
         # Return a new TimeSeries with the given updated/added column.
@@ -706,7 +706,7 @@ class GenericTimeSeries:
             axes = plt.gca()
 
         if columns is None:
-            columns = self._data.columns
+            columns = self.columns
 
         axes = self._data[columns].plot(ax=axes, **plot_args)
 

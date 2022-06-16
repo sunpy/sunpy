@@ -89,7 +89,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         if axes is None:
             axes = plt.gca()
         if columns is None:
-            columns = self._data.columns
+            columns = self.columns
         for d in columns:
             axes.plot(self._data.index, self._data[d], label=d, **kwargs)
         axes.set_yscale("log")
