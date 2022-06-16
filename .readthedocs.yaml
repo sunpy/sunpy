@@ -6,10 +6,10 @@ build:
     python: "mambaforge-4.10"
   jobs:
     pre_install:
-      - git update-index --assume-unchanged environment.yml docs/conf.py
+      - git update-index --assume-unchanged .rtd-environment.yml docs/conf.py
 
 conda:
-  environment: environment.yml
+  environment: .rtd-environment.yml
 
 sphinx:
   builder: html
