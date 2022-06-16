@@ -709,6 +709,8 @@ class GenericTimeSeries:
             # label to the y-axis.
             unit = u.Unit(list(units)[0])
             axes.set_ylabel(unit.to_string())
+
+        self._setup_x_axis(axes)
         return axes
 
     def _setup_axes_columns(self, axes, columns, *, subplots=False):
@@ -728,6 +730,19 @@ class GenericTimeSeries:
                 axes = plt.gcf().subplots(ncols=1, nrows=len(columns), sharex=True)
 
         return axes, columns
+
+    @staticmethod
+    def _setup_x_axis(ax):
+        """
+        Shared code to set a locator and formatter on the x-axis.
+        """
+        import matplotlib.dates as mdates
+        if isinstance(ax, np.ndarray):
+            ax = ax[-1]
+        locator = mdates.AutoDateLocator()
+        formatter = mdates.ConciseDateFormatter(locator)
+        ax.xaxis.set_major_locator(locator)
+        ax.xaxis.set_major_formatter(formatter)
 
     @peek_show
     def peek(self, columns=None, **kwargs):

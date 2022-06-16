@@ -86,6 +86,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes.set_xlabel('Start time: ' + self._data.index[0].strftime(TIME_FORMAT))
         axes.set_ylabel('Correlation')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show

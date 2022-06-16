@@ -110,6 +110,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show
@@ -265,6 +266,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show

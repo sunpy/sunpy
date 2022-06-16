@@ -4,7 +4,6 @@ This module provies a RHESSI `~sunpy.timeseries.TimeSeries` source.
 import itertools
 from collections import OrderedDict
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
@@ -172,10 +171,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
         axes.legend()
-        locator = mdates.AutoDateLocator()
-        formatter = mdates.ConciseDateFormatter(locator)
-        axes.xaxis.set_major_locator(locator)
-        axes.xaxis.set_major_formatter(formatter)
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show

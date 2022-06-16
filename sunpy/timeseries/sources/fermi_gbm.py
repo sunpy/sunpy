@@ -92,6 +92,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         axes.set_xlabel('Start time: ' + self._data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show
