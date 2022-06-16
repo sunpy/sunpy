@@ -156,11 +156,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
-        if axes is None:
-            axes = plt.gca()
-        if columns is None:
-            columns = self.columns
+        axes, columns = self._setup_axes_columns(axes, columns)
+
         # These are a matplotlib version of the default RHESSI color cycle
         default_colors = ('black', 'tab:pink', 'tab:green', 'tab:cyan',
                           'tab:olive', 'tab:red', 'tab:blue', 'tab:orange',

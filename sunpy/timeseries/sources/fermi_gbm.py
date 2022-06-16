@@ -85,11 +85,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
-        if axes is None:
-            axes = plt.gca()
-        if columns is None:
-            columns = self.columns
+        axes, columns = self._setup_axes_columns(axes, columns)
         for d in columns:
             axes.plot(self._data.index, self._data[d], label=d, **kwargs)
         axes.set_yscale("log")

@@ -80,9 +80,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
-        if axes is None:
-            axes = plt.gca()
+        axes, columns = self._setup_axes_columns(axes, columns)
 
         if plot_type == 'sunspot SWO':
             to_plot = ['sunspot SWO', 'sunspot SWO smooth']
@@ -256,10 +254,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
+        axes, columns = self._setup_axes_columns(axes, columns)
+
         dataframe = self.to_dataframe()
-        if axes is None:
-            axes = plt.gca()
         dataframe['sunspot'].plot(color='b', **plot_args)
         dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
         dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)

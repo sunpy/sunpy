@@ -699,14 +699,7 @@ class GenericTimeSeries:
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        import matplotlib.pyplot as plt
-
-        # Get current axes
-        if axes is None:
-            axes = plt.gca()
-
-        if columns is None:
-            columns = self.columns
+        axes, columns = self._setup_axes_columns(axes, columns)
 
         axes = self._data[columns].plot(ax=axes, **plot_args)
 
@@ -717,6 +710,24 @@ class GenericTimeSeries:
             unit = u.Unit(list(units)[0])
             axes.set_ylabel(unit.to_string())
         return axes
+
+    def _setup_axes_columns(self, axes, columns, *, subplots=False):
+        """
+        Validate data for plotting, and get default axes/columns if not passed
+        by the user.
+        """
+        import matplotlib.pyplot as plt
+
+        self._validate_data_for_plotting()
+        if columns is None:
+            columns = self.columns
+        if axes is None:
+            if not subplots:
+                axes = plt.gca()
+            else:
+                axes = plt.gcf().subplots(ncols=1, nrows=len(columns), sharex=True)
+
+        return axes, columns
 
     @peek_show
     def peek(self, columns=None, **kwargs):
