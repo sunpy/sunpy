@@ -1,0 +1,2 @@
+All TimeSeries plotting methods now consistently set the same
+formatter and locator for the x-axis.
