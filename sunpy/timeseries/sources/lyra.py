@@ -84,8 +84,6 @@ class LYRATimeSeries(GenericTimeSeries):
                       'CHANNEL3': 'Al filter', 'CHANNEL4': 'Zr filter'},
                      {'CHANNEL1': '120-123nm', 'CHANNEL2': '190-222nm',
                       'CHANNEL3': '17-80nm + <5nm', 'CHANNEL4': '6-20nm + <2nm'})
-        colors = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple',
-                  'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan')
         predefined_axes = False
         if columns is None:
             columns = self._data.columns
@@ -96,7 +94,6 @@ class LYRATimeSeries(GenericTimeSeries):
         for i, name in enumerate(self.to_dataframe()[columns]):
             if predefined_axes:
                 axes[i].plot(self._data[columns[i]],
-                             color=colors[i % len(colors)],
                              label=columns[i])
                 axes[i].legend(loc="upper right")
                 plt.xticks(rotation=30)

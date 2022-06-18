@@ -79,8 +79,6 @@ class ESPTimeSeries(GenericTimeSeries):
         self._validate_data_for_plotting()
         column_names = {"QD": "Flux \n 0.1-7nm", "CH_18": "Flux \n 18nm",
                         "CH_26": "Flux \n 26nm", "CH_30": "Flux \n 30nm", "CH_36": "Flux \n 36nm"}
-        colors = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple',
-                  'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan')
         predefined_axes = False
         if columns is None:
             columns = self._data.columns
@@ -91,7 +89,6 @@ class ESPTimeSeries(GenericTimeSeries):
         for i, name in enumerate(self.to_dataframe()[columns]):
             if predefined_axes:
                 axes[i].plot(self._data[name],
-                             color=colors[i % len(colors)],
                              label=name)
                 plt.xticks(rotation=30)
             axes[i].set_ylabel(column_names[name])
