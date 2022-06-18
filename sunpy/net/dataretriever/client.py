@@ -64,6 +64,8 @@ class GenericClient(BaseClient):
     pattern = None
     # Set of required 'attrs' for client to handle the query.
     required = {a.Time, a.Instrument}
+    # Define keywards a client needs to pass to enqueue_file
+    enqueue_file_kwargs = {}
 
     @classmethod
     def _get_match_dict(cls, *args, **kwargs):
@@ -294,7 +296,7 @@ class GenericClient(BaseClient):
             downloader = Downloader(progress=progress, overwrite=overwrite)
 
         for url, filename in zip(urls, paths):
-            downloader.enqueue_file(url, filename=filename)
+            downloader.enqueue_file(url, filename=filename, **self.enqueue_file_kwargs)
 
         if dl_set and not wait:
             return
