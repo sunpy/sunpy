@@ -78,6 +78,22 @@ Since `~sunpy.net.scraper.Scraper` doesn't currently support generating director
 The search method should in this case, generate a ``baseurl`` dependant on the values of these attrs, and then call ``super().search`` or `~sunpy.net.scraper.Scraper` for each ``baseurl`` generated.
 For an example of a complex modification of the ``search()`` method see the implementation of `.SUVIClient.search`.
 
+Customizing the Downloader
+--------------------------
+
+There is no method for a client creator to override the `parfive.Downloader` that is used to fetch the final files.
+This is because we allow a user to setup a custom `parfive.Downloader` by passing it to the ``downloader`` argument of :meth:`Fido.fetch`.
+However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if need to work around a limitation on the remote server.
+One example is the `sunpy.net.dataretriever.sources.noaa.SRSClient`:
+
+.. code_block:: python
+
+    # Server does not support the normal aioftp passive command.
+    enqueue_file_kwargs = {"passive_commands": ["pasv"]}
+
+These keywords are passed to each call to :meth:`parfive.Downloader.enqueue_file`, so they will affect all files that are downloaded.
+
+
 Examples
 --------
 
@@ -521,18 +537,3 @@ An example client class may look something like
             query_attrs = set(type(x) for x in query)
             supported_attrs = {a.Time, a.Level}
             return supported_attrs.issuperset(query_attrs)
-
-Customizing the Downloader
-==========================
-
-There is no method for a client creator to override the `parfive.Downloader` that is used to fetch the final files.
-This is because we allow a user to setup a custom `parfive.Downloader` by passing it to the ``downloader`` argument of :meth:`Fido.fetch`.
-However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if need to work around a limitation on the remote server.
-One example is the `sunpy.net.dataretriever.sources.noaa.SRSClient`:
-
-.. code_block:: python
-
-    # Server does not support the normal aioftp passive command.
-    enqueue_file_kwargs = {"passive_commands": ["pasv"]}
-
-These keywords are passed to each call to :meth:`parfive.Downloader.enqueue_file`, so they will affect all files that are downloaded.
