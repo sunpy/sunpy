@@ -73,7 +73,7 @@ goes_15.peek()
 
 df = goes_15.to_dataframe()
 df = df[(df["xrsa_quality"] == 0) & (df["xrsb_quality"] == 0)]
-goes_15.data = df
+goes_15 = ts.TimeSeries(df, goes_15.meta, goes_15.units)
 
 ###############################################################
 # We can also pull out the individual GOES chanels and plot. The 0.5-4 angstrom
