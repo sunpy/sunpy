@@ -12,54 +12,65 @@ Developer's Guide
 
 This section contains the various guidelines to be followed by anyone working on sunpy.
 
-.. panels::
+.. grid:: 1 2 2 2
+    :gutter: 3
 
-    Getting started
-    ^^^^^^^^^^^^^^^
-    .. toctree::
-      :maxdepth: 3
+    .. grid-item-card::
+        :class-card: card
 
-      contents/newcomers
+        Getting started
+        ^^^^^^^^^^^^^^^
 
-    ---
+        .. toctree::
+            :maxdepth: 3
 
-    Conventions
-    ^^^^^^^^^^^
-    .. toctree::
-      :maxdepth: 1
+            contents/newcomers
 
-      contents/code_standards
-      contents/tests
-      contents/documentation
-      contents/example_gallery
-      contents/pr_review_procedure
-      contents/units_quantities
+    .. grid-item-card::
+        :class-card: card
 
-    ---
+        Conventions
+        ^^^^^^^^^^^
 
-    Repo management
-    ^^^^^^^^^^^^^^^
-    .. toctree::
-      :maxdepth: 1
+        .. toctree::
+            :maxdepth: 1
 
-      contents/maintainer_workflow
-      contents/dependencies
-      contents/ci_jobs
-      contents/funding
+            contents/code_standards
+            contents/tests
+            contents/documentation
+            contents/example_gallery
+            contents/pr_review_procedure
+            contents/units_quantities
 
-    ---
+    .. grid-item-card::
+        :class-card: card
 
-    Extending sunpy
-    ^^^^^^^^^^^^^^^
-    .. toctree::
-      :maxdepth: 1
+        Repo management
+        ^^^^^^^^^^^^^^^
 
-      contents/public_api
-      contents/extending_fido
-      contents/logger
-      contents/new_objects
-      contents/remote_data
-      contents/map_rotate_custom
+        .. toctree::
+            :maxdepth: 1
+
+            contents/maintainer_workflow
+            contents/dependencies
+            contents/ci_jobs
+            contents/funding
+
+    .. grid-item-card::
+        :class-card: card
+
+        Extending sunpy
+        ^^^^^^^^^^^^^^^
+
+        .. toctree::
+            :maxdepth: 1
+
+            contents/public_api
+            contents/extending_fido
+            contents/logger
+            contents/new_objects
+            contents/remote_data
+            contents/map_rotate_custom
 
 {%else%}
 
