@@ -64,7 +64,7 @@ class GenericClient(BaseClient):
     pattern = None
     # Set of required 'attrs' for client to handle the query.
     required = {a.Time, a.Instrument}
-    # Define keywards a client needs to pass to enqueue_file
+    # Define keywords a client needs to pass to enqueue_file
     enqueue_file_kwargs = {}
 
     @classmethod
