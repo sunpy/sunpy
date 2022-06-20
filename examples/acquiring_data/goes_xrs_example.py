@@ -69,7 +69,7 @@ goes_15.peek()
 
 #############################################################
 # The resulting `~sunpy.timeseries.TimeSeries` can be filtered by GOES quality flags. For more information
-# refer to the `GOES Data Guide <https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf>`.
+# refer to the `GOES Data Guide <https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf>`__.
 
 df = goes_15.to_dataframe()
 df = df[(df["xrsa_quality"] == 0) & (df["xrsb_quality"] == 0)]
