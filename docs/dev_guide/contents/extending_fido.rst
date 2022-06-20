@@ -83,7 +83,7 @@ Customizing the Downloader
 
 There is no method for a client creator to override the `parfive.Downloader` that is used to fetch the final files.
 This is because we allow a user to setup a custom `parfive.Downloader` by passing it to the ``downloader`` argument of :meth:`Fido.fetch`.
-However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if need to work around a limitation on the remote server.
+However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if there is a need to work around a limitation on the remote server.
 One example is the `sunpy.net.dataretriever.sources.noaa.SRSClient`:
 
 .. code_block:: python
