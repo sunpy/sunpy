@@ -30,10 +30,8 @@ def draw_equator(axes, resolution=300, **kwargs):
     >>> from sunpy.visualization import draw
     >>> import sunpy.data.sample   # doctest: +REMOTE_DATA
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)   # doctest: +REMOTE_DATA
-    >>> plt.figure()   # doctest: +REMOTE_DATA
     >>> aia.plot()   # doctest: +REMOTE_DATA
     >>> draw.draw_equator(aia._check_axes(None))   # doctest: +REMOTE_DATA
-    >>> plt.show()   # doctest: +REMOTE_DATA
     """
     if not wcsaxes_compat.is_wcsaxes(axes):
         raise ValueError('axes must be a WCSAxes')

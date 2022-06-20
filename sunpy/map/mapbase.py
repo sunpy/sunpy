@@ -2302,7 +2302,7 @@ class GenericMap(NDData):
         kwergs.update(kwargs)
         quad = Quadrangle(anchor, width, height, **kwergs)
         axes.add_patch(quad)
-        return quad   
+        return quad
 
     def _process_levels_arg(self, levels):
         """

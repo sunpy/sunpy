@@ -1,0 +1,1 @@
+Add draw module which includes draw_equator and draw_prime_meridian functions to `sunpy.visualization`.
