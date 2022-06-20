@@ -2302,68 +2302,7 @@ class GenericMap(NDData):
         kwergs.update(kwargs)
         quad = Quadrangle(anchor, width, height, **kwergs)
         axes.add_patch(quad)
-        return quad
-
-    def draw_equator(self, axes=None, resolution=300, **kwargs):
-        """
-        Draws the equator as seen by the map's observer. 
-        
-        Parameters
-        ----------
-        axes : `matplotlib.axes.Axes`
-            The axes to plot the equator on, or "None" to use current axes.
-        resolution : `int`
-            The number of points used to represent the equator.
-        """
-        left = self.bottom_left_coord.Tx
-        right = self.top_right_coord.Ty
-        
-        lat = 0*u.deg
-        lat0 = SkyCoord(np.linspace(-90, 90, resolution) * u.deg,
-                        np.ones(resolution) * lat, 
-                        frame=sunpy.coordinates.frames.HeliographicStonyhurst)
-        lat0 = lat0.transform_to(self.center.frame)
-        
-        is_visible = np.where((lat0.Tx >= left) & (lat0.Tx <= right))
-        visible = lat0[is_visible]
-        axes = self._check_axes(axes)
-        equator = axes.plot_coord(visible, color='white', linewidth=1,
-                                  **kwargs)
-        return equator
-
-    def draw_prime_meridian(self, axes=None, resolution=300, **kwargs):
-        """
-        Draws the prime meridian as seen by the map's observer. 
-        Any part that is hidden is not plotted.
-        
-        Parameters
-        ----------
-        axes : `matplotlib.axes.Axes`
-            The axes to plot the prime meridian on, or "None" to use current axes.
-        resolution : `int`
-            The number of points used to represent the prime meridian.
-        """
-        top = self.top_right_coord.Ty
-        bottom = self.bottom_left_coord.Ty
-        
-        lon = 0*u.deg
-        lon0 = SkyCoord(np.ones(resolution) * lon,
-                        np.linspace(-90, 90, resolution) * u.deg, 
-                        frame=sunpy.coordinates.frames.HeliographicStonyhurst)
-        lon0 = lon0.transform_to(self.center.frame)
-        
-        rsun = self.center.rsun
-        reference_dist = np.sqrt(self.center.frame.observer.radius**2 - rsun**2)
-        is_visible = lon0.spherical.distance <= reference_dist
-        vis = np.where(is_visible == True)[0]
-        visible = lon0[vis]
-        
-        is_visible = np.where((visible.Ty >= bottom) & (visible.Ty <= top))
-        visible = visible[is_visible]
-        axes = self._check_axes(axes)
-        prime_meridian = axes.plot_coord(visible, color='white', linewidth=1,
-                                         **kwargs)
-        return prime_meridian    
+        return quad   
 
     def _process_levels_arg(self, levels):
         """
