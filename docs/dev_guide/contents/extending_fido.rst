@@ -82,17 +82,16 @@ Customizing the Downloader
 --------------------------
 
 There is no method for a client creator to override the `parfive.Downloader` that is used to fetch the files.
-This is because all downloads made by a single call to :meth:`Fido.fetch` share one instance of `parfive.Downloader`.
+This is because all downloads made by a single call to ``Fido.fetch`` share one instance of `parfive.Downloader`.
 However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if there is a need to customise the requests to a remote server, such as setting custom HTTP headers.
 One example is the `sunpy.net.dataretriever.sources.noaa.SRSClient`:
 
-.. code_block:: python
+.. code-block:: python
 
     # Server does not support the normal aioftp passive command.
     enqueue_file_kwargs = {"passive_commands": ["pasv"]}
 
 These keywords are passed to each call to :meth:`parfive.Downloader.enqueue_file`, so they will affect all files that are downloaded, by your client.
-
 
 Examples
 --------
@@ -153,13 +152,13 @@ This means the list of queries is an **OR** of **ANDs** (technically called `dis
 
 Each query in the list of ORs contains all the information about that query so for example if the user provided a query like
 
-.. code_block:: python
+.. code-block:: python
 
     a.Time("2020/02/02", "2020/02/03") & (a.Instrument("AIA") | a.Instrument("HMI"))
 
 it would be passed to the client as::
 
-.. code_block:: python
+.. code-block:: python
 
     (a.Time("2020/02/02", "2020/02/03") & a.Instrument("HMI")) | (a.Time("2020/02/02", "2020/02/03") & a.Instrument("AIA"))
 
@@ -309,7 +308,7 @@ Assuming the walker is the one we defined above, queries would be a list of dict
     If you want your search method to be able to be called independently of Fido, then you should accept a variable number of positional arguments (``*args``) and they should have the AND operator applied to them.
     This looks like
 
-    .. code_block:: python
+    .. code-block:: python
 
         def search(self, *args):
             query = attr.and_(args)
@@ -348,7 +347,7 @@ This method gets passed each query (in its independent form), and must either re
 
 A simple example, which just checks the type of ``attrs`` and not their values would be
 
-.. code_block:: python
+.. code-block:: python
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -396,7 +395,7 @@ Each row of the results table has a `~sunpy.net.base_client.QueryResponseRow.res
 In addition to the `~sunpy.net.base_client.QueryResponseRow.response_block_map` your fetch method also needs to be able to generate a filename for the file.
 The simplest (but unlikely) scenario is that you know the filename for each file you are going to download before you do so, in this situation you would be able to generate the full filepath for each row of the response as follows
 
-.. code_block:: python
+.. code-block:: python
 
     for row in query_results:
         filename = self._calculate_filename(row)
@@ -414,7 +413,7 @@ To combine the formatting of the row with the extraction of the filename from th
 In the following example we will define a function which takes 4 arguments which we will use to generate the filename for the row.
 This function will be called by `parfive` with the ``resp`` and ``url`` arguments.
 
-.. code_block:: python
+.. code-block:: python
 
     def make_filename(path, row, resp, url):
         # Define a fallback filename based on the information in the search results
@@ -442,7 +441,7 @@ Adding URLs to be Downloaded
 For each file you wish for ``Fido`` to download (normally one per row of the ``query_results``) you need to call the :meth:`parfive.Downloader.enqueue_file` of the ``downloader`` argument.
 Combining this with the simple example above it may look something like
 
-.. code_block:: python
+.. code-block:: python
 
     for row in query_results:
         filename = self._calculate_filename(row)
@@ -461,7 +460,7 @@ Putting it all Together
 
 An example client class may look something like
 
-.. code_block:: python
+.. code-block:: python
 
     import cgi
 
