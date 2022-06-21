@@ -54,10 +54,12 @@ class LYRATimeSeries(GenericTimeSeries):
     * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`_
     * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
     """
-    # Class attribute used to specify the source class of the TimeSeries.
+    # Class attributes used to specify the source class of the TimeSeries
+    # and a URL to the mission website.
     _source = 'lyra'
+    _url = "https://proba2.sidc.be/about/LYRA"
 
-    def plot(self, axes=None, names=3, **kwargs):
+    def plot(self, axes=None, columns=None, names=3, **kwargs):
         """
         Plots the LYRA data.
 
@@ -65,6 +67,8 @@ class LYRATimeSeries(GenericTimeSeries):
         ----------
         axes : array of `matplotlib.axes.Axes`, optional
             The axes on which to plot the TimeSeries.
+        columns : list[str], optional
+            If provided, only plot the specified columns.
         names : `int`, optional
             The number of columns to plot. Defaults to 3.
         **kwargs : `dict`
@@ -76,26 +80,27 @@ class LYRATimeSeries(GenericTimeSeries):
             The plot axes.
         """
         self._validate_data_for_plotting()
-        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
-                     ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
-        colors = ('tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple',
-                  'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan')
+        lyranames = ({'CHANNEL1': 'Lyman alpha', 'CHANNEL2': 'Herzberg cont.',
+                      'CHANNEL3': 'Al filter', 'CHANNEL4': 'Zr filter'},
+                     {'CHANNEL1': '120-123nm', 'CHANNEL2': '190-222nm',
+                      'CHANNEL3': '17-80nm + <5nm', 'CHANNEL4': '6-20nm + <2nm'})
         predefined_axes = False
+        if columns is None:
+            columns = self._data.columns
         if isinstance(axes, np.ndarray):
             predefined_axes = True
         elif axes is None:
-            axes = self.to_dataframe().plot(subplots=True, sharex=True, **kwargs)
-        for i, name in enumerate(self.to_dataframe().columns):
+            axes = self.to_dataframe()[columns].plot(subplots=True, sharex=True, **kwargs)
+        for i, name in enumerate(self.to_dataframe()[columns]):
             if predefined_axes:
-                axes[i].plot(self._data[self._data.columns[i]],
-                             color=colors[i % len(colors)],
-                             label=self._data.columns[i])
+                axes[i].plot(self._data[columns[i]],
+                             label=columns[i])
                 axes[i].legend(loc="upper right")
                 plt.xticks(rotation=30)
             if names < 3:
-                name = lyranames[names][i]
+                name = lyranames[names][columns[i]]
             else:
-                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
+                name = lyranames[0][columns[i]] + ' \n (' + lyranames[1][columns[i]] + ')'
             axes[i].locator_params(axis='y', nbins=6)
             axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
         locator = mdates.AutoDateLocator()
@@ -105,7 +110,7 @@ class LYRATimeSeries(GenericTimeSeries):
         return axes
 
     @peek_show
-    def peek(self, title=None, names=3, **kwargs):
+    def peek(self, title=None, columns=None, names=3, **kwargs):
         """
         Displays the LYRA data by calling `~sunpy.timeseries.sources.lyra.LYRATimeSeries.plot`.
 
@@ -120,13 +125,15 @@ class LYRATimeSeries(GenericTimeSeries):
         ----------
         title : `str`, optional
             The title of the plot.
+        columns : list[str], optional
+            If provided, only plot the specified columns.
         names : `int`, optional
             The number of columns to plot. Defaults to 3.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to
             :meth:`pandas.DataFrame.plot`.
         """
-        axes = self.plot(names=names, **kwargs)
+        axes = self.plot(columns=columns, names=names, **kwargs)
         if title is None:
             title = "LYRA ({0:{1}})".format(self.to_dataframe().index[0], TIME_FORMAT)
         axes[0].set_title(title)
