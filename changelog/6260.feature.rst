@@ -1,0 +1,1 @@
+Expose GOES quality flags in order to allow filtering corrupt values when using the `~sunpy.timeseries.sources.goes.XRSTimeSeries`.
