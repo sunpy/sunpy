@@ -81,9 +81,9 @@ For an example of a complex modification of the ``search()`` method see the impl
 Customizing the Downloader
 --------------------------
 
-There is no method for a client creator to override the `parfive.Downloader` that is used to fetch the final files.
-This is because we allow a user to setup a custom `parfive.Downloader` by passing it to the ``downloader`` argument of :meth:`Fido.fetch`.
-However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if there is a need to work around a limitation on the remote server.
+There is no method for a client creator to override the `parfive.Downloader` that is used to fetch the files.
+This is because all downloads made by a single call to :meth:`Fido.fetch` share one instance of `parfive.Downloader`.
+However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if there is a need to customise the requests to a remote server, such as setting custom HTTP headers.
 One example is the `sunpy.net.dataretriever.sources.noaa.SRSClient`:
 
 .. code_block:: python
@@ -91,7 +91,7 @@ One example is the `sunpy.net.dataretriever.sources.noaa.SRSClient`:
     # Server does not support the normal aioftp passive command.
     enqueue_file_kwargs = {"passive_commands": ["pasv"]}
 
-These keywords are passed to each call to :meth:`parfive.Downloader.enqueue_file`, so they will affect all files that are downloaded.
+These keywords are passed to each call to :meth:`parfive.Downloader.enqueue_file`, so they will affect all files that are downloaded, by your client.
 
 
 Examples
