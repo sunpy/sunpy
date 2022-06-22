@@ -11,27 +11,63 @@ for plots of some of these files.
    * - Variable name
      - Name of downloaded file
 """
-import sys
+import os
 from pathlib import Path
 
-from ._sample import _SAMPLE_FILES, download_sample_data
+import pooch
 
-files = download_sample_data()
+from sunpy.util.config import _is_writable_dir, get_and_create_sample_dir
+from ._sample import _SAMPLE_DATA
 
-file_dict = {}
-for f in files:
-    name = Path(f).name
-    _key = _SAMPLE_FILES.get(name, None)
-    if _key:
-        setattr(sys.modules[__name__], _key, str(f))
-        file_dict.update({_key: f})
 
-# Sort the entries in the dictionary
-file_dict = dict(sorted(file_dict.items()))
+def get_sample_data_dir() -> Path:
+    # Workaround for tox only. This is not supported as a user option
+    sampledata_dir = os.environ.get("SUNPY_SAMPLEDIR", False)
+    if sampledata_dir:
+        sampledata_dir = Path(sampledata_dir).expanduser().resolve()
+        _is_writable_dir(sampledata_dir)
+    else:
+        # Creating the directory for sample files to be downloaded
+        sampledata_dir = Path(get_and_create_sample_dir())
+    return sampledata_dir
 
-file_list = file_dict.values()
 
-for keyname, filename in file_dict.items():
-    __doc__ += f'   * - ``{keyname}``\n     - {Path(filename).name}\n'
+AVAILABLE_DATA = list(_SAMPLE_DATA.keys())
+FILES = list(_SAMPLE_DATA.values())
+REGISTRY = {fname: None for fname in FILES}
+version = 'v1'
+POOCH = pooch.create(
+    # Use the default cache folder for the operating system
+    path=get_sample_data_dir(),
+    # The remote data is on Github
+    base_url="https://github.com/sunpy/sample-data/raw/master/sunpy/{version}/",
+    version='v1',
+    registry=REGISTRY,
+)
 
-__all__ = list(_SAMPLE_FILES.values()) + ['file_dict', 'file_list']
+
+def __getattr__(value):
+    if value in ['file_dict', 'file_list']:
+        data_dir = get_sample_data_dir()
+        file_dict = {
+            keyname: file_path for keyname, filename in _SAMPLE_DATA.items()
+            if (file_path := data_dir / filename).exists()
+        }
+        file_dict = dict(sorted(file_dict.items()))
+        if value == 'file_dict':
+            return file_dict
+        elif value == 'file_list':
+            return file_dict.values()
+    if value not in AVAILABLE_DATA:
+        raise AttributeError(f'{value} not in sample data set:\n{AVAILABLE_DATA}')
+    return POOCH.fetch(_SAMPLE_DATA[value])
+
+
+def download_sample_data(overwrite=False):
+    return [POOCH.fetch(fname) for fname in FILES]
+
+
+for keyname, filename in _SAMPLE_DATA.items():
+    __doc__ += f'   * - ``{keyname}``\n     - {filename}\n'
+
+__all__ = AVAILABLE_DATA
