@@ -1,0 +1,1 @@
+Added a SDO/AIA 1600 file of the Venus transit to the sunpy sample data.
