@@ -160,7 +160,7 @@ Each query in the list of ORs contains all the information about that query so f
 
     a.Time("2020/02/02", "2020/02/03") & (a.Instrument("AIA") | a.Instrument("HMI"))
 
-it would be passed to the client as::
+it would be passed to the client as
 
 .. code-block:: python
 
