@@ -14,7 +14,6 @@ Before writing a new client, ensure you are familiar with how searches are speci
 When choosing a name for your new client it should have the form ``<name>Client`` as sunpy will split the name the name of the class to extract the name of your client.
 The main place this is done is when constructing a `~.UnifiedResponse` object, where the name part can be used to index the response object.
 
-
 .. _new_scraper_client:
 
 Writing a new "scraper" client
@@ -32,27 +31,25 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
 * A class attribute ``pattern``; this is a template used to extract the metadata from URLs matched by ``baseurl``.
   The extraction uses the `~sunpy.extern.parse.parse` format.
 
-
 For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
 A version without documentation strings is reproduced below:
 
 .. code-block:: python
 
-  class EVEClient(GenericClient):
-      baseurl = (r'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
-                 r'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
-      pattern = '{}/SpWx/{:4d}/{year:4d}{month:2d}{day:2d}_EVE_L{Level:1d}{}'
+    class EVEClient(GenericClient):
+        baseurl = (r'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
+                    r'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
+        pattern = '{}/SpWx/{:4d}/{year:4d}{month:2d}{day:2d}_EVE_L{Level:1d}{}'
 
-      @classmethod
-      def register_values(cls):
-          from sunpy.net import attrs
-          adict = {attrs.Instrument: [('EVE', 'Extreme ultraviolet Variability Experiment, which is part of the NASA Solar Dynamics Observatory mission.')],
-                   attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
-                   attrs.Source: [('SDO', 'The Solar Dynamics Observatory.')],
-                   attrs.Provider: [('LASP', 'The Laboratory for Atmospheric and Space Physics.')],
-                   attrs.Level: [('0', 'EVE: The specific EVE client can only return Level 0C data. Any other number will use the VSO Client.')]}
-          return adict
-
+        @classmethod
+        def register_values(cls):
+            from sunpy.net import attrs
+            adict = {attrs.Instrument: [('EVE', 'Extreme ultraviolet Variability Experiment, which is part of the NASA Solar Dynamics Observatory mission.')],
+                    attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
+                    attrs.Source: [('SDO', 'The Solar Dynamics Observatory.')],
+                    attrs.Provider: [('LASP', 'The Laboratory for Atmospheric and Space Physics.')],
+                    attrs.Level: [('0', 'EVE: The specific EVE client can only return Level 0C data. Any other number will use the VSO Client.')]}
+            return adict
 
 This client scrapes all the URLs available under the base url ``http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/``.
 `~sunpy.net.scraper.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``baseurl`` pattern specifies where in the pattern the time information is located, using `strptime <https://strftime.org/>`__ notation.
@@ -63,7 +60,6 @@ The supported time keys are: 'year', 'month', 'day', 'hour', 'minute', 'second',
 The attrs returned in the ``register_values()`` method are used to match your client to a search, as well as adding their values to the attr.
 This means that after this client has been imported, running ``print(a.Provider)`` will show that the ``EVEClient`` has registered a provider value of ``LASP``.
 In addition to this, a sanitized, lower cased version of the value will be available for tab completing, e.g. ``a.Provider.lasp`` or ``a.Level.zero``.
-
 
 More Complex Clients
 --------------------
@@ -81,6 +77,25 @@ It may also be possible that the ``baseurl`` property needs to be customised bas
 Since `~sunpy.net.scraper.Scraper` doesn't currently support generating directories that have non-time variables, the :meth:`~sunpy.net.dataretriever.client.GenericClient.search` needs to be customised.
 The search method should in this case, generate a ``baseurl`` dependant on the values of these attrs, and then call ``super().search`` or `~sunpy.net.scraper.Scraper` for each ``baseurl`` generated.
 For an example of a complex modification of the ``search()`` method see the implementation of `.SUVIClient.search`.
+
+Customizing the Downloader
+--------------------------
+
+There is no method for a client creator to override the `parfive.Downloader` that is used to fetch the files.
+This is because all downloads made by a single call to ``Fido.fetch`` share one instance of `parfive.Downloader`.
+However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if there is a need to customise the requests to a remote server, such as setting custom HTTP headers.
+This is done by setting the ``enqueue_file_kwargs`` attribute of the client class.
+One example from the `sunpy.net.dataretriever.sources.noaa.SRSClient` is:
+
+.. code-block:: python
+
+    class SRSClient(GenericClient):
+        ...
+        # Server does not support the normal aioftp passive command.
+        enqueue_file_kwargs = {"passive_commands": ["pasv"]}
+        ...
+
+These keywords are passed to each call to :meth:`parfive.Downloader.enqueue_file`, so they will affect all files that are added for download by your client.
 
 Examples
 --------
@@ -117,7 +132,6 @@ So the desired key names for returned dictionary should be written in the ``patt
 
         return adict
 
-
 .. _new_full_client:
 
 Writing a "full" client
@@ -140,13 +154,17 @@ To make these complex queries easily processable by the clients the ``AttrWalker
 It does this by converting the input query to a set of queries which are ORed, but are complete queries.
 This means the list of queries is an **OR** of **ANDs** (technically called `disjuntive normal form <https://en.wikipedia.org/wiki/Disjunctive_normal_form>`__).
 
-Each query in the list of ORs contains all the information about that query so for example if the user provided a query like::
+Each query in the list of ORs contains all the information about that query so for example if the user provided a query like
 
-  a.Time("2020/02/02", "2020/02/03") & (a.Instrument("AIA") | a.Instrument("HMI"))
+.. code-block:: python
 
-it would be passed to the client as::
+    a.Time("2020/02/02", "2020/02/03") & (a.Instrument("AIA") | a.Instrument("HMI"))
 
-  (a.Time("2020/02/02", "2020/02/03") & a.Instrument("HMI")) | (a.Time("2020/02/02", "2020/02/03") & a.Instrument("AIA"))
+it would be passed to the client as
+
+.. code-block:: python
+
+    (a.Time("2020/02/02", "2020/02/03") & a.Instrument("HMI")) | (a.Time("2020/02/02", "2020/02/03") & a.Instrument("AIA"))
 
 So you can process each element of the OR in turn without having to consult any other part of the query.
 
@@ -291,13 +309,14 @@ Assuming the walker is the one we defined above, queries would be a list of dict
 
 .. note::
 
-   If you want your search method to be able to be called independently of Fido, then you should accept a variable number of positional arguments (``*args``) and they should have the AND operator applied to them.
-   This looks like::
+    If you want your search method to be able to be called independently of Fido, then you should accept a variable number of positional arguments (``*args``) and they should have the AND operator applied to them.
+    This looks like
 
-     def search(self, *args):
-         query = attr.and_(args)
-         queries = walker.create(query)
+    .. code-block:: python
 
+        def search(self, *args):
+            query = attr.and_(args)
+            queries = walker.create(query)
 
 Once the walker has processed the query into a form designed to be passed to your API, your ``search()`` method then needs to iterate over these parameters, make the requests, and process the results into a table.
 
@@ -315,15 +334,13 @@ We also pretend that the response is a json object in the form of a Python dicti
 
       return QueryResponseTable(results, client=self)
 
-
 In reality, you probably want to post-process the results from your API before you put them in the table, they should be human readable first, with spaces and capitalisation as appropriate.
-
 
 Supporting filesize estimates
 #############################
+
 The base client has a method for automatically estimating the total size of files in a given query: :meth:`~sunpy.net.base_client.QueryResponseTable.total_size`.
 To enable to support for this, make sure the table returned by ``search`` has a column that contains filesizes as astropy quantities convertible to ``u.byte``, and set the ``size_column`` class attribute to the name of this column.
-
 
 The ``_can_handle_query`` method
 ---------------------------------
@@ -332,16 +349,17 @@ The next required method is ``_can_handle_query``, this method tells ``Fido`` if
 If this method returns `True`, your clients ``search()`` method will be called for that query.
 This method gets passed each query (in its independent form), and must either return ``True`` or ``False``.
 
-A simple example, which just checks the type of ``attrs`` and not their values would be::
+A simple example, which just checks the type of ``attrs`` and not their values would be
 
-  @classmethod
-  def _can_handle_query(cls, *query):
-      query_attrs = set(type(x) for x in query)
-      supported_attrs = {a.Time, a.Level}
-      return supported_attrs.issuperset(query_attrs)
+.. code-block:: python
+
+    @classmethod
+    def _can_handle_query(cls, *query):
+        query_attrs = set(type(x) for x in query)
+        supported_attrs = {a.Time, a.Level}
+        return supported_attrs.issuperset(query_attrs)
 
 Note, that this method is a class method, it gets called without instantiating your client to speed up the dispatching.
-
 
 Writing a Fetch Method
 ----------------------
@@ -361,7 +379,6 @@ The parameters here are:
 * ``downloader=`` This is a `parfive.Downloader` object which should be mutated by the ``fetch()`` method.
 * ``**kwargs`` It is very important that ``fetch()`` methods accept extra keyword arguments that they don't use, as the user might be passing them to other clients via ``Fido``.
 
-
 Processing the ``query_results`` Argument
 #########################################
 
@@ -380,11 +397,13 @@ In addition to these it may contain the ``{file}`` format segment which is a pla
 Each row of the results table has a `~sunpy.net.base_client.QueryResponseRow.response_block_map` property which is a dictionary of valid format keys to values for that row.
 
 In addition to the `~sunpy.net.base_client.QueryResponseRow.response_block_map` your fetch method also needs to be able to generate a filename for the file.
-The simplest (but unlikely) scenario is that you know the filename for each file you are going to download before you do so, in this situation you would be able to generate the full filepath for each row of the response as follows::
+The simplest (but unlikely) scenario is that you know the filename for each file you are going to download before you do so, in this situation you would be able to generate the full filepath for each row of the response as follows
 
-  for row in query_results:
-      filename = self._calculate_filename(row)
-      filepath = path.format(file=filename, **row.response_block_map)
+.. code-block:: python
+
+    for row in query_results:
+        filename = self._calculate_filename(row)
+        filepath = path.format(file=filename, **row.response_block_map)
 
 
 In the situation where you wish to be told the filename by the webserver you are downloading the file from, it is a little more complex, you need to pass a callback function to :meth:`parfive.Downloader.enqueue_file` which will calculate the full filename in the context of the download, where the headers can be inspected for the filename the webserver provides.
@@ -396,19 +415,21 @@ This response object allows us to inspect the headers of the response before the
 
 To combine the formatting of the row with the extraction of the filename from the headers it is common to use `functools.partial` to generate many functions with different fixed parameters.
 In the following example we will define a function which takes 4 arguments which we will use to generate the filename for the row.
-This function will be called by `parfive` with the ``resp`` and ``url`` arguments.::
+This function will be called by `parfive` with the ``resp`` and ``url`` arguments.
 
-  def make_filename(path, row, resp, url):
-      # Define a fallback filename based on the information in the search results
-      name = f"row['ID'].fits"
+.. code-block:: python
 
-      if resp:
-        cdheader = resp.headers.get("Content-Disposition", None)
-        if cdheader:
-          _, params = cgi.parse_header(cdheader)
-          name = params.get('filename', "")
+    def make_filename(path, row, resp, url):
+        # Define a fallback filename based on the information in the search results
+        name = f"row['ID'].fits"
 
-      return path.format(file=name, **row.response_block_map)
+        if resp:
+            cdheader = resp.headers.get("Content-Disposition", None)
+            if cdheader:
+            _, params = cgi.parse_header(cdheader)
+            name = params.get('filename', "")
+
+        return path.format(file=name, **row.response_block_map)
 
 To reduce this function down to the two arguments expected we pre-specify the first two of these with `~functools.partial` before passing the function to `~parfive.Downloader.enqueue_file` inside the ``fetch()`` method.
 Our simple example above now becomes::
@@ -418,19 +439,20 @@ Our simple example above now becomes::
 
 Where the ``path`` variable is a `pathlib.Path` object provided as the ``path`` argument to ``fetch()``.
 
-
 Adding URLs to be Downloaded
 ############################
 
 For each file you wish for ``Fido`` to download (normally one per row of the ``query_results``) you need to call the :meth:`parfive.Downloader.enqueue_file` of the ``downloader`` argument.
-Combining this with the simple example above it may look something like::
+Combining this with the simple example above it may look something like
 
-  for row in query_results:
-      filename = self._calculate_filename(row)
-      filepath = path.format(file=filename, **row.response_block_map)
+.. code-block:: python
 
-      url = self._calculate_url(row)
-      downloader.enqueue_file(url, filename=filepath)
+    for row in query_results:
+        filename = self._calculate_filename(row)
+        filepath = path.format(file=filename, **row.response_block_map)
+
+        url = self._calculate_url(row)
+        downloader.enqueue_file(url, filename=filepath)
 
 
 If your filepath is a callback function, pass this to the ``filename=`` argument.
@@ -440,79 +462,81 @@ Your fetch method does not need to return anything, as long as ``enqueue_file`` 
 Putting it all Together
 -----------------------
 
-An example client class may look something like::
+An example client class may look something like
 
-  import cgi
+.. code-block:: python
 
-  import sunpy.net.atrrs as a
-  from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr
-  from sunpy.base_client import QueryResponseTable
+    import cgi
 
-
-  walker = AttrWalker()
-
-
-  @walker.add_creator(AttrOr)
-  def create_or(wlk, tree):
-      results = []
-      for sub in tree.attrs:
-          results.append(wlk.create(sub))
-
-      return results
+    import sunpy.net.atrrs as a
+    from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr
+    from sunpy.base_client import QueryResponseTable
 
 
-  @walker.add_creator(AttrAnd, DataAttr)
-  def create_and(wlk, tree):
-      result = dict()
-      wlk.apply(tree, result)
-      return [result]
+    walker = AttrWalker()
 
 
-  @walker.add_applier(a.Time)
-  def _(wlk, attr, params):
-      return params.update({'startTime': attr.start.isot,
-                            'endTime': attr.end.isot})
+    @walker.add_creator(AttrOr)
+    def create_or(wlk, tree):
+        results = []
+        for sub in tree.attrs:
+            results.append(wlk.create(sub))
+
+        return results
 
 
-  @walker.add_applier(a.Level)
-  def _(wlk, attr, params):
-      return params.update({'level': attr.value})
+    @walker.add_creator(AttrAnd, DataAttr)
+    def create_and(wlk, tree):
+        result = dict()
+        wlk.apply(tree, result)
+        return [result]
 
 
-  class ExampleClient(BaseClient):
-      size_column = 'Filesize'
+    @walker.add_applier(a.Time)
+    def _(wlk, attr, params):
+        return params.update({'startTime': attr.start.isot,
+                                'endTime': attr.end.isot})
 
-      def search(self, query):
-          queries = walker.create(query)
 
-          results = []
-          for query_parameters in queries:
-              results.append(self._make_search(query_parameters))
+    @walker.add_applier(a.Level)
+    def _(wlk, attr, params):
+        return params.update({'level': attr.value})
 
-          return QueryResponseTable(results, client=self)
 
-      def _make_filename(path, row, resp, url):
-          # Define a fallback filename based on the information in the search results
-          name = f"row['ID'].fits"
+    class ExampleClient(BaseClient):
+        size_column = 'Filesize'
 
-          if resp:
-            cdheader = resp.headers.get("Content-Disposition", None)
-            if cdheader:
-              _, params = cgi.parse_header(cdheader)
-              name = params.get('filename', "")
+        def search(self, query):
+            queries = walker.create(query)
 
-          return path.format(file=name, **row.response_block_map)
+            results = []
+            for query_parameters in queries:
+                results.append(self._make_search(query_parameters))
 
-      @convert_row_to_table
-      def fetch(self, query_results, *, path, downloader, **kwargs):
-          for row in query_results:
-              filepath = partial(self._make_filename, path, row)
+            return QueryResponseTable(results, client=self)
 
-              url = f"https://sfsi.sunpy.org/download/{row['ID']}"
-              downloader.enqueue_file(url, filename=filepath)
+        def _make_filename(path, row, resp, url):
+            # Define a fallback filename based on the information in the search results
+            name = f"row['ID'].fits"
 
-      @classmethod
-      def _can_handle_query(cls, *query):
-          query_attrs = set(type(x) for x in query)
-          supported_attrs = {a.Time, a.Level}
-          return supported_attrs.issuperset(query_attrs)
+            if resp:
+                cdheader = resp.headers.get("Content-Disposition", None)
+                if cdheader:
+                _, params = cgi.parse_header(cdheader)
+                name = params.get('filename', "")
+
+            return path.format(file=name, **row.response_block_map)
+
+        @convert_row_to_table
+        def fetch(self, query_results, *, path, downloader, **kwargs):
+            for row in query_results:
+                filepath = partial(self._make_filename, path, row)
+
+                url = f"https://sfsi.sunpy.org/download/{row['ID']}"
+                downloader.enqueue_file(url, filename=filepath)
+
+        @classmethod
+        def _can_handle_query(cls, *query):
+            query_attrs = set(type(x) for x in query)
+            supported_attrs = {a.Time, a.Level}
+            return supported_attrs.issuperset(query_attrs)
