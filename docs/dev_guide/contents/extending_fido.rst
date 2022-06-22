@@ -84,14 +84,18 @@ Customizing the Downloader
 There is no method for a client creator to override the `parfive.Downloader` that is used to fetch the files.
 This is because all downloads made by a single call to ``Fido.fetch`` share one instance of `parfive.Downloader`.
 However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if there is a need to customise the requests to a remote server, such as setting custom HTTP headers.
-One example is the `sunpy.net.dataretriever.sources.noaa.SRSClient`:
+This is done by setting the ``enqueue_file_kwargs`` attribute of the client class.
+One example from the `sunpy.net.dataretriever.sources.noaa.SRSClient` is:
 
 .. code-block:: python
 
-    # Server does not support the normal aioftp passive command.
-    enqueue_file_kwargs = {"passive_commands": ["pasv"]}
+    class SRSClient(GenericClient):
+        ...
+        # Server does not support the normal aioftp passive command.
+        enqueue_file_kwargs = {"passive_commands": ["pasv"]}
+        ...
 
-These keywords are passed to each call to :meth:`parfive.Downloader.enqueue_file`, so they will affect all files that are downloaded, by your client.
+These keywords are passed to each call to :meth:`parfive.Downloader.enqueue_file`, so they will affect all files that are added for download by your client.
 
 Examples
 --------
