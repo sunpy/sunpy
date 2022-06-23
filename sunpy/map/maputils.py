@@ -459,7 +459,7 @@ def extract_along_coord(smap, coord):
     For a given coordinate ``coord``, find all the pixels that cross the coordinate
     and extract the values of the image array in ``smap`` at these points. This is done by applying
     `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`_
-    between the consecutive pairs of points in the coordinate and then indexing the data
+    between the consecutive coordinates, in pixel space, and then indexing the data
     array of ``smap`` at those points.
 
     Parameters
@@ -471,7 +471,7 @@ def extract_along_coord(smap, coord):
     Returns
     -------
     values : `~astropy.units.Quantity`
-   value_coords : `~astropy.coordinates.SkyCoord`
+    value_coords : `~astropy.coordinates.SkyCoord`
     """
     if not len(coord.shape) or coord.shape[0] < 2:
         raise ValueError('At least two points are required for extracting intensity along a '
@@ -485,7 +485,7 @@ def extract_along_coord(smap, coord):
     px, py = smap.wcs.world_to_array_index(coord)
     pix = []
     for i in range(len(px)-1):
-        b = _bresenham(px[i], py[i], px[i+1], py[i+1])
+        b = _bresenham(x1=px[i], y1=py[i], x2=px[i+1], y2=py[i+1])
         # Pop the last one, unless this is the final entry because the first point
         # of the next section will be the same
         if i < (len(px) - 2):
