@@ -40,7 +40,7 @@ intensity, intensity_coords = sunpy.map.extract_along_coord(aia_map, line_coords
 ###############################################################################
 # Next we will calculate the angular separation between the first point and
 # every other coordinate we extracted. We are doing this to give us a
-# meaningful scale for our line plot below.
+# meaningful x-axis for our line plot below.
 angular_separation = intensity_coords.separation(intensity_coords[0]).to(u.arcsec)
 
 ###############################################################################
