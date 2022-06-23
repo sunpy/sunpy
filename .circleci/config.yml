@@ -110,8 +110,7 @@ workflows:
                 - "py38-figure"
                 - "py39-figure-devdeps"
           requires:
-            - "py38-figure"
-            - "py39-figure-devdeps"
+            - << matrix.jobname >>
           filters:
             branches:
               only:
