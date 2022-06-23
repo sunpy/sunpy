@@ -1521,7 +1521,7 @@ def test_map_arithmetic_multiplication_division(aia171_test_map, value):
     check_arithmetic_value_and_units(new_map, value * aia171_test_map.quantity)
     new_map = aia171_test_map / value
     check_arithmetic_value_and_units(new_map, aia171_test_map.quantity / value)
-    with pytest.warns(RuntimeWarning, match='divide by zero encountered in true_divide'):
+    with pytest.warns(RuntimeWarning, match='divide by zero encountered in divide'):
         new_map = value / aia171_test_map
         check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
 
