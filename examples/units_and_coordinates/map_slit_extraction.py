@@ -1,6 +1,6 @@
 """
 =====================================================
-Extracting intensity of a map between two coordinates
+Extracting intensity of a map along a line
 =====================================================
 
 In this example we will define a slit in world coordinates and then extract the intensity values of all the pixels that the path intersects with.
