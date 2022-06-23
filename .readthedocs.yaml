@@ -10,7 +10,7 @@ build:
     pre_install:
       - git update-index --assume-unchanged .rtd-environment.yml docs/conf.py
     post_install:
-      - pip install -U git+https://github.com/ayshih/sphinx@svg_urls_5.0.2
+      - pip install -U git+https://github.com/ayshih/sphinx@fix_inheritance_diagrams
 
 conda:
   environment: .rtd-environment.yml
