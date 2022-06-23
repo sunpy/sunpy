@@ -413,7 +413,7 @@ def contains_coordinate(smap, coordinates):
             (yc <= ys - point5pix))
 
 
-def _bresenham(x1, y1, x2, y2):
+def _bresenham(*, x1, y1, x2, y2):
     """
     Returns an array of all pixel coordinates which the line defined by `x1, y1` and
     `x2, y2` crosses. Uses Bresenham's line algorithm to enumerate the pixels along
@@ -429,7 +429,7 @@ def _bresenham(x1, y1, x2, y2):
     * http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
     """
     for x in [x1, y1, x2, y2]:
-        if type(x) not in (int, np.int64):
+        if not isinstance(x, (int, np.int_)):
             raise TypeError('All pixel coordinates must be of type int')
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
@@ -454,7 +454,7 @@ def _bresenham(x1, y1, x2, y2):
 
 def extract_along_coord(smap, coord):
     """
-    Return the value of the image array at every point along the coordinate.
+    Return the value of the image array at every pixel the coordinate path intersects.
 
     For a given coordinate ``coord``, find all the pixels that cross the coordinate
     and extract the values of the image array in ``smap`` at these points. This is done by applying
@@ -470,8 +470,8 @@ def extract_along_coord(smap, coord):
 
     Returns
     -------
-    intensity : `~astropy.units.Quantity`
-    loop_coord : `~astropy.coordinates.SkyCoord`
+    values : `~astropy.units.Quantity`
+   value_coords : `~astropy.coordinates.SkyCoord`
     """
     if not len(coord.shape) or coord.shape[0] < 2:
         raise ValueError('At least two points are required for extracting intensity along a '
