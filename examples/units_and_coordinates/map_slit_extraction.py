@@ -3,7 +3,8 @@
 Extracting intensity of a map along a line
 =====================================================
 
-In this example we will define a slit in world coordinates and then extract the intensity values of all the pixels that the path intersects with.
+In this example we will extract the intensity values of all the pixels
+that intersect with a given set of coordinates.
 """
 import matplotlib.pyplot as plt
 
@@ -20,10 +21,9 @@ aia_map = sunpy.map.Map(AIA_171_ROLL_IMAGE)
 
 ###############################################################################
 # Next we define a path in a `~astropy.coordinates.SkyCoord` object.
-# In this example we are just going to use a straight line, however a path with
-# any number of points can be used, and the slit will be defined as straight
-# line segments between all the points.
-line_limits = SkyCoord([-1024, -908], [20, 633], unit=(u.arcsec, u.arcsec),
+# In this example we are just going to use a straight line defined by two points.
+# However a path with any number of points and any shape can be used.
+line_coords = SkyCoord([-1024, -908], [20, 633], unit=(u.arcsec, u.arcsec),
                        frame=aia_map.coordinate_frame)
 
 
@@ -34,23 +34,23 @@ line_limits = SkyCoord([-1024, -908], [20, 633], unit=(u.arcsec, u.arcsec),
 # intensities and the second is a `~astropy.coordinates.SkyCoord` object of the
 # same length, which describes the world coordinates of each pixel that has
 # been extracted.
-intensity, coord = sunpy.map.extract_along_coord(aia_map, line_limits)
+intensity, intensity_coords = sunpy.map.extract_along_coord(aia_map, line_coords)
 
 
 ###############################################################################
 # Next we will calculate the angular separation between the first point and
 # every other coordinate we extracted. We are doing this to give us a
 # meaningful scale for our line plot below.
-angular_separation = coord.separation(coord[0]).to(u.arcsec)
+angular_separation = intensity_coords.separation(intensity_coords[0]).to(u.arcsec)
 
 ###############################################################################
 # Finally let's plot the results.
 fig = plt.figure()
 ax1 = fig.add_subplot(121, projection=aia_map)
 aia_map.plot(axes=ax1)
-ax1.plot_coord(coord)
-ax1.plot_coord(line_limits[0], marker="o", color="blue", label="start")
-ax1.plot_coord(line_limits[1], marker="o", color="green", label="end")
+ax1.plot_coord(intensity_coords)
+ax1.plot_coord(line_coords[0], marker="o", color="blue", label="start")
+ax1.plot_coord(line_coords[1], marker="o", color="green", label="end")
 ax1.legend()
 
 ax2 = fig.add_subplot(122)
