@@ -47,6 +47,6 @@ else:
             # This is to make our sample data download code work on 1.x and 2.x
             # when we depend on 2+ we should remove this.
             headers = kwargs.pop("headers", {})
-            kwargs["config"].headers = {**headers, **kwargs["config"].headers}
+            kwargs["config"].headers = {**kwargs["config"].headers, **headers}
 
             super().__init__(*args, **kwargs)
