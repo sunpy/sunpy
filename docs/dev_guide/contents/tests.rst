@@ -125,8 +125,15 @@ Mocked remote data tests
 Some of our remote data tests are run using `vcrpy <https://vcrpy.readthedocs.io/en/latest/>`__, which saves a copy of any HTTP requests made within the test so a remote request doesn't have to be run on subsequent test runs.
 To use ``vcrpy`` on a test add the ``@pytest.mark.vcrpy()`` decorator to the test, and keep the ``@pytest.mark.remote_data`` decorator.
 These should only be used to test search requests, and **not** data download requests, to avoid storing large files in the git repository.
-Every week the ``sunpy-vcr-cassettes`` repository will update the cassettes from the sunpy core main branch.
+Every week the `sunpy-vcr-cassettes <https://github.com/sunpy/sunpy-vcr-cassettes/>` repository will update the cassettes from the sunpy core main branch.
 After this is done, the sunpy core remote data tests will use these cassettes to avoid remote requests in the future.
+The ``-online`` tox environment is setup to automatically clone this repository and use it during the test run.
+If you want to run the online tests without tox you will need to clone the cassettes into the root of the sunpy git repository, in a folder named ``cassettes``.::
+
+  $ git clone https://github.com/sunpy/sunpy-vcr-cassettes cassettes
+
+This is the default location the tests will look for the cassettes, the directory used for the sunpy cassettes repository can be controlled using the ``SUNPY_VCR_CASSETTE_DIR`` environment variable.
+
 
 Figure tests
 ------------
