@@ -32,7 +32,7 @@ jobs:
       jobname:
         type: string
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.10
     environment:
       TOXENV=<< parameters.jobname >>
     steps:
@@ -57,7 +57,7 @@ jobs:
       jobname:
         type: string
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.10
     environment:
       TOXENV: << parameters.jobname >>
       GIT_SSH_COMMAND: ssh -i ~/.ssh/id_rsa_7b8fc81c13a3b446ec9aa50d3f626978
@@ -99,16 +99,16 @@ workflows:
           matrix:
             parameters:
               jobname:
-                - "py38-figure"
-                - "py39-figure-devdeps"
+                - "py310-figure"
+                - "py310-figure-devdeps"
 
       - deploy-reference-images:
           name: baseline-<< matrix.jobname >>
           matrix:
             parameters:
               jobname:
-                - "py38-figure"
-                - "py39-figure-devdeps"
+                - "py310-figure"
+                - "py310-figure-devdeps"
           requires:
             - << matrix.jobname >>
           filters:
