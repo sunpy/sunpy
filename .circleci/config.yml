@@ -24,7 +24,7 @@ apt-run: &apt-install
   name: Install apt packages
   command: |
     sudo apt update
-    sudo apt install -y libopenjp2-7 python3-dev
+    sudo apt install -y libopenjp2-7
 
 jobs:
   figure:
