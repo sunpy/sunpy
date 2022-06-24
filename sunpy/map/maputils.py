@@ -429,7 +429,7 @@ def _bresenham(*, x1, y1, x2, y2):
     * http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
     """
     for x in [x1, y1, x2, y2]:
-        if not isinstance(x, (int, np.int_)):
+        if not isinstance(x, numbers.Integral):
             raise TypeError('All pixel coordinates must be of type int')
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
