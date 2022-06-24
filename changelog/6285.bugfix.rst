@@ -1,0 +1,6 @@
+Changed the default scaling for `~sunpy.map.sources.EUIMap` from a linear stretch to a asinh stretch.
+
+To revert to the previous linear stretch do the following::
+
+     from astropy.visualization import ImageNormalize, LinearStretch
+     euimap.plot_settings["norm"] = ImageNormalize(stretch=LinearStretch())
