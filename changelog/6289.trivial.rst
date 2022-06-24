@@ -1,0 +1,3 @@
+The primary sample-data URL will be changing from ``https://github.com/sunpy/sample-data/raw/master/sunpy/v1/`` to ``https://github.com/sunpy/data/raw/main/sunpy/v1/``.
+We expect GitHub to redirect from the old URL for sometime but will eventually expire it.
+The ``data.sunpy.org`` mirror will continue to be available.
