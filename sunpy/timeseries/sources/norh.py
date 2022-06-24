@@ -75,18 +75,17 @@ class NoRHTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
-        if axes is None:
-            axes = plt.gca()
+        axes, columns = self._setup_axes_columns(axes, columns)
+
         plt.xticks(rotation=30)
         data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(
             ']', '').replace('\'', '')
         axes.plot(self.to_dataframe(), label=data_lab, **kwargs)
         axes.set_yscale("log")
         axes.set_ylim(1e-4, 1)
-        axes.set_xlabel('Start time: ' + self._data.index[0].strftime(TIME_FORMAT))
         axes.set_ylabel('Correlation')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show

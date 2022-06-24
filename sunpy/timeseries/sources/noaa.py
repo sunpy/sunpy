@@ -10,7 +10,6 @@ from matplotlib import pyplot as plt
 
 import astropy.units as u
 
-from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
@@ -80,9 +79,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
-        if axes is None:
-            axes = plt.gca()
+        axes, columns = self._setup_axes_columns(axes, columns)
 
         if plot_type == 'sunspot SWO':
             to_plot = ['sunspot SWO', 'sunspot SWO smooth']
@@ -112,6 +109,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show
@@ -177,8 +175,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)
-        data.index = pd.DatetimeIndex(parse_time(
-            [x for x in data.index.values]).isot.astype('datetime64'))
 
         # Add the units data, reported in radio flux values (sfu) originally.
         units = OrderedDict([('sunspot RI', u.dimensionless_unscaled),
@@ -256,10 +252,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
+        axes, columns = self._setup_axes_columns(axes, columns)
+
         dataframe = self.to_dataframe()
-        if axes is None:
-            axes = plt.gca()
         dataframe['sunspot'].plot(color='b', **plot_args)
         dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
         dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
@@ -268,6 +263,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show
@@ -340,8 +336,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)
-        data.index = pd.DatetimeIndex(parse_time(
-            [x for x in data.index.values]).isot.astype('datetime64'))
         # Add the units data, reported in radio flux values (sfu) originally.
         units = OrderedDict([('sunspot', u.dimensionless_unscaled),
                              ('sunspot high', u.dimensionless_unscaled),

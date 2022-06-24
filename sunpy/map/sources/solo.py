@@ -3,7 +3,7 @@ Solar Orbiter Map subclass definitions.
 """
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
-from astropy.visualization import ImageNormalize, LinearStretch
+from astropy.visualization import AsinhStretch, ImageNormalize
 
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
@@ -35,7 +35,7 @@ class EUIMap(GenericMap):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, LinearStretch()), clip=False)
+            stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
 
     @property
     def _rotation_matrix_from_crota(self):

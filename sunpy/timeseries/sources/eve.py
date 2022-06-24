@@ -3,7 +3,6 @@ import codecs
 from os.path import basename
 from collections import OrderedDict
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame, to_datetime
@@ -76,28 +75,18 @@ class ESPTimeSeries(GenericTimeSeries):
         array of `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
+        axes, columns = self._setup_axes_columns(axes, columns, subplots=True)
         column_names = {"QD": "Flux \n 0.1-7nm", "CH_18": "Flux \n 18nm",
                         "CH_26": "Flux \n 26nm", "CH_30": "Flux \n 30nm", "CH_36": "Flux \n 36nm"}
-        predefined_axes = False
-        if columns is None:
-            columns = self._data.columns
-        if isinstance(axes, np.ndarray):
-            predefined_axes = True
-        elif axes is None:
-            axes = self.to_dataframe()[columns].plot(subplots=True, sharex=True, **kwargs)
+
         for i, name in enumerate(self.to_dataframe()[columns]):
-            if predefined_axes:
-                axes[i].plot(self._data[name],
-                             label=name)
-                plt.xticks(rotation=30)
+            axes[i].plot(self._data[name],
+                         label=name)
+            plt.xticks(rotation=30)
             axes[i].set_ylabel(column_names[name])
             axes[i].legend(loc="upper right")
         axes[-1].set_xlim(self._data.index[0], self._data.index[-1])
-        locator = mdates.AutoDateLocator()
-        formatter = mdates.ConciseDateFormatter(locator)
-        axes[-1].xaxis.set_major_locator(locator)
-        axes[-1].xaxis.set_major_formatter(formatter)
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show

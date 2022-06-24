@@ -4,7 +4,6 @@ This module provies a RHESSI `~sunpy.timeseries.TimeSeries` source.
 import itertools
 from collections import OrderedDict
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
@@ -156,11 +155,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
-        if axes is None:
-            axes = plt.gca()
-        if columns is None:
-            columns = self._data.columns
+        axes, columns = self._setup_axes_columns(axes, columns)
+
         # These are a matplotlib version of the default RHESSI color cycle
         default_colors = ('black', 'tab:pink', 'tab:green', 'tab:cyan',
                           'tab:olive', 'tab:red', 'tab:blue', 'tab:orange',
@@ -175,10 +171,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
         axes.legend()
-        locator = mdates.AutoDateLocator()
-        formatter = mdates.ConciseDateFormatter(locator)
-        axes.xaxis.set_major_locator(locator)
-        axes.xaxis.set_major_formatter(formatter)
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show
@@ -207,7 +200,6 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         fig, ax = plt.subplots()
         axes = self.plot(axes=ax, columns=columns, **kwargs)
         axes.set_title(title)
-        fig.autofmt_xdate()
         return fig
 
     @classmethod

@@ -4,9 +4,7 @@ This module provies Proba-2 `~sunpy.timeseries.TimeSeries` source.
 import sys
 from collections import OrderedDict
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas
 
 import astropy.units as u
@@ -79,34 +77,23 @@ class LYRATimeSeries(GenericTimeSeries):
         array of `~matplotlib.axes.Axes`
             The plot axes.
         """
-        self._validate_data_for_plotting()
+        axes, columns = self._setup_axes_columns(axes, columns, subplots=True)
         lyranames = ({'CHANNEL1': 'Lyman alpha', 'CHANNEL2': 'Herzberg cont.',
                       'CHANNEL3': 'Al filter', 'CHANNEL4': 'Zr filter'},
                      {'CHANNEL1': '120-123nm', 'CHANNEL2': '190-222nm',
                       'CHANNEL3': '17-80nm + <5nm', 'CHANNEL4': '6-20nm + <2nm'})
-        predefined_axes = False
-        if columns is None:
-            columns = self._data.columns
-        if isinstance(axes, np.ndarray):
-            predefined_axes = True
-        elif axes is None:
-            axes = self.to_dataframe()[columns].plot(subplots=True, sharex=True, **kwargs)
-        for i, name in enumerate(self.to_dataframe()[columns]):
-            if predefined_axes:
-                axes[i].plot(self._data[columns[i]],
-                             label=columns[i])
-                axes[i].legend(loc="upper right")
-                plt.xticks(rotation=30)
+        for i, name in enumerate(columns):
+            axes[i].plot(self._data[columns[i]],
+                         label=columns[i])
+            axes[i].legend(loc="upper right")
+            plt.xticks(rotation=30)
             if names < 3:
                 name = lyranames[names][columns[i]]
             else:
                 name = lyranames[0][columns[i]] + ' \n (' + lyranames[1][columns[i]] + ')'
             axes[i].locator_params(axis='y', nbins=6)
             axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
-        locator = mdates.AutoDateLocator()
-        formatter = mdates.ConciseDateFormatter(locator)
-        axes[-1].xaxis.set_major_locator(locator)
-        axes[-1].xaxis.set_major_formatter(formatter)
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show

@@ -15,7 +15,8 @@ import sunpy.map
 ###############################################################################
 # Rotating a map in sunpy has a choice between three libraries: ``scipy`` (the default),
 # ``scikit-image`` and ``opencv``. Furthermore, one can also create a custom rotation
-# function and register it for use with :meth:`~sunpy.map.GenericMap.rotate`, see :ref:`map_rotate_custom`.
+# function and register it for use with :meth:`~sunpy.map.GenericMap.rotate`,
+# see `Adding a new rotation method <https://docs.sunpy.org/en/latest/dev_guide/contents/map_rotate_custom.html>`__.
 #
 # Defining an appropriate metric to compare different algorithms is
 # challenging. This example will just compare the raw value differences.

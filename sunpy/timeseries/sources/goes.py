@@ -5,7 +5,6 @@ from pathlib import Path
 from collections import OrderedDict
 
 import h5netcdf
-import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
 import numpy as np
 import packaging.version
@@ -86,11 +85,9 @@ class XRSTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
-        if not axes:
-            axes = plt.gca()
         if columns is None:
             columns = ["xrsa", "xrsb"]
-        self._validate_data_for_plotting()
+        axes, columns = self._setup_axes_columns(axes, columns)
         plot_settings = {"xrsa": ["blue", r"0.5--4.0 $\AA$"], "xrsb": ["red", r"1.0--8.0 $\AA$"]}
         data = self.to_dataframe()
         for channel in columns:
@@ -100,10 +97,7 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
         axes.set_ylabel("Watts m$^{-2}$")
-        locator = mdates.AutoDateLocator()
-        formatter = mdates.ConciseDateFormatter(locator)
-        axes.xaxis.set_major_locator(locator)
-        axes.xaxis.set_major_formatter(formatter)
+        self._setup_x_axis(axes)
         ax2 = axes.twinx()
         ax2.set_yscale("log")
         ax2.set_ylim(1e-9, 1e-2)
@@ -115,6 +109,7 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, "major")
         axes.xaxis.grid(False, "major")
         axes.legend()
+
         return axes
 
     @property
@@ -174,7 +169,6 @@ class XRSTimeSeries(GenericTimeSeries):
         fig, ax = plt.subplots()
         axes = self.plot(columns=columns, axes=ax, **kwargs)
         axes.set_title(title)
-        fig.autofmt_xdate()
         return fig
 
     @classmethod
@@ -218,6 +212,7 @@ class XRSTimeSeries(GenericTimeSeries):
                 raise ValueError("Date not recognized")
             xrsb = hdulist[2].data['FLUX'][0][:, 0]
             xrsa = hdulist[2].data['FLUX'][0][:, 1]
+            # TODO how to extract quality flags from HDU?
             seconds_from_start = hdulist[2].data['TIME'][0]
         elif 1 <= len(hdulist) <= 3:
             start_time = parse_time(header['TIMEZERO'], format='utime')
@@ -263,6 +258,8 @@ class XRSTimeSeries(GenericTimeSeries):
             if "a_flux" in d.variables:
                 xrsa = np.array(d["a_flux"])
                 xrsb = np.array(d["b_flux"])
+                xrsa_quality = np.array(d['a_flags'])
+                xrsb_quality = np.array(d['b_flags'])
 
                 start_time_str = d["time"].attrs["units"]
                 if not isinstance(start_time_str, str):
@@ -274,6 +271,9 @@ class XRSTimeSeries(GenericTimeSeries):
             elif "xrsa_flux" in d.variables:
                 xrsa = np.array(d["xrsa_flux"])
                 xrsb = np.array(d["xrsb_flux"])
+                xrsa_quality = np.array(d['xrsa_flags'])
+                xrsb_quality = np.array(d['xrsb_flags'])
+
                 start_time_str = d["time"].attrs["units"]
                 if not isinstance(start_time_str, str):
                     # For h5netcdf<0.14
@@ -285,10 +285,13 @@ class XRSTimeSeries(GenericTimeSeries):
             else:
                 raise ValueError(f"The file {filepath} doesn't seem to be a GOES netcdf file.")
 
-        data = DataFrame({"xrsa": xrsa, "xrsb": xrsb}, index=times.datetime)
+        data = DataFrame({"xrsa": xrsa, "xrsb": xrsb, "xrsa_quality": xrsa_quality,
+                         "xrsb_quality": xrsb_quality}, index=times.datetime)
         data = data.replace(-9999, np.nan)
         units = OrderedDict([("xrsa", u.W/u.m**2),
-                             ("xrsb", u.W/u.m**2)])
+                             ("xrsb", u.W/u.m**2),
+                             ("xrsa_quality", int),
+                             ("xrsb_quality", int)])
 
         return data, header, units
 

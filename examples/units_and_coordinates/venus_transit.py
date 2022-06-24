@@ -3,7 +3,7 @@
 Overplotting the position of the Venus transit
 ==============================================
 
-How to accurately plot the position of Venus as it transitted in front
+How to accurately plot the position of Venus as it transited in front
 of the Sun as observed by SDO/AIA.
 """
 import matplotlib.pyplot as plt
@@ -13,17 +13,12 @@ from astropy.coordinates import SkyCoord, solar_system_ephemeris
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.net import Fido
-from sunpy.net import attrs as a
+from sunpy.data.sample import AIA_1600_VENUS_IMAGE
 
 ###############################################################################
-# Let's download an image of the Venus transit.
+# Let's use the sunpy sample data which has an image of the Venus transit.
 
-result = Fido.search(a.Time('2012/06/06 04:07:25', '2012/06/06 04:07:35'),
-                     a.Instrument.aia,
-                     a.Wavelength(1600*u.angstrom))
-files = Fido.fetch(result)
-aiamap = sunpy.map.Map(files[0])
+aiamap = sunpy.map.Map(AIA_1600_VENUS_IMAGE)
 
 ###############################################################################
 # For this example, we require high-precision ephemeris information. The built-in
