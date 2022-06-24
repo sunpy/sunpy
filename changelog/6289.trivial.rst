@@ -1,0 +1,2 @@
+The sample-data URL will be changing from ``https://github.com/sunpy/sample-data/raw/master/sunpy/v1/`` to ``https://github.com/sunpy/data/raw/main/sunpy/v1/``.
+GitHub will keep the redirect alive for sometime but will eventually expire it.
