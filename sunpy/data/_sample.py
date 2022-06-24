@@ -79,26 +79,40 @@ def _download_sample_data(base_url, sample_files, overwrite):
         Download results. Will behave like a list of files.
     """
     dl = Downloader(overwrite=overwrite, progress=True, headers={'Accept-Encoding': 'identity'})
+
     for url_file_name, fname in sample_files:
         url = urljoin(base_url, url_file_name)
         dl.enqueue_file(url, filename=fname)
+
     results = dl.download()
     return results
 
 
-def _retry_sample_data(results):
+def _retry_sample_data(results, new_url_base):
     # In case we have a broken file on disk, overwrite it.
     dl = Downloader(overwrite=True, progress=True, headers={'Accept-Encoding': 'identity'})
+
     for err in results.errors:
         file_name = err.filepath_partial().name
         log.debug(
             f"Failed to download {_SAMPLE_FILES[file_name]} from {err.url}: {err.exception}")
         # Update the url to a mirror and requeue the file.
-        new_url = urljoin(_BASE_URLS[1], file_name)
+        new_url = urljoin(new_url_base, file_name)
         log.debug(f"Attempting redownload of {_SAMPLE_FILES[file_name]} using {new_url}")
         dl.enqueue_file(new_url, filename=err.filepath_partial)
+
     extra_results = dl.download()
-    for err in extra_results.errors:
+
+    # Make a new results object which contains all the successful downloads
+    # from the previous results object and this retry, and all the errors from
+    # this retry.
+    new_results = results + extra_results
+    new_results._errors = extra_results._errors
+    return new_results
+
+
+def _handle_final_errors(results):
+    for err in results.errors:
         file_name = err.filepath_partial().name
         log.debug(f"Failed to download {_SAMPLE_FILES[file_name]} from {err.url}: {err.exception}"
                   )
@@ -106,7 +120,6 @@ def _retry_sample_data(results):
             f"Failed to download {_SAMPLE_FILES[file_name]} from all mirrors,"
             "the file will not be available."
         )
-    return results + extra_results
 
 
 def download_sample_data(overwrite=False):
@@ -126,6 +139,7 @@ def download_sample_data(overwrite=False):
     else:
         # Creating the directory for sample files to be downloaded
         sampledata_dir = Path(get_and_create_sample_dir())
+
     already_downloaded = []
     to_download = []
     for url_file_name in _SAMPLE_FILES.keys():
@@ -136,11 +150,19 @@ def download_sample_data(overwrite=False):
         else:
             # URL and Filename pairs
             to_download.append((url_file_name, fname))
+
     if to_download:
         results = _download_sample_data(_BASE_URLS[0], to_download, overwrite=overwrite)
     else:
         return already_downloaded
+
     # Something went wrong.
     if results.errors:
-        results = _retry_sample_data(results)
+        for next_url in _BASE_URLS[1:]:
+            results = _retry_sample_data(results, next_url)
+            if not results.errors:
+                break
+        else:
+            _handle_final_errors(results)
+
     return results + already_downloaded
