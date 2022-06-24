@@ -53,7 +53,7 @@ if Version(python_version()) >= Version("3.10.0"):
     )
 else:
     asdf_entry_points = pytest.mark.skipif(
-        not all(
+        not any(
             [
                 enter_point.name == "sunpy"
                 for enter_point in entry_points()["asdf.resource_mappings"]
