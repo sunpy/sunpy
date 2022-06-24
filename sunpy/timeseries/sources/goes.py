@@ -8,7 +8,6 @@ import h5netcdf
 import matplotlib.ticker as mticker
 import numpy as np
 import packaging.version
-from matplotlib import pyplot as plt
 from pandas import DataFrame
 
 import astropy.units as u
@@ -21,7 +20,6 @@ from sunpy.io.file_tools import UnrecognizedFileTypeError
 from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
-from sunpy.visualization import peek_show
 
 __all__ = ['XRSTimeSeries']
 
@@ -58,6 +56,8 @@ class XRSTimeSeries(GenericTimeSeries):
     # and a URL to the mission website.
     _source = 'xrs'
     _url = "https://www.swpc.noaa.gov/products/goes-x-ray-flux"
+
+    _peek_title = "GOES X-ray flux"
 
     _netcdf_read_kw = {}
     h5netcdf_version = packaging.version.parse(h5netcdf.__version__)
@@ -143,33 +143,6 @@ class XRSTimeSeries(GenericTimeSeries):
                 return f"GOES-{parsed['SatelliteNumber']}"
         log.debug('Satellite Number not found in metadata')
         return None
-
-    @peek_show
-    def peek(self, columns=None, title="GOES X-ray flux", **kwargs):
-        """
-        Displays the GOES XRS light curve by calling `~sunpy.timeseries.sources.goes.XRSTimeSeries.plot`.
-
-        .. plot::
-
-            import sunpy.timeseries
-            import sunpy.data.sample
-            ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
-            ts_goes.peek()
-
-        Parameters
-        ----------
-        columns : list[str], optional
-            If provided, only plot the specified columns.
-        title : `str`, optional
-            The title of the plot. Defaults to "GOES X-ray flux".
-        **kwargs : `dict`
-            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
-            functions.
-        """
-        fig, ax = plt.subplots()
-        axes = self.plot(columns=columns, axes=ax, **kwargs)
-        axes.set_title(title)
-        return fig
 
     @classmethod
     def _parse_file(cls, filepath):

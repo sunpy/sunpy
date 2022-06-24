@@ -4,7 +4,6 @@ This module provies a RHESSI `~sunpy.timeseries.TimeSeries` source.
 import itertools
 from collections import OrderedDict
 
-import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
 
@@ -15,7 +14,6 @@ import sunpy.io
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
-from sunpy.visualization import peek_show
 
 __all__ = ['RHESSISummaryTimeSeries']
 
@@ -136,6 +134,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     _source = 'rhessi'
     _url = "https://hesperia.gsfc.nasa.gov/rhessi3/index.html"
 
+    _peek_title = "RHESSI Observing Summary Count Rate"
+
     def plot(self, axes=None, columns=None, **kwargs):
         """
         Plots RHESSI count rate light curve.
@@ -173,34 +173,6 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         axes.legend()
         self._setup_x_axis(axes)
         return axes
-
-    @peek_show
-    def peek(self, columns=None, title="RHESSI Observing Summary Count Rate", **kwargs):
-        """
-        Displays the RHESSI Count Rate light curve by calling
-        `~sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries.plot`.
-
-        .. plot::
-
-            import sunpy.data.sample
-            import sunpy.timeseries
-            rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_TIMESERIES, source='RHESSI')
-            rhessi.peek()
-
-        Parameters
-        ----------
-        columns : list[str], optional
-            If provided, only plot the specified columns.
-        title : `str`
-            The title of the plot. Defaults to "RHESSI Observing Summary Count Rate".
-        **kwargs : `dict`
-            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
-            functions.
-        """
-        fig, ax = plt.subplots()
-        axes = self.plot(axes=ax, columns=columns, **kwargs)
-        axes.set_title(title)
-        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
