@@ -1,8 +1,3 @@
-"""RHESSI Map subclass definitions"""
-
-__author__ = "Steven Christe"
-__email__ = "steven.d.christe@nasa.gov"
-
 import astropy.units as u
 
 from sunpy.map.mapbase import GenericMap, SpatialPair
@@ -11,7 +6,8 @@ __all__ = ['RHESSIMap']
 
 
 class RHESSIMap(GenericMap):
-    """RHESSI Image Map.
+    """
+    RHESSI Image Map.
 
     The RHESSI mission consists of a single spin-stabilized
     spacecraft in a low-altitude orbit inclined 38 degrees to
@@ -32,13 +28,16 @@ class RHESSIMap(GenericMap):
 
     .. warning::
 
-        This software is in beta and cannot read fits files containing more than one image.
+        Cannot read fits files containing more than one image.
     """
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
         self.plot_settings['cmap'] = 'rhessi'
+
+    def _get_cmap_name(self):
+        return "rhessi"
 
     @property
     def _timesys(self):
