@@ -86,6 +86,8 @@ class XRSTimeSeries(GenericTimeSeries):
         `~matplotlib.axes.Axes`
             The plot axes.
         """
+        if columns is None:
+            columns = ["xrsa", "xrsb"]
         axes, columns = self._setup_axes_columns(axes, columns)
         plot_settings = {"xrsa": ["blue", r"0.5--4.0 $\AA$"], "xrsb": ["red", r"1.0--8.0 $\AA$"]}
         data = self.to_dataframe()
@@ -100,6 +102,7 @@ class XRSTimeSeries(GenericTimeSeries):
         formatter = mdates.ConciseDateFormatter(locator)
         axes.xaxis.set_major_locator(locator)
         axes.xaxis.set_major_formatter(formatter)
+
         ax2 = axes.twinx()
         ax2.set_yscale("log")
         ax2.set_ylim(1e-9, 1e-2)
@@ -111,6 +114,7 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, "major")
         axes.xaxis.grid(False, "major")
         axes.legend()
+
         return axes
 
     @property
