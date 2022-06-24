@@ -36,10 +36,6 @@ def test_data_type(many_ts):
     assert isinstance(many_ts.to_dataframe(), DataFrame)
     # TODO: check length? (should match the number of columns)
 
-# =============================================================================
-# Test Basic Single-Timeseries Truncation Operations
-# =============================================================================
-
 
 @pytest.fixture
 def truncation_slice_test_ts_1(eve_test_ts):
@@ -128,9 +124,6 @@ def test_truncation_dates(eve_test_ts):
             eve_test_ts.time_range.split(3)[1])
 
 
-# =============================================================================
-# Test Basic Single-Timeseries Truncation Operations
-# =============================================================================
 def test_truncated_none_ts(concatenate_multi_files_ts):
     # This timerange covers the whole range of metadata, so no change is expected
     a = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
@@ -258,10 +251,6 @@ def test_extraction(eve_test_ts):
     extracted_df = DataFrame(eve_test_ts.to_dataframe()['CMLon']).dropna()
     extracted_df = extracted_df.sort_index()
     assert_frame_equal(cmlon.to_dataframe(), extracted_df)
-
-# =============================================================================
-# Test Concatenation Operations
-# =============================================================================
 
 
 @pytest.fixture
@@ -392,10 +381,6 @@ def test_generic_construction_concatenation():
     assert ts_concat.columns == ['intensity', 'intensity2']
     assert len(ts_concat.meta.metadata) == 2
 
-# =============================================================================
-# Test Data Manipulation
-# =============================================================================
-
 
 @pytest.fixture
 def column_quantity(eve_test_ts):
@@ -454,10 +439,6 @@ def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
     ts = eve_test_ts.add_column('array_added', column_quantity.value)
     assert (ts.quantity('array_added') == column_quantity.value).all()
 
-# =============================================================================
-# Test Exporting to different formats
-# =============================================================================
-
 
 def test_ts_to_table(generic_ts):
     tbl = generic_ts.to_table()
@@ -479,10 +460,6 @@ def test_ts_to_array(generic_ts):
     assert isinstance(arr, np.ndarray)
     assert len(arr) == len(generic_ts.to_dataframe())
 
-# =============================================================================
-# Test Basic Working Peek
-# =============================================================================
-
 
 @figure_test
 def test_generic_ts_peek(generic_ts):
@@ -501,10 +478,6 @@ def test_empty_ts_invalid_peek(generic_ts):
     empty_ts = generic_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
-
-# =============================================================================
-# Test Other Functions
-# =============================================================================
 
 
 def test_equality(generic_ts, table_ts):
