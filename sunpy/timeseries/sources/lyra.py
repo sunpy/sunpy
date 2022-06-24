@@ -4,7 +4,6 @@ This module provies Proba-2 `~sunpy.timeseries.TimeSeries` source.
 import sys
 from collections import OrderedDict
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas
 
@@ -94,10 +93,7 @@ class LYRATimeSeries(GenericTimeSeries):
                 name = lyranames[0][columns[i]] + ' \n (' + lyranames[1][columns[i]] + ')'
             axes[i].locator_params(axis='y', nbins=6)
             axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
-        locator = mdates.AutoDateLocator()
-        formatter = mdates.ConciseDateFormatter(locator)
-        axes[-1].xaxis.set_major_locator(locator)
-        axes[-1].xaxis.set_major_formatter(formatter)
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show

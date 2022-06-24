@@ -83,9 +83,9 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes.plot(self.to_dataframe(), label=data_lab, **kwargs)
         axes.set_yscale("log")
         axes.set_ylim(1e-4, 1)
-        axes.set_xlabel('Start time: ' + self._data.index[0].strftime(TIME_FORMAT))
         axes.set_ylabel('Correlation')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show

@@ -5,7 +5,6 @@ from pathlib import Path
 from collections import OrderedDict
 
 import h5netcdf
-import matplotlib.dates as mdates
 import matplotlib.ticker as mticker
 import numpy as np
 import packaging.version
@@ -98,11 +97,7 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
         axes.set_ylabel("Watts m$^{-2}$")
-        locator = mdates.AutoDateLocator()
-        formatter = mdates.ConciseDateFormatter(locator)
-        axes.xaxis.set_major_locator(locator)
-        axes.xaxis.set_major_formatter(formatter)
-
+        self._setup_x_axis(axes)
         ax2 = axes.twinx()
         ax2.set_yscale("log")
         ax2.set_ylim(1e-9, 1e-2)
@@ -174,7 +169,6 @@ class XRSTimeSeries(GenericTimeSeries):
         fig, ax = plt.subplots()
         axes = self.plot(columns=columns, axes=ax, **kwargs)
         axes.set_title(title)
-        fig.autofmt_xdate()
         return fig
 
     @classmethod

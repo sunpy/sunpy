@@ -3,7 +3,6 @@ import codecs
 from os.path import basename
 from collections import OrderedDict
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame, to_datetime
@@ -87,10 +86,7 @@ class ESPTimeSeries(GenericTimeSeries):
             axes[i].set_ylabel(column_names[name])
             axes[i].legend(loc="upper right")
         axes[-1].set_xlim(self._data.index[0], self._data.index[-1])
-        locator = mdates.AutoDateLocator()
-        formatter = mdates.ConciseDateFormatter(locator)
-        axes[-1].xaxis.set_major_locator(locator)
-        axes[-1].xaxis.set_major_formatter(formatter)
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show

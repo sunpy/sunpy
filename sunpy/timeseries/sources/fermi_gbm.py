@@ -89,9 +89,9 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         for d in columns:
             axes.plot(self._data.index, self._data[d], label=d, **kwargs)
         axes.set_yscale("log")
-        axes.set_xlabel('Start time: ' + self._data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show
@@ -122,7 +122,6 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         fig, ax = plt.subplots()
         axes = self.plot(axes=ax, columns=columns, **kwargs)
         axes.set_title(title)
-        fig.autofmt_xdate()
         return fig
 
     @classmethod

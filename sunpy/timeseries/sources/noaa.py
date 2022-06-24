@@ -10,7 +10,6 @@ from matplotlib import pyplot as plt
 
 import astropy.units as u
 
-from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
@@ -110,6 +109,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show
@@ -175,8 +175,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)
-        data.index = pd.DatetimeIndex(parse_time(
-            [x for x in data.index.values]).isot.astype('datetime64'))
 
         # Add the units data, reported in radio flux values (sfu) originally.
         units = OrderedDict([('sunspot RI', u.dimensionless_unscaled),
@@ -265,6 +263,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
+        self._setup_x_axis(axes)
         return axes
 
     @peek_show
@@ -337,8 +336,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)
-        data.index = pd.DatetimeIndex(parse_time(
-            [x for x in data.index.values]).isot.astype('datetime64'))
         # Add the units data, reported in radio flux values (sfu) originally.
         units = OrderedDict([('sunspot', u.dimensionless_unscaled),
                              ('sunspot high', u.dimensionless_unscaled),
