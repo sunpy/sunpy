@@ -8,12 +8,9 @@ from sunpy.map import Map
 from sunpy.map.sources.rhessi import RHESSIMap
 from sunpy.util.exceptions import SunpyMetadataWarning
 
-params = [get_test_filepath("hsi_image_20101016_191218.fits")]
-
-
-@pytest.fixture(scope="module", params=params)
-def rhessi_map(request):
-    return Map(request.param)
+@pytest.fixture(scope="module")
+def rhessi_map():
+    return Map(get_test_filepath("hsi_image_20101016_191218.fits"))
 
 
 def test_RHESSIMap(rhessi_map):
