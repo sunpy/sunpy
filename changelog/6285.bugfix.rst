@@ -1,1 +1,1 @@
-Changed the default scaling for `EUIMap` from a linear stretch to a asinh stretch.
+Changed the default scaling for `~sunpy.map.sources.EUIMap` from a linear stretch to a asinh stretch.
