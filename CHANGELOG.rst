@@ -1,3 +1,36 @@
+4.0.2 (2022-06-24)
+==================
+
+New Features
+------------
+
+- Added a SDO/AIA 1600 file of the Venus transit to the sunpy sample data. (`#6242 <https://github.com/sunpy/sunpy/pull/6242>`__)
+- Expose GOES quality flags in order to allow filtering corrupt values when using the `~sunpy.timeseries.sources.goes.XRSTimeSeries`. (`#6260 <https://github.com/sunpy/sunpy/pull/6260>`__)
+
+
+Bug Fixes
+---------
+
+- The `sunpy.net.dataretriever.sources.noaa.SRSClient` was not correctly setting the passive mode for FTP connection resulting in a permission error.
+  This has been fixed. (`#6256 <https://github.com/sunpy/sunpy/pull/6256>`__)
+- Changed the default scaling for `~sunpy.map.sources.EUIMap` from a linear stretch to a asinh stretch.
+
+  To revert to the previous linear stretch do the following::
+
+       from astropy.visualization import ImageNormalize, LinearStretch
+       euimap.plot_settings["norm"] = ImageNormalize(stretch=LinearStretch()) (`#6285 <https://github.com/sunpy/sunpy/pull/6285>`__)
+
+
+Internal Changes
+----------------
+
+- Add support for upcoming parfive 2.0 release. (`#6243 <https://github.com/sunpy/sunpy/pull/6243>`__)
+- The primary sample-data URL will be changing from ``https://github.com/sunpy/sample-data/raw/master/sunpy/v1/`` to ``https://github.com/sunpy/data/raw/main/sunpy/v1/``.
+  We expect GitHub to redirect from the old URL for sometime but will eventually expire it.
+  The ``data.sunpy.org`` mirror will continue to be available. (`#6289 <https://github.com/sunpy/sunpy/pull/6289>`__)
+- Add support for downloading sample data from more than two mirror locations. (`#6295 <https://github.com/sunpy/sunpy/pull/6295>`__)
+
+
 4.0.1 (2022-06-09)
 ==================
 
