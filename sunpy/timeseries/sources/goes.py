@@ -169,7 +169,6 @@ class XRSTimeSeries(GenericTimeSeries):
         fig, ax = plt.subplots()
         axes = self.plot(columns=columns, axes=ax, **kwargs)
         axes.set_title(title)
-        fig.autofmt_xdate()
         return fig
 
     @classmethod

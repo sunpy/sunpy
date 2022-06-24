@@ -200,7 +200,6 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         fig, ax = plt.subplots()
         axes = self.plot(axes=ax, columns=columns, **kwargs)
         axes.set_title(title)
-        fig.autofmt_xdate()
         return fig
 
     @classmethod
