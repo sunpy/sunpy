@@ -10,7 +10,6 @@ from matplotlib import pyplot as plt
 
 import astropy.units as u
 
-from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
