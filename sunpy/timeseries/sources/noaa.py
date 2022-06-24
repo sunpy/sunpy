@@ -176,8 +176,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)
-        data.index = pd.DatetimeIndex(parse_time(
-            [x for x in data.index.values]).isot.astype('datetime64'))
 
         # Add the units data, reported in radio flux values (sfu) originally.
         units = OrderedDict([('sunspot RI', u.dimensionless_unscaled),
@@ -339,8 +337,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         # Convoluted time index handling
         data = data.set_index('time-tag')
         data.index = pd.DatetimeIndex(data.index.values)
-        data.index = pd.DatetimeIndex(parse_time(
-            [x for x in data.index.values]).isot.astype('datetime64'))
         # Add the units data, reported in radio flux values (sfu) originally.
         units = OrderedDict([('sunspot', u.dimensionless_unscaled),
                              ('sunspot high', u.dimensionless_unscaled),
