@@ -5,7 +5,6 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 import pytest
-from erfa.core import ErfaWarning
 from pandas import DataFrame
 from pandas.testing import assert_frame_equal
 
@@ -16,140 +15,13 @@ from astropy.time import TimeDelta
 
 import sunpy
 import sunpy.timeseries
-from sunpy.data.test import get_test_filepath, test_data_filenames
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
-# =============================================================================
-# TimeSeries Tests
-# =============================================================================
-
-eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
-esp_filepath = get_test_filepath('eve_l1_esp_2011046_00_truncated.fits')
-fermi_gbm_filepath = get_test_filepath('gbm.fits')
-norh_filepath = get_test_filepath('tca110810_truncated')
-lyra_filepath = get_test_filepath('lyra_20150101-000000_lev3_std_truncated.fits.gz')
-rhessi_filepath = get_test_filepath('hsi_obssumm_20120601_018_truncated.fits.gz')
-noaa_ind_json_filepath = get_test_filepath('observed-solar-cycle-indices-truncated.json')
-noaa_pre_json_filepath = get_test_filepath('predicted-solar-cycle-truncated.json')
-goes_filepath = get_test_filepath('go1520120601.fits.gz')
-a_list_of_many = [f for f in test_data_filenames() if f.parents[0].relative_to(f.parents[1]).name == 'eve']
-
-
-@pytest.fixture
-def eve_test_ts():
-    with pytest.warns(SunpyUserWarning, match='Unknown units'):
-        return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
-
-
-@pytest.fixture
-def esp_test_ts():
-    return sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
-
-
-@pytest.fixture
-def fermi_gbm_test_ts():
-    return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
-
-
-@pytest.fixture
-def norh_test_ts():
-    return sunpy.timeseries.TimeSeries(norh_filepath, source='NoRH')
-
-
-@pytest.fixture
-def goes_test_ts():
-    return sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
-
-
-@pytest.fixture
-def lyra_test_ts():
-    return sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
-
-
-@pytest.fixture
-def rhessi_test_ts():
-    return sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
-
-
-@pytest.fixture
-def noaa_ind_json_test_ts():
-    return sunpy.timeseries.TimeSeries(noaa_ind_json_filepath, source='NOAAIndices')
-
-
-@pytest.fixture
-def noaa_pre_json_test_ts():
-    # NOAA pre data contains years long into the future, which ERFA complains about
-    with pytest.warns(ErfaWarning, match=r'.*dubious year'):
-        return sunpy.timeseries.TimeSeries(
-            noaa_pre_json_filepath, source='NOAAPredictIndices')
-
-
-@pytest.fixture
-def generic_ts():
-    # Generate the data and the corresponding dates
-    base = parse_time("2016/10/01T05:00:00")
-    dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
-    intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
-    intensity2 = np.cos(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
-
-    # Create the data DataFrame, header MetaDict and units dict
-    data = DataFrame(np.column_stack([intensity, intensity2]),
-                     index=dates.isot.astype('datetime64'),
-                     columns=['intensity', 'intensity2'])
-    units = {'intensity': u.W / u.m**2,
-             'intensity2': u.W / u.m**2}
-    meta = MetaDict({'key': 'value'})
-
-    # Create the time series
-    return sunpy.timeseries.TimeSeries(data, meta, units)
-
-
-@pytest.fixture
-def concatenate_multi_files_ts():
-    with pytest.warns(SunpyUserWarning, match='Unknown units'):
-        return sunpy.timeseries.TimeSeries(
-            a_list_of_many, source='EVE', concatenate=True)
-
-# =============================================================================
-# Test Creating TimeSeries From Various Dataformats
-# =============================================================================
-
-
-@pytest.fixture
-def table_ts():
-    # Generate the data and the corresponding dates
-    base = parse_time(datetime.datetime.today())
-    times = base - TimeDelta(np.arange(24 * 60)*u.minute)
-    intensity = u.Quantity(
-        np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60)))), u.W / u.m ** 2)
-
-    # Create the units and meta objects
-    units = OrderedDict([('intensity', u.W / u.m**2)])
-    meta = MetaDict({'key': 'value'})
-    tbl_meta = MetaDict({'t_key': 't_value'})
-
-    # Create a suitable mixin qtable
-    table = Table(
-        [times, intensity], names=['time', 'intensity'], meta=tbl_meta)
-    table.add_index('time')
-
-    # Create TS from dataframe and check
-    return sunpy.timeseries.TimeSeries(table, meta, units)
-
-
-# =============================================================================
-# Test Resulting TimeSeries Parameters
-# =============================================================================
-@pytest.fixture(params=['eve_test_ts', 'esp_test_ts', 'fermi_gbm_test_ts', 'norh_test_ts', 'goes_test_ts',
-                        'lyra_test_ts', 'rhessi_test_ts', 'noaa_ind_json_test_ts',
-                        'noaa_pre_json_test_ts', 'generic_ts', 'table_ts'])
-def many_ts(request):
-    # Fixture to return lots of different timeseries
-    return request.getfixturevalue(request.param)
+# Test fixtures are in ../conftest.py
 
 
 def test_units_type(many_ts):
@@ -163,10 +35,6 @@ def test_meta_type(many_ts):
 def test_data_type(many_ts):
     assert isinstance(many_ts.to_dataframe(), DataFrame)
     # TODO: check length? (should match the number of columns)
-
-# =============================================================================
-# Test Basic Single-Timeseries Truncation Operations
-# =============================================================================
 
 
 @pytest.fixture
@@ -256,9 +124,6 @@ def test_truncation_dates(eve_test_ts):
             eve_test_ts.time_range.split(3)[1])
 
 
-# =============================================================================
-# Test Basic Single-Timeseries Truncation Operations
-# =============================================================================
 def test_truncated_none_ts(concatenate_multi_files_ts):
     # This timerange covers the whole range of metadata, so no change is expected
     a = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
@@ -386,10 +251,6 @@ def test_extraction(eve_test_ts):
     extracted_df = DataFrame(eve_test_ts.to_dataframe()['CMLon']).dropna()
     extracted_df = extracted_df.sort_index()
     assert_frame_equal(cmlon.to_dataframe(), extracted_df)
-
-# =============================================================================
-# Test Concatenation Operations
-# =============================================================================
 
 
 @pytest.fixture
@@ -520,10 +381,6 @@ def test_generic_construction_concatenation():
     assert ts_concat.columns == ['intensity', 'intensity2']
     assert len(ts_concat.meta.metadata) == 2
 
-# =============================================================================
-# Test Data Manipulation
-# =============================================================================
-
 
 @pytest.fixture
 def column_quantity(eve_test_ts):
@@ -582,10 +439,6 @@ def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
     ts = eve_test_ts.add_column('array_added', column_quantity.value)
     assert (ts.quantity('array_added') == column_quantity.value).all()
 
-# =============================================================================
-# Test Exporting to different formats
-# =============================================================================
-
 
 def test_ts_to_table(generic_ts):
     tbl = generic_ts.to_table()
@@ -607,58 +460,6 @@ def test_ts_to_array(generic_ts):
     assert isinstance(arr, np.ndarray)
     assert len(arr) == len(generic_ts.to_dataframe())
 
-# =============================================================================
-# Test Basic Working Peek
-# =============================================================================
-
-
-@figure_test
-def test_eve_peek(eve_test_ts):
-    eve_test_ts.peek()
-
-
-@figure_test
-def test_esp_peek(esp_test_ts):
-    esp_test_ts.peek()
-
-
-# This warning is fixed in matplotlib, and the filter can be removed once
-# matplotlib 3.3.1 is released (https://github.com/matplotlib/matplotlib/pull/18101)
-@pytest.mark.filterwarnings('ignore:Support for multi-dimensional indexing.*is deprecated')
-@figure_test
-def test_fermi_gbm_peek(fermi_gbm_test_ts):
-    fermi_gbm_test_ts.peek()
-
-
-@figure_test
-def test_norh_peek(norh_test_ts):
-    norh_test_ts.peek()
-
-
-@figure_test
-def test_goes_peek(goes_test_ts):
-    goes_test_ts.peek()
-
-
-@figure_test
-def test_lyra_peek(lyra_test_ts):
-    lyra_test_ts.peek()
-
-
-@figure_test
-def test_rhessi_peek(rhessi_test_ts):
-    rhessi_test_ts.peek()
-
-
-@figure_test
-def test_noaa_json_ind_peek(noaa_ind_json_test_ts):
-    noaa_ind_json_test_ts.peek()
-
-
-@figure_test
-def test_noaa_json_pre_peek(noaa_pre_json_test_ts):
-    noaa_pre_json_test_ts.peek()
-
 
 @figure_test
 def test_generic_ts_peek(generic_ts):
@@ -678,10 +479,6 @@ def test_empty_ts_invalid_peek(generic_ts):
     with pytest.raises(ValueError):
         empty_ts.peek()
 
-# =============================================================================
-# Test Other Functions
-# =============================================================================
-
 
 def test_equality(generic_ts, table_ts):
     generic_copy_ts = copy.deepcopy(generic_ts)
@@ -691,7 +488,7 @@ def test_equality(generic_ts, table_ts):
     assert generic_ts != table_ts
 
 
-def test_equality_different_ts_types(generic_ts):
+def test_equality_different_ts_types(generic_ts, eve_test_ts):
     # this should fail as they're not the smae type and can't match
     assert not (generic_ts == eve_test_ts)
 
@@ -747,67 +544,6 @@ def test_timeseries_array():
     with pytest.warns(SunpyUserWarning, match='Unknown units'):
         ts = sunpy.timeseries.TimeSeries(data, {})
         assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
-
-# =============================================================================
-# Test Source Plot columns keyword argument
-# =============================================================================
-
-
-def test_esp_plot_column(esp_test_ts):
-    axes = esp_test_ts.plot(columns=['QD', 'CH_18', 'CH_36'])
-    assert len(axes) == 3
-    assert '0.1-7nm' in axes[0].get_ylabel()
-    assert '18nm' in axes[1].get_ylabel()
-    assert '36nm' in axes[2].get_ylabel()
-
-
-def test_lyra_plot_column(lyra_test_ts):
-    axes = lyra_test_ts.plot(columns=['CHANNEL1', 'CHANNEL3'])
-    assert len(axes) == 2
-    assert 'Lyman alpha' in axes[0].get_ylabel()
-    assert 'Al filter' in axes[1].get_ylabel()
-
-
-def test_rhessi_plot_column(rhessi_test_ts):
-    ax = rhessi_test_ts.plot(columns=['3 - 6 keV', '25 - 50 keV', '100 - 300 keV'])
-    assert len(ax.lines) == 3
-    assert '3 - 6 keV' == ax.lines[0].get_label()
-    assert '25 - 50 keV' == ax.lines[1].get_label()
-    assert '100 - 300 keV' == ax.lines[2].get_label()
-
-
-def test_fermi_gbm_plot_column(fermi_gbm_test_ts):
-    ax = fermi_gbm_test_ts.plot(columns=['4-15 keV', '100-300 keV'])
-    assert len(ax.lines) == 2
-    assert '4-15 keV' == ax.lines[0].get_label()
-    assert '100-300 keV' == ax.lines[1].get_label()
-
-
-def test_goes_plot_column(goes_test_ts):
-    ax = goes_test_ts.plot(columns=['xrsa'])
-    assert len(ax.lines) == 1
-    assert '0.5--4.0' == ax.lines[0].get_label().split()[0]
-
-
-def test_norh_plot_column(norh_test_ts):
-    ax = norh_test_ts.plot(columns=['Correlation Coefficient'])
-    assert len(ax.lines) == 1
-    assert '17GHZ' == ax.lines[0].get_label()
-
-
-def test_noaa_json_ind_plot_column(noaa_ind_json_test_ts):
-    ax = noaa_ind_json_test_ts.plot(columns=['sunspot SWO', 'sunspot SWO smooth'])
-    assert len(ax.lines) == 2
-    assert 'sunspot SWO' == ax.lines[0].get_label()
-    assert 'sunspot SWO smooth' == ax.lines[1].get_label()
-
-
-def test_noaa_json_pre_plot_column(noaa_pre_json_test_ts):
-    ax = noaa_pre_json_test_ts.plot(columns=['sunspot', 'sunspot high', 'sunspot low'])
-    assert len(ax.lines) == 3
-    assert 'sunspot' == ax.lines[0].get_label()
-    assert 'sunspot high' == ax.lines[1].get_label()
-    assert 'sunspot low' == ax.lines[2].get_label()
 
 
 # TODO:
