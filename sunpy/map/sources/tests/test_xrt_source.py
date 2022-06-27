@@ -8,8 +8,6 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.hinode import XRTMap
 
-__author__ = 'Pritish C. (VaticanCameos)'
-
 
 @pytest.fixture
 def xrt_map():

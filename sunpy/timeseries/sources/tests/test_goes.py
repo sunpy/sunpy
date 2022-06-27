@@ -5,6 +5,7 @@ from astropy import units as u
 
 import sunpy.timeseries
 from sunpy.data.test import get_test_filepath
+from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
 
 goes_fits_filepath_com = get_test_filepath('go1520120601.fits.gz')
@@ -59,28 +60,33 @@ def test_goes_netcdf_time_parsing15():
     # Testing to make sure the time is correctly parsed (to ignore leap seconds)
     # Tests for 13, 14, 15
     ts_goes = sunpy.timeseries.TimeSeries(goes15_filepath_nc, source="XRS")
-    assert ts_goes.index[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2013-10-28 00:00:01.385000'
+    assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2013-10-28 00:00:01.385'
 
 
 def test_goes_netcdf_time_parsing17():
     # Testing to make sure the time is correctly parsed (to ignore leap seconds)
     # Tests for GOES-R (16, 17)
     ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
-    assert ts_goes.index[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2020-10-16 00:00:00.476771'
+    assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2020-10-16 00:00:00.477'
 
 
 def test_goes_leap_seconds():
     # Test for case when leap second present
     with pytest.warns(SunpyUserWarning, match="There is one leap second timestamp present in: goes_13_leap_second"):
         ts = sunpy.timeseries.TimeSeries(goes13_leap_second_filepath)
-    assert ts.index[-1].strftime("%Y-%m-%d %H:%M:%S.%f") == '2015-06-30 23:59:59.999000'
+    assert ts.time[-1].isot == '2015-06-30T23:59:59.999'
 
 
-def test_goes_plot_column():
-    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
-    ax = ts_goes.plot(columns=['xrsa'])
+def test_goes_plot_column(goes_test_ts):
+    ax = goes_test_ts.plot(columns=['xrsa'])
     assert len(ax.lines) == 1
     assert '0.5--4.0' == ax.lines[0].get_label().split()[0]
+
+
+def test_goes_r_primarydetector():
+    # Test that the primary channel column added for the GOES-R satellites
+    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
+    assert "xrsa_primary_chan" in ts_goes.columns
 
 
 @pytest.mark.remote_data
@@ -97,3 +103,8 @@ def test_goes_remote():
     goes = sunpy.timeseries.TimeSeries(
         'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/xrsf-l2-flx1s_science/2022/05/sci_xrsf-l2-flx1s_g16_d20220506_v2-1-0.nc')
     assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+
+
+@figure_test
+def test_goes_peek(goes_test_ts):
+    goes_test_ts.peek()
