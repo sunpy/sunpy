@@ -13,13 +13,13 @@ build-backend = 'setuptools.build_meta'
     enabled = true
 
   [ tool.gilesbot.circleci_artifacts.figure_report ]
-    url = ".tmp/py38-figure/figure_test_images/fig_comparison.html"
-    message = "Click details to see the figure test comparisons, for py38-figure."
+    url = ".tmp/py310-figure/figure_test_images/fig_comparison.html"
+    message = "Click details to see the figure test comparisons, for py310-figure."
     report_on_fail = true
 
   [ tool.gilesbot.circleci_artifacts.figure_report_devdeps ]
-    url = ".tmp/py39-figure-devdeps/figure_test_images/fig_comparison.html"
-    message = "Click details to see the figure test comparisons for py39-figure-devdeps."
+    url = ".tmp/py310-figure-devdeps/figure_test_images/fig_comparison.html"
+    message = "Click details to see the figure test comparisons for py310-figure-devdeps."
     report_on_fail = true
 
   [ tool.gilesbot.pull_requests ]
