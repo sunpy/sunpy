@@ -10,7 +10,7 @@ from astropy.constants import R_sun
 from astropy.coordinates import SkyCoord
 from astropy.visualization.wcsaxes.wcsapi import wcsapi_to_celestial_frame
 
-from sunpy.coordinates import HeliographicStonyhurst, HeliographicCarrington
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst
 from sunpy.visualization import wcsaxes_compat
 
 __all__ = ["equator", "prime_meridian"]
@@ -64,8 +64,8 @@ def equator(axes, rsun: u.m = R_sun, resolution=500, **kwargs):
 
 def prime_meridian(axes, rsun: u.m = R_sun, resolution=500, **kwargs):
     """
-    Draws the solar prime meridian as seen by the axes observer.
-    Hidden parts are drawn as a dotted line.
+    Draws the solar prime meridian (zero Carrington longitude) as seen by the
+    axes observer. Hidden parts are drawn as a dotted line.
 
     Parameters
     ----------
@@ -98,11 +98,11 @@ def prime_meridian(axes, rsun: u.m = R_sun, resolution=500, **kwargs):
                     frame=HeliographicCarrington(observer=observer,
                                                  obstime=axes_frame.obstime))
     visible, hidden = _plot_vertices(lon0, axes, axes_frame, rsun,
-                                     pm_dis=True, **kwargs)
+                                     close_path=False, **kwargs)
     return visible, hidden
 
 
-def _plot_vertices(coord, axes, frame, rsun, pm_dis=False, **kwargs):
+def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
     """
     Draws the provided SkyCoord on the WCSAxes as `~matplotlib.patches.Polygon`
     objects depending on visibility.
@@ -135,8 +135,7 @@ def _plot_vertices(coord, axes, frame, rsun, pm_dis=False, **kwargs):
     step = np.sqrt((vertices[1:, 0] - vertices[:-1, 0]) ** 2 +
                    (vertices[1:, 1] - vertices[:-1, 1]) ** 2)
     continuous = np.concatenate([[True, True], step[1:] < 100 * step[:-1]])
-    # The prime meridian is not continuous, so set the endpoints equal to False
-    if pm_dis is True:
+    if not close_path is True:
         continuous[0] = False
         continuous[-1] = False
 

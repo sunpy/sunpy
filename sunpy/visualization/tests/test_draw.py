@@ -1,4 +1,5 @@
 import pytest
+from astropy.wcs import WCS
 import matplotlib.pyplot as plt
 
 from sunpy.tests.helpers import figure_test
@@ -29,3 +30,9 @@ def test_heliographic_equator_prime_meridian(heliographic_test_map):
     heliographic_test_map.plot()
     draw.equator(axes, color="blue")
     draw.prime_meridian(axes, color="red")
+
+
+def test_prime_meridian_error():
+    axes = plt.subplot(projection=WCS())
+    with pytest.raises(AttributeError):
+        draw.prime_meridian(axes)
