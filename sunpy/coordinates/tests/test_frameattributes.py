@@ -2,7 +2,7 @@
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import ICRS, HeliocentricMeanEcliptic, get_body_barycentric
+from astropy.coordinates import ICRS, HeliocentricMeanEcliptic, SphericalRepresentation, get_body_barycentric
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
@@ -112,6 +112,17 @@ def test_observer_not_hgs_astropy(oca):
     result, converted = oca.convert_input(observer)
 
     assert isinstance(result, HeliographicStonyhurst)
+    assert result.obstime == observer.obstime
+    assert converted
+
+
+def test_observer_not_default_representation(oca):
+    observer = HeliographicStonyhurst((1, 0, 0) * u.AU, representation_type='cartesian',
+                                      obstime='2001-01-01')
+    result, converted = oca.convert_input(observer)
+
+    assert isinstance(result, HeliographicStonyhurst)
+    assert issubclass(result.representation_type, SphericalRepresentation)
     assert result.obstime == observer.obstime
     assert converted
 
