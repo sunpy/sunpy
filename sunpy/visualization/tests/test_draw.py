@@ -3,9 +3,27 @@ import pytest
 
 from astropy.wcs import WCS
 
-from sunpy.map.tests.conftest import aia171_test_map, heliographic_test_map  # NoQA
+import sunpy.io
+from sunpy.data.test import get_test_filepath
+from sunpy.map import Map
 from sunpy.tests.helpers import figure_test
 from sunpy.visualization import draw
+
+
+@pytest.fixture
+def aia171_test_map():
+    return Map(get_test_filepath('aia_171_level1.fits'))
+
+
+@pytest.fixture
+def heliographic_test_map():
+    (data, header), = sunpy.io.read_file(get_test_filepath('heliographic_phase_map.fits.gz'))
+    # Fix unit strings to prevent some astropy fits fixing warnings
+    header['CUNIT1'] = 'deg'
+    header['CUNIT2'] = 'deg'
+    # Set observer location to avoid warnings later
+    header['HGLN_OBS'] = 0.0
+    return Map((data, header))
 
 
 @figure_test
