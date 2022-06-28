@@ -1,6 +1,7 @@
 """
 This submodule provides utility functions to act on `sunpy.map.GenericMap` instances.
 """
+import numbers
 from itertools import product
 
 import numpy as np
