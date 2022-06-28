@@ -1,10 +1,10 @@
-import pytest
-from astropy.wcs import WCS
 import matplotlib.pyplot as plt
+import pytest
+
+from astropy.wcs import WCS
 
 from sunpy.tests.helpers import figure_test
 from sunpy.visualization import draw
-from sunpy.map.tests.conftest import aia171_test_map, heliographic_test_map
 
 
 @figure_test

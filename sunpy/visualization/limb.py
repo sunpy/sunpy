@@ -1,6 +1,4 @@
-import numpy as np
 from matplotlib import patches
-from matplotlib.path import Path
 
 import astropy.units as u
 from astropy.constants import R_sun
