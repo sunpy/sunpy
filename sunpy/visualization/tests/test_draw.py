@@ -3,6 +3,7 @@ import pytest
 
 from astropy.wcs import WCS
 
+from sunpy.map.tests.conftest import aia171_test_map, heliographic_test_map  # NoQA
 from sunpy.tests.helpers import figure_test
 from sunpy.visualization import draw
 
