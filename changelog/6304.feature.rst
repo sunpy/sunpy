@@ -1,0 +1,2 @@
+:meth:`sunpy.timeseries.GenericTimeSeries.peek` now takes a ``title`` argument
+to set the title of the plot.

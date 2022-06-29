@@ -1,0 +1,3 @@
+Timeseries data sources can now set the ``_peek_title`` class attribute
+to set the default plot title produced when ``.peek()`` is called and the user
+does not provide a custom title.

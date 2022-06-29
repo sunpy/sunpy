@@ -84,6 +84,9 @@ class GenericTimeSeries:
     _source = None
     _registry = dict()
 
+    # Title to show when .peek()ing
+    _peek_title = ''
+
     def __init_subclass__(cls, **kwargs):
         """
         An __init_subclass__ hook initializes all of the subclasses of a given
@@ -748,7 +751,7 @@ class GenericTimeSeries:
             ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator))
 
     @peek_show
-    def peek(self, columns=None, **kwargs):
+    def peek(self, columns=None, *, title=None, **kwargs):
         """
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the
@@ -758,17 +761,19 @@ class GenericTimeSeries:
         ----------
         columns : list[str], optional
             If provided, only plot the specified columns.
+        title : str, optional
+            If provided, set the plot title. Custom timeseries sources may set
+            a default value for this.
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
         """
         import matplotlib.pyplot as plt
 
-        # Check we have a timeseries valid for plotting
-        self._validate_data_for_plotting()
-
         # Now make the plot
         figure = plt.figure()
         self.plot(columns=columns, **kwargs)
+        title = title or self._peek_title
+        figure.suptitle(title)
 
         return figure
 

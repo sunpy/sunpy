@@ -6,7 +6,6 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
 import astropy.units as u
 
@@ -233,6 +232,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     _source = 'noaapredictindices'
     _url = "https://www.swpc.noaa.gov/products-and-data"
 
+    _peek_title = "Solar Cycle Sunspot Number Prediction"
+
     def plot(self, axes=None, columns=None, **plot_args):
         """
         Plots predicted NOAA Indices as a function of time from a pandas dataframe.
@@ -265,34 +266,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes.legend()
         self._setup_x_axis(axes)
         return axes
-
-    @peek_show
-    def peek(self, title="Solar Cycle Sunspot Number Prediction", columns=None, **plot_args):
-        """
-        Displays the predicted NOAA Indices as a function of time by calling
-        `~sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries.plot`.
-
-        .. plot::
-
-            import sunpy.timeseries
-            noaa_url = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
-            noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')
-            noaa.peek()
-
-        Parameters
-        ----------
-        title : `str`, optional
-            The title of the plot. Defaults to "Solar Cycle Sunspot Number Prediction".
-        columns : list[str], optional
-            Unused, but there to maintain uniformity among peek methods.
-        **plot_args : `dict`
-            Additional plot keyword arguments that are handed to `~matplotlib.axes.Axes.plot`
-            functions.
-        """
-        axes = self.plot(**plot_args)
-        axes.set_title(title)
-        fig = plt.gcf()
-        return fig
 
     @classmethod
     def _parse_file(cls, filepath):
