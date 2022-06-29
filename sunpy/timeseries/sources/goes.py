@@ -19,6 +19,7 @@ from sunpy.extern import parse
 from sunpy.io.file_tools import UnrecognizedFileTypeError
 from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 
 __all__ = ['XRSTimeSeries']
@@ -240,8 +241,15 @@ class XRSTimeSeries(GenericTimeSeries):
             if isinstance(start_time_str, bytes):
                 start_time_str = start_time_str.decode("utf-8")
             start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC").strip()
-            times = Time(parse_time(start_time_str).unix + h5nc["time"], format="unix").datetime
+            times = Time(parse_time(start_time_str).unix + h5nc["time"], format="unix")
 
+        try:
+            times = times.datetime
+        except ValueError:
+            warn_user("There is a leap second in the data, this has been subtracted by 1 second to work around this")
+            idx = np.argwhere((np.char.find(times.isot, ":60.") != -1) == True).flatten()[0]
+            times[idx] = times[idx] - TimeDelta(1*u.s)
+            times = times.datetime
         data = DataFrame({"xrsa": xrsa, "xrsb": xrsb, "xrsa_quality": xrsa_quality, "xrsb_quality": xrsb_quality}, index=times)
         data = data.replace(-9999, np.nan)
         units = OrderedDict(
