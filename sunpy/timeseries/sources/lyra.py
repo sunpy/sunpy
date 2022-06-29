@@ -13,6 +13,7 @@ import sunpy.io
 from sunpy import config
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -94,7 +95,8 @@ class LYRATimeSeries(GenericTimeSeries):
         return axes
 
     @peek_show
-    def peek(self, title=None, columns=None, names=3, **kwargs):
+    @deprecate_positional_args_since("4.1")
+    def peek(self, *, title=None, columns=None, names=3, **kwargs):
         """
         Displays the LYRA data by calling `~sunpy.timeseries.sources.lyra.LYRATimeSeries.plot`.
 

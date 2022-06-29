@@ -15,6 +15,7 @@ import sunpy.io
 from sunpy import config
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -88,7 +89,8 @@ class NoRHTimeSeries(GenericTimeSeries):
         return axes
 
     @peek_show
-    def peek(self, title="Nobeyama Radioheliograph", columns=None, **kwargs):
+    @deprecate_positional_args_since("4.1")
+    def peek(self, *, title="Nobeyama Radioheliograph", columns=None, **kwargs):
         """
         Displays the NoRH lightcurve TimeSeries by calling
         `~sunpy.timeseries.sources.norh.NoRHTimeSeries.plot`.

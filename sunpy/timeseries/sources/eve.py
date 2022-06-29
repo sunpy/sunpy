@@ -13,6 +13,7 @@ from astropy.time import TimeDelta
 import sunpy.io
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -88,7 +89,8 @@ class ESPTimeSeries(GenericTimeSeries):
         return axes
 
     @peek_show
-    def peek(self, title="EVE/ESP Level 1", columns=None, **kwargs):
+    @deprecate_positional_args_since("4.1")
+    def peek(self, *, title="EVE/ESP Level 1", columns=None, **kwargs):
         """
         Displays the EVE ESP Level 1 timeseries data by calling
         `~sunpy.timeseries.sources.eve.ESPTimeSeries.plot`.
@@ -195,7 +197,8 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     _url = "http://lasp.colorado.edu/home/eve/"
 
     @peek_show
-    def peek(self, columns=None, **kwargs):
+    @deprecate_positional_args_since("4.1")
+    def peek(self, *, columns=None, **kwargs):
         """
         Plots the time series in a new figure.
 
