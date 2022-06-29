@@ -11,7 +11,7 @@ On this page, you can read about some of the big changes in this release.
     :local:
     :depth: 1
 
-SunPy 4.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+sunpy 4.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
