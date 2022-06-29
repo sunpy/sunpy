@@ -16,7 +16,8 @@ from sunpy.visualization import wcsaxes_compat
 __all__ = ["equator", "prime_meridian"]
 
 
-def equator(axes, rsun: u.m = R_sun, resolution=500, **kwargs):
+@u.quantity_input
+def equator(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
     """
     Draws the solar equator as seen by the axes observer.
     Hidden parts are drawn as a dotted line.
