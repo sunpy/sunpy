@@ -9,6 +9,7 @@ from astropy.time import Time
 from sunpy.coordinates import frames, get_earth
 from sunpy.coordinates.frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 from sunpy.coordinates.frames import (
+    Heliocentric,
     HeliocentricInertial,
     HeliographicCarrington,
     HeliographicStonyhurst,
@@ -204,3 +205,12 @@ def test_obstime_hack():
     assert_quantity_allclose(obs.lon, earth.lon)
     assert_quantity_allclose(obs.lat, earth.lat)
     assert_quantity_allclose(obs.radius, earth.radius)
+
+
+@pytest.mark.parametrize('frame_class', [Heliocentric, HeliographicCarrington, Helioprojective])
+def test_observer_in_heeq(frame_class):
+    # An observer provided in HGS Cartesian (i.e., HEEQ) should be converted to HGS spherical
+    obs_heeq = HeliographicStonyhurst((3, 4, 12)*u.AU, representation_type='cartesian')
+    frame = frame_class(observer=obs_heeq)
+    assert issubclass(frame.observer.representation_type, SphericalRepresentation)
+    assert_quantity_allclose(frame.observer.radius, 13*u.AU)
