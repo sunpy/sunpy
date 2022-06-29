@@ -89,7 +89,8 @@ def prime_meridian(axes, rsun: u.m = R_sun, resolution=500, **kwargs):
     axes_frame = wcsapi_to_celestial_frame(axes.wcs)
 
     if not hasattr(axes_frame, 'observer'):
-        raise AttributeError('an observer is required on the WCSAxes')
+        raise ValueError('the coordinate frame of the WCSAxes does not have an observer, '
+                         'so zero Carrington longitude cannot be determined.')
     observer = axes_frame.observer
 
     lon = 0*u.deg
