@@ -1,7 +1,7 @@
 """
-=====================================================
+==========================================
 Extracting intensity of a map along a line
-=====================================================
+==========================================
 
 In this example we will extract the intensity values of all the pixels
 that intersect with a given set of coordinates.

@@ -466,8 +466,9 @@ def extract_along_coord(smap, coord):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
+        The sunpy map.
     coord : `~astropy.coordinates.SkyCoord`
-        Coordinate along which to extract intensity
+        Coordinate along which to extract intensity.
 
     Returns
     -------
