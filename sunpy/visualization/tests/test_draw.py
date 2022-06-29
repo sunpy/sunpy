@@ -53,5 +53,5 @@ def test_heliographic_equator_prime_meridian(heliographic_test_map):
 
 def test_prime_meridian_error():
     axes = plt.subplot(projection=WCS())
-    with pytest.raises(AttributeError):
+    with pytest.raises(ValueError, match="does not have an observer"):
         draw.prime_meridian(axes)
