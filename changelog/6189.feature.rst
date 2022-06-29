@@ -1,0 +1,3 @@
+Add a function `sunpy.map.extract_along_coord` that, for a given set of coordinates,
+finds each array index that crosses the line traced by those coordinates and returns the value of the data
+array of a given map at those array indices.

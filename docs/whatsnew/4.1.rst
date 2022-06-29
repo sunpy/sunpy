@@ -1,0 +1,43 @@
+.. _whatsnew-4.1:
+
+************************
+What's New in SunPy 4.1?
+************************
+The SunPy project is pleased to announce the 4.1 release of the sunpy core package.
+
+On this page, you can read about some of the big changes in this release.
+
+.. contents::
+    :local:
+    :depth: 1
+
+sunpy 4.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+
+This release of sunpy contains x commits in x merged pull requests closing x issues from x people, x of which are first-time contributors to sunpy.
+
+* x commits have been added since 4.0
+* x issues have been closed since 4.0
+* x pull requests have been merged since 4.0
+* x people have contributed since 4.0
+* x of which are new contributors
+
+Extracting Values from a `~sunpy.map.GenericMap` Along a Set of Coordinates
+===========================================================================
+It is now easy to extract data values from a `~sunpy.map.GenericMap` along
+a curve specified by set of coordinates using the new
+`sunpy.map.extract_along_coord` function.
+This is done by applying `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`_
+between the consecutive coordinates, in pixel space, and then indexing the data
+array of the map at those points.
+See :ref:`sphx_glr_generated_gallery_units_and_coordinates_map_slit_extraction.py` for an example.
+
+Contributors to this Release
+============================
+
+The people who have contributed to the code for this release are:
+
+TODO: fill this in at release time.
+
+Where a * indicates that this release contains their first contribution to SunPy.

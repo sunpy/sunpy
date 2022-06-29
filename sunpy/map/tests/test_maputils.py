@@ -19,6 +19,7 @@ from sunpy.map.maputils import (
     contains_limb,
     contains_solar_center,
     coordinate_is_on_solar_disk,
+    extract_along_coord,
     is_all_off_disk,
     is_all_on_disk,
     map_edges,
@@ -272,3 +273,32 @@ def test_contains_coord(aia171_test_map):
     multi_coord = SkyCoord([0, 2000]*u.arcsec, [0, 2000]*u.arcsec,
                            frame=smap.coordinate_frame)
     assert (contains_coordinate(smap, multi_coord) == [True, False]).all()
+
+
+def test_extract_along_coord(aia171_test_map):
+    nmax = max(*aia171_test_map.data.shape)
+    top_right = aia171_test_map.pixel_to_world((nmax-1)*u.pix, (nmax-1)*u.pix)
+    line = SkyCoord([aia171_test_map.bottom_left_coord, top_right])
+    intensity, line_discrete = extract_along_coord(aia171_test_map, line)
+    pix_diag = np.array([(i, i) for i in range(nmax)])
+    intensity_diag = u.Quantity(
+        [aia171_test_map.data[i[0], i[1]] for i in pix_diag],
+        aia171_test_map.unit
+    )
+    line_discrete_pix = aia171_test_map.world_to_pixel(line_discrete)
+    assert np.allclose(pix_diag[:, 0], line_discrete_pix.x.value)
+    assert np.allclose(pix_diag[:, 1], line_discrete_pix.y.value)
+    assert u.quantity.allclose(intensity_diag, intensity)
+
+
+def test_extract_along_coord_one_point_exception(aia171_test_map):
+    with pytest.raises(ValueError, match='At least two points are required*'):
+        _ = extract_along_coord(aia171_test_map, aia171_test_map.bottom_left_coord)
+    with pytest.raises(ValueError, match='At least two points are required*'):
+        _ = extract_along_coord(aia171_test_map, SkyCoord([aia171_test_map.bottom_left_coord]))
+
+
+def test_extract_along_coord_out_of_bounds_exception(aia171_test_map):
+    point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
+    with pytest.raises(ValueError, match='At least one coordinate is not within the bounds of the map.*'):
+        _ = extract_along_coord(aia171_test_map, point)

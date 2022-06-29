@@ -10,6 +10,7 @@ In between versions x.1 are non-LTS releases, and supported for 6 months until t
    :maxdepth: 1
 
    changelog
+   4.1
    4.0
    3.1
    3.0
