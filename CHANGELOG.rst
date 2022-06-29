@@ -859,7 +859,7 @@ Features
   - ``sunpy.util.scraper.Scraper.findDatewith_extractor`` that parses the url using extractor to return its start time.
   - A ``matcher`` in ``sunpy.util.scraper.Scraper._extract_files_meta`` which validates the extracted metadata by using the dictionary returned from :meth:`~sunpy.net.dataretriever.GenericClient._get_match_dict`. (`#4321 <https://github.com/sunpy/sunpy/pull/4321>`__)
 - Added methods :meth:`~sunpy.net.dataretriever.GenericClient.pre_search_hook` and :meth:`~sunpy.net.dataretriever.GenericClient.post_search_hook` which helps to translate the attrs for scraper before and after the search respectively. (`#4321 <https://github.com/sunpy/sunpy/pull/4321>`__)
-- :meth:`sunpy.timeseries.sources.RHESSISummaryTimeSeries.peek` has had the following minor
+- ``sunpy.timeseries.sources.RHESSISummaryTimeSeries.peek`` has had the following minor
   changes:
 
   - Colors from the default matplotlib color cycle are now used (but the colors remain qualitatively the same)
