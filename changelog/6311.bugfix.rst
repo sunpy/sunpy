@@ -1,0 +1,2 @@
+Fixed bugs when working with a coordinate frame where the observer is specified in `~sunpy.coordinates.frames.HeliographicStonyhurst` with a Cartesian representation, which is equivalent to Heliocentric Earth Equatorial (HEEQ).
+Now, the observer will always be converted to spherical representation when the coordinate frame is created.
