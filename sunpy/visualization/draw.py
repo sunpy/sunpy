@@ -63,7 +63,8 @@ def equator(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
     return visible, hidden
 
 
-def prime_meridian(axes, rsun: u.m = R_sun, resolution=500, **kwargs):
+@u.quantity_input
+def prime_meridian(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
     """
     Draws the solar prime meridian (zero Carrington longitude) as seen by the
     axes observer. Hidden parts are drawn as a dotted line.
