@@ -76,5 +76,8 @@
   "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params": "6535c5d4c7cfb9699bf99c4ad1919e9854626c5633eaa4d9aa97d5003408634a",
   "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params_no_ticks": "536034d8e761ef5d2fdfbf8911c4ab9bbc96308328594befb44d0837eccd671e",
   "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params_grid": "5b81acf2215c9b8c1a700e2e7371f43be3177363abfe9729b6746eedd7d16686",
-  "sunpy.visualization.colormaps.tests.test_cm.test_cmap_visual": "3e05e268e324b58493ec692a48c757a7f6ed5e1a4744b03066ff7a72bdda96e7"
+  "sunpy.visualization.colormaps.tests.test_cm.test_cmap_visual": "3e05e268e324b58493ec692a48c757a7f6ed5e1a4744b03066ff7a72bdda96e7",
+  "sunpy.visualization.tests.test_draw.test_draw_equator_aia171": "abc52d5e8254b32ed42942926a4ee92d7b0aaf441bfe8c54cdcd98d6a7a62eba",
+  "sunpy.visualization.tests.test_draw.test_draw_prime_meridian_aia171": "6602b10b71759a5dae32691cfdab8762de61409a433c97b151de663f3515eb66",
+  "sunpy.visualization.tests.test_draw.test_heliographic_equator_prime_meridian": "3cb195a44e899ef46de7365bd0a0c580b7ea69662bdc560a1bbb1686c2ad48cf"
 }

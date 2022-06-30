@@ -1,6 +1,4 @@
-import numpy as np
 from matplotlib import patches
-from matplotlib.path import Path
 
 import astropy.units as u
 from astropy.constants import R_sun
@@ -10,6 +8,7 @@ from sunpy.coordinates.frames import HeliocentricInertial, Helioprojective
 from sunpy.coordinates.sun import _angular_radius
 from sunpy.coordinates.utils import get_limb_coordinates
 from sunpy.visualization import wcsaxes_compat
+from sunpy.visualization.draw import _plot_vertices
 
 __all__ = ['draw_limb']
 
@@ -95,51 +94,6 @@ def draw_limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     limb = get_limb_coordinates(observer, rsun, resolution)
 
     # Transform the limb to the axes frame and get the 2D vertices
-    limb_in_axes = limb.transform_to(axes_frame)
-    Tx = limb_in_axes.spherical.lon.to_value(u.deg)
-    Ty = limb_in_axes.spherical.lat.to_value(u.deg)
-    vertices = np.array([Tx, Ty]).T
-
-    # Determine which points are visible
-    if hasattr(axes_frame, 'observer'):
-        # The reference distance is the distance to the limb for the axes
-        # observer
-        rsun = getattr(axes_frame, 'rsun', rsun)
-        reference_distance = np.sqrt(axes_frame.observer.radius**2 - rsun**2)
-        is_visible = limb_in_axes.spherical.distance <= reference_distance
-    else:
-        # If the axes has no observer, the entire limb is considered visible
-        is_visible = np.ones_like(
-            limb_in_axes.spherical.distance, bool, subok=False)
-
-    # Identify discontinuities in the limb. Uses the same approach as
-    # astropy.visualization.wcsaxes.grid_paths.get_lon_lat_path()
-    step = np.sqrt((vertices[1:, 0] - vertices[:-1, 0]) ** 2 +
-                   (vertices[1:, 1] - vertices[:-1, 1]) ** 2)
-    continuous = np.concatenate([[True, True], step[1:] < 100 * step[:-1]])
-
-    visible, hidden = None, None
-    if np.sum(is_visible) > 0:
-        # Create the Polygon for the near side of the Sun (using a solid line)
-        if 'linestyle' not in kwargs:
-            c_kw['linestyle'] = '-'
-        visible = patches.Polygon(vertices, **c_kw)
-        _modify_polygon_visibility(visible, is_visible & continuous)
-        # Add patches as artists rather than patches to avoid triggering auto-scaling
-        axes.add_artist(visible)
-
-    if np.sum(~is_visible) > 0:
-        # Create the Polygon for the far side of the Sun (using a dotted line)
-        if 'linestyle' not in kwargs:
-            c_kw['linestyle'] = ':'
-        hidden = patches.Polygon(vertices, **c_kw)
-        _modify_polygon_visibility(hidden, ~is_visible & continuous)
-        axes.add_artist(hidden)
+    visible, hidden = _plot_vertices(limb, axes, axes_frame, rsun, **kwargs)
 
     return visible, hidden
-
-
-def _modify_polygon_visibility(polygon, keep):
-    polygon_codes = polygon.get_path().codes
-    polygon_codes[:-1][~keep] = Path.MOVETO
-    polygon_codes[-1] = Path.MOVETO if not keep[0] else Path.LINETO
