@@ -315,11 +315,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # client generated results, we drop the empty VSO results for tidiness.
         # This is because the VSO _can_handle_query is very broad because we
         # don't know the full list of supported values we can search for (yet).
-        if len(results) > 1:
-            vso_results = list(filter(lambda r: isinstance(r, vso.VSOQueryResponseTable), results))
-            for vres in vso_results:
-                if len(vres) == 0:
-                    results.remove(vres)
+        results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
 
         return UnifiedResponse(*results)
 
