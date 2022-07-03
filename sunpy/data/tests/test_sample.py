@@ -12,9 +12,7 @@ def test_retry_sample_data(tmpdir):
     assert result == []
     assert result.errors != []
 
-    # Inside _retry_sample_data, the base url will be updated to point towards
-    # http://data.sunpy.org/sunpy/v1/
-    result_retry = _retry_sample_data(result)
+    result_retry = _retry_sample_data(result, "http://data.sunpy.org/sunpy/v1/")
     assert result_retry == [tmpdir.strpath+'/tca110607.fits']
     assert result_retry.errors == []
 
