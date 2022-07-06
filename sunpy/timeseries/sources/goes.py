@@ -253,9 +253,9 @@ class XRSTimeSeries(GenericTimeSeries):
             # then use that to workout the index of the leap timestamp.
             idx = np.argwhere((np.char.find(times.isot, ":60.") != -1) == True)
             warn_user(
-                f"There is a leap second present in: {Path(filepath).name}, "
-                "1 second has been subtracted to allow its conversion into a Python datetime. "
-                f"The leap second timestamp was at index: {idx} - {times.isot[idx]}"
+                f"There is one leap second timestamp present in: {Path(filepath).name}, "
+                "1 second has been subtracted from this timestamp to allow its conversion into a Python datetime. "
+                f"The leap second timestamp was: {times.isot[idx]}"
             )
             times[idx] = times[idx] - TimeDelta(1*u.s)
             times = times.datetime
