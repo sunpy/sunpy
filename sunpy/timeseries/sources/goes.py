@@ -246,8 +246,12 @@ class XRSTimeSeries(GenericTimeSeries):
         try:
             times = times.datetime
         except ValueError:
-            warn_user("There is a leap second in the data, this has been subtracted by 1 second to work around this")
             idx = np.argwhere((np.char.find(times.isot, ":60.") != -1) == True).flatten()[0]
+            warn_user(
+                f"There is a leap second present in: {Path(filepath).name}, "
+                "1 second has been subtracted to allow its conversion into a Python datetime."
+                f"The leap second timestamp is at index: {idx} - {times.isot[idx]}"
+            )
             times[idx] = times[idx] - TimeDelta(1*u.s)
             times = times.datetime
         data = DataFrame({"xrsa": xrsa, "xrsb": xrsb, "xrsa_quality": xrsa_quality, "xrsb_quality": xrsb_quality}, index=times)
