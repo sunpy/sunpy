@@ -246,11 +246,16 @@ class XRSTimeSeries(GenericTimeSeries):
         try:
             times = times.datetime
         except ValueError:
-            idx = np.argwhere((np.char.find(times.isot, ":60.") != -1) == True).flatten()[0]
+            # We make an assumption here that there is only 1 leap second in the file.
+            # We do not make the assumption that the leap second occurs at the end of the file.
+            # Therefore, we need to find it:
+            # To do so, we convert the times to isot strings, use numpy to find the the leap second string,
+            # then use that to workout the index of the leap timestamp.
+            idx = np.argwhere((np.char.find(times.isot, ":60.") != -1) == True)
             warn_user(
                 f"There is a leap second present in: {Path(filepath).name}, "
-                "1 second has been subtracted to allow its conversion into a Python datetime."
-                f"The leap second timestamp is at index: {idx} - {times.isot[idx]}"
+                "1 second has been subtracted to allow its conversion into a Python datetime. "
+                f"The leap second timestamp was at index: {idx} - {times.isot[idx]}"
             )
             times[idx] = times[idx] - TimeDelta(1*u.s)
             times = times.datetime
