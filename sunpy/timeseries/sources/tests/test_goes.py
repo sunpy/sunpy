@@ -3,10 +3,12 @@ import pytest
 import sunpy.timeseries
 from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import figure_test
+from sunpy.util.exceptions import SunpyUserWarning
 
 goes_filepath_com = get_test_filepath('go1520120601.fits.gz')
 new_goes15_filepath = get_test_filepath('goes_truncated_test_goes15.nc')
 new_goes17_filepath = get_test_filepath('goes_truncated_test_goes17.nc')
+goes13_leap_second_filepath = get_test_filepath('goes_13_leap_second.nc')
 
 
 def test_implicit_goes(goes_test_ts):
@@ -92,6 +94,12 @@ def test_goes_remote():
     goes = sunpy.timeseries.TimeSeries(
         'https://umbra.nascom.nasa.gov/goes/fits/2018/go1520180626.fits')
     assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+
+
+def test_goes_leap_seconds():
+    with pytest.warns(SunpyUserWarning, match="There is one leap second timestamp present in: goes_13_leap_second"):
+        ts = sunpy.timeseries.TimeSeries(goes13_leap_second_filepath)
+    assert str(ts.index[-1]) == '2015-06-30 23:59:59.999000'
 
 
 def test_goes_plot_column(goes_test_ts):
