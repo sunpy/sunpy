@@ -231,11 +231,12 @@ class XRSTimeSeries(GenericTimeSeries):
             flux_name = h5nc.variables.get("a_flux") or h5nc.variables.get("xrsa_flux")
             if flux_name is None:
                 raise ValueError(f"No flux data (either a_flux or xrsa_flux) found in file: {filepath}")
-            flux_name = flux_name.name
-            xrsa = np.array(h5nc[flux_name])
-            xrsb = np.array(h5nc[flux_name.replace("a", "b")])
-            xrsa_quality = np.array(h5nc[flux_name.replace("flux", "flags")])
-            xrsb_quality = np.array(h5nc[flux_name.replace("a", "b").replace("flux", "flags")])
+            flux_name_a = flux_name.name
+            flux_name_b = flux_name_a.replace("a", "b")
+            xrsa = np.array(h5nc[flux_name_a])
+            xrsb = np.array(h5nc[flux_name_b])
+            xrsa_quality = np.array(h5nc[flux_name_a.replace("flux", "flags")])
+            xrsb_quality = np.array(h5nc[flux_name_b.replace("flux", "flags")])
             start_time_str = h5nc["time"].attrs["units"]
             # h5netcdf < 0.14 return bytes instead of a str
             if isinstance(start_time_str, bytes):
@@ -246,12 +247,15 @@ class XRSTimeSeries(GenericTimeSeries):
         try:
             times = times.datetime
         except ValueError:
-            # We make an assumption here that there is only 1 leap second in the file.
             # We do not make the assumption that the leap second occurs at the end of the file.
             # Therefore, we need to find it:
             # To do so, we convert the times to isot strings, use numpy to find the the leap second string,
             # then use that to workout the index of the leap timestamp.
             idx = np.argwhere((np.char.find(times.isot, ":60.") != -1) == True)
+            # We only handle the case there is only 1 leap second in the file.
+            # I don't think there every would be a case where it would be more than 1.
+            if len(idx) != 1:
+                raise ValueError(f"More than one leap second was found in: {Path(filepath).name}")
             warn_user(
                 f"There is one leap second timestamp present in: {Path(filepath).name}, "
                 "This timestamp has been rounded to `:59.999` to allow its conversion into a Python datetime. "
