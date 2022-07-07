@@ -1,2 +1,2 @@
 Fixed `~sunpy.timeseries.sources.XRSTimeSeries` inability to read leap-second files for GOES.
-It subtracts 1 second from the leap-second timestamp, so that Python datetime does not raise an exception.
+It floors the leap-second timestamp to be ``59.999``, so that Python datetime does not raise an exception.

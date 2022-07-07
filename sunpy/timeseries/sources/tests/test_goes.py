@@ -99,7 +99,7 @@ def test_goes_remote():
 def test_goes_leap_seconds():
     with pytest.warns(SunpyUserWarning, match="There is one leap second timestamp present in: goes_13_leap_second"):
         ts = sunpy.timeseries.TimeSeries(goes13_leap_second_filepath)
-    assert str(ts.index[-1]) == '2015-06-30 23:59:59.965000'
+    assert str(ts.index[-1]) == '2015-06-30 23:59:59.999000'
 
 
 def test_goes_plot_column(goes_test_ts):

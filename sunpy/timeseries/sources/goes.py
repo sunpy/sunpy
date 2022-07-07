@@ -254,10 +254,10 @@ class XRSTimeSeries(GenericTimeSeries):
             idx = np.argwhere((np.char.find(times.isot, ":60.") != -1) == True)
             warn_user(
                 f"There is one leap second timestamp present in: {Path(filepath).name}, "
-                "1 second has been subtracted from this timestamp to allow its conversion into a Python datetime. "
+                "This timestamp has been rounded to `:59.999` to allow its conversion into a Python datetime. "
                 f"The leap second timestamp was: {times.isot[idx]}"
             )
-            times[idx] = times[idx] - TimeDelta(1*u.s)
+            times[idx] = Time(times[idx].isot.tolist()[0][0][:17] + "59.999").unix
             times = times.datetime
         data = DataFrame({"xrsa": xrsa, "xrsb": xrsb, "xrsa_quality": xrsa_quality, "xrsb_quality": xrsb_quality}, index=times)
         data = data.replace(-9999, np.nan)
