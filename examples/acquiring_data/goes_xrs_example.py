@@ -30,9 +30,13 @@ available from each satellite. Similarly there are times when GOES 16 and 17 ove
 import matplotlib.pyplot as plt
 import numpy as np
 
+from astropy.visualization import time_support
+
 from sunpy import timeseries as ts
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+
+time_support()
 
 #############################################################
 # Lets first define our start and end times and query using the
@@ -91,7 +95,7 @@ plt.show()
 
 goes_flare = goes_15.truncate("2015-06-21 09:35", "2015-06-21 10:30")
 fig, ax = plt.subplots()
-ax.plot(goes_flare.index, np.gradient(goes_flare.quantity("xrsb")))
+ax.plot(goes_flare.time, np.gradient(goes_flare.quantity("xrsb")))
 ax.set_ylabel("Flux (Wm$^{-2}$$s^{-1}$)")
 fig.autofmt_xdate()
 plt.show()

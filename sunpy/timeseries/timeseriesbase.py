@@ -186,7 +186,10 @@ class GenericTimeSeries:
         """
         The timestamps of the data.
         """
-        return Time(self._data.index)
+        t = Time(self._data.index)
+        # Set time format to enable plotting with astropy.visualisation.time_support()
+        t.format = 'iso'
+        return t
 
     @property
     def shape(self):
