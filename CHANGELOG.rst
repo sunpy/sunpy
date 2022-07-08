@@ -1,3 +1,18 @@
+4.0.3 (2022-07-08)
+==================
+
+Bug Fixes
+---------
+
+- Fixed `~sunpy.timeseries.sources.XRSTimeSeries` inability to read leap-second files for GOES.
+  It floors the leap-second timestamp to be ``59.999``, so that Python datetime does not raise an exception. (`#6262 <https://github.com/sunpy/sunpy/pull/6262>`__)
+- Fixed bugs when working with a coordinate frame where the observer is specified in `~sunpy.coordinates.frames.HeliographicStonyhurst` with a Cartesian representation, which is equivalent to Heliocentric Earth Equatorial (HEEQ).
+  Now, the observer will always be converted to spherical representation when the coordinate frame is created. (`#6311 <https://github.com/sunpy/sunpy/pull/6311>`__)
+- Fixed an error when Fido returns zero results from the VSO
+  and some results from at least one other data source. This
+  (now fixed) error is only present when using numpy version >= 1.23. (`#6318 <https://github.com/sunpy/sunpy/pull/6318>`__)
+
+
 4.0.2 (2022-06-24)
 ==================
 
