@@ -185,7 +185,7 @@ the header information as read from the source files. A word of caution: many
 data sources provide little to no meta data so this variable might be empty.
 The meta data is described in more detail later in this guide. Similarly there
 are properties for getting `~sunpy.timeseries.GenericTimeSeries.columns`
-as a list of strings, `~sunpy.timeseries.GenericTimeSeries.index`
+as a list of strings, `~sunpy.timeseries.GenericTimeSeries.time`
 values and `~sunpy.timeseries.GenericTimeSeries.time_range` of
 the data.  The actual data in a sunpy TimeSeries object is accessible through
 the `~sunpy.timeseries.GenericTimeSeries.data` attribute.  The

@@ -18,7 +18,7 @@ import sunpy.timeseries
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.util import SunpyUserWarning
+from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
 # Test fixtures are in ../conftest.py
@@ -494,7 +494,8 @@ def test_equality_different_ts_types(generic_ts, eve_test_ts):
 
 
 def test_ts_index(generic_ts):
-    assert (generic_ts.index == generic_ts.to_dataframe().index).all()
+    with pytest.warns(SunpyDeprecationWarning, match='.index is deprecatd'):
+        assert (generic_ts.index == generic_ts.to_dataframe().index).all()
 
 
 def test_ts_shape(generic_ts):

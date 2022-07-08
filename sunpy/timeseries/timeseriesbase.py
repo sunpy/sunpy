@@ -18,13 +18,14 @@ import pandas as pd
 import astropy
 import astropy.units as u
 from astropy.table import Column, Table
+from astropy.time import Time
 from astropy.visualization import hist
 
 from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.exceptions import warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_user
 from sunpy.util.metadata import MetaDict
 from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import peek_show
@@ -176,7 +177,16 @@ class GenericTimeSeries:
         """
         The time index of the data.
         """
-        return self._data.index
+        warn_deprecated('.index is deprecatd. Use .time instead to get an astropy.time.Time object, '
+                        'or ts.to_dataframe().index to get a pandas DateTimeIndex.')
+        return self.to_dataframe().index
+
+    @property
+    def time(self):
+        """
+        The timestamps of the data.
+        """
+        return Time(self._data.index)
 
     @property
     def shape(self):
