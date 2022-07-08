@@ -1,8 +1,10 @@
 """Hinode XRT and SOT Map subclass definitions"""
-from sunpy.map import GenericMap
+import astropy.units as u
+from astropy.coordinates import SkyCoord
 
-__author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
-__email__ = "jack.ireland@nasa.gov"
+from sunpy.coordinates import sun
+from sunpy.map import GenericMap
+from sunpy.sun import constants
 
 __all__ = ['XRTMap', 'SOTMap']
 
@@ -12,7 +14,8 @@ def _lower_list(l):
 
 
 class XRTMap(GenericMap):
-    """Hinode XRT map definition.
+    """
+    Hinode XRT map definition.
 
     The X-Ray Telescope (XRT) is a high resolution grazing incidence telescope,
     which is a succsessor to Yohkoh. It provides 2-arcsecond resolution images
@@ -20,6 +23,13 @@ class XRTMap(GenericMap):
     from 1,000,000 to 10,000,000 Kelvin.
 
     Hinode was launched on 22 September 2006 into a sun-synchronous orbit.
+
+    .. note::
+
+        If the required parameters for observator are not provided,
+        default values will be used for ``HGLT_OBS`` and ``HGLN_OBS``.
+        ``HGLN_OBS`` will be set to 0 degrees.
+        ``HGLT_OBS`` will be set to the B0 value.
 
     References
     ----------
@@ -36,24 +46,43 @@ class XRTMap(GenericMap):
                                   "Be_thick", "Gband", "Ti_poly"]
 
     def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
-
-        fw1 = header.get('EC_FW1_')
+        fw1 = header.get('EC_FW1_', '')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
-            raise ValueError('Unpexpected filter wheel 1 in header.')
-
-        fw2 = header.get('EC_FW2_')
+            raise ValueError(f'Unexpected filter wheel 1 {fw1} in header.')
+        fw2 = header.get('EC_FW2_', '')
         if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
-            raise ValueError('Unpexpected filter wheel 2 in header.')
-
+            raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
+        super().__init__(data, header, **kwargs)
         self.plot_settings['cmap'] = 'hinodexrt'
 
     @property
     def _timesys(self):
         if self.meta.get('timesys', '').upper() == 'UTC (TBR)':
             return 'UTC'
-        else:
-            return super()._timesys
+        return super()._timesys
+
+    @property
+    # @cached_property_based_on('_meta_hash')
+    def observer_coordinate(self):
+        # Based on the discussion from
+        # # https://community.openastronomy.org/t/sunpymetadatawarnings-when-using-hinode-xrt-data/393/7
+        # Certain keywords are missing from the level 1 header that make haev to set values
+        # to avoid warnings being raised.
+        missing_meta = {}
+        for keys, kwargs in self._supported_observer_coordinates:
+            if not isinstance(kwargs['frame'], str):
+                kwargs['frame'] = kwargs['frame'].name
+            missing_meta[kwargs['frame']] = set(keys).difference(self.meta.keys())
+            if "heliographic_stonyhurst" in missing_meta:
+                if "hgln_obs" in missing_meta["heliographic_stonyhurst"]:
+                    extra_kwargs = {"lon": 0,
+                                    "lat": self.meta.get("SOLAR_B0", sun.B0(self.meta.get("DATE_OBS")).to_value(u.deg)),
+                                    "radius": constants.radius
+                                    }
+                    sc = SkyCoord(obstime=self.date, **{**kwargs, **extra_kwargs})
+                    sc = sc.heliographic_stonyhurst
+                    return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))
+        return super().observer_coordinate
 
     @property
     def detector(self):
@@ -68,6 +97,13 @@ class XRTMap(GenericMap):
         fw1 = self.meta.get('EC_FW1_').replace("_", " ")
         fw2 = self.meta.get('EC_FW2_').replace("_", " ")
         return f"{fw1}-{fw2}"
+
+    @property
+    def processing_level(self):
+        lvl = self.meta.get('DATA_LEV', None)
+        if lvl is None:
+            return
+        return int(lvl)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
