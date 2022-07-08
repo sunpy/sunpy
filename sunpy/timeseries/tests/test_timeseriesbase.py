@@ -11,7 +11,7 @@ from pandas.testing import assert_frame_equal
 import astropy.units as u
 from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.time import TimeDelta
+from astropy.time import Time, TimeDelta
 
 import sunpy
 import sunpy.timeseries
@@ -496,6 +496,10 @@ def test_equality_different_ts_types(generic_ts, eve_test_ts):
 def test_ts_index(generic_ts):
     with pytest.warns(SunpyDeprecationWarning, match='.index is deprecatd'):
         assert (generic_ts.index == generic_ts.to_dataframe().index).all()
+
+
+def test_ts_time(generic_ts):
+    assert isinstance(generic_ts.time, Time)
 
 
 def test_ts_shape(generic_ts):
