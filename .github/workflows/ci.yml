@@ -30,4 +30,5 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: 3.11-dev
+        - linux: py311
+          python-version: '3.11-dev'
