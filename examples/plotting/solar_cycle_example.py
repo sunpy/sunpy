@@ -17,7 +17,6 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.time import TimeRange
 
-time_support()
 ###############################################################################
 # The U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center (SWPC)
 # provides recent solar cycle indices which includes different sunspot numbers,
@@ -46,7 +45,6 @@ noaa_predict = ts.TimeSeries(f_noaa_predict, source='noaapredictindices')
 # The predictions provide both a high and low values, which we plot below as
 # ranges.
 
-# Enable support for plotting astropy times
 time_support()
 plt.figure()
 plt.plot(noaa.time, noaa.quantity('sunspot RI'), label='Sunspot Number')

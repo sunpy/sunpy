@@ -36,8 +36,6 @@ from sunpy import timeseries as ts
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-time_support()
-
 #############################################################
 # Lets first define our start and end times and query using the
 # `~sunpy.net.Fido`.
@@ -94,6 +92,8 @@ plt.show()
 # flares.
 
 goes_flare = goes_15.truncate("2015-06-21 09:35", "2015-06-21 10:30")
+
+time_support()
 fig, ax = plt.subplots()
 ax.plot(goes_flare.time, np.gradient(goes_flare.quantity("xrsb")))
 ax.set_ylabel("Flux (Wm$^{-2}$$s^{-1}$)")
