@@ -1,7 +1,7 @@
 cff-version: '1.1.0'
-message: 'Please cite the following works when using this software.'
+message: 'Please cite the following work when using this software.'
 authors:
-  - family-names: 'The SunPy Community'
+  - name: 'The SunPy Community'
   - family-names: 'Barnes'
     given-names: 'Will T.'
   - family-names: 'Bobra'
