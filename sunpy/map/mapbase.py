@@ -1213,7 +1213,7 @@ class GenericMap(NDData):
                 # representation)
                 return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))
 
-            elif any(meta_list) and not set(keys).isdisjoint(self.meta.keys()):
+            elif not any(meta_list) and set(keys).isdisjoint(self.meta.keys()):
                 if not isinstance(kwargs['frame'], str):
                     kwargs['frame'] = kwargs['frame'].name
                 missing_meta[kwargs['frame']] = set(keys).difference(self.meta.keys())

@@ -7,6 +7,9 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.hinode import XRTMap
+from sunpy.util.exceptions import SunpyMetadataWarning
+
+__author__ = 'Pritish C. (VaticanCameos)'
 
 
 @pytest.fixture
@@ -43,11 +46,13 @@ def test_level_number(xrt_map):
 
 
 def test_heliographic_longitude(xrt_map):
-    assert u.allclose(xrt_map.heliographic_longitude, 0 * u.deg)
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        assert u.allclose(xrt_map.heliographic_longitude, 0 * u.deg)
 
 
 def test_heliographic_latitude(xrt_map):
-    assert u.allclose(xrt_map.heliographic_latitude, -4.84401544 * u.deg)
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        assert u.allclose(xrt_map.heliographic_latitude, -4.84401544 * u.deg)
 
 
 def test_wheel_measurements(xrt_map):
@@ -61,4 +66,5 @@ def test_wheel_measurements(xrt_map):
 
 def test_wcs(xrt_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    xrt_map.pixel_to_world(0*u.pix, 0*u.pix)
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        xrt_map.pixel_to_world(0*u.pix, 0*u.pix)

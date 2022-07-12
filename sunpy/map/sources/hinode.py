@@ -1,11 +1,10 @@
 """Hinode XRT and SOT Map subclass definitions"""
 import astropy.units as u
-from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates import sun
 from sunpy.map import GenericMap
-from sunpy.sun import constants
 
+__author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
+__email__ = "jack.ireland@nasa.gov"
 __all__ = ['XRTMap', 'SOTMap']
 
 
@@ -28,7 +27,7 @@ class XRTMap(GenericMap):
     -----
     XRT files do not normally specify the heliographic longitude of the spacecraft,
     and the default assumption is that the spacecraft is at zero Stonyhurst
-    heliographic longitude (i.e., the same longitude as Earth).  This assumption is
+    heliographic longitude (i.e., the same longitude as Earth). This assumption is
     safe for nearly all analyses due to Hinode's orbital altitude of only ~600 km.
     This assumption is not made if ``HGLN_OBS`` and ``HGLT_OBS`` values have been
     explicitly added to the metadata.
@@ -64,9 +63,9 @@ class XRTMap(GenericMap):
         return super()._timesys
 
     @property
-    @property
     def _supported_observer_coordinates(self):
         # Assume observer is at zero Stonyhurst heliographic longitude if not otherwise specified
+        # https://community.openastronomy.org/t/sunpymetadatawarnings-when-using-hinode-xrt-data/393/7 for more information
         return (super()._supported_observer_coordinates
                 + [(('solar_b0', 'dsun_obs'), {'lon': 0*u.deg,
                                                'lat': self.meta.get('solar_b0'),
