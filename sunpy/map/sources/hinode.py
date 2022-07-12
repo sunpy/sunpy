@@ -24,12 +24,14 @@ class XRTMap(GenericMap):
 
     Hinode was launched on 22 September 2006 into a sun-synchronous orbit.
 
-    .. note::
-
-        If the required parameters for observator are not provided,
-        default values will be used for ``HGLT_OBS`` and ``HGLN_OBS``.
-        ``HGLN_OBS`` will be set to 0 degrees.
-        ``HGLT_OBS`` will be set to the B0 value.
+    Notes
+    -----
+    XRT files do not normally specify the heliographic longitude of the spacecraft,
+    and the default assumption is that the spacecraft is at zero Stonyhurst
+    heliographic longitude (i.e., the same longitude as Earth).  This assumption is
+    safe for nearly all analyses due to Hinode's orbital altitude of only ~600 km.
+    This assumption is not made if ``HGLN_OBS`` and ``HGLT_OBS`` values have been
+    explicitly added to the metadata.
 
     References
     ----------
@@ -62,27 +64,15 @@ class XRTMap(GenericMap):
         return super()._timesys
 
     @property
-    # @cached_property_based_on('_meta_hash')
-    def observer_coordinate(self):
-        # Based on the discussion from
-        # # https://community.openastronomy.org/t/sunpymetadatawarnings-when-using-hinode-xrt-data/393/7
-        # Certain keywords are missing from the level 1 header that make haev to set values
-        # to avoid warnings being raised.
-        missing_meta = {}
-        for keys, kwargs in self._supported_observer_coordinates:
-            if not isinstance(kwargs['frame'], str):
-                kwargs['frame'] = kwargs['frame'].name
-            missing_meta[kwargs['frame']] = set(keys).difference(self.meta.keys())
-            if "heliographic_stonyhurst" in missing_meta:
-                if "hgln_obs" in missing_meta["heliographic_stonyhurst"]:
-                    extra_kwargs = {"lon": 0,
-                                    "lat": self.meta.get("SOLAR_B0", sun.B0(self.meta.get("DATE_OBS")).to_value(u.deg)),
-                                    "radius": constants.radius
-                                    }
-                    sc = SkyCoord(obstime=self.date, **{**kwargs, **extra_kwargs})
-                    sc = sc.heliographic_stonyhurst
-                    return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))
-        return super().observer_coordinate
+    @property
+    def _supported_observer_coordinates(self):
+        # Assume observer is at zero Stonyhurst heliographic longitude if not otherwise specified
+        return (super()._supported_observer_coordinates
+                + [(('solar_b0', 'dsun_obs'), {'lon': 0*u.deg,
+                                               'lat': self.meta.get('solar_b0'),
+                                               'radius': self.meta.get('dsun_obs'),
+                                               'unit': (u.deg, u.deg, u.m),
+                                               'frame': "heliographic_stonyhurst"})])
 
     @property
     def detector(self):
