@@ -1,6 +1,9 @@
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import pytest
 
+import astropy.units as u
+from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 
 import sunpy.io
@@ -55,3 +58,22 @@ def test_prime_meridian_error():
     axes = plt.subplot(projection=WCS())
     with pytest.raises(ValueError, match="does not have an observer"):
         draw.prime_meridian(axes)
+
+
+def test_limb_invisible(aia171_test_map):
+    aia_obs = aia171_test_map.observer_coordinate
+    # Create a new observer on the opposite side of the Sun
+    new_obs = SkyCoord(lon=aia_obs.lon + 180*u.deg,
+                       lat=-aia_obs.lat,
+                       radius=aia_obs.radius / 10,
+                       frame=aia_obs.replicate_without_data())
+
+    ax = Figure().add_subplot(111, projection=aia171_test_map)
+    # Original observer
+    visible, hidden = draw.limb(ax, aia_obs)
+    assert visible is not None
+    assert hidden is None
+    # Far side observer
+    visible, hidden = draw.limb(ax, new_obs)
+    assert visible is None
+    assert hidden is not None
