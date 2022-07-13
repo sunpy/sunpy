@@ -13,7 +13,7 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
-from sunpy.visualization import draw
+from sunpy.visualization import drawing
 
 ###############################################################################
 # Let's import sample AIA data and plot it with the equator and prime meridian.
@@ -23,8 +23,8 @@ aia_map = sunpy.map.Map(AIA_171_IMAGE)
 fig = plt.figure()
 ax = fig.add_subplot(projection=aia_map)
 aia_map.plot()
-draw.equator(ax, color='blue')
-draw.prime_meridian(ax, color='red')
+drawing.equator(ax, color='blue')
+drawing.prime_meridian(ax, color='red')
 plt.show()
 
 ###############################################################################
@@ -47,6 +47,6 @@ outmap = aia_map.reproject_to(header)
 fig = plt.figure()
 ax = fig.add_subplot(projection=outmap)
 outmap.plot()
-draw.equator(ax, color='blue')
-draw.prime_meridian(ax, color='red')
+drawing.equator(ax, color='blue')
+drawing.prime_meridian(ax, color='red')
 plt.show()

@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.visualization import draw
+from sunpy.visualization import drawing
 
 ###############################################################################
 # Let's download a magnetic field synoptic map and read it into a Map.
@@ -35,7 +35,7 @@ im = syn_map.plot(axes=ax)
 
 visible_limbs = []
 for (body, coord), color in zip(coords.items(), ['tab:blue', 'tab:red']):
-    v, _ = draw.limb(ax, coord, color=color, label=f'Limb seen from {body}', linewidth=2)
+    v, _ = drawing.limb(ax, coord, color=color, label=f'Limb seen from {body}', linewidth=2)
     visible_limbs.append(v)
 
 ax.legend(handles=visible_limbs)
