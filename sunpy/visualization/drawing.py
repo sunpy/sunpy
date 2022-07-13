@@ -131,13 +131,13 @@ def equator(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
     Examples
     --------
     >>> import sunpy.map
-    >>> from sunpy.visualization import draw
+    >>> from sunpy.visualization import drawing
     >>> import sunpy.data.sample   # doctest: +REMOTE_DATA
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)   # doctest: +REMOTE_DATA
     >>> fig = plt.figure()   # doctest: +SKIP
     >>> ax = fig.add_subplot(projection=aia)   # doctest: +SKIP
     >>> aia.plot()   # doctest: +SKIP
-    >>> draw.equator(ax)   # doctest: +SKIP
+    >>> drawing.equator(ax)   # doctest: +SKIP
     """
     if not wcsaxes_compat.is_wcsaxes(axes):
         raise ValueError('axes must be a WCSAxes')
