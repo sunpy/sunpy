@@ -35,16 +35,15 @@ See :ref:`sphx_glr_generated_gallery_units_and_coordinates_map_slit_extraction.p
 
 Drawing the solar equator and prime meridian
 ============================================
-You can now use the `~sunpy.visualization.draw` module to draw the solar equator
+You can now use the `~sunpy.visualization.drawing` module to draw the solar equator
 and prime meridian (zero Carrington longitude) on Astropy WCS axes. See
 :ref:`plot_equator_prime_meridian.py` for an example.
 
-Removal of `~sunpy.visualization.limb`
+Deprecation of `~sunpy.visualization.limb`
 ==========================================
-The `~sunpy.visualization.limb` module has been moved into the
-`~sunpy.visualization.draw` module. Note that `~sunpy.visualization.limb.draw_limb`
-has been renamed `~sunpy.visualization.draw.limb` in accordance with the other
-functions in the module.
+The `~sunpy.visualization.limb` module is deprecated and will be removed in 
+version 4.2. The `~sunpy.visualization.limb.draw_limb` function has been moved into
+the `~sunpy.visualization.drawing` module and renamed `~sunpy.visualization.drawing.limb`.
 
 Contributors to this Release
 ============================
