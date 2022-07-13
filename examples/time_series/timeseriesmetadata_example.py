@@ -85,8 +85,8 @@ print(large_trunc_ts.meta.to_string(2))
 large_trunc_ts.meta.find(time=parse_time('2010-11-04 09:01:16'))
 large_trunc_ts.meta.find(time='2010-11-04 09:01:16', colname='xrsb')
 
-# You can get the time of a row a from the TimeSeries object's index:
-large_trunc_ts.meta.find(time=large_trunc_ts.index[10])
+# You can get the time of a row a from the TimeSeries object's times:
+large_trunc_ts.meta.find(time=large_trunc_ts.time[10])
 
 # There is also a get method:
 large_trunc_ts.meta.get('telescop')

@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
+from astropy.visualization import time_support
 
 import sunpy.timeseries as ts
 from sunpy.net import Fido
@@ -44,11 +45,12 @@ noaa_predict = ts.TimeSeries(f_noaa_predict, source='noaapredictindices')
 # The predictions provide both a high and low values, which we plot below as
 # ranges.
 
+time_support()
 plt.figure()
-plt.plot(noaa.index, noaa.quantity('sunspot RI'), label='Sunspot Number')
-plt.plot(noaa_predict.index, noaa_predict.quantity('sunspot'),
+plt.plot(noaa.time, noaa.quantity('sunspot RI'), label='Sunspot Number')
+plt.plot(noaa_predict.time, noaa_predict.quantity('sunspot'),
          color='grey', label='Near-term Prediction')
-plt.fill_between(noaa_predict.index, noaa_predict.quantity('sunspot low'),
+plt.fill_between(noaa_predict.time, noaa_predict.quantity('sunspot low'),
                  noaa_predict.quantity('sunspot high'), alpha=0.3, color='grey')
 plt.ylim(bottom=0)
 plt.ylabel('Sunspot Number')
