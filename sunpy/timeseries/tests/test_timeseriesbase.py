@@ -319,18 +319,13 @@ def test_concatenation_of_slices_list(eve_test_ts, concatenated_slices_test_list
 @pytest.fixture
 def different_data_concat(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate
-    return eve_test_ts.concatenate(fermi_gbm_test_ts, method='astropy')
+    with pytest.warns(SunpyDeprecationWarning, match='Using pandas to concatenate two TimeSeries is deprecated'):
+        return eve_test_ts.concatenate(fermi_gbm_test_ts, method='pandas')
 
 
 def test_concat_list(eve_test_ts, fermi_gbm_test_ts):
-    assert (eve_test_ts.concatenate(fermi_gbm_test_ts) ==
-            eve_test_ts.concatenate([fermi_gbm_test_ts]))
-
-@pytest.fixture
-def concatenation_different_data_test_list(eve_test_ts, fermi_gbm_test_ts):
-    # Take two different data sources, pass one as an iterable and concatenate
-    return eve_test_ts.concatenate([fermi_gbm_test_ts], method='astropy')
-
+    assert (eve_test_ts.concatenate(fermi_gbm_test_ts, method='astropy') ==
+            eve_test_ts.concatenate([fermi_gbm_test_ts], method='astropy'))
 
 def test_concatenation_of_different_data_ts(eve_test_ts, fermi_gbm_test_ts,
                                             different_data_concat):
@@ -357,40 +352,10 @@ def test_concatenation_of_different_data_ts(eve_test_ts, fermi_gbm_test_ts,
         comined_units)
 
     # Test data is the concatenation
-    comined_df = comined_df.sort_index()
-    assert_frame_equal(different_data_concat.to_dataframe(), comined_df)
-
-
-def test_concatenation_of_self(eve_test_ts):
-    assert_frame_equal(concatenation_different_data_test_ts.to_dataframe(), comined_df)
-
-
-def test_concatenation_of_different_data_list(eve_test_ts, fermi_gbm_test_ts,
-                                              concatenation_different_data_test_list):
-    # Same test_concatenation_of_different_data_ts except an iterable is passed to concatenate
-    value = True
-    for key in list(concatenation_different_data_test_list.meta.metadata[0][2]
-                    .keys()):
-        if concatenation_different_data_test_list.meta.metadata[0][2][
-                key] != fermi_gbm_test_ts.meta.metadata[0][2][key]:
-            value = False
-    for key in list(concatenation_different_data_test_list.meta.metadata[1][2]
-                    .keys()):
-        if concatenation_different_data_test_list.meta.metadata[1][2][
-                key] != eve_test_ts.meta.metadata[0][2][key]:
-            value = False
-    assert value
-
-    # Test units concatenation
-    comined_units = copy.deepcopy(eve_test_ts.units)
-    comined_units.update(fermi_gbm_test_ts.units)
-    assert dict(concatenation_different_data_test_list.units) == dict(
-        comined_units)
-
-    # Test data is the concatenation
     comined_df = pd.concat([eve_test_ts.to_dataframe(), fermi_gbm_test_ts.to_dataframe()],
                            sort=False)
-    assert_frame_equal(concatenation_different_data_test_list.to_dataframe(), comined_df)
+    comined_df = comined_df.sort_index()
+    assert_frame_equal(different_data_concat.to_dataframe(), comined_df)
 
 
 def test_concatenation_of_self_ts(eve_test_ts):
