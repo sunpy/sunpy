@@ -1195,10 +1195,10 @@ class GenericMap(NDData):
         if default is not None:
             return default
 
-        missing_meta = {}
+        warning_message = ["Missing metadata for observer: assuming Earth-based observer."]
         for keys, kwargs in self._supported_observer_coordinates:
-            meta_list = [k in self.meta for k in keys]
-            if all(meta_list):
+            missing_keys = set(keys) - self.meta.keys()
+            if not missing_keys:
                 sc = SkyCoord(obstime=self.date, **kwargs)
                 # If the observer location is supplied in Carrington coordinates,
                 # the coordinate's `observer` attribute should be set to "self"
@@ -1212,17 +1212,11 @@ class GenericMap(NDData):
                 # observer coordinate is specified in a cartesian
                 # representation)
                 return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))
-
-            elif not any(meta_list) and set(keys).isdisjoint(self.meta.keys()):
-                if not isinstance(kwargs['frame'], str):
-                    kwargs['frame'] = kwargs['frame'].name
-                missing_meta[kwargs['frame']] = set(keys).difference(self.meta.keys())
-
-        warning_message = "".join(
-            [f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
-        warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
-        warn_metadata(warning_message, stacklevel=3)
-
+            elif missing_keys != keys:
+                frame = kwargs['frame'] if isinstance(kwargs['frame'], str) else kwargs['frame'].name
+                warning_message.append(f"For frame '{frame}' the following metadata is missing: "
+                                       f"{','.join(missing_keys)}")
+        warn_metadata("\n".join(warning_message), stacklevel=3)
         return get_earth(self.date)
 
     @property
