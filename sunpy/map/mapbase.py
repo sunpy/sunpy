@@ -1216,6 +1216,7 @@ class GenericMap(NDData):
                 frame = kwargs['frame'] if isinstance(kwargs['frame'], str) else kwargs['frame'].name
                 warning_message.append(f"For frame '{frame}' the following metadata is missing: "
                                        f"{','.join(missing_keys)}")
+        warning_message.append("\n")
         warn_metadata("\n".join(warning_message), stacklevel=3)
         return get_earth(self.date)
 
