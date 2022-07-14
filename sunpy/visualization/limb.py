@@ -7,8 +7,8 @@ from sunpy.visualization import drawing
 __all__ = ['draw_limb']
 
 
-@deprecated(since="4.1", message="We will be moving this",
-            alternative="sunpy.visualization.drawing")
+@deprecated(since="4.1", message="This will be moved.",
+            alternative="sunpy.visualization.drawing.limb")
 @u.quantity_input
 def draw_limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     """

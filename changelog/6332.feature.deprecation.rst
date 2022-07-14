@@ -1,4 +1,0 @@
-Moved :func:`~sunpy.visualization.limb.draw_limb` into `~sunpy.visualization.drawing`
-as :func"`~sunpy.visualization.drawing.limb` and added the plot_equator_prime_meridian.py
-example to the Example Gallery.
-Deprecated the `~sunpy.visualization.limb` module.
