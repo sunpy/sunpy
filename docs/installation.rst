@@ -4,47 +4,41 @@
 Installation
 ************
 
-Requirements
-============
+The SunPy project maintains a range of libraries that leverage the wider ecosystem of scientific Python packages for solar physics.
 
-sunpy requires Python 3.8 or higher.
+Installing a SunPy library
+==========================
 
-Installing Scientific Python and ``sunpy``
-==========================================
-
-``sunpy`` is part of the wider ecosystem of scientific Python packages for solar physics.
-Therefore a working ``sunpy`` installation is more about installing the scientific Python ecosystem than ``sunpy`` itself.
-
-If you do not currently have a working scientific Python distribution this guide will set you up with the Miniforge, which makes it easy to install and manage your scientific Python packages.
+If you do not currently have a working scientific Python distribution this guide will set you up with `Miniforge <https://conda-forge.org/#about>`__, which makes it easy to install and manage Python packages.
 
 `To install the Miniforge Python distribution follow these instructions <https://github.com/conda-forge/miniforge#install>`__.
 
-We do not recommend that you use Anaconda, there are known conflicts with the "defaults" channel and the "conda-forge" channel which has the ``sunpy`` package.
+We do not recommend that you use Anaconda, there are known conflicts with the "defaults" channel and the "conda-forge" channel that contains all of the SunPy libraries.
 
-Installing ``sunpy`` using Miniforge
+Installing a package using Miniforge
 ------------------------------------
 
-To install ``sunpy``, launch a system command prompt or terminal.
+To install ``sunpy`` (or another package such as ``ablog``), launch a terminal (under a UNIX-like system) or Miniforge Prompt (under Windows).
 
 .. note::
 
     We strongly recommend using a `Python virtual environment <https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/>`__ or a `conda virtual environment. <https://towardsdatascience.com/getting-started-with-python-environments-using-conda-32e9f2779307>`__
 
-Now to install ``sunpy`` within the your virtual environment::
+You will want to activate your virtual environment then run::
 
     $ conda install sunpy
 
 This will install ``sunpy`` and each of its dependencies.
 
-Updating ``sunpy``
+Updating a package
 ------------------
 
-You can update to the latest version by running::
+You can update to the latest version of any package by running::
 
-    conda update sunpy
+    conda update <package_name>
 
-Installing ``sunpy`` on top of an existing scientific Python environment
-------------------------------------------------------------------------
+Installing on top of an existing scientific Python environment
+--------------------------------------------------------------
 
 This section assumes you already have everything setup, whether that be conda or a Python virtual environment.
 These commands are to be executed within these environments.
@@ -54,10 +48,10 @@ conda
 
 If you want to install ``sunpy`` within a pre-existing conda environment, you will want to activate the virtual environment and run::
 
-    $ conda activate <name e.g., sunpy>
     $ conda install sunpy
 
-This assumes you have the conda-forge channel added (either via Miniforge or manually added).
+This assumes that your pre-existing conda environment is already using the "conda-forge" channel.
+If this is not the case, please install Miniforge (using the instructions above).
 
 pip
 ^^^
@@ -69,8 +63,11 @@ To acquire a fully working ``sunpy`` installation::
     pip install "sunpy[all]"
 
 .. note::
-    If this does not work, it could be due to a missing C compiler (e.g., ``gcc`` or ``clang``) that is required to build sunpy at install.
-    Getting the compiler either from your system package manager, XCode or Miniforge should address this.
+
+    We strive to provide binary wheels for all of our packages.
+    If you are using a Python distribution or operating system that is missing a binary wheel.
+    ``pip`` will try to compile the package from source and this is likely to fail without a C compiler (e.g., ``gcc`` or ``clang``).
+    Getting the compiler either from your system package manager or XCode should address this.
 
 If you have a reason to want a more minimal installation, you can install sunpy with no optional dependencies, however this means a lot of submodules will not import::
 
@@ -86,7 +83,5 @@ If you want to develop ``sunpy`` we would strongly recommend reading the `Newcom
 
 .. note::
     If you get a ``PermissionError`` this means that you do not have the required administrative access to install new packages to your Python installation.
-
-    Do **not** install ``sunpy`` or other third-party packages using ``sudo``.
-
+    Do **not** install ``sunpy`` or other Python package using ``sudo``.
     This error implies you have an incorrectly configured virtual environment or it is not activated.
