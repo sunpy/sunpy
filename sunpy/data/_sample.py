@@ -93,7 +93,7 @@ def _retry_sample_data(results, new_url_base):
     dl = Downloader(overwrite=True, progress=True, headers={'Accept-Encoding': 'identity'})
 
     for err in results.errors:
-        file_name = err.filepath_partial().name
+        file_name = err.url.split("/")[-1]
         log.debug(
             f"Failed to download {_SAMPLE_FILES[file_name]} from {err.url}: {err.exception}")
         # Update the url to a mirror and requeue the file.
@@ -113,7 +113,7 @@ def _retry_sample_data(results, new_url_base):
 
 def _handle_final_errors(results):
     for err in results.errors:
-        file_name = err.filepath_partial().name
+        file_name = err.url.split("/")[-1]
         log.debug(f"Failed to download {_SAMPLE_FILES[file_name]} from {err.url}: {err.exception}"
                   )
         log.error(
