@@ -306,6 +306,7 @@ def test_draw_limb_heliographic_stonyhurst(aia171_test_map):
     # Create the WCS header for HGS axes
     header = {
         'date-obs': aia171_test_map.date.utc.isot,
+        'mjd-obs': 55607.000004,
         'naxis': 2,
         'naxis1': 360,
         'naxis2': 180,

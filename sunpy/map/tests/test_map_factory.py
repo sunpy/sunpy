@@ -129,11 +129,11 @@ def test_patterns(eit_fits_directory):
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
     # Data-wcs object pair in tuple
-    pair_map = sunpy.map.Map((amap.data, WCS(AIA_171_IMAGE)))
+    pair_map = sunpy.map.Map((amap.data, WCS(AIA_171_IMAGE, fix=False)))
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
     # Data-wcs object pair not in a tuple
-    pair_map = sunpy.map.Map(amap.data, WCS(AIA_171_IMAGE))
+    pair_map = sunpy.map.Map(amap.data, WCS(AIA_171_IMAGE, fix=False))
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
     # Data-header from FITS
