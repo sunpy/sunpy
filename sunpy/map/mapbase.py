@@ -1727,7 +1727,7 @@ class GenericMap(NDData):
                                     order=order, scale=scale,
                                     image_center=pixel_center,
                                     recenter=recenter, missing=missing,
-                                    method=method, clip=clip)
+                                    method=method, clip=clip).T
 
         if recenter:
             new_reference_pixel = pixel_array_center
