@@ -1,8 +1,3 @@
-"""
-Created on Fri Jun 21 15:05:09 2013
-
-@author: stuart
-"""
 import os
 import pathlib
 import tempfile
@@ -135,11 +130,11 @@ class TestMap:
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
         # Data-wcs object pair in tuple
-        pair_map = sunpy.map.Map((amap.data, WCS(AIA_171_IMAGE)))
+        pair_map = sunpy.map.Map((amap.data, WCS(AIA_171_IMAGE, fix=False)))
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
         # Data-wcs object pair not in a tuple
-        pair_map = sunpy.map.Map(amap.data, WCS(AIA_171_IMAGE))
+        pair_map = sunpy.map.Map(amap.data, WCS(AIA_171_IMAGE, fix=False))
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
         # Data-header from FITS
@@ -150,6 +145,15 @@ class TestMap:
         assert isinstance(pair_map, sunpy.map.GenericMap)
         pair_map, pair_map = sunpy.map.Map(((data, header), (data, header)))
         assert isinstance(pair_map, sunpy.map.GenericMap)
+        pair_map = sunpy.map.Map(data, header)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+
+    # Custom Map
+    data = np.arange(0, 100).reshape(10, 10)
+    header = {'cdelt1': 10, 'cdelt2': 10,
+              'telescop': 'sunpy',
+              'cunit1': 'arcsec', 'cunit2': 'arcsec'}
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
