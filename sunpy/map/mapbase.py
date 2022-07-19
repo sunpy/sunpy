@@ -1661,7 +1661,7 @@ class GenericMap(NDData):
                                     order=order, scale=scale,
                                     image_center=pixel_center,
                                     recenter=recenter, missing=missing,
-                                    use_scipy=use_scipy).T
+                                    use_scipy=use_scipy)
 
         if recenter:
             new_reference_pixel = pixel_array_center
