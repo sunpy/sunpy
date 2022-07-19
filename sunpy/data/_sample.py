@@ -7,7 +7,7 @@ from sunpy.util.config import _is_writable_dir, get_and_create_sample_dir
 from sunpy.util.parfive_helpers import Downloader
 
 _BASE_URLS = (
-    'https://github.com/sunpy/sample-data/raw/master/sunpy/v1/',
+    'https://github.com/sunpy/data/raw/main/sunpy/v1/',
     'http://data.sunpy.org/sunpy/v1/',
 )
 
