@@ -1,0 +1,1 @@
+Fixed :meth:`sunpy.map.GenericMap.rotate` incorrectly transposing twice.
