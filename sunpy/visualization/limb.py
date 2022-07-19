@@ -43,5 +43,5 @@ def draw_limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
         "far" side of the Sun).
     """
     visible, hidden = drawing.limb(axes, observer, rsun=rsun,
-                                        resolution=resolution, **kwargs)
+                                   resolution=resolution, **kwargs)
     return visible, hidden
