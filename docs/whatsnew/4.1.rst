@@ -36,8 +36,9 @@ See :ref:`sphx_glr_generated_gallery_units_and_coordinates_map_slit_extraction.p
 Drawing the solar equator and prime meridian
 ============================================
 You can now use the `~sunpy.visualization.drawing` module to draw the solar equator
-and prime meridian (zero Carrington longitude) on Astropy WCS axes. See
-:ref:`plot_equator_prime_meridian.py` for an example.
+and prime meridian (zero Carrington longitude) on Astropy WCS axes.
+
+.. minigallery:: sunpy.visualization.drawing.equator
 
 Deprecation of `~sunpy.visualization.limb`
 ==========================================

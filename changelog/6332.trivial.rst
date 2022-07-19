@@ -1,2 +1,1 @@
-Updated mapbase.py and example limb_plotting.py
-to use the :func:`~sunpy.visualization.drawing.limb` function.
+All internal code now uses :func:`~sunpy.visualization.drawing.limb`.

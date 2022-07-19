@@ -1,1 +1,1 @@
-Added the plot_equator_prime_meridian.py example to the Example Gallery.
+Added the :ref:`sphx_glr_generated_gallery_plotting_plot_equator_prime_meridian.py` example to the Example Gallery.
