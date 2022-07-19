@@ -216,7 +216,8 @@ def test_flat(identity):
 def test_nan_skimage_low(identity):
     # Test non-replacement of NaN values for scikit-image rotation with order <= 3
     in_arr = np.array([[np.nan]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, order=3)
+    with pytest.warns(RuntimeWarning, match='All-NaN slice encountered'):
+        out_arr = affine_transform(in_arr, rmatrix=identity, order=3)
     assert np.all(np.isnan(out_arr))
 
 
