@@ -13,4 +13,4 @@ Visualization (`sunpy.visualization`)
 
 .. automodapi:: sunpy.visualization.wcsaxes_compat
 
-.. automodapi:: sunpy.visualization.draw
+.. automodapi:: sunpy.visualization.drawing
