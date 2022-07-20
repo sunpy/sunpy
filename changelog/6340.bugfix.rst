@@ -1,1 +1,1 @@
-Fixed :meth:`sunpy.map.GenericMap.rotate` incorrectly transposing twice.
+Fixed an erroneous transpose of the image data by :meth:`sunpy.map.GenericMap.rotate`.

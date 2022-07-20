@@ -66,7 +66,6 @@ def test_rotation(original, angle, k):
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
 
-    # Run the tests at order 4 as it produces more accurate 90 deg rotations
     rot = affine_transform(original, order=1, rmatrix=rmatrix)
     assert compare_results(expected, rot)
 
