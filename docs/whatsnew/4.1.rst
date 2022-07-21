@@ -41,9 +41,9 @@ and prime meridian (zero Carrington longitude) on Astropy WCS axes.
 .. minigallery:: sunpy.visualization.drawing.equator
 
 Deprecation of ``sunpy.visualization.limb``
-==========================================
+===========================================
 The ``sunpy.visualization.limb`` module is deprecated and will be removed in
-version 5.1. The :func:`sunpy.visualization.limb.draw_limb` function has been moved into
+version 5.1. The ``sunpy.visualization.limb.draw_limb`` function has been moved into
 the `sunpy.visualization.drawing` module and renamed :func:`sunpy.visualization.drawing.limb`.
 
 Contributors to this Release
