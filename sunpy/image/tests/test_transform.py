@@ -66,15 +66,14 @@ def test_rotation(original, angle, k):
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
 
-    # Run the tests at order 4 as it produces more accurate 90 deg rotations
-    rot = affine_transform(original, order=4, rmatrix=rmatrix)
+    rot = affine_transform(original, order=1, rmatrix=rmatrix)
     assert compare_results(expected, rot)
 
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, order=4, rmatrix=derot_matrix)
+    derot = affine_transform(rot, order=1, rmatrix=derot_matrix)
     assert compare_results(original, derot)
 
 
@@ -133,8 +132,8 @@ def test_scale(original, scale_factor):
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
     # Check a scaled image against the expected outcome
-    newim = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
+    newim = tf.rescale(original / original.max(), scale_factor, order=1,
+                       mode='constant', anti_aliasing=False) * original.max()
     # Old width and new center of image
     w = original.shape[0] / 2.0 - 0.5
     new_c = (newim.shape[0] / 2.0) - 0.5
@@ -146,7 +145,7 @@ def test_scale(original, scale_factor):
     else:
         lower = int(w - new_c)
         expected[lower:upper, lower:upper] = newim
-    scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=4)
+    scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=1)
     assert compare_results(expected, scale)
 
 
@@ -166,8 +165,8 @@ def test_all(original, angle, dx, dy, scale_factor):
     c = np.round(np.cos(angle))
     s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
-    scale = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
+    scale = tf.rescale(original / original.max(), scale_factor, order=1,
+                       mode='constant', anti_aliasing=False) * original.max()
     new = np.zeros(original.shape)
 
     disp = np.array([dx, dy])
@@ -185,15 +184,15 @@ def test_all(original, angle, dx, dy, scale_factor):
     rcen = image_center - disp
     expected = np.rot90(new, k=k)
 
-    rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=4,
+    rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, order=1,
                                      recenter=True, image_center=rcen)
     assert compare_results(expected, rotscaleshift)
 
     # Check a rotated/shifted and restored image against original
-    transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, order=4, recenter=True,
+    transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, order=1, recenter=True,
                                    image_center=rcen)
     inv_rcen = image_center + np.dot(rmatrix.T, np.array([dx, dy]))
-    inverse = affine_transform(transformed, rmatrix=rmatrix.T, scale=1.0, order=4, recenter=True,
+    inverse = affine_transform(transformed, rmatrix=rmatrix.T, scale=1.0, order=1, recenter=True,
                                image_center=inv_rcen)
 
     # Need to ignore the portion of the image cut off by the first shift
@@ -216,7 +215,8 @@ def test_flat(identity):
 def test_nan_skimage_low(identity):
     # Test non-replacement of NaN values for scikit-image rotation with order <= 3
     in_arr = np.array([[np.nan]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, order=3)
+    with pytest.warns(RuntimeWarning, match='All-NaN slice encountered'):
+        out_arr = affine_transform(in_arr, rmatrix=identity, order=3)
     assert np.all(np.isnan(out_arr))
 
 
