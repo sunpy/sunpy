@@ -1,3 +1,3 @@
-Created the `sunpy.visualization.draw` module which includes
-:func:`~sunpy.visualization.draw.equator` and
-:func:`~sunpy.visualization.draw.prime_meridian` functions.
+Created the `sunpy.visualization.drawing` module which includes
+:func:`~sunpy.visualization.drawing.equator` and
+:func:`~sunpy.visualization.drawing.prime_meridian` functions.
