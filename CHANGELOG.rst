@@ -1,3 +1,15 @@
+3.1.8 (2022-07-23)
+==================
+
+Bug Fixes
+---------
+
+- Fixed an error when Fido returns zero results from the VSO
+  and some results from at least one other data source. This
+  (now fixed) error is only present when using numpy version >= 1.23. (`#6318 <https://github.com/sunpy/sunpy/pull/6318>`__)
+- Fixed an erroneous transpose of the image data by :meth:`sunpy.map.GenericMap.rotate`. (`#6340 <https://github.com/sunpy/sunpy/pull/6340>`__)
+
+
 3.1.7 (2022-05-06)
 ==================
 
