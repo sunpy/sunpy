@@ -1,19 +1,24 @@
-***********
-TimeSeries
-***********
+****************
+TimeSeries Guide
+****************
 
 Time series data are a fundamental part of many data analysis projects
-in heliophysics as well as other areas. sunpy therefore provides a TimeSeries
-object to handle this type of data. This new object supersedes the now
-deprecated Lightcurve datatype. Once you've read through this guide check out
-the :doc:`/code_ref/timeseries` for a more thorough look at sunpy TimeSeries
-and to see what data sources it currently supports.
+in heliophysics as well as other areas. SunPy provides a TimeSeries
+object to handle this type of data. Much like the `~sunpy.map.Map` object,
+`~sunpy.timeseries` recognizes data from nine sources and provides
+instrument-specific information when plotting and similar metadata handling.
+For more information about TimeSeries, and what data sources are currently supported,
+check out :doc:`/code_ref/timeseries`.
 
-Sections 1 and 2 below describe how to create TimeSeries objects.  Section 3
-describes how to inspect the TimeSeries object to examine the data itself and
-the metadata.  Section 4 describes how to plot a TimeSeries object, Section 5
-describes how a TimeSeries object can be manipulated, and Section 6 describes
-in detail the TimeSeries metadata.
+:ref:`1. Creating a TimeSeries` describes how to create a TimeSeries object from single or multiple observational sources.
+:ref:`2. Inspecting TimeSeries & Accessing the Data` describes how to examine the data and metadata.
+:ref:`3. Plotting TimeSeries` outlines the basics of how SunPy will plot a TimeSeries object.
+:ref:`4. Manipulating TimeSeries` describes how to modify data, truncate a TimeSeries, down and up sample data,
+concatenate data, and create an Astropy Table from a TimeSeries.
+:ref:`5. Creating Custom TimeSeries` details how to create a TimeSeries object from
+a Pandas DataFrame or an Astropy Table.
+Lastly, :ref:`6. A Detailed Look at the Metadata` describes how to view and
+extract information from the metadata.
 
 .. warning::
 
@@ -21,13 +26,13 @@ in detail the TimeSeries metadata.
    implement data download methods. To download TimeSeries data files use
    `sunpy.net`.
 
-1. Creating a TimeSeries from an observational data source
-==========================================================
+1. Creating a TimeSeries
+========================
 
-A TimeSeries object can be created from local files.  For convenience, sunpy can
+A TimeSeries object can be created from local files.  For convenience, SunPy can
 download several example timeseries of observational data. These files have names like
 ``sunpy.data.sample.EVE_TIMESERIES`` and ``sunpy.data.sample.GOES_XRS_TIMESERIES``.
-To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries` type the
+To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries`, type the
 following into your interactive Python shell: ::
 
     >>> import sunpy.timeseries as ts
@@ -46,13 +51,13 @@ a local GOES/XRS FITS file try the following: ::
 
     >>> my_timeseries = ts.TimeSeries('/mydirectory/myts.fits', source='XRS')   # doctest: +SKIP
 
-sunpy will attempt to detect automatically the instrument source for most FITS
+SunPy will attempt to detect automatically the instrument source for most FITS
 files. However timeseries data are stored in a variety of file types (FITS, txt,
 csv) and formats, and so it is not always possible to detect the source. For
 this reason, it is good practice to explicitly state the source for the file.
-sunpy ships with a number of known instrumental sources.  If you would like
-sunpy to include another instrumental source please follow the
-`sunpy contribution guide <https://sunpy.org/contribute>`__.
+SunPy ships with a number of known instrumental sources.  If you would like
+SunPy to include another instrumental source please follow the
+`SunPy contribution guide <https://sunpy.org/contribute>`__.
 The `~sunpy.timeseries.TimeSeries` factory has the ability to make a list of
 TimeSeries objects using a list of filepaths, a folder or a glob, for example: ::
 
@@ -67,7 +72,7 @@ reason, all the files should be from that same source for the `~sunpy.timeseries
 factory to work as intended.
 
 1.1 Creating a Single TimeSeries from Multiple Files
-====================================================
+----------------------------------------------------
 
 You can create a single time series from multiple files for a given source using
 the keyword argument ``concatenate=True``, such as:
@@ -80,103 +85,20 @@ factory. However, if time series `~sunpy.timeseries.GenericTimeSeries.concatenat
 can be used to make a single time series from multiple TimeSeries from different
 sources once they are already in the form of TimeSeries objects.
 
-2. Creating Custom TimeSeries
-=============================
 
-Sometimes you will have data that you want to create into a TimeSeries. You can
-use the factory to create a `~sunpy.timeseries.GenericTimeSeries`
-from a variety of data sources currently including `pandas.DataFrame` and
-`astropy.table.Table`.
+2. Inspecting TimeSeries & Accessing the Data
+=============================================
 
-2.1 Creating a TimeSeries from a Pandas DataFrame
-=================================================
+A time series holds both data as well as meta data and units data. For a quick look at
+a TimeSeries, type: ::
 
-A TimeSeries object must be supplied with some data when it is
-created.  The data can either be in your current Python session, in a
-local file, or in a remote file.  Let's create some data and pass
-it into a TimeSeries object: ::
+    >>> my_timeseries  # doctest: +SKIP
 
-    >>> import numpy as np
-    >>> intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
-
-The first line imports the numpy module used to create and store the data.
-The second line creates a basic numpy array of values representing a sine wave.
-We can use this array along with a suitable time storing object (such as Astropy
-`~astropy.time` or a list of `datetime` objects) to make a Pandas
-`~pandas.DataFrame`.  A suitable list of times must contain the same
-number of values as the data, this can be created using: ::
-
-    >>> import datetime
-    >>> base = datetime.datetime.today()
-    >>> times = [base - datetime.timedelta(minutes=x) for x in range(24*60, 0, -1)]
-
-The Pandas `~pandas.DataFrame` will use the dates list as the index: ::
-
-    >>> from pandas import DataFrame
-    >>> data = DataFrame(intensity, index=times, columns=['intensity'])
-
-This `~pandas.DataFrame` can then be used to construct a TimeSeries: ::
-
-    >>> import sunpy.timeseries as ts
-    >>> ts_custom = ts.TimeSeries(data)
-
-Furthermore we could specify the metadata/header and units of this time series
-by sending them as arguments to the factory: ::
-
-    >>> from collections import OrderedDict
-    >>> import astropy.units as u
-
-    >>> meta = OrderedDict({'key':'value'})
-    >>> units = OrderedDict([('intensity', u.W/u.m**2)])
-    >>> ts_custom = ts.TimeSeries(data, meta, units)
-
-2.2 Creating Custom TimeSeries from an Astropy Table
-====================================================
-
-A Pandas `~pandas.DataFrame` is the underlying object used to store
-the data within a TimeSeries, so the above example is the most lightweight to
-create a custom TimeSeries, but being scientific data it will often be more
-convenient to use an Astropy `~astropy.table.Table` and let the factory
-convert this.  An advantage of this method is it allows you to include metadata
-and Astropy `~astropy.units.quantity.Quantity` values, which are both supported
-in tables, without additional arguments.  For example: ::
-
-    >>> import datetime
-    >>> from astropy.time import Time
-    >>> import astropy.units as u
-    >>> from astropy.table import Table
-
-    >>> base = datetime.datetime.today()
-    >>> times = [base - datetime.timedelta(minutes=x) for x in range(24*60, 0, -1)]
-    >>> intensity = u.Quantity(np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60)))), u.W/u.m**2)
-    >>> tbl_meta = {'t_key':'t_value'}
-    >>> table = Table([times, intensity], names=['time', 'intensity'], meta=tbl_meta)
-    >>> table.add_index('time')
-    >>> ts_table = ts.TimeSeries(table)
-
-Note that due to the properties of the `~astropy.time.Time` object, this will be
-a mixin column which since it is a single object, limits the versatility of
-the `~astropy.table.Table` a little. For more on mixin columns see the `Astropy
-docs <https://docs.astropy.org/en/stable/table/mixin_columns.html>`_.  The units
-will be taken from the table quantities for each column, the metadata will
-simply be the table.meta dictionary.  You can also explicitly add metadata and
-units, these will be added to the relevant dictionaries using the dictionary
-update method, with the explicit user-given values taking precedence.
-
-    >>> from sunpy.util.metadata import MetaDict
-    >>> from collections import OrderedDict
-    >>> import astropy.units as u
-
-    >>> meta = MetaDict({'key':'value'})
-    >>> units = OrderedDict([('intensity', u.W/u.m**2)])
-    >>> ts_table = ts.TimeSeries(table, meta, units)
-
-
-3. Inspecting TimeSeries & Getting at the Data
-===============================================
-
-A time series holds both data as well as meta data and units data. The meta data
-for the time series is accessed by: ::
+This will show a table of information taken from the metadata and a preview of your data.
+If you execute this command in a Jupyter Notebook, a rich HTML version of this quick look
+will be shown that includes plots of the data. Alternatively, the `~sunpy.timeseries.GenericTimeSeries.quicklook` 
+command will show the HTML view in your default browser.
+The meta data for the time series is accessed by: ::
 
     >>> header = my_timeseries.meta
 
@@ -185,9 +107,9 @@ the header information as read from the source files. A word of caution: many
 data sources provide little to no meta data so this variable might be empty.
 The meta data is described in more detail later in this guide. Similarly there
 are properties for getting `~sunpy.timeseries.GenericTimeSeries.columns`
-as a list of strings, `~sunpy.timeseries.GenericTimeSeries.time`
+as a list of strings, `~sunpy.timeseries.GenericTimeSeries.index`
 values and `~sunpy.timeseries.GenericTimeSeries.time_range` of
-the data.  The actual data in a sunpy TimeSeries object is accessible through
+the data.  The actual data in a SunPy TimeSeries object is accessible through
 the `~sunpy.timeseries.GenericTimeSeries.data` attribute.  The
 data is implemented as a Pandas `~pandas.DataFrame`, so to get a look at what
 data you have available use: ::
@@ -228,7 +150,7 @@ you provide. You can consider the data as x or y values: ::
     >>> x = my_timeseries.data.index
     >>> y = my_timeseries.data.values
 
-You can read more about indexing at the `pandas documentation website
+You can read more about indexing at the `Pandas documentation website
 <https://pandas.pydata.org/pandas-docs/stable/>`_.
 
 A TimeSeries can also return an Astropy `~astropy.units.quantity.Quantity` for a
@@ -238,10 +160,10 @@ dictionary to determine the `~astropy.units.quantity.Quantity`: ::
 
     >>> quantity = my_timeseries.quantity('xrsa')
 
-4. Plotting
-===========
+3. Plotting TimeSeries
+======================
 
-The sunpy TimeSeries object has its own built-in plot methods so that
+The SunPy TimeSeries object has its own built-in plot methods so that
 it is easy to quickly view your time series. To create a plot just
 type:
 
@@ -259,7 +181,7 @@ file you can do so from the Matplotlib GUI.
 
 In addition, to enable users to modify the plot it is possible to use the
 `~sunpy.timeseries.GenericTimeSeries.plot` command.  This makes it possible to
-use the sunpy plot as the foundation for a more complicated figure:
+use the SunPy plot as the foundation for a more complicated figure:
 
 .. plot::
    :include-source:
@@ -276,11 +198,11 @@ use the sunpy plot as the foundation for a more complicated figure:
    fig.savefig('figure.png')
 
 
-5 Manipulating TimeSeries
-=========================
+4. Manipulating TimeSeries
+==========================
 
-5.1 Modifying the Data
-======================
+4.1 Modifying the Data
+----------------------
 
 Since the timeseries data is stored as a Pandas `~pandas.DataFrame`
 you can easily modify the data directly using all of the usual Pandas methods:
@@ -298,7 +220,7 @@ You can even change all the values for a given time: ::
 
 Note, you will need to be careful to consider units when modifying the
 TimeSeries data directly. For further details about editing Pandas DataFames you
-can read the `pandas documentation website <https://pandas.pydata.org/pandas-docs/stable/>`_.
+can read the `Pandas documentation website <https://pandas.pydata.org/pandas-docs/stable/>`_.
 
 Additionally the TimeSeries provides the `~sunpy.timeseries.GenericTimeSeries.add_column`
 method which will either add a new column or update a current column if the
@@ -315,8 +237,8 @@ a new column because this column won't have any associated MetaData entry,
 similarly if you use an array of values it won't add an entry into the units
 `~collections.OrderedDict`.
 
-5.2 Truncating a TimeSeries
-===========================
+4.2 Truncating a TimeSeries
+---------------------------
 
 It is often useful to truncate an existing TimeSeries object to retain a
 specific time range.  This is easily achieved by using the `~sunpy.timeseries.GenericTimeSeries.truncate`
@@ -339,8 +261,8 @@ Caution should be used when removing values from the data manually, the
 TimeSeries can't guarantee Astropy units are correctly preserved when you
 interact with the data directly.
 
-5.3 Down and Up Sampling a TimeSeries Using Pandas
-==================================================
+4.3 Down and Up Sampling a TimeSeries Using Pandas
+--------------------------------------------------
 
 Because the data is stored in a Pandas `~pandas.DataFrame` object you
 can manipulate it using normal Pandas methods, such as the `~pandas.DataFrame.resample`
@@ -359,8 +281,8 @@ fill-forward method. Alternatively the back-fill method could be used.  Caution
 should be used when resampling the data, the TimeSeries can't guarantee Astropy
 Units are correctly preserved when you interact with the data directly.
 
-5.4 Concatenating TimeSeries
-============================
+4.4 Concatenating TimeSeries
+----------------------------
 
 It's common to want to combine a number of TimeSeries together into a single
 TimeSeries.  In the simplest scenario this is to combine data from a single
@@ -398,8 +320,8 @@ object now has 2 entries and shows details on both: ::
 The metadata object is described in more detail in the next section.
 
 
-5.5 Creating an Astropy Table from a TimeSeries
-===============================================
+4.5 Creating an Astropy Table from a TimeSeries
+-----------------------------------------------
 
 If you want to take the data from your TimeSeries and use it as a `~astropy.table.Table`
 this can be done using the `~sunpy.timeseries.GenericTimeSeries.to_table`
@@ -446,8 +368,100 @@ method: ::
 
     >>> table.show_in_browser(jsviewer=True)  # doctest: +SKIP
 
-For further details about editing Astropy tables you can read the `astropy
+For further details about editing Astropy tables you can read the `Astropy
 documentation website <https://docs.astropy.org/en/stable/table/>`_.
+
+
+5. Creating Custom TimeSeries
+=============================
+
+Sometimes you will have data that you want to create into a TimeSeries. You can
+use the factory to create a `~sunpy.timeseries.GenericTimeSeries`
+from a variety of data sources currently including `pandas.DataFrame` and
+`astropy.table.Table`.
+
+5.1 Creating a TimeSeries from a Pandas DataFrame
+-------------------------------------------------
+
+A TimeSeries object must be supplied with some data when it is
+created.  The data can either be in your current Python session, in a
+local file, or in a remote file.  Let's create some data and pass
+it into a TimeSeries object: ::
+
+    >>> import numpy as np
+    >>> intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+
+The first line imports the numpy module used to create and store the data.
+The second line creates a basic numpy array of values representing a sine wave.
+We can use this array along with a suitable time storing object (such as Astropy
+`~astropy.time` or a list of `datetime` objects) to make a Pandas
+`~pandas.DataFrame`.  A suitable list of times must contain the same
+number of values as the data, this can be created using: ::
+
+    >>> import datetime
+    >>> base = datetime.datetime.today()
+    >>> times = [base - datetime.timedelta(minutes=x) for x in range(24*60, 0, -1)]
+
+The Pandas `~pandas.DataFrame` will use the dates list as the index: ::
+
+    >>> from pandas import DataFrame
+    >>> data = DataFrame(intensity, index=times, columns=['intensity'])
+
+This `~pandas.DataFrame` can then be used to construct a TimeSeries: ::
+
+    >>> import sunpy.timeseries as ts
+    >>> ts_custom = ts.TimeSeries(data)
+
+Furthermore we could specify the metadata/header and units of this time series
+by sending them as arguments to the factory: ::
+
+    >>> from collections import OrderedDict
+    >>> import astropy.units as u
+
+    >>> meta = OrderedDict({'key':'value'})
+    >>> units = OrderedDict([('intensity', u.W/u.m**2)])
+    >>> ts_custom = ts.TimeSeries(data, meta, units)
+
+5.2 Creating Custom TimeSeries from an Astropy Table
+----------------------------------------------------
+
+A Pandas `~pandas.DataFrame` is the underlying object used to store
+the data within a TimeSeries, so the above example is the most lightweight to
+create a custom TimeSeries, but being scientific data it will often be more
+convenient to use an Astropy `~astropy.table.Table` and let the factory
+convert this.  An advantage of this method is it allows you to include metadata
+and Astropy `~astropy.units.quantity.Quantity` values, which are both supported
+in tables, without additional arguments.  For example: ::
+
+    >>> import datetime
+    >>> from astropy.time import Time
+    >>> import astropy.units as u
+    >>> from astropy.table import Table
+
+    >>> base = datetime.datetime.today()
+    >>> times = [base - datetime.timedelta(minutes=x) for x in range(24*60, 0, -1)]
+    >>> intensity = u.Quantity(np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60)))), u.W/u.m**2)
+    >>> tbl_meta = {'t_key':'t_value'}
+    >>> table = Table([times, intensity], names=['time', 'intensity'], meta=tbl_meta)
+    >>> table.add_index('time')
+    >>> ts_table = ts.TimeSeries(table)
+
+Note that due to the properties of the `~astropy.time.Time` object, this will be
+a mixin column which since it is a single object, limits the versatility of
+the `~astropy.table.Table` a little. For more on mixin columns see the `Astropy
+docs <https://docs.astropy.org/en/stable/table/mixin_columns.html>`_.  The units
+will be taken from the table quantities for each column, the metadata will
+simply be the table.meta dictionary.  You can also explicitly add metadata and
+units, these will be added to the relevant dictionaries using the dictionary
+update method, with the explicit user-given values taking precedence.
+
+    >>> from sunpy.util.metadata import MetaDict
+    >>> from collections import OrderedDict
+    >>> import astropy.units as u
+
+    >>> meta = MetaDict({'key':'value'})
+    >>> units = OrderedDict([('intensity', u.W/u.m**2)])
+    >>> ts_table = ts.TimeSeries(table, meta, units)
 
 
 6. A Detailed Look at the Metadata
