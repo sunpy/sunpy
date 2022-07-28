@@ -7,7 +7,6 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.hinode import XRTMap
-from sunpy.util.exceptions import SunpyMetadataWarning
 
 __author__ = 'Pritish C. (VaticanCameos)'
 
@@ -36,23 +35,19 @@ def test_observatory(xrt_map):
 
 def test_measurement(xrt_map):
     """Tests the measurement property of the XRTMap object."""
-    measurement = xrt_map.filter_wheel1_measurements[5].replace("_", " ")
-    measurement += '-' + xrt_map.filter_wheel2_measurements[1].replace("_", " ")
-    assert xrt_map.measurement == measurement
+    assert xrt_map.measurement == 'Be thin-Open'
 
 
 def test_level_number(xrt_map):
-    assert xrt_map.processing_level == 0
+    assert xrt_map.processing_level == 1
 
 
 def test_heliographic_longitude(xrt_map):
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        assert u.allclose(xrt_map.heliographic_longitude, 0 * u.deg)
+    assert u.allclose(xrt_map.heliographic_longitude, 0 * u.deg)
 
 
 def test_heliographic_latitude(xrt_map):
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        assert u.allclose(xrt_map.heliographic_latitude, -4.84401544 * u.deg)
+    assert u.allclose(xrt_map.heliographic_latitude, 3.33047459 * u.deg)
 
 
 def test_wheel_measurements(xrt_map):
@@ -66,5 +61,4 @@ def test_wheel_measurements(xrt_map):
 
 def test_wcs(xrt_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        xrt_map.pixel_to_world(0*u.pix, 0*u.pix)
+    xrt_map.pixel_to_world(0*u.pix, 0*u.pix)
