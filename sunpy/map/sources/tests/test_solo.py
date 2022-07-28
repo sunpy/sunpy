@@ -1,21 +1,16 @@
-"""Tests for EUI Solar Orbiter Map"""
-
 import pytest
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
-from sunpy.map.sources import EUIMap
-
-header_list = [
-    get_test_filepath('solo_L1_eui-fsi304-image_20201021T145510206_V03.header'),
-]
+from sunpy.map.sources.solo import EUIMap
 
 
-@pytest.fixture(scope="module", params=header_list)
-def eui_map(request):
-    return get_dummy_map_from_header(request.param)
+@pytest.fixture
+def eui_map():
+    filepath = get_test_filepath('solo_L1_eui-fsi304-image_20201021T145510206_V03.header')
+    return get_dummy_map_from_header(filepath)
 
 
 def test_EUIMap(eui_map):

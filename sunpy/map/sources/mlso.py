@@ -31,18 +31,19 @@ class KCorMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         self._nickname = self.detector
-
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
+            stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False
+        )
         # Negative value pixels can appear that lead to ugly looking images.
         # This can be fixed by setting the lower limit of the normalization.
         self.plot_settings['norm'].vmin = 0.0
 
     def _get_cmap_name(self):
-        """Build the default color map name."""
+        """
+        Build the default color map name.
+        """
         return self.detector.lower()
 
     @property
@@ -58,8 +59,7 @@ class KCorMap(GenericMap):
         """
         If the WAVEUNIT FITS keyword is not present, defaults to nanometers.
         """
-        unit = self.meta.get("waveunit", "nm")
-        return u.Unit(unit)
+        return u.Unit(self.meta.get("waveunit", "nm"))
 
     @property
     def _default_observer_coordinate(self):
@@ -72,5 +72,7 @@ class KCorMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to a COSMO image"""
+        """
+        Determines if header corresponds to a COSMO image.
+        """
         return header.get('instrume') == 'COSMO K-Coronagraph'

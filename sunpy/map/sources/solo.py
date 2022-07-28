@@ -1,6 +1,3 @@
-"""
-Solar Orbiter Map subclass definitions.
-"""
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch, ImageNormalize
@@ -15,7 +12,7 @@ __all__ = ['EUIMap']
 
 class EUIMap(GenericMap):
     """
-    EUI Image Map
+    EUI Image Map.
 
     The Extreme Ultraviolet Imager (EUI) is a remote sensing instrument onboard the
     Solar Orbiter (SolO) spacecraft. EUI has three telescopes that image the Sun in
@@ -77,7 +74,9 @@ class EUIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an EUI image"""
+        """
+        Determines if header corresponds to an EUI image.
+        """
         is_solo = 'solar orbiter' in str(header.get('obsrvtry', '')).lower()
         is_eui = str(header.get('instrume', '')).startswith('EUI')
         return is_solo and is_eui

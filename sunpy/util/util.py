@@ -15,6 +15,10 @@ __all__ = ['unique', 'replacement_filename', 'expand_list',
            'get_keywords', 'get_set_methods']
 
 
+def _lower_list(l):
+    return [item.lower() for item in l]
+
+
 def unique(itr, key=None):
     """
     Return only unique elements of a sequence.

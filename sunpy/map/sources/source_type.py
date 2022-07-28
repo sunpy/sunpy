@@ -1,9 +1,3 @@
-"""
-Source type-dependencies.
-
-Helioviewer JPEG2000 files have stretched images compared to the FITS data.
-
-"""
 from astropy.visualization import LinearStretch
 
 __author__ = "Jack Ireland"
@@ -14,7 +8,7 @@ __all__ = ['from_helioviewer_project', 'source_stretch']
 
 def from_helioviewer_project(meta):
     """
-    Test determining if the given metadata contains Helioviewer Project sourced data.
+    Determines if the given metadata contains Helioviewer Project sourced data.
 
     Parameters
     ----------
@@ -23,8 +17,9 @@ def from_helioviewer_project(meta):
 
     Returns
     -------
-    If the data of the map comes from the Helioviewer Project, then True is
-    returned. If not, False is returned.
+    `bool`
+        `True` : If the data of the map comes from the Helioviewer Project,
+        `False` : If not
     """
     return 'helioviewer' in meta.keys()
 

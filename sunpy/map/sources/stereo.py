@@ -1,9 +1,3 @@
-"""STEREO Map subclass definitions"""
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
-
 import astropy.units as u
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
@@ -12,10 +6,13 @@ from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['EUVIMap', 'CORMap', 'HIMap']
+__author__ = "Keith Hughitt"
+__email__ = "keith.hughitt@nasa.gov"
 
 
 class EUVIMap(GenericMap):
-    """STEREO-SECCHI EUVI Image Map
+    """
+    STEREO-SECCHI EUVI Image Map.
 
     EUVI is an extreme ultraviolet (EUV) imager. Part of the STEREO-SECCHI
     suite it observes the Sun from 1 to 1.7 solar radii. It is capable of
@@ -31,7 +28,6 @@ class EUVIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = 'euvi{wl:d}'.format(wl=int(self.wavelength.value))
         self.plot_settings['norm'] = ImageNormalize(
@@ -52,20 +48,21 @@ class EUVIMap(GenericMap):
     @property
     def rsun_obs(self):
         rsun_arcseconds = self.rsun_arcseconds
-
         if rsun_arcseconds is None:
             rsun_arcseconds = super().rsun_obs
-
         return u.Quantity(rsun_arcseconds, 'arcsec')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an EUVI image"""
+        """
+        Determines if header corresponds to an EUVI image.
+        """
         return header.get('detector') == 'EUVI'
 
 
 class CORMap(GenericMap):
-    """STEREO-SECCHI CORonograph Image Map.
+    """
+    STEREO-SECCHI CORonograph Image Map.
 
     Part of the STEREO-SECCHI suite of remote sensing telescopes,
     COR is a set of two coronographs (COR1, COR2) onboard STEREO.
@@ -85,7 +82,6 @@ class CORMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = 'stereocor{det!s}'.format(det=self.detector[-1])
         self.plot_settings['norm'] = ImageNormalize(
@@ -98,12 +94,15 @@ class CORMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an COR image"""
+        """
+        Determines if header corresponds to an COR image.
+        """
         return str(header.get('detector', '')).startswith('COR')
 
 
 class HIMap(GenericMap):
-    """STEREO-SECCHI Heliospheric Imager (HI) Map.
+    """
+    STEREO-SECCHI Heliospheric Imager (HI) Map.
 
     The HI is a wide-angle visible-light imaging system
     for the detection of coronal mass ejection (CME) events
@@ -123,11 +122,11 @@ class HIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = 'stereohi{det!s}'.format(det=self.detector[-1])
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
+            stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False
+        )
 
     @property
     def measurement(self):
@@ -136,5 +135,7 @@ class HIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an COR image"""
+        """
+        Determines if header corresponds to an COR image.
+        """
         return str(header.get('detector', '')).startswith('HI')

@@ -1,15 +1,11 @@
-"""Hinode XRT and SOT Map subclass definitions"""
 import astropy.units as u
 
 from sunpy.map import GenericMap
+from sunpy.util.util import _lower_list
 
+__all__ = ['XRTMap', 'SOTMap']
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
-__all__ = ['XRTMap', 'SOTMap']
-
-
-def _lower_list(l):
-    return [item.lower() for item in l]
 
 
 class XRTMap(GenericMap):
@@ -17,7 +13,7 @@ class XRTMap(GenericMap):
     Hinode XRT map definition.
 
     The X-Ray Telescope (XRT) is a high resolution grazing incidence telescope,
-    which is a succsessor to Yohkoh. It provides 2-arcsecond resolution images
+    which is a successor to Yohkoh. It provides 2-arcsecond resolution images
     of the highest temperature solar coronal material,
     from 1,000,000 to 10,000,000 Kelvin.
 
@@ -47,13 +43,13 @@ class XRTMap(GenericMap):
                                   "Be_thick", "Gband", "Ti_poly"]
 
     def __init__(self, data, header, **kwargs):
-        fw1 = header.get('EC_FW1_', '')
-        if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
-            raise ValueError(f'Unexpected filter wheel 1 {fw1} in header.')
-        fw2 = header.get('EC_FW2_', '')
-        if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
-            raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
         super().__init__(data, header, **kwargs)
+        fw1 = header.get('EC_FW1_')
+        if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
+            raise ValueError('Unpexpected filter wheel 1 in header.')
+        fw2 = header.get('EC_FW2_')
+        if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
+            raise ValueError('Unpexpected filter wheel 2 in header.')
         self.plot_settings['cmap'] = 'hinodexrt'
 
     @property
@@ -66,12 +62,17 @@ class XRTMap(GenericMap):
     def _supported_observer_coordinates(self):
         # Assume observer is at zero Stonyhurst heliographic longitude if not otherwise specified
         # https://community.openastronomy.org/t/sunpymetadatawarnings-when-using-hinode-xrt-data/393/7 for more information
-        return (super()._supported_observer_coordinates
-                + [(('solar_b0', 'dsun_obs'), {'lon': 0*u.deg,
-                                               'lat': self.meta.get('solar_b0'),
-                                               'radius': self.meta.get('dsun_obs'),
-                                               'unit': (u.deg, u.deg, u.m),
-                                               'frame': "heliographic_stonyhurst"})])
+        return (
+            super()._supported_observer_coordinates
+            + [
+                (('solar_b0', 'dsun_obs'),
+                 {'lon': 0*u.deg,
+                  'lat': self.meta.get('solar_b0'),
+                  'radius': self.meta.get('dsun_obs'),
+                  'unit': (u.deg, u.deg, u.m),
+                  'frame': "heliographic_stonyhurst"})
+            ]
+        )
 
     @property
     def detector(self):
@@ -96,12 +97,15 @@ class XRTMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an XRT image"""
+        """
+        Determines if header corresponds to an XRT image.
+        """
         return header.get('instrume') == 'XRT'
 
 
 class SOTMap(GenericMap):
-    """Hinode SOT Image Map definition.
+    """
+    Hinode SOT Image Map definition.
 
     The Hinode Solar Optical Telescope (SOT) consists of a 50 cm
     diffraction-limited Gregorian telescope. It is optimized for
@@ -121,15 +125,12 @@ class SOTMap(GenericMap):
     # TODO: get a link for the SOT FITS headers
     # Add in some information about the the possible instrument, observation
     # type, observable ion and wavelength
-
-    Instruments = ['SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT']
-
-    Waves = ['6302A', 'BFI no move', 'CN bandhead 3883',
+    instruments = ['SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT']
+    waves = ['6302A', 'BFI no move', 'CN bandhead 3883',
              'Ca II H line', 'G band 4305', 'NFI no move',
              'TF Fe I 6302', 'TF Mg I 5172', 'TF Na I 5896',
              'blue cont 4504', 'green cont 5550', 'red cont 6684']
-
-    Observation_Type = ['FG (simple)', 'FG focus scan',
+    observation_type = ['FG (simple)', 'FG focus scan',
                         'FG shuttered I and V', 'FG shutterless I and V',
                         'FG shutterless I and V with 0.2s intervals',
                         'FG shutterless Stokes', 'SP IQUV 4D array']
@@ -137,7 +138,6 @@ class SOTMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
-
         # TODO (add other options, Now all threated as intensity. This follows
         # Hinode SDC archive) StokesQUV -> grey, Velocity -> EIS, Width -> EIS,
         # Mag Field Azi -> IDL 5 (STD gamma II)
@@ -148,7 +148,6 @@ class SOTMap(GenericMap):
                  'SOT/NB': 'intensity',  # For the 1st dimension
                  'SOT/SP': 'intensity',  # For the 1st 2 dimensions
                  }
-
         self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
 
     @property
@@ -161,5 +160,7 @@ class SOTMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an SOT image."""
-        return header.get('instrume') in cls.Instruments
+        """
+        Determines if header corresponds to an SOT image.
+        """
+        return header.get('instrume') in cls.instruments

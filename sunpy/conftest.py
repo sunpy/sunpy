@@ -74,7 +74,7 @@ def tmp_config_dir(request):
     astropy.config.paths.set_temp_cache._temp_path = None
 
 
-@pytest.fixture()
+@pytest.fixture
 def sunpy_cache(mocker, tmp_path):
     """
     Provide a way to add local files to the cache. This can be useful when mocking
@@ -106,7 +106,7 @@ def sunpy_cache(mocker, tmp_path):
     yield func
 
 
-@pytest.fixture()
+@pytest.fixture
 def undo_config_dir_patch():
     """
     Provide a way for certain tests to not have the config dir.
@@ -147,7 +147,7 @@ def set_columns(request):
         os.environ['COLUMNS'] = orig_columns
 
 
-@pytest.fixture()
+@pytest.fixture
 def undo_download_dir_patch():
     """
     Provide a way for certain tests to not have tmp download dir.

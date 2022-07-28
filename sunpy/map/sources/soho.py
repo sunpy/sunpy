@@ -1,5 +1,3 @@
-"""SOHO Map subclass definitions"""
-
 import numpy as np
 
 import astropy.units as u
@@ -31,16 +29,15 @@ class EITMap(GenericMap):
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`_
     * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
-
     """
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False
+        )
 
     @property
     def spatial_units(self):
@@ -68,30 +65,34 @@ class EITMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('hec_x', 'hec_y', 'hec_z'), {'x': self.meta.get('hec_x'),
-                                               'y': self.meta.get('hec_y'),
-                                               'z': self.meta.get('hec_z'),
-                                               'unit': u.km,
-                                               'representation_type': CartesianRepresentation,
-                                               'frame': HeliocentricMeanEcliptic})
-                ] + super()._supported_observer_coordinates
+        return [
+            (('hec_x', 'hec_y', 'hec_z'),
+             {'x': self.meta.get('hec_x'),
+             'y': self.meta.get('hec_y'),
+              'z': self.meta.get('hec_z'),
+              'unit': u.km,
+              'representation_type': CartesianRepresentation,
+              'frame': HeliocentricMeanEcliptic})
+        ] + super()._supported_observer_coordinates
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an EIT image"""
+        """
+        Determines if header corresponds to an EIT image.
+        """
         return header.get('instrume') == 'EIT'
 
 
 class LASCOMap(GenericMap):
     """
-    SOHO LASCO Image Map
+    SOHO LASCO Image Map.
 
     The Large Angle and Spectrometric COronagraph (LASCO) is a set of three
     Lyot-type coronagraphs (C1, C2, and C3) that image the solar corona from
     1.1 to 32 solar radii.
 
     The C1 images rom 1.1 to 3 solar radii. The C2 telescope images the corona
-    from 2 to 6 solar radii, overlaping the outer field-of-view of C1 from 2 to
+    from 2 to 6 solar radii, overlapping the outer field-of-view of C1 from 2 to
     3 solar radii. The C3 telescope extends the field-of-view to 32 solar radii.
 
     SOHO was launched on 2 December 2 1995 into a sun-synchronous orbit.
@@ -103,10 +104,10 @@ class LASCOMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         self.plot_settings['cmap'] = 'soholasco{det!s}'.format(det=self.detector[1])
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False
+        )
 
     @property
     def spatial_units(self):
@@ -119,8 +120,8 @@ class LASCOMap(GenericMap):
         # Also check that all CROTAn keywords exist to make sure that it's an untouched
         # Helioviewer file.
         if ('helioviewer' in self.meta and
-                'crota' in self.meta and
-                'crota1' in self.meta and
+            'crota' in self.meta and
+            'crota1' in self.meta and
                 'crota2' in self.meta):
             log.debug("LASCOMap: Ignoring CROTAn keywords "
                       "because the map has already been rotated by Helioviewer")
@@ -131,10 +132,9 @@ class LASCOMap(GenericMap):
     @property
     def date(self):
         date = self.meta.get('date-obs', self.meta.get('date_obs'))
-        # Incase someone fixes the header
+        # Incase someone fixed the header
         if 'T' in date:
             return parse_time(date)
-
         time = self.meta.get('time-obs', self.meta.get('time_obs'))
         return parse_time(f"{date}T{time}")
 
@@ -145,18 +145,20 @@ class LASCOMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an LASCO image."""
+        """
+        Determines if header corresponds to an LASCO image.
+        """
         return header.get('instrume') == 'LASCO'
 
 
 class MDIMap(GenericMap):
     """
-    SOHO MDI Image Map
+    SOHO MDI Image Map.
 
     The Michelson Doppler Imager (MDI) is a white light refracting telescope
     which feeds sunlight through a series of filters onto a CCD camera. Two
@@ -181,14 +183,14 @@ class MDIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
+        # Magnetic field maps, not intensity maps
         if self.unit is not None and self.unit.is_equivalent(u.T):
-            # Magnetic field maps, not intensity maps
             self._set_symmetric_vmin_vmax()
 
     @property
     def _date_obs(self):
         if 'T' in self.meta['date-obs']:
-            # Helioviewer MDI files have the full date in DATE_OBS, but we stil
+            # Helioviewer MDI files have the full date in DATE_OBS, but we still
             # want to let normal FITS files use DATE-OBS
             return parse_time(self.meta['date-obs'])
         else:
@@ -219,11 +221,12 @@ class MDIMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('obs_l0', 'obs_b0', 'obs_dist'), {'lon': self.meta.get('obs_l0'),
-                                                    'lat': self.meta.get('obs_b0'),
-                                                    'radius': self.meta.get('obs_dist'),
-                                                    'unit': (u.deg, u.deg, u.AU),
-                                                    'frame': "heliographic_carrington"}),
+        return [(('obs_l0', 'obs_b0', 'obs_dist'),
+                 {'lon': self.meta.get('obs_l0'),
+                  'lat': self.meta.get('obs_b0'),
+                  'radius': self.meta.get('obs_dist'),
+                  'unit': (u.deg, u.deg, u.AU),
+                  'frame': "heliographic_carrington"}),
                 ] + super()._supported_observer_coordinates
 
     @property
@@ -246,7 +249,9 @@ class MDIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an MDI image"""
+        """
+        Determines if header corresponds to an MDI image.
+        """
         return cls._is_mdi_map(header) and not cls._is_synoptic_map(header)
 
 
@@ -272,20 +277,17 @@ class MDISynopticMap(MDIMap):
         cunit1 = self.meta['cunit1']
         if cunit1 == 'Degree':
             cunit1 = 'deg'
-
         cunit2 = self.meta['cunit2']
         if cunit2 == 'Sine Latitude':
             cunit2 = 'deg'
-
         return SpatialPair(u.Unit(cunit1), u.Unit(cunit2))
 
     @property
     def unit(self):
+        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
         bunit = self.meta.get('bunit', None)
         if bunit is None:
-            return
-        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
-        # The mapbase unit property forces this validation, so we must override it to prevent it.
+            return None
         return u.Unit(bunit)
 
     @property
@@ -299,5 +301,7 @@ class MDISynopticMap(MDIMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an MDI image"""
+        """
+        Determines if header corresponds to an MDI image.
+        """
         return cls._is_mdi_map(header) and cls._is_synoptic_map(header)

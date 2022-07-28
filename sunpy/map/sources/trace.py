@@ -1,8 +1,3 @@
-"""TRACE Map subclass definitions"""
-
-__author__ = "Jack Ireland"
-__email__ = "jack.ireland@nasa.gov"
-
 import astropy.units as u
 from astropy.visualization import LogStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
@@ -11,10 +6,13 @@ from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['TRACEMap']
+__author__ = "Jack Ireland"
+__email__ = "jack.ireland@nasa.gov"
 
 
 class TRACEMap(GenericMap):
-    """TRACE Image Map
+    """
+    TRACE Image Map.
 
     The Transition Region and Coronal Explorer was a
     NASA Small Explorer (SMEX) mission to image the
@@ -35,25 +33,24 @@ class TRACEMap(GenericMap):
     * `Analysis Guide <https://sdowww.lmsal.com/TRACE/tag/>`_
     * `Passband reference <https://sdowww.lmsal.com/TRACE/Project/Instrument/inspass.htm>`_
 
-    .. note::
-
-        Note that this map definition is currently only being tested on JPEG2000
-        files. TRACE FITS data is stored in a more complex format. Typically
-        TRACE data is stored in hourly "tri" files that store all the data taken
-        by TRACE in the hour indicated by the filename. Those files must first be
-        understood and parsed to obtain the science data. The ability to do this
-        is not yet in SunPy, but is available in SSWIDL. Please refer to the links
-        above concerning how to read "tri" files in SSWIDL.
+    Notes
+    -----
+    Note that this map definition is currently only being tested on JPEG2000
+    files. TRACE FITS data is stored in a more complex format. Typically
+    TRACE data is stored in hourly "tri" files that store all the data taken
+    by TRACE in the hour indicated by the filename. Those files must first be
+    understood and parsed to obtain the science data. The ability to do this
+    is not yet in SunPy, but is available in SSWIDL. Please refer to the links
+    above concerning how to read "tri" files in SSWIDL.
     """
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         self._nickname = self.detector
-        # Colour maps
         self.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, LogStretch()), clip=False)
+            stretch=source_stretch(self.meta, LogStretch()), clip=False
+        )
 
     @property
     def spatial_units(self):
@@ -73,12 +70,12 @@ class TRACEMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an TRACE image"""
+        """
+        Determines if header corresponds to an TRACE image.
+        """
         return header.get('instrume') == 'TRACE'
 
     @property
     def measurement(self):
-        s = self.meta['WAVE_LEN']
-        if s == 'WL':
-            s = 'white-light'
-        return s
+        s = self.meta.get('WAVE_LEN')
+        return 'white-light' if s == 'WL' else s

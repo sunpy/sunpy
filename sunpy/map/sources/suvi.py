@@ -1,4 +1,3 @@
-"""SUVI Map subclass definitions"""
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch
@@ -7,11 +6,9 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
+__all__ = ["SUVIMap"]
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
-
-
-__all__ = ["SUVIMap"]
 
 
 class SUVIMap(GenericMap):
@@ -71,7 +68,6 @@ class SUVIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         self._nickname = self.detector
         self.plot_settings["cmap"] = self._get_cmap_name()
         self.plot_settings["norm"] = ImageNormalize(
@@ -80,13 +76,15 @@ class SUVIMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('obsgeo-x', 'obsgeo-y', 'obsgeo-z'), {'x': self.meta.get('obsgeo-x'),
-                                                        'y': self.meta.get('obsgeo-y'),
-                                                        'z': self.meta.get('obsgeo-z'),
-                                                        'unit': u.m,
-                                                        'representation_type': CartesianRepresentation,
-                                                        'frame': "itrs"})
-                ] + super()._supported_observer_coordinates
+        return [
+            (('obsgeo-x', 'obsgeo-y', 'obsgeo-z'),
+             {'x': self.meta.get('obsgeo-x'),
+             'y': self.meta.get('obsgeo-y'),
+              'z': self.meta.get('obsgeo-z'),
+              'unit': u.m,
+              'representation_type': CartesianRepresentation,
+              'frame': "itrs"})
+        ] + super()._supported_observer_coordinates
 
     @property
     def observatory(self):
@@ -98,7 +96,9 @@ class SUVIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an AIA image"""
+        """
+        Determines if header corresponds to an GOES-R SUVI image.
+        """
         return str(header.get("instrume", "")).startswith(
             "GOES-R Series Solar Ultraviolet Imager"
         )

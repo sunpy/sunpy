@@ -1,7 +1,3 @@
-"""
-Parker Solar Probe subclass definitions.
-"""
-
 from sunpy.map import GenericMap
 
 __all__ = ['WISPRMap']
@@ -9,7 +5,7 @@ __all__ = ['WISPRMap']
 
 class WISPRMap(GenericMap):
     """
-    WISPR Map
+    WISPR Map.
 
     The The Wide-field Imager for Parker Solar Probe (WISPR) is a white light
     telescope onboard the Parker Solar Probe (PSP) spacecraft.
@@ -24,7 +20,7 @@ class WISPRMap(GenericMap):
     def processing_level(self):
         lvl = self.meta.get('level', None)
         if lvl is None:
-            return
+            return None
         return int(lvl[1])
 
     @property
@@ -37,7 +33,9 @@ class WISPRMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an WISPR image"""
+        """
+        Determines if header corresponds to an WISPR image.
+        """
         is_psp = 'parker solar probe' in str(header.get('obsrvtry', '')).lower()
         is_wispr = str(header.get('instrume', '')).startswith('WISPR')
         return is_psp and is_wispr

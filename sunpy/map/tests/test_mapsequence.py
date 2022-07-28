@@ -44,7 +44,7 @@ def mapsequence_all_the_same_some_have_masks(aia171_test_map, aia171_test_map_wi
     return sunpy.map.Map([aia171_test_map_with_mask, aia171_test_map_with_mask, aia171_test_map], sequence=True)
 
 
-@pytest.fixture()
+@pytest.fixture
 def mapsequence_different(aia171_test_map):
     """ Mapsequence allows that the size of the image data in each map be
     different.  This mapsequence contains such maps."""

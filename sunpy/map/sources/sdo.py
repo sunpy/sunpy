@@ -1,5 +1,3 @@
-"""SDO Map subclass definitions"""
-
 import numpy as np
 
 import astropy.units as u
@@ -14,7 +12,8 @@ __all__ = ['AIAMap', 'HMIMap', 'HMISynopticMap']
 
 
 class AIAMap(GenericMap):
-    """AIA Image Map.
+    """
+    AIA Image Map.
 
     The Atmospheric Imaging Assembly is a set of four telescopes that employ
     normal-incidence, multi-layer coated optics to provide narrow-band imaging
@@ -45,21 +44,21 @@ class AIAMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
-        # Fill in some missing info
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
+            stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False
+        )
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('haex_obs', 'haey_obs', 'haez_obs'), {'x': self.meta.get('haex_obs'),
-                                                        'y': self.meta.get('haey_obs'),
-                                                        'z': self.meta.get('haez_obs'),
-                                                        'unit': u.m,
-                                                        'representation_type': CartesianRepresentation,
-                                                        'frame': HeliocentricMeanEcliptic})
+        return [(('haex_obs', 'haey_obs', 'haez_obs'),
+                 {'x': self.meta.get('haex_obs'),
+                  'y': self.meta.get('haey_obs'),
+                  'z': self.meta.get('haez_obs'),
+                  'unit': u.m,
+                  'representation_type': CartesianRepresentation,
+                  'frame': HeliocentricMeanEcliptic})
                 ] + super()._supported_observer_coordinates
 
     @property
@@ -77,18 +76,20 @@ class AIAMap(GenericMap):
     def unit(self):
         unit_str = self.meta.get('bunit', self.meta.get('pixlunit'))
         if unit_str is None:
-            return
-
+            return None
         return self._parse_fits_unit(unit_str)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an AIA image"""
+        """
+        Determines if header corresponds to an AIA image.
+        """
         return str(header.get('instrume', '')).startswith('AIA')
 
 
 class HMIMap(GenericMap):
-    """HMI Image Map.
+    """
+    HMI Image Map.
 
     HMI consists of a refracting telescope, a polarization selector,
     an image stabilization system, a narrow band tunable filter
@@ -108,10 +109,10 @@ class HMIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-        if self.unit is not None and self.unit.is_equivalent(u.T):
-            # Magnetic field maps, not intensity maps
-            self._set_symmetric_vmin_vmax()
         self._nickname = self.detector
+        # Magnetic field maps, not intensity maps
+        if self.unit is not None and self.unit.is_equivalent(u.T):
+            self._set_symmetric_vmin_vmax()
 
     @property
     def measurement(self):
@@ -133,7 +134,9 @@ class HMIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an HMI image"""
+        """
+        Determines if header corresponds to an HMI image.
+        """
         return (str(header.get('INSTRUME', '')).startswith('HMI') and
                 not HMISynopticMap.is_datasource_for(data, header))
 
@@ -163,11 +166,9 @@ class HMISynopticMap(HMIMap):
         cunit1 = self.meta['cunit1']
         if cunit1 == 'Degree':
             cunit1 = 'deg'
-
         cunit2 = self.meta['cunit2']
         if cunit2 == 'Sine Latitude':
             cunit2 = 'deg'
-
         return SpatialPair(u.Unit(cunit1), u.Unit(cunit2))
 
     @property
@@ -178,7 +179,6 @@ class HMISynopticMap(HMIMap):
             # Reference: Section 5.5, Thompson 2006
             return SpatialPair(np.abs(self.meta['cdelt1']) * self.spatial_units[0] / u.pixel,
                                180 / np.pi * self.meta['cdelt2'] * u.deg / u.pixel)
-
         return super().scale
 
     @property
@@ -191,16 +191,14 @@ class HMISynopticMap(HMIMap):
         date = self._get_date('DATE-OBS')
         if date is None:
             return self._get_date('T_OBS')
-        else:
-            return date
+        return date
 
     @property
     def unit(self):
+        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
-        # The mapbase unit property forces this validation, so we must override it to prevent it.
         return u.Unit(unit_str)
 
     @classmethod

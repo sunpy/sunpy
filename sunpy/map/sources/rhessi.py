@@ -9,6 +9,10 @@ class RHESSIMap(GenericMap):
     """
     RHESSI Image Map.
 
+    .. warning::
+
+        Cannot read FITS files containing more than one image.
+
     The RHESSI mission consists of a single spin-stabilized
     spacecraft in a low-altitude orbit inclined 38 degrees to
     the Earth's equator. The only instrument on board is an
@@ -25,10 +29,6 @@ class RHESSIMap(GenericMap):
     ----------
     * RHESSI Homepage `<https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
     * Mission Paper `<https://doi.org/10.1023/A:1022428818870>`_
-
-    .. warning::
-
-        Cannot read fits files containing more than one image.
     """
 
     def __init__(self, data, header, **kwargs):
@@ -43,13 +43,14 @@ class RHESSIMap(GenericMap):
     def _timesys(self):
         """
         RHESSI maps can incorrectly use the TIMESYS keyword for the reference
-        time. If this is the case, returns the FITS default UTC.
+        time.
+
+        If this is the case, returns the FITS default UTC.
         """
         if ('TIMESYS' in self.meta and
                 self.meta['keycomments']['TIMESYS'] == 'Reference Time'):
             return 'UTC'
-        else:
-            return super()._timesys
+        return super()._timesys
 
     def _rotation_matrix_from_crota(self):
         """
@@ -103,5 +104,7 @@ class RHESSIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an RHESSI image"""
+        """
+        Determines if header corresponds to an RHESSI image.
+        """
         return header.get('instrume') == 'RHESSI'
