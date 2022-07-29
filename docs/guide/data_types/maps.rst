@@ -14,19 +14,20 @@ functionality that a scientist would want. Therefore, a Map also contains a numb
 of methods such as resizing or grabbing a subview. See `~sunpy.map.mapbase.GenericMap`
 for summaries of all attributes and methods.
 
-:ref:`1. Creating Maps` and :ref:`2. Inspecting Maps` demonstrate how to create a Map object
-and view a summary of the data in the object. :ref:`3. Map Data` describes how data is stored
-and accessed in a Map, and :ref:`4. Plotting Maps` introduces some basics of visualizing Map
-data in SunPy. :ref:`5. Composite Maps` and :ref:`6. Map Sequences` detail how SunPy can handle
-multiple Maps from similar and different instruments. Lastly, :ref:`7. Creating Custom Maps`
+:ref:`creating-maps` and :ref:`inspecting-maps` demonstrate how to create a Map object
+and view a summary of the data in the object. :ref:`map-data` describes how data is stored
+and accessed in a Map, and :ref:`plotting-maps` introduces some basics of visualizing Map
+data in SunPy. :ref:`composite-maps` and :ref:`map-sequences` detail how SunPy can handle
+multiple Maps from similar and different instruments. Lastly, :ref:`custom-maps`
 shows how you can create Maps from data sources not supported in SunPy.
 
+.. _creating-maps:
 
 1. Creating Maps
 ================
 
 To make things easy, SunPy can download sample data which are used
-throughout the docs (see :doc:`/examples/acquiring_data/2011_06_07_sampledata_overview`).
+throughout the docs (see the `Sample data overview <https://docs.sunpy.org/en/latest/generated/gallery/acquiring_data/2011_06_07_sampledata_overview.html>`_).
 These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE``.
 To create a `~sunpy.map.Map` from a sample AIA image,
 type the following into your Python shell: ::
@@ -53,6 +54,7 @@ The `Acquiring Data <https://docs.sunpy.org/en/stable/generated/gallery/index.ht
 of the Example Gallery has several examples of retrieving data using the `~sunpy.net.Fido` tool. For more details,
 check out the :doc:`/guide/acquiring_data/fido` guide.
 
+.. _inspecting-maps:
 
 2. Inspecting Maps
 ==================
@@ -90,8 +92,9 @@ The metadata for the map is accessed by: ::
     >>> header = my_map.meta  # doctest: +REMOTE_DATA
 
 This references the metadata dictionary with the header information as read
-from the source file. If you need to modify Map metadata, see this `example <https://docs.sunpy.org/en/latest/generated/gallery/map/map_metadata_modification.html>`_ for a demonstration. 
+from the source file. If you need to modify Map metadata, see `Map metadata modification <https://docs.sunpy.org/en/latest/generated/gallery/map/map_metadata_modification.html>`_ for a demonstration.
 
+.. _map-data:
 
 3. Map Data
 ===========
@@ -152,6 +155,7 @@ can be accessed through the data array directly. For example: ::
     >>> my_map.data.std()  # doctest: +REMOTE_DATA
     826.41016
 
+.. _plotting-maps:
 
 4. Plotting Maps
 ================
@@ -242,7 +246,7 @@ you would any other colormap: ::
 See `~sunpy.visualization.colormaps` for a plot of all available colormaps.
 
 If you want to override the built-in colormap, consider the following example
-which plots an AIA map using an EIT colormap: ::
+which plots an AIA map using an EIT colormap.
 
 .. plot::
     :include-source:
@@ -367,6 +371,7 @@ See the following two examples for applications of this technique:
 
 * `Finding and masking bright pixels <https://docs.sunpy.org/en/stable/generated/gallery/computer_vision_techniques/finding_masking_bright_pixels.html>`_
 
+.. _composite-maps:
 
 5. Composite Maps
 =================
@@ -394,6 +399,7 @@ and how to overlay HMI contours on an AIA map (without creating a composite map 
 
 For a more advanced tutorial on combining data from several maps, see `Creating a Full Sun Map with AIA and EUVI <https://docs.sunpy.org/en/stable/generated/gallery/map_transformations/reprojection_aia_euvi_mosaic.html>`_.
 
+.. _map-sequences:
 
 6. Map Sequences
 ================
@@ -526,6 +532,7 @@ to learn more about the features of this function.
 See the `Differential Rotation of the Sun <https://docs.sunpy.org/en/stable/generated/gallery/index.html#differential-rotation-of-the-sun>`_
 section of the Example Gallery for examples using `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 
+.. _custom-maps:
 
 7. Creating Custom Maps
 =======================

@@ -10,14 +10,14 @@ instrument-specific information when plotting and similar metadata handling.
 For more information about TimeSeries, and what data sources are currently supported,
 check out :doc:`/code_ref/timeseries`.
 
-:ref:`1. Creating a TimeSeries` describes how to create a TimeSeries object from single or multiple observational sources.
-:ref:`2. Inspecting TimeSeries & Accessing the Data` describes how to examine the data and metadata.
-:ref:`3. Plotting TimeSeries` outlines the basics of how SunPy will plot a TimeSeries object.
-:ref:`4. Manipulating TimeSeries` describes how to modify data, truncate a TimeSeries, down and up sample data,
+:ref:`creating-timeseries` describes how to create a TimeSeries object from single or multiple observational sources.
+:ref:`inspecting-timeseries` describes how to examine the data and metadata.
+:ref:`plotting-timeseries` outlines the basics of how SunPy will plot a TimeSeries object.
+:ref:`manipulating-timeseries` describes how to modify data, truncate a TimeSeries, down and up sample data,
 concatenate data, and create an Astropy Table from a TimeSeries.
-:ref:`5. Creating Custom TimeSeries` details how to create a TimeSeries object from
+:ref:`custom-timeseries` details how to create a TimeSeries object from
 a Pandas DataFrame or an Astropy Table.
-Lastly, :ref:`6. A Detailed Look at the Metadata` describes how to view and
+Lastly, :ref:`ts-metadata` describes how to view and
 extract information from the metadata.
 
 .. warning::
@@ -25,6 +25,8 @@ extract information from the metadata.
    The TimeSeries supersedes the previous LightCurve object but does not
    implement data download methods. To download TimeSeries data files use
    `sunpy.net`.
+
+.. _creating-timeseries:
 
 1. Creating a TimeSeries
 ========================
@@ -85,6 +87,7 @@ factory. However, if time series `~sunpy.timeseries.GenericTimeSeries.concatenat
 can be used to make a single time series from multiple TimeSeries from different
 sources once they are already in the form of TimeSeries objects.
 
+.. _inspecting-timeseries:
 
 2. Inspecting TimeSeries & Accessing the Data
 =============================================
@@ -96,7 +99,7 @@ a TimeSeries, type: ::
 
 This will show a table of information taken from the metadata and a preview of your data.
 If you execute this command in a Jupyter Notebook, a rich HTML version of this quick look
-will be shown that includes plots of the data. Alternatively, the `~sunpy.timeseries.GenericTimeSeries.quicklook` 
+will be shown that includes plots of the data. Alternatively, the `~sunpy.timeseries.GenericTimeSeries.quicklook`
 command will show the HTML view in your default browser.
 The meta data for the time series is accessed by: ::
 
@@ -160,6 +163,8 @@ dictionary to determine the `~astropy.units.quantity.Quantity`: ::
 
     >>> quantity = my_timeseries.quantity('xrsa')
 
+.. _plotting-timeseries:
+
 3. Plotting TimeSeries
 ======================
 
@@ -197,6 +202,7 @@ use the SunPy plot as the foundation for a more complicated figure:
    # Modify the figure here
    fig.savefig('figure.png')
 
+.. _manipulating-timeseries:
 
 4. Manipulating TimeSeries
 ==========================
@@ -371,6 +377,7 @@ method: ::
 For further details about editing Astropy tables you can read the `Astropy
 documentation website <https://docs.astropy.org/en/stable/table/>`_.
 
+.. _custom-timeseries:
 
 5. Creating Custom TimeSeries
 =============================
@@ -463,6 +470,7 @@ update method, with the explicit user-given values taking precedence.
     >>> units = OrderedDict([('intensity', u.W/u.m**2)])
     >>> ts_table = ts.TimeSeries(table, meta, units)
 
+.. _ts-metadata:
 
 6. A Detailed Look at the Metadata
 ==================================
