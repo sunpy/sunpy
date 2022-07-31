@@ -2208,7 +2208,7 @@ class GenericMap(NDData):
         # Put imports here to reduce sunpy.map import time
         from matplotlib import patches
 
-        import sunpy.visualization.limb
+        import sunpy.visualization.drawing
 
         # Don't use _check_axes() here, as drawing the limb works fine on none-WCSAxes,
         # even if the image is rotated relative to the axes
@@ -2218,7 +2218,7 @@ class GenericMap(NDData):
         is_wcsaxes = wcsaxes_compat.is_wcsaxes(axes)
         if is_wcsaxes:
             # TODO: supply custom limb radius
-            return sunpy.visualization.limb.draw_limb(
+            return sunpy.visualization.drawing.limb(
                 axes, self.observer_coordinate, resolution=resolution,
                 rsun=self.rsun_meters, **kwargs)
         else:

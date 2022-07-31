@@ -33,6 +33,19 @@ between the consecutive coordinates, in pixel space, and then indexing the data
 array of the map at those points.
 See :ref:`sphx_glr_generated_gallery_units_and_coordinates_map_slit_extraction.py` for an example.
 
+Drawing the solar equator and prime meridian
+============================================
+You can now use the `sunpy.visualization.drawing` module to draw the solar equator
+and prime meridian (zero Carrington longitude) on Astropy WCS axes.
+
+.. minigallery:: sunpy.visualization.drawing.equator
+
+Deprecation of ``sunpy.visualization.limb``
+===========================================
+The ``sunpy.visualization.limb`` module is deprecated and will be removed in
+version 5.1. The ``sunpy.visualization.limb.draw_limb`` function has been moved into
+the `sunpy.visualization.drawing` module and renamed :func:`sunpy.visualization.drawing.limb`.
+
 Contributors to this Release
 ============================
 
