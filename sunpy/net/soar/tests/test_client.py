@@ -86,8 +86,7 @@ def test_no_instrument():
 
 
 def test_download_path(tmp_path):
-    # Check that we can download things to a custom path using
-    # the search parameters
+    # Check that we can download things to a custom path using the search parameters
     id = a.Instrument('EUI')
     time = a.Time('2021-02-01', '2021-02-02')
     level = a.Level(1)
