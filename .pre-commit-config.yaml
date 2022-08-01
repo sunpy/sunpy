@@ -6,7 +6,7 @@ repos:
   # F823 - local variable name referenced before assignment
   # Others are taken care of by autopep8
   - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 5.0.2
     hooks:
       - id: flake8
         args:
