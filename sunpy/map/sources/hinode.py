@@ -26,8 +26,8 @@ class XRTMap(GenericMap):
     Notes
     -----
     XRT files do not normally specify the heliographic longitude of the spacecraft,
-    so sunpy silently assumes is that the spacecraft is at zero Stonyhurst
-    heliographic longitude (i.e., the same longitude as Earth) for L1 files. This assumption is
+    so sunpy silently assumes that the spacecraft is at zero Stonyhurst heliographic
+    longitude (i.e., the same longitude as Earth) for L1 files. This assumption is
     safe for nearly all analyses due to Hinode's orbital altitude of only ~600 km.
     This assumption is not made if ``HGLN_OBS`` and ``HGLT_OBS`` values have been
     explicitly added to the metadata.
