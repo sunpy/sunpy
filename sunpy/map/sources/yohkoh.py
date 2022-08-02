@@ -1,12 +1,10 @@
-import numpy as np
 
-from astropy.time import Time
+import astropy.units as u
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
-from sunpy.sun import constants
 
 __all__ = ['SXTMap']
 __author__ = "Jack Ireland"
@@ -46,32 +44,23 @@ class SXTMap(GenericMap):
         )
 
     @property
+    def _supported_observer_coordinates(self):
+        return [
+            (('hgln_obs', 'solar_b0', 'dsun_obs'),
+             {'lon': self.meta.get('hgln_obs'),
+              'lat': self.meta.get('solar_b0'),
+              'radius': self.meta.get('dsun_obs'),
+              'unit': (u.deg, u.deg, u.m),
+              'frame': "heliographic_stonyhurst"})
+        ] + super()._supported_observer_coordinates
+
+    @property
     def observatory(self):
         return "Yohkoh"
 
     @property
     def detector(self):
         return "SXT"
-
-    @property
-    def dsun(self):
-        """
-        For Yohkoh Maps, DSUN_OBS is not always defined.
-
-        In this case the SOLAR_R keyword is used to calculate dsun.
-        """
-        # 2012/12/19 - the SXT headers do not have a value of the distance from
-        # the spacecraft to the center of the Sun. The FITS keyword 'DSUN_OBS'
-        # appears to refer to the observed diameter of the Sun. Until such
-        # time as that is calculated and properly included in the file, we will
-        # use simple trigonometry to calculate the distance of the center of
-        # the Sun from the spacecraft. Note that the small angle approximation
-        # is used, and the solar radius stored in SXT FITS files is in arcseconds.
-        if 'solar_r' in self.meta:
-            dsun = constants.radius / (np.deg2rad(self.meta['solar_r'] / 3600.0))
-        else:
-            dsun = constants.au
-        return dsun
 
     @property
     def measurement(self):
@@ -95,7 +84,3 @@ class SXTMap(GenericMap):
         Determines if header corresponds to an SXT image.
         """
         return header.get('instrume') == 'SXT'
-
-    @property
-    def date(self):
-        return Time(self.meta.get('DATE_OBS'))

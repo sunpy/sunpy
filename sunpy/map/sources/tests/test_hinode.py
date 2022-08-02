@@ -30,9 +30,7 @@ def test_observatory_xrt(xrt_map):
 
 
 def test_measurement_xrt(xrt_map):
-    measurement = xrt_map.filter_wheel1_measurements[5].replace("_", " ")
-    measurement += '-' + xrt_map.filter_wheel2_measurements[1].replace("_", " ")
-    assert xrt_map.measurement == measurement
+    assert xrt_map.measurement == "Be thin-Open"
 
 
 def test_wheel_measurements_xrt(xrt_map):
@@ -44,8 +42,7 @@ def test_wheel_measurements_xrt(xrt_map):
 
 def test_wcs_xrt(xrt_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        xrt_map.pixel_to_world(0*u.pix, 0*u.pix)
+    xrt_map.pixel_to_world(0*u.pix, 0*u.pix)
 
 
 def test_sot_map(sot_map):
@@ -87,5 +84,5 @@ def test_obstype_sot(sot_map):
 
 def test_wcs_sot(sot_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='assuming Earth-based observer'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
         sot_map.pixel_to_world(0*u.pix, 0*u.pix)

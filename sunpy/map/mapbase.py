@@ -786,10 +786,9 @@ class GenericMap(NDData):
         self._nickname = n
 
     def _get_date(self, key):
-        time = self.meta.get(key, None)
-        if time is None:
+        time = self.meta.get(key)
+        if not time:
             return
-
         # Get the time scale
         if 'TAI' in time:
             # SDO specifies the 'TAI' scale in their time string, which is parsed
@@ -802,7 +801,6 @@ class GenericMap(NDData):
                               f'which is set to "{timesys_meta}".')
         else:
             timesys = self._timesys
-
         return parse_time(time, scale=timesys.lower())
 
     @property
