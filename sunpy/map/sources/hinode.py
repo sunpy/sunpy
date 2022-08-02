@@ -1,9 +1,10 @@
 """Hinode XRT and SOT Map subclass definitions"""
+import astropy.units as u
+
 from sunpy.map import GenericMap
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
-
 __all__ = ['XRTMap', 'SOTMap']
 
 
@@ -12,7 +13,8 @@ def _lower_list(l):
 
 
 class XRTMap(GenericMap):
-    """Hinode XRT map definition.
+    """
+    Hinode XRT map definition.
 
     The X-Ray Telescope (XRT) is a high resolution grazing incidence telescope,
     which is a succsessor to Yohkoh. It provides 2-arcsecond resolution images
@@ -20,6 +22,15 @@ class XRTMap(GenericMap):
     from 1,000,000 to 10,000,000 Kelvin.
 
     Hinode was launched on 22 September 2006 into a sun-synchronous orbit.
+
+    Notes
+    -----
+    XRT files do not normally specify the heliographic longitude of the spacecraft,
+    so sunpy silently assumes that the spacecraft is at zero Stonyhurst heliographic
+    longitude (i.e., the same longitude as Earth) for L1 files. This assumption is
+    safe for nearly all analyses due to Hinode's orbital altitude of only ~600 km.
+    This assumption is not made if ``HGLN_OBS`` and ``HGLT_OBS`` values have been
+    explicitly added to the metadata.
 
     References
     ----------
@@ -36,24 +47,31 @@ class XRTMap(GenericMap):
                                   "Be_thick", "Gband", "Ti_poly"]
 
     def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
-
-        fw1 = header.get('EC_FW1_')
+        fw1 = header.get('EC_FW1_', '')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
-            raise ValueError('Unpexpected filter wheel 1 in header.')
-
-        fw2 = header.get('EC_FW2_')
+            raise ValueError(f'Unexpected filter wheel 1 {fw1} in header.')
+        fw2 = header.get('EC_FW2_', '')
         if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
-            raise ValueError('Unpexpected filter wheel 2 in header.')
-
+            raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
+        super().__init__(data, header, **kwargs)
         self.plot_settings['cmap'] = 'hinodexrt'
 
     @property
     def _timesys(self):
         if self.meta.get('timesys', '').upper() == 'UTC (TBR)':
             return 'UTC'
-        else:
-            return super()._timesys
+        return super()._timesys
+
+    @property
+    def _supported_observer_coordinates(self):
+        # Assume observer is at zero Stonyhurst heliographic longitude if not otherwise specified
+        # https://community.openastronomy.org/t/sunpymetadatawarnings-when-using-hinode-xrt-data/393/7 for more information
+        return (super()._supported_observer_coordinates
+                + [(('solar_b0', 'dsun_obs'), {'lon': 0*u.deg,
+                                               'lat': self.meta.get('solar_b0'),
+                                               'radius': self.meta.get('dsun_obs'),
+                                               'unit': (u.deg, u.deg, u.m),
+                                               'frame': "heliographic_stonyhurst"})])
 
     @property
     def detector(self):
@@ -68,6 +86,13 @@ class XRTMap(GenericMap):
         fw1 = self.meta.get('EC_FW1_').replace("_", " ")
         fw2 = self.meta.get('EC_FW2_').replace("_", " ")
         return f"{fw1}-{fw2}"
+
+    @property
+    def processing_level(self):
+        lvl = self.meta.get('DATA_LEV', None)
+        if lvl is None:
+            return
+        return int(lvl)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

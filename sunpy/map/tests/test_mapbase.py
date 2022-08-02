@@ -296,8 +296,8 @@ def test_partially_missing_observers(generic_map):
     generic_map.meta['crln_obs'] = 0
     generic_map.meta.pop('dsun_obs')
     with pytest.warns(SunpyMetadataWarning,
-                      match="Missing metadata for observer: assuming Earth-based observer.\n" +
-                            "For frame 'heliographic_stonyhurst' the following metadata is missing: dsun_obs\n" +
+                      match="Missing metadata for observer: assuming Earth-based observer.\n"
+                            "For frame 'heliographic_stonyhurst' the following metadata is missing: dsun_obs\n"
                             "For frame 'heliographic_carrington' the following metadata is missing: dsun_obs\n"):
         generic_map.observer_coordinate
 
