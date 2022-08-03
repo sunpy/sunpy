@@ -430,10 +430,9 @@ def test_entries_from_dir_recursively_true():
 
 
 def test_entries_from_dir_recursively_false():
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        entries = list(entries_from_dir(testdir, False,
-                                        default_waveunit='angstrom',
-                                        time_string_parse_format='%d/%m/%Y'))
+    entries = list(entries_from_dir(testdir, False,
+                                    default_waveunit='angstrom',
+                                    time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 70
 
 
