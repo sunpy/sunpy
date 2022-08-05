@@ -1,3 +1,21 @@
+4.0.4 (2022-08-05)
+==================
+
+Bug Fixes
+---------
+
+- If a level 1 XRT file does not specify the heliographic longitude of the spacecraft,
+  a silent assumption is made that the spacecraft is at zero Stonyhurst
+  heliographic longitude (i.e., the same longitude as Earth). (`#6333 <https://github.com/sunpy/sunpy/pull/6333>`__)
+- The sample data retry was failing under parfive 2.0.0. (`#6334 <https://github.com/sunpy/sunpy/pull/6334>`__)
+
+
+Documentation
+-------------
+
+- Added the current bugfix release policy to the docs. (`#6336 <https://github.com/sunpy/sunpy/pull/6336>`__)
+
+
 4.0.3 (2022-07-08)
 ==================
 
