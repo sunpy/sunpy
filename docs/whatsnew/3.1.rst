@@ -2,10 +2,11 @@
 
 .. _whatsnew-3.1:
 
-************************
-What's New in SunPy 3.1?
-************************
-The SunPy project is pleased to announce the 3.1 release of the sunpy core package.
+****************************
+What's New in **sunpy** 3.1?
+****************************
+
+The SunPy project is pleased to announce the 3.1 release of the **sunpy** core package.
 
 On this page, you can read about some of the big changes in this release.
 
@@ -13,7 +14,7 @@ On this page, you can read about some of the big changes in this release.
     :local:
     :depth: 1
 
-SunPy 3.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+**sunpy** 3.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
@@ -25,39 +26,43 @@ By the numbers:
 
 Increase in required package versions
 =====================================
-We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 3.1:
+
+We have bumped the minimum version of several packages we depend on; these are the new minimum versions for **sunpy** 3.1:
 
 - astropy >= 4.2
 - matplotlib >= 3.2.0
 - numpy >= 1.17.0
 - pandas >= 1.0.0
 
-
 Increased in-situ data support
 ==============================
+
 Two new features have significantly increased support for in-situ data returned by heliospheric missions.
 See :ref:`sphx_glr_generated_gallery_acquiring_data_search_cdaweb.py` for a full example of searching for, downloading, and loading a CDF file into sunpy.
 
 New CDAWeb client
 -----------------
+
 A new Fido client to search the Coordinated Data Analysis Web (CDAWeb) has been added to `sunpy.net`.
 This allows one to search for and download data from many space physics missions that take in-situ data (including Parker Solar Probe and Solar Orbiter).
 In combination with the new CDF reading abilities of `sunpy.timeseries.TimeSeries`, this provides a full workflow for searching for, downloading, and analysing in-situ data contained within CDF files.
 
 Support for .cdf files
 ----------------------
+
 `sunpy.timeseries.TimeSeries` now supports loading CDF files if the external library ``cdflib`` is installed.
 
 New limb drawing function
 =========================
+
 The solar limb as seen from an arbitrary observer coordinate can now be drawn on a world coordinate system aware
 Axes using the :func:`sunpy.visualization.draw_limb` function.
 
 .. minigallery:: sunpy.visualization.draw_limb
 
-
 New WISPR map source
 ====================
+
 A new map source for the WISPR instrument on Parker Solar Probe has been added.
 This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
 information for the `~sunpy.map.GenericMap.processing_level` and
@@ -65,15 +70,16 @@ information for the `~sunpy.map.GenericMap.processing_level` and
 
 Changes to map metadata fixes
 =============================
+
 The `~sunpy.map.GenericMap` map sources are primarily used to modify metadata values to either fix known incorrect values in a given data source, or make the metadata comply with the FITS standard.
-There are two ways in which the sunpy map sources can do this:
+There are two ways in which the **sunpy** map sources can do this:
 
 1. Directly edit the values stored in the FITS metadata.
 2. Overload properties (e.g. `sunpy.map.GenericMap.unit`) such that they return the correct information without modifying the underlying metadata.
 
-In previous versions of sunpy there has been no consistency in which of these two approaches is taken.
+In previous versions of **sunpy** there has been no consistency in which of these two approaches is taken.
 
-As of sunpy 3.1, the second approach is now consistently taken, and **sunpy no longer edits any FITS metadata values** when constructing a Map.
+As of **sunpy** 3.1, the second approach is now consistently taken, and **sunpy no longer edits any FITS metadata values** when constructing a Map.
 `~sunpy.map.GenericMap` properties now consistently provide corrected information.
 For details of any corrections applied, the docstrings of different map sources (e.g., `~sunpy.map.sources.HMIMap` - see :ref:`map-sources` for a list of map sources) provide information on any assumptions made beyond the original FITS metadata when constructing the map properties.
 
@@ -112,17 +118,16 @@ Changes to map date/time handling
 
 New date properties
 -------------------
-The properties `~sunpy.map.GenericMap.date_start`,
-`~sunpy.map.GenericMap.date_end`, and `~sunpy.map.GenericMap.date_average` have
-been added to be drawn from the relevant FITS metadata, if present in the map
-header. These are from new keywords defined in version 4 of the FITS standard,
-which have precise meanings compared to the previously ill-defined DATE-OBS.
+
+The properties `~sunpy.map.GenericMap.date_start`, `~sunpy.map.GenericMap.date_end`, and `~sunpy.map.GenericMap.date_average` have been added to be drawn from the relevant FITS metadata, if present in the map header.
+These are from new keywords defined in version 4 of the FITS standard, which have precise meanings compared to the previously ill-defined DATE-OBS.
 
 Changes to `~sunpy.map.GenericMap.date`
 ---------------------------------------
+
 `sunpy.map.GenericMap.date` now looks for more metadata than just DATE-OBS.
-This property can return any one of the new properties (see above) depending
-on the metadata present in the map. It now draws from, in order of preference:
+This property can return any one of the new properties (see above) depending on the metadata present in the map.
+It now draws from, in order of preference:
 
 1. The DATE-OBS FITS keyword
 2. `~sunpy.map.GenericMap.date_average`
@@ -130,29 +135,23 @@ on the metadata present in the map. It now draws from, in order of preference:
 4. `~sunpy.map.GenericMap.date_end`
 5. The current time.
 
-If DATE-OBS is present alongside DATE-AVG or DATE-BEG and DATE-END, this results
-in a behaviour change to favour the new (more precisely defined) keywords.
-It is recommended
-to use `~sunpy.map.GenericMap.date_average`,
-`~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
-instead if you need one of these specific times.
+If DATE-OBS is present alongside DATE-AVG or DATE-BEG and DATE-END, this results in a behavior change to favour the new (more precisely defined) keywords.
+It is recommended to use `~sunpy.map.GenericMap.date_average`, `~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end` instead if you need one of these specific times.
 
 Addition of new time format `~sunpy.time.TimeTaiSeconds`
 --------------------------------------------------------
-The new `~sunpy.time.TimeTaiSeconds` format is the number of
-SI seconds from 1958-01-01 00:00:00, which includes UTC leap seconds.
-1958-01-01 00:00:00 is the defined time when International Atomic Time (TAI)
-and Universal Time (UT) are synchronized.
 
-This format is equivalent to the output of the SSW ``anytim2tai`` routine, and
-related routines, for times after 1972-01-01.  Be aware that the SSW routines
-are not written to provide valid results for times before 1972-01-01.
+The new `~sunpy.time.TimeTaiSeconds` format is the number of SI seconds from 1958-01-01 00:00:00, which includes UTC leap seconds.
+1958-01-01 00:00:00 is the defined time when International Atomic Time (TAI) and Universal Time (UT) are synchronized.
 
-This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch
-is 12 years earlier.
+This format is equivalent to the output of the SSW ``anytim2tai`` routine, and related routines, for times after 1972-01-01.
+Be aware that the SSW routines are not written to provide valid results for times before 1972-01-01.
+
+This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch is 12 years earlier.
 
 Propagating solar-surface coordinates in time
 =============================================
+
 There is now an easy-to-use context manager (:func:`~sunpy.coordinates.propagate_with_solar_surface`) to enable coordinate transformations to take solar rotation into account.
 Normally, a coordinate refers to a point in inertial space, so transforming it to a different observation time does not move the point at all.
 Under this context manager, a coordinate will be treated as if it were referring to a point on the solar surface.
@@ -160,9 +159,9 @@ Coordinate transformations with a change in observation time will automatically 
 
 .. minigallery:: sunpy.coordinates.propagate_with_solar_surface
 
-
 Convenient reprojection of maps
 ===============================
+
 `~sunpy.map.Map` objects now have the :meth:`~sunpy.map.GenericMap.reproject_to` method to easily reproject the map to a new WCS.
 The returned map will be of type `~sunpy.map.GenericMap`, with no metadata preserved from the original map, so copy over any desired metadata from the original map.
 This method requires the optional package `reproject` to be installed.
@@ -171,6 +170,7 @@ This method requires the optional package `reproject` to be installed.
 
 JSOC keyword filtering with Fido
 ================================
+
 Support for filtering searches with JSOC keywords has been added to ``Fido.search``::
 
     >>> from sunpy.net import Fido, attrs as a
@@ -207,7 +207,6 @@ Please be aware of two caveats:
 
 - We do not validate the value used for comparison.
 - Passing in a keyword without comparison to a value (e.g. ``==0``, ``< 10``) will error.
-
 
 Arithmetic operations with maps
 ===============================
