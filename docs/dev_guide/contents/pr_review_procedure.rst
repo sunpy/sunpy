@@ -4,11 +4,11 @@
 Pull Requests and GitHub Teams
 ******************************
 
-This document describes the standards required for a pull request to sunpy and an explanation of our automated tests.
+This document describes the standards required for a pull request to **sunpy** and an explanation of our automated tests.
 
 Each pull request **must** meet the following criteria before it is considered for merge:
 
-* The code must be PEP 8 compliant and meet the ill-defined sunpy quality standards.
+* The code must be PEP 8 compliant and meet the **sunpy** quality standards.
   We have these in the :ref:`coding-standards` page.
 
 * The PR must contain a changelog entry if it changes the behavior of any code.
@@ -36,10 +36,6 @@ Continuous Integration
 
 Currently we have a variety of services that respond or activate on an opened pull request.
 
-Comments from bots:
-
-* `pep8speaks <https://github.com/OrkoHunter/pep8speaks>`_: Performs a PEP8 check on any submitted code. This is updated as the code changes.
-
 Checks that appear at the bottom of a pull request:
 
 .. image:: images/checks_pr.png
@@ -65,7 +61,7 @@ or at the top under the "Checks" tab:
   Warnings are not checked on this build but under GitHub Actions (see below).
 
 * `CI (GitHub Actions) <https://github.com/sunpy/sunpy/actions>`_: Runs our test suite on multiple operating systems.
-  If the minimal "CI / core" tests are successful, the indepth "CI / test", documentation "CI / docs" test and remote data "CI / online" tests will be run.
+  If the minimal "CI / core" tests are successful, the in-depth "CI / test", documentation "CI / docs" test and remote data "CI / online" tests will be run.
   You will see multiple jobs within each group.
   Each job corresponds to a tox environment being run on a particular operating system.
 
@@ -73,7 +69,8 @@ or at the top under the "Checks" tab:
 
 * `codecov/project (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage in sunpy overall.
 
-* `pre-commit.ci - pr <https://pre-commit.ci>`__: Checks the code style checks have passed. This CI will automatically fix style issues by commenting ``pre-commit.ci autofix`` on its own line in a comment on the PR.
+* `pre-commit.ci - pr <https://pre-commit.ci>`__: Checks the code style checks have passed.
+  This CI will automatically fix style issues by commenting ``pre-commit.ci autofix`` on its own line in a comment on the PR.
 
 It is common to see some of these checks fail.
 This can be happen due to a change that has broken a test (should be fixed) or a remote server has failed (might have to wait for it to come back).
@@ -87,7 +84,7 @@ The vast majority of our tests are run on GitHub Actions and this means you migh
 The tests for GitHub Actions are split into multiple phases to reduce the number of builds running at one time.
 If your PR fails the minimal initial stage, the subsequent stages tests will not run.
 
-The Azure checks on GitHub manifest:
+The Action checks on GitHub manifest:
 
 .. image:: images/actions_check_pr.png
    :width: 600
@@ -99,7 +96,7 @@ The "Details" link will show you the log output of the particular check:
 
 .. image:: images/actions_summary_check.png
    :width: 600
-   :alt: Summary of Azure outputs on Checks tab
+   :alt: Summary of Action outputs on Checks tab
 
 On the left you should see the entire list of GitHub Actions checks.
 You can navigate between the jobs here.
@@ -110,10 +107,10 @@ Normally the "Run tox" step will be red if the tests have failed.
 You will need to click on this so it will load the output from the test suite.
 
 Our test suite is very verbose, so there will be a lot of text outputted.
-The important bits of information should be at the bottom as "pytest" prints out a test summary at the end.
+The important bits of information should be at the bottom as **pytest** prints out a test summary at the end.
 For example:
 
-.. code:: bash
+.. code-block:: bash
 
     ============================================================================= short test summary info =============================================================================
     SKIPPED [1] d:\a\1\s\.tox\py37\lib\site-packages\pytest_doctestplus\plugin.py:178: unable to import module local('d:\\a\\1\\s\\.tox\\py37\\lib\\site-packages\\sunpy\\io\\setup_package.py')
@@ -152,18 +149,18 @@ SunPy owners
 The SunPy owners group is the group of people who have total control over the SunPy GitHub organization.
 The SunPy board have control over who is in this group, it has been decided that generally it will be the Lead Developer and the SunPy board chair and vice-chair.
 
-sunpy Maintainers
------------------
+**sunpy** Maintainers
+---------------------
 
-This is the group of people who have push access to the main sunpy repository.
+This is the group of people who have push access to the main **sunpy** repository.
 The membership of this group is at the discretion of the Lead Developer, but shall generally be made up of people who have demonstrated themselves to be trust worthy and active contributors to the project.
 
 This group has `subgroups <https://github.com/orgs/sunpy/teams/sunpy-maintainers/teams>`__ for each section of the repository that has `maintainers <https://sunpy.org/project/#maintainers>`__.
 The members of these groups will automatically be requested to review all PRs which change files in that subpackage.
 
-sunpy Developers
-----------------
+**sunpy** Developers
+--------------------
 
-The members of this group have "read" access to the sunpy repository.
+The members of this group have "read" access to the **sunpy** repository.
 As all these repository are open anyway, what this effectively means is that these people can be assigned to issues.
-The members of this group are people who are involved in the development of sunpy at a good frequency, they are people who's opinions have been demonstrated to be constructive and informative.
+The members of this group are people who are involved in the development of **sunpy** at a good frequency, they are people who's opinions have been demonstrated to be constructive and informative.
