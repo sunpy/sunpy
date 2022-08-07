@@ -1,9 +1,10 @@
 .. _whatsnew-4.1:
 
-************************
-What's New in SunPy 4.1?
-************************
-The SunPy project is pleased to announce the 4.1 release of the sunpy core package.
+****************************
+What's New in **sunpy** 4.1?
+****************************
+
+The SunPy project is pleased to announce the 4.1 release of the **sunpy** core package.
 
 On this page, you can read about some of the big changes in this release.
 
@@ -11,11 +12,11 @@ On this page, you can read about some of the big changes in this release.
     :local:
     :depth: 1
 
-sunpy 4.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+**sunpy** 4.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
-This release of sunpy contains x commits in x merged pull requests closing x issues from x people, x of which are first-time contributors to sunpy.
+This release of **sunpy** contains x commits in x merged pull requests closing x issues from x people, x of which are first-time contributors to **sunpy**.
 
 * x commits have been added since 4.0
 * x issues have been closed since 4.0
@@ -25,6 +26,7 @@ This release of sunpy contains x commits in x merged pull requests closing x iss
 
 Extracting Values from a `~sunpy.map.GenericMap` Along a Set of Coordinates
 ===========================================================================
+
 It is now easy to extract data values from a `~sunpy.map.GenericMap` along
 a curve specified by set of coordinates using the new
 `sunpy.map.extract_along_coord` function.
@@ -35,6 +37,7 @@ See :ref:`sphx_glr_generated_gallery_units_and_coordinates_map_slit_extraction.p
 
 Drawing the solar equator and prime meridian
 ============================================
+
 You can now use the `sunpy.visualization.drawing` module to draw the solar equator
 and prime meridian (zero Carrington longitude) on Astropy WCS axes.
 
@@ -42,6 +45,7 @@ and prime meridian (zero Carrington longitude) on Astropy WCS axes.
 
 Deprecation of ``sunpy.visualization.limb``
 ===========================================
+
 The ``sunpy.visualization.limb`` module is deprecated and will be removed in
 version 5.1. The ``sunpy.visualization.limb.draw_limb`` function has been moved into
 the `sunpy.visualization.drawing` module and renamed :func:`sunpy.visualization.drawing.limb`.
