@@ -4,14 +4,14 @@
 Extending Fido with New Sources of Data
 ***************************************
 
-Sunpy's data search and retrieval tool (``Fido``) is designed to be extensible, so that new sources of data or metadata can be supported, either inside or outside the sunpy core package.
+**sunpy**'s data search and retrieval tool (`~sunpy.net.Fido`) is designed to be extensible, so that new sources of data or metadata can be supported, either inside or outside the **sunpy** core package.
 There are two ways of defining a new client, depending on the complexity of the web service.
 A "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` which provides helper methods for downloading from a list of URLs.
-If the service you want to add has easily accesible HTTP or FTP URLs that have a well defined folder and filename structure, this is probably the best approach.
+If the service you want to add has easily accessible HTTP or FTP URLs that have a well defined folder and filename structure, this is probably the best approach.
 If the service you want to add requires making requests to an API with parameters for the search and getting a list of results in return, then you probably want to write a "full" client.
 
 Before writing a new client, ensure you are familiar with how searches are specified by the `sunpy.net.attr` system, including combining them with logical operations.
-When choosing a name for your new client it should have the form ``<name>Client`` as sunpy will split the name the name of the class to extract the name of your client.
+When choosing a name for your new client it should have the form ``<name>Client`` as **sunpy** will split the name the name of the class to extract the name of your client.
 The main place this is done is when constructing a `~.UnifiedResponse` object, where the name part can be used to index the response object.
 
 .. _new_scraper_client:
@@ -26,7 +26,7 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
 
 * A class method :meth:`~sunpy.net.base_client.BaseClient.register_values`; this registers the "attrs" that are supported by the client.
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
-  Each ``tuple`` contains the attr value and its description.
+  Each `tuple` contains the attr value and its description.
 * A class attribute ``baseurl``; this is a regular expression which is used to match the URLs supported by the client.
 * A class attribute ``pattern``; this is a template used to extract the metadata from URLs matched by ``baseurl``.
   The extraction uses the `~sunpy.extern.parse.parse` format.
@@ -51,7 +51,7 @@ A version without documentation strings is reproduced below:
                     attrs.Level: [('0', 'EVE: The specific EVE client can only return Level 0C data. Any other number will use the VSO Client.')]}
             return adict
 
-This client scrapes all the URLs available under the base url ``http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/``.
+This client scrapes all the URLs available under the base url: ``http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/``.
 `~sunpy.net.scraper.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``baseurl`` pattern specifies where in the pattern the time information is located, using `strptime <https://strftime.org/>`__ notation.
 The ``pattern`` attribute is used to populate the results table from the URLs matched with the ``baseurl``.
 It includes some of the time definitions, as well as names of attrs (in this case "Level").
@@ -73,8 +73,8 @@ This is done addressed with the two following methods:
 
 A good example of the use of these two methods is the `sunpy.net.dataretriever.sources.norh.NoRHClient` in sunpy.
 
-It may also be possible that the ``baseurl`` property needs to be customised based on attrs other than Time.
-Since `~sunpy.net.scraper.Scraper` doesn't currently support generating directories that have non-time variables, the :meth:`~sunpy.net.dataretriever.client.GenericClient.search` needs to be customised.
+It may also be possible that the ``baseurl`` property needs to be customized based on attrs other than "Time".
+Since `~sunpy.net.scraper.Scraper` doesn't currently support generating directories that have non-time variables, the :meth:`~sunpy.net.dataretriever.client.GenericClient.search` needs to be customized.
 The search method should in this case, generate a ``baseurl`` dependant on the values of these attrs, and then call ``super().search`` or `~sunpy.net.scraper.Scraper` for each ``baseurl`` generated.
 For an example of a complex modification of the ``search()`` method see the implementation of `.SUVIClient.search`.
 
@@ -105,7 +105,7 @@ Suppose any file of a data archive can be described by this URL ``https://some-d
 ``baseurl`` becomes ``r'https://some-domain.com/%Y/%m/%d/satname_(\d){2}_(\d){1}_(\d){12}_(\d){2}\.fits'``.
 
 Note all variables in the filename are converted to regex that will match any possible value for it.
-A character enclosed within ``()`` followed by a number enclosed within ``{}`` is used to match the specified number of occurences of that special sequence.
+A character enclosed within ``()`` followed by a number enclosed within ``{}`` is used to match the specified number of occurrences of that special sequence.
 For example, ``%y%m%d%H%M%S`` is a twelve digit variable (with 2 digits for each item) and thus represented by ``r'(\d){12}'``.
 Note that ``\`` is used to escape the special character ``.``.
 
@@ -152,7 +152,7 @@ Search Attrs
 As described in `~sunpy.net.attr` the attr system allows the construction of complex queries by the user.
 To make these complex queries easily processable by the clients the ``AttrWalker`` converts these into a set of queries which can be processed separately.
 It does this by converting the input query to a set of queries which are ORed, but are complete queries.
-This means the list of queries is an **OR** of **ANDs** (technically called `disjuntive normal form <https://en.wikipedia.org/wiki/Disjunctive_normal_form>`__).
+This means the list of queries is an **OR** of **ANDs** (technically called `disjunctive normal form <https://en.wikipedia.org/wiki/Disjunctive_normal_form>`__).
 
 Each query in the list of ORs contains all the information about that query so for example if the user provided a query like
 
@@ -169,7 +169,7 @@ it would be passed to the client as
 So you can process each element of the OR in turn without having to consult any other part of the query.
 
 If the query the user provided contains an OR statement you get passed an instance of `~sunpy.net.attr.AttrOr` and each sub-element of that `~sunpy.net.attr.AttrOr` will be `~sunpy.net.attr.AttrAnd` (or a single other attr class).
-If the user query dosen't contain an OR you get a single `~.Attr` instance or an `~.AttrAnd`.
+If the user query doesn't contain an OR you get a single `~.Attr` instance or an `~.AttrAnd`.
 
 For example you could get any of the following queries (using ``&`` for AND and ``|`` for OR):
 
@@ -188,7 +188,7 @@ The Attr Walker
 
 Given the potential complexity of these combined attrs, converting them into other forms, such as query parameters or JSON etc involves walking the tree and converting each attr to the expected format in a given way.
 This parsing and conversion of the query tree is deliberately not done using methods or attributes of the attrs themselves.
-The attrs should be independent of any client in their implementation, so they can be shared between the different ``Fido`` clients.
+The attrs should be independent of any client in their implementation, so they can be shared between the different Fido clients.
 
 A class is provided to facilitate this conversion, `~sunpy.net.attr.AttrWalker`.
 The `~sunpy.net.attr.AttrWalker` class consists of three main components:
@@ -261,7 +261,7 @@ Obviously, most clients would want to support more attrs than these two, and thi
 Adding "Attrs" to Registry
 ##########################
 
-Registering of "attrs" ensures discoverability of search attributes supported by the corresponding sunpy Client.
+Registering of "attrs" ensures discoverability of search attributes supported by the corresponding **sunpy** Client.
 For adding them to the Registry, we need to define a ``classmethod`` :meth:`~sunpy.net.base_client.BaseClient.register_values` that returns a dictionary of registered values.
 This dictionary should have `~sunpy.net.attr.Attr` classes as keys and a list of tuples corresponding to that key representing the possible values the key "attr" can take.
 Each tuple comprises of two elements.
@@ -302,8 +302,8 @@ The general flow of a ``search()`` method is:
 
 To process the query with the `.AttrWalker`, call the :meth:`.AttrWalker.create` method::
 
-  def search(self, query):
-    queries = walker.create(query)
+    def search(self, query):
+        queries = walker.create(query)
 
 Assuming the walker is the one we defined above, queries would be a list of dicts with the attrs processed into query parameters for the API URL.
 
@@ -325,14 +325,14 @@ We also pretend that the response is a json object in the form of a Python dicti
 
 .. code-block:: python
 
-  def search(self, query):
-      queries = walker.create(query)
+    def search(self, query):
+        queries = walker.create(query)
 
-      results = []
-      for query_parameters in queries:
-          results.append(self._make_search(query_parameters))
+        results = []
+        for query_parameters in queries:
+            results.append(self._make_search(query_parameters))
 
-      return QueryResponseTable(results, client=self)
+        return QueryResponseTable(results, client=self)
 
 In reality, you probably want to post-process the results from your API before you put them in the table, they should be human readable first, with spaces and capitalisation as appropriate.
 
@@ -366,7 +366,7 @@ Writing a Fetch Method
 
 The ``fetch()`` method of a Fido client is responsible for converting a set of search results (possibly sliced by the user) into a set of URLs to be downloaded.
 Due to the history of clients and how they were implemented in sunpy, some existing clients support use outside of the``Fido`` wrapper, this makes them appear more complex.
-In this example we are going to write a ``fetch()`` method which is designed only to be called from ``Fido``.
+In this example we are going to write a ``fetch()`` method which is designed only to be called from Fido.
 
 The parameters for such a method should be::
 
@@ -377,7 +377,7 @@ The parameters here are:
 * ``query_results`` which is an instance of `~.QueryResponseTable` or `~sunpy.net.base_client.QueryResponseRow`, these are the results the user wants to download.
 * ``path=`` This is the path that the user wants the file to be downloaded to, this can be a template string (i.e. expects to have ``.format()`` called on it).
 * ``downloader=`` This is a `parfive.Downloader` object which should be mutated by the ``fetch()`` method.
-* ``**kwargs`` It is very important that ``fetch()`` methods accept extra keyword arguments that they don't use, as the user might be passing them to other clients via ``Fido``.
+* ``**kwargs`` It is very important that ``fetch()`` methods accept extra keyword arguments that they don't use, as the user might be passing them to other clients via Fido.
 
 Processing the ``query_results`` Argument
 #########################################
@@ -434,15 +434,15 @@ This function will be called by `parfive` with the ``resp`` and ``url`` argument
 To reduce this function down to the two arguments expected we pre-specify the first two of these with `~functools.partial` before passing the function to `~parfive.Downloader.enqueue_file` inside the ``fetch()`` method.
 Our simple example above now becomes::
 
-  for row in query_results:
-      filepath = partial(make_filename, path, row)
+    for row in query_results:
+        filepath = partial(make_filename, path, row)
 
 Where the ``path`` variable is a `pathlib.Path` object provided as the ``path`` argument to ``fetch()``.
 
 Adding URLs to be Downloaded
 ############################
 
-For each file you wish for ``Fido`` to download (normally one per row of the ``query_results``) you need to call the :meth:`parfive.Downloader.enqueue_file` of the ``downloader`` argument.
+For each file you wish for Fido to download (normally one per row of the ``query_results``) you need to call the :meth:`parfive.Downloader.enqueue_file` of the ``downloader`` argument.
 Combining this with the simple example above it may look something like
 
 .. code-block:: python
@@ -457,7 +457,7 @@ Combining this with the simple example above it may look something like
 
 If your filepath is a callback function, pass this to the ``filename=`` argument.
 
-Your fetch method does not need to return anything, as long as ``enqueue_file`` is called for every file you want ``Fido`` to download.
+Your fetch method does not need to return anything, as long as ``enqueue_file`` is called for every file you want Fido to download.
 
 Putting it all Together
 -----------------------
