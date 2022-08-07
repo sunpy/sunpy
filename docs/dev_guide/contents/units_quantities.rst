@@ -1,5 +1,3 @@
-.. doctest-skip-all
-
 .. _units_in_code:
 
 ***************************
@@ -7,19 +5,22 @@ Use of quantities and units
 ***************************
 
 Much code perform calculations using physical quantities.
-SunPy uses astropy's `quantities and units <https://docs.astropy.org/en/stable/units/index.html>`_ implementation to store, express and convert physical quantities.
+**sunpy** uses **astropy**'s `quantities and units <https://docs.astropy.org/en/stable/units/index.html>`__ implementation to store, express and convert physical quantities.
 New classes and functions should adhere to the SunPy project's `quantity and unit usage guidelines
 <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`_.
 
-This document sets out SunPy's reasons and requirements for the usage of quantities and units.
-Briefly, SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`_ is that *all user-facing function/object arguments which accept physical quantities as input **MUST** accept astropy quantities, and **ONLY** astropy quantities*.
+This document sets out the reasons and requirements for the usage of quantities and units.
+Briefly, `SunPy's policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__ is that *all user-facing function/object arguments which accept physical quantities as input **MUST** accept **astropy** quantities, and **ONLY** **astropy** quantities*.
 
-Developers should consult the `Astropy Quantities and Units page <https://docs.astropy.org/en/stable/units/index.html>`_ for the latest updates on using quantities and units.  The `astropy tutorial on quantities and units <https://www.astropy.org/astropy-tutorials/Quantities.html>`_ also provides useful examples on their
-capabilities.
+Developers should consult the `astropy Quantities and Units page <https://docs.astropy.org/en/stable/units/index.html>`__ for the latest updates on using quantities and units.
+The `astropy tutorial on quantities and units <https://www.astropy.org/astropy-tutorials/Quantities.html>`__ provides useful examples on their capabilities.
 
-Astropy provides the decorator `~astropy.units.quantity_input` that checks the units of the input arguments to a function against the expected units of the argument.
+**astropy** provides the decorator `~astropy.units.quantity_input` that checks the units of the input arguments to a function against the expected units of the argument.
 We recommend using this decorator to perform function argument unit checks.
-The decorator ensures that the units of the input to the function are convertible to that specified by the decorator, for example ::
+
+The decorator ensures that the units of the input to the function are convertible to that specified by the decorator, for example:
+
+.. code-block:: python
 
     >>> import astropy.units as u
     >>> @u.quantity_input
@@ -27,12 +28,16 @@ The decorator ensures that the units of the input to the function are convertibl
     ...     return myangle**2
 
 This function only accepts arguments that are convertible to arcseconds.
-Therefore::
+Therefore:
+
+.. code-block:: python
 
     >>> myfunction(20 * u.degree)
     <Quantity 400. deg2>
 
-returns the expected answer but::
+returns the expected answer but:
+
+.. code-block:: python
 
     >>> myfunction(20 * u.km)
     Traceback (most recent call last):
@@ -41,7 +46,9 @@ returns the expected answer but::
 
 raises an error.
 
-The following is an example of a use-facing function that returns the area of a square, in units that are the square of the input length unit::
+The following is an example of a use-facing function that returns the area of a square, in units that are the square of the input length unit:
+
+.. code-block:: python
 
     >>> @u.quantity_input
     ... def get_area_of_square(side_length: u.m):
@@ -61,7 +68,9 @@ The following is an example of a use-facing function that returns the area of a 
     ...
     ...     return (side_length ** 2)
 
-This more advanced example shows how a private function that does not accept quantities can be wrapped by a function that does::
+This more advanced example shows how a private function that does not accept quantities can be wrapped by a function that does:
+
+.. code-block:: python
 
     >>> @u.quantity_input
     ... def some_function(length: u.m):
@@ -80,8 +89,8 @@ This more advanced example shows how a private function that does not accept qua
     ...     """
     ...
     ...     # the following function either
-    ...     # a] does not accept Quantities
-    ...     # b] is slow if using Quantities
+    ...     # a. does not accept Quantities
+    ...     # b. is slow if using Quantities
     ...     result = _private_wrapper_function(length.convert('meters').value)
     ...
     ...     # now convert back to a quantity
