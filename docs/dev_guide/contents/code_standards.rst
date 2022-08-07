@@ -8,19 +8,16 @@ The purpose of the page is to describe the standards that are expected of all th
 All potential developers should read and abide by the following standards.
 Code which does not follow these standards closely will not be accepted.
 
-We try to closely follow the coding style and conventions proposed by `Astropy <https://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
+We try to closely follow the coding style and conventions proposed by `Astropy <https://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`__.
 
 Language Standard
 =================
 
-* All code must be compatible with Python 3.7 and later.
+* All code must be compatible with Python 3.8 and later.
   Usage of ``six``, ``__future__``, and ``2to3`` is no longer acceptable.
 
-* The new Python 3 formatting style should be used (i.e.
-  ``"{0:s}".format("spam")`` instead of ``"%s" % "spam"``).
-
-* The core package and affiliated packages should be importable with no dependencies other than components already in the sunpy core package, the `Python Standard Library <https://docs.python.org/3/library/index.html>`_, and packages already required by the sunpy core package.
-  Adding dependencies to sunpy core will be considered but are highly discouraged.
+* The core package and affiliated packages should be importable with no dependencies other than components already in the **sunpy** core package, the `Python Standard Library <https://docs.python.org/3/library/index.html>`__, and packages already required by the **sunpy** core package.
+  Adding dependencies to **sunpy** core will be considered but are highly discouraged.
   Such optional dependencies should be recorded in the ``setup.cfg`` file in the ``extras_require`` entry.
 
 Coding Style/Conventions
@@ -47,11 +44,10 @@ Coding Style/Conventions
 
 * ``__init__.py`` files for modules should not contain any significant implementation code. ``__init__.py`` can contain docstrings and code for organizing the module layout.
 
-
 Private code
 ============
 
-It is often useful to designate code as private, which means it is not part of the user facing API, only used internally by sunpy, and can be modified without a deprecation period.
+It is often useful to designate code as private, which means it is not part of the user facing API, only used internally by **sunpy**, and can be modified without a deprecation period.
 Any classes, functions, or variables that are private should either:
 
 - Have an underscore as the first character of their name, e.g., ``_my_private_function``.
@@ -59,17 +55,19 @@ Any classes, functions, or variables that are private should either:
 
 If these might be useful for other packages within the sunpy ecosphere, they should be made public.
 
-Utilities in sunpy
-==================
+Utilities in **sunpy**
+======================
 
-Within ``sunpy``, it might be useful to have a set of utility classes or functions that are used by internally to help with certain tasks or to provide a certain level of abstraction.
+Within **sunpy**, it might be useful to have a set of utility classes or functions that are used by internally to help with certain tasks or to provide a certain level of abstraction.
 These should be placed either:
 
 - ``sunpy.{subpackage}.utils.py``, if it is only used within that sub-package.
 - ``sunpy.util`` if it is used across multiple sub-packages.
 
 These can be private (see section above) or public.
-The decision is up to the developer, but if these might be useful for other packages within the sunpy ecosphere, they should be made public.
+The decision is up to the developer, but if these might be useful for other packages within the ecosphere, they should be made public.
+
+.. _coding-standards-formatting:
 
 Formatting
 ==========
@@ -79,11 +77,12 @@ This runs a tool called `pre-commit <https://pre-commit.com/>`__.
 
 The settings and tools we use for the pre-commit can be found in the file :file:`.pre-commit-config.yaml` at the root of the sunpy git repository.
 Some of the checks are:
-* Checks (but doesn't fix) various PEP8 issues with flake8.
-* Sort all imports in any Python files with isort.
-* Remove any unused variables or imports with autoflake.
+* Checks (but doesn't fix) various PEP8 issues with **flake8**.
+* Runs **autopep8** to fix (most but not all) formatting issues.
+* Sort all imports in any Python files with **isort**.
+* Remove any unused variables or imports with **autoflake**.
 
-We suggest you use "tox" (which is used to run the sunpy test suite) to run these tools without having to setup anything within your own Python virtual environment::
+We suggest you use **tox** (which is used to run the test suite) to run these tools without having to setup anything within your own Python virtual environment::
 
     $ tox -e codestyle
 
@@ -157,7 +156,7 @@ Now you can do::
 
     $ pre-commit run --all-files
 
-which will run the tools on all files in the sunpy git repository.
+which will run the tools on all files in the git repository.
 The pre-commit tools can change some of the files, but in other cases it will report problems that require manual correction.
 If the pre-commit tool changes any files, they will show up as new changes that will need to be committed.
 
@@ -181,7 +180,7 @@ Documentation and Testing
   Additionally, examples or tutorials in the package documentation are strongly recommended.
 
 * Write usage examples in the docstrings of all classes and functions whenever possible.
-  These examples should be short and simple to reproduce–users should be able to copy them verbatim and run them.
+  These examples should be short and simple to reproduce-users should be able to copy them verbatim and run them.
   These examples should, whenever possible, be in the :ref:`doctests` format and will be executed as part of the test suite.
 
 * Unit tests should be provided for as many public methods and functions as possible, and should adhere to the standards set in the :ref:`testing` document.
@@ -196,8 +195,7 @@ Data and Configuration
   This data should not be used for unit tests but can be within our documentation.
 
 * All persistent configuration should use the :ref:`customizing-sunpy` mechanism.
-  Such configuration items should be placed at the top of the module or package that makes use of them, and supply a description sufficient for users to understand what the setting
-  changes.
+  Such configuration items should be placed at the top of the module or package that makes use of them, and supply a description sufficient for users to understand what the setting changes.
 
 Standard output, warnings, and errors
 =====================================
