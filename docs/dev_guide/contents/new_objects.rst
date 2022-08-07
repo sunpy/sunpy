@@ -1,7 +1,7 @@
-.. _new_maps_ts_etc:
+.. _new_maps_ts:
 
 ************************************************
-Creating new sunpy Subclasses (Maps, TimeSeries)
+Creating new sunpy Maps and TimeSeries
 ************************************************
 
 Writing a new Instrument Map Class
@@ -22,48 +22,56 @@ The following example shows how this works and includes a sample doc string that
 .. code-block:: python
 
     import sunpy.map
+
     class NextGenerationTelescopeMap(sunpy.map.GenericMap):
-      "NextGenerationTelescope Map.
+    """
+    NextGenerationTelescope Map.
 
-      The Next Generation Telescope is a type A telescope on board the XYZ mission.
-      It operates in low Earth orbit with an altitude of 600 kmn and an inclination of 28.5 degrees.
-      It is designed to observe the aliens on the Sun that are responsible for triggering the impulsive release of magnetic energy in the solar corona.
-      It observes in the following 3 different passband in visible light, wavelength A, wavelength B, wavelength C.
-      The primary emission processes in these passbands are process A and process B.
+    The Next Generation Telescope is on board the XYZ mission.
+    It operates in low Earth orbit with an altitude of 600 kmn and an inclination of 28.5 degrees.
+    It is designed to observe the processes that are responsible for triggering the impulsive release of magnetic energy in the solar corona.
+    It observes in the following 3 different passband in visible light, wavelength A, wavelength B, wavelength C.
+    The primary emission processes in these passbands are process A and process B.
 
-      The focal plane consists of a MAGIC detector with 2 x 2 pixels.
-      The plate scale is 500 arcsec per pixel.
-      The field of view is the whole Sun (1000 x 1000 arsec).
-      It makes images in each passband every 10 minutes except for when it is in eclipse which occurs every approximately 30 minutes.
+    The focal plane consists of a MAGIC detector with 2 x 2 pixels.
+    The plate scale is 500 arcsec per pixel.
+    The field of view is the whole Sun (1000 x 1000 arcsec).
+    It makes images in each passband every 10 minutes except for when it is in eclipse which occurs every approximately 30 minutes.
 
-      It began operating on 2100 November 1.
+    It began operating on 2100 November 1.
 
-      Notes
-      -----
-      Due to rise of our new insect overlords, the telescope was not operational from 2200 Jan to 2300 Jan.
+    Notes
+    -----
+    The telescope was not operational from 2200 Jan to 2300 Jan.
 
-      References
-      ----------
-      * List of all required references
-      "
+    References
+    ----------
+    * List of all required references
+    """
 
         def __init__(self, data, header, **kwargs):
+            # Will process the header according to common standards
+            super().__init__(data, header, **kwargs)
 
-            # will process the header according to common standards
-            super(FutureMap, self).__init__(data, header, **kwargs)
-
-            # Any NextGenerationTelescope Instrument-specific manipulation.
-            # This typically involves editing the `self.meta` attribute.
-
-        # used by the Map factory to determine if this subclass should be used
+        # Used by the Map factory to determine if this subclass should be used
         @classmethod
         def is_datasource_for(cls, data, header, **kwargs):
             """Determines if data, header corresponds to a NextGenerationTelescope image"""
             # returns True only if this is data and header from NextGenerationTelescope
             return header.get('instrume', '').startswith('NextGenerationTelescope')
 
+        # If the header information is incorrect and you want the properties that
+        # `~sunpy.map.GenericMap` provides to be correct, you will have to override them in the source class
+        @property
+        def rsun_obs(self):
+            rsun_arcseconds = self.rsun_arcseconds
+
+            if rsun_arcseconds is None:
+                rsun_arcseconds = super().rsun_obs
+
+            return u.Quantity(rsun_arcseconds, 'arcsec')
 
 Writing a new Instrument TimeSeries Class
 =========================================
 
-To be written.
+TBW.
