@@ -75,16 +75,11 @@ sunpy-Specific Rules
 --------------------
 
 * For **all** RST files, we enforce a one sentence per line rule and ignore the line length.
-* Standards on docstring length and style are enforced using `docformatter <https://pypi.org/project/docformatter/>`__:
-
-.. code-block:: bash
-
-    $ docformatter -r -i  --pre-summary-newline --make-summary-multi-line
 
 .. _Docs Guidelines for Data Sources:
 
 Documenting Data Sources
-----------------------------
+------------------------
 
 Subclasses of `~sunpy.map.GenericMap` or `~sunpy.timeseries.TimeSeries` must provide a detailed docstring providing an overview of the data source that the object represents.
 In order to maintain consistency and completeness, the following information must be provided by a data source docstring, if available, and preferably in the following order:
@@ -109,7 +104,7 @@ In addition, a reference section must be provided with links to the following re
 * information to interpret metadata keywords such as FITS header reference
 * the data archive
 
-An example docstring can be found in the :ref:`Writing a new Instrument Map Class guide <new_maps_ts_etc>`.
+An example docstring can be found in the :ref:`Writing a new Instrument Map Class guide <new_maps_ts>`.
 
 Sphinx
 ======
