@@ -1,15 +1,15 @@
 Acknowledging or Citing SunPy
 =============================
 
-If you use SunPy in your scientific work, we would appreciate citing it in your publications.
-The continued growth and development of SunPy is dependent on the community being aware of SunPy.
+If you use a SunPy library in your scientific work, we would appreciate citing it in your publications.
+The continued growth and development of **sunpy** and the SunPy Project is dependent on the community being aware of SunPy.
 
 Citing SunPy in Publications
 ----------------------------
 
 Please add the following line within your methods, conclusion or acknowledgements sections:
 
-   *This research used version X.Y.Z (software citation) of the SunPy open source
+   *This research used version X.Y.Z (software citation) of the sunpy open source
    software package (project citation).*
 
 The project citation should be to the `SunPy paper`_, and the software citation should be the specific `Zenodo DOI`_ for the version used in your work.
