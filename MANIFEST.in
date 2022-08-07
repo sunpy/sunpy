@@ -9,7 +9,6 @@ exclude .test_package_pins.txt
 exclude .zenodo.json
 exclude asv.conf.json
 exclude CITATION.cff
-exclude readthedocs.yml
 
 prune .circleci
 prune .github
