@@ -2,14 +2,14 @@
 
 .. _whatsnew-1.1:
 
-************************
-What's New in SunPy 1.1?
-************************
+****************************
+What's New in **sunpy** 1.1?
+****************************
 
 Overview
 ========
 
-The SunPy project is pleased to announce the 1.1 release of the sunpy package.
+The SunPy project is pleased to announce the 1.1 release of the **sunpy** package.
 
 The headline changes in 1.1 are:
 
@@ -28,7 +28,7 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-1.1-WISPR`
 * :ref:`whatsnew-1.1-importtime`
 
-SunPy 1.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+**sunpy** 1.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
@@ -43,7 +43,7 @@ By the numbers:
 Supported versions of Python
 ============================
 
-Like SunPy 1.0, 1.1 comes with support for Python versions 3.6, 3.7 and support for 3.8 has been added.
+Like **sunpy** 1.0, 1.1 comes with support for Python versions 3.6, 3.7 and support for 3.8 has been added.
 
 .. _whatsnew-1.1-coordinates:
 
@@ -137,7 +137,7 @@ See our :ref:`coordinates documentation <sunpy-coordinates>` for a table of the 
 Manager for Versioned Data Files
 ================================
 
-SunPy 1.1 provides a data manager for versioning and caching remote files.
+**sunpy** 1.1 provides a data manager for versioning and caching remote files.
 The objective of this is to provide a way for data required for functions, such as instrument correction routines, to depend on non-local data in a reliable way.
 The data manager also guarantees that a specific version of the code uses a specific data file, with the ability for users to specify updated files.
 
@@ -153,16 +153,17 @@ Support for SUVI Data
 =====================
 
 The Solar Ultraviolet Imager (SUVI) is a EUV instrument imaging the full disk of the Sun in six passbands, and is onboard the latest of the Geostationary Operational Environmental Satellite (GOES) missions.
-`~sunpy.map.sources.SUVIMap` provides SunPy map support for loading SUVI FITS image data, and the `~sunpy.net.dataretriever.SUVIClient` adds support to search for SUVI data hosted by NOAA via `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`. It supports searching for wavelength, level of data (level 2 data which consists of stacked level 1b images and original level 1b files), as well as GOES satellite number (>= GOES 16).
+`~sunpy.map.sources.SUVIMap` provides SunPy map support for loading SUVI FITS image data, and the `~sunpy.net.dataretriever.SUVIClient` adds support to search for SUVI data hosted by NOAA via `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`.
+It supports searching for wavelength, level of data (level 2 data which consists of stacked level 1b images and original level 1b files), as well as GOES satellite number (>= GOES 16).
 
 .. _whatsnew-1.1-WISPR:
 
 Initial Support for WISPR Images
 ================================
 
-Following the first data release from Parker Solar Probe, SunPy 1.1 supports loading WISPR imaging data into a `~sunpy.map.GenericMap`.
-Due to the complex projections in the WISPR data this involved changing the way sunpy converts FITS headers into `astropy.wcs.WCS` objects.
-It is expected that sunpy 2.0 will include more complete support for WISPR data.
+Following the first data release from Parker Solar Probe, **sunpy** 1.1 supports loading WISPR imaging data into a `~sunpy.map.GenericMap`.
+Due to the complex projections in the WISPR data this involved changing the way **sunpy** converts FITS headers into `astropy.wcs.WCS` objects.
+It is expected that **sunpy** 2.0 will include more complete support for WISPR data.
 
 .. image:: 1.1-wispr.png
    :alt: A plot from SunPy of a WISPR level 3 file.
@@ -172,7 +173,7 @@ It is expected that sunpy 2.0 will include more complete support for WISPR data.
 Speeding up import times
 ========================
 
-We know that the initial import of `sunpy` or its subpackages can feel like it takes a long time, particularly on slower machines.
+We know that the initial import of **sunpy** or its subpackages can feel like it takes a long time, particularly on slower machines.
 Some of that import time can be the result of importing other modules or external packages that are required for specialized functionality that a user may not ever actually use.
 We have identified the most egregious cases and deferred those imports of dependencies to when they are actually needed.
 For example, the initial import of `sunpy.map` is now ~40% faster, with no loss of functionality.
