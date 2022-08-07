@@ -1,16 +1,12 @@
+***************************
 Database (`sunpy.database`)
 ***************************
 
-``sunpy.database`` can be used to provide a local cache of the files and
-records retrieved from various remote services. For an introduction to the
-database see :ref:`database_guide`.
-
+`sunpy.database` can be used to provide a local cache of the files and records retrieved from various remote services.
+For an introduction to the database see :ref:`database_guide`.
 
 .. automodapi:: sunpy.database
     :no-inheritance-diagram:
-
-Submodules
-==========
 
 .. automodapi:: sunpy.database.tables
     :no-inheritance-diagram:
