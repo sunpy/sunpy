@@ -2,14 +2,15 @@
 
 .. _whatsnew-1.0:
 
-************************
-What's New in SunPy 1.0?
-************************
+****************************
+What's New in **sunpy** 1.0?
+****************************
 
 Overview
 ========
 
-The SunPy project is pleased to announce the 1.0 release of the sunpy package.
+The SunPy project is pleased to announce the 1.0 release of the **sunpy** package.
+
 This release is the result of over 14 months of work and marks a shift in the core library with the removal of a lot of legacy code and a focus on usability and stability.
 The headline changes in 1.0 are:
 
@@ -32,8 +33,8 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-1.0-moved-config`
 * :ref:`whatsnew-1.0-renamed-removed`
 
-There have been numerous improvements to large parts of SunPy, notably in the content of the documentation, continuous integration and testing.
-SunPy 1.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+There have been numerous improvements to large parts of **sunpy**, notably in the content of the documentation, continuous integration and testing.
+**sunpy** 1.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
@@ -48,18 +49,18 @@ By the numbers:
 Supported versions of Python
 ============================
 
-SunPy 1.0 has dropped Python 2 support as Python 2 is nearing the end of its support cycle.
+**sunpy** 1.0 has dropped Python 2 support as Python 2 is nearing the end of its support cycle.
 To port your code to Python 3, there is some good advice `here <https://docs.python.org/3/howto/pyporting.html>`__ and a
 breakdown of the relevant changes in Python 3 on the `Python 3 for Scientists <https://python-3-for-scientists.readthedocs.io/en/latest/>`__
-page. If you still need Python 2 support, SunPy 0.9.X will see bug fixes until the end of 2019, but no new features. As a result,
-SunPy's minimum Python version has been raised to Python 3.6 and is routinely tested against Python 3.6 and 3.7.
+page. If you still need Python 2 support, **sunpy** 0.9.X will see bug fixes until the end of 2019, but no new features. As a result,
+**sunpy**'s minimum Python version has been raised to Python 3.6 and is routinely tested against Python 3.6 and 3.7.
 
 .. _whatsnew-1.0-time:
 
 Astropy Time is used everywhere
 ===============================
 
-SunPy now uses Astropy's `~astropy.time.Time` object everywhere to represent time.
+**sunpy** now uses Astropy's `~astropy.time.Time` object everywhere to represent time.
 This comes with numerous benefits:
 
 - **Support for non-UTC time scales.**
@@ -128,15 +129,13 @@ This comes with numerous benefits:
   The API of `~sunpy.time.parse_time` is almost the same as `~astropy.time.Time`, however, `~sunpy.time.parse_time` supports conversion of a few more formats than `~astropy.time.Time`, which
   are `numpy.datetime64`, `pandas.Series`, `pandas.DatetimeIndex`, utime and a few other time string formats.
 
-
 .. _whatsnew-1.0-download:
 
 Improved file downloading capability
 ====================================
 
 The file download capability has been re-written to use the `parfive package <https://github.com/Cadair/parfive>`__.
-This brings more visually appealing and informative progress bars, better reporting of download errors and the ability to
-re-download failed files.
+This brings more visually appealing and informative progress bars, better reporting of download errors and the ability to re-download failed files.
 
 .. image:: https://user-images.githubusercontent.com/1391051/50290236-ecf07b00-0462-11e9-80b2-9473c918802a.gif
    :alt: Parfive progress bars in a Jupyter Notebook
@@ -149,7 +148,6 @@ It is possible to retry any downloads which fail with::
 
   >>> files = Fido.fetch(results)  # Some downloads fail
   >>> files = Fido.fetch(files)  # Retry the downloads which failed
-
 
 .. _whatsnew-1.0-coordinates:
 
@@ -187,7 +185,6 @@ Improvements to coordinates functionality
   JPL HORIZONS includes not only planets and other natural bodies in the solar system, but also major spacecraft.
   This function requires the `Astroquery <https://astroquery.readthedocs.io/en/latest/>`__ package and an Internet connection.
 
-
   - Query the location of Venus
 
   .. code:: python
@@ -215,13 +212,12 @@ Improvements to coordinates functionality
     <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000): (lon, lat, radius) in (deg, deg, AU)
         (0.2523461, -3.55863351, 0.99923086)>
 
-
 .. _whatsnew-1.0-logging:
 
-Logging used to record SunPy notices
-====================================
+Logging used to record **sunpy** notices
+========================================
 
-All messages provided by SunPy use a new logging facility which is based on the Python logging module rather than print statements.
+All messages provided by **sunpy** use a new logging facility which is based on the Python logging module rather than print statements.
 
 Messages can have one of several levels, in increasing order of importance:
 
@@ -234,7 +230,6 @@ Messages can have one of several levels, in increasing order of importance:
 By default, all messages except for DEBUG messages are displayed. Messages can also be sent to a file and time stamped.
 
 See the :ref:`logger` documentation for instructions on how to control the verbosity of the logger.
-
 
 .. _whatsnew-1.0-diffrot:
 
@@ -272,7 +267,6 @@ For example, since the Earth moves, observers on the Earth must take into accoun
     <SkyCoord (Helioprojective: obstime=2010-06-10T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-06-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
         (0., 0.58398742, 1.01539908)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (-359.11576773, 117.18020622, 1.51263627e+08)>
-
 
   The user can also explicitly specify an observer at a different time and location in space.  The amount of solar
   rotation applied depends on the time difference between the observation time of the`~astropy.coordinates.SkyCoord`
@@ -342,7 +336,6 @@ For example, getting the world coordinates for every pixel::
     >>> coordinates.shape
     (1024, 1024)
 
-
 or generating a new FITS header for a custom map::
 
     >>> import numpy as np
@@ -374,7 +367,6 @@ or generating a new FITS header for a custom map::
     dsun_obs: 148644585949.49176
     rsun_ref: 695700.0
     rsun_obs: 965.3723815059902
-
 
 .. _whatsnew-1.0-moved-config:
 
