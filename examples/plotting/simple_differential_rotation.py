@@ -9,7 +9,7 @@ the rotation rate near the equator (rotation period of approximately 25 days).
 This is possible because the Sun is not a solid body. Though it is still poorly
 understood, it is fairly well measured and must be taken into account
 when comparing observations of features on the Sun over time.
-A good review can be found in Beck 1999 Solar Physics 191, 47–70.
+A good review can be found in Beck 1999 Solar Physics 191, 47-70.
 This example illustrates solar differential rotation.
 """
 # sphinx_gallery_thumbnail_number = 2

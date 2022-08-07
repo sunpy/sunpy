@@ -63,7 +63,7 @@ plt.show()
 
 ###############################################################################
 # SOHO is actually a `halo orbit <https://en.wikipedia.org/wiki/Solar_and_Heliospheric_Observatory#Orbit>`__
-# around the Sun–Earth L1 point, about 1 million km away from the Earth.
+# around the Sun-Earth L1 point, about 1 million km away from the Earth.
 # The following functions queries JPL HORIZONS which includes positions of major spacecraft.
 # This function requires an internet connection to fetch the ephemeris data.
 
