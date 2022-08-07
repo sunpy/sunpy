@@ -7,7 +7,7 @@ API Reference
 .. toctree::
    :maxdepth: 2
 
-   coordinates/index
+   coordinates
    data
    database
    image
