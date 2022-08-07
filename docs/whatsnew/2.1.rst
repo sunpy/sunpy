@@ -2,13 +2,14 @@
 
 .. _whatsnew-2.1:
 
-************************
-What's New in SunPy 2.1?
-************************
+****************************
+What's New in **sunpy** 2.1?
+****************************
 
 Overview
 ========
-The SunPy project is pleased to announce the 2.1 release of the sunpy package.
+
+The SunPy project is pleased to announce the 2.1 release of the **sunpy** package.
 
 On this page, you can read about some of the big changes in this release:
 
@@ -24,7 +25,7 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-2.1-python`
 * :ref:`whatsnew-2.1-contributors`
 
-SunPy 2.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+**sunpy** 2.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
@@ -40,7 +41,9 @@ Please find below a selection of what we consider to be the biggest changes or f
 
 Support for GOES-16 and GOES-17 X-Ray Sensor (XRS) data
 =======================================================
-We have now included support for the GOES-16 and GOES-17 XRS 1-second data. This data can now be queried and downloaded with `sunpy.net.Fido` and the files read in and analysed as a `sunpy.timeseries.TimeSeries`.
+
+We have now included support for the GOES-16 and GOES-17 XRS 1-second data.
+This data can now be queried and downloaded with `sunpy.net.Fido` and the files read in and analyzed as a `sunpy.timeseries.TimeSeries`.
 
 .. minigallery:: sunpy.net.attrs.goes.SatelliteNumber
 
@@ -127,7 +130,9 @@ The key highlights you will want to be aware of are:
 
 New synoptic map sources and clients
 ====================================
-`~sunpy.map.sources.MDISynopticMap` and `~sunpy.map.sources.HMISynopticMap` have been added as new data sources, and automatically fix common issues with FITS metadata from these sources. You do not need to change any code to use these, as sunpy automatically detects and uses the appropriate map sources for each file.
+
+`~sunpy.map.sources.MDISynopticMap` and `~sunpy.map.sources.HMISynopticMap` have been added as new data sources, and automatically fix common issues with FITS metadata from these sources.
+You do not need to change any code to use these, as **sunpy** automatically detects and uses the appropriate map sources for each file.
 
 It is now possible to search for GONG synoptic maps within `sunpy.net.Fido`, using ``a.Instrument('GONG')``.
 
@@ -135,7 +140,9 @@ It is now possible to search for GONG synoptic maps within `sunpy.net.Fido`, usi
 
 Requesting cutouts from the JSOC
 ================================
-`~sunpy.net.Fido` can now be used to request cutouts from JSOC via the new ``a.jsoc.Cutout`` attr. This includes the ability to adjust the requested field of view to "track" a feature as it moves across the solar disk, perform sub-pixel image registration, and mask off-disk pixels.
+
+`~sunpy.net.Fido` can now be used to request cutouts from JSOC via the new ``a.jsoc.Cutout`` attr.
+This includes the ability to adjust the requested field of view to "track" a feature as it moves across the solar disk, perform sub-pixel image registration, and mask off-disk pixels.
 
 .. minigallery:: sunpy.net.attrs.jsoc.Cutout
 
@@ -143,6 +150,7 @@ Requesting cutouts from the JSOC
 
 Coordinates with velocities
 ===========================
+
 It is now supported to transform coordinates with attached velocities, and the various ephemeris functions can optionally include velocity information.
 Transformations between coordinate frames will account for both any change in orientation of the velocity vector and any induced velocity due to relative motion between the frames.
 For example, consider Mars's position/velocity in `~sunpy.coordinates.frames.HeliographicStonyhurst`::
@@ -176,8 +184,9 @@ See :ref:`sunpy-coordinates-velocities` for more information.
 
 Alternatives for reprojecting a Helioprojective map
 ===================================================
+
 The typical observation in `~sunpy.coordinates.frames.Helioprojective` coordinates does not contain full 3D information for the sources of emission, so an assumption needs to be made when transforming such coordinates to other coordinate frames.
-By default, SunPy assumes that the emission is coming from the surface of the Sun, which enables reprojections such as in the example :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py`.
+By default, **sunpy** assumes that the emission is coming from the surface of the Sun, which enables reprojections such as in the example :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py`.
 However, this assumption is not appropriate for some observations, e.g., from coronagraphs.
 
 There is now a context manager (:meth:`~sunpy.coordinates.frames.Helioprojective.assume_spherical_screen`) to override the default assumption such that any 2D coordinates are interpreted as being on the inside of a large spherical screen.
@@ -189,7 +198,9 @@ See the following example for how this context manager enables alternative repro
 
 Finding map contours
 ====================
-The new :meth:`sunpy.map.GenericMap.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
+
+The new :meth:`sunpy.map.GenericMap.contour` method can be used to extract contours from a map.
+It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
 
 .. minigallery:: sunpy.map.GenericMap.contour
 
@@ -197,15 +208,17 @@ The new :meth:`sunpy.map.GenericMap.contour` method can be used to extract conto
 
 Performance improvements
 ========================
+
 Several functions in `sunpy.map` have been significantly sped up with improved algorithms.
 
-In addition, `sunpy.map.GenericMap.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications which make mutiple requests for the map WCS (e.g. plotting), and reducing the number of repeated warnings thrown when metadata is missing.
+In addition, `sunpy.map.GenericMap.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications which make multiple requests for the map WCS (e.g. plotting), and reducing the number of repeated warnings thrown when metadata is missing.
 
 .. _whatsnew-2.1-python:
 
 Increase in required package versions
 =====================================
-We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 2.1:
+
+We have bumped the minimum version of several packages we depend on; these are the new minimum versions for **sunpy** 2.1:
 
 - python 3.7
 - astropy 4.0
