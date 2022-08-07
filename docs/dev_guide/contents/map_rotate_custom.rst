@@ -30,5 +30,4 @@ Then you can do:
 
     rot_map = hmi_map.rotate(order=3, recenter=True, method="my_rotate")
 
-
 The available rotation methods are all implemented using the :func:`~sunpy.image.transform.add_rotation_function` decorator, so you can look in `sunpy/image/transform.py <https://github.com/sunpy/sunpy/blob/main/sunpy/image/transform.py>`__ for examples of how to use this decorator.
