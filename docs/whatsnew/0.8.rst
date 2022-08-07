@@ -2,14 +2,14 @@
 
 .. _whatsnew-0.8:
 
-************************
-What's New in SunPy 0.8?
-************************
+****************************
+What's New in **sunpy** 0.8?
+****************************
 
 Overview
 ========
 
-SunPy 0.8 is a major release that adds significant new functionality since the 0.7.x series of releases.
+**sunpy** 0.8 is a major release that adds significant new functionality since the 0.7.x series of releases.
 
 On this page, you can read about some of the big changes in this release:
 
@@ -20,7 +20,7 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-0.8-differential_rotation`
 * :ref:`whatsnew-0.8-renamed-removed`
 
-In addition to these major changes, SunPy 0.8 includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+In addition to these major changes, **sunpy** 0.8 includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
@@ -35,7 +35,8 @@ By the numbers:
 Supported versions of Python
 ============================
 
-SunPy is tested against Python 2.7, 3.5 and 3.6.  SunPy no longer supports Python 3.4.
+**sunpy** is tested against Python 2.7, 3.5 and 3.6.
+**sunpy** no longer supports Python 3.4.
 
 .. _whatsnew-0.8-fido:
 
@@ -43,8 +44,9 @@ New data downloading interface
 ==============================
 
 The new package Fido is the primary interface to search for and download observational data.
-Fido is a unified interface for searching and fetching solar physics data irrespective of the underlying client or webservice through which the data is obtained, e.g. VSO, JSOC, etc.
-It therefore supplies a single, easy and consistent way to obtain most forms of solar physics data. It unifies data search and download from multiple sources such as the VSO and non-VSO sources::
+Fido is a unified interface for searching and fetching solar physics data irrespective of the underlying client or web-service through which the data is obtained, e.g. VSO, JSOC, etc.
+It therefore supplies a single, easy and consistent way to obtain most forms of solar physics data.
+It unifies data search and download from multiple sources such as the VSO and non-VSO sources::
 
     >>> from sunpy.net import Fido, attrs as a
 
@@ -87,7 +89,8 @@ which returns a set of filepaths to the data.
 New coordinate package
 ======================
 
-The SunPy coordinates package describes locations in physical space, and coordinate frames. It provides a way to transform coordinates from one frame like helioprojective to another such as heliographic.
+The **sunpy** coordinates package describes locations in physical space, and coordinate frames.
+It provides a way to transform coordinates from one frame like helioprojective to another such as heliographic.
 
 Coordinates can be defined very simply::
 
@@ -155,7 +158,6 @@ Major solar system bodies can be used to specify observer locations in SkyCoord:
     <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02): (lon, lat, radius) in (deg, deg, AU)
         ( 135.78519602,  4.47598707,  1.43448427)>): (Tx, Ty) in arcsec
         (-45.,  600.)>
-
 
 .. _whatsnew-0.8-timeseries:
 
@@ -246,6 +248,7 @@ The modules in ``sunpy.physics.transforms`` have been moved to `~sunpy.physics`.
 
 sunpy.net
 ---------
+
 ``HelioviewerClient`` has been removed from the ``sunpy.net`` namespace. It
 should now be imported with ``from sunpy.net.helioviewer import HelioviewerClient``.
 
