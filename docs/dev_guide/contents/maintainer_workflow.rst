@@ -10,8 +10,8 @@ Seeing as how you're a maintainer, you should be completely on top of the basic 
 
 .. _git workflow: https://docs.astropy.org/en/stable/development/workflow/development_workflow.html#development-workflow
 
-Integrating changes via the web interface (recommended)
-=======================================================
+Integrating changes via the web interface
+=========================================
 
 Whenever possible, merge pull requests automatically via the pull request manager on GitHub.
 Merging should only be done manually if there is a really good reason to do this!
@@ -107,7 +107,6 @@ Pull requests **may** be rebased (either manually or with the rebase and merge b
 
 Asking contributors who are new to the project or inexperienced with using git is **discouraged**, as is maintainers rebasing these PRs before merge time, as this requires resetting of local git checkouts.
 
-
 A few commits
 -------------
 
@@ -184,16 +183,16 @@ The current changelog is kept in the file "CHANGELOG.rst" at the root of the rep
 You do not need to update this file as we use `towncrier`_ to update our changelog.
 This is built and embedded into our documentation.
 
-Towncrier will automatically reflow your text, so it will work best if you stick to a single paragraph, but multiple sentences and links are OK and encouraged.
-You can install towncrier and then run ``towncrier --draft`` if you want to get a preview of how your change will look in the final release notes.
+**Towncrier** will automatically reflow your text, so it will work best if you stick to a single paragraph, but multiple sentences and links are OK and encouraged.
+You can install **towncrier** and then run ``towncrier --draft`` if you want to get a preview of how your change will look in the final release notes.
 
 `Instructions on how to write a changelog. <https://github.com/sunpy/sunpy/blob/main/changelog/README.rst>`__.
 
 .. _towncrier: https://pypi.org/project/towncrier/
 
-Releasing sunpy
-===============
+Releasing **sunpy**
+===================
 
-We have a `step by step checklist`_ on the SunPy Wiki on how to release the sunpy core package.
+We have a `step by step checklist`_ on the **sunpy** wiki on how to release the **sunpy** core package.
 
 .. _step by step checklist: https://github.com/sunpy/sunpy/wiki/Home%3A-Release-Checklist
