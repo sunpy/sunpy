@@ -2,13 +2,14 @@
 
 .. _whatsnew-3.0:
 
-************************
-What's New in SunPy 3.0?
-************************
+****************************
+What's New in **sunpy** 3.0?
+****************************
 
 Overview
 ========
-The SunPy project is pleased to announce the 3.0 release of the sunpy package.
+
+The SunPy project is pleased to announce the 3.0 release of the **sunpy** core package.
 
 On this page, you can read about some of the big changes in this release:
 
@@ -18,7 +19,7 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-3.0-instr`
 * :ref:`whatsnew-3.0-python`
 
-SunPy 3.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+**sunpy** 3.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
@@ -87,7 +88,8 @@ This has been done to make the core package align with the goal that instrument 
 
 Increase in required package versions
 =====================================
-We have bumped the minimum version of several packages we depend on; these are the new minimum versions for sunpy 3.0:
+
+We have bumped the minimum version of several packages we depend on; these are the new minimum versions for **sunpy** 3.0:
 
 - asdf>=2.6.0
 - astropy >= 4.1.0
