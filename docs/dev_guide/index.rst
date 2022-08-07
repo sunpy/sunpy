@@ -55,7 +55,6 @@ This section contains the various guidelines to be followed by anyone working on
             contents/dependencies
             contents/ci_jobs
             contents/backports
-            contents/funding
 
     .. grid-item-card::
         :class-card: card
