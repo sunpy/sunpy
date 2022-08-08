@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
@@ -7,7 +5,6 @@ from scipy.ndimage import shift as sp_shift
 
 import astropy.units as u
 
-import sunpy.data.test
 from sunpy.image.coalignment import (
     _default_fmap_function,
     _lower_clip,
@@ -33,12 +30,6 @@ DEP_WARNING = r'''ignore:The .* function is deprecated and may be removed in ver
 @pytest.fixture
 def aia171_test_clipping():
     return np.asarray([0.2, -0.3, -1.0001])
-
-
-@pytest.fixture
-def aia171_test_map():
-    testpath = sunpy.data.test.rootdir
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
 
 @pytest.fixture

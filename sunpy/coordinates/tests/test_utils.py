@@ -5,8 +5,6 @@ import astropy.units as u
 from astropy.coordinates import ConvertError, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 
-import sunpy.data.test as test
-import sunpy.map as smap
 from sunpy.coordinates import frames, get_earth, sun
 from sunpy.coordinates.utils import (
     GreatArc,
@@ -15,11 +13,6 @@ from sunpy.coordinates.utils import (
     solar_angle_equivalency,
 )
 from sunpy.sun import constants
-
-
-@pytest.fixture
-def aia171_test_map():
-    return smap.Map(test.get_test_filepath('aia_171_level1.fits'))
 
 # Test the great arc code against calculable quantities
 # The inner angle is the same between each pair of co-ordinates.  You can

@@ -1,53 +1,45 @@
-import os
-
 import pytest
 
 import astropy.units as u
 
-import sunpy.data.test
-from sunpy.map import Map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.trace import TRACEMap
 from sunpy.util.exceptions import SunpyMetadataWarning
 
-path = sunpy.data.test.rootdir
-fitspath = os.path.join(path, "tsi20010130_025823_a2.fits")
-
 
 @pytest.fixture(scope="module")
-def createTRACE():
-    """Creates a TRACEMap from a FITS file."""
-    return Map(fitspath)
+def trace_map():
+    return get_dummy_map_from_header(get_test_filepath("tsi20010130_025823_a2.header"))
 
 
-# TRACE Tests
-def test_fitstoTRACE(createTRACE):
+def test_fitstoTRACE(trace_map):
     """Tests the creation of TRACEMap using FITS."""
-    assert isinstance(createTRACE, TRACEMap)
+    assert isinstance(trace_map, TRACEMap)
 
 
-def test_is_datasource_for(createTRACE):
+def test_is_datasource_for(trace_map):
     """Test the is_datasource_for method of TRACEMap.
     Note that header data to be provided as an argument
     can be a MetaDict object."""
-    assert createTRACE.is_datasource_for(createTRACE.data, createTRACE.meta)
+    assert trace_map.is_datasource_for(trace_map.data, trace_map.meta)
 
 
-def test_measurement(createTRACE):
+def test_measurement(trace_map):
     """Tests the measurement property of the TRACEMap object."""
-    assert int(createTRACE.measurement) == 171
+    assert int(trace_map.measurement) == 171
 
 
-def test_observatory(createTRACE):
+def test_observatory(trace_map):
     """Tests the observatory property of the TRACEMap object."""
-    assert createTRACE.observatory == "TRACE"
+    assert trace_map.observatory == "TRACE"
 
 
-def test_norm_clip(createTRACE):
+def test_norm_clip(trace_map):
     # Tests that the default normalizer has clipping disabled
-    assert not createTRACE.plot_settings['norm'].clip
+    assert not trace_map.plot_settings['norm'].clip
 
 
-def test_wcs(createTRACE):
+def test_wcs(trace_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        createTRACE.pixel_to_world(0*u.pix, 0*u.pix)
+        trace_map.pixel_to_world(0*u.pix, 0*u.pix)

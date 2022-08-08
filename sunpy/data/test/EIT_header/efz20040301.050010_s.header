@@ -1,0 +1,74 @@
+SIMPLE  =                    T / conforms to FITS standard                      
+BITPIX  =                  -64 / array data type                                
+NAXIS   =                    2 / number of array dimensions                     
+NAXIS1  =                  128                                                  
+NAXIS2  =                  128                                                  
+                                                                                
+DATE    = '2004-03-01'         / Date of file creation                          
+TIME-OBS= '05:00:10'           /                                                
+DATE-OBS= '2004-03-01T05:00:10.532' / UTC at spacecraft                         
+                                                                                
+ORIGIN  = 'Rocket Science'     / Rocket Science = NASA GSFC                     
+DATASRC = 'LZ file           ' /                                                
+TELESCOP= 'SOHO'               /                                                
+INSTRUME= 'EIT'                /                                                
+OBJECT  = 'full FOV'           /                                                
+                                                                                
+BUNIT   = 'counts / pixel    ' /                                                
+                                                                                
+WAVELNTH=                  195 / 171 = Fe IX/X, 195 = Fe XII,                   
+                               / 284 = Fe XV, 304 = He II                       
+FILTER  = 'Al +1             ' /                                                
+                                                                                
+DATE_OBS= '2004-03-01T05:00:10.532Z' /                                          
+SCI_OBJ = 'CME WATCH 195     ' /                                                
+OBS_PROG= '195_10S_AL_1.000  ' /                                                
+CMP_NO  =                    1 / Unique campaign instance (1 = synoptic)        
+EXPTIME =               12.599 / s (total commanded + shutter close)            
+EXPMODE = 'backside          ' /                                                
+FILENAME= 'efz20040301.050010' /                                                
+                                                                                
+CFTEMP  =               -66.71 / CCD cold finger temperature (C)                
+CCDTEMP =                 7.34 / CCD temperature (DN/100)                       
+                                                                                
+CTYPE1  = 'Solar-X '           /                                                
+CTYPE2  = 'Solar-Y '           /                                                
+CRPIX1  =                 64.5 / Sun center x, EIT pixels                       
+CRPIX2  =                 64.5 / Sun center y, EIT pixels                       
+CRVAL1  =                 0.00 /                                                
+CRVAL2  =                 0.00 /                                                
+CDELT1  =                 2.63 / Pixel scale x (arc sec, fixed)                 
+CDELT2  =                 2.63 / Pixel scale y (arc sec, fixed)                 
+SOLAR_R =               372.27 / Solar photospheric radius, EIT pixels          
+SOLAR_B0=                -7.22 / Degrees                                        
+                                                                                
+SC_X0   =                 0.00 / s/c yaw (arc sec)                              
+SC_Y0   =                 0.00 / s/c pitch (arc sec; -109.14 after 1996/04/16)  
+SC_ROLL =               180.00 / s/c roll (deg., Solar north + CCW from nominal)
+HEC_X   =        -139130208.00 / s/c heliocentric ecliptic x (km)               
+HEC_Y   =          46576272.00 / s/c heliocentric ecliptic y (km)               
+HEC_Z   =            -94896.31 / s/c heliocentric ecliptic z (km)               
+CAR_ROT =              2013.00 / Carrington rotation at earth                   
+                                                                                
+COMMENT   CORRECTED DATE_OBS = '2004-03-01T04:58:14.631Z'                       
+COMMENT   COMMANDED EXPOSURE TIME =   10.000 s                                  
+COMMENT   SHUTTER CLOSE TIME =    2.599 s                                       
+COMMENT   LINE_SYNC = 'no'                                                      
+COMMENT   CAMERA_ERR = 'no'                                                     
+COMMENT   IMAGE_OF_SEQ =                    0                                   
+COMMENT   READOUT PORT = 'B'                                                    
+COMMENT   NUM_LEB_PROC =                    3                                   
+COMMENT   LEB_PROC = 26 (no ROI)                                                
+COMMENT   LEB_PROC = 27 (no occ mask)                                           
+COMMENT   LEB_PROC = 12 (Rice)                                                  
+COMMENT   BLOCKS_HORZ =   32                                                    
+COMMENT   BLOCKS_VERT =   32                                                    
+COMMENT   P1_X =           1                                                    
+COMMENT   P2_X =        1024                                                    
+COMMENT   P1_Y =          20                                                    
+COMMENT   P2_Y =        1043                                                    
+COMMENT   N_MISSING_BLOCKS =    0                                               
+                                                                                
+                                                                                
+HISTORY   Version 4.0, 2001 December 10                                         
+HISTORY Image linear resampled to (128,128) for SunPy                           

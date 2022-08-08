@@ -15,24 +15,18 @@ from astropy.wcs import WCS
 
 import sunpy
 import sunpy.coordinates
-import sunpy.data.test
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
+from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import figure_test, fix_map_wcs
 from sunpy.util.exceptions import SunpyUserWarning
 
-testpath = sunpy.data.test.rootdir
 pytestmark = pytest.mark.filterwarnings('ignore:Missing metadata')
 
 
 @pytest.fixture
-def aia171_test_map():
-    return sunpy.map.Map(testpath / 'aia_171_level1.fits')
-
-
-@pytest.fixture
 def heliographic_test_map():
-    m = sunpy.map.Map(testpath / 'heliographic_phase_map.fits.gz')
+    m = sunpy.map.Map(get_test_filepath('heliographic_phase_map.fits.gz'))
     return fix_map_wcs(m)
 
 
@@ -312,6 +306,7 @@ def test_draw_limb_heliographic_stonyhurst(aia171_test_map):
     # Create the WCS header for HGS axes
     header = {
         'date-obs': aia171_test_map.date.utc.isot,
+        'mjd-obs': 55607.000004,
         'naxis': 2,
         'naxis1': 360,
         'naxis2': 180,

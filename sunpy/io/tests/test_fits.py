@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from collections import OrderedDict
 
@@ -6,21 +5,19 @@ import numpy as np
 import pytest
 
 import astropy.io.fits as fits
-from astropy.utils.exceptions import AstropyUserWarning
 
 import sunpy.data.test
 import sunpy.io._fits
+from sunpy.data.test import get_test_filepath, test_data_filenames
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 from sunpy.io._fits import extract_waveunit, get_header, header_to_fits
+from sunpy.io.fits import extract_waveunit, format_comments_and_history, get_header, header_to_fits
 from sunpy.util import MetaDict, SunpyMetadataWarning
 
-testpath = sunpy.data.test.rootdir
-
-RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
-EIT_195_IMAGE = os.path.join(testpath, 'EIT/efz20040301.000010_s.fits')
-AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
-SWAP_LEVEL1_IMAGE = os.path.join(testpath, 'SWAP/resampled1_swap.fits')
-
+RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
+EIT_195_IMAGE = get_test_filepath('EIT_header/efz20040301.000010_s.header')
+AIA_171_IMAGE = get_test_filepath('aia_171_level1.fits')
+SWAP_LEVEL1_IMAGE = get_test_filepath('SWAP/resampled1_swap.header')
 
 # Some of the tests iamges contain an invalid BLANK keyword; ignore the warning
 # raised by this
@@ -40,22 +37,22 @@ def test_read_hdus(fname, hdus, length):
 
 
 @pytest.mark.parametrize(
-    'fname, waveunit, warn',
-    [(RHESSI_IMAGE, None, False),
-     (EIT_195_IMAGE, None, False),
-     (AIA_171_IMAGE, 'angstrom', False),
-     (MEDN_IMAGE, 'nm', True),
-     (MQ_IMAGE, 'angstrom', True),
-     (NA_IMAGE, 'm', True),
-     (SWAP_LEVEL1_IMAGE, 'angstrom', False),
-     (SVSM_IMAGE, 'nm', True)]
+    'fname, waveunit',
+    [(RHESSI_IMAGE, None),
+     (EIT_195_IMAGE, None),
+     (AIA_171_IMAGE, 'angstrom'),
+     (MEDN_IMAGE, 'nm'),
+     (MQ_IMAGE, 'angstrom'),
+     (NA_IMAGE, 'm'),
+     (SWAP_LEVEL1_IMAGE, 'angstrom'),
+     (SVSM_IMAGE, 'nm')]
 )
-def test_extract_waveunit(fname, waveunit, warn):
-    if warn:
-        with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-            waveunit = extract_waveunit(get_header(fname)[0])
+def test_extract_waveunit(fname, waveunit):
+    if Path(fname).suffix == '.header':
+        header = format_comments_and_history(fits.Header.fromtextfile(fname))
     else:
-        waveunit = extract_waveunit(get_header(fname)[0])
+        header = get_header(fname)[0]
+    waveunit = extract_waveunit(header)
     assert waveunit is waveunit
 
 
@@ -143,9 +140,10 @@ def test_write_with_metadict_header_astropy(tmpdir):
 @pytest.mark.filterwarnings('ignore')
 def test_fitsheader():
     """Test that all test data can be converted back to a FITS header."""
-    extensions = ('fts', 'fits')
+    extensions = ('.fts', '.fits')
     for ext in extensions:
-        for ffile in Path(testpath).glob(f"*.{ext}*"):
+        test_files = [f for f in test_data_filenames() if f.suffix == ext]
+        for ffile in test_files:
             fits_file = fits.open(ffile)
             fits_file.verify("fix")
             meta_header = MetaDict(OrderedDict(fits_file[0].header))

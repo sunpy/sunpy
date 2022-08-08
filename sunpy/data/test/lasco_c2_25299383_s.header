@@ -1,0 +1,79 @@
+SIMPLE  =                    T / conforms to FITS standard                      
+BITPIX  =                  -64 / array data type                                
+NAXIS   =                    2 / number of array dimensions                     
+NAXIS1  =                  128                                                  
+NAXIS2  =                  128                                                  
+DATAP50 =            7.297E-10                                                  
+DSATVAL =    1.71124823554E-07                                                  
+DATE_OBS= '2009-02-28T00:05:33.380'                                             
+CDELT1  =                 95.2                                                  
+CDELT2  =                 95.2                                                  
+LEBYSUM =                    1                                                  
+DATAP75 =            1.523E-09                                                  
+DATE-OBS= '2009-02-28T00:05:33.380'                                             
+LEBXSUM =                    1                                                  
+R1COL   =                   20                                                  
+DATE    = '2012-12-13T16:07:48.951'                                             
+FILENAME= '25299383.fts'                                                        
+DATAP10 =            3.212E-10                                                  
+READPORT= 'C       '                                                            
+SUMCOL  =                    0                                                  
+DATAP95 =          1.03027E-08                                                  
+COMPRSSN= 'X%      '                                                            
+RSUN    =        978.572578766                                                  
+CRPIX2  =                 64.5                                                  
+RECTIFY =                  0.0                                                  
+R1ROW   =                    1                                                  
+DATAP98 =          3.91363E-08                                                  
+R2ROW   =                 1024                                                  
+R2COL   =                 1043                                                  
+INSTRUME= 'LASCO   '                                                            
+POLAR   = 'Clear   '                                                            
+CUNIT1  = 'arcsec  '                                                            
+CROTA2  =             0.475331                                                  
+CROTA1  =             0.475331                                                  
+CUNIT2  = 'arcsec  '                                                            
+MISSLIST= 'None    '                                                            
+CTYPE2  = 'HPLT-TAN'                                                            
+DSATMIN =    1.68475228523E-12                                                  
+LEVEL   = '1.0     '                                                            
+DATAZER =                59025                                                  
+DATAP99 =          9.07191E-08                                                  
+MID_TIME=              376.024                                                  
+DATASAT =                    1                                                  
+BUNIT   = 'MSB     '                                                            
+YCEN    =               54.621                                                  
+DATAP90 =           4.0103E-09                                                  
+DATAMIN =          1.68475E-12                                                  
+DATAP25 =            4.452E-10                                                  
+DATAP01 =            2.188E-10                                                  
+MID_DATE=                54890                                                  
+CRVAL2  =    54.62100000000009                                                  
+CRPIX1  =                 64.5                                                  
+XCEN    =              15.3747                                                  
+CRVAL1  =     15.3747999999996                                                  
+FILEORIG= '090228_000656.img'                                                   
+TIME-OBS= ''                                                                    
+TELESCOP= 'SOHO    '                                                            
+DATASIG =     1.4350301289E-08                                                  
+SUMROW  =                    0                                                  
+CROTA   =             0.475331                                                  
+FILTER  = 'Orange  '                                                            
+NMISSING=                    0                                                  
+DATAAVG =     3.6263502816E-09                                                  
+DATAMAX =          1.70933E-07                                                  
+CTYPE1  = 'HPLN-TAN'                                                            
+NSATMIN =                59025                                                  
+DETECTOR= 'C2      '                                                            
+EXPTIME =        25.1262079357                                                  
+COMMENT FITS coordinate for center of full image is (512.5,512.5). Rotate image 
+COMMENT CROTA degrees CCW to correct.                                           
+HISTORY V15 18 Jun 1997 MAKE_FITS_HDR reduce_level_1.pro 1.65, 11/16/12,'2229938
+HISTORY 3.fts','25299383.fts' get_exp_factor.pro 1.20 07/26/11, 1.00108, Nreg=10
+HISTORY , Sig=0.00114000 Bias (618.500) from c2_expfactor_090228.dat (wr.2009/05
+HISTORY /05) c2_calfactor.pro 1.9, 03/22/07: 6.26831e-12 c2_calibrate.pro 1.13, 
+HISTORY 10/03/05 c2vig_final.fts, 2005/09/20 distortion_coeffs.pro 1.4 09/13/10 
+HISTORY adjust_hdr_tcr.pro 1.12 11/30/12  -2 using: TIME_DIFF.DAT 2012-11-05: st
+HISTORY dev 7052.3 sec Original date_obs: 2009/02/28 00:06:03.474 c2_post_recove
+HISTORY ry_adj_xyr_medv2.sav (interpolated) last_day=2012-10-07 No roll correcti
+HISTORY on applied.                                                             

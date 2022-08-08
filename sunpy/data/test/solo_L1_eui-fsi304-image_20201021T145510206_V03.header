@@ -1,0 +1,220 @@
+SIMPLE  =                    T / file conforms to basic FITS standards          
+BITPIX  =                   16 / number of bits per data pixel, rounded up      
+NAXIS   =                    2 / number of axes in data cube                    
+NAXIS1  =                  768 / length of data axis 1                          
+NAXIS2  =                  768 / length of data axis 2                          
+EXTEND  =                    F / F = no extensions T = extension(s)             
+BSCALE  =                    1 / ratio of physical to array value at 0 offset   
+BZERO   =                32768 / physical value for the array value 0           
+LONGSTRN= 'OGIP 1.0'           / The OGIP long string convention may be used    
+COMMENT --------- General Description: -----------------------------------------
+FILENAME= 'solo_L1_eui-fsi304-image_20201021T145510206_V03.fits' / FITS filename
+DATE    = '2021-06-25T14:45:58.407' / [UTC] FITS file creation date             
+FILE_RAW= 'BatchRequest.PktTmRaw.SOL.0.2020.295.15.15.01.857.eJeU@2020.295.15.&'
+CONTINUE  '15.03.463.1.xml&'                                                    
+CONTINUE  '' / raw filename                                                     
+PARENT  = 'solo_L0_eui-fsi###-image_0656607273e84f_V00.fits' / source file curre
+APID    =                  924 / APID number of associated TM                   
+DATE-OBS= '2020-10-21T14:55:10.206' / [UTC] deprecated, same as DATE-BEG.       
+DATE-BEG= '2020-10-21T14:55:10.206' / [UTC] start time of observation           
+DATE-AVG= '2020-10-21T14:55:13.206' / [UTC] average time of observation         
+TIMESYS = 'UTC     '           / system used for time keywords                  
+OBT_BEG =    656607273.9074554 / start acquisition time in OBT                  
+LEVEL   = 'L1      '           / data processing level                          
+ORIGIN  = 'Royal Observatory of Belgium' / file generation location             
+CREATOR = '/home/eui/pipeline/level0_to_level1_release.py --inputL0 &'          
+CONTINUE  '/home/eui/pipeline/new_release/xab.txt --outputReleaseList &'        
+CONTINUE  '/home/eui/pipeline/new_release/output_xab.txt --configFile &'        
+CONTINUE  '/home/eui/config/config.ini -od &'                                   
+CONTINUE  '/data/solo-eui/internal/releases/20210623_release_3.0/&'             
+CONTINUE  '' / fits creation software                                           
+VERS_SW = '877     '           / version of SW that provided FITS file          
+VERSION = '03      '           / incremental version number                     
+IMGTYPE = 'solar image'        / type of image; solar, calib., engineering      
+JOBID   = '20210625T140739.584Z_01f' / unique pipeline job ID                   
+COMPLETE= 'C       '           / C or I for complete/incomplete                 
+COMMENT --------- Instrument and Observation Configuration: --------------------
+OBSRVTRY= 'Solar Orbiter'      / satellite name                                 
+TELESCOP= 'SOLO/EUI/FSI'       / telescope/Sensor name                          
+INSTRUME= 'EUI     '           / instrument name                                
+DETECTOR= 'FSI     '           / instrument subunit or sensor                   
+DOORINT = 'open    '           / internal door position                         
+DOOREXT = 'open    '           / external HS Door 2 FSI @-76.08 s               
+XPOSURE =                  6.0 / [s] total effective exposure time              
+FILTER  = 'Magnesium_304_n4'   / physical filter during acquisition             
+FILTPOS =                    0 / (0-199) filter wheel position determ. from tm5 
+WAVELNTH=                  304 / [Angstrom] characteristic wavelength observatio
+WAVEMIN =                  250 / [Angstrom] min wavelength resp. > 0.05 of max  
+WAVEMAX =                  350 / [Angstrom] max wavelength resp. > 0.05 of max  
+WAVEUNIT= 'Angstrom'                                                            
+SOOPNAME= 'not defined'        / name of the SOOP Campaign that the data belong 
+SOOPTYPE= '000     '           / campaign ID(s) that the data belong to         
+OBS_MODE= 'GENERIC_CALIB'      / observation mode                               
+OBS_TYPE= '2ZpG    '           / encoded version of OBS_MODE                    
+OBS_ID  = 'SEUI_021A_000_000_2ZpG_11K' / unique ID of the individual observation
+TARGET  = 'not defined'        / type of target from planning                   
+COMMENT --------- Description of Data Content: ---------------------------------
+BTYPE   = 'Intensity'          / type of data                                   
+BUNIT   = 'DN      '           / units of physical value, after BSCALE, BZERO   
+UCD     = 'phot.count;em.UV.10-50nm' / Unified Content Descriptor               
+BLANK   =                32767 / value undefined pixels before BSCALE,BZERO     
+COMMENT --------- Image Relative to Detector and Electronics: ------------------
+PXBEG1  =                    1 / first read-out pixel in dimension 1            
+PXEND1  =                 3072 / last read-out pixel in dimension 1             
+PXBEG2  =                    1 / first read-out pixel in dimension 2            
+PXEND2  =                 3072 / last read-out pixel in dimension 2             
+NBIN1   =                    4 / on-board binning factor in dim 1               
+NBIN2   =                    4 / on-board binning factor in dim 1               
+NBIN    =                   16 / total binning factor                           
+COMMENT --------- World Coordinate System Attitude: ----------------------------
+WCSNAME = 'Helioprojective-cartesian' / name of coordinate system               
+CTYPE1  = 'HPLN-TAN'           / helioprojective longitude (Solar X)            
+CTYPE2  = 'HPLT-TAN'           / helioprojective latitude (Solar Y)             
+CUNIT1  = 'arcsec  '           / units along axis 1                             
+CUNIT2  = 'arcsec  '           / units along axis 2                             
+PC1_1   =   0.9999102260281425 / WCS coordinate transformation matrix           
+PC1_2   = -0.01342815057671589 / WCS coordinate transformation matrix           
+PC2_1   =  0.01337041041677168 / WCS coordinate transformation matrix           
+PC2_2   =   0.9999102260281425 / WCS coordinate transformation matrix           
+CDELT1  =           17.7413644 / [arcsec] pixel scale along axis 1              
+CDELT2  =           17.7796312 / [arcsec] pixel scale along axis 2              
+CROTA   =   0.7677434135716757 / [deg] rotation angle                           
+CRVAL1  =      110.24274639227 / [arcsec] value of reference pixel along axis 1 
+CRVAL2  =     111.852878006255 / [arcsec] value of reference pixel along axis 2 
+CRPIX1  =                384.5 / [pixel] reference pixel location along axis 1  
+CRPIX2  =                384.5 / [pixel] reference pixel location along axis 2  
+LONPOLE =                180.0 / [deg] native longitude of the celestial pole   
+ATT_SKD = 'v107_20210623_001+flown' / attitude SKD version, +flown/+predicted   
+COMMENT --------- Front End Electronics: ---------------------------------------
+DETGAINL=                0.875 / commanded low gain value                       
+DETGAINH=                  3.0 / commanded high-gain value                      
+GAINCOMB= 'combined'           / commanded low/high gain combination            
+READOUTM=                    4 / commanded FEE readout mode                     
+DOWNLOAM=                    0 / commanded FEE download mode                    
+GAINTHRE=                15600 / commanded threshold value for H/L gain         
+LEDSTATE= 'all off '           / LED control for current telescope              
+COMMENT --------- Temperature: -------------------------------------------------
+TEMPINT =     211.159425070688 / [K] internal APS detector temperature          
+TEMP1DET=    211.3479264844486 / [K] last measured APS det. T before date-avg   
+TEMP2DET=     211.159425070688 / [K] earliest measured APS det. T after date-avg
+TTEMP1  = '2020-10-21T14:55:00.902583' / [UTC] time TEMP1DET measurement        
+TTEMP2  = '2020-10-21T14:56:00.901291' / [UTC] time TEMP2DET measurement        
+COMMENT --------- Telemetry Header: --------------------------------------------
+ALU     =                21131 / CEB ALU register                               
+ALU2    =                    1 / CEB ALU2 register                              
+DETREG20=                   85 / REG20_VDAC_CLIPP                               
+DETREG21=                   87 / REG21_VDAC_OFFSETP                             
+DETREG22=                   63 / REG22_VDAC_CMREF                               
+DETREG23=                   39 / REG23_VDAC_OFFSETN                             
+DETREG24=                   41 / REG24_VDAC_CLIPN                               
+DETREG25=                   35 / REG25_VDAC_CMREF_LV                            
+DETREG26=                  137 / REG26_IDAC_CDSSTAGE2_3                         
+DETREG27=                  136 / REG27_IDAC_CDSSTAGE1_COMPA                     
+DETREG28=                  136 / REG28_IDAC_INVBUFFER_REFBU                     
+DETREG29=                  136 / REG29_IDAC_COLBUFFER_COLBU                     
+DETREG2A=                    8 / REG2A_IDAC_COLPC_COLGAINST                     
+DETREG2B=                  136 / REG2B_IDAC_OUTPUTDRIVER_CO                     
+DETREG2C=                    0 / REG2C_VDAC_BLACKSUN_EVEN                       
+DETREG2D=                  136 / REG2D_IDAC_ABS_REBUFF_TEMP                     
+DETREG2E=                  255 / REG2E_COLGAIN_EVEN_FF_MID                      
+DETREG2F=                  240 / REG2F_COLGAIN_EVEN_FF_LOW                      
+DETREG30=                    0 / REG30_COLGAIN_EVEN_FB_MID                      
+DETREG31=                   15 / REG31_COLGAIN_EVEN_FB_LOW                      
+DETREG32=                    0 / REG32_COLGAIN_EVEN_FB_HIGH                     
+DETREG33=                  127 / REG33_COLGAIN_ODD_FF_MID                       
+DETREG34=                    0 / REG34_COLGAIN_ODD_FF_LOW                       
+DETREG35=                    0 / REG35_COLGAIN_ODD_FB_MID                       
+DETREG36=                  255 / REG36_COLGAIN_ODD_FB_LOW                       
+DETREG37=                    0 / REG37_COLGAIN_VDAC_SIGCLAM                     
+DETREG38=                   61 / REG38_CDS_EN_SAMPLE_CLOCK_                     
+DETREG39=                    0 / REG39_MBS_PIXCOL_ADDR_LOW                      
+DETREG3A=                    0 / REG3A_MBS_PIXCOL_ADDR_HIGH                     
+DETREG3B=                    0 / REG3B_MBS_MUXBUS_SR_EOSX_S                     
+DETREG3C=                    0 / REG3C_VDAC_SIGC_LAMP_BLACK                     
+DETREG3D=                    0 / REG3D_XWIN_ADDRESS                             
+DETREG3E=                   65 / REG3E_VDAC_BUSCLAMPHIGH                        
+DETREG3F=                   65 / REG3F_VDAC_BUSCLAMPLOW                         
+DOORPOS =                   34 / Door position (raw) = open                     
+FILCPOS =                    1 / filter wheel commanded position                
+COMMENT --------- CEB Pixel Preprocessing: -------------------------------------
+GAOFSTAT= 'none    '           / status of the CEB gain and offset correction   
+BADPXREM= 'off     '           / commanded bad pixel removal on or off          
+BADPXDEF=                 4000 / commanded bad pixel default @-8.30 s           
+CRREM   = 'off     '           / cosmic ray removal on or off                   
+CRREMLIM=                 1024 / [1 G. sigma DN] cosmic ray limit @-8.30 s      
+GAINHG  =                    0 / global gain corr. high gain @PT-0.0 d          
+GAINLG  =                    0 / global gain corr. how gain  @PT-0.0 d          
+OFFSETHG=                    0 / [DN] global offset corr. high gain @PT-0.0 d   
+OFFSETLG=                    0 / [DN] global offset corr. low gain @PT-0.0 d    
+COMMENT --------- Data Routing: ------------------------------------------------
+PRIORITY=                    0 / priority # of image/histogram when downloaded  
+SCITABID=                   28 / exposure identifier in sec. science table      
+SCITABNR=                    2 / sequential number of SCITABID                  
+COMMENT --------- Onboard Processing: ------------------------------------------
+RECSTATE= 'on      '           / recoding on or off                             
+RECNRBIT=                    8 / bit depth recoding output (sqrt)               
+RECLOW  =                    0 / rec. threshold low (clipped 0)                 
+RECHIGH =                32767 / rec. threshold high(clipped 2^RECNRBIT-1)      
+COMBITPP=                    3 / WICOM compression bpp ( COMBITPP*0.04=bpp)     
+COMSPLMD= 'provided by user'   / WICOM compression splitb3 mode                 
+COMSPLVL=                    5 / WICOM compression splitb3 value                
+COMWEIMD= 'off     '           / WICOM compression weighting mode               
+COMWEIVL= '128,128,128,128,128,128,128,128,128,128' / WICOM sub-band coefficient
+COMSIZE =                 8944 / number of bytes onboard compressed image       
+COMSTRIP= 'off     '           / compression type: off=whole image; on=strip    
+COMPRESS= 'Lossy-extreme'      / data compression quality (None/Lossless/Lossy) 
+COMP_RAT=    1978.389982110912 / compression ratio: uncompressed/compressed size
+COMMENT --------- Derived Image Properties: ------------------------------------
+EUXCEN  =    378.2023801648368 / [pixel] axis 1 location of solar center in L1  
+EUYCEN  =    378.2927576174591 / [pixel] axis 2 location of solar center in L1  
+DATAMIN =                    0 / minimum valid physical value                   
+DATAMAX =                 3486 / maximum valid physical value                   
+DATAMEAN=    70.92212422688802 / [DN] average pixel value across the image      
+COMMENT --------- Solar Ephemeris: ---------------------------------------------
+RSUN_ARC=    973.9926182912142 / [arcsec] apparent photospheric solar radius    
+RSUN_OBS=    973.9926182912142 / [arcsec] apparent photospheric solar radius    
+RSUN_REF=            695700000 / [m] assumed physical solar radius              
+SOLAR_B0=   -6.677299920579563 / [deg] s/c tilt of solar North pole             
+SOLAR_P0=   -19.82012802686048 / [deg] s/c celestial North to solar North angle 
+SOLAR_EP=    1.490205110810511 / [deg] s/c ecliptic North to solar North angle  
+CAR_ROT =    2236.260992777846 / carrington rotation number                     
+HGLT_OBS=   -6.677299920579563 / [deg] s/c Heliographic latitude (B0 angle)     
+HGLN_OBS=    125.2574809848614 / [deg] s/c Heliographic longitude               
+CRLT_OBS=   -6.677299920579563 / [deg] s/c Carrington latitude (B0 angle)       
+CRLN_OBS=    266.0425999753442 / [deg] s/c Carrington longitude (L0 angle)      
+DSUN_OBS=    147330643266.3527 / [m] s/c distance from Sun                      
+DSUN_AU =   0.9848445206937874 / [AU] s/c distance from Sun                     
+HEEX_OBS=   -85695782465.79042 / [m] s/c Heliocentric Earth Ecliptic X          
+HEEY_OBS=    119839007050.6942 / [m] s/c Heliocentric Earth Ecliptic Y          
+HEEZ_OBS=    1078750182.796005 / [m] s/c Heliocentric Earth Ecliptic Z          
+HCIX_OBS=    30146800120.73569 / [m] s/c Heliocentric Inertial X                
+HCIY_OBS=    143192216415.6103 / [m] s/c Heliocentric Inertial Y                
+HCIZ_OBS=   -17131200942.80347 / [m] s/c Heliocentric Inertial Z                
+HCIX_VOB=   -24672.55520003601 / [m/s] s/c Heliocentric Inertial X Velocity     
+HCIY_VOB=    3682.953536061317 / [m/s] s/c Heliocentric Inertial Y Velocity     
+HCIZ_VOB=     290.617015667812 / [m/s] s/c Heliocentric Inertial Z Velocity     
+HAEX_OBS=   -132369235325.6332 / [m] s/c Heliocentric Aries Ecliptic X          
+HAEY_OBS=    64680258288.34607 / [m] s/c Heliocentric Aries Ecliptic Y          
+HAEZ_OBS=    1080820215.048503 / [m] s/c Heliocentric Aries Ecliptic Z          
+HEQX_OBS=   -84469990436.74907 / [m] s/c Heliocentric Earth Equatorial X        
+HEQY_OBS=    119489167354.8279 / [m] s/c Heliocentric Earth Equatorial Y        
+HEQZ_OBS=   -17131200942.80347 / [m] s/c Heliocentric Earth Equatorial Z        
+GSEX_OBS=    234594200895.7115 / [m] s/c Geocentric Solar Ecliptic X            
+GSEY_OBS=   -119839007050.6942 / [m] s/c Geocentric Solar Ecliptic Y            
+GSEZ_OBS=    1078750182.796002 / [m] s/c Geocentric Solar Ecliptic Z            
+OBS_VR  =    24947.56033387015 / [m/s] Radial velocity of S/C relative to Sun   
+EAR_TDEL=    5.229535039098096 / [s] Time(Sun to Earth) - Time(Sun to S/C)      
+SUN_TIME=    491.4421271610266 / [s] Time(Sun to S/C)                           
+DATE_EAR= '2020-10-21T14:55:18.436' / [UTC] start time of observation Earth     
+DATE_SUN= '2020-10-21T14:47:01.764' / [UTC] start time of observation Sun       
+COMMENT --------- Parameters Closing Metadata: ---------------------------------
+INFO_URL= 'http://sidc.be/EUI/data' / Link to additional information            
+CHECKSUM= 'NZLZPZLZNZLZNZLZ'   / HDU checksum updated 2021-06-25T14:45:58       
+DATASUM = '4177122843'         / data unit checksum updated 2021-06-25T14:45:58 
+HISTORY created by /home/eui/pipeline/telemetry_parser.py --databaseExternal --w
+HISTORY orkingDirectory /tmp/telemetry_parser --configFile /home/eui/config/conf
+HISTORY ig.ini --outputDirectory /data/solo-eui/internal/L0/ --atROB            
+HISTORY created by /home/eui/pipeline/level0_to_level1_release.py --inputL0 /hom
+HISTORY e/eui/pipeline/new_release/xab.txt --outputReleaseList /home/eui/pipelin
+HISTORY e/new_release/output_xab.txt --configFile /home/eui/config/config.ini -o
+HISTORY d /data/solo-eui/internal/releases/20210623_release_3.0/                
