@@ -1,16 +1,16 @@
 .. _sunpy-coordinates:
 
-Coordinates (`sunpy.coordinates`)
-*********************************
+***********
+Coordinates
+***********
 
-This sub-package contains:
+**sunpy** provides:
 
 * A robust framework for working with solar-physics coordinate systems
 * Functions to obtain the locations of solar-system bodies (`sunpy.coordinates.ephemeris`)
 * Functions to calculate Sun-specific coordinate information (`sunpy.coordinates.sun`)
 
-The SunPy coordinate framework extends the
-:ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
+The SunPy coordinate framework extends the :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
 
 Supported Coordinate Systems
 ============================
@@ -76,12 +76,10 @@ Supported Coordinate Systems
      - `~sunpy.coordinates.frames.GeocentricSolarEcliptic`
      -
 
-
 For a description of these coordinate systems,
 see `Thompson (2006) <https://doi.org/10.1051/0004-6361:20054262>`_
 and `Franz & Harper (2002) <https://doi.org/10.1016/S0032-0633(01)00119-2>`_
 (and `corrected version <https://www2.mps.mpg.de/homes/fraenz/systems/systems3art/systems3art.html>`_).
-
 
 Getting Started
 ===============
@@ -99,7 +97,6 @@ The easiest interface to work with coordinates is through the `~astropy.coordina
   <SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
       (70., -30.)>
 
-
 It is also possible to use strings to specify the frame but in that case make sure to
 explicitly import `sunpy.coordinates` as it registers SunPy's coordinate frames with
 the Astropy coordinates framework::
@@ -112,7 +109,6 @@ the Astropy coordinates framework::
   >>> c
   <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=earth): (Tx, Ty) in arcsec
       (-100., 500.)>
-
 
 `~astropy.coordinates.SkyCoord` and all coordinate frames
 support array coordinates. These work the same as single-value coordinates,
@@ -129,7 +125,6 @@ than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
    >>> c[0]
    <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec
        (-500.,  100.)>
-
 
 Accessing Coordinates
 ---------------------
@@ -282,8 +277,6 @@ that contains a representation of one or many points is said to have been
 For a more in depth look at the design and concepts of the Astropy coordinates
 system see :ref:`astropy-coordinates-overview`
 
-
-
 Frames and SkyCoord
 -------------------
 
@@ -321,27 +314,8 @@ More Detailed Information
    rotatedsunframe
    velocities
    wcs
-   other_api
-
-
-Reference/API
-=============
-
-.. automodapi:: sunpy.coordinates
-
-.. automodapi:: sunpy.coordinates.ephemeris
-
-.. automodapi:: sunpy.coordinates.sun
-
-.. automodapi:: sunpy.coordinates.utils
-    :no-inheritance-diagram:
-
 
 Attribution
 ===========
 
-Some of this documentation was adapted from Astropy under the terms of the `BSD
-License
-<https://raw.githubusercontent.com/astropy/astropy/master/LICENSE.rst>`_.
-
-This sub-package was initially developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.
+Some of this documentation was adapted from Astropy under the terms of the `BSD License <https://raw.githubusercontent.com/astropy/astropy/main/LICENSE.rst>`__.

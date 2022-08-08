@@ -4,15 +4,6 @@
 Coordinates (`sunpy.coordinates`)
 *********************************
 
-`sunpy.coordinates` contains:
-
-* A robust framework for working with solar-physics coordinate systems
-* Functions to obtain the locations of solar-system bodies (`sunpy.coordinates.ephemeris`)
-* Functions to calculate Sun-specific coordinate information (`sunpy.coordinates.sun`)
-
-The SunPy coordinate framework extends the :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
-
-
 .. automodapi:: sunpy.coordinates
 
 .. automodapi:: sunpy.coordinates.ephemeris
@@ -29,3 +20,5 @@ The SunPy coordinate framework extends the :ref:`Astropy coordinates framework <
 .. automodapi:: sunpy.coordinates.transformations
 
 .. automodapi:: sunpy.coordinates.wcs_utils
+
+This sub-package was initially developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.

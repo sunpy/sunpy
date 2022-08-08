@@ -18,6 +18,7 @@ For more details checkout the :ref:`reference`.
    Data Types <data_types/index>
    Plotting <plotting>
    Units and Coordinates <units-coordinates>
+   Extra coordinate information <coordinates/index>
    Time <time>
    customization
    logger

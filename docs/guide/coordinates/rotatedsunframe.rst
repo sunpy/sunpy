@@ -162,7 +162,6 @@ Note that equator rotates slightly faster than the Carrington rotation rate (its
        ( 97.60193088,  60.0838908, 694951.31065278),
        ( 96.71777552,  75.0975847, 695238.51302901)]>
 
-
 .. testcleanup::
   >>> np.set_printoptions(floatmode=old_floatmode)
 
@@ -181,8 +180,6 @@ Using the context manager, the ``radius`` component stays as the solar radius as
        ( 99.991779,  15., 695700.), ( 99.497762,  30., 695700.),
        ( 98.624643,  45., 695700.), ( 97.52257 ,  60., 695700.),
        ( 96.570646,  75., 695700.)]>
-
-
 
 Transforming multiple durations of rotation
 -------------------------------------------
@@ -288,7 +285,6 @@ Example uses of RotatedSunFrame
 Here are the examples in our gallery that use `~sunpy.coordinates.metaframes.RotatedSunFrame`:
 
 .. minigallery:: sunpy.coordinates.RotatedSunFrame
-
 
 ..
   >>> # Reset change to default print options
