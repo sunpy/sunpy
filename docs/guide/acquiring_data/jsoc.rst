@@ -1,6 +1,6 @@
-***************************************
-Querying and Downloading Data from JSOC
-***************************************
+**************************************
+Finding and Downloading Data from JSOC
+**************************************
 
 Joint Science Operations Center (JSOC) contains data products from the Solar Dynamics Observatory, as well as certain other missions and instruments.
 These data are available from the JSOC database, which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`__.

@@ -1,8 +1,8 @@
 .. _fido_guide:
 
-***************************************
-Finding and Downloading Data using Fido
-***************************************
+****************************
+Finding and Downloading Data
+****************************
 
 This guide outlines how to search for and download data using `~sunpy.net.Fido` sunpy's interface for search and download.
 `~sunpy.net.Fido` is a unified interface for searching and fetching solar physics data irrespective of the underlying client or webservice through which the data is obtained, e.g. VSO_,JSOC_, etc.
