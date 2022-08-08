@@ -1,6 +1,6 @@
-***********************************
-Querying Helioviewer.org with sunpy
-***********************************
+************************
+Querying Helioviewer.org
+************************
 
 sunpy can be used to make several basic requests using the The `Helioviewer.org API <https://api.helioviewer.org/docs/v2/>`_ including generating a PNG screenshot and downloading a `JPEG 2000 <https://wiki.helioviewer.org/wiki/JPEG_2000>`_ image.
 

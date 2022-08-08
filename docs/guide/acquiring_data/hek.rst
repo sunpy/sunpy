@@ -1,6 +1,6 @@
-************************
-Using sunpy's HEK module
-************************
+**********************************************
+Searching the Heliophysics Event Knowledgebase
+**********************************************
 
 The Heliophysics Event Knowledgebase (HEK) is a repository of feature
 and event information about the Sun.
