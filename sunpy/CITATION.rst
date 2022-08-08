@@ -14,7 +14,7 @@ Please add the following line within your methods, conclusion or acknowledgement
 
 The project citation should be to the `SunPy paper`_, and the software citation should be the specific `Zenodo DOI`_ for the version used in your work.
 
-.. code:: bibtex
+.. code-block:: bibtex
 
     @ARTICLE{sunpy_community2020,
       doi = {10.3847/1538-4357/ab4f7a},
@@ -36,7 +36,7 @@ Other SunPy publications
 
 The SunPy v1.0.8 code was reviewed by `The Journal of Open Source Software (JOSS) <https://joss.theoj.org/papers/10.21105/joss.01832>`__.
 
-.. code:: bibtex
+.. code-block:: bibtex
 
     @ARTICLE{Mumford2020,
       doi = {10.21105/joss.01832},

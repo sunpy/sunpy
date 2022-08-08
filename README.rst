@@ -35,7 +35,7 @@ Installation
 The recommended way to install **sunpy** is with `miniconda`_.
 To install **sunpy** once conda is installed run the following two commands:
 
-.. code:: bash
+.. code-block:: bash
 
     $ conda config --append channels conda-forge
     $ conda install sunpy
@@ -56,7 +56,7 @@ Usage
 
 Here is a quick example of plotting an AIA image:
 
-.. code:: python
+.. code-block:: python
 
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE

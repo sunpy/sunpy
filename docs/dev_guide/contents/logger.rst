@@ -53,7 +53,7 @@ A warning can be issued in the following way::
 Raising Exceptions
 ==================
 
-Raising errors causes the program to halt
+Raising errors causes the program to halt, so they should be used only when the function can not continue.
 
 Exceptions are raised simply with::
 

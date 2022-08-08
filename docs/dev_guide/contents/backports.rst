@@ -1,8 +1,8 @@
 .. _backports:
 
-*************************
-Updated Released Versions
-*************************
+**************************
+Updating Released Versions
+**************************
 
 When changes need to be made in a bugfix release of an already released version of **sunpy** this is done by a process called "backporting".
 The process is as follows:

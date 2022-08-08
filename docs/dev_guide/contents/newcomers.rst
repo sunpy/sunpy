@@ -146,7 +146,7 @@ This method will bypass your operating system Python packages and makes the enti
 The first step is to install the version of conda that corresponds to your operating system and `instructions are here`_.
 Next we will want to setup the conda environment and we will need to add the `conda-forge`_ channel as a prerequisite:
 
-.. code:: bash
+.. code-block:: bash
 
     $ conda config --add channels conda-forge
     $ conda create -n sunpy-dev pip
@@ -157,7 +157,7 @@ The next step is get a development version of **sunpy**.
 This will require that `git`_ is installed.
 You will need to have a `GitHub`_ account, so you can `fork`_ the `sunpy repository`_ (the fork button is to the top right) and **use will use that url for the clone step**.
 
-.. code:: bash
+.. code-block:: bash
 
     $ git clone https://github.com/<username>/sunpy.git sunpy-git
     $ cd sunpy-git
@@ -176,7 +176,7 @@ You will need to have a `GitHub`_ account, so you can `fork`_ the `sunpy reposit
 Now you have the latest version of **sunpy** installed and are ready to work on it.
 Ideally, when you start making changes you want to create a git branch:
 
-.. code:: bash
+.. code-block:: bash
 
     $ git checkout -b my_fix
 
