@@ -1,4 +1,4 @@
-.. _cheatsheet:
+.. _pr_checklist:
 
 ***********************
 Pull Request Check List

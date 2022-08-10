@@ -25,7 +25,7 @@ This section contains the various guidelines to be followed by anyone working on
             :maxdepth: 3
 
             contents/newcomers
-            contents/cheatsheet
+            contents/pr_checklist
 
     .. grid-item-card::
         :class-card: card
