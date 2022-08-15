@@ -79,20 +79,20 @@ def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacemen
 def test_mapsequence_solar_derotate(aia171_test_mapsequence, aia171_test_submap):
     # Test that a mapsequence is returned when the clipping is False.
     tmc = mapsequence_solar_derotate(aia171_test_mapsequence, clip=False)
-    assert(isinstance(tmc, sunpy.map.MapSequence))
+    assert (isinstance(tmc, sunpy.map.MapSequence))
 
     # Test that all entries have the same shape when clipping is False
     for m in tmc:
-        assert(m.data.shape == aia171_test_submap.data.shape)
+        assert (m.data.shape == aia171_test_submap.data.shape)
 
     # Test that a mapsequence is returned on default clipping (clipping is True)
     tmc = mapsequence_solar_derotate(aia171_test_mapsequence)
-    assert(isinstance(tmc, sunpy.map.MapSequence))
+    assert (isinstance(tmc, sunpy.map.MapSequence))
 
     # Test that the shape of data is correct when clipped
     clipped_shape = (26, 20)
     for m in tmc:
-        assert(m.data.shape == clipped_shape)
+        assert (m.data.shape == clipped_shape)
 
     # Test that the returned reference pixels are correctly displaced.
     layer_index = 0
