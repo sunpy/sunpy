@@ -59,12 +59,37 @@ def check_connection(url):
         return None
 
 
+def check_cgi_connection(url):
+    """
+    At the moment there is no way to make an "are you alive" request to the
+    cgi, so we just hit it with a HTTP get and it gives us back a 411 response.
+    This is weird enough that it probably satisfies us for this check.
+    """
+    try:
+        return urlopen(url).getcode() == 411
+    except HTTPError as e:
+        if e.code == 411:
+            return True
+        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        return None
+    except (socket.error, socket.timeout, HTTPError, URLError) as e:
+        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        return None
+
+
 def get_online_vso_url():
     """
     Return the first VSO url and port combination that is online.
     """
     for mirror in DEFAULT_URL_PORT:
         if check_connection(mirror['url']):
+            # Now we get the port URL from the WSDL and test that
+            wsdl = zeep.wsdl.Document(mirror["url"], zeep.Transport())
+            # I think that accessing "VSOiService" here is equivalent to the
+            # set_ns_prefix call in the build_client function below
+            url = wsdl.services["VSOiService"].ports[mirror["port"]].binding_options["address"]
+            if not check_cgi_connection(url):
+                continue
             return mirror
 
 
