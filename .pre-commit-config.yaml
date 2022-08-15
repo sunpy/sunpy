@@ -34,7 +34,7 @@ repos:
         args: ["--sp", "setup.cfg"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.6.0
+    rev: v1.7.0
     hooks:
     -   id: autopep8
         args: ["--in-place","--max-line-length", "200"]
