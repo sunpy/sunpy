@@ -61,7 +61,7 @@ def check_connection(url):
         return urlopen(url, timeout=15).getcode() == 200
     except (socket.error, socket.timeout, HTTPError, URLError) as e:
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
-        return None
+        return False
 
 
 def check_cgi_connection(url):
@@ -76,10 +76,10 @@ def check_cgi_connection(url):
         if e.code == 411:
             return True
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
-        return None
+        return False
     except (socket.error, socket.timeout, URLError) as e:
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
-        return None
+        return False
 
 
 def get_online_vso_url():
