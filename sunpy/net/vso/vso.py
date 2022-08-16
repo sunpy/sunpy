@@ -39,14 +39,11 @@ from .table_response import VSOQueryResponseTable
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
 DEFAULT_URL_PORT = [
-    {'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
-     'port': 'nsoVSOi'},
-    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl',
-     'port': 'sdacVSOi'},
+    {'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl', 'port': 'nsoVSOi'},
+    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl', 'port': 'sdacVSOi'},
     # This connects to the same cgi as the first WSDL file, but if that file
     # isn't accessible and the SDAC cgi is unreachable, this might still work.
-    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl',
-     'port': 'nsoVSOi'},
+    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl', 'port': 'nsoVSOi'},
 ]
 
 

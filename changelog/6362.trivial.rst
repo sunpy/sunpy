@@ -1,0 +1,4 @@
+When determining which VSO servers to use for queries, `.VSOClient` will now
+attempt to check if the cgi endpoint referenced by the WDSL file is accessible,
+and try the next endpoint if it can't be reached. This should mean that a small
+category of connection issues with the VSO are now automatically bypassed.
