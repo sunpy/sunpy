@@ -38,23 +38,31 @@ from .legacy_response import QueryResponse
 from .table_response import VSOQueryResponseTable
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
-DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
-                     'port': 'nsoVSOi'},
-                    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl',
-                     'port': 'sdacVSOi'}]
+DEFAULT_URL_PORT = [
+    {'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
+     'port': 'nsoVSOi'},
+    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl',
+     'port': 'sdacVSOi'},
+    # This connects to the same cgi as the first WSDL file, but if that file
+    # isn't accessible and the SDAC cgi is unreachable, this might still work.
+    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl',
+     'port': 'nsoVSOi'},
+]
 
 
 class _Str(str):
-    """ Subclass of string that contains a meta attribute for the
-    record_item associated with the file. """
+    """
+    Subclass of string that contains a meta attribute for the
+    record_item associated with the file.
+    """
     meta = None
 
 
 # ----------------------------------------
 def check_connection(url):
     try:
-        return urlopen(url).getcode() == 200
-    except (OSError, HTTPError, URLError) as e:
+        return urlopen(url, timeout=15).getcode() == 200
+    except (socket.error, socket.timeout, HTTPError, URLError) as e:
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return None
 
@@ -66,13 +74,13 @@ def check_cgi_connection(url):
     This is weird enough that it probably satisfies us for this check.
     """
     try:
-        return urlopen(url).getcode() == 411
+        return urlopen(url, timeout=15).getcode() == 411
     except HTTPError as e:
         if e.code == 411:
             return True
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return None
-    except (socket.error, socket.timeout, HTTPError, URLError) as e:
+    except (socket.error, socket.timeout, URLError) as e:
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return None
 
