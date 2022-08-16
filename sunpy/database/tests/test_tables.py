@@ -127,8 +127,8 @@ def test_tag_hashability():
 @pytest.mark.remote_data
 def test_entries_from_fido_search_result(fido_search_result):
     entries = list(entries_from_fido_search_result(fido_search_result))
-    # 66 entries for 8 instruments in fido_search_result
-    assert len(entries) == 66
+    # 68 entries for 8 instruments in fido_search_result
+    assert len(entries) == 68
     # First 2 entries are from lyra
     assert entries[0] == DatabaseEntry(
         source='PROBA2', provider='ESA', physobs='irradiance',
@@ -146,7 +146,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
         instrument='EVE')
-    # 54 entries from EVE
+    # 56 entries from EVE
     assert entries[4] == DatabaseEntry(
         source='SDO', provider='LASP', physobs='irradiance',
         fileid='EVE_L1_esp_2012001_00',
@@ -156,7 +156,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         instrument='EVE',
         wavemin=0.1, wavemax=30.4)
     # 2 entries from goes
-    assert entries[58] == DatabaseEntry(
+    assert entries[60] == DatabaseEntry(
         source='GOES', provider='NOAA', physobs='irradiance',
         fileid='https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/'
                'gxrs-l2-irrad_science/2012/01/sci_gxrs-l2-irrad_g15_d20120101_v0-0-0.nc',
@@ -165,7 +165,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=np.nan, wavemax=np.nan,
         instrument='XRS')
     # 1 entry from noaa-indices
-    assert entries[60] == DatabaseEntry(
+    assert entries[62] == DatabaseEntry(
         source='SIDC', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
         observation_time_start=None,
@@ -173,7 +173,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=np.nan, wavemax=np.nan,
         instrument='NOAA-Indices')
     # 1 entry from noaa-predict
-    assert entries[61] == DatabaseEntry(
+    assert entries[63] == DatabaseEntry(
         source='ISES', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json',
         observation_time_start=None,
@@ -181,7 +181,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=np.nan, wavemax=np.nan,
         instrument='NOAA-Predict')
     # 2 entries from norh
-    assert entries[62] == DatabaseEntry(
+    assert entries[64] == DatabaseEntry(
         source='NAOJ', provider='NRO', physobs=None,
         fileid=("ftp://solar-pub.nao.ac.jp/"
                 "pub/nsro/norh/data/tcx/2012/01/tca120101"),
@@ -190,7 +190,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=17634850.470588233, wavemax=17634850.470588233,
         instrument='NORH')
     # 1 entry from rhessi
-    assert entries[64] == DatabaseEntry(
+    assert entries[66] == DatabaseEntry(
         source="RHESSI", provider='NASA', physobs='summary_lightcurve',
         fileid=("https://hesperia.gsfc.nasa.gov/"
                 "hessidata/metadata/catalog/hsi_obssumm_20120101_032.fits"),
