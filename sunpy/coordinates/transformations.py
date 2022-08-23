@@ -32,7 +32,7 @@ from astropy.coordinates import (
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.builtin_frames import make_transform_graph_docs
 from astropy.coordinates.builtin_frames.utils import get_jd12
-from astropy.coordinates.matrix_utilities import matrix_product, matrix_transpose, rotation_matrix
+from astropy.coordinates.matrix_utilities import matrix_transpose, rotation_matrix
 from astropy.coordinates.representation import (
     CartesianRepresentation,
     SphericalRepresentation,
@@ -806,7 +806,7 @@ def _rotation_matrix_hme_to_hee(hmeframe):
     tilt_matrix = _rotation_matrix_reprs_to_reprs(sun_earth_hme.transform(rot_matrix),
                                                   CartesianRepresentation(1, 0, 0))
 
-    return matrix_product(tilt_matrix, rot_matrix)
+    return tilt_matrix @ rot_matrix
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
