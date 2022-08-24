@@ -4,7 +4,7 @@ Using Remote Data Manager
 =========================
 
 This is an example to show how to use remote data manager to
-handle remote data in Sunpy.
+handle remote data in sunpy.
 """
 
 ##############################################################################

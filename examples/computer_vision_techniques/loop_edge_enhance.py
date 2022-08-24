@@ -3,7 +3,7 @@
 Edge Enhancing Coronal Loops
 ============================
 
-How to edge enhance coronal loops in an SDO/AIA image.
+How to edge enhance coronal loops. In this example we use a SDO/AIA image.
 """
 import matplotlib.pyplot as plt
 import numpy as np

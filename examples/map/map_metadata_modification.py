@@ -1,7 +1,7 @@
 """
-=========================
-Map metadata modification
-=========================
+==================================
+Checking for modified map metadata
+==================================
 
 How to query map metadata for changes.
 

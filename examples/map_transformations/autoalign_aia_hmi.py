@@ -1,7 +1,7 @@
 """
-==============================================
-Auto-Aligning AIA and HMI Data During Plotting
-==============================================
+============================================
+Auto-Aligning AIA and HMI Data When Plotting
+============================================
 
 This example shows how to auto-align two images with different reference frames
 during plotting.
