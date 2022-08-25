@@ -3,15 +3,36 @@ This module provides a set of colormaps specific for solar data.
 """
 from copy import deepcopy
 
+import matplotlib
 import matplotlib.cm as mplcm
 import matplotlib.pyplot as plt
 import numpy as np
+from packaging import version
 
 import astropy.units as u
 
 from sunpy.visualization.colormaps import color_tables as ct
 
 __all__ = ['show_colormaps', 'cmlist']
+
+# Helper functions for Matplotlib colormap that avoid deprecation warnings
+# in MPL >= 3.6 Once MPL 3.5.0 (where matplotlib.colormaps was introduced)
+# is our min version these can be removed and we can just use matplotlib.colormaps
+
+
+def _get_mpl_cmap(name):
+    if version.parse(matplotlib.__version__) >= version.parse("3.5"):
+        return matplotlib.colormaps[name]
+    else:
+        return mplcm.get_cmap(name)
+
+
+def _register_cmap(name, cmap):
+    if version.parse(matplotlib.__version__) >= version.parse("3.5"):
+        matplotlib.colormaps.register(cmap, name=name)
+    else:
+        return mplcm.register_cmap(name, cmap)
+
 
 sdoaia94 = ct.aia_color_table(94*u.angstrom)
 sdoaia131 = ct.aia_color_table(131*u.angstrom)
@@ -52,9 +73,9 @@ goesrsuvi304 = ct.suvi_color_table(304*u.angstrom)
 # LASCO images. These are not the same as those used in SSWIDL.  This is
 # because the SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly
 # compressed and does not display the data well.
-soholasco2 = deepcopy(mplcm.get_cmap("gist_heat"))
+soholasco2 = deepcopy(_get_mpl_cmap("gist_heat"))
 soholasco2.name = 'SOHO LASCO C2'
-soholasco3 = deepcopy(mplcm.get_cmap("bone"))
+soholasco3 = deepcopy(_get_mpl_cmap("bone"))
 soholasco3.name = 'SOHO LASCO C3'
 
 # These are the SSWIDL color tables.
@@ -84,7 +105,7 @@ traceWL = ct.trace_color_table('WL')
 
 hmimag = ct.hmi_mag_color_table()
 
-kcor = deepcopy(mplcm.get_cmap("gist_gray"))
+kcor = deepcopy(_get_mpl_cmap("gist_gray"))
 kcor.name = 'MLSO KCor'
 
 rhessi = ct.rhessi_color_table()
@@ -161,7 +182,7 @@ cmlist = {
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
 for name, cmap in cmlist.items():
-    mplcm.register_cmap(name=name, cmap=cmap)
+    _register_cmap(name=name, cmap=cmap)
 
 
 def show_colormaps(search=None):
