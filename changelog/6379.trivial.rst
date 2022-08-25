@@ -1,0 +1,2 @@
+Fixed a colormap deprecation warning when importing the sunpy colormaps
+with Matplotlib 3.6.
