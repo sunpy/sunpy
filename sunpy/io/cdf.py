@@ -1,4 +1,5 @@
 import cdflib
+import numpy as np
 import pandas as pd
 from cdflib.epochs import CDFepoch
 
@@ -61,6 +62,7 @@ def read_cdf(fname):
 
         for var_key in sorted(var_keys):
             attrs = var_attrs[var_key]
+            # If this variable doesn't depend on this index, continue
             if attrs['DEPEND_0'] != index_key:
                 continue
 
@@ -70,6 +72,13 @@ def read_cdf(fname):
                 continue
 
             data = cdf.varget(var_key)
+
+            # Set fillval values to NaN
+            # It would be nice to properley mask these values to work with
+            # non-floating point (ie. int) dtypes, but this is not possible with pandas
+            if np.issubdtype(data.dtype, np.floating):
+                data[data == attrs['FILLVAL']] = np.nan
+
             # Get units
             if 'UNITS' in attrs:
                 unit_str = attrs['UNITS']
