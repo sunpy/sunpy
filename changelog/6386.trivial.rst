@@ -1,0 +1,1 @@
+CI is no longer run on commits when only a changelog is modified.
