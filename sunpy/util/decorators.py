@@ -10,6 +10,7 @@ from inspect import Parameter, signature
 from functools import wraps
 
 import astropy.units as u
+from astropy.nddata import NDData
 
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning, warn_deprecated
 
@@ -383,13 +384,10 @@ def check_arithmetic_compatibility(func):
     """
     @wraps(func)
     def inner(instance, value):
-        # Import here to avoid circular imports
-        from sunpy.map import GenericMap
-
         # This is explicit because it is expected that users will try to do this. This raises
         # a different error because it is expected that this type of operation will be supported
         # in future releases.
-        if isinstance(value, GenericMap):
+        if isinstance(value, NDData):
             return NotImplemented
         try:
             # We want to support operations between numbers and array-like objects. This includes
