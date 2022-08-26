@@ -7,6 +7,7 @@ API Reference
 .. toctree::
    :maxdepth: 2
 
+   sunpy
    coordinates/index
    data
    database
@@ -16,7 +17,6 @@ API Reference
    net
    physics
    sun
-   sunpy
    time
    timeseries
    util

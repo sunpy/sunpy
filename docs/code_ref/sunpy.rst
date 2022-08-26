@@ -1,4 +1,4 @@
-sunpy
-*****
+sunpy (`sunpy`)
+***************
 
 .. automodapi:: sunpy
