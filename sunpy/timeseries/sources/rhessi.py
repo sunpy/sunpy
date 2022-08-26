@@ -168,8 +168,6 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
                       color=color, label=item, **kwargs)
         axes.set_yscale("log")
         axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
         axes.legend()
         self._setup_x_axis(axes)
         return axes

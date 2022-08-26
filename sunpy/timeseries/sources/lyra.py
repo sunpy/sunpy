@@ -4,7 +4,6 @@ This module provies Proba-2 `~sunpy.timeseries.TimeSeries` source.
 import sys
 from collections import OrderedDict
 
-import matplotlib.pyplot as plt
 import pandas
 
 import astropy.units as u
@@ -86,12 +85,10 @@ class LYRATimeSeries(GenericTimeSeries):
             axes[i].plot(self._data[columns[i]],
                          label=columns[i])
             axes[i].legend(loc="upper right")
-            plt.xticks(rotation=30)
             if names < 3:
                 name = lyranames[names][columns[i]]
             else:
                 name = lyranames[0][columns[i]] + ' \n (' + lyranames[1][columns[i]] + ')'
-            axes[i].locator_params(axis='y', nbins=6)
             axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
         self._setup_x_axis(axes)
         return axes
@@ -123,12 +120,8 @@ class LYRATimeSeries(GenericTimeSeries):
         axes = self.plot(columns=columns, names=names, **kwargs)
         if title is None:
             title = "LYRA ({0:{1}})".format(self.to_dataframe().index[0], TIME_FORMAT)
-        axes[0].set_title(title)
-        fig = axes[-1].get_figure()
-        fig.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
-        fig = axes[0].get_figure()
-        fig.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
-        return fig
+            axes[0].set_title(title)
+        return axes[0].get_figure()
 
     @classmethod
     def _parse_file(cls, filepath):

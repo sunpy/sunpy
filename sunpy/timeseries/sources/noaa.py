@@ -105,8 +105,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
                       max(to_plot.dropna(how='all').index))
         axes.set_ylim(0)
         axes.set_ylabel(ylabel)
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
         axes.legend()
         self._setup_x_axis(axes)
         return axes
