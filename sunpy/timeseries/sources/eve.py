@@ -3,7 +3,6 @@ import codecs
 from os.path import basename
 from collections import OrderedDict
 
-import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame, to_datetime
 from pandas.io.parsers import read_csv
@@ -82,7 +81,6 @@ class ESPTimeSeries(GenericTimeSeries):
         for i, name in enumerate(self.to_dataframe()[columns]):
             axes[i].plot(self._data[name],
                          label=name)
-            plt.xticks(rotation=30)
             axes[i].set_ylabel(column_names[name])
             axes[i].legend(loc="upper right")
         axes[-1].set_xlim(self._data.index[0], self._data.index[-1])

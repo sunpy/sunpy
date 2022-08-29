@@ -1,0 +1,1 @@
+Removed custom tick label rotation from Lyra, EVE, and Norh timeseries sources, and grid drawing from NOAA and RHESSI sources.
