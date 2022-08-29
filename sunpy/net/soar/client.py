@@ -1,3 +1,6 @@
+import json
+import pathlib
+
 import astropy.table
 import astropy.units as u
 import requests
@@ -158,3 +161,17 @@ class SOARClient(BaseClient):
     def _attrs_module(cls):
         # Register SOAR specific attributes with Fido
         return 'soar', 'sunpy.net.soar.attrs'
+
+    @classmethod
+    def register_values(cls):
+        return cls.load_dataset_values()
+
+    @staticmethod
+    def load_dataset_values():
+        attrs_path = pathlib.Path(__file__).parent / 'data' / 'attrs.json'
+        with open(attrs_path, 'r') as attrs_file:
+            all_datasets = json.load(attrs_file)
+
+        # Convert from dict to list of tuples
+        all_datasets = [(id, desc) for id, desc in all_datasets.items()]
+        return {Product: all_datasets}
