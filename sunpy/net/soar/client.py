@@ -34,22 +34,16 @@ class SOARClient(BaseClient):
         return qrt
 
     @staticmethod
-    def _construct_url(query):
+    def _construct_payload(query):
         """
-        Construct search URL.
+        Construct search payload.
 
         Parameters
         ----------
-        query : list[str]
-            List of query items.
+        payload : dict[str]
+            Payload to send to the TAP server.
         """
-        base_url = ('http://soar.esac.esa.int/soar-sl-tap/tap/'
-                    'sync?REQUEST=doQuery&')
-        # Need to manually set the intervals based on a query
-        request_dict = {}
-        request_dict['LANG'] = 'ADQL'
-        request_dict['FORMAT'] = 'json'
-
+        # Construct ADQL query
         url_query = {}
         url_query['SELECT'] = '*'
         # Assume science data by deafult
@@ -60,14 +54,14 @@ class SOARClient(BaseClient):
                 url_query['FROM'] = 'v_ll_data_item'
 
         url_query['WHERE'] = '+AND+'.join(query)
-        request_dict['QUERY'] = '+'.join([f'{item}+{url_query[item]}' for
-                                          item in url_query])
+        adql_query = '+'.join([f'{item}+{url_query[item]}' for item in url_query])
 
-        request_str = ''
-        request_str = [f'{item}={request_dict[item]}' for item in request_dict]
-        request_str = '&'.join(request_str)
+        payload = {'REQUEST': 'doQuery',
+                   'LANG': 'ADQL',
+                   'FORMAT': 'json',
+                   'QUERY': adql_query}
 
-        return base_url + request_str
+        return payload
 
     @staticmethod
     def _do_search(query):
@@ -84,10 +78,13 @@ class SOARClient(BaseClient):
         astropy.table.QTable
             Query results.
         """
-        url = SOARClient._construct_url(query)
-        log.debug(f'Getting request from URL: {url}')
+        tap_endpoint = 'http://soar.esac.esa.int/soar-sl-tap/tap'
+        payload = SOARClient._construct_payload(query)
+        # Need to force requests to not form-encode the paramaters
+        payload = '&'.join([f'{key}={val}' for key, val in payload.items()])
         # Get request info
-        r = requests.get(url)
+        r = requests.get(f'{tap_endpoint}/sync', params=payload)
+        log.debug(f'Sent query: {r.url}')
         r.raise_for_status()
 
         # Do some list/dict wrangling
