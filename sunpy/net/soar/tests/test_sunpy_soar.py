@@ -96,3 +96,9 @@ def test_download_path(tmp_path):
     assert len(files) == 1
     for f in files:
         assert 'EUI' in f
+
+
+def test_registered_attrs():
+    attr_str = str(a.soar.Product)
+    # Check that at least one attr value is registered
+    assert 'epd_ept_asun_burst_ele_close' in attr_str
