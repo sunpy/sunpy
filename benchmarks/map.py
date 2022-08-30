@@ -41,6 +41,10 @@ class Rotate:
         aiamap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
         return aiamap
 
+    def setup(self, aiamap, method, order):
+        if method == 'opencv' and order not in {0, 1, 3}:
+            raise NotImplementedError
+
     def time_rotate(self, aiamap, method, order):
         aiamap.rotate(30*u.deg, method=method, order=order)
 
