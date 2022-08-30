@@ -11,13 +11,13 @@ class Creation:
     def setup(self, name):
         self.filename = getattr(sunpy.data.sample, name)
 
-    def time_create_map(self):
+    def time_create_map(self, name):
         sunpy.map.Map(self.filename)
 
-    def mem_create_map(self):
+    def mem_create_map(self, name):
         return sunpy.map.Map(self.filename)
 
-    def peakmem_create_map(self):
+    def peakmem_create_map(self, name):
         sunpy.map.Map(self.filename)
 
 
