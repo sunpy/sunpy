@@ -52,6 +52,14 @@ In order to make plotting a timeseries as source-independent as possible, we hav
 number of source-specific plot customisations in ``peek()`` and ``plot()`` methods. See the
 changelog for more details on what has changed.
 
+Updates to the documentation structure
+======================================
+The structure of the sunpy core documentation has been updated to distinguish between:
+
+- "how-to" examples that are each tailored towards accomplishing a single task.
+  These are in the pre-existing examples gallery.
+- Tutorials that are longer and give a step by step lesson in how to use a particular part of sunpy.
+
 Contributors to this Release
 ============================
 
