@@ -49,8 +49,11 @@ the `sunpy.visualization.drawing` module and renamed :func:`sunpy.visualization.
 Changes to timeseries plotting
 ==============================
 In order to make plotting a timeseries as source-independent as possible, we have removed a
-number of source-specific plot customisations in ``peek()`` and ``plot()`` methods. See the
-changelog for more details on what has changed.
+number of source-specific plot customisations in ``peek()`` and ``plot()`` methods.
+See the changelog for more details on what has changed.
+
+In order to harmonise different ``peek()`` and ``plot()`` signatures, all non-keyword arguments to these methods are deprecated.
+To avoid a warning pas all arguments with keywords (e.g. ``plot(title='my plot title')``) instead.
 
 ``parfive`` 2.0.0 release
 =========================
