@@ -4,17 +4,14 @@ Requesting cutouts of AIA images from the JSOC
 ===============================================
 
 This example shows how to request a cutout of a series of
-AIA images from the JSOC and animate the resulting sequence.
+AIA images from the JSOC.
 """
 # sphinx_gallery_thumbnail_number = 2
 import os
 
-import matplotlib.pyplot as plt
-
 import astropy.time
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-from astropy.visualization import ImageNormalize, SqrtStretch
 
 import sunpy.map
 from sunpy.net import Fido
@@ -34,32 +31,16 @@ files = Fido.fetch(query)
 amap = sunpy.map.Map(files)
 
 #####################################################
-# Next, we will create a submap from this image. We will
-# crop the field of view to active region NOAA 11575.
-
-cutouts = amap.submap(
-    SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=amap.coordinate_frame),
-    top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=amap.coordinate_frame),
-)
-plt.figure()
-cutouts.plot()
-
-plt.show()
+# Next, we will use this map to definte the top right and bottom
+# left coordinates we want for the submap.
+bottom_left = SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=amap.coordinate_frame)
+top_right = SkyCoord(150*u.arcsec, 375*u.arcsec, frame=amap.coordinate_frame)
 
 #####################################################
-# We want to watch the evolution of this active region
-# in time, but we do not want to download the full frame
-# image at each timestep. Instead, we will use our submap
-# to create a cutout request from the JSOC.
-#
-# First, construct the cutout from the submap
+# Now construct the cutout from the coordinates above
 # above using the `~sunpy.net.jsoc.attrs.Cutout` attribute.
 
-cutout = a.jsoc.Cutout(
-    cutouts.bottom_left_coord,
-    top_right=cutouts.top_right_coord,
-    tracking=True
-)
+cutout = a.jsoc.Cutout(bottom_left, top_right=top_right, tracking=True)
 
 #####################################################
 # Exporting data from the JSOC requires registering your
@@ -78,37 +59,16 @@ jsoc_email = os.environ["JSOC_EMAIL"]
 # We request one image every 2 hours.
 
 query = Fido.search(
-    a.Time(cutouts.date - 6*u.h, cutouts.date + 6*u.h),
-    a.Wavelength(cutouts.wavelength),
+    a.Time(amap.date - 6*u.h, amap.date + 6*u.h),
+    a.Wavelength(amap.wavelength),
     a.Sample(2*u.h),
     a.jsoc.Series.aia_lev1_euv_12s,
     a.jsoc.Notify(jsoc_email),
     a.jsoc.Segment.image,
     cutout,
 )
+print(query)
 
 #####################################################
-# Submit the export request and download the data.
-
-files = Fido.fetch(query)
-files.sort()
-
-#####################################################
-# Now that we've downloaded the files, we can create
-# a `~sunpy.map.MapSequence` from them.
-
-sequence = sunpy.map.Map(files, sequence=True)
-
-#####################################################
-# Finally, we can construct an animation in time from
-# our stack of cutouts and interactively flip through
-# each image in our sequence. We first adjust the plot
-# settings on each image to ensure the colorbar is the
-# same at each time step.
-
-for each_map in sequence:
-    each_map.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
-plt.figure()
-ani = sequence.plot()
-
-plt.show()
+# To download use the following code:
+# ``files = Fido.fetch(query)``

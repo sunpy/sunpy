@@ -1,9 +1,10 @@
 """
-===========================================
-Downloading and plotting an HMI magnetogram
-===========================================
+==============================================
+Rotating HMI maps so they're not 'upside-down'
+==============================================
 
-This example shows how to download a HMI magnetogram data with Fido and make a plot.
+This example shows how to rotate a HMI magnetogram, so when you plot it
+it appears with solar North puting up, and not upside down!
 """
 import matplotlib.pyplot as plt
 
@@ -12,28 +13,15 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###############################################################################
-# To download the required data, we use `sunpy.net.Fido`, a downloader client,
-# to query the Virtual Solar Observatory to acquire HMI data.
+# To download the required data, we use `sunpy.net.Fido`.
 
 result = Fido.search(a.Time('2020/01/20 00:00:00', '2020/01/20 00:01:00'),
                      a.Instrument.hmi, a.Physobs.los_magnetic_field)
 
 ###############################################################################
-# Now we can see what results we obtained from our search.
+# Now we can see what results we obtained from our search, and download them.
 
 print(result)
-
-###############################################################################
-# We can look at the values of specific keywords from this result.
-
-jsoc_result = result[0]
-print(jsoc_result.show('T_REC', 'CROTA2'))
-
-###############################################################################
-# The following shows how to download the results. If we
-# don't provide a path it will download the file into the sunpy data directory.
-# The output provides the path of the downloaded files.
-
 downloaded_file = Fido.fetch(result)
 print(downloaded_file)
 

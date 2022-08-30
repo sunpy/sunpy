@@ -1,7 +1,7 @@
 """
-====================================
-Querying Metadata clients using Fido
-====================================
+=========================
+Querying Metadata clients
+=========================
 
 This example shows how to search and retrieve metadata using `~sunpy.net.Fido`.
 Fido supports searching metadata from services like `~sunpy.net.hek.HEKClient`,

@@ -1,8 +1,6 @@
 """
 This module provides the following sample data files.  These files are
-downloaded when this module is imported for the first time.  See
-:ref:`sphx_glr_generated_gallery_acquiring_data_2011_06_07_sampledata_overview.py`
-for plots of some of these files.
+downloaded when this module is imported for the first time.
 
 .. list-table::
    :widths: auto
