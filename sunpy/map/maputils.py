@@ -404,16 +404,13 @@ def contains_coordinate(smap, coordinates):
         returns a boolean arrary.
     """
     # Dimensions of smap
-    ys, xs = smap.wcs.array_shape * u.pix
+    ys, xs = smap.wcs.array_shape
     # Converting coordinates to pixels
     xc, yc = smap.wcs.world_to_pixel(coordinates)
-    xc = xc * u.pix
-    yc = yc * u.pix
-    point5pix = 0.5 * u.pix
-    return ((xc >= -point5pix) &
-            (xc <= xs - point5pix) &
-            (yc >= -point5pix) &
-            (yc <= ys - point5pix))
+    return ((xc >= -0.5) &
+            (xc <= xs - 0.5) &
+            (yc >= -0.5) &
+            (yc <= ys - 0.5))
 
 
 def _bresenham(*, x1, y1, x2, y2):
