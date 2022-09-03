@@ -98,7 +98,7 @@ def test_reproject_to_hpc_exact(aia171_test_map, hpc_header):
 
 @figure_test
 def test_reproject_to_hpc_adaptive(aia171_test_map, hpc_header):
-    aia171_test_map.reproject_to(hpc_header, algorithm='adaptive').plot()
+    aia171_test_map.reproject_to(hpc_header, algorithm='adaptive', kernel='Hann', boundary_mode='strict').plot()
 
 
 def test_return_footprint(aia171_test_map, hpc_header):
