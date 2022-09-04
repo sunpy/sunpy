@@ -1,0 +1,1 @@
+When reading CDF files, any columns with a floating point data type now have their masked values converted to NaN.
