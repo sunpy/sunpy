@@ -3,7 +3,7 @@
 ************************
 What's New in SunPy 4.1?
 ************************
-The SunPy project is pleased to announce the 4.1 release of the sunpy core package.
+The SunPy project is pleased to announce the 4.1 release of the ``sunpy`` core package.
 
 On this page, you can read about some of the big changes in this release.
 
@@ -11,11 +11,11 @@ On this page, you can read about some of the big changes in this release.
     :local:
     :depth: 1
 
-sunpy 4.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+``sunpy`` 4.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
-This release of sunpy contains x commits in x merged pull requests closing x issues from x people, x of which are first-time contributors to sunpy.
+This release of ``sunpy`` contains x commits in x merged pull requests closing x issues from x people, x of which are first-time contributors to ``sunpy``.
 
 * x commits have been added since 4.0
 * x issues have been closed since 4.0
@@ -51,6 +51,21 @@ Changes to timeseries plotting
 In order to make plotting a timeseries as source-independent as possible, we have removed a
 number of source-specific plot customisations in ``peek()`` and ``plot()`` methods. See the
 changelog for more details on what has changed.
+
+``parfive`` 2.0.0 release
+=========================
+A recent update (2.0.0) to ``parfive`` adds several features and we would encourage users to upgrade to it.
+
+This comes with major usability improvements: removal of incomplete files and major error reporting upgrades.
+We believe it will have an impact on how people experience downloading files.
+
+To upgrade you can use pip::
+
+    pip install -U parfive
+
+or conda::
+
+    conda update parfive
 
 Contributors to this Release
 ============================
