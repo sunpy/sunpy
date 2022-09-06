@@ -9,6 +9,7 @@ The example uses <packages> to <do something> and <other package> to <do other
 thing>. Include links to referenced packages like this: `sunpy.map` to
 show the sunpy.map or like this `~sunpy.map`to show just 'map'.
 """
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -44,9 +45,9 @@ plt.ylabel('$y$')
 # time to introduce the next code block generates 2 separate figures.
 
 plt.figure()
-plt.imshow(z, cmap=plt.cm.get_cmap('hot'))
+plt.imshow(z, cmap=matplotlib.colormaps['hot'])
 plt.figure()
-plt.imshow(z, cmap=plt.cm.get_cmap('Spectral'), interpolation='none')
+plt.imshow(z, cmap=matplotlib.colormaps['Spectral'], interpolation='none')
 
 ##########################################################################
 # There's some subtle differences between rendered html rendered comment
