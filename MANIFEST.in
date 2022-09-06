@@ -5,11 +5,11 @@ exclude .gitignore
 exclude .mailmap
 exclude .pre-commit-config.yaml
 exclude .readthedocs.yaml
+exclude .rtd-environment.yml
 exclude .test_package_pins.txt
 exclude .zenodo.json
 exclude asv.conf.json
 exclude CITATION.cff
-exclude readthedocs.yml
 
 prune .circleci
 prune .github
