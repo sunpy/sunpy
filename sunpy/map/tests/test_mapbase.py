@@ -34,6 +34,7 @@ from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
+from sunpy.visualization.colormaps.cm import _get_mpl_cmap
 from .conftest import make_simple_map
 from .strategies import matrix_meta
 
@@ -261,7 +262,7 @@ def test_units(generic_map):
 
 
 def test_cmap(generic_map):
-    assert generic_map.cmap == plt.get_cmap('gray')
+    assert generic_map.cmap == _get_mpl_cmap('gray')
 
 
 def test_coordinate_frame(aia171_test_map):

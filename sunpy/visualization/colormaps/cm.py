@@ -180,7 +180,7 @@ cmlist = {
     'solar orbiterhri_lya1216': solohri_lya1216,
 }
 
-# Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
+# Register the colormaps with matplotlib so matplotlib.colormaps['sdoaia171'] works
 for name, cmap in cmlist.items():
     _register_cmap(name=name, cmap=cmap)
 

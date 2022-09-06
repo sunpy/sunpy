@@ -5,6 +5,7 @@ Editing the colormap and normalization of a Map
 
 How to edit the display of a map.
 """
+import matplotlib
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 
@@ -20,9 +21,9 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 # All plot settings for a map are stored in the ``plot_settings`` attribute.
 # How a Map is displayed is determined by its colormap, which sets the colors
 # , and the normalization, which sets how data values are translated to colors.
-# Lets replace the colormap and normalization.
+# Let's replace the colormap and normalization.
 
-aiamap.plot_settings['cmap'] = plt.get_cmap('Greys_r')
+aiamap.plot_settings['cmap'] = matplotlib.colormaps['Greys_r']
 aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.max())
 
 ###############################################################################
