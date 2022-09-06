@@ -5,6 +5,7 @@ Using the sunpy Colormaps with matplotlib
 
 How you can use the sunpy colormaps with matplotlib.
 """
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -14,7 +15,7 @@ import sunpy.visualization.colormaps as cm
 # When the sunpy colormaps are imported, the sunpy colormaps are registered
 # with matplotlib. It is now possible to access the colormaps with the following command.
 
-sdoaia171 = plt.get_cmap('sdoaia171')
+sdoaia171 = matplotlib.colormaps['sdoaia171']
 
 ###############################################################################
 # You can get the list of all sunpy colormaps with:
