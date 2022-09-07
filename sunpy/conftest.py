@@ -41,7 +41,8 @@ console_logger.setLevel('INFO')
 
 @pytest.fixture
 def jsoc_test_email():
-    return "nabil.freij@gmail.com"
+    # See https://github.com/sunpy/sunpy/wiki/Home:-JSOC
+    return "jsoc@sunpy.org"
 
 
 @pytest.fixture(scope='session', autouse=True)
