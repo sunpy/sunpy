@@ -6,29 +6,28 @@ Setting the correct position for SOHO in a LASCO C3 Map
 How to get the correct location of SOHO using JPL HORIZONS
 and update the header.
 
-This requires the intallation of the
+This requires the installation of the
 `astroquery <https://astroquery.readthedocs.io/en/latest/>`__
 package and an internet connection.
-`astroquery <https://astroquery.readthedocs.io/en/latest/>`__ can be installed ontop of
-the existing sunpy conda environment: ``conda install -c astropy astroquery``
+`astroquery <https://astroquery.readthedocs.io/en/latest/>`__ can be installed on-top of
+the existing ``sunpy`` conda environment: ``conda install -c astropy astroquery``
 """
 # sphinx_gallery_thumbnail_number = 2
 
+import hvpy
 import matplotlib.pyplot as plt
 import numpy as np
 
 import sunpy.map
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_horizons_coord
-from sunpy.net import helioviewer
-
-hv = helioviewer.HelioviewerClient()
+from sunpy.time import parse_time
 
 ###############################################################################
 # Let's download a SOHO/LASCO C3 image from Helioviewer which provided
 # pre-processed images and load it into a Map.
 
-f = hv.download_jp2('2000/02/27 07:42', observatory='SOHO', instrument='LASCO', detector='C3')
-lasco = sunpy.map.Map(f)
+lasco_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2000/02/27 07:42').datetime, hvpy.DataSource.LASCO_C3.value), "LASCO_C3.JPEG2000")
+lasco = sunpy.map.Map(lasco_file)
 
 ###############################################################################
 # A user warning let's you know that there is missing metadata for the observer

@@ -15,6 +15,7 @@ import sunpy
 import sunpy.util.parfive_helpers as parfive
 from sunpy import log
 from sunpy.time import parse_time
+from sunpy.util.decorators import deprecated
 from sunpy.util.util import partial_key_match
 from sunpy.util.xml import xml_to_dict
 
@@ -38,6 +39,7 @@ def check_connection(url):
     return None
 
 
+@deprecated(since="4.1", alternative="hvpy - Helioviewer API wrapper")
 class HelioviewerClient:
     """Helioviewer.org Client"""
 
@@ -138,9 +140,9 @@ class HelioviewerClient:
         Examples
         --------
         >>> from sunpy.net import helioviewer
-        >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> metadata = client.get_closest_image('2012/01/01', source_id=11)  # doctest: +REMOTE_DATA
-        >>> print(metadata['date'])  # doctest: +REMOTE_DATA
+        >>> client = helioviewer.HelioviewerClient()  # doctest: +SKIP
+        >>> metadata = client.get_closest_image('2012/01/01', source_id=11)  # doctest: +SKIP
+        >>> print(metadata['date'])  # doctest: +SKIP
         2012-01-01T00:00:08.000
         """
         if source_id is None:
@@ -205,12 +207,12 @@ class HelioviewerClient:
         --------
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
-        >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
+        >>> hv = helioviewer.HelioviewerClient()  # doctest: +SKIP
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO',
-        ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
-        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', measurement='continuum')  # doctest: +REMOTE_DATA
-        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', instrument='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
-        >>> aia = sunpy.map.Map(filepath)  # doctest: +REMOTE_DATA
+        ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +SKIP
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', measurement='continuum')  # doctest: +SKIP
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', instrument='HMI', measurement='continuum')  # doctest: +SKIP
+        >>> aia = sunpy.map.Map(filepath)  # doctest: +SKIP
         >>> aia.peek()  # doctest: +SKIP
         """
         if source_id is None:
@@ -262,13 +264,13 @@ class HelioviewerClient:
         Examples
         --------
         >>> from sunpy.net import helioviewer
-        >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
+        >>> hv = helioviewer.HelioviewerClient()  # doctest: +SKIP
         >>> header = hv.get_jp2_header('2012/07/03', observatory='SDO',
-        ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
+        ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +SKIP
         >>> # The key 'fits' can be used to get the fits header information
-        >>> fits_header = header['fits']  # doctest: +REMOTE_DATA
+        >>> fits_header = header['fits']  # doctest: +SKIP
         >>> # The keys 'helioviewer' can be used to extract the helioviewer specific metadata.
-        >>> helioviewer_meta_data = header['helioviewer']  # doctest: +REMOTE_DATA
+        >>> helioviewer_meta_data = header['helioviewer']  # doctest: +SKIP
         """
         if jp2_id is None:
             jp2_id = self.get_closest_image(
@@ -395,13 +397,13 @@ class HelioviewerClient:
         Examples
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
-        >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
+        >>> hv = HelioviewerClient()  # doctest: +SKIP
         >>> file = hv.download_png('2012/07/16 10:08:00', 2.4,
         ...                        "[SDO,AIA,AIA,171,1,100]",
-        ...                        x0=0, y0=0, width=1024, height=1024)   # doctest: +REMOTE_DATA
+        ...                        x0=0, y0=0, width=1024, height=1024)   # doctest: +SKIP
         >>> file = hv.download_png('2012/07/16 10:08:00', 4.8,
         ...                        "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]",
-        ...                        x1=-2800, x2=2800, y1=-2800, y2=2800)   # doctest: +REMOTE_DATA
+        ...                        x1=-2800, x2=2800, y1=-2800, y2=2800)   # doctest: +SKIP
         """
         params = {
             "action": "takeScreenshot",

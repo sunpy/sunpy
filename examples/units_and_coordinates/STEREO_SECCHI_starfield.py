@@ -15,6 +15,7 @@ This requires the installation of the `astroquery <https://astroquery.readthedoc
 package, which can be installed on top of the existing sunpy conda
 environment: ``conda install -c astropy astroquery`` and an active internet connection.
 """
+import hvpy
 import matplotlib.pyplot as plt
 from astroquery.vizier import Vizier
 
@@ -24,16 +25,15 @@ from astropy.time import Time
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.net import helioviewer
+from sunpy.time import parse_time
 
 ###############################################################################
 # Let's download a STEREO-A SECCHI COR2 image from Helioviewer which provide
 # pre-processed images and load it into a Map.
+# To get data from Helioviewer, we will use their offical Python binding, ``hvpy``.
 
-hv = helioviewer.HelioviewerClient()
-f = hv.download_jp2('2014/05/15 07:54', observatory='STEREO_A',
-                    instrument='SECCHI', detector='COR2')
-cor2 = sunpy.map.Map(f)
+cor2_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2014/05/15 07:54').datetime, hvpy.DataSource.COR2_A.value), "COR2.JPEG2000")
+cor2 = sunpy.map.Map(cor2_file)
 
 ###############################################################################
 # To efficiently search the star field, we need to know what stars are near the

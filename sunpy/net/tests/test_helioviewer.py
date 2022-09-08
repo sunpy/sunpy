@@ -12,6 +12,8 @@ import sunpy.map
 from sunpy.net.helioviewer import HelioviewerClient
 from sunpy.tests.helpers import figure_test, skip_glymur
 
+pytestmark = pytest.mark.filterwarnings('ignore:The HelioviewerClient class is deprecated')
+
 
 @pytest.fixture(scope="function")
 def client():

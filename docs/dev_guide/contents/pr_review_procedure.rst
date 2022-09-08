@@ -136,7 +136,6 @@ For example:
     SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_jp2.py:21: Glymur can not be imported.
     SKIPPED [1] .tox\py37\lib\site-packages\sunpy\io\tests\test_jp2.py:31: Glymur can not be imported.
     SKIPPED [1] .tox\py37\lib\site-packages\sunpy\net\tests\test_fido.py:298: Windows.
-    SKIPPED [1] .tox\py37\lib\site-packages\sunpy\net\tests\test_helioviewer.py:90: Glymur can not be imported.
     FAILED ..\..\.tox\py37\lib\site-packages\sunpy\timeseries\sources\noaa.py::sunpy.timeseries.sources.noaa.NOAAGoesSXRTimeSeries
 
 If you want to find the full test output, you can search the tab for the name of the test out of the ~3 results, one will be that output.
