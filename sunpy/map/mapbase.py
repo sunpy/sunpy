@@ -2643,7 +2643,7 @@ class GenericMap(NDData):
 
         return axes
 
-    def reproject_to(self, target_wcs, algorithm='interpolation', return_footprint=False,
+    def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
