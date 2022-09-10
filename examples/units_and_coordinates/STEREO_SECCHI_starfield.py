@@ -15,7 +15,6 @@ This requires the installation of the `astroquery <https://astroquery.readthedoc
 package, which can be installed on top of the existing sunpy conda
 environment: ``conda install -c astropy astroquery`` and an active internet connection.
 """
-import hvpy
 import matplotlib.pyplot as plt
 from astroquery.vizier import Vizier
 
@@ -25,22 +24,22 @@ from astropy.time import Time
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.time import parse_time
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###############################################################################
-# Let's download a STEREO-A SECCHI COR2 image from Helioviewer which provide
-# pre-processed images and load it into a Map.
-# To get data from Helioviewer, we will use their offical Python binding, ``hvpy``.
+# Let's download a STEREO-A SECCHI COR2 image and load it into a Map.
 
-cor2_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2014/05/15 07:54').datetime, hvpy.DataSource.COR2_A.value), "COR2.JPEG2000")
-cor2 = sunpy.map.Map(cor2_file)
+query = Fido.search(a.Time("2014-05-15 07:54", "2014-05-15 07:55", "2014-05-15 07:54:26"), a.Instrument.secchi)
+cor2_file = Fido.fetch(query)
+cor2_map = sunpy.map.Map(cor2_file)
 
 ###############################################################################
 # To efficiently search the star field, we need to know what stars are near the
 # Sun as observed by STEREO. We need the vector that points from STEREO to the Sun.
 # The location of STEREO in HCRS provides the Sun-to-STEREO vector.
 
-sun_to_stereo = cor2.observer_coordinate.transform_to('hcrs')
+sun_to_stereo = cor2_map.observer_coordinate.transform_to('hcrs')
 
 ###############################################################################
 # We next reflect the vector to get our search vector which points from STEREO
@@ -50,7 +49,7 @@ stereo_to_sun = SkyCoord(-sun_to_stereo.spherical, obstime=sun_to_stereo.obstime
 
 ###############################################################################
 # Let's look up bright stars using the Vizier search capability provided by
-# astroquery.
+# ``astroquery``.
 # We will search the GAIA2 star catalog for stars with magnitude
 # brighter than 7.
 
@@ -64,8 +63,8 @@ result = vv.query_region(stereo_to_sun, radius=4 * u.deg, catalog='I/345/gaia2')
 print(len(result[0]))
 
 ###############################################################################
-# Now we load all stars into an array coordinate.  The reference epoch for the
-# star positions is J2015.5, # so we update these positions to the date of the
+# Now we load all stars into an array coordinate. The reference epoch for the
+# star positions is J2015.5,so we update these positions to the date of the
 # COR2 observation using :meth:`astropy.coordinates.SkyCoord.apply_space_motion`.
 
 tbl_crds = SkyCoord(ra=result[0]['RA_ICRS'],
@@ -76,27 +75,27 @@ tbl_crds = SkyCoord(ra=result[0]['RA_ICRS'],
                     radial_velocity=result[0]['RV'],
                     frame='icrs',
                     obstime=Time(result[0]['Epoch'], format='jyear'))
-tbl_crds = tbl_crds.apply_space_motion(new_obstime=cor2.date)
+tbl_crds = tbl_crds.apply_space_motion(new_obstime=cor2_map.date)
 
 ###############################################################################
 # One of the bright features is actually Mars, so let's also get that coordinate.
 
-mars = get_body_heliographic_stonyhurst('mars', cor2.date, observer=cor2.observer_coordinate)
+mars = get_body_heliographic_stonyhurst('mars', cor2_map.date, observer=cor2_map.observer_coordinate)
 
 ###############################################################################
-# Let's plot the results.  The coordinates will be transformed automatically
+# Let's plot the results. The coordinates will be transformed automatically
 # when plotted using :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord`.
 
 fig = plt.figure()
-ax = fig.add_subplot(projection=cor2)
+ax = fig.add_subplot(projection=cor2_map)
 
 # Let's tweak the axis to show in degrees instead of arcsec
 lon, lat = ax.coords
 lon.set_major_formatter('d.dd')
 lat.set_major_formatter('d.dd')
 
-cor2.plot(axes=ax, vmin=0, vmax=600)
-cor2.draw_limb(axes=ax)
+cor2_map.plot(axes=ax, vmin=0, vmax=600)
+cor2_map.draw_limb(axes=ax)
 
 # Plot the position of Mars
 ax.plot_coord(mars, 's', color='white', fillstyle='none', markersize=12, label='Mars')

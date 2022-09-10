@@ -39,7 +39,7 @@ def check_connection(url):
     return None
 
 
-@deprecated(since="4.1", alternative="hvpy - Helioviewer API wrapper")
+@deprecated(since="4.1", alternative="hvpy - https://hvpy.readthedocs.io/en/stable")
 class HelioviewerClient:
     """Helioviewer.org Client"""
 
