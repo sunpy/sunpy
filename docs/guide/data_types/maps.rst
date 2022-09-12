@@ -4,7 +4,8 @@ Map Guide
 
 Map objects in **sunpy** are two-dimensional data associated with a coordinate system.
 This class offers many advantages over using packages such as `astropy.io.fits` to open 2D solar data in Python.
-**sunpy** Maps recognize data from 19 sources (see :doc:`/code_ref/map` for a complete list) and can provide instrument-specific information when plotting and even correct or add metadata when it is missing from the original file.
+**sunpy** Maps be used with any image with two spatial axes that has FITS standard compliant metadata.
+There are also 19 sources (see :doc:`/code_ref/map` for a complete list) that provide instrument-specific information when plotting and in some cases interpret missing metadata when it is missing from the original file.
 
 Part of the philosophy of the Map object is to provide most of the basic functionality that a scientist would want.
 Therefore, a Map also contains a number of methods such as resizing or grabbing a subview.
@@ -90,7 +91,7 @@ To get a quick look at your Map simply type:
 
 This will show a representation of the data as well as some of its associated attributes.
 Typing the above command in a Jupyter Notebook will show a rich HTML view of the table along with two plots of your data.
-The HTML view can also be accessed using the :func:`~sunpy.map.GenericMap.quicklook` function, which will open the view in your default browser.
+The HTML view can also be accessed using the :func:`~sunpy.map.GenericMap.quicklook` method, which will open the view in your default browser.
 
 A number of other attributes are also available.
 For example, the `~sunpy.map.GenericMap.date`, `~sunpy.map.GenericMap.exposure_time`, `~sunpy.map.GenericMap.center` and others (see `~sunpy.map.GenericMap`).
@@ -126,7 +127,7 @@ To see if the metadata of a Map source has been modified, see :ref:`sphx_glr_gen
 ===========
 
 The data in a Map object is accessible through the `~sunpy.map.GenericMap.data` attribute.
-The data is implemented as a NumPy `~numpy.ndarray`.
+The data is stored as a NumPy `~numpy.ndarray`.
 For example, to get the 0th element in the array:
 
 .. code-block:: python
@@ -157,7 +158,7 @@ You can store the data of a `~sunpy.map.GenericMap` object in a separate `~numpy
     >>> var = my_map.data  # doctest: +REMOTE_DATA
     >>> var = my_map.data.copy()  # doctest: +REMOTE_DATA
 
-To create a complete copy of a Map object that is entirely independent of the original, use the built-in `copy.deepcopy` method:
+To create a complete copy of a Map object that is entirely independent of the original, use the built-in `copy.deepcopy` function:
 
 .. code-block:: python
 
@@ -198,8 +199,8 @@ To create a plot just type:
 
     >>> my_map.peek()   # doctest: +SKIP
 
-This will open a matplotlib plot on your screen.
-In addition, it is possible to grab the matplotlib axes object by using the `~sunpy.map.GenericMap.plot()` command.
+This will open a Matplotlib plot on your screen.
+In addition, it is possible to grab the Matplotlib Axes object by using the `~sunpy.map.GenericMap.plot()` command.
 This makes it possible to use the SunPy plot as the foundation for a more complicated figure.
 For more information about this and some examples see :ref:`plotting`.
 Check out the following foundational examples in the Example Gallery for plotting Maps:
@@ -232,8 +233,8 @@ For example, the following plot changes the default colormap to use an inverse G
     plt.colorbar()
     plt.show()
 
-You can view or make changes to the default settings through the ``sunpy.map.GenericMap.plot_settings`` dictionary.
-See :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py` for an example of this method.
+You can also view or make changes to the default settings through the ``sunpy.map.GenericMap.plot_settings`` dictionary.
+See :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py` for an example of this workflow for changing plot settings.
 
 
 4.2 Colormaps and Normalization
@@ -256,7 +257,7 @@ To see what colormaps are available:
     'goes-rsuvi284', 'goes-rsuvi304', 'sdoaia94', 'sdoaia131', 'sdoaia171',
     ...
 
-The **sunpy** colormaps are registered with matplotlib so you can grab them like you would any other colormap:
+The **sunpy** colormaps are registered with Matplotlib so you can grab them like you would any other colormap:
 
 .. code-block:: python
 
@@ -431,7 +432,7 @@ It is often useful to return the image data in a `~sunpy.map.MapSequence` as a s
     >>> mc_array = mc.as_array()   # doctest: +REMOTE_DATA
 
 Note that an array is returned only if all the maps have the same shape.
-If this is not true, a `ValueError` is returned.
+If this is not true, a `ValueError` is raised.
 If all the maps have nx pixels in the x-direction, and ny pixels in the y-direction, and there are n maps in the MapSequence, the returned `~numpy.ndarray` array has shape (ny, nx, n).
 The data of the first map in the `~sunpy.map.MapSequence` appears in the `~numpy.ndarray` in position ``[:, :, 0]``, the data of second map in position ``[:, :, 1]``, and so on.
 The order of maps in the `~sunpy.map.MapSequence` is reproduced in the returned `~numpy.ndarray`.
