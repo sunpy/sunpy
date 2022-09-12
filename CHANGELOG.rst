@@ -1,3 +1,14 @@
+4.0.5 (2022-09-12)
+==================
+
+Internal Changes
+----------------
+
+- Switched to using the standard matrix-multiplication operator (available in Python 3.5+) instead of a custom function. (`#6376 <https://github.com/sunpy/sunpy/pull/6376>`__)
+- Fixed a colormap deprecation warning when importing the sunpy colormaps
+  with Matplotlib 3.6. (`#6379 <https://github.com/sunpy/sunpy/pull/6379>`__)
+
+
 4.0.4 (2022-08-05)
 ==================
 
