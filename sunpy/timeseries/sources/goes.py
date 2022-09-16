@@ -235,8 +235,12 @@ class XRSTimeSeries(GenericTimeSeries):
             flux_name_b = flux_name_a.replace("a", "b")
             xrsa = np.array(h5nc[flux_name_a])
             xrsb = np.array(h5nc[flux_name_b])
-            xrsa_quality = np.array(h5nc[flux_name_a.replace("flux", "flags")])
-            xrsb_quality = np.array(h5nc[flux_name_b.replace("flux", "flags")])
+            flux_flag_a = h5nc.variables.get("a_flags") or h5nc.variables.get("xrsa_flags") or h5nc.variables.get("xrsa_flag")
+            flux_flag_b = h5nc.variables.get("b_flags") or h5nc.variables.get("xrsb_flags") or h5nc.variables.get("xrsb_flag")
+            flux_flag_a = flux_flag_a.name
+            flux_flag_b = flux_flag_b.name
+            xrsa_quality = np.array(h5nc[flux_flag_a])
+            xrsb_quality = np.array(h5nc[flux_flag_b])
             start_time_str = h5nc["time"].attrs["units"]
             # h5netcdf < 0.14 return bytes instead of a str
             if isinstance(start_time_str, bytes):
