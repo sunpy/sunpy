@@ -1,1 +1,1 @@
-Fix a bug in loading XRSTimeSeries due to unsupported quality flag column names.
+Fix a bug in loading `.XRSTimeSeries` due to unsupported quality flag column names.
