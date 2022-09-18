@@ -191,9 +191,9 @@ For example:
 
 .. code-block:: python
 
-    >>> values = my_timeseries.quantity('xrsa') * 2
-    >>> my_timeseries = my_timeseries.add_column('xrsa*2', values)
-    >>> my_timeseries.columns
+    >>> values = my_timeseries.quantity('xrsa') * 2 # doctest: +REMOTE_DATA
+    >>> my_timeseries = my_timeseries.add_column('xrsa*2', values) # doctest: +REMOTE_DATA
+    >>> my_timeseries.columns # doctest: +REMOTE_DATA
     ['xrsa', 'xrsb', 'xrsa*2']
 
 Adding a column is not done in place, but instead returns a new TimeSeries with the new column added.
@@ -211,7 +211,7 @@ For example, to trim our GOES data into a period of interest use:
 
     >>> from sunpy.time import TimeRange
     >>> tr = TimeRange('2012-06-01 05:00', '2012-06-01 06:30')
-    >>> my_timeseries_trunc = my_timeseries.truncate(tr)
+    >>> my_timeseries_trunc = my_timeseries.truncate(tr) # doctest: +REMOTE_DATA
 
 This takes a number of different arguments, such as the start and end dates (as datetime or string objects) or a `~sunpy.time.TimeRange` as used above.
 Note that the truncated TimeSeries will have a truncated `~sunpy.timeseries.TimeSeriesMetaData` object, which may include dropping metadata entries for data totally cut out from the TimeSeries.
@@ -219,7 +219,7 @@ If you want to truncate using slice-like values you can, for example taking ever
 
 .. code-block:: python
 
-    >>> my_timeseries_trunc = my_timeseries.truncate(0, 100000, 2)
+    >>> my_timeseries_trunc = my_timeseries.truncate(0, 100000, 2) # doctest: +REMOTE_DATA
 
 4.3 More complicated timeseries operations
 ------------------------------------------
@@ -229,7 +229,7 @@ As an example to downsample you can do:
 
 .. code-block:: python
 
-    >>> downsampled_dataframe = my_timeseries_trunc.to_dataframe().resample('10T').mean()
+    >>> downsampled_dataframe = my_timeseries_trunc.to_dataframe().resample('10T').mean() # doctest: +REMOTE_DATA
 
 Here ``10T`` means sample every 10 minutes and 'mean' is the method used to combine the data in each 10 minute bin.
 See the `pandas` documentation for more details on other functionality they offer for timeseries analysis.
@@ -258,15 +258,15 @@ To do this you can still use the `~sunpy.timeseries.GenericTimeSeries.concatenat
 
 .. code-block:: python
 
-    >>> eve_ts = ts.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='eve')
-    >>> goes_ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
-    >>> concatenated_timeseries = goes_ts.concatenate(eve_ts)
+    >>> eve_ts = ts.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='eve') # doctest: +REMOTE_DATA
+    >>> goes_ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES) # doctest: +REMOTE_DATA
+    >>> concatenated_timeseries = goes_ts.concatenate(eve_ts) # doctest: +REMOTE_DATA
 
 Note that the more complex `~sunpy.timeseries.TimeSeriesMetaData` object now has 2 entries and shows details on both:
 
 .. code-block:: python
 
-    >>> concatenated_timeseries.meta
+    >>> concatenated_timeseries.meta # doctest: +REMOTE_DATA
         |-------------------------------------------------------------------------------------------------|
     |TimeRange                  | Columns         | Meta                                              |
     |-------------------------------------------------------------------------------------------------|
@@ -307,14 +307,14 @@ For example:
 
 .. code-block:: python
 
-    >>> table = my_timeseries_trunc.to_table()
+    >>> table = my_timeseries_trunc.to_table() # doctest: +REMOTE_DATA
 
 Note that this `~astropy.table.Table` will contain a mixin column for containing the Astropy `~astropy.time.Time` object representing the index, it will also add the relevant units to the columns.
 One of the most useful reasons for doing this is that Astropy `~sunpy.timeseries.GenericTimeSeries.to_table` objects have some very nice options for viewing the data, including the basic console view:
 
 .. code-block:: python
 
-    >>> table
+    >>> table # doctest: +REMOTE_DATA
     <Table length=21089>
                  date               xrsa     xrsb     xrsa*2
                                    W / m2   W / m2    W / m2
@@ -444,13 +444,13 @@ The metadata can be accessed by:
 
 .. code-block:: python
 
-    >>> meta = my_timeseries.meta
+    >>> meta = my_timeseries.meta # doctest: +REMOTE_DATA
 
 You can easily get an overview of the metadata, this will show you a basic representation of the metadata entries that are relevant to this TimeSeries.
 
 .. code-block:: python
 
-    >>> meta
+    >>> meta # doctest: +REMOTE_DATA
     |-------------------------------------------------------------------------------------------------|
     |TimeRange                  | Columns         | Meta                                              |
     |-------------------------------------------------------------------------------------------------|
@@ -482,7 +482,7 @@ For example:
 
 .. code-block:: python
 
-    >>> meta_str = meta.to_string(depth = 20, width=99)
+    >>> meta_str = meta.to_string(depth=20, width=99) # doctest: +REMOTE_DATA
 
 Similar to the TimeSeries, the metadata has some properties for convenient access to the global metadata details, including `~sunpy.timeseries.TimeSeriesMetaData.columns` as a list of strings,  and `~sunpy.timeseries.TimeSeriesMetaData.time_range` of the data.
 Beyond this, there are properties to get lists of details for all the entries in the `~sunpy.timeseries.TimeSeriesMetaData` object, including `~sunpy.timeseries.TimeSeriesMetaData.timeranges`, `~sunpy.timeseries.TimeSeriesMetaData.columns` (as a list of string column names) and `~sunpy.timeseries.TimeSeriesMetaData.metas`.
@@ -495,8 +495,8 @@ For example:
 
 .. code-block:: python
 
-    >>> tsmd_return = my_timeseries.meta.find(colname='xrsa', time='2012-06-01 00:00:33.904999')
-    >>> tsmd_return.metas
+    >>> tsmd_return = my_timeseries.meta.find(colname='xrsa', time='2012-06-01 00:00:33.904999') # doctest: +REMOTE_DATA
+    >>> tsmd_return.metas # doctest: +REMOTE_DATA
     []
 
 Note, the colname and time filters are optional, but omitting both filters just returns an identical `~sunpy.timeseries.TimeSeriesMetaData` object to the TimeSeries original.
@@ -507,8 +507,8 @@ The result can be converted into a simple list of strings using the `~sunpy.time
 
 .. code-block:: python
 
-    >>> tsmd_return = my_timeseries.meta.get('telescop', colname='xrsa')
-    >>> tsmd_return.values()
+    >>> tsmd_return = my_timeseries.meta.get('telescop', colname='xrsa') # doctest: +REMOTE_DATA
+    >>> tsmd_return.values() # doctest: +REMOTE_DATA
     ['GOES 15']
 
 Note `~sunpy.timeseries.TimeSeriesMetaData.values` removes duplicate strings and sorts the returned list.
@@ -516,7 +516,7 @@ You can update the values for these entries efficiently using the `~sunpy.timese
 
 .. code-block:: python
 
-    >>> my_timeseries.meta.update({'telescop': 'G15'}, colname='xrsa', overwrite=True)
+    >>> my_timeseries.meta.update({'telescop': 'G15'}, colname='xrsa', overwrite=True) # doctest: +REMOTE_DATA
 
 Here we have to specify the ``overwrite=False`` keyword parameter to allow us to overwrite values for keys already present in the `~sunpy.util.metadata.MetaDict` objects, this helps protect the integrity of the original metadata and without this set (or with it set to False) you can still add new key/value pairs.
 Note that the `~sunpy.util.metadata.MetaDict` objects are both case-insensitive for key strings and have ordered entries, where possible the order is preserved when updating values.
