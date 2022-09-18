@@ -32,8 +32,6 @@ To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries`, type the fol
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
 
-.. doctest-skip-all
-
 This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time series from a GOES XRS FITS file.
 
 The variable ``my_timeseries`` is a `~sunpy.timeseries.GenericTimeSeries` object.
@@ -62,8 +60,7 @@ Instead of creating a list of one TimeSeries object per file, you can create a s
 
 .. code-block:: python
 
-    >>> my_ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, sunpy.data.sample.GOES_XRS_TIMESERIES,  # doctest: +REMOTE_DATA
-    >>>                       source='XRS', concatenate=True)  # doctest: +REMOTE_DATA
+    >>> my_ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS', concatenate=True)  # doctest: +REMOTE_DATA
 
 Again these must all be from the same source if the ``source`` keyword is explicitly specified.
 The `.GenericTimeSeries.concatenate` method can be used to make a single time series from multiple TimeSeries from different sources if they are already in the form of TimeSeries objects.
@@ -79,7 +76,7 @@ For a quick look at a TimeSeries, type:
 .. code-block:: python
 
     >>> my_timeseries  # doctest: +REMOTE_DATA
-    <sunpy.timeseries.sources.goes.XRSTimeSeries object at 0x000002168FDCE280>
+    <sunpy.timeseries.sources.goes.XRSTimeSeries object at ...>
     SunPy TimeSeries
     ----------------
     Observatory:		 GOES-15
@@ -104,7 +101,7 @@ For a quick look at a TimeSeries, type:
     2011-06-07 23:59:53.538999915  1.000000e-09  1.598500e-07
     2011-06-07 23:59:55.584999919  1.000000e-09  1.624800e-07
     2011-06-07 23:59:57.631999850  1.000000e-09  1.598500e-07
-
+    <BLANKLINE>
     [42177 rows x 2 columns]
 
 This shows a table of information taken from the metadata and a preview of your data.
@@ -115,6 +112,22 @@ The metadata for the time series is accessed by:
 .. code-block:: python
 
     >>> my_timeseries.meta # doctest: +REMOTE_DATA
+    |-------------------------------------------------------------------------------------------------|
+    |TimeRange                  | Columns         | Meta                                              |
+    |-------------------------------------------------------------------------------------------------|
+    |2011-06-06T23:59:59.961999 | xrsa            | simple: True                                      |
+    |            to             | xrsb            | bitpix: 8                                         |
+    |2011-06-07T23:59:57.631999 |                 | naxis: 0                                          |
+    |                           |                 | extend: True                                      |
+    |                           |                 | date: 26/06/2012                                  |
+    |                           |                 | numext: 3                                         |
+    |                           |                 | telescop: GOES 15                                 |
+    |                           |                 | instrume: X-ray Detector                          |
+    |                           |                 | object: Sun                                       |
+    |                           |                 | origin: SDAC/GSFC                                 |
+    |                           |                 | ...                                               |
+    |-------------------------------------------------------------------------------------------------|
+    <BLANKLINE>
 
 This references the `~sunpy.timeseries.TimeSeriesMetaData` object with the header information as read from the source files.
 A word of caution: many data sources provide little to no meta data so this variable might be empty.
@@ -126,6 +139,7 @@ To get a column of the data use the `~sunpy.timeseries.GenericTimeSeries.quantit
 .. code-block:: python
 
     >>> my_timeseries.quantity('xrsa') # doctest: +REMOTE_DATA
+    <Quantity [1.e-09, 1.e-09, 1.e-09, ..., 1.e-09, 1.e-09, 1.e-09] W / m2>
 
 .. _plotting-timeseries:
 
@@ -180,6 +194,7 @@ For example:
     >>> values = my_timeseries.quantity('xrsa') * 2
     >>> my_timeseries = my_timeseries.add_column('xrsa*2', values)
     >>> my_timeseries.columns
+    ['xrsa', 'xrsb', 'xrsa*2']
 
 Adding a column is not done in place, but instead returns a new TimeSeries with the new column added.
 Note that the values will be converted into the column units if an Astropy `~astropy.units.quantity.Quantity` is given.
@@ -214,7 +229,7 @@ As an example to downsample you can do:
 
 .. code-block:: python
 
-    >>> downsampled_dataframe = my_timeseries_trunc.to_datafrmae().resample('10T').mean()
+    >>> downsampled_dataframe = my_timeseries_trunc.to_dataframe().resample('10T').mean()
 
 Here ``10T`` means sample every 10 minutes and 'mean' is the method used to combine the data in each 10 minute bin.
 See the `pandas` documentation for more details on other functionality they offer for timeseries analysis.
@@ -235,7 +250,7 @@ For example:
 
 .. code-block:: python
 
-    >>> concatenated_timeseries = goes_timeseries_1.concatenate(goes_timeseries_2)
+    >>> concatenated_timeseries = goes_timeseries_1.concatenate(goes_timeseries_2) # doctest: +SKIP
 
 This will result in a TimeSeries identical to if you used the factory to create it in one step.
 A limitation of the TimeSeries class is that often it is not easy to determine the source observatory/instrument of a file, generally because the file formats used vary depending on the scientific working groups, thus some sources need to be explicitly stated (as a keyword argument) and so it is not possible to concatenate files from multiple sources with the factory.
@@ -243,13 +258,43 @@ To do this you can still use the `~sunpy.timeseries.GenericTimeSeries.concatenat
 
 .. code-block:: python
 
-    >>> concatenated_timeseries = goes_timeseries.concatenate(eve_timeseries)
+    >>> eve_ts = ts.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='eve')
+    >>> goes_ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
+    >>> concatenated_timeseries = goes_ts.concatenate(eve_ts)
 
 Note that the more complex `~sunpy.timeseries.TimeSeriesMetaData` object now has 2 entries and shows details on both:
 
 .. code-block:: python
 
     >>> concatenated_timeseries.meta
+        |-------------------------------------------------------------------------------------------------|
+    |TimeRange                  | Columns         | Meta                                              |
+    |-------------------------------------------------------------------------------------------------|
+    |2011-06-06T23:59:59.961999 | xrsa            | simple: True                                      |
+    |            to             | xrsb            | bitpix: 8                                         |
+    |2011-06-07T23:59:57.631999 |                 | naxis: 0                                          |
+    |                           |                 | extend: True                                      |
+    |                           |                 | date: 26/06/2012                                  |
+    |                           |                 | numext: 3                                         |
+    |                           |                 | telescop: GOES 15                                 |
+    |                           |                 | instrume: X-ray Detector                          |
+    |                           |                 | object: Sun                                       |
+    |                           |                 | origin: SDAC/GSFC                                 |
+    |                           |                 | ...                                               |
+    |-------------------------------------------------------------------------------------------------|
+    |2011-06-07T00:00:00.000000 | XRS-B proxy     | data_list: 20110607_EVE_L0CS_DIODES_1m.txt        |
+    |            to             | XRS-A proxy     | created: Tue Jun  7 23:59:10 2011 UTC             |
+    |2011-06-07T23:59:00.000000 | SEM proxy       | origin: SDO/EVE Science Processing and Operations |
+    |                           | 0.1-7ESPquad    | units: W/m^2 for irradiance, dark is counts/(0.25s|
+    |                           | 17.1ESP         | source: SDO-EVE ESP and MEGS-P instruments, http:/|
+    |                           | 25.7ESP         | product: Level 0CS, 1-minute averaged SDO-EVE Sola|
+    |                           | 30.4ESP         | version: 2.1, code updated 2011-May-12            |
+    |                           | 36.6ESP         | missing data: -1.00e+00                           |
+    |                           | darkESP         | hhmm: hour and minute in UT                       |
+    |                           | 121.6MEGS-P     | xrs-b proxy: a model of the expected XRS-B 0.1-0.8|
+    |                           | ...             | ...                                               |
+    |-------------------------------------------------------------------------------------------------|
+    <BLANKLINE>
 
 The metadata object is described in more detail in the next section.
 
@@ -271,30 +316,30 @@ One of the most useful reasons for doing this is that Astropy `~sunpy.timeseries
 
     >>> table
     <Table length=21089>
-                 date               xrsa     xrsb
-                                   W / m2   W / m2
-            datetime64[ns]        float32  float32
-    ----------------------------- ------- ----------
-    2011-06-06T23:59:59.961999000     0.1 1.8871e-07
-    2011-06-07T00:00:04.058999000   1e-09 1.8609e-07
-    2011-06-07T00:00:08.151999000   1e-09 1.8609e-07
-    2011-06-07T00:00:12.248999000   1e-09 1.8609e-07
-    2011-06-07T00:00:16.344999000   1e-09 1.8084e-07
-    2011-06-07T00:00:20.441999000   1e-09 1.8084e-07
-    2011-06-07T00:00:24.534999000   1e-09 1.8084e-07
-    2011-06-07T00:00:28.631999000   1e-09 1.8346e-07
-    2011-06-07T00:00:32.728999000   1e-09 1.8346e-07
-                              ...     ...        ...
-    2011-06-07T23:59:20.768999000   1e-09  1.651e-07
-    2011-06-07T23:59:24.864999000   1e-09 1.5985e-07
-    2011-06-07T23:59:28.961999000   1e-09 1.5985e-07
-    2011-06-07T23:59:33.058999000   1e-09 1.6248e-07
-    2011-06-07T23:59:37.151999000   1e-09 1.6248e-07
-    2011-06-07T23:59:41.248999000   1e-09 1.5985e-07
-    2011-06-07T23:59:45.344999000   1e-09 1.5723e-07
-    2011-06-07T23:59:49.441999000   1e-09 1.6248e-07
-    2011-06-07T23:59:53.538999000   1e-09 1.5985e-07
-    2011-06-07T23:59:57.631999000   1e-09 1.5985e-07
+                 date               xrsa     xrsb     xrsa*2
+                                   W / m2   W / m2    W / m2
+            datetime64[ns]        float32  float32   float32
+    ----------------------------- ------- ---------- -------
+    2011-06-06T23:59:59.961999893   1e-09 1.8871e-07   2e-09
+    2011-06-07T00:00:04.058999896   1e-09 1.8609e-07   2e-09
+    2011-06-07T00:00:08.151999950   1e-09 1.8609e-07   2e-09
+    2011-06-07T00:00:12.248999953   1e-09 1.8609e-07   2e-09
+    2011-06-07T00:00:16.344999909   1e-09 1.8084e-07   2e-09
+    2011-06-07T00:00:20.441999912   1e-09 1.8084e-07   2e-09
+    2011-06-07T00:00:24.534999847   1e-09 1.8084e-07   2e-09
+    2011-06-07T00:00:28.631999850   1e-09 1.8346e-07   2e-09
+    2011-06-07T00:00:32.728999853   1e-09 1.8346e-07   2e-09
+                              ...     ...        ...     ...
+    2011-06-07T23:59:20.768999934   1e-09  1.651e-07   2e-09
+    2011-06-07T23:59:24.864999890   1e-09 1.5985e-07   2e-09
+    2011-06-07T23:59:28.961999893   1e-09 1.5985e-07   2e-09
+    2011-06-07T23:59:33.058999896   1e-09 1.6248e-07   2e-09
+    2011-06-07T23:59:37.151999950   1e-09 1.6248e-07   2e-09
+    2011-06-07T23:59:41.248999953   1e-09 1.5985e-07   2e-09
+    2011-06-07T23:59:45.344999909   1e-09 1.5723e-07   2e-09
+    2011-06-07T23:59:49.441999912   1e-09 1.6248e-07   2e-09
+    2011-06-07T23:59:53.538999915   1e-09 1.5985e-07   2e-09
+    2011-06-07T23:59:57.631999850   1e-09 1.5985e-07   2e-09
 
 and the more sophisticated browser view using the `~astropy.table.Table.show_in_browser` method:
 
@@ -346,17 +391,10 @@ This `~pandas.DataFrame` can then be used to construct a TimeSeries:
 .. code-block:: python
 
     >>> import sunpy.timeseries as ts
-    >>> ts_custom = ts.TimeSeries(data)
-
-Furthermore, we could specify the metadata/header and units of this time series by sending them as arguments to the factory:
-
-.. code-block:: python
-
     >>> import astropy.units as u
-
-    >>> meta = {'key':'value'}
-    >>> units = {'intensity', u.W/u.m**2}
-    >>> ts_custom = ts.TimeSeries(data, meta, units)
+    >>> header = {'key': 'value'}
+    >>> units = {'intensity': u.W/u.m**2}
+    >>> ts_custom = ts.TimeSeries(data, header, units)
 
 5.2 Creating Custom TimeSeries from an Astropy Table
 ----------------------------------------------------
@@ -416,9 +454,9 @@ You can easily get an overview of the metadata, this will show you a basic repre
     |-------------------------------------------------------------------------------------------------|
     |TimeRange                  | Columns         | Meta                                              |
     |-------------------------------------------------------------------------------------------------|
-    |2011-06-06 23:59:59.961999 | xrsa            | simple: True                                      |
+    |2011-06-06T23:59:59.961999 | xrsa            | simple: True                                      |
     |            to             | xrsb            | bitpix: 8                                         |
-    |2011-06-07 23:59:57.631999 |                 | naxis: 0                                          |
+    |2011-06-07T23:59:57.631999 |                 | naxis: 0                                          |
     |                           |                 | extend: True                                      |
     |                           |                 | date: 26/06/2012                                  |
     |                           |                 | numext: 3                                         |
