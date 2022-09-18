@@ -292,7 +292,7 @@ You can also change the colormap for the Map itself:
 
 The normalization is set automatically so that all the data from minimum to maximum is displayed as best as possible.
 Just like the colormap, the default normalization can be changed through the ``plot_settings`` dictionary or directly for the individual plot by passing a keyword argument.
-               
+
 Alternate normalizations are available from `matplotlib <https://matplotlib.org/stable/tutorials/colors/colormapnorms.html>`__ and `astropy <https://docs.astropy.org/en/stable/visualization/normalization.html>`__.
 The following example shows the difference between a linear and logarithmic normalization on an AIA image.
 
