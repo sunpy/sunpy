@@ -1,6 +1,8 @@
-****************
-TimeSeries Guide
-****************
+.. _timeseries_guide:
+
+*********************
+Timeseries data guide
+*********************
 
 Time series data are a fundamental part of many data analysis projects in heliophysics as well as other areas.
 **sunpy** provides a TimeSeries object to handle this type of data.
