@@ -11,7 +11,7 @@ For more information about TimeSeries, and what data sources are currently suppo
 
 :ref:`creating-timeseries` describes how to create a TimeSeries object from single or multiple observational sources.
 :ref:`inspecting-timeseries` describes how to examine the data and metadata.
-:ref:`plotting-timeseries` outlines the basics of how SunPy will plot a TimeSeries object.
+:ref:`plotting-timeseries` outlines the basics of how **sunpy** will plot a TimeSeries object.
 :ref:`manipulating-timeseries` describes how to modify data, truncate a TimeSeries, down and up sample data, concatenate data, and create an Astropy Table from a TimeSeries.
 :ref:`custom-timeseries` details how to create a TimeSeries object from a Pandas DataFrame or an Astropy Table.
 Lastly, :ref:`ts-metadata` describes how to view and extract information from the metadata.
@@ -47,7 +47,7 @@ To create one from a local GOES/XRS FITS file try the following:
 **sunpy** will attempt to detect automatically the instrument source for most FITS files.
 However timeseries data are stored in a variety of file types (FITS, txt, csv, CDF) and formats, and so it is not always possible to detect the source.
 For this reason, it is good practice to explicitly state the source for the file.
-SunPy ships with a number of known instrumental sources.
+**sunpy** ships with a number of known instrumental sources.
 If you would like **sunpy** to include another instrumental source see the `Newcomers' Guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
 The `~sunpy.timeseries.TimeSeries` factory has the ability to make a list of TimeSeries objects using a list of filepaths, a folder or a glob, for example:
 
@@ -124,7 +124,7 @@ This references the `~sunpy.timeseries.TimeSeriesMetaData` object with the heade
 A word of caution: many data sources provide little to no meta data so this variable might be empty.
 The meta data is described in more detail later in this guide.
 Similarly there are properties for getting `~sunpy.timeseries.GenericTimeSeries.columns` as a list of strings, `~sunpy.timeseries.GenericTimeSeries.time` values and `~sunpy.timeseries.GenericTimeSeries.time_range` of the data.
-The actual data in a SunPy TimeSeries object is accessible through the `~sunpy.timeseries.GenericTimeSeries.data` attribute.
+The actual data in a **sunpy** TimeSeries object is accessible through the `~sunpy.timeseries.GenericTimeSeries.data` attribute.
 The data is implemented as a Pandas `~pandas.DataFrame`, so to get a look at what data you have available use:
 
 .. code-block:: python
