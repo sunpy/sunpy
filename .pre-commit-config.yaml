@@ -16,8 +16,8 @@ repos:
             "E901,E902,F822,F823",
           ]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|sunpy/visualization/colormaps/color_tables.py)$"
-  - repo: https://github.com/myint/autoflake
-    rev: v1.5.3
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v1.6.0
     hooks:
       - id: autoflake
         args:
