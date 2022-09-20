@@ -8,6 +8,7 @@ from sunpy.util.exceptions import SunpyUserWarning
 goes_filepath_com = get_test_filepath('go1520120601.fits.gz')
 new_goes15_filepath = get_test_filepath('goes_truncated_test_goes15.nc')
 new_goes17_filepath = get_test_filepath('goes_truncated_test_goes17.nc')
+new_goes1m_avg_filepath = get_test_filepath('goes_truncated_test_1m_avg.nc')
 goes13_leap_second_filepath = get_test_filepath('goes_13_leap_second.nc')
 
 
@@ -28,6 +29,12 @@ def test_implicit_new_goes15():
 def test_implicit_new_goes17():
     # Test a GOES TimeSeries
     ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath)
+    assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+
+
+def test_implicit_goes_1m_avg():
+    # Test a 1m avg GOES TimeSeries
+    ts_goes = sunpy.timeseries.TimeSeries(new_goes1m_avg_filepath)
     assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
 
