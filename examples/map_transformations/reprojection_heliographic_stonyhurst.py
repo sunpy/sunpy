@@ -1,9 +1,9 @@
 """
-===========================
-Creating a Heliographic Map
-===========================
+========================
+Creating Carrington Maps
+========================
 
-In this example we use the `reproject` generate an image in heliographic coordinates from an AIA image.
+In this example we use the `reproject` generate a map in heliographic Carrington coordinates from a full-disk AIA image.
 
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 or higher installed.
 """
@@ -11,11 +11,9 @@ You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 o
 
 import matplotlib.pyplot as plt
 
-import astropy.units as u
-from astropy.coordinates import SkyCoord
-
 import sunpy.data.sample
 import sunpy.map
+import sunpy.map.header_helper
 
 ###############################################################################
 # We will start with using sunpy's sample data for this example.
@@ -28,20 +26,12 @@ plt.show()
 
 ###############################################################################
 # Reproject works by transforming an input image to a desired World Coordinate
-# System (WCS) projection. Here we use :func:`sunpy.map.make_fitswcs_header`
-# to create a FITS WCS header based on a Stonyhurst heliographic reference
-# coordinate and the CAR (plate carrée) projection.
+# System (WCS) projection. Here we use :func:`sunpy.map.header_helper.carrington_header`
+# to create a FITS WCS header based on a heliographic Carrington reference
+# coordinate.
 
-shape_out = (720, 1440)
-frame_out = SkyCoord(0, 0, unit=u.deg,
-                     frame="heliographic_stonyhurst",
-                     obstime=aia_map.date,
-                     rsun=aia_map.coordinate_frame.rsun)
-header = sunpy.map.make_fitswcs_header(shape_out,
-                                       frame_out,
-                                       scale=(360 / shape_out[1],
-                                              180 / shape_out[0]) * u.deg / u.pix,
-                                       projection_code="CAR")
+shape_out = (1440, 720)
+carr_header = sunpy.map.header_helper.carrington_header(aia_map.date, aia_map.observer_coordinate, shape_out=shape_out)
 
 ###############################################################################
 # With the new header, re-project the data into the new coordinate system.
@@ -49,7 +39,7 @@ header = sunpy.map.make_fitswcs_header(shape_out,
 # the fast :func:`reproject.reproject_interp` algorithm, but a different
 # algorithm can be specified (e.g., :func:`reproject.reproject_adaptive`).
 
-outmap = aia_map.reproject_to(header)
+outmap = aia_map.reproject_to(carr_header)
 
 ###############################################################################
 # Plot the result.
