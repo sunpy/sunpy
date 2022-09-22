@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 import sunpy.data.sample
 import sunpy.map
-import sunpy.map.header_helper
+from sunpy.map.header_helper import carrington_header
 
 ###############################################################################
 # We will start with using sunpy's sample data for this example.
@@ -22,7 +22,6 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
 
 plt.figure()
 aia_map.plot()
-plt.show()
 
 ###############################################################################
 # Reproject works by transforming an input image to a desired World Coordinate
@@ -30,8 +29,8 @@ plt.show()
 # to create a FITS WCS header based on a heliographic Carrington reference
 # coordinate.
 
-shape_out = (1440, 720)
-carr_header = sunpy.map.header_helper.carrington_header(aia_map.date, aia_map.observer_coordinate, shape_out=shape_out)
+shape = (720, 1440)
+carr_header = carrington_header(aia_map.date, aia_map.observer_coordinate, shape)
 
 ###############################################################################
 # With the new header, re-project the data into the new coordinate system.

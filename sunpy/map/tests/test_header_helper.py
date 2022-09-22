@@ -229,10 +229,10 @@ def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
 
 
 # Second case here chosen to produce non-square pixels
-@pytest.mark.parametrize('shape_out', [[180, 90], [100, 240]])
+@pytest.mark.parametrize('shape', [[90, 180], [240, 100]])
 @pytest.mark.parametrize('projection_code', ['CAR', 'CEA'])
-def test_carrington_header(aia171_test_map, shape_out, projection_code):
-    header = carrington_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape_out=shape_out, projection_code=projection_code)
+def test_carrington_header(aia171_test_map, shape, projection_code):
+    header = carrington_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape=shape, projection_code=projection_code)
     carr_map = aia171_test_map.reproject_to(header)
 
     # Check upper right and lower left coordinates are as expected
@@ -240,6 +240,6 @@ def test_carrington_header(aia171_test_map, shape_out, projection_code):
     assert ll_coord.lon == 180 * u.deg
     assert ll_coord.lat == -90 * u.deg
 
-    ur_coord = carr_map.pixel_to_world((shape_out[0] - 0.5) * u.pix, (shape_out[1] - 0.5) * u.pix)
+    ur_coord = carr_map.pixel_to_world((shape[1] - 0.5) * u.pix, (shape[0] - 0.5) * u.pix)
     assert ur_coord.lon == 180 * u.deg
     assert ur_coord.lat == 90 * u.deg

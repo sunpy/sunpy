@@ -28,7 +28,8 @@ def meta_keywords():
 
 
 @u.quantity_input(equivalencies=u.spectral())
-def make_fitswcs_header(data, coordinate,
+def make_fitswcs_header(data,
+                        coordinate,
                         reference_pixel: u.pix = None,
                         scale: u.arcsec/u.pix = None,
                         rotation_angle: u.deg = None,
@@ -377,7 +378,7 @@ _map_meta_keywords = {
 }
 
 
-def carrington_header(date, observer_coordinate, *, shape_out, projection_code="CAR"):
+def carrington_header(date, observer_coordinate, shape, *, projection_code="CAR"):
     """
     Construct a FITS-WCS header for a Carrington coordinate frame.
     The date-time and observer coordinate of the new coordinate frame
@@ -391,7 +392,7 @@ def carrington_header(date, observer_coordinate, *, shape_out, projection_code="
         Date for the output header.
     observer_coordinate :
         Observer coordinate for the output header.
-    shape_out : [int, int]
+    shape : [int, int]
         Output map shape, number of pixels in (latitude, longitude).
     projection_code : {'CAR', 'CEA'}
         Projection to use for the latitude coordinate.
@@ -413,14 +414,16 @@ def carrington_header(date, observer_coordinate, *, shape_out, projection_code="
     )
 
     if projection_code == "CAR":
-        scale = [360 / int(shape_out[0]), 180 / int(shape_out[1])] * u.deg / u.pix
+        scale = [360 / int(shape[1]), 180 / int(shape[0])] * u.deg / u.pix
     elif projection_code == "CEA":
-        # Since, this map uses the cylindrical equal-area (CEA) projection,
-        # the spacing needs to be to 180/pi times the sin(latitude)
-        # spacing
-        # Reference: Section 5.5, Thompson 2006
-        scale = [360 / int(shape_out[0]), 180 / int(shape_out[1]) / (np.pi / 2)] * u.deg / u.pix
+        # Using the cylindrical equal-area (CEA) projection,
+        # scale needs to be to 180/pi times the sin(latitude) spacing
+        # See Section 5.5, Thompson 2006
+        scale = [
+            360 / int(shape[1]),
+            (180 / np.pi) / (int(shape[0]) / 2)
+        ] * u.deg / u.pix
 
     # Header helper expects shape to be in [y, x] order, but scale in [x, y]...
-    header = make_fitswcs_header(shape_out[::-1], frame_out, scale=scale, projection_code=projection_code)
+    header = make_fitswcs_header(shape, frame_out, scale=scale, projection_code=projection_code)
     return header
