@@ -6,7 +6,7 @@ Time series data guide
 
 Time series data are a fundamental part of many data analysis projects in heliophysics as well as other areas.
 **sunpy** provides a TimeSeries object to handle this type of data.
-Much like the `~sunpy.map.Map` object, `~sunpy.timeseries.TimeSeries` can load generic filetypes, and recognizes data from nine specific sources to provide instrument specific data loading and plotting capabilities.
+Much like the `~sunpy.map.Map` object, the `~sunpy.timeseries.TimeSeries` object can load generic filetypes, and recognizes data from nine specific sources to provide instrument specific data loading and plotting capabilities.
 For more information about TimeSeries, and what file types and data sources are supported, check out :doc:`/code_ref/timeseries`.
 
 :ref:`creating-timeseries` describes how to create a TimeSeries object from single or multiple observational sources.
@@ -22,7 +22,7 @@ Lastly, :ref:`ts-metadata` describes how to view and extract information from th
 ========================
 
 A TimeSeries object can be created from local files.
-For convenience, **sunpy** can download several example timeseries of observational data.
+For convenience, **sunpy** can download several example time series of observational data.
 These files have names like ``sunpy.data.sample.EVE_TIMESERIES`` and ``sunpy.data.sample.GOES_XRS_TIMESERIES``.
 To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries`, type the following into your interactive Python shell:
 
@@ -42,7 +42,7 @@ To create one from a local GOES/XRS FITS file try the following:
     >>> my_timeseries = ts.TimeSeries('/mydirectory/myts.fits', source='XRS')   # doctest: +SKIP
 
 **sunpy** will attempt to detect automatically the instrument source for most FITS files.
-However timeseries data are stored in a variety of file types (FITS, txt, csv, CDF), and so it is not always possible to detect the source.
+However time series data are stored in a variety of file types (FITS, txt, csv, CDF), and so it is not always possible to detect the source.
 **sunpy** ships with a number of known instrumental sources, and can also load CDF files that conform to the `Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`__.
 If you would like **sunpy** to include another instrumental source see the `Newcomers' Guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
 
@@ -221,8 +221,8 @@ If you want to truncate using slice-like values you can, for example taking ever
 
     >>> my_timeseries_trunc = my_timeseries.truncate(0, 100000, 2) # doctest: +REMOTE_DATA
 
-4.3 More complicated timeseries operations
-------------------------------------------
+4.3 More complicated time series operations
+-------------------------------------------
 If you want to do any more complicated analysis on a TimeSeries, we recommend converting it to a `pandas.DataFrame` object first.
 Although this conversion will use the unit information and metadata, pandas has a wide array of methods that can be used e.g. for resampling data.
 As an example to downsample you can do:
@@ -232,7 +232,7 @@ As an example to downsample you can do:
     >>> downsampled_dataframe = my_timeseries_trunc.to_dataframe().resample('10T').mean() # doctest: +REMOTE_DATA
 
 Here ``10T`` means sample every 10 minutes and 'mean' is the method used to combine the data in each 10 minute bin.
-See the `pandas` documentation for more details on other functionality they offer for timeseries analysis.
+See the `pandas` documentation for more details on other functionality they offer for time series analysis.
 
 4.4 Concatenating TimeSeries
 ----------------------------
@@ -468,7 +468,7 @@ You can easily get an overview of the metadata, this will show you a basic repre
     |-------------------------------------------------------------------------------------------------|
     <BLANKLINE>
 
-The data within a `~sunpy.timeseries.TimeSeriesMetaData` object is stored as a list of tuples, each tuple representing the metadata from a source file or timeseries.
+The data within a `~sunpy.timeseries.TimeSeriesMetaData` object is stored as a list of tuples, each tuple representing the metadata from a source file or time series.
 The tuple will contain a `~sunpy.time.TimeRange` telling us which rows the metadata applies to, a list of column name strings for which the metadata applies to and finally a `~sunpy.util.metadata.MetaDict` object for storing the key/value pairs of the metadata itself.
 Each time a TimeSeries is concatenated to the original a new set of rows and/or columns will be added to the `~pandas.DataFrame` and a new entry will be added into the metadata.
 Note that entries are ordered chronologically based on
