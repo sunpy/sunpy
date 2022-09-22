@@ -70,6 +70,8 @@ def test_new_goes16():
     # Test a GOES TimeSeries
     ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath, source='XRS')
     assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+    # test that all columns have associated units
+    assert np.all([isinstance(unit_val, u.UnitBase) for unit_val in ts_goes.units.values()])
 
 
 def test_goes_netcdf_time_parsing15():
