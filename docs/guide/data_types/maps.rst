@@ -1,6 +1,8 @@
-*********
-Map Guide
-*********
+.. _map_guide:
+
+**************
+Map data guide
+**************
 
 Map objects in **sunpy** are two-dimensional data associated with a coordinate system.
 This class offers many advantages over using packages such as `astropy.io.fits` to open 2D solar data in Python.
@@ -12,7 +14,7 @@ Therefore, a Map also contains a number of methods such as resizing or grabbing 
 See `~sunpy.map.mapbase.GenericMap` for summaries of all attributes and methods.
 
 :ref:`creating-maps` and :ref:`inspecting-maps` demonstrate how to create a Map object and view a summary of the data in the object.
-:ref:`map-data` describes how data is stored and accessed in a Map, and :ref:`plotting-maps` introduces some basics of visualizing Map data in SunPy.
+:ref:`map-data` describes how data is stored and accessed in a Map, and :ref:`plotting-maps` introduces some basics of visualizing Map data in **sunpy**.
 :ref:`map-sequences` and :ref:`composite-maps` detail how **sunpy** can handle multiple Maps from similar and different instruments.
 Lastly, :ref:`custom-maps` shows how you can create Maps from data sources not supported in **sunpy**.
 
@@ -41,7 +43,7 @@ To create a Map from a local FITS file try the following:
     >>> my_map = sunpy.map.Map('/mydirectory/mymap.fits')   # doctest: +SKIP
 
 **sunpy** automatically detects the type of file (e.g. FITS), the instrument associated with it (e.g. AIA, EIT, LASCO), and finds the FITS keywords it needs to interpret the coordinate system.
-If the type of FITS file is not recognized then SunPy will try some default FITS keywords and return a `~sunpy.map.GenericMap`, but results may vary.
+If the type of FITS file is not recognized then **sunpy** will try some default FITS keywords and return a `~sunpy.map.GenericMap`, but results may vary.
 **sunpy** can also create Maps using the JPEG 2000 files from `helioviewer.org <https://helioviewer.org/>`__.
 
 The :ref:`sphx_glr_generated_gallery_acquiring_data` section of the Example Gallery has several examples of retrieving data using the `~sunpy.net.Fido` tool.
@@ -201,7 +203,7 @@ To create a plot just type:
 
 This will open a Matplotlib plot on your screen.
 In addition, it is possible to grab the Matplotlib Axes object by using the `~sunpy.map.GenericMap.plot()` command.
-This makes it possible to use the SunPy plot as the foundation for a more complicated figure.
+This makes it possible to use the **sunpy** plot as the foundation for a more complicated figure.
 For more information about this and some examples see :ref:`plotting`.
 Check out the following foundational examples in the Example Gallery for plotting Maps:
 
