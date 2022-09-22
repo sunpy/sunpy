@@ -1,4 +1,7 @@
+import numpy as np
 import pytest
+
+from astropy import units as u
 
 import sunpy.timeseries
 from sunpy.data.test import get_test_filepath
