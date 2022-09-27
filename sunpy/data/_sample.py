@@ -4,6 +4,7 @@ from urllib.parse import urljoin
 
 from sunpy import log
 from sunpy.util.config import _is_writable_dir, get_and_create_sample_dir
+from sunpy.util.decorators import deprecated
 from sunpy.util.parfive_helpers import Downloader
 
 _BASE_URLS = (
@@ -122,6 +123,19 @@ def _handle_final_errors(results):
         )
 
 
+def _get_sampledata_dir():
+    # Workaround for tox only. This is not supported as a user option
+    sampledata_dir = os.environ.get("SUNPY_SAMPLEDIR", False)
+    if sampledata_dir:
+        sampledata_dir = Path(sampledata_dir).expanduser().resolve()
+        _is_writable_dir(sampledata_dir)
+    else:
+        # Creating the directory for sample files to be downloaded
+        sampledata_dir = Path(get_and_create_sample_dir())
+    return sampledata_dir
+
+
+@deprecated('4.1', alternative='`sunpy.data.sample.download_all`')
 def download_sample_data(overwrite=False):
     """
     Download all sample data at once. This will overwrite any existing files.
@@ -131,14 +145,7 @@ def download_sample_data(overwrite=False):
     overwrite : `bool`
         Overwrite existing sample data.
     """
-    # Workaround for tox only. This is not supported as a user option
-    sampledata_dir = os.environ.get("SUNPY_SAMPLEDIR", False)
-    if sampledata_dir:
-        sampledata_dir = Path(sampledata_dir).expanduser().resolve()
-        _is_writable_dir(sampledata_dir)
-    else:
-        # Creating the directory for sample files to be downloaded
-        sampledata_dir = Path(get_and_create_sample_dir())
+    sampledata_dir = _get_sampledata_dir()
 
     already_downloaded = []
     to_download = []
@@ -166,3 +173,31 @@ def download_sample_data(overwrite=False):
             _handle_final_errors(results)
 
     return results + already_downloaded
+
+
+def _get_sample_files(filename_list, no_download=False, force_download=False):
+    sampledata_dir = _get_sampledata_dir()
+
+    fullpath = [sampledata_dir/fn for fn in filename_list]
+
+    if no_download:
+        fullpath = [fp if fp.exists() else None for fp in fullpath]
+    else:
+        to_download = zip(filename_list, fullpath)
+        if not force_download:
+            to_download = [(fn, fp) for fn, fp in to_download if not fp.exists()]
+
+        if to_download:
+            results = _download_sample_data(_BASE_URLS[0], to_download, overwrite=force_download)
+
+            # Something went wrong
+            if results.errors:
+                for next_url in _BASE_URLS[1:]:
+                    results = _retry_sample_data(results, next_url)
+                    if not results.errors:
+                        break
+                else:
+                    _handle_final_errors(results)
+                    raise RuntimeError
+
+    return fullpath

@@ -7,8 +7,5 @@ Each example is a short and self contained how-to guide for performing a specifi
 
 Sample data
 ===========
-Some of these examples require the SunPy sample data, which you can download by running::
-
-     >>> import sunpy.data.sample
-
-Once downloaded the data will be stored in your user directory and you will not need to download it again.
+Some of these examples require the SunPy sample data, which are downloaded as needed via the module `sunpy.data.sample`.
+If you want to download all of the sample data files in advance, call :func:`sunpy.data.sample.download_all`.
