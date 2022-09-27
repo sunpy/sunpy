@@ -296,8 +296,8 @@ class XRSTimeSeries(GenericTimeSeries):
             [
                 ("xrsa", u.W/u.m**2),
                 ("xrsb", u.W/u.m**2),
-                ("xrsa_quality", int),
-                ("xrsb_quality", int),
+                ("xrsa_quality", u.dimensionless_unscaled),
+                ("xrsb_quality", u.dimensionless_unscaled),
             ]
         )
         return data, header, units
