@@ -4,31 +4,24 @@
 Plotting in sunpy
 *****************
 
-sunpy makes use of `matplotlib <https://matplotlib.org/>`_ for all of its
-plotting - as such, it tries to follow the matplotlib plotting philosophy. It is
-therefore useful to go over how matplotlib works as background.
+sunpy makes use of `Matplotlib <https://matplotlib.org/>`_ for all of its plotting - as such, it tries to follow the Matplotlib plotting philosophy.
+We'll start by going over the basics of plotting in Matplotlib.
+If you are already familiar with Matplotlib, skip ahead to the second section.
 
-1. Matplotlib Tutorial
-**********************
+Matplotlib Tutorial
+*******************
 
-The tutorial provided here is a summary of one that can be found in the `matplotlib
-usage documentation <https://matplotlib.org/faq/usage_faq.html>`_.
+This tutorial is a summary of one that can be found in the `Matplotlib usage documentation <https://matplotlib.org/stable/users/explain/api_interfaces.html>`_.
 
-Matplotlib provides two main pathways for plotting. One is meant for interactive use
-(e.g. command-line) and the other for non-interactive use (e.g. modules). It is important
-to recognize though that the interactive-use pathway (referred to as pyplot) just
-provides shortcuts for doing many of the more advanced non-interactive functions in the
-background. It is therefore possible to switch between the two as necessary and
-it is possible to use pyplot in a non-interactive way. In this manner pyplot
-is just a shortcut to making it quicker to set up plot axes and figures.
-In order to get access to the full interactive capabilities of pyplot it is
-necessary to turn this feature on.
-Pylab is another matplotlib usage scenario but it is essentially just pyplot with the
-interactive capabilities turned on and numpy and matplotlib imported into the main
-namespace.
+Matplotlib provides two main pathways for plotting.
+One is meant for interactive use (e.g. on the command-line) and the other for non-interactive use (e.g. in scripts).
+It is important to recognize though that the interactive-use pathway (referred to as pyplot) just provides shortcuts for doing many of the more advanced non-interactive functions in the background.
+It is therefore possible to switch between the two as necessary and it is possible to use pyplot in a non-interactive way.
+In this manner pyplot is just a shortcut to making it quicker to set up plot axes and figures.
+In order to get access to the full interactive capabilities of pyplot it is necessary to turn this feature on.
 
-2. Pyplot
-*********
+Pyplot
+------
 Here is a simple example of pyplot usage.
 
 .. plot::
@@ -39,41 +32,32 @@ Here is a simple example of pyplot usage.
     plt.title("A simple Plot")
     plt.show()
 
-The `~matplotlib.pyplot.show` command opens a plot on the screen and blocks
-execution until the plot window is closed. The `~matplotlib.pyplot.show`
-command only works once. If you were to call `~matplotlib.pyplot.show` again
-after the above code is executed nothing happens. This confusing behavior
-is something that the matplotlib devs get complaints about often and so this may change.
-A discussion about this can be found `here
-<https://stackoverflow.com/questions/5524858/matplotlib-show-doesnt-work-twice>`_.
-Don't be confused by another command called `~matplotlib.pyplot.draw`.
-This is only used while in interactive mode.
+The `~matplotlib.pyplot.show` command opens a plot on the screen and blocks execution until the plot window is closed.
+The `~matplotlib.pyplot.show` command only works once - if you call `~matplotlib.pyplot.show` again after the above code is executed nothing happens.
 
-To turn on interactivity for pyplot use the command ::
+To turn on interactive plotting for pyplot use the command ::
 
     >>> plt.ion()   # doctest: +SKIP
 
-In interactive mode, the plot will appear at the first `~matplotlib.pyplot.plot`
-command and most commands will update the plot as you call them. Here is some
-example code::
+In interactive mode, the plot will appear at the first `~matplotlib.pyplot.plot` command and most commands will update the plot as you call them.
+Here is some example code::
 
     >>> plt.plot(range(10), range(10))   # doctest: +SKIP
     >>> plt.title("Simple Plot")   # doctest: +SKIP
 
 In this example, you'll see that the title appears right on the plot when you call it.
-Note that in this case the `~matplotlib.pyplot.show` command is useless as the
-plot shows up right when you create it. Also note that some commands will not
-automatically update the plot and you have to use the `~matplotlib.pyplot.draw`
-command. The following command ::
+Note that in this case the `~matplotlib.pyplot.show` command isn't needed as the plot shows up right when you create it.
+
+The following command ::
 
     >>> plt.ioff()   # doctest: +SKIP
 
 turns off interactivity.
 
-3. Advanced Pyplot
-******************
-If you need more fine-grained control over plots the recommended path is to use pyplot
-and access the figures and axes objects. This is shown in the following example.
+Advanced Pyplot
+---------------
+If you need more fine-grained control over plots the recommended path is to use pyplot and access the figures and axes objects.
+This is shown in the following example.
 
 .. plot::
     :include-source:
@@ -88,30 +72,23 @@ and access the figures and axes objects. This is shown in the following example.
     ax.set_xlabel('x')
     plt.show()
 
-In matplotlib, `~matplotlib.figure.Figure` is the top-level container for all plot elements and
-`~matplotlib.axes.Axes` is the top-level container for a particular plot. So the above example,
-creates a figure then creates an axes and populates the plot in ``ax``. With this method you
-now have your hands on the `~matplotlib.axes.Axes` object so you can do things
+In Matplotlib, `~matplotlib.figure.Figure` is the top-level container for a single figure and `~matplotlib.axes.Axes` is the top-level container for a set of axes.
+The above example creates a figure then creates an axes and populates the plot in ``ax``.
+With this method you now have your hands on the `~matplotlib.axes.Axes` object so you can do things
 like change the labels on the x and y axes or add a legend.
-In the previous section, pyplot took care of creating these
-objects for you so you didn't have to worry about creating them yourself.
+In the previous section, pyplot took care of creating these objects for you so you didn't have to worry about creating them yourself.
 
-4. sunpy Plotting Convention
-****************************
+Plotting in sunpy
+*****************
 
-To be consistent with matplotlib, sunpy has developed a standard plotting policy
-which supports both simple and advanced matplotlib usage. The following examples
-focus on the map object but they should be applicable across all of the data
-objects.
+To be consistent with Matplotlib, sunpy has developed a standard plotting interface which supports both simple and advanced Matplotlib usage.
+The following examples focus on the map object, but both ``peek()`` ``plot()`` work on time series objects too.
 
-4.1 peek()
-**********
-
-For quick and easy access to a plot all sunpy base objects (i.e. maps, spectra,
-timeseries) define their own `~sunpy.map.mapbase.GenericMap.peek` command which
-will create a plot for you and show it without you having to deal with any
-matplotlib setup. This is so that it is easy to take a quick look at your data.
-For example you can make the following plot.
+peek()
+------
+For quick and easy access to a plot `~sunpy.map.GenericMap` and `~sunpy.timeseries.GenericTimeSeries` define their own ``peek()`` methods which create a plot for you and show it without you having to deal with any Matplotlib setup.
+This is so that it is easy to take a quick look at your data.
+For example:
 
 .. plot::
     :include-source:
@@ -121,17 +98,14 @@ For example you can make the following plot.
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     smap.peek(draw_limb=True)
 
-This creates a plot window with all axes defined, a plot title, and the image of
-the map data defined by the contents of the map. In non-interactive mode the
-plot window blocks the command line terminal and must be closed before doing anything else.
+This creates a plot window with all axes defined, a plot title, and the image of the map data defined by the contents of the map.
+In non-interactive mode the plot window blocks the command line terminal and must be closed before doing anything else.
 
-4.2 plot()
-**********
+plot()
+------
 
-For more advanced plotting the base sunpy objects also provide a
-`~sunpy.map.mapbase.GenericMap.plot` command. This command is similar to the
-pyplot `~matplotlib.pyplot.imshow` command in that it will create a figure and
-axes object for you if you haven't already.
+For more advanced plotting the base sunpy objects also provide a `~sunpy.map.mapbase.GenericMap.plot` command.
+This command is similar to the pyplot `~matplotlib.pyplot.imshow` command in that it will create a figure and axes object for you if you haven't already.
 
 When you create a plot with `~sunpy.map.GenericMap.peek` or
 `~sunpy.map.GenericMap.plot`, sunpy will use `astropy.visualization.wcsaxes` to
@@ -205,8 +179,8 @@ Please see this example :ref:`sphx_glr_generated_gallery_map_plot_frameless_imag
 
 .. _wcsaxes-plotting:
 
-Plotting Maps with wcsaxes
-**************************
+Maps with coordinate systems
+----------------------------
 
 By default :ref:`map` uses the `astropy.visualization.wcsaxes` module to improve
 the representation of world coordinates, and calling
