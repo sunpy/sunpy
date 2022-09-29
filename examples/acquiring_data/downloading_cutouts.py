@@ -9,9 +9,12 @@ AIA images from the JSOC.
 # sphinx_gallery_thumbnail_number = 2
 import os
 
+import matplotlib.pyplot as plt
+
 import astropy.time
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.visualization import ImageNormalize, SqrtStretch
 
 import sunpy.map
 from sunpy.net import Fido
@@ -70,5 +73,19 @@ query = Fido.search(
 print(query)
 
 #####################################################
-# To download use the following code:
-# ``files = Fido.fetch(query)``
+# Submit the export request and download the data.
+files = Fido.fetch(query)
+files.sort()
+
+#####################################################
+# Now that we've downloaded the files, we can create
+# a `~sunpy.map.MapSequence` from them and animate
+# them.
+sequence = sunpy.map.Map(files, sequence=True)
+# Make sure the colorbar limits are the same for each image
+for each_map in sequence:
+    each_map.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
+plt.figure()
+ani = sequence.plot()
+
+plt.show()
