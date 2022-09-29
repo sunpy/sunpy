@@ -72,7 +72,7 @@ All sunpy Maps are derived from `sunpy.map.GenericMap`, all the methods and attr
     :skip: make_fitswcs_header
     :skip: meta_keywords
     :skip: get_observer_meta
-    :skip: carrington_header
+    :skip: make_carrington_header
 
 Header helpers
 ==============

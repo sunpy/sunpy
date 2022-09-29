@@ -8,7 +8,7 @@ from sunpy import log
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
 
-__all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'carrington_header']
+__all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'make_carrington_header']
 
 
 def meta_keywords():
@@ -378,7 +378,7 @@ _map_meta_keywords = {
 }
 
 
-def carrington_header(date, observer_coordinate, shape, *, projection_code="CAR"):
+def make_carrington_header(date, observer_coordinate, shape, *, projection_code="CAR"):
     """
     Construct a FITS-WCS header for a Carrington coordinate frame.
     The date-time and observer coordinate of the new coordinate frame

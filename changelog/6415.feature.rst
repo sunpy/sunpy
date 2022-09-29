@@ -1,1 +1,1 @@
-Added a new function :func:`sunpy.map.header_helper.carrington_header` to help with generating FITS-WCS headers in a Carrington coordinate system.
+Added a new function :func:`sunpy.map.header_helper.make_carrington_header` to help with generating FITS-WCS headers in a Carrington coordinate system.

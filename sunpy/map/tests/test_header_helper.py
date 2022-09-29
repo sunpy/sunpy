@@ -8,7 +8,7 @@ from astropy.wcs import WCS
 import sunpy.map
 from sunpy.coordinates import frames, sun
 from sunpy.map import make_fitswcs_header
-from sunpy.map.header_helper import carrington_header
+from sunpy.map.header_helper import make_carrington_header
 from sunpy.util.metadata import MetaDict
 
 
@@ -231,8 +231,8 @@ def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
 # Second case here chosen to produce non-square pixels
 @pytest.mark.parametrize('shape', [[90, 180], [240, 100]])
 @pytest.mark.parametrize('projection_code', ['CAR', 'CEA'])
-def test_carrington_header(aia171_test_map, shape, projection_code):
-    header = carrington_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape=shape, projection_code=projection_code)
+def test_make_carrington_header(aia171_test_map, shape, projection_code):
+    header = make_carrington_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape=shape, projection_code=projection_code)
     carr_map = aia171_test_map.reproject_to(header)
 
     # Check upper right and lower left coordinates are as expected
@@ -245,6 +245,6 @@ def test_carrington_header(aia171_test_map, shape, projection_code):
     assert ur_coord.lat == 90 * u.deg
 
 
-def test_carrington_header_invalid_proj_code(aia171_test_map):
+def test_make_carrington_header_invalid_proj_code(aia171_test_map):
     with pytest.raises(ValueError, match='projection_code must be one of'):
-        carrington_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape=[90, 180], projection_code='blah')
+        make_carrington_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape=[90, 180], projection_code='blah')
