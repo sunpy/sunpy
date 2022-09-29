@@ -10,10 +10,6 @@ Unified File Readers
 
 .. automodapi:: sunpy.io.header
 
-.. _iofits:
-.. automodapi:: sunpy.io.fits
-   :allowed-package-names: sunpy.io._fits
-
 .. _iojp2:
 .. automodapi:: sunpy.io.jp2
 
