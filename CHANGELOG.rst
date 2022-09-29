@@ -30,9 +30,9 @@ Deprecations
 - The `sunpy.io.fits` module is deprecated, as it was designed for internal use
   only. Use the `astropy.io.fits` module instead for more generic functionality
   to read FITS files. (`#5983 <https://github.com/sunpy/sunpy/pull/5983>`__)
-- `sunpy.physics.solar_rotation.mapsequence_solar_derotate` is deprecated and will be removed in version 4.1.
+- ``sunpy.physics.solar_rotation.mapsequence_solar_derotate`` is deprecated and will be removed in version 4.1.
   This function has been moved to `sunkit_image.coalignment.mapsequence_coalign_by_rotation` and has an identical API and functionality. (`#6031 <https://github.com/sunpy/sunpy/pull/6031>`__)
-- `sunpy.physics.solar_rotation.calculate_solar_rotate_shift` is deprecated and will be removed in version 4.1.
+- ``sunpy.physics.solar_rotation.calculate_solar_rotate_shift`` is deprecated and will be removed in version 4.1.
   This function has been moved to `sunkit_image.coalignment.calculate_solar_rotate_shift` and has an identical API and functionality. (`#6031 <https://github.com/sunpy/sunpy/pull/6031>`__)
 - Deprecated using `sunpy.map.GenericMap.draw_limb` on an Axes that is not a
   WCSAxes. (`#6079 <https://github.com/sunpy/sunpy/pull/6079>`__)
@@ -1433,7 +1433,7 @@ Bug Fixes
 - Fixed a bug with the handling of changing observation times for transformations between `~astropy.coordinates.HCRS` and `~sunpy.coordinates.frames.HeliographicStonyhurst`, which also indirectly affected other transformations when changing observation times. (`#3246 <https://github.com/sunpy/sunpy/pull/3246>`__)
 - Fixed all coordinate transformations to properly handle a change in observation time. (`#3247 <https://github.com/sunpy/sunpy/pull/3247>`__)
 - Fixed the handling of coordinates with velocity information when transforming between Astropy frames and SunPy frames. (`#3247 <https://github.com/sunpy/sunpy/pull/3247>`__)
-- Fixed `~sunpy.physics.solar_rotation.calculate_solar_rotate_shift` so that it does not calculate a shift between the reference layer and itself, which would sometimes incorrectly result in a shift of a pixel due to numerical precision. (`#3255 <https://github.com/sunpy/sunpy/pull/3255>`__)
+- Fixed ``sunpy.physics.solar_rotation.calculate_solar_rotate_shift`` so that it does not calculate a shift between the reference layer and itself, which would sometimes incorrectly result in a shift of a pixel due to numerical precision. (`#3255 <https://github.com/sunpy/sunpy/pull/3255>`__)
 - Stop crash when ``LineAnimator`` ``axes_ranges`` entry given as ``1D`` array when data is ``>1D``, i.e. as an independent axis. (`#3283 <https://github.com/sunpy/sunpy/pull/3283>`__)
 - Fixed a `sunpy.coordinates` bug where a frame using the default observer of Earth could have its observer overwritten during a transformation. (`#3291 <https://github.com/sunpy/sunpy/pull/3291>`__)
 - Fixed a bug where the transformation from `~sunpy.coordinates.frames.Helioprojective` to `~sunpy.coordinates.frames.Heliocentric` used the Sun-observer distance from the wrong frame when shifting the origin, and thus might not give the correct answer if the observer was not the same for the two frames. (`#3291 <https://github.com/sunpy/sunpy/pull/3291>`__)
@@ -1588,7 +1588,7 @@ Deprecations and Removals
 - Removed ``JSOCClient.check_request`` in favour of `drms.client.ExportRequest.status` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - ``sunpy.net.vso.VSOClient.query_legacy`` and ``sunpy.net.vso.VSOClient.latest`` have been deprecated as we strongly recommend people use `sunpy.net.Fido` for all queries. (`#2866 <https://github.com/sunpy/sunpy/pull/2866>`__)
 - The deprecated ``sunpy.physics.transforms`` module has been removed, it is
-  replaced by `sunpy.physics.solar_rotation` and
+  replaced by ``sunpy.physics.solar_rotation`` and
   `sunpy.physics.differential_rotation`. (`#2994 <https://github.com/sunpy/sunpy/pull/2994>`__)
 - Removed ``sunpy.sun.sun.solar_cycle_number`` because it was fundamentally flawed (`#3150 <https://github.com/sunpy/sunpy/pull/3150>`__)
 
