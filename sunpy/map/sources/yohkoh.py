@@ -4,6 +4,8 @@ __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
 
+import astropy.units as u
+from astropy.coordinates import ITRS, SphericalRepresentation
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
@@ -44,6 +46,16 @@ class SXTMap(GenericMap):
         self.plot_settings['cmap'] = 'yohkohsxt' + self.measurement[0:2].lower()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+
+    @property
+    def _supported_observer_coordinates(self):
+        return [(('long', 'lat', 'radius'), {'lon': self.meta.get('long'),
+                                             'lat': self.meta.get('lat'),
+                                             'distance': self.meta.get('radius'),
+                                             'unit': (u.deg, u.deg, u.km),
+                                             'representation_type': SphericalRepresentation,
+                                             'frame': ITRS, })
+                ] + super()._supported_observer_coordinates
 
     @property
     def observatory(self):
