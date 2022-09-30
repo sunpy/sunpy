@@ -18,7 +18,7 @@ Breaking Changes
 Deprecations
 ------------
 
-- Deprecate `sunpy.image.coalignment` as the code has now been moved to
+- Deprecate ``sunpy.image.coalignment`` as the code has now been moved to
   `sunkit_image.coalignment` with an identical API.
   This module will be removed in sunpy 4.1. (`#5957 <https://github.com/sunpy/sunpy/pull/5957>`__)
 - The `sunpy.map.GenericMap.shift` method has been renamed to
@@ -31,9 +31,9 @@ Deprecations
   only. Use the `astropy.io.fits` module instead for more generic functionality
   to read FITS files. (`#5983 <https://github.com/sunpy/sunpy/pull/5983>`__)
 - ``sunpy.physics.solar_rotation.mapsequence_solar_derotate`` is deprecated and will be removed in version 4.1.
-  This function has been moved to `sunkit_image.coalignment.mapsequence_coalign_by_rotation` and has an identical API and functionality. (`#6031 <https://github.com/sunpy/sunpy/pull/6031>`__)
+  This function has been moved to ``sunkit_image.coalignment.mapsequence_coalign_by_rotation`` and has an identical API and functionality. (`#6031 <https://github.com/sunpy/sunpy/pull/6031>`__)
 - ``sunpy.physics.solar_rotation.calculate_solar_rotate_shift`` is deprecated and will be removed in version 4.1.
-  This function has been moved to `sunkit_image.coalignment.calculate_solar_rotate_shift` and has an identical API and functionality. (`#6031 <https://github.com/sunpy/sunpy/pull/6031>`__)
+  This function has been moved to ``sunkit_image.coalignment.calculate_solar_rotate_shift`` and has an identical API and functionality. (`#6031 <https://github.com/sunpy/sunpy/pull/6031>`__)
 - Deprecated using `sunpy.map.GenericMap.draw_limb` on an Axes that is not a
   WCSAxes. (`#6079 <https://github.com/sunpy/sunpy/pull/6079>`__)
 
@@ -767,7 +767,7 @@ Removals
   - ``sunpy.coordinates.frames.Helioprojective.calculate_distance``, alternative
     is `sunpy.coordinates.frames.Helioprojective.make_3d`.
   - ``sunpy.image.coalignment.repair_image_nonfinite`` - if you wish to repair the image,
-    this has to be done manually before calling the various `sunpy.image.coalignment` functions.
+    this has to be done manually before calling the various ``sunpy.image.coalignment`` functions.
   - The ``repair_nonfinite`` keyword argument to ``calculate_shift`` and  ``calculate_match_template_shift``
     has been removed.
   - ``sunpy.instr.lyra.download_lytaf_database`` - this just downloaded the file
@@ -1628,7 +1628,7 @@ Features
 - Add a new WSDL URL and port to support SunPy use of VSO instance at SDAC. (`#2912 <https://github.com/sunpy/sunpy/pull/2912>`__)
 - Add support for COSMO K-Coronograph (KCOR) FITS data. (`#2916 <https://github.com/sunpy/sunpy/pull/2916>`__)
 - Add logger messaging system based on `~astropy.logger.AstropyLogger`, cleaned up all warnings, removed all print statements. (`#2980 <https://github.com/sunpy/sunpy/pull/2980>`__)
-- The function `sunpy.image.coalignment.get_correlation_shifts` now issues an error when the number of dimensions
+- The function ``sunpy.image.coalignment.get_correlation_shifts`` now issues an error when the number of dimensions
   are not correct instead of a warning and returning None. (`#2980 <https://github.com/sunpy/sunpy/pull/2980>`__)
 - The default location of the sunpy sample data has changed to be in the platform
   specific data directory as provided by `appdirs <https://github.com/ActiveState/appdirs>`__. (`#2993 <https://github.com/sunpy/sunpy/pull/2993>`__)
