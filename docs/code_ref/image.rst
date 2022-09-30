@@ -10,5 +10,3 @@ in other places.
 .. automodapi:: sunpy.image.resample
 
 .. automodapi:: sunpy.image.transform
-
-.. automodapi:: sunpy.image.coalignment

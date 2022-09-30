@@ -52,7 +52,7 @@ class MapSequence:
     >>> import sunpy.map
     >>> mapsequence = sunpy.map.Map('images/*.fits', sequence=True)   # doctest: +SKIP
 
-    MapSequences can be co-aligned using the routines in sunpy.image.coalignment.
+    MapSequences can be co-aligned using the routines in `sunkit_image.coalignment`.
     """
 
     def __init__(self, *args, sortby='date', derotate=False, **kwargs):
