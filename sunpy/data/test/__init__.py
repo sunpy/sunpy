@@ -115,7 +115,7 @@ def get_dummy_map_from_header(filename):
     if 'BITPIX' in header:
         data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
     # NOTE: by reading straight from the data header pair, we are skipping
-    # the fixes that are applied in sunpy.io.fits, e.g. the waveunit fix
+    # the fixes that are applied in sunpy.io._fits, e.g. the waveunit fix
     # Would it be better to write this whole map back to a temporary file and then
     # read it back in by passing in the filename instead?
     return sunpy.map.Map(data, header)

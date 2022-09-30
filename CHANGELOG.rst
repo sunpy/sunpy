@@ -27,7 +27,7 @@ Deprecations
 - The `sunpy.map.GenericMap.shifted_value` property has been deprecated.
   Modifications to the reference coordinate can be found in the
   ``CRVAL1`` and ``CRVAL2`` keys of ``sunpy.map.GenericMap.meta.modified_items``. (`#5977 <https://github.com/sunpy/sunpy/pull/5977>`__)
-- The `sunpy.io.fits` module is deprecated, as it was designed for internal use
+- The ``sunpy.io.fits`` module is deprecated, as it was designed for internal use
   only. Use the `astropy.io.fits` module instead for more generic functionality
   to read FITS files. (`#5983 <https://github.com/sunpy/sunpy/pull/5983>`__)
 - `sunpy.physics.solar_rotation.mapsequence_solar_derotate` is deprecated and will be removed in version 4.1.
@@ -218,7 +218,7 @@ Breaking Changes
   to use `~sunpy.map.GenericMap.date_average`,
   `~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
   instead if you need one of these specific times. (`#5449 <https://github.com/sunpy/sunpy/pull/5449>`__)
-- :func:`sunpy.io.fits.get_header` no longer automatically tries to add the
+- ``sunpy.io.fits.get_header`` no longer automatically tries to add the
   WAVEUNIT keyword if it isn't present in the header. To replicate the original
   behaviour do::
 
@@ -228,7 +228,7 @@ Breaking Changes
         header['WAVEUNIT'] = waveunit
 
   The `sunpy.map.GenericMap.waveunit` property still uses
-  :func:`sunpy.io.fits.extract_waveunit` to try and get the waveunit if the
+  ``sunpy.io.fits.extract_waveunit``` to try and get the waveunit if the
   WAVEUNIT key isn't present. (`#5501 <https://github.com/sunpy/sunpy/pull/5501>`__)
 - `sunpy.map.GenericMap.wcs` no longer passes the whole ``.meta`` dictionary to
   `astropy.wcs.WCS` when constructing ``.wcs``. Instead each metadata value is
@@ -334,7 +334,7 @@ New Features
   This improves the `~sunpy.map.GenericMap.name` of the map and adds correct
   information for the `~sunpy.map.GenericMap.processing_level` and
   `~sunpy.map.GenericMap.exposure_time`. (`#5502 <https://github.com/sunpy/sunpy/pull/5502>`__)
-- :func:`sunpy.io.fits.write` can now update the ``data`` and ``header`` of an existing HDU instance, as an alternative to creating a new instance of a specified HDU type. This adds support for writing a HDU (such as :class:`~astropy.io.fits.CompImageHDU`) initialised with non-default keyword arguments. (`#5503 <https://github.com/sunpy/sunpy/pull/5503>`__)
+- ``sunpy.io.fits.write`` can now update the ``data`` and ``header`` of an existing HDU instance, as an alternative to creating a new instance of a specified HDU type. This adds support for writing a HDU (such as :class:`~astropy.io.fits.CompImageHDU`) initialised with non-default keyword arguments. (`#5503 <https://github.com/sunpy/sunpy/pull/5503>`__)
 - Added `~sunpy.timeseries.GenericTimeSeries.observatory` to provide observatory information for the timeseries e.g. specific goes satellite number. (`#5556 <https://github.com/sunpy/sunpy/pull/5556>`__)
 - :meth:`sunpy.timeseries.GenericTimeSeries.plot` and
   :meth:`sunpy.timeseries.GenericTimeSeries.peek` will now automatically label
@@ -987,7 +987,7 @@ Bug Fixes
 - Fixed a significant performance bug that affected all coordinate transformations.
   Transformations have been sped up by a factor a few. (`#4663 <https://github.com/sunpy/sunpy/pull/4663>`__)
 - Fixed a bug with the mapping of a WCS header to a coordinate frame if the observer location is provided in Carrington coordinates. (`#4669 <https://github.com/sunpy/sunpy/pull/4669>`__)
-- `sunpy.io.fits.header_to_fits` now excludes any keys that have associated NaN
+- ``sunpy.io.fits.header_to_fits`` now excludes any keys that have associated NaN
   values, as these are not valid in a FITS header, and throws a warning if this
   happens. (`#4676 <https://github.com/sunpy/sunpy/pull/4676>`__)
 - Fixed an assumption in `sunpy.map.GenericMap.pixel_to_world` that the first
@@ -1023,7 +1023,7 @@ Added/Improved Documentation
   and `sunpy.timeseries.TimeSeries` to the docs. (`#4098 <https://github.com/sunpy/sunpy/pull/4098>`__)
 - Clarified spline option for `sunpy.map.GenericMap.resample`. (`#4136 <https://github.com/sunpy/sunpy/pull/4136>`__)
 - Updated the gallery example :ref:`sphx_glr_generated_gallery_plotting_solar_cycle_example.py` to retrieve data using `~sunpy.net.Fido`. (`#4169 <https://github.com/sunpy/sunpy/pull/4169>`__)
-- Fixed example usage of :func:`~sunpy.io.fits.read` to account for the fact that it returns a list
+- Fixed example usage of ``sunpy.io.fits.read`` to account for the fact that it returns a list
   of data-header pairs rather than the data-header pairs directly. (`#4183 <https://github.com/sunpy/sunpy/pull/4183>`__)
 - Added example of how to create a `sunpy.map.GenericMap` from observations in RA-DEC coordinates. (`#4236 <https://github.com/sunpy/sunpy/pull/4236>`__)
 - Added `sunpy.coordinates.SunPyBaseCoordinateFrame` and `sunpy.coordinates.BaseHeliographic` to the documentation. (`#4274 <https://github.com/sunpy/sunpy/pull/4274>`__)
@@ -1221,7 +1221,7 @@ Bug Fixes
 - Fixed a bug with :func:`~sunpy.coordinates.transformations.transform_with_sun_center` where the global variable was sometimes restored incorrectly.
   This bug was most likely encountered if there was a nested use of this context manager. (`#4015 <https://github.com/sunpy/sunpy/pull/4015>`__)
 - Fixes a bug in fido_factory to allow  path="./" in fido.fetch(). (`#4058 <https://github.com/sunpy/sunpy/pull/4058>`__)
-- Prevented `sunpy.io.fits.header_to_fits` modifying the passed header in-place. (`#4067 <https://github.com/sunpy/sunpy/pull/4067>`__)
+- Prevented ``sunpy.io.fits.header_to_fits`` modifying the passed header in-place. (`#4067 <https://github.com/sunpy/sunpy/pull/4067>`__)
 - Strip out any unknown unicode from the HEK response to prevent it failing to load some results. (`#4088 <https://github.com/sunpy/sunpy/pull/4088>`__)
 - Fixed a bug in :func:`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst` that resulted in a error when requesting an array of locations in conjuction with enabling the light-travel-time correction. (`#4112 <https://github.com/sunpy/sunpy/pull/4112>`__)
 - `sunpy.map.GenericMap.top_right_coord` and `~sunpy.map.GenericMap.center`
@@ -1250,7 +1250,7 @@ Bug Fixes
   near the edges are now correctly extrapolated using the ``fill_value=extrapolate``
   option to `scipy.interpolate.interp1d`. (`#4164 <https://github.com/sunpy/sunpy/pull/4164>`__)
 - Fixed a bug where passing an `int` or `list` via the ``hdus`` keyword argument to
-  `~sunpy.io.fits.read` threw an exception because the list of HDU objects was no longer
+  ``sunpy.io.fits.read`` threw an exception because the list of HDU objects was no longer
   of type `~astropy.io.fits.HDUList`. (`#4183 <https://github.com/sunpy/sunpy/pull/4183>`__)
 - Fix attr printing when the attr registry is empty for that attr (`#4199 <https://github.com/sunpy/sunpy/pull/4199>`__)
 - Improved the accuracy of :func:`~sunpy.coordinates.sun.angular_radius` by removing the use of the small-angle approximation.
@@ -1483,7 +1483,7 @@ Improved Documentation
 - Added more details to docstrings in `sunpy.coordinates.frames`. (`#3262 <https://github.com/sunpy/sunpy/pull/3262>`__)
 - Added a link to package maintainer list in the API Stability page. (`#3281 <https://github.com/sunpy/sunpy/pull/3281>`__)
 - Improved the contributing guide by updating commands and highlighting text. (`#3394 <https://github.com/sunpy/sunpy/pull/3394>`__)
-- Removing `.fits` from the end of path kwargs in `sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch` docs to change output file extension from ``{file}.fits.fits`` to ``{file}.fits``. (`#3399 <https://github.com/sunpy/sunpy/pull/3399>`__)
+- Removing ``.fits`` from the end of path kwargs in `sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch` docs to change output file extension from ``{file}.fits.fits`` to ``{file}.fits``. (`#3399 <https://github.com/sunpy/sunpy/pull/3399>`__)
 - A new example gallery section "Using SunPy with Other Packages" has been added,
   which contains a set of new examples using the `reproject
   <https://reproject.readthedocs.io/>`__ with solar data. (`#3405 <https://github.com/sunpy/sunpy/pull/3405>`__)
@@ -1655,7 +1655,7 @@ Bug Fixes
   the coordinate representation is Cartesian. (`#2646 <https://github.com/sunpy/sunpy/pull/2646>`__)
 - Running the figure tests with ``setup.py test`` now saves the figures and the hashes to the same directory as setup.py. (`#2658 <https://github.com/sunpy/sunpy/pull/2658>`__)
 - ``sunpy.instr.fermi.met_to_utc`` now returns the correct utc time which takes into account the leap seconds that have passed. (`#2679 <https://github.com/sunpy/sunpy/pull/2679>`__)
-- Support passing Python file objects to `sunpy.io.fits.write`. (`#2688 <https://github.com/sunpy/sunpy/pull/2688>`__)
+- Support passing Python file objects to ``sunpy.io.fits.write``. (`#2688 <https://github.com/sunpy/sunpy/pull/2688>`__)
 - Added DRMS to setup.py so sunpy[all] installs it as a dependency. (`#2693 <https://github.com/sunpy/sunpy/pull/2693>`__)
 - Fix eve 0cs timeseries seperator regex to support Python 3.7 (`#2697 <https://github.com/sunpy/sunpy/pull/2697>`__)
 - Fix the bug which crashes `~sunpy.map.sources.LASCOMap` for when 'date-obs' is reformatted agian from a self applied function. (`#2700 <https://github.com/sunpy/sunpy/pull/2700>`__)
@@ -1674,7 +1674,7 @@ Bug Fixes
 - Always use _default_wrap_angle rather than hard coding a wrap angle in the init
   of a sunpy coordinate frame (`#2853 <https://github.com/sunpy/sunpy/pull/2853>`__)
 - Ensure imageanimators only slice arrays with integers (`#2856 <https://github.com/sunpy/sunpy/pull/2856>`__)
-- Fixed `sunpy.io.fits.write` to handle the keyword ``COMMENT`` correctly. (`#2880 <https://github.com/sunpy/sunpy/pull/2880>`__)
+- Fixed ``sunpy.io.fits.write`` to handle the keyword ``COMMENT`` correctly. (`#2880 <https://github.com/sunpy/sunpy/pull/2880>`__)
 - If Carrington longitude ("crln_obs") is found in the FITS header, `~sunpy.map.Map` converts this to the correct Heliographic longitude. (`#2946 <https://github.com/sunpy/sunpy/pull/2946>`__)
 - ``sunpy.net.helio.hec.HECClient.time_query`` now resolves the correct input time format. (`#2969 <https://github.com/sunpy/sunpy/pull/2969>`__)
 - Fixes the calculation of the solar rotation of coordinates and the differential rotation of `sunpy.map.GenericMap`. (`#2972 <https://github.com/sunpy/sunpy/pull/2972>`__)
