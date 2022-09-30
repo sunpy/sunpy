@@ -1,0 +1,1 @@
+Added tests and test data for `~sunpy.map.sources.SXTMap`

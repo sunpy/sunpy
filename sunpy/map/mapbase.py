@@ -786,7 +786,7 @@ class GenericMap(NDData):
 
     def _get_date(self, key):
         time = self.meta.get(key, None)
-        if time is None:
+        if not time:
             return
 
         # Get the time scale
@@ -1127,12 +1127,12 @@ class GenericMap(NDData):
         If not present, defaults to (HPLN-TAN, HPLT-TAN), and emits a warning.
         """
         ctype1 = self.meta.get('ctype1', None)
-        if ctype1 is None:
+        if not ctype1:
             warn_metadata("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN")
             ctype1 = 'HPLN-TAN'
 
         ctype2 = self.meta.get('ctype2', None)
-        if ctype2 is None:
+        if not ctype2:
             warn_metadata("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
             ctype2 = 'HPLT-TAN'
 
