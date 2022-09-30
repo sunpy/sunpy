@@ -1,0 +1,3 @@
+In `~sunpy.map.GenericMap.coordinate_system` and `~sunpy.map.GenericMap._get_date`, the default values
+will be used if the expected key is missing or empty.
+This covers cases where the key may be present in the header, but have no value.
