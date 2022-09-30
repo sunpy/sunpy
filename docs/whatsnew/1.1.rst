@@ -200,7 +200,7 @@ Notable Breaking Changes or Removed functionality
   The function ``sunpy.image.coalignment.repair_image_nonfinite`` is deprecated. (`#3287 <https://github.com/sunpy/sunpy/pull/3287>`__)
 - The method to convert a `~sunpy.coordinates.frames.Helioprojective` frame from 2D to 3D has been renamed from ``sunpy.coordinates.frames.Helioprojective.calculate_distance`` to `~sunpy.coordinates.frames.Helioprojective.make_3d`.  This method is not typically directly called by users. (`#3389 <https://github.com/sunpy/sunpy/pull/3389>`__)
 - ``sunpy.visualization.animator.ImageAnimatorWCS`` is now deprecated in favour of
-  `~sunpy.visualization.animator.ArrayAnimatorWCS`. (`#3407 <https://github.com/sunpy/sunpy/pull/3407>`__)
+  ``sunpy.visualization.animator.ArrayAnimatorWCS``. (`#3407 <https://github.com/sunpy/sunpy/pull/3407>`__)
 - ``sunpy.cm`` has been moved to `sunpy.visualization.colormaps` and will be
   removed in a future version. (`#3410 <https://github.com/sunpy/sunpy/pull/3410>`__)
 
