@@ -229,7 +229,6 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
-        self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
             norm = None
