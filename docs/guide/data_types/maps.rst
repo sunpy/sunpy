@@ -23,7 +23,7 @@ Lastly, :ref:`custom-maps` shows how you can create Maps from data sources not s
 1. Creating Maps
 ================
 
-To make things easy, **sunpy** can download sample data which are used throughout the docs (see the :ref:`sphx_glr_generated_gallery_acquiring_data_2011_06_07_sampledata_overview.py`).
+To make things easy, **sunpy** can download sample data which are used throughout the docs.
 These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE``.
 To create a `~sunpy.map.Map` from a sample AIA image, type the following into your Python shell:
 
