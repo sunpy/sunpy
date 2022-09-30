@@ -49,15 +49,15 @@ def test_wavelength(sxt_map):
 
 
 def test_heliographic_longitude(sxt_map):
-    assert u.allclose(sxt_map.heliographic_longitude, 0 * u.deg)
+    assert u.allclose(sxt_map.heliographic_longitude, 0.002357818089886795 * u.deg)
 
 
 def test_heliographic_latitude(sxt_map):
-    assert u.allclose(sxt_map.heliographic_latitude, 0 * u.deg)
+    assert u.allclose(sxt_map.heliographic_latitude, 3.955251457847305 * u.deg)
 
 
 def test_dsun(sxt_map):
-    assert u.allclose(sxt_map.dsun, 148331000000.0 * u.m)
+    assert u.allclose(sxt_map.dsun, 148328341.63429108 * u.km)
 
 
 def test_wcs(sxt_map):
