@@ -1,0 +1,113 @@
+SIMPLE  =                    T / Written by IDL:  Wed May 25 11:26:25 2016      
+BITPIX  =                  -32 /Real*4 (floating point)                         
+NAXIS   =                    2 /                                                
+NAXIS1  =                  256 /                                                
+NAXIS2  =                  256 /                                                
+INDEX_VE=                 4113 / gen:                                           
+TIME    =             40224018 / gen: Time (millisec of day) Derived from DP_Tim
+DAY     =                 4692 / gen: Day (since 1-Jan-79) Derived from DP_Time 
+DP_MODE =                  141 / gen: DP Mode W50 F2                            
+DP_RATE =                   64 / gen: DP Rate W48 F15                           
+FLARE_CO=                    5 / gen: Flare flag control (active triggers) W50 F
+RBM_STAT=                    0 / gen: Radiation Belt Montitor Status W50 F61    
+TELEMETR=                   21 / gen: Telemetry source information W7 in 16 byte
+CAL_STAT=                   64 / gen: CAL status W51 F55                        
+PNTG_TRA=                    1 / gen: Information on how pointing was derived Fr
+PNTG_JIT=                    0 / gen: Magnitude of pointing change From Mainfram
+DATA_QUA=                    0 / gen: Data quality Ground Info                  
+NMISSSAM=                    0 / gen: Number of missing bytes (due to telemetry 
+STARTSAM=                    0 / gen: Starting sample number of good data Ground
+DATA_WOR=                    4 / gen: Data word type (byte, integer*2, real...) 
+NINDEXST=                    0 / gen: Number of "extra" index structures followi
+NINDEXBY=                  352 / gen: Number of bytes in the index records      
+NDATABYT=               262144 / gen: Number of byte in the data section        
+SXT_POW_=                  251 / gen: Power Status (0=off, 1=on) W48 F25        
+BCS_POW_=                  238 / gen: BCS Power status W112 F32n+3              
+HXT_POW_=                  240 / gen: HXT Power status W48 F32+1                
+WBS_POW_=                   98 / gen: Power status W48 F32n+2                   
+SXT_CONT=                  192 / gen: SXT Control Status W114 F32               
+SINDEX_V=                12307 / sxt:                                           
+PFI_FFI =                    1 / sxt: Image information                         
+PERIPH  =                  209 / sxt: Aspect/shutter/filter information W114 F08
+EXPLEVMO=                    4 / sxt: Exposure mode/level W114 F09/03           
+IMGPARAM=                    2 / sxt: Image parameter information W114 F24/18   
+FLUSH   =                  133 / sxt: Flush information W114 F40/34             
+EXPLAT  =                 2489 / sxt: Exposure latency (mailbox value) W114 F10,
+EXPDUR  =                23971 / sxt: Exposure duration (mailbox value) W114 F42
+SHAPE_C1=                  256 / sxt: Commanded image shape (nx by ny) W114 F57,
+SHAPE_C2=                  256 / sxt: Commanded image shape (nx by ny) W114 F57,
+CORNE_C1=                    0 / sxt: Commanded starting corner (x0, y0) W114 F2
+CORNE_C2=                    0 / sxt: Commanded starting corner (x0, y0) W114 F2
+PIX_SIZE=              2.00000 / his: pixel size from index.his.pixel_size      
+FOV_VER =                    0 / sxt: Information on how solution was derived Gr
+OBSREGIO=                   96 / sxt: Observing region Number W114 F50          
+SEQ_NUM =                   11 / sxt: Sequence Number (1-13) W114 F59/55        
+SEQ_TAB_=                  186 / sxt: Sequence table serial used Ground Info    
+SERIAL_N=                 8583 / sxt: Serial number of image W115 F18,34,50/16,3
+POW_STAT=                  251 / sxt: Power Status (0=off, 1=on) W48 F25        
+SW_STAT =                  176 / sxt: Active Software (1=active) W114 F12       
+SSXT_CON=                  192 / sxt: SXT Control Status W114 F32               
+SXTFMT  =                   12 / sxt: SXT Format info 8:2 or 2:8 W115 F00       
+TEMP_CCD=                   95 / sxt: CCD Temperature W113 F52                  
+J_REGIST=                   68 / sxt: Which buffer is used W114 F33?            
+IMG_MAX =                  255 / sxt: Maximum intensity Derived                 
+IMG_AVG =                    1 / sxt: Average intensity of whole image Derived  
+IMG_DEV =                   34 / sxt: Standard deviation of the whole image Deri
+PERCENTD=                  239 / sxt: Percentage of data present Derived        
+PERCENTO=                    0 / sxt: Percentage of data over [N] counts Derived
+AEC_STAT=                    0 / sxt: AEC Status W114 F44                       
+EXTRA   =                    0 / sxt: Information used by secondary programs    
+LAT     =              10.9955 / Yoh Orb: Spacecraft Lattitude                  
+LONG    =              315.861 / Yoh Orb: Spacecraft Longitude                  
+HEIGHT  =              777.563 / Yoh Orb: Spacecrft Altitude (Km)               
+RADIUS  =              7154.83 / Yoh Orb: Radius                                
+RIG     =              10.2560 / Yoh Orb: Rigidity                              
+TIM2FMS =                  985 / Seconds Since FMS                              
+TIM2NITE=                 2764 / Seconds Until LMS                              
+IN_SAA  =                    0 / Yohkoh in SAA?                                 
+DATE    = '        '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+MJD     =                48565 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+TIME_OBS= '        '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+DATE_OBS= '1991-11-05T11:10:24.018' / ssw: http://www.lmsal.com/solarsoft/ssw_st
+DATE-OBS= '        '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+FILENAME= 'sxtf_19911105_111024_221.fts' / ssw: http://www.lmsal.com/solarsoft/s
+ORIGIN  = '        '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+TELESCOP= 'Yohkoh  '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+INSTRUME= 'SXT     '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+OBJECT  = '        '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+SCI_OBJ = '        '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+OBS_PROG= '        '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+EXPTIME =              1.00000 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+WAVELNTH= 'Al.1    '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CTYPE1  = '        '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CTYPE2  = '        '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CUNIT1  = 'arcsec  '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CUNIT2  = 'arcsec  '           / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CRPIX1  =              107.613 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CRPIX2  =              165.908 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CRVAL1  =              0.00000 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CRVAL2  =              0.00000 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CDELT1  =              9.82000 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CDELT2  =              9.82000 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+XCEN    =              205.115 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+YCEN    =             -367.342 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CROTA1  =             0.793083 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+CROTA2  =             0.793083 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+SOLAR_R =              967.151 / ssw: Solar radius in arcsec (geocentric)       
+SOLAR_B0=              3.95366 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+SOLAR_L0=              0.00000 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+SOLAR_P =              0.00000 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+DSUN_OBS=          1.48331E+11 / ssw: Sun-Earth distance in meter               
+HGLN_OBS=              0.00000 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+HGLT_OBS=              0.00000 / ssw: http://www.lmsal.com/solarsoft/ssw_standar
+HISTORY Dark Subtraction: (dark_sub,Ver: 3.280) One Img      1-NOV-91  16:09:20 
+HISTORY DC Orbit Correction: Enabled                                            
+HISTORY Despiked: (sxt_clean.pro) Level/N_Sigma =   3.0                         
+HISTORY Leak Subtraction:  NONE PERFORMED                                       
+HISTORY Image Deconvolution?    NONE                                            
+HISTORY Composite Creation:NONE PERFORMED                                       
+HISTORY Vignette Correction: NONE PERFORMED                                     
+HISTORY Registration: NONE                                                      
+HISTORY Exposure Duration (millisec):   Original=         38.7   New=       1000
+HISTORY Pixel Resolution:    Original= Qrtr   New= Qrtr                         
+HISTORY Intensity units:   DN/Image-Pixel/Exposure-Duration                     
