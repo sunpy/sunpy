@@ -1,7 +1,7 @@
 """
-===============================================
+==============================================
 Requesting cutouts of AIA images from the JSOC
-===============================================
+==============================================
 
 This example shows how to request a cutout of a series of
 AIA images from the JSOC.
@@ -34,8 +34,8 @@ files = Fido.fetch(query)
 amap = sunpy.map.Map(files)
 
 #####################################################
-# Next, we will use this map to definte the top right and bottom
-# left coordinates we want for the submap.
+# Next, we will use the coordinate frame from this map to define the top right and bottom
+# left coordinates we want for the cutout request.
 bottom_left = SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=amap.coordinate_frame)
 top_right = SkyCoord(150*u.arcsec, 375*u.arcsec, frame=amap.coordinate_frame)
 
