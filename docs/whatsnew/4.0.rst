@@ -104,12 +104,12 @@ Printing a `.MetaDict` now prints each entry on a new line, making it much easie
   naxis2: 1024
   ...
 
-Deprecation of `sunpy.image.coalignment`
-========================================
-The `sunpy.image.coalignment` module has been deprecated and will be removed in version 4.1.
+Deprecation of ``sunpy.image.coalignment``
+==========================================
+The ``sunpy.image.coalignment`` module has been deprecated and will be removed in version 4.1.
 Users should instead use `sunkit_image.coalignment` which includes identical functionality and
 an identical API.
-The reason for deprecating and moving `sunpy.image.coalignment` is twofold.
+The reason for deprecating and moving ``sunpy.image.coalignment`` is twofold.
 First, the scope of the core `sunpy` package has increasingly narrowed, with more analysis-specific
 functionality moved out to affiliated packages.
 Second, the module has seen little development in several years and by moving
