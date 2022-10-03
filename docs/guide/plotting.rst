@@ -11,7 +11,7 @@ If you are already familiar with Matplotlib, skip ahead to the second section.
 Matplotlib Tutorial
 *******************
 
-This tutorial is a summary of one that can be found in the `Matplotlib usage documentation <https://matplotlib.org/stable/users/explain/api_interfaces.html>`_.
+This tutorial is a summary of one that can be found in the `Matplotlib usage documentation <https://matplotlib.org/stable/users/explain/api_interfaces.html>`__.
 
 Matplotlib provides two main pathways for plotting.
 One is meant for interactive use (e.g. on the command-line) and the other for non-interactive use (e.g. in scripts).
@@ -82,7 +82,7 @@ Plotting in sunpy
 *****************
 
 To be consistent with Matplotlib, sunpy has developed a standard plotting interface which supports both simple and advanced Matplotlib usage.
-The following examples focus on the map object, but both ``peek()`` ``plot()`` work on time series objects too.
+The following examples focus on the map object, but both ``peek()`` and ``plot()`` work on time series objects too.
 
 peek()
 ------
