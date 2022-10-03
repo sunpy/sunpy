@@ -36,10 +36,10 @@ class SXTMap(GenericMap):
     Notes
     -----
     Observer location:  We use the ITRS coordinates provided in the FITS header (``LAT``, ``LONG``, ``RADIUS``)
-    for the spacecraft location even when coordinates in other frames are provided (``HGS_LON``, ``HGS_LAT``,``DSUN_OBS``).
-    The two frames differ substantially and it the ITRS coordinates are more accurate than the HGS information.
+    for the spacecraft location even when coordinates in a Heliographic frame are provided (``HGS_LON``, ``HGS_LAT``,``DSUN_OBS``).
+    The two frames differ substantially and the ITRS coordinates are more accurate than the HGS information.
 
-    These changes were required due to the FITS files being re-processed in 2016.
+    Using this information for the observer coordinate was implemented in sunpy 4.0.6 to work with the FITS files that were re-processed in 2016.
 
     References
     ----------
