@@ -4,42 +4,72 @@
 Finding and Downloading Data
 ****************************
 
-This guide outlines how to search for and download data using `~sunpy.net.Fido` sunpy's interface for search and download.
-`~sunpy.net.Fido` is a unified interface for searching and fetching solar physics data irrespective of the underlying client or webservice through which the data is obtained, e.g. VSO_,JSOC_, etc.
-It therefore supplies a single, easy and consistent way to obtain most forms of solar physics data.
-
-Import
-******
+This guide outlines how to search for and download data using the `~sunpy.net.Fido` interface for search and download.
+`~sunpy.net.Fido` is a unified interface for searching and fetching solar physics data irrespective of the underlying client or webservice through which the data is obtained.
+It therefore supplies a single, easy, and consistent way to obtain most forms of solar physics data.
 
 The `~sunpy.net.Fido` object is in `sunpy.net`.
-It can be imported as follows::
+All the examples in this guide use ``Fido``, so lets start by importing it::
 
     >>> from sunpy.net import Fido, attrs as a
 
-Search Attributes
-*****************
+.. contents::
+    :depth: 3
 
-To search for data with `~sunpy.net.Fido`, you need to specify attributes to search against.
-The range of attributes are found in the `attrs <sunpy.net.attrs>` submodule.
-Examples of these attributes are:
+Fido supports a number of different remote data sources. To see a list the Fido object can be printed::
+
+    >>> print(Fido)
+    sunpy.net.Fido
+    <BLANKLINE>
+    Fido is a unified data search and retrieval tool.
+    <BLANKLINE>
+    It provides simultaneous access to a variety of online data sources, some
+    cover multiple instruments and data products like the Virtual Solar
+    Observatory and some are specific to a single source.
+    <BLANKLINE>
+    For details of using `~sunpy.net.Fido` see :ref:`fido_guide`.
+    <BLANKLINE>
+    <BLANKLINE>
+          Client                                                    Description
+    ----------------- -------------------------------------------------------------------------------------------------------
+    CDAWEBClient      Provides access to query and download from the Coordinated Data Analysis Web (CDAWeb).
+    EVEClient         Provides access to Level 0CS Extreme ultraviolet Variability Experiment (EVE) data.
+    GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
+    XRSClient         Provides access to the GOES XRS fits files archive.
+    SUVIClient        Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
+    GONGClient        Provides access to the Magnetogram products of NSO-GONG synoptic Maps.
+    LYRAClient        Provides access to the LYRA/Proba2 data archive.
+    NOAAIndicesClient Provides access to the NOAA solar cycle indices.
+    NOAAPredictClient Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
+    SRSClient         Provides access to the NOAA SWPC solar region summary data.
+    NoRHClient        Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
+    RHESSIClient      Provides access to the RHESSI observing summary time series data.
+    HEKClient         Provides access to the Heliophysics Event Knowledgebase (HEK).
+    HECClient         Provides access to the HELIO webservices.
+    JSOCClient        Provides access to the JSOC Data Export service.
+    VSOClient         Provides access to query and download from Virtual Solar Observatory (VSO).
+
+Searching for Data
+******************
+
+To search for data with `~sunpy.net.Fido`, you need to specify attributes to search with.
+Examples of generic search attributes that work across many different data sources are:
 
 - `a.Time <sunpy.net.attrs.Time>`
 - `a.Instrument <sunpy.net.attrs.Instrument>`
 - `a.Wavelength <sunpy.net.attrs.Wavelength>`
 
-whereas some of these attributes are client specific, and are found under client specific submodules, e.g. `attrs.vso <sunpy.net.vso.attrs>` and `attrs.jsoc <sunpy.net.jsoc.attrs>`.
+Some other attributes are client specific, and are found under client specific submodules, e.g. `attrs.vso <sunpy.net.vso.attrs>` and `attrs.jsoc <sunpy.net.jsoc.attrs>`.
+The full list of attributes can be found in the `attrs submodule reference <sunpy.net.attrs>` .
 
-In to each attribute you have to provide a value to use::
+Some search attributes need one or more values specifying, for example ``Time`` needs at least a start and an end date to specify a time range::
 
-    >>> a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra
-    (<sunpy.net.attrs.Time(2012-03-04 00:00:00.000, 2012-03-06 00:00:00.000)>, <sunpy.net.attrs.Instrument(LYRA: Lyman Alpha Radiometer is the solar UV radiometer on board
-    Proba-2.) object at ...>)
+    >>> a.Time('2012/3/4', '2012/3/6')
+    <sunpy.net.attrs.Time(2012-03-04 00:00:00.000, 2012-03-06 00:00:00.000)>
 
-For attributes that have no fixed selection of values (``Time`` for example) you will have to provide the range you require.
-However, for attributes that have a fixed range of **known** values, it is possible to list all these values.
-**Please note that each list is not exhaustive.**
-
-Using ``Instrument`` as the first example, if you print the object::
+For attributes that can take a range of different values, printing the attribute lists the values sunpy knows about.
+These values are updated with every release of sunpy, so may not be quite up to date!
+As an example::
 
     >>> print(a.Instrument)
     sunpy.net.attrs.Instrument
@@ -58,47 +88,20 @@ Using ``Instrument`` as the first example, if you print the object::
     celias                      VSO         CELIAS                   Charge, Element, and Isotope Analysis System
     ...
 
-You get a full list of known values, a description and what "Clients" support those values (if you want to use a specific data source).
-This is supported for most attributes including the client specific ones.
+This is a full list of known values, a description, and which clients support those values (if you want to search using a specific data source).
+Printing attributes like this is supported for most attributes, including  client specific ones.
+These attributes also support tab-completion to auto to auto-fill the attribute name, for example typing ``a.jsoc.aia_f<TAB>`` in a jupyter notebook will show you the available attributes that start with "aia_f".
 
-
-For example you can print a list of Series provided by JSOC::
-
-    >>> print(a.jsoc.Series)
-    sunpy.net.jsoc.attrs.Series
-    <BLANKLINE>
-    The JSOC Series to Download.
-    <BLANKLINE>
-              Attribute Name           Client             Full Name                                                Description
-    ---------------------------------- ------ ---------------------------------- --------------------------------------------------------------------------------
-    aia_flatfield                      JSOC   aia.flatfield                      AIA flatfield
-    aia_lev1                           JSOC   aia.lev1                           AIA Level 1
-    aia_lev1_euv_12s                   JSOC   aia.lev1_euv_12s                   AIA Level 1, 12 second cadence
-    aia_lev1_uv_24s                    JSOC   aia.lev1_uv_24s                    AIA Level 1, 24 second cadence
-    aia_lev1_vis_1h                    JSOC   aia.lev1_vis_1h                    AIA Level 1, 3600 second cadence
-    aia_master_pointing3h              JSOC   aia.master_pointing3h              Master Pointing Parameters
-    aia_response                       JSOC   aia.response                       AIA instrument response table
-    aia_temperature_summary_300s       JSOC   aia.temperature_summary_300s       Temperature Statistics from AIA Housekeeping - Thermal Packet
-    hmi_b_135s                         JSOC   hmi.b_135s                         Full-disk Milne-Eddington inversion with the azimuth disambiguation informati...
-    ...
-
-Furthermore, you can use tab completion to auto-fill the attribute name, for example by typing ``a.jsoc.aia_f<TAB>``.
-
-Searching for Data Using Fido
-*****************************
-
-For example::
+To search for data use the ``Fido.search`` method::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra, a.Level.two) # doctest: +REMOTE_DATA
 
-this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing information on the results which fit the criteria specified by the attrs objects in the above call.
-It does not download the files.
-For instructions on how to download data using Fido, see :ref:`downloading_data`.
+this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing all the search results that match the search attributes.
+This does not download the files; we'll learn how to do that later in :ref:`downloading_data`.
 
-To see a summary of the results of our query, simply type the name of the variable set to the Fido search, in this case, result::
+To see a summary of the results print the result variable that came back from the previous search::
 
-    >>> result  # doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    >>> print(result)  # doctest: +REMOTE_DATA
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the LYRAClient:
@@ -113,7 +116,7 @@ To see a summary of the results of our query, simply type the name of the variab
     <BLANKLINE>
 
 Queries can be made more flexible or specific by adding more attrs objects to the `~sunpy.net.Fido` search.
-Specific passbands can be searched for by supplying an `~astropy.units.Quantity` to the `a.Wavelength <sunpy.net.attrs.Wavelength>` attribute::
+As an example, specific passbands can be searched for by supplying an `~astropy.units.Quantity` to the `a.Wavelength <sunpy.net.attrs.Wavelength>` attribute::
 
     >>> import astropy.units as u
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh,
@@ -133,8 +136,7 @@ Specific passbands can be searched for by supplying an `~astropy.units.Quantity`
     <BLANKLINE>
     <BLANKLINE>
 
-Data of a given cadence can also be specified using the Sample attribute.
-To search for data at a given cadence use the `a.Sample <sunpy.net.attrs.Sample>` attribute.
+Data of a given cadence can also be specified using the `a.Sample <sunpy.net.attrs.Sample>` attribute::
 
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.aia,
     ...             a.Wavelength(171*u.angstrom), a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
@@ -173,8 +175,8 @@ To search for data at a given cadence use the `a.Sample <sunpy.net.attrs.Sample>
     <BLANKLINE>
     <BLANKLINE>
 
-To search for data from multiple instruments, wavelengths, times etc., use the pipe ``|`` operator.
-This joins queries together just as the logical ``OR`` operator would::
+To search for data from multiple instruments, wavelengths, times etc., use the pipe ``|`` operator which joins queries using a logical ``OR`` operator.
+In this example we'll search for LYRA or RHESSI data in a given time range::
 
     >>> Fido.search(a.Time('2012/3/4', '2012/3/4 02:00'),
     ...             a.Instrument.lyra | a.Instrument.rhessi)  # doctest: +REMOTE_DATA
@@ -270,13 +272,10 @@ Or, equivalently::
     2012-01-01 00:00:00.000 2012-01-01 23:59:59.999       LYRA ...      ESA     2
     2012-01-02 00:00:00.000 2012-01-02 23:59:59.999       LYRA ...      ESA     2
 
-Normal slicing operations work as with any other Python sequence, e.g. ``results[1,::10]`` to access every tenth file in the result returned by the second client.
+Normal slicing operations work as with any other Python sequence, e.g. ``results[1, ::10]`` to access every tenth file in the result returned by the second client.
 
 Note that the first (response) index is still necessary even if results are only found for a single client.
 So in this case the first result would be ``results[0, 0]`` rather than ``results[0]`` (the latter would return all results from the first - and only - client and is therefore the same as ``results``).
-
-Working with Response Tables
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As we have seen above the `~sunpy.net.fido_factory.UnifiedResponse` object contains many response tables which make up the search results.
 Each of the responses are `~sunpy.net.base_client.QueryResponseTable` objects, which are `astropy.table` objects meaning that you can interact with them and filter them like any other tabular data.
@@ -474,31 +473,28 @@ To match the ``"Wavelength"`` column we need to account for the fact that VSO re
     2020-01-01 00:04:59.000        AIA 94.0 .. 94.0 intensity
     Length = 25 rows
 
-These can then be passed to `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
-
-    >>> Fido.fetch(hmi_los, aia_94)  # doctest: +SKIP
-
 .. warning::
 
-   While you can reduce the number of columns and rows in the results, the
-   ``fetch()`` method may need certain columns to be present to successfully
-   download the files. It is therefore highly recommended that if you are
-   planning on downloading data you do not slice out columns, but instead use
-   ``.show()`` to only display the ones you are interested in.
+   While you can reduce the number of columns and rows in the results, the ``fetch()`` method that downloades data may need certain columns to be present to successfully download the files.
+   It is therefore highly recommended that if you are planning on downloading data you do not slice out columns, but instead use ``.show()`` to only display the ones you are interested in.
 
 
 .. _downloading_data:
 
 Downloading data
 ****************
-Once you have located your files via a `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>`, you can download them via `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
+Once you have located your files via a `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>`, you can download them via `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
+Here we'll just download the first file in the result::
 
-    >>> downloaded_files = Fido.fetch(results)  # doctest: +SKIP
+    >>> downloaded_files = Fido.fetch(results[0, 0]) # doctest: +REMOTE_DATA
+    >>> downloaded_files # doctest: +REMOTE_DATA
+    <parfive.results.Results object at ...>
+    ['.../aia_lev1_335a_2020_01_01t00_00_00_64z_image_lev1.fits']
 
-This downloads the files to the location set in you sunpy config file.
-It also returns a `parfive.Results` object ``downloaded_files``, of absolute file paths of where the files have been downloaded to.
+This downloads the files to the location set in the sunpy config file.
+It also returns a `parfive.Results` object ``downloaded_files``, which contains local file paths to all the downloaded data.
 
-You can also specify the path to which you want the data downloaded::
+You can also explicitly specify the path to which you want the data downloaded::
 
   >>> downloaded_files = Fido.fetch(results, path='/ThisIs/MyPath/to/Data/{file}')  # doctest: +SKIP
 
@@ -508,11 +504,13 @@ For example, to save the data to a subdirectory named after the instrument, use:
 
     >>> downloaded_files = Fido.fetch(results, path='./{instrument}/{file}')  # doctest: +SKIP
 
-You can see the list of options that can be specified in path for all the files to be downloaded with ``results.path_format_keys``.
+You can see the list of options that can be specified in path for all the files to be downloaded with ``results.path_format_keys``::
+
+    >>> sorted(results.path_format_keys()) # doctest: +REMOTE_DATA
+    ['end_time', 'extent_length', 'extent_type', 'extent_width', 'fileid', 'info', 'instrument', 'physobs', 'provider', 'size', 'source', 'start_time', 'wavelength', 'wavetype']
 
 Retrying Downloads
 ^^^^^^^^^^^^^^^^^^
-
 If any files failed to download, the progress bar will show an incomplete number of files (i.e. 100/150) and the `parfive.Results` object will contain a list of the URLs that failed to transfer and the error associated with them.
 This can be accessed with the ``.errors`` attribute or by printing the `~parfive.Results` object::
 
@@ -523,45 +521,3 @@ The transfer can be retried by passing the `parfive.Results` object back to `Fid
     >>> downloaded_files = Fido.fetch(downloaded_files)  # doctest: +SKIP
 
 doing this will append any newly downloaded file names to the list and replace the ``.errors`` list with any errors that occurred during the second attempt.
-
-
-.. _VSO: https://sdac.virtualsolar.org/cgi/search
-.. _JSOC: http://jsoc.stanford.edu/
-
-
-Fido Clients
-************
-
-`~sunpy.net.Fido` provides access to many sources of data via "clients", these clients can be defined inside sunpy or in other packages.
-If you want to see the current list of clients you can do::
-
-    >>> print(Fido)
-    sunpy.net.Fido
-    <BLANKLINE>
-    Fido is a unified data search and retrieval tool.
-    <BLANKLINE>
-    It provides simultaneous access to a variety of online data sources, some
-    cover multiple instruments and data products like the Virtual Solar
-    Observatory and some are specific to a single source.
-    <BLANKLINE>
-    For details of using `~sunpy.net.Fido` see :ref:`fido_guide`.
-    <BLANKLINE>
-    <BLANKLINE>
-          Client                                                    Description
-    ----------------- -------------------------------------------------------------------------------------------------------
-    CDAWEBClient      Provides access to query and download from the Coordinated Data Analysis Web (CDAWeb).
-    EVEClient         Provides access to Level 0CS Extreme ultraviolet Variability Experiment (EVE) data.
-    GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
-    XRSClient         Provides access to the GOES XRS fits files archive.
-    SUVIClient        Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
-    GONGClient        Provides access to the Magnetogram products of NSO-GONG synoptic Maps.
-    LYRAClient        Provides access to the LYRA/Proba2 data archive.
-    NOAAIndicesClient Provides access to the NOAA solar cycle indices.
-    NOAAPredictClient Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
-    SRSClient         Provides access to the NOAA SWPC solar region summary data.
-    NoRHClient        Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
-    RHESSIClient      Provides access to the RHESSI observing summary time series data.
-    HEKClient         Provides access to the Heliophysics Event Knowledgebase (HEK).
-    HECClient         Provides access to the HELIO webservices.
-    JSOCClient        Provides access to the JSOC Data Export service.
-    VSOClient         Provides access to query and download from Virtual Solar Observatory (VSO).
