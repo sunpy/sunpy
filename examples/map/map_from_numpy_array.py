@@ -20,7 +20,7 @@ from sunpy.coordinates import frames
 data = np.arange(0, 100).reshape(10, 10)
 
 ##############################################################################
-# Next we need to create the metadata. This is made easier using the `~sunpy.map.make_fitswcs_header`
+# Next we need to create the metadata. This is made easier using the `~sunpy.map.header_helper.make_fitswcs_header`
 # function which will create a header object for you. First define the reference coordinate
 # which requires a time and an observer location.
 
