@@ -60,7 +60,7 @@ Examples of generic search attributes that work across many different data sourc
 - `a.Wavelength <sunpy.net.attrs.Wavelength>`
 
 Some other attributes are client specific, and are found under client specific submodules, e.g. `attrs.vso <sunpy.net.vso.attrs>` and `attrs.jsoc <sunpy.net.jsoc.attrs>`.
-The full list of attributes can be found in the `attrs submodule reference <sunpy.net.attrs>` .
+The full list of attributes can be found in the `attrs submodule reference <sunpy.net.attrs>`.
 
 Some search attributes need one or more values specifying, for example ``Time`` needs at least a start and an end date to specify a time range::
 
