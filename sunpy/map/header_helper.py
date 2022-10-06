@@ -441,6 +441,5 @@ def make_heliographic_header(date, observer_coordinate, shape, frame, *, project
             (180 / np.pi) / (int(shape[0]) / 2)
         ] * u.deg / u.pix
 
-    # Header helper expects shape to be in [y, x] order, but scale in [x, y]...
     header = make_fitswcs_header(shape, frame_out, scale=scale, projection_code=projection_code)
     return header
