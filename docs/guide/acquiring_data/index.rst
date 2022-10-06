@@ -1,8 +1,8 @@
 .. _acquiring_data:
 
-*************************
-Acquiring Data with sunpy
-*************************
+**************
+Acquiring Data
+**************
 
 This section of the guide introduces ways to obtain different kind of solar data from different places.
 
