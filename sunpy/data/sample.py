@@ -23,7 +23,12 @@ Sample shortnames
    * - Sample shortname
      - Name of downloaded file
 """
-from ._sample import _SAMPLE_DATA, _get_sample_files, download_sample_data
+# download_sample_data is deprecated and not used here,
+# but during deprecation period want to keep it in this namespace
+# for backwards compatability. noqa stops it being removed by
+# pre-commit as an unused import
+from ._sample import download_sample_data  # noqa
+from ._sample import _SAMPLE_DATA, _get_sample_files
 
 # Add a table row to the module docstring for each sample file
 for _keyname, _filename in sorted(_SAMPLE_DATA.items()):
