@@ -21,10 +21,10 @@ Deprecations
 - Deprecate `sunpy.image.coalignment` as the code has now been moved to
   `sunkit_image.coalignment` with an identical API.
   This module will be removed in sunpy 4.1. (`#5957 <https://github.com/sunpy/sunpy/pull/5957>`__)
-- The `sunpy.map.GenericMap.shift` method has been renamed to
+- The ``sunpy.map.GenericMap.shift`` method has been renamed to
   `sunpy.map.GenericMap.shift_reference_coord` and
-  `~sunpy.map.GenericMap.shift` has been deprecated. (`#5977 <https://github.com/sunpy/sunpy/pull/5977>`__)
-- The `sunpy.map.GenericMap.shifted_value` property has been deprecated.
+  ``shift`` has been deprecated. (`#5977 <https://github.com/sunpy/sunpy/pull/5977>`__)
+- The ``sunpy.map.GenericMap.shifted_value`` property has been deprecated.
   Modifications to the reference coordinate can be found in the
   ``CRVAL1`` and ``CRVAL2`` keys of ``sunpy.map.GenericMap.meta.modified_items``. (`#5977 <https://github.com/sunpy/sunpy/pull/5977>`__)
 - The `sunpy.io.fits` module is deprecated, as it was designed for internal use

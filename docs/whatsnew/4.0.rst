@@ -138,20 +138,20 @@ If installing sunpy with ``sunpy[all]`` or ``sunpy[asdf]`` when using pip this w
 If you have installed sunpy with conda, you don't need to do anything as the conda package has been updated to depend on `asdf` and ``asdf-astropy``.
 If ``asdf-astropy`` is not installed then sunpy's asdf plugin will fail to load and emit a warning, this will happen every time for *any* ASDF file irrespective of if it contains a sunpy object in its tree.
 
-Deprecation of `~sunpy.map.GenericMap.shift` and `~sunpy.map.GenericMap.shifted_value`
+Deprecation of ``shift`` and ``shifted_value``
 ======================================================================================
-The method `sunpy.map.GenericMap.shift` has been renamed
-`sunpy.map.GenericMap.shift_reference_coord` and `~sunpy.map.GenericMap.shift` has been
+The method ``sunpy.map.GenericMap.shift`` has been renamed
+`sunpy.map.GenericMap.shift_reference_coord` and ``shift`` has been
 deprecated.
 The method has been renamed to make it clear that it is the reference coordinate that is
 being shifted and not the image itself.
-Additionally, the `sunpy.map.GenericMap.shifted_value` property, which keeps track of
-the shifts applied by `~sunpy.map.GenericMap.shift`, has been deprecated.
+Additionally, the ``sunpy.map.GenericMap.shifted_value`` property, which keeps track of
+the shifts applied by ``shift``, has been deprecated.
 Users should instead use the ``CRVAL1`` and ``CRVAL2`` keys in
 ``sunpy.map.GenericMap.meta.modified_items`` to see how the reference coordinate has been
 modified.
 Note that `~sunpy.map.GenericMap.shift_reference_coord` does not modify
-`~sunpy.map.GenericMap.shifted_value`.
+``shifted_value``.
 
 Contributors to this Release
 ============================
