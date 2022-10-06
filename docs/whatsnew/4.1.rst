@@ -53,7 +53,7 @@ number of source-specific plot customisations in ``peek()`` and ``plot()`` metho
 See the changelog for more details on what has changed.
 
 In order to harmonise different ``peek()`` and ``plot()`` signatures, all non-keyword arguments to these methods are deprecated.
-To avoid a warning pas all arguments with keywords (e.g. ``plot(title='my plot title')``) instead.
+To avoid a warning pass all arguments with keywords (e.g. ``plot(title='my plot title')``) instead.
 
 ``parfive`` 2.0.0 release
 =========================
