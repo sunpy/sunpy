@@ -8,7 +8,7 @@ from sunpy import log
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
 
-__all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'make_carrington_header']
+__all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header']
 
 
 def meta_keywords():
@@ -378,13 +378,13 @@ _map_meta_keywords = {
 }
 
 
-def make_carrington_header(date, observer_coordinate, shape, *, projection_code="CAR"):
+def make_heliographic_header(date, observer_coordinate, shape, frame, *, projection_code="CAR"):
     """
-    Construct a FITS-WCS header for a Carrington coordinate frame.
+    Construct a FITS-WCS header for a heliographic (Carrington or Stonyhurst) coordinate frame.
+
     The date-time and observer coordinate of the new coordinate frame
     are taken from the input map. The resulting WCS covers the full surface
-    of the Sun, and has a reference coordinate at (0, 0) degrees Carrington
-    Longitude/Latitude.
+    of the Sun, and has a reference coordinate at (0, 0) degrees Longitude/Latitude.
 
     Parameters
     ----------
@@ -394,21 +394,38 @@ def make_carrington_header(date, observer_coordinate, shape, *, projection_code=
         Observer coordinate for the output header.
     shape : [int, int]
         Output map shape, number of pixels in (latitude, longitude).
+    frame : {'carrington', 'stonyhurst'}
+        Coordinate frame.
     projection_code : {'CAR', 'CEA'}
         Projection to use for the latitude coordinate.
 
     Returns
     -------
     `~sunpy.util.MetaDict`
+
+    Examples
+    --------
+    >>> from sunpy.map.header_helper import make_heliographic_header
+    >>> from sunpy.coordinates import get_earth
+    >>>
+    >>> date = '2020-01-01 12:00:00'
+    >>> observer = get_earth(date)
+    >>> header = make_heliographic_header(date, observer, [90, 180], 'carrington')
+    >>> header
+    MetaDict([('wcsaxes', 2), ('crpix1', 90.5), ('crpix2', 45.5), ('cdelt1', 2.0), ('cdelt2', 2.0), ('cunit1', 'deg'), ('cunit2', 'deg'), ('ctype1', 'CRLN-CAR'), ('ctype2', 'CRLT-CAR'), ('crval1', 0.0), ('crval2', 0.0), ('lonpole', 0.0), ('latpole', 90.0), ('mjdref', 0.0), ('date-obs', '2020-01-01T12:00:00.000'), ('rsun_ref', 695700000.0), ('dsun_obs', 147096975776.97), ('hgln_obs', 0.0), ('hglt_obs', -3.0011725838606), ('naxis', 2), ('naxis1', 180), ('naxis2', 90), ('pc1_1', 1.0), ('pc1_2', -0.0), ('pc2_1', 0.0), ('pc2_2', 1.0), ('rsun_obs', 975.5398432033492)])
     """
     valid_codes = {"CAR", "CEA"}
     if projection_code not in valid_codes:
         raise ValueError(f"projection_code must be one of {valid_codes}")
 
+    valid_frames = {'carrington', 'stonyhurst'}
+    if frame not in valid_frames:
+        raise ValueError(f"frame must be one of {valid_frames}")
+
     frame_out = SkyCoord(
         0 * u.deg,
         0 * u.deg,
-        frame="heliographic_carrington",
+        frame=f"heliographic_{frame}",
         obstime=date,
         observer=observer_coordinate,
     )

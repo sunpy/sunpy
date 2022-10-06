@@ -492,7 +492,7 @@ See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a bri
 
 The keys required for the header information follow the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`__.
 **sunpy** provides a Map header helper function to assist in creating a header that contains the correct meta information.
-This includes a `~sunpy.map.header_helper.meta_keywords` function that will return a `dict` the meta keywords used when creating a Map.
+This includes a `~sunpy.map.header_helper.meta_keywords` function that will return a `dict` of the meta keywords used when creating a Map.
 
 .. code-block:: python
 
@@ -519,7 +519,7 @@ Here's an example of creating a header from some generic data and an `astropy.co
     >>> import numpy as np
     >>> from astropy.coordinates import SkyCoord
     >>> import astropy.units as u
-    >>>
+
     >>> from sunpy.coordinates import frames
     >>> from sunpy.map.header_helper import make_fitswcs_header
 
@@ -599,7 +599,7 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
 
 As we can see, a list of WCS and observer meta information is contained within the generated headers, however we may want to include other meta information including the observatory name, the wavelength and waveunit of the observation.
 Any of the keywords listed in ``header_helper.meta_keywords`` can be passed to the `~sunpy.map.header_helper.make_fitswcs_header` and will then populate the returned MetaDict header.
-Furthermore, the following observation keywords can be passed to the `~sunpy.map.header_helper.make_fitswcs_header` function and will be translated to the FITS standard: ``observtory``, ``instrument``, ``telescope``, ``wavelength``, ``exposure``.
+Furthermore, the following observation keywords can be passed to the `~sunpy.map.header_helper.make_fitswcs_header` function: ``observtory``, ``instrument``, ``telescope``, ``wavelength``, ``exposure``.
 
 An example of creating a header with these additional keywords:
 

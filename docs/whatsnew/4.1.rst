@@ -35,6 +35,11 @@ It is now easy to extract data values from a `~sunpy.map.GenericMap` along a cur
 This is done by applying `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`__ between the consecutive coordinates, in pixel space, and then indexing the data array of the map at those points.
 See :ref:`sphx_glr_generated_gallery_units_and_coordinates_map_slit_extraction.py` for an example.
 
+Easier reprojecting to Carrington and Stonyhurst coordinates
+============================================================
+`sunpy.map.header_helper` has a new `~sunpy.map.header_helper.make_heliographic_header` function that simplifies creating map headers that span the whole solar surface in Carrington or Stonyhurst coordinates.
+When used in combination with `sunpy.map.GenericMap.reproject_to` this greatly simplifies reprojecting helioprojective maps into heliographic full-Sun maps.
+
 Drawing the solar equator and prime meridian
 ============================================
 You can now use the `sunpy.visualization.drawing` module to draw the solar equator and prime meridian (zero Carrington longitude) on Astropy WCS axes.
