@@ -9,8 +9,8 @@ Summary variables
    :widths: auto
 
    * - ``file_dict``
-     - Dictionary of all sample shortnames and, if downloaded, file locations
-       on disk
+     - Dictionary of all sample shortnames and, if downloaded, corresponding
+       file locations on disk (otherwise, ``None``)
    * - ``file_list``
      - List of disk locations for sample data files that have been downloaded
 
@@ -30,19 +30,22 @@ for _keyname, _filename in sorted(_SAMPLE_DATA.items()):
     __doc__ += f'   * - ``{_keyname}``\n     - {_filename}\n'
 
 
+# file_dict and file_list are not normal variables; see __getattr__() below
 __all__ = list(sorted(_SAMPLE_DATA.keys())) + ['download_all', 'file_dict', 'file_list']
 
 
+# See PEP 562 (https://peps.python.org/pep-0562/) for module-level __dir__()
 def __dir__():
     return __all__
 
 
+# See PEP 562 (https://peps.python.org/pep-0562/) for module-level __getattr__()
 def __getattr__(name):
     if name in _SAMPLE_DATA:
         return _get_sample_files([_SAMPLE_DATA[name]])[0]
     elif name == 'file_dict':
-        return {k: _get_sample_files([_SAMPLE_DATA[k]], no_download=True)[0]
-                for k in sorted(_SAMPLE_DATA.keys())}
+        return dict(sorted(zip(_SAMPLE_DATA.keys(),
+                               _get_sample_files(_SAMPLE_DATA.values(), no_download=True))))
     elif name == 'file_list':
         return [v for v in __getattr__('file_dict').values() if v]
     else:
