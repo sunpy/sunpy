@@ -1,0 +1,3 @@
+Passing positional arguments to all ``timeseries`` ``peek()`` methods
+is now deprecated, and will raise an error in sunpy 5.1. Pass the arguments
+with keywords (e.g. ``title='my plot title'``) instead.

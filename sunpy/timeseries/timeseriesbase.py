@@ -25,6 +25,7 @@ from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
+from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.exceptions import warn_deprecated, warn_user
 from sunpy.util.metadata import MetaDict
 from sunpy.util.util import _figure_to_base64
@@ -764,7 +765,8 @@ class GenericTimeSeries:
             ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator))
 
     @peek_show
-    def peek(self, columns=None, *, title=None, **kwargs):
+    @deprecate_positional_args_since("4.1")
+    def peek(self, *, columns=None, title=None, **kwargs):
         """
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the

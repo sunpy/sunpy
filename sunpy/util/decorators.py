@@ -263,6 +263,13 @@ class add_common_docstring:
 
 def deprecate_positional_args_since(since, keyword_only=False):
     """
+    Decorator for methods that issues warnings for positional arguments
+    Using the keyword-only argument syntax in pep 3102, arguments after the
+    * will issue a warning when passed as a positional argument.
+
+    Note that when you apply this, you also have to put at * in the signature
+    to create new keyword only parameters!
+
     Parameters
     ----------
     since : str
@@ -270,9 +277,7 @@ def deprecate_positional_args_since(since, keyword_only=False):
     """
     def deprecate_positional_args(f):
         """
-        Decorator for methods that issues warnings for positional arguments
-        Using the keyword-only argument syntax in pep 3102, arguments after the
-        * will issue a warning when passed as a positional argument.
+
 
         Parameters
         ----------

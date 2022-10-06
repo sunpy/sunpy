@@ -551,6 +551,11 @@ def test_timeseries_array():
         assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
 
 
+def test_deprecated_positional_peek_args(many_ts):
+    # Check that all positional arguments to peek() are deprecated
+    with pytest.warns(SunpyDeprecationWarning, match='passing these as positional arguments will result in an error'):
+        many_ts.peek(many_ts.columns[0:1])
+
 # TODO:
 # _validate_units
 # _validate_meta
