@@ -37,8 +37,8 @@ class SXTMap(GenericMap):
     -----
     Observer location:  We use the ITRS coordinates provided in
     the FITS header (``LAT``, ``LONG``, ``RADIUS``)
-    for the spacecraft location even when coordinates in a
-    Heliographic frame are provided (``HGS_LON``, ``HGS_LAT``,``DSUN_OBS``).
+    for the spacecraft location even when coordinates in the heliographic
+    Stonyhurst frame are provided (``HGS_LON``, ``HGS_LAT``, ``DSUN_OBS``).
     The two locations differ substantially, and the ITRS coordinates
     are more accurate than the HGS information.
 
