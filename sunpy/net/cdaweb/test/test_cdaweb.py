@@ -27,3 +27,12 @@ def test_download():
     assert len(result[0]) == 4
     files = Fido.fetch(result)
     assert len(files.errors) == 0
+
+
+@pytest.mark.remote_data
+def test_no_results():
+    result = Fido.search(
+        a.Time('2000/03/01', '2000/03/02'),
+        a.cdaweb.Dataset('SOLO_L2_MAG-RTN-NORMAL-1-MINUTE')
+    )
+    assert len(result[0]) == 0
