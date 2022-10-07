@@ -67,6 +67,7 @@ warnings.filterwarnings("error", category=AstropyDeprecationWarning)
 ori_level = sunpy.log.level
 sunpy.log.setLevel("DEBUG")
 import sunpy.data.sample  # NOQA
+sunpy.data.sample.download_all()
 sunpy.log.setLevel(ori_level)
 
 # For the linkcheck

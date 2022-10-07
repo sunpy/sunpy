@@ -9,8 +9,8 @@ functionality available.
 
 Sample Data
 ===========
-This tour makes use of a number of sample data files which you will need to
-download. This will happen when the sample data is imported for the first time.
+This tour makes use of a number of sample data files that will need to be downloaded.
+This downloading will happen automatically when using the module `sunpy.data.sample`.
 
 Maps
 ====
