@@ -1149,8 +1149,8 @@ class GenericMap(NDData):
     @property
     def _default_observer_coordinate(self):
         """
-        The default obsever coordinate. This can be overriden by map sources
-        to provide a preferred observer coordinate.
+        The default observer coordinate to use when there is insufficient information
+        in the metadata. This should be overridden by map sources as appropriate.
         """
 
     def _remove_existing_observer_location(self):
@@ -1167,11 +1167,7 @@ class GenericMap(NDData):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
         """
-        default = self._default_observer_coordinate
-        if default is not None:
-            return default
-
-        warning_message = ["Missing metadata for observer: assuming Earth-based observer."]
+        warning_message = []
         for keys, kwargs in self._supported_observer_coordinates:
             missing_keys = set(keys) - self.meta.keys()
             if not missing_keys:
@@ -1192,9 +1188,20 @@ class GenericMap(NDData):
                 frame = kwargs['frame'] if isinstance(kwargs['frame'], str) else kwargs['frame'].name
                 warning_message.append(f"For frame '{frame}' the following metadata is missing: "
                                        f"{','.join(missing_keys)}")
-        warning_message.append("")
-        warn_metadata("\n".join(warning_message), stacklevel=3)
-        return get_earth(self.date)
+
+        default = self._default_observer_coordinate
+        if default is not None:
+            # If a map source specifies a default observer, we log a message at the debug level
+            warning_message = (["Missing metadata for observer: assuming custom default observer."]
+                               + warning_message)
+            log.debug("\n".join(warning_message))
+            return default
+        else:
+            # If a map source does not specify a default observer, we assume Earth center and warn
+            warning_message = (["Missing metadata for observer: assuming Earth-based observer."]
+                               + warning_message + [""])
+            warn_metadata("\n".join(warning_message), stacklevel=3)
+            return get_earth(self.date)
 
     @property
     def heliographic_latitude(self):
