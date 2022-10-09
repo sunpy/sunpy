@@ -228,8 +228,6 @@ class XRSTimeSeries(GenericTimeSeries):
         """
         with h5netcdf.File(filepath, mode="r", **XRSTimeSeries._netcdf_read_kw) as h5nc:
             header = MetaDict(OrderedDict(h5nc.attrs))
-            if len(header["id"].strip()) == 0:
-                header.update({"id": Path(filepath).name})
             flux_name = h5nc.variables.get("a_flux") or h5nc.variables.get("xrsa_flux")
             if flux_name is None:
                 raise ValueError(f"No flux data (either a_flux or xrsa_flux) found in file: {filepath}")
