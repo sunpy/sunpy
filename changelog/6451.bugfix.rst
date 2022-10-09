@@ -1,1 +1,1 @@
-Fix a bug to parse the GOES `observatory` number in XRSTimeSeries for GOES 13, 14, 15.
+Fix a bug to parse the GOES `observatory` number in XRSTimeSeries for GOES 13, 14, 15 and for the 1minute GOES-R data.
