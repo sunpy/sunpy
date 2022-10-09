@@ -361,7 +361,7 @@ def test_check_request_keywords(client):
 def test_empty_response_fetch(client):
     # Check that results from downloading an empty response are empty
     response = client.search(
-        a.Time('2022-12-12T00:00:00', '2022-12-12T0:01:00'),
+        a.Time('1990-12-12T00:00:00', '1990-12-12T0:01:00'),
         a.jsoc.Series.hmi_b_720s
     )
     assert len(response) == 0
