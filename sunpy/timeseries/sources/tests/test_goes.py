@@ -17,9 +17,8 @@ goes15_1m_avg_filepath = get_test_filepath('goes_truncated_test_1m_avg_goes15.nc
 goes16_1m_avg_filepath = get_test_filepath('goes_truncated_test_1m_avg_goes16.nc')
 goes13_leap_second_filepath = get_test_filepath('goes_13_leap_second.nc')
 
+
 # test implicit for all files
-
-
 @pytest.mark.parametrize("goes_nc_files",
                          [goes15_fits_filepath,
                           goes13_filepath_nc,
