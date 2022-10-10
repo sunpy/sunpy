@@ -9,7 +9,6 @@ from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
 
 goes_filepath_com = get_test_filepath('go1520120601.fits.gz')
-goes15_fits_filepath = get_test_filepath('go1520110607.fits')
 goes13_filepath_nc = get_test_filepath('goes_truncated_test_goes13.nc')
 goes15_filepath_nc = get_test_filepath('goes_truncated_test_goes15.nc')
 goes17_filepath_nc = get_test_filepath('goes_truncated_test_goes17.nc')
@@ -19,7 +18,7 @@ goes13_leap_second_filepath = get_test_filepath('goes_13_leap_second.nc')
 
 
 @pytest.mark.parametrize("goes_nc_files",
-                         [goes15_fits_filepath,
+                         [goes_filepath_com,
                           goes13_filepath_nc,
                           goes15_filepath_nc,
                           goes17_filepath_nc,
