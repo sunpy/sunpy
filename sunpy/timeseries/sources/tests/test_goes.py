@@ -9,103 +9,66 @@ from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
 
 goes_filepath_com = get_test_filepath('go1520120601.fits.gz')
-new_goes15_filepath = get_test_filepath('goes_truncated_test_goes15.nc')
-new_goes17_filepath = get_test_filepath('goes_truncated_test_goes17.nc')
-new_goes1m_avg_filepath = get_test_filepath('goes_truncated_test_1m_avg.nc')
+goes15_fits_filepath = get_test_filepath('go1520110607.fits')
+goes13_filepath_nc = get_test_filepath('goes_truncated_test_goes13.nc')
+goes15_filepath_nc = get_test_filepath('goes_truncated_test_goes15.nc')
+goes17_filepath_nc = get_test_filepath('goes_truncated_test_goes17.nc')
+goes15_1m_avg_filepath = get_test_filepath('goes_truncated_test_1m_avg_goes15.nc')
+goes16_1m_avg_filepath = get_test_filepath('goes_truncated_test_1m_avg_goes16.nc')
 goes13_leap_second_filepath = get_test_filepath('goes_13_leap_second.nc')
 
-
-def test_implicit_goes(goes_test_ts):
-    assert isinstance(goes_test_ts, sunpy.timeseries.sources.goes.XRSTimeSeries)
+# test implicit for all files
 
 
-def test_implicit_goes_com(goes_test_ts):
-    assert isinstance(goes_test_ts, sunpy.timeseries.sources.goes.XRSTimeSeries)
-
-
-def test_implicit_new_goes15():
-    # Test a GOES TimeSeries
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath)
+@pytest.mark.parametrize("goes_nc_files",
+                         [goes15_fits_filepath,
+                          goes13_filepath_nc,
+                          goes15_filepath_nc,
+                          goes17_filepath_nc,
+                          goes15_1m_avg_filepath,
+                          goes16_1m_avg_filepath])
+def test_implicit_goes(goes_nc_files):
+    ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source='XRS')
     assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
 
-def test_implicit_new_goes17():
-    # Test a GOES TimeSeries
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath)
-    assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
-
-
-def test_implicit_goes_1m_avg():
-    # Test a 1m avg GOES TimeSeries
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes1m_avg_filepath)
-    assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
-
-
-def test_implicit_goes_satno(goes_test_ts):
-    assert goes_test_ts.observatory == 'GOES-15'
-
-
-def test_implicit_new_goes15_satno():
-    # Test a GOES TimeSeries for satellite number
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath)
-    assert ts_goes.observatory == 'GOES-15'
-
-
-def test_implicit_new_goes17_satno():
-    # Test a GOES TimeSeries for satellite number
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath)
-    assert ts_goes.observatory == 'GOES-17'
+# test that satellite number is correctly parsed from files
+@pytest.mark.parametrize("goes_nc_files, sat_no",
+                         [(goes13_filepath_nc, 'GOES-13'),
+                          (goes15_filepath_nc, 'GOES-15'),
+                          (goes17_filepath_nc, 'GOES-17'),
+                          (goes15_1m_avg_filepath, 'GOES-15'),
+                          (goes16_1m_avg_filepath, 'GOES-16')])
+def test_implicit_goes_satno(goes_nc_files, sat_no):
+    ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source='XRS')
+    assert ts_goes.observatory == sat_no
 
 
 def test_implicit_goes_satno_missing():
     # Test a GOES TimeSeries for a missing satellite number
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath)
+    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc)
     del ts_goes.meta.metas[0]['id']
     assert ts_goes.observatory is None
 
 
-def test_goes_com():
-    # Test a GOES TimeSeries
-    ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
-    assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
-
-
-def test_new_goes15():
-    # Test a GOES TimeSeries
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath, source='XRS')
-    assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
-
-
-def test_new_goes16():
-    # Test a GOES TimeSeries
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath, source='XRS')
-    assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+def test_columns_units():
+    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source='XRS')
     # test that all columns have associated units
     assert np.all([isinstance(unit_val, u.UnitBase) for unit_val in ts_goes.units.values()])
 
 
 def test_goes_netcdf_time_parsing15():
     # testing to make sure the time is correctly parsed (to ignore leap seconds)
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes15_filepath, source="XRS")
+    # tests for 13, 14, 15
+    ts_goes = sunpy.timeseries.TimeSeries(goes15_filepath_nc, source="XRS")
     assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2013-10-28 00:00:01.385'
 
 
 def test_goes_netcdf_time_parsing17():
     # testing to make sure the time is correctly parsed (to ignore leap seconds)
-    ts_goes = sunpy.timeseries.TimeSeries(new_goes17_filepath, source="XRS")
+    # tests for GOES-R (16, 17)
+    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
     assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2020-10-16 00:00:00.477'
-
-
-@pytest.mark.remote_data
-def test_goes_remote():
-    # Older format file
-    goes = sunpy.timeseries.TimeSeries(
-        'https://umbra.nascom.nasa.gov/goes/fits/1986/go06860129.fits')
-    assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
-    # Newer format
-    goes = sunpy.timeseries.TimeSeries(
-        'https://umbra.nascom.nasa.gov/goes/fits/2018/go1520180626.fits')
-    assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
 
 def test_goes_leap_seconds():
@@ -118,6 +81,22 @@ def test_goes_plot_column(goes_test_ts):
     ax = goes_test_ts.plot(columns=['xrsa'])
     assert len(ax.lines) == 1
     assert '0.5--4.0' == ax.lines[0].get_label().split()[0]
+
+
+@pytest.mark.remote_data
+def test_goes_remote():
+    # Older format file
+    goes = sunpy.timeseries.TimeSeries(
+        'https://umbra.nascom.nasa.gov/goes/fits/1986/go06860129.fits')
+    assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+    # Newer format
+    goes = sunpy.timeseries.TimeSeries(
+        'https://umbra.nascom.nasa.gov/goes/fits/2018/go1520180626.fits')
+    assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+    # Testing NOAA served data
+    goes = sunpy.timeseries.TimeSeries(
+        'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/xrsf-l2-flx1s_science/2022/05/sci_xrsf-l2-flx1s_g16_d20220506_v2-1-0.nc')
+    assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
 
 @figure_test
