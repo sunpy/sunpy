@@ -60,6 +60,14 @@ repos:
       - id: prohibit-string
         args: [--prohibit-string, "from warnings import warn,warnings.warn"]
         exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py|sunpy/extern/|sunpy/util/tests/test_logger.py"
+  - repo: local
+    hooks:
+      - id: git-diff
+        name: git diff
+        entry: git diff --color --exit-code
+        language: system
+        pass_filenames: false
+        always_run: true
 
 ci:
   autofix_prs: false
