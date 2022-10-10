@@ -18,7 +18,6 @@ goes16_1m_avg_filepath = get_test_filepath('goes_truncated_test_1m_avg_goes16.nc
 goes13_leap_second_filepath = get_test_filepath('goes_13_leap_second.nc')
 
 
-# test implicit for all files
 @pytest.mark.parametrize("goes_nc_files",
                          [goes15_fits_filepath,
                           goes13_filepath_nc,
@@ -27,11 +26,11 @@ goes13_leap_second_filepath = get_test_filepath('goes_13_leap_second.nc')
                           goes15_1m_avg_filepath,
                           goes16_1m_avg_filepath])
 def test_implicit_goes(goes_nc_files):
+    # Test implicit for all files
     ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source='XRS')
     assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
 
-# test that satellite number is correctly parsed from files
 @pytest.mark.parametrize("goes_nc_files, sat_no",
                          [(goes13_filepath_nc, 'GOES-13'),
                           (goes15_filepath_nc, 'GOES-15'),
@@ -39,6 +38,7 @@ def test_implicit_goes(goes_nc_files):
                           (goes15_1m_avg_filepath, 'GOES-15'),
                           (goes16_1m_avg_filepath, 'GOES-16')])
 def test_implicit_goes_satno(goes_nc_files, sat_no):
+    # Test that satellite number is correctly parsed from files
     ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source='XRS')
     assert ts_goes.observatory == sat_no
 
@@ -51,26 +51,27 @@ def test_implicit_goes_satno_missing():
 
 
 def test_columns_units():
+    # Test that all columns have associated units
     ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source='XRS')
-    # test that all columns have associated units
     assert np.all([isinstance(unit_val, u.UnitBase) for unit_val in ts_goes.units.values()])
 
 
 def test_goes_netcdf_time_parsing15():
-    # testing to make sure the time is correctly parsed (to ignore leap seconds)
-    # tests for 13, 14, 15
+    # Testing to make sure the time is correctly parsed (to ignore leap seconds)
+    # Tests for 13, 14, 15
     ts_goes = sunpy.timeseries.TimeSeries(goes15_filepath_nc, source="XRS")
     assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2013-10-28 00:00:01.385'
 
 
 def test_goes_netcdf_time_parsing17():
-    # testing to make sure the time is correctly parsed (to ignore leap seconds)
-    # tests for GOES-R (16, 17)
+    # Testing to make sure the time is correctly parsed (to ignore leap seconds)
+    # Tests for GOES-R (16, 17)
     ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
     assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2020-10-16 00:00:00.477'
 
 
 def test_goes_leap_seconds():
+    # Test for case when leap second present
     with pytest.warns(SunpyUserWarning, match="There is one leap second timestamp present in: goes_13_leap_second"):
         ts = sunpy.timeseries.TimeSeries(goes13_leap_second_filepath)
     assert ts.time[-1].isot == '2015-06-30T23:59:59.999'
