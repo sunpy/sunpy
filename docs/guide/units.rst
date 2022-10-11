@@ -4,21 +4,21 @@ Units
 *****
 
 This section of the guide talks about representing physical units sunpy.
-sunpy makes use of the `astropy.units` module for both these tasks.
+sunpy makes use of the `astropy.units` for this task.
 
+Quantity objects
+================
 All functions in sunpy that accept or return numbers associated with physcial quantities accept and return `~astropy.units.Quantity` objects.
 These objects represent a number (or an array of numbers) and a unit.
 This means sunpy is always explicit about the units associated with a value.
 Quantities and units are powerful tools for keeping track of variables with a physical meaning and make it straightforward to convert the same physical quantity into different units.
 
-In this section of the guide we will give a quick introduction to `astropy.units` and then demostrate how to use units with sunpy.
-
 To use units we must first import them from Astropy.
-To save on typing we usually import units as ``u``::
+To save on typing it's standard practice to import the units module as ``u``::
 
    >>> import astropy.units as u
 
-Once we have imported units we can create a quantity by multiplying a number bya unit::
+Once we have imported the units module we can create a `~astropy.units.Quantity` by multiplying a plain number by a unit::
 
    >>> length = 10 * u.meter
    >>> length
@@ -32,7 +32,7 @@ A `~astropy.units.Quantity` has both a ``.unit`` and a ``.value`` attribute::
   >>> length.unit
   Unit("m")
 
-These `~astropy.units.Quantity` objects can also be converted to other units, or unit systems::
+These `~astropy.units.Quantity` objects can also be converted to other units or unit systems::
 
   >>> length.to(u.km)
   <Quantity 0.01 km>
@@ -65,14 +65,14 @@ Quantities as function arguments
 ================================
 
 An extremely useful addition to the base functionality of Quanitities is the ``@u.quantity_input`` decorator.
-This allows you to specify required units for function arguments to ensure that the calculation within that function always make physical sense.
+This allows specification required units for function arguments to ensure that the calculation within that function always make physical sense.
 For instance, if we defined a function to calculate speed as above, we might want the distance and time as inputs::
 
   >>> def speed(length, time):
   ...     return length / time
 
-However, this requires that length and time both have the appropriate units.
-We therefore want to use `~astropy.units.quantity_input` to enforce this, here we use `function annotations <https://python-3-for-scientists.readthedocs.io/en/latest/python3_features.html#function-annotations>`__ to specify the units.
+However, this assumes that the length and time passed in always have the appropriate units.
+To enforce the correct units we can use `~astropy.units.quantity_input`, with `function annotations <https://python-3-for-scientists.readthedocs.io/en/latest/python3_features.html#function-annotations>`__ to specify the units::
 
   >>> @u.quantity_input
   ... def speed(length: u.m, time: u.s):
