@@ -4,6 +4,7 @@ Test cases for KCor Map subclass.
 import pytest
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.mlso import KCorMap
@@ -12,7 +13,7 @@ from sunpy.map.sources.mlso import KCorMap
 @pytest.fixture()
 def kcor():
     """Creates an KCorMap from a FITS file."""
-    return get_dummy_map_from_header(get_test_filepath("20181209_180305_kcor_l1.5_rebinned.header"))
+    return get_dummy_map_from_header(get_test_filepath("20181209_180305_kcor_l2.header"))
 
 
 def test_kcormap_creation(kcor):
@@ -45,3 +46,21 @@ def test_norm_clip(kcor):
 def test_wcs(kcor):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     kcor.pixel_to_world(0*u.pix, 0*u.pix)
+
+
+def test_observer_coordinate(kcor):
+    assert 'dsun_obs' not in kcor.meta
+
+    # The test header triggers using the default observer coordinate
+    observer = kcor.observer_coordinate.itrs.earth_location
+    assert_quantity_allclose(observer.lon, kcor._earth_location.lon)
+    assert_quantity_allclose(observer.lat, kcor._earth_location.lat)
+    assert_quantity_allclose(observer.height, kcor._earth_location.height)
+
+    # The test header will have a fully specified observer when DSUN_OBS is added
+    kcor.meta['dsun_obs'] = (1*u.AU).to_value(u.m)
+    kcor = KCorMap(kcor.data, kcor.meta)
+
+    # The observer coordinate should now no longer be the default observer coordinate
+    assert_quantity_allclose(kcor.observer_coordinate.radius, 1*u.AU)
+    assert_quantity_allclose(kcor.observer_coordinate.lat, kcor.meta['crlt_obs']*u.deg)

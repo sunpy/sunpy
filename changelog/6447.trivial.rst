@@ -1,0 +1,1 @@
+Fixed a bug where the private attribute ``_default_observer_coordinate`` for `~sunpy.map.GenericMap` was being used even when there was sufficient observer metadata in the header.

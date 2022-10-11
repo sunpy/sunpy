@@ -1,9 +1,8 @@
 import astropy.units as u
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import EarthLocation, SkyCoord
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy.coordinates import sun
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
@@ -27,7 +26,18 @@ class KCorMap(GenericMap):
     ----------
     * `COSMO Mission Page <https://www2.hao.ucar.edu/cosmo>`_
     * `KCOR Instrument Page <https://www2.hao.ucar.edu/mlso/instruments/mlso-kcor-coronagraph>`_
+
+    Notes
+    -----
+    Observer location: The standard K-Cor metadata does not include the full 3D
+    location of the observer.  There are 2D Carrington heliographic coordinates, but
+    using them is not recommended because the calculation of Carrington longitude
+    differs from ``sunpy`` (see :ref:`sunpy-coordinates-carrington`).  Instead, we
+    assume the default observer location to be the geographic location of MLSO.
     """
+
+    # MLSO location per Wikipedia (https://en.wikipedia.org/wiki/Mauna_Loa_Solar_Observatory)
+    _earth_location = EarthLocation(-155.576*u.deg, 19.536*u.deg, 3394*u.m)
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
@@ -63,12 +73,7 @@ class KCorMap(GenericMap):
 
     @property
     def _default_observer_coordinate(self):
-        # Override missing metadata in the observer coordinate
-        dsun_obs = self.meta.get('dsun_obs', sun.earth_distance(self.date).to_value(u.m))
-        return SkyCoord(self.meta.get('hgln_obs', 0.0) * u.deg,
-                        self.meta.get('hglt_obs', 0.0) * u.deg,
-                        self.meta.get('dsun_obs', dsun_obs) * u.m,
-                        frame="heliographic_stonyhurst")
+        return SkyCoord(self._earth_location.get_itrs(self.date)).heliographic_stonyhurst
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
