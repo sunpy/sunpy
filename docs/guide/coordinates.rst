@@ -6,18 +6,14 @@ Coordinates
 This section of the guide talks about representing coordinates in sunpy.
 sunpy makes use of the `astropy.coordinates` module for this task.
 
-In much the same way as `~astropy.units` are used for representing physical
-quantities, sunpy uses `astropy.coordinates` to represent points in physical
-space. This applies to both points in 3D space and projected coordinates in
-images.
+In much the same way as `~astropy.units` are used for representing physical quantities, sunpy uses `astropy.coordinates` to represent points in physical space.
+This applies to both points in 3D space and projected coordinates in images.
 
-The astropy coordinates module is primarily used through the
-`~astropy.coordinates.SkyCoord` class::
+The astropy coordinates module is primarily used through the `~astropy.coordinates.SkyCoord` class::
 
   >>> from astropy.coordinates import SkyCoord
 
-To enable the use of the solar physics specific frames defined in sunpy we also
-need to import them::
+To enable the use of the solar physics specific frames defined in sunpy we also need to import them::
 
   >>> from sunpy.coordinates import frames
 
@@ -29,37 +25,29 @@ A SkyCoord object to represent a point on the Sun can then be created::
   <SkyCoord (HeliographicStonyhurst: obstime=2017-08-01T00:00:00.000, rsun=695700.0 km): (lon, lat) in deg
       (70., -30.)>
 
-This `~astropy.coordinates.SkyCoord` object can then be transformed to any
-other coordinate frame defined either in Astropy or sunpy, for example::
+This `~astropy.coordinates.SkyCoord` object can then be transformed to any other coordinate frame defined either in Astropy or sunpy, for example to transform from the original Stonyhurst frame to a Helioprojective frame::
 
   >>> c.transform_to(frames.Helioprojective(observer="earth"))
   <SkyCoord (Helioprojective: obstime=2017-08-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
       (769.96270814, -498.89715922, 1.51668773e+08)>
 
 
-It is also possible to convert three dimensional positions to astrophysical
-frames defined in Astropy, for example `~astropy.coordinates.ICRS`.
+It is also possible to convert three dimensional positions to astrophysical frames defined in Astropy, for example `~astropy.coordinates.ICRS`.
 
   >>> c.transform_to('icrs')
   <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
     (49.84856512, 0.05394699, 1417743.94689472)>
 
 
-
 Observer Location
 -----------------
 
-Both `~sunpy.coordinates.frames.Helioprojective` and
-`~sunpy.coordinates.frames.Heliocentric` frames are defined based on the
-position of the observer. Therefore to transform either of these frames to a
-different frame the location of the observer must be known.
-The observer can be specified for a coordinate object using the ``observer``
-argument to `~astropy.coordinates.SkyCoord`.  For sunpy to calculate the
-location of Earth or another solar-system body, it must know the time for
-which the coordinate is valid; this is specified with the ``obstime`` argument.
+Both `~sunpy.coordinates.frames.Helioprojective` and `~sunpy.coordinates.frames.Heliocentric` frames are defined based on the position of the observer.
+Therefore to transform either of these frames to a different frame the location of the observer must be known.
+The observer can be specified for a coordinate object using the ``observer`` argument to `~astropy.coordinates.SkyCoord`.
+For sunpy to calculate the location of Earth or another solar-system body, it must know the time associated with the coordinate; this is specified with the ``obstime`` argument.
 
-Using the observer location it is possible to convert a coordinate as seen by
-one observer to a coordinate seen by another::
+Using the observer location it is possible to convert a coordinate as seen by one observer to a coordinate seen by another::
 
   >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, observer="earth",
   ...                 obstime="2017-07-26",
@@ -71,16 +59,15 @@ one observer to a coordinate seen by another::
       (-1285.47497992, 106.20918654, 0.72405937)>
 
 
-Using Coordinates with sunpy Map
---------------------------------
+Using Coordinates with Maps
+---------------------------
 
 .. plot::
    :include-source:
 
-   sunpy Map uses coordinates to specify locations on the image, and to plot
-   overlays on plots of maps. When a Map is created, a coordinate frame is
-   constructed from the header information. This can be accessed using
-   ``.coordinate_frame``:
+   sunpy Map uses coordinates to specify locations on the image, and to plot overlays on plots of maps.
+   When a Map is created, a coordinate frame is constructed from the header information.
+   This can be accessed using ``.coordinate_frame``:
 
    >>> import sunpy.map
    >>> from sunpy.data.sample import AIA_171_IMAGE   # doctest: +REMOTE_DATA
@@ -89,8 +76,7 @@ Using Coordinates with sunpy Map
    <Helioprojective Frame (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
        (-0.00406308, 0.04787238, 1.51846026e+11)>)>
 
-   This can be used when creating a `~astropy.coordinates.SkyCoord` object to set
-   the coordinate system to that image:
+   This can be used when creating a `~astropy.coordinates.SkyCoord` object to set the coordinate system to that image:
 
    >>> from astropy.coordinates import SkyCoord
    >>> import astropy.units as u
@@ -100,15 +86,13 @@ Using Coordinates with sunpy Map
        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
        (100., 10.)>
 
-   The `~astropy.coordinates.SkyCoord` object can be converted to a PixelPair object
-   using `~sunpy.map.GenericMap.world_to_pixel`:
+   The `~astropy.coordinates.SkyCoord` object can be converted to a PixelPair object using `~sunpy.map.GenericMap.world_to_pixel`:
 
    >>> pixel_obj = m.world_to_pixel(c) # doctest: +REMOTE_DATA
    >>> pixel_obj # doctest: +REMOTE_DATA
    PixelPair(x=<Quantity 551.7680511 pix>, y=<Quantity 515.18266871 pix>)
 
-   This `~astropy.coordinates.SkyCoord` object could also be used to plot a point
-   on top of the map:
+   This `~astropy.coordinates.SkyCoord` object could also be used to plot a point on top of the map:
 
    >>> import matplotlib.pyplot as plt
    >>> ax = plt.subplot(projection=m)  # doctest: +SKIP
