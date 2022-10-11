@@ -37,6 +37,7 @@ def test_implicit_goes(goes_nc_files):
                           (goes17_filepath_nc, 'GOES-17'),
                           (goes15_1m_avg_filepath, 'GOES-15'),
                           (goes16_1m_avg_filepath, 'GOES-16')])
+@pytest.mark.xfail
 def test_implicit_goes_satno(goes_nc_files, sat_no):
     # Test that satellite number is correctly parsed from files
     ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source='XRS')
