@@ -112,7 +112,7 @@ To get a list of all of the attributes check the documentation by typing:
     >>> help(my_map)  # doctest: +SKIP
 
 Many attributes and functions of the map classes accept and return `~astropy.units.quantity.Quantity` or `~astropy.coordinates.SkyCoord` objects.
-Please refer to :ref:`units-coordinates-sunpy` for more details.
+Please refer to :ref:`units-sunpy` and :ref:`coordinates-sunpy` for more details.
 
 The metadata for the map is accessed by:
 

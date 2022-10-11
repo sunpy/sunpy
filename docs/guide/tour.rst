@@ -186,7 +186,7 @@ with units. sunpy uses `~astropy.units` to implement this functionality.
 Quantities and units are powerful tools for keeping track of variables with
 physical meaning and make it straightforward to convert the same physical
 quantity into different units. To learn more about the capabilities of
-quantities and units, consult :ref:`units-coordinates-sunpy` or
+quantities and units, consult :ref:`units-sunpy` or
 `the astropy tutorial <http://learn.astropy.org/Quantities.html>`__.
 
 To demonstrate this, let's look at the solar radius constant. This is a physical quantity
