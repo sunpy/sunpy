@@ -130,6 +130,7 @@ class XRSTimeSeries(GenericTimeSeries):
         # The other fields are fallback and sometimes have data in them that is "useless".
         id = (
             self.meta.metas[0].get("id", "").strip()
+            or self.meta.metas[0].get("filename_id", "").strip()
             or self.meta.metas[0].get("TELESCOP", "").strip()
             or self.meta.metas[0].get("Instrument", "").strip()
         )
@@ -229,8 +230,8 @@ class XRSTimeSeries(GenericTimeSeries):
         """
         with h5netcdf.File(filepath, mode="r", **XRSTimeSeries._netcdf_read_kw) as h5nc:
             header = MetaDict(OrderedDict(h5nc.attrs))
-            if len(header["id"].strip()) == 0:
-                header.update({"id": Path(filepath).name})
+            if len(header["id"].strip()) == 0:  # needed to get observatory number if 'id' empty.
+                header.update({"filename_id": Path(filepath).name})
             flux_name = h5nc.variables.get("a_flux") or h5nc.variables.get("xrsa_flux")
             if flux_name is None:
                 raise ValueError(f"No flux data (either a_flux or xrsa_flux) found in file: {filepath}")
