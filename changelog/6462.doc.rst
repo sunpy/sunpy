@@ -1,1 +1,1 @@
-Split the units and coordinate guides on to separate pages, and made minor improvements to thtem.
+Split the units and coordinate guides on to separate pages, and made minor improvements to them.
