@@ -3,15 +3,16 @@
 Coordinates
 ***********
 
-This section of the guide talks about representing coordinates in sunpy.
+This section of the guide introduces how coordinates are represented in sunpy.
 sunpy makes use of the `astropy.coordinates` module for this task.
 
 In much the same way as `~astropy.units` are used for representing physical quantities, sunpy uses `astropy.coordinates` to represent points in physical space.
 This applies to both points in 3D space and projected coordinates in images.
 
-The astropy coordinates module is primarily used through the `~astropy.coordinates.SkyCoord` class::
+The astropy coordinates module is primarily used through the `~astropy.coordinates.SkyCoord` class, which also makes use of the astropy units system::
 
   >>> from astropy.coordinates import SkyCoord
+  >>> import astropy.units as u
 
 To enable the use of the solar physics specific frames defined in sunpy we also need to import them::
 
@@ -19,22 +20,22 @@ To enable the use of the solar physics specific frames defined in sunpy we also 
 
 A SkyCoord object to represent a point on the Sun can then be created::
 
-  >>> c = SkyCoord(70*u.deg, -30*u.deg, obstime="2017-08-01",
-  ...              frame=frames.HeliographicStonyhurst)
-  >>> c
+  >>> coord = SkyCoord(70*u.deg, -30*u.deg, obstime="2017-08-01",
+  ...                  frame=frames.HeliographicStonyhurst)
+  >>> coord
   <SkyCoord (HeliographicStonyhurst: obstime=2017-08-01T00:00:00.000, rsun=695700.0 km): (lon, lat) in deg
       (70., -30.)>
 
-This `~astropy.coordinates.SkyCoord` object can then be transformed to any other coordinate frame defined either in Astropy or sunpy, for example to transform from the original Stonyhurst frame to a Helioprojective frame::
+This `~astropy.coordinates.SkyCoord` object can then be transformed to any other coordinate frame defined either in Astropy or sunpy (see :ref:`_sunpy-coordinate-systems` for a list of sunpy frames), for example to transform from the original Stonyhurst frame to a Helioprojective frame::
 
-  >>> c.transform_to(frames.Helioprojective(observer="earth"))
+  >>> coord.transform_to(frames.Helioprojective(observer="earth"))
   <SkyCoord (Helioprojective: obstime=2017-08-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
       (769.96270814, -498.89715922, 1.51668773e+08)>
 
 
 It is also possible to convert three dimensional positions to astrophysical frames defined in Astropy, for example `~astropy.coordinates.ICRS`.
 
-  >>> c.transform_to('icrs')
+  >>> coord.transform_to('icrs')
   <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
     (49.84856512, 0.05394699, 1417743.94689472)>
 
@@ -80,15 +81,15 @@ Using Coordinates with Maps
 
    >>> from astropy.coordinates import SkyCoord
    >>> import astropy.units as u
-   >>> c = SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame)  # doctest: +REMOTE_DATA
-   >>> c  # doctest: +REMOTE_DATA
+   >>> coord = SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame)  # doctest: +REMOTE_DATA
+   >>> coord  # doctest: +REMOTE_DATA
    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
        (100., 10.)>
 
-   The `~astropy.coordinates.SkyCoord` object can be converted to a PixelPair object using `~sunpy.map.GenericMap.world_to_pixel`:
+   The `~astropy.coordinates.SkyCoord` object can be converted to a `~PixelPair object using `~sunpy.map.GenericMap.world_to_pixel`:
 
-   >>> pixel_obj = m.world_to_pixel(c) # doctest: +REMOTE_DATA
+   >>> pixel_obj = m.world_to_pixel(coord) # doctest: +REMOTE_DATA
    >>> pixel_obj # doctest: +REMOTE_DATA
    PixelPair(x=<Quantity 551.7680511 pix>, y=<Quantity 515.18266871 pix>)
 
@@ -98,6 +99,6 @@ Using Coordinates with Maps
    >>> ax = plt.subplot(projection=m)  # doctest: +SKIP
    >>> m.plot()  # doctest: +SKIP
    <matplotlib.image.AxesImage object at ...>
-   >>> _ = ax.plot_coord(c, 'o')  # doctest: +SKIP
+   >>> _ = ax.plot_coord(coord, 'o')  # doctest: +SKIP
 
 For more information on coordinates see :ref:`sunpy-coordinates` section of the :ref:`reference`.

@@ -12,6 +12,8 @@ This sub-package contains:
 The SunPy coordinate framework extends the
 :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
 
+.. _sunpy-coordinate-systems:
+
 Supported Coordinate Systems
 ============================
 
