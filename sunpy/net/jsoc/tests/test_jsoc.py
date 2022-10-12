@@ -357,13 +357,17 @@ def test_check_request_keywords(client):
     assert len(responses) == 7
 
 
-@pytest.mark.remote_data
 def test_empty_response_fetch(client):
     # Check that results from downloading an empty response are empty
-    response = client.search(
-        a.Time('1990-12-12T00:00:00', '1990-12-12T0:01:00'),
-        a.jsoc.Series.hmi_b_720s
-    )
+    #
+    # Could do a search like below, but to save a JSOC query in the tests
+    # just test against an empty response.
+    #
+    # response = client.search(
+    #     a.Time('1990-12-12T00:00:00', '1990-12-12T0:01:00'),
+    #    a.jsoc.Series.hmi_b_720s
+    # )
+    response = JSOCResponse()
     assert len(response) == 0
     result = client.fetch(response)
     assert len(result) == 0
