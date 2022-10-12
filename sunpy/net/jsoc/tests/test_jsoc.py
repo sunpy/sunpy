@@ -355,3 +355,19 @@ def test_check_request_keywords(client):
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Keyword("QUALITY") < 2, a.jsoc.Keyword("EXPTIME") > 2)
     assert len(responses) == 7
+
+
+def test_empty_response_fetch(client):
+    # Check that results from downloading an empty response are empty
+    #
+    # Could do a search like below, but to save a JSOC query in the tests
+    # just test against an empty response.
+    #
+    # response = client.search(
+    #     a.Time('1990-12-12T00:00:00', '1990-12-12T0:01:00'),
+    #    a.jsoc.Series.hmi_b_720s
+    # )
+    response = JSOCResponse()
+    assert len(response) == 0
+    result = client.fetch(response)
+    assert len(result) == 0
