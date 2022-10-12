@@ -1,6 +1,6 @@
-********
-`SunPy`_
-********
+*********
+``sunpy``
+*********
 
 |Latest Version| |codecov| |matrix| |Research software impact| |DOI| |Powered by NumFOCUS|
 
@@ -19,36 +19,34 @@
 .. |Binder| image:: https://mybinder.org/badge_logo.svg
    :target: https://mybinder.org/v2/gh/sunpy/sunpy/main?filepath=examples
 
-SunPy is an open-source Python library for Solar Physics data analysis and visualization.
-Our homepage `SunPy`_ has more information about the project.
+``sunpy`` is an open-source Python library for Solar Physics data analysis and visualization.
+`Our homepage has more information about the SunPy project. <https://sunpy.org>`_
 
-For some examples of using SunPy see our `gallery`_, to see the latest changes in SunPy see our `Changelog`_.
+For some examples of using ``sunpy`` see our `gallery`_, to see the latest changes in ``sunpy`` see our `Changelog`_.
 
-.. _SunPy: https://sunpy.org
 .. _gallery: https://docs.sunpy.org/en/stable/generated/gallery/index.html
 .. _Changelog: https://docs.sunpy.org/en/stable/whatsnew/changelog.html
 
 Installation
 ============
 
-The recommended way to install SunPy is with `miniconda`_.
-To install SunPy once conda is installed run the following two commands:
+The recommended way to install ``sunpy`` is with `miniforge`_.
+To install ``sunpy`` once conda is installed run the following command:
 
 .. code:: bash
 
-    $ conda config --append channels conda-forge
     $ conda install sunpy
 
-For detailed installation instructions, see the `installation guide`_ in the SunPy docs.
+For detailed installation instructions, see the `installation guide`_ in the ``sunpy`` docs.
 
-.. _miniconda: https://docs.conda.io/en/latest/miniconda.html
+.. _miniforge: https://github.com/conda-forge/miniforge#miniforge3
 .. _installation guide: https://docs.sunpy.org/en/stable/guide/installation.html
 
 Developing
 ==========
 
-If you want to develop SunPy you will need to install from GitHub.
-For detailed installation instructions, see `Development installation`_ in the SunPy docs.
+If you want to develop ``sunpy`` you will need to install from GitHub.
+For detailed installation instructions, see `Development installation`_ in the ``sunpy`` docs.
 
 Usage
 =====
@@ -65,21 +63,21 @@ Here is a quick example of plotting an AIA image:
 Getting Help
 ============
 
-For more information or to ask questions about SunPy, check out:
+For more information or to ask questions about ``sunpy`` or any other SunPy library, check out:
 
--  `SunPy Documentation`_
+-  `sunpy Documentation`_
 -  `SunPy Element Channel`_
 -  `SunPy Mailing List`_
 
-.. _SunPy Documentation: https://docs.sunpy.org/en/stable/
+.. _sunpy Documentation: https://docs.sunpy.org/en/stable/
 .. _SunPy Element Channel: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. _SunPy Mailing List: https://groups.google.com/forum/#!forum/sunpy
 
-Acknowledging or Citing sunpy
-=============================
+Acknowledging or Citing ``sunpy``
+=================================
 
-If you use `sunpy` in your scientific work, we would appreciate citing it in your publications.
-The continued growth and development of `sunpy` is dependent on the community being aware of `sunpy`.
+If you use ``sunpy`` in your scientific work, we would appreciate citing it in your publications.
+The continued growth and development of `sunpy` is dependent on the community being aware of ``sunpy``.
 
 Please see https://sunpy.org/about#acknowledging-or-citing-sunpy on how to do this.
 
@@ -88,11 +86,11 @@ Contributing
 
 |Open Source Helpers|
 
-If you would like to get involved, start by joining the `SunPy mailing list`_ and check out the `Developers Guide`_ section of the SunPy docs.
+If you would like to get involved, start by joining the `SunPy mailing list`_ and check out the `Developers Guide`_ section of the ``sunpy`` docs.
 Stop by our chat room `#sunpy:openastronomy.org`_ if you have any questions.
 Help is always welcome so let us know what you like to work on, or check out the `issues page`_ for the list of known outstanding items.
 
-For more information on contributing to SunPy, please read our `Newcomers' guide`_.
+For more information on contributing to ``sunpy`` or any other SunPy library, please read our `Newcomers' guide`_.
 
 .. |Open Source Helpers| image:: https://www.codetriage.com/sunpy/sunpy/badges/users.svg
    :target: https://www.codetriage.com/sunpy/sunpy
