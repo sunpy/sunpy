@@ -1,0 +1,1 @@
+Tidy the GOES XRSTimesSeries tests and add two new XRS files to test.
