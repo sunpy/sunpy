@@ -7,6 +7,7 @@ from pathlib import Path
 
 import drms
 import numpy as np
+import parfive
 
 import astropy.table
 import astropy.time
@@ -406,6 +407,9 @@ class JSOCClient(BaseClient):
             A `parfive.Results` object.
 
         """
+        if len(jsoc_response) == 0:
+            return parfive.Results()
+
         for resp in jsoc_response.query_args:
             if 'notify' not in resp:
                 raise ValueError('A registered email is required to get data from JSOC. '
