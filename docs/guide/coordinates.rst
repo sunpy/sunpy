@@ -26,7 +26,7 @@ A SkyCoord object to represent a point on the Sun can then be created::
   <SkyCoord (HeliographicStonyhurst: obstime=2017-08-01T00:00:00.000, rsun=695700.0 km): (lon, lat) in deg
       (70., -30.)>
 
-This `~astropy.coordinates.SkyCoord` object can then be transformed to any other coordinate frame defined either in Astropy or sunpy (see :ref:`_sunpy-coordinate-systems` for a list of sunpy frames), for example to transform from the original Stonyhurst frame to a Helioprojective frame::
+This `~astropy.coordinates.SkyCoord` object can then be transformed to any other coordinate frame defined either in Astropy or sunpy (see :ref:`sunpy-coordinate-systems` for a list of sunpy frames), for example to transform from the original Stonyhurst frame to a Helioprojective frame::
 
   >>> coord.transform_to(frames.Helioprojective(observer="earth"))
   <SkyCoord (Helioprojective: obstime=2017-08-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
@@ -87,7 +87,7 @@ Using Coordinates with Maps
        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
        (100., 10.)>
 
-   The `~astropy.coordinates.SkyCoord` object can be converted to a `~PixelPair object using `~sunpy.map.GenericMap.world_to_pixel`:
+   The `~astropy.coordinates.SkyCoord` object can be converted to a PixelPair object using `~sunpy.map.GenericMap.world_to_pixel`:
 
    >>> pixel_obj = m.world_to_pixel(coord) # doctest: +REMOTE_DATA
    >>> pixel_obj # doctest: +REMOTE_DATA
