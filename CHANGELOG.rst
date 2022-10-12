@@ -600,8 +600,8 @@ Added/Improved Documentation
 Backwards Incompatible Changes
 ------------------------------
 
-- ``sunpy.instr`` has been depreacted and will be removed in sunpy 3.1 in favour of `sunkit_instruments`.
-  The code that is under ``sunpy.instr`` is imported via `sunkit_instruments` to ensure backwards comparability. (`#4526 <https://github.com/sunpy/sunpy/pull/4526>`__)
+- ``sunpy.instr`` has been depreacted and will be removed in sunpy 3.1 in favour of ``sunkit_instruments``.
+  The code that is under ``sunpy.instr`` is imported via ``sunkit_instruments`` to ensure backwards comparability. (`#4526 <https://github.com/sunpy/sunpy/pull/4526>`__)
 - Several `sunpy.map.GenericMap` attributes have been updated to return `None` when the relevant piece of FITS metadata is missing. These are:
 
   - `~sunpy.map.GenericMap.exposure_time`, previously defaulted to zero seconds.
