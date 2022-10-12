@@ -17,7 +17,8 @@ For more details checkout the :ref:`reference`.
    Data Acquisition <acquiring_data/index>
    Data Types <data_types/index>
    Plotting <plotting>
-   Units and Coordinates <units-coordinates>
+   Units <units>
+   Coordinates <coordinates>
    Time <time>
    customization
    logger
