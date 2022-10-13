@@ -17,7 +17,7 @@
 .. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
    :target: https://numfocus.org
 
-``sunpy`` is a Python software package designed to provide the fundamental tools for accessing, loading and interacting with solar physics data in Python.
+``sunpy`` is a Python software package that provides fundamental tools for accessing, loading and interacting with solar physics data in Python.
 It is the core library of the `SunPy Project <https://sunpy.org/>`__.
 
 For some examples of using ``sunpy`` see our `gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__.
@@ -27,7 +27,7 @@ Installation
 ============
 
 The recommended way to install ``sunpy`` is with `miniforge <https://github.com/conda-forge/miniforge#miniforge3>`__.
-To install ``sunpy`` once conda is installed run the following command:
+To install ``sunpy`` once miniforge is installed run the following command:
 
 .. code:: bash
 
