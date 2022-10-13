@@ -2,7 +2,7 @@
 ``sunpy``
 *********
 
-|Latest Version| |DOI| |element IM| |codecov| |Binder| |Powered by NumFOCUS| 
+|Latest Version| |DOI| |element IM| |codecov| |Binder| |Powered by NumFOCUS|
 
 .. |Latest Version| image:: https://img.shields.io/pypi/v/sunpy.svg
    :target: https://pypi.python.org/pypi/sunpy/
@@ -45,9 +45,9 @@ Here is a quick example of plotting an AIA image:
    >>> from sunpy.data.sample import AIA_171_IMAGE
    >>>
    >>> import matplotlib.pyplot as plt
-   >>> 
+   >>>
    >>> aia = sunpy.map.Map(AIA_171_IMAGE)
-   >>> 
+   >>>
    >>> aia.plot()
    >>>
    >>> plt.show()
