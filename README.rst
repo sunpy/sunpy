@@ -2,13 +2,13 @@
 ``sunpy``
 *********
 
-|Latest Version| |DOI| |element IM| |codecov| |Binder| |Powered by NumFOCUS|
+|Latest Version| |DOI| |matrix| |codecov| |Binder| |Powered by NumFOCUS|
 
 .. |Latest Version| image:: https://img.shields.io/pypi/v/sunpy.svg
    :target: https://pypi.python.org/pypi/sunpy/
 .. |DOI| image:: https://zenodo.org/badge/2165383.svg
    :target: https://zenodo.org/badge/latestdoi/2165383
-.. |element IM| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=openastronomy.modular.im
+.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=openastronomy.modular.im
    :target: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
 .. |codecov| image:: https://codecov.io/gh/sunpy/sunpy/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/sunpy
@@ -58,7 +58,7 @@ Getting Help
 For more information or to ask questions about ``sunpy`` or any other SunPy library, check out:
 
 -  `sunpy documentation <https://docs.sunpy.org/en/stable/>`__
--  `SunPy IM channel <https://app.element.io/#/room/#sunpy:openastronomy.org>`__
+-  `SunPy Chat <https://openastronomy.element.io/#/room/#sunpy:openastronomy.org>`__
 -  `SunPy mailing list <https://groups.google.com/forum/#!forum/sunpy>`__
 
 Acknowledging or Citing ``sunpy``
@@ -72,7 +72,7 @@ Please see https://sunpy.org/about#acknowledging-or-citing-sunpy on how to do th
 Contributing
 ============
 
-If you would like to get involved, start by joining the `SunPy IM channel <https://app.element.io/#/room/#sunpy:openastronomy.org>`__ and check out our `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
+If you would like to get involved, start by joining the `SunPy Chat <https://openastronomy.element.io/#/room/#sunpy:openastronomy.org>`__ and check out our `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
 This will walk you through getting setup for contributing.
 
 Code of Conduct
