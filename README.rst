@@ -19,10 +19,10 @@
 .. |Binder| image:: https://mybinder.org/badge_logo.svg
    :target: https://mybinder.org/v2/gh/sunpy/sunpy/main?filepath=examples
 
-``sunpy`` is an open-source Python library for Solar Physics data analysis and visualization.
-`Our homepage has more information about the SunPy project. <https://sunpy.org>`_
+``sunpy`` is the core library of the `SunPy Project <https://sunpy.org/>`__, a Python software package which is designed to provide the fundamental tools for accessing, loading and interacting with solar physics data in Python.
 
-For some examples of using ``sunpy`` see our `gallery`_, to see the latest changes in ``sunpy`` see our `Changelog`_.
+For some examples of using ``sunpy`` see our `gallery`_.
+To see the latest changes in ``sunpy`` see our `Changelog`_.
 
 .. _gallery: https://docs.sunpy.org/en/stable/generated/gallery/index.html
 .. _Changelog: https://docs.sunpy.org/en/stable/whatsnew/changelog.html
@@ -84,16 +84,13 @@ Please see https://sunpy.org/about#acknowledging-or-citing-sunpy on how to do th
 Contributing
 ============
 
-|Open Source Helpers|
 
-If you would like to get involved, start by joining the `SunPy mailing list`_ and check out the `Developers Guide`_ section of the ``sunpy`` docs.
+If you would like to get involved, start by joining the `SunPy Element Channel`_ and check out the `Developers' Guide`_ section of the ``sunpy`` docs.
 Stop by our chat room `#sunpy:openastronomy.org`_ if you have any questions.
 Help is always welcome so let us know what you like to work on, or check out the `issues page`_ for the list of known outstanding items.
 
 For more information on contributing to ``sunpy`` or any other SunPy library, please read our `Newcomers' guide`_.
 
-.. |Open Source Helpers| image:: https://www.codetriage.com/sunpy/sunpy/badges/users.svg
-   :target: https://www.codetriage.com/sunpy/sunpy
 
 .. _SunPy mailing list: https://groups.google.com/forum/#!forum/sunpy
 .. _Developers Guide: https://docs.sunpy.org/en/latest/dev_guide/index.html
