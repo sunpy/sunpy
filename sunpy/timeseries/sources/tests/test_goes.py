@@ -84,6 +84,11 @@ def test_goes_plot_column(goes_test_ts):
     assert '0.5--4.0' == ax.lines[0].get_label().split()[0]
 
 
+def test_goes_r_primarydetector():
+    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
+    assert "xrsa_primary_chan" in ts_goes.columns
+
+
 @pytest.mark.remote_data
 def test_goes_remote():
     # Older format file
