@@ -17,7 +17,8 @@
 .. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
    :target: https://numfocus.org
 
-``sunpy`` is the core library of the `SunPy Project <https://sunpy.org/>`__, a Python software package which is designed to provide the fundamental tools for accessing, loading and interacting with solar physics data in Python.
+``sunpy`` is a Python software package designed to provide the fundamental tools for accessing, loading and interacting with solar physics data in Python.
+It is the core library of the `SunPy Project <https://sunpy.org/>`__.
 
 For some examples of using ``sunpy`` see our `gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__.
 To see the latest changes in ``sunpy`` see our `changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__.
@@ -58,7 +59,7 @@ Getting Help
 For more information or to ask questions about ``sunpy`` or any other SunPy library, check out:
 
 -  `sunpy documentation <https://docs.sunpy.org/en/stable/>`__
--  `SunPy Chat <https://openastronomy.element.io/#/room/#sunpy:openastronomy.org>`__
+-  `SunPy Chat`_
 -  `SunPy mailing list <https://groups.google.com/forum/#!forum/sunpy>`__
 
 Acknowledging or Citing ``sunpy``
@@ -72,10 +73,12 @@ Please see https://sunpy.org/about#acknowledging-or-citing-sunpy on how to do th
 Contributing
 ============
 
-If you would like to get involved, start by joining the `SunPy Chat <https://openastronomy.element.io/#/room/#sunpy:openastronomy.org>`__ and check out our `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
+If you would like to get involved, start by joining the `SunPy Chat`_ and check out our `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
 This will walk you through getting setup for contributing.
 
 Code of Conduct
 ===============
 
 When you are interacting with the SunPy community you are asked to follow our `Code of Conduct <https://sunpy.org/coc>`__.
+
+.. _SunPy Chat: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
