@@ -85,6 +85,7 @@ def test_goes_plot_column(goes_test_ts):
 
 
 def test_goes_r_primarydetector():
+    # Test that the primary channel column added for the GOES-R satellites
     ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
     assert "xrsa_primary_chan" in ts_goes.columns
 
