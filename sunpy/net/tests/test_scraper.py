@@ -201,7 +201,7 @@ def testFilesRange_sameDirectory_months_remote():
     startdate = parse_time((2007, 8, 1))
     enddate = parse_time((2007, 9, 10))
     timerange = TimeRange(startdate, enddate)
-    assert len(s.filelist(timerange)) == 2
+    assert len(s.filelist(timerange)) == 3
 
 
 @pytest.mark.remote_data
@@ -211,8 +211,8 @@ def test_ftp():
     timerange = TimeRange('2016/5/18 15:28:00', '2016/5/20 16:30:50')
     urls = s.filelist(timerange)
     assert urls[0] == ('ftp://solar-pub.nao.ac.jp'
-                       '/pub/nsro/norh/data/tcx/2016/05/tca160519')
-    assert len(urls) == 2
+                       '/pub/nsro/norh/data/tcx/2016/05/tca160518')
+    assert len(urls) == 3
 
 
 @pytest.mark.remote_data
@@ -291,3 +291,14 @@ def test_get_timerange_with_extractor(exdict, start, end):
     tr = TimeRange(start, end)
     file_timerange = get_timerange_from_exdict(exdict)
     assert file_timerange == tr
+
+@pytest.mark.remote_data
+def test_yearly_overlap():
+    # Check that a time range that falls within the interval that a file reprsents
+    # returns a single result.
+    pattern = "https://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/solar-flares/x-rays/goes/xrs/goes-xrs-report_%Y.txt"
+    scraper = Scraper(pattern)
+
+    # Should return a single file for 2013
+    trange = TimeRange("2013-01-02", "2013-01-03")
+    assert len(scraper.filelist(trange)) == 1
