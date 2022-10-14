@@ -65,16 +65,14 @@ For more information or to ask questions about ``sunpy`` or any other SunPy libr
 Acknowledging or Citing ``sunpy``
 =================================
 
-If you use ``sunpy`` in your scientific work, we would appreciate citing it in your publications.
+If you use ``sunpy`` in your scientific work, we would appreciate your `citing it in your publications <https://sunpy.org/about#acknowledging-or-citing-sunpy>`__.
 The continued growth and development of ``sunpy`` is dependent on the community being aware of ``sunpy``.
-
-Please see https://sunpy.org/about#acknowledging-or-citing-sunpy on how to do this.
 
 Contributing
 ============
 
 If you would like to get involved, start by joining the `SunPy Chat`_ and check out our `Newcomers' guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
-This will walk you through getting setup for contributing.
+This will walk you through getting set up for contributing.
 
 Code of Conduct
 ===============
