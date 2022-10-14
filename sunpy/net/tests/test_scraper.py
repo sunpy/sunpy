@@ -201,7 +201,10 @@ def testFilesRange_sameDirectory_months_remote():
     startdate = parse_time((2007, 8, 1))
     enddate = parse_time((2007, 9, 10))
     timerange = TimeRange(startdate, enddate)
-    assert len(s.filelist(timerange)) == 3
+    files = s.filelist(timerange)
+    assert files == ['http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
+                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Jul.1m',
+                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
 @pytest.mark.remote_data
@@ -291,6 +294,7 @@ def test_get_timerange_with_extractor(exdict, start, end):
     tr = TimeRange(start, end)
     file_timerange = get_timerange_from_exdict(exdict)
     assert file_timerange == tr
+
 
 @pytest.mark.remote_data
 def test_yearly_overlap():
