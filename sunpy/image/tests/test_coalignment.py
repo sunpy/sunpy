@@ -66,7 +66,7 @@ def aia171_test_template_shape(aia171_test_template):
 
 @pytest.mark.filterwarnings(DEP_WARNING)
 def test_parabolic_turning_point():
-    assert(parabolic_turning_point(np.asarray([6.0, 2.0, 0.0])) == 1.5)
+    assert (parabolic_turning_point(np.asarray([6.0, 2.0, 0.0])) == 1.5)
 
 
 @pytest.mark.filterwarnings(DEP_WARNING)
@@ -162,15 +162,15 @@ def test_find_best_match_location(aia171_test_map_layer, aia171_test_template,
 def test_lower_clip(aia171_test_clipping):
     # No element is less than zero
     test_array = np.asarray([1.1, 0.1, 3.0])
-    assert(_lower_clip(test_array) == 0)
-    assert(_lower_clip(aia171_test_clipping) == 2.0)
+    assert (_lower_clip(test_array) == 0)
+    assert (_lower_clip(aia171_test_clipping) == 2.0)
 
 
 def test_upper_clip(aia171_test_clipping):
-    assert(_upper_clip(aia171_test_clipping) == 1.0)
+    assert (_upper_clip(aia171_test_clipping) == 1.0)
     # No element is greater than zero
     test_array = np.asarray([-1.1, -0.1, -3.0])
-    assert(_upper_clip(test_array) == 0)
+    assert (_upper_clip(test_array) == 0)
 
 
 @pytest.mark.filterwarnings(DEP_WARNING)
@@ -185,12 +185,12 @@ def test_clip_edges():
     yclip = [4, 0] * u.pix
     xclip = [1, 2] * u.pix
     new_a = clip_edges(a, yclip, xclip)
-    assert(a.shape[0] - (yclip[0].value + yclip[1].value) == new_a.shape[0])
-    assert(a.shape[1] - (xclip[0].value + xclip[1].value) == new_a.shape[1])
+    assert (a.shape[0] - (yclip[0].value + yclip[1].value) == new_a.shape[0])
+    assert (a.shape[1] - (xclip[0].value + xclip[1].value) == new_a.shape[1])
 
 
 def test__default_fmap_function():
-    assert(_default_fmap_function([1, 2, 3]).dtype == np.float64(1).dtype)
+    assert (_default_fmap_function([1, 2, 3]).dtype == np.float64(1).dtype)
 
 #
 # The following tests test functions that have mapsequences as inputs
@@ -269,13 +269,13 @@ def test_mapsequence_coalign_by_match_template(aia171_test_mc,
     test_mc = mapsequence_coalign_by_match_template(aia171_test_mc, shift=test_displacements)
 
     # Make sure the output is a mapsequence
-    assert(isinstance(test_mc, MapSequence))
+    assert (isinstance(test_mc, MapSequence))
 
     # Test returning with no clipping.  Output layers should have the same size
     # as the original input layer.
     test_mc = mapsequence_coalign_by_match_template(aia171_test_mc, clip=False)
-    assert(test_mc[0].data.shape == aia171_test_map_layer_shape)
-    assert(test_mc[1].data.shape == aia171_test_map_layer_shape)
+    assert (test_mc[0].data.shape == aia171_test_map_layer_shape)
+    assert (test_mc[1].data.shape == aia171_test_map_layer_shape)
 
     # Test the returned mapsequence using the default - clipping on.
     # All output layers should have the same size
@@ -287,10 +287,10 @@ def test_mapsequence_coalign_by_match_template(aia171_test_mc,
     number_of_pixels_clipped = [np.sum(np.abs(expected_clipping[0])),
                                 np.sum(np.abs(expected_clipping[1]))]
 
-    assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value,
-                                     nx - number_of_pixels_clipped[1].value))
-    assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value,
-                                     nx - number_of_pixels_clipped[1].value))
+    assert (test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value,
+                                      nx - number_of_pixels_clipped[1].value))
+    assert (test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value,
+                                      nx - number_of_pixels_clipped[1].value))
 
     # Test the returned mapsequence explicitly using clip=True.
     # All output layers should have the same size
@@ -302,10 +302,10 @@ def test_mapsequence_coalign_by_match_template(aia171_test_mc,
     number_of_pixels_clipped = [np.sum(np.abs(expected_clipping[0])),
                                 np.sum(np.abs(expected_clipping[1]))]
 
-    assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value,
-                                     nx - number_of_pixels_clipped[1].value))
-    assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value,
-                                     nx - number_of_pixels_clipped[1].value))
+    assert (test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value,
+                                      nx - number_of_pixels_clipped[1].value))
+    assert (test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value,
+                                      nx - number_of_pixels_clipped[1].value))
 
     # Test that the reference pixel of each map in the coaligned mapsequence is
     # correct.
@@ -337,21 +337,21 @@ def test_apply_shifts(aia171_test_map):
 
     # Test returning with no extra options - the code returns a mapsequence only
     test_output = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
-    assert(isinstance(test_output, MapSequence))
+    assert (isinstance(test_output, MapSequence))
 
     # Test returning with no clipping.  Output layers should have the same size
     # as the original input layer.
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False)
-    assert(test_mc[0].data.shape == aia171_test_map.data.shape)
-    assert(test_mc[1].data.shape == aia171_test_map.data.shape)
+    assert (test_mc[0].data.shape == aia171_test_map.data.shape)
+    assert (test_mc[1].data.shape == aia171_test_map.data.shape)
 
     # Test returning with clipping.  Output layers should be smaller than the
     # original layer by a known amount.
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=True)
     for i in range(0, len(test_mc.maps)):
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
-        assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
-        assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
+        assert (test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
+        assert (test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
 
     # Test returning with default clipping.  The default clipping is set to
     # true, that is the mapsequence is clipped.  Output layers should be smaller
@@ -359,18 +359,18 @@ def test_apply_shifts(aia171_test_map):
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
     for i in range(0, len(test_mc.maps)):
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
-        assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
-        assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
+        assert (test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
+        assert (test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
 
     # Test that keywords are correctly passed
     # Test for an individual keyword
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False,
                            cval=np.nan)
-    assert(np.all(np.logical_not(np.isfinite(test_mc[1].data[:, -1]))))
+    assert (np.all(np.logical_not(np.isfinite(test_mc[1].data[:, -1]))))
 
     # Test for a combination of keywords, and that changing the interpolation
     # order and how the edges are treated changes the results.
     test_mc1 = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False,
                             order=2, mode='reflect')
     test_mc2 = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False)
-    assert(np.all(test_mc1[1].data[:, -1] != test_mc2[1].data[:, -1]))
+    assert (np.all(test_mc1[1].data[:, -1] != test_mc2[1].data[:, -1]))
