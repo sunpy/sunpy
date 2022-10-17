@@ -10,7 +10,7 @@ Migration guide
 
 If you are using ``HelioviewerClient`` and need to make the switch the following text will hopefully help you.
 
-``HelioviewerClient().data_sources`` is replaced by `hvpy.DataSource`, an `Enum` that lists every known data source for Helioviewer.org.
+``HelioviewerClient().data_sources`` is replaced by `hvpy.DataSource`, an `enum.Enum` that lists every known data source for Helioviewer.org.
 
 .. code-block:: python
 

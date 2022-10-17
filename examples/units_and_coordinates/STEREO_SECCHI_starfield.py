@@ -49,7 +49,7 @@ stereo_to_sun = SkyCoord(-sun_to_stereo.spherical, obstime=sun_to_stereo.obstime
 
 ###############################################################################
 # Let's look up bright stars using the Vizier search capability provided by
-# `astroquery`.
+# `astroquery <https://astroquery.readthedocs.io/en/latest/>`__.
 # We will search the GAIA2 star catalog for stars with magnitude
 # brighter than 7.
 
