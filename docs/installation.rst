@@ -83,6 +83,8 @@ If you have a reason to want a more minimal installation, you can install sunpy 
 
 It is possible to select which "extra" dependencies you want to install, if you know you only need certain submodules:
 
+.. code-block:: bash
+
     $ pip install "sunpy[map,timeseries]"
 
 The available options are: ``[asdf]``, ``[dask]``, ``[database]``, ``[image]``, ``[jpeg2000]``, ``[map]``, ``[net]``, ``[timeseries]``, ``[visualization]``.
