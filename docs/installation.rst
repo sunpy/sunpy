@@ -91,6 +91,11 @@ The available options are: ``[asdf]``, ``[dask]``, ``[database]``, ``[image]``, 
 
 If you want to develop ``sunpy`` we would strongly recommend reading the `Newcomers' Guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
 
+.. warning::
+
+    Please do not mix ``pip`` and ``conda`` to install packages within your environments.
+    There are no guarantees that this will work and it is likely to cause problems.
+
 .. note::
     If you get a ``PermissionError`` this means that you do not have the required administrative access to install new packages to your Python installation.
     Do **not** install ``sunpy`` or other Python packages using ``sudo``.
