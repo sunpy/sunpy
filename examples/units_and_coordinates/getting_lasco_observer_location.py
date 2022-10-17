@@ -14,19 +14,19 @@ the existing ``sunpy`` conda environment: ``conda install -c astropy astroquery`
 """
 # sphinx_gallery_thumbnail_number = 2
 
+import hvpy
 import matplotlib.pyplot as plt
 import numpy as np
 
 import sunpy.map
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_horizons_coord
-from sunpy.net import Fido
-from sunpy.net import attrs as a
+from sunpy.time import parse_time
 
 ###############################################################################
-# Let's download a SOHO/LASCO C3 image and load it into a Map.
+# Let's download a SOHO/LASCO C3 image Helioviewer.org and load it into a Map.
+# The reason to ise Helioviewer.org is that they provide processed images.
 
-query = Fido.search(a.Time("2000-02-27 07:41", "2000-02-27 07:43", "2000-02-27 07:42"), a.Instrument.lasco)
-lasco_file = Fido.fetch(query)
+lasco_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2000/02/27 07:42').datetime, hvpy.DataSource.LASCO_C3.value), "LASCO_C3.JPEG2000")
 lasco_map = sunpy.map.Map(lasco_file)
 
 ###############################################################################

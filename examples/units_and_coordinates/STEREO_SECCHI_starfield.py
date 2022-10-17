@@ -15,6 +15,7 @@ This requires the installation of the `astroquery <https://astroquery.readthedoc
 package, which can be installed on top of the existing sunpy conda
 environment: ``conda install -c astropy astroquery`` and an active internet connection.
 """
+import hvpy
 import matplotlib.pyplot as plt
 from astroquery.vizier import Vizier
 
@@ -24,14 +25,13 @@ from astropy.time import Time
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.net import Fido
-from sunpy.net import attrs as a
+from sunpy.time import parse_time
 
 ###############################################################################
-# Let's download a STEREO-A SECCHI COR2 image and load it into a Map.
+# Let's download a STEREO-A SECCHI COR2 image from Helioviewer.org which provide
+# pre-processed images and load it into a Map.
 
-query = Fido.search(a.Time("2014-05-15 07:54", "2014-05-15 07:55", "2014-05-15 07:54:26"), a.Instrument.secchi)
-cor2_file = Fido.fetch(query)
+cor2_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2014/05/15 07:54').datetime, hvpy.DataSource.COR2_A.value), "COR2.JPEG2000")
 cor2_map = sunpy.map.Map(cor2_file)
 
 ###############################################################################
@@ -49,7 +49,7 @@ stereo_to_sun = SkyCoord(-sun_to_stereo.spherical, obstime=sun_to_stereo.obstime
 
 ###############################################################################
 # Let's look up bright stars using the Vizier search capability provided by
-# ``astroquery``.
+# `astroquery`.
 # We will search the GAIA2 star catalog for stars with magnitude
 # brighter than 7.
 
