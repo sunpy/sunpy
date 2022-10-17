@@ -1,0 +1,3 @@
+The ``sunpy.net.helioviewer`` module is deprecated and will be removed in version 5.1.
+The Helioviewer Project now maintains a Python Wrapper called `hvpy <https://hvpy.readthedocs.io/en/latest/>`__.
+As such, in consultation with the Helioviewer Project, we have decided to deprecate the ``HelioviewerClient`` class.
