@@ -25,7 +25,7 @@ It also supports tab-complete, to find the data source you want.
 .. code-block:: python
 
    >>> import hvpy
-   >>> hvpy.getDataSources()
+   >>> hvpy.getDataSources()  # doctest: +REMOTE_DATA
    {'SDO': {'HMI': {'continuum': {'sourceId': 18,
    ...
 
@@ -35,9 +35,8 @@ It also supports tab-complete, to find the data source you want.
 
    >>> from datetime import datetime
    >>> import hvpy
-   >>> hvpy.getClosestImage(date=datetime.now(), sourceId=hvpy.DataSource.AIA_171)
-   {'id': '133264034',
-   ...
+   >>> hvpy.getClosestImage(date=datetime.now(), sourceId=hvpy.DataSource.AIA_171)  # doctest: +REMOTE_DATA
+   {'id': '13326...',...
 
 ``HelioviewerClient().download_jp2`` is replaced by :func:`hvpy.getJP2Image`, but you will have to wrap the call using :func:`hvpy.save_file` to save the data to disk.
 
@@ -45,7 +44,8 @@ It also supports tab-complete, to find the data source you want.
 
    >>> from datetime import datetime
    >>> import hvpy
-   >>> hvpy.save_file(hvpy.getJP2Image(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171), filename="~/example.jpeg")
+   >>> filepath = hvpy.save_file(hvpy.getJP2Image(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171), filename="~/example.jpeg")  # doctest: +REMOTE_DATA
+   >>> filepath.unlink()
 
 ``HelioviewerClient().get_jp2_header`` is replaced by :func:`hvpy.getJP2Header`.
 However you will need to make a call to :func:`hvpy.getClosestImage` to get the ID required.
@@ -55,8 +55,8 @@ Furthermore, the header is returned as a XML string, which you will need to pars
 
    >>> from datetime import datetime
    >>> import hvpy
-   >>> metadata = hvpy.getClosestImage(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171)
-   >>> hvpy.getJP2Header(metadata['id'])
+   >>> metadata = hvpy.getClosestImage(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171)  # doctest: +REMOTE_DATA
+   >>> hvpy.getJP2Header(metadata['id'])  # doctest: +REMOTE_DATA
    '<?xml version="1.0" encoding="utf-8"?>...
 
 ``HelioviewerClient().download_png`` is replaced by `hvpy.createScreenshot`, it takes the same arguments as the old method expect for ``progress`` and ``directory`` which do not exist and adds ``filename`` so one is able to save the file, otherwise it will save it in the current working directory.
@@ -76,7 +76,8 @@ Furthermore, the header is returned as a XML string, which you will need to pars
    ...     width=100,
    ...     height=100,
    ...     filename="my_screenshot",
-   ... )
+   ... )  # doctest: +REMOTE_DATA
+   >>> screenshot_location.unlink()  # doctest: +REMOTE_DATA
 
 `The documentation for hvpy has more examples of how to use it and examples for each function <https://hvpy.readthedocs.io/en/latest/index.html>`__.
 
