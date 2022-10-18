@@ -43,10 +43,26 @@ in a platform specific directory, which you can see the path for by running::
     log_file_format = %(asctime)s, %(origin)s, %(levelname)s, %(message)s
   <BLANKLINE>
 
-To maintain your own customizations place a copy of the default sunpyrc file
-into the *first* path printed above.
+Do not edit the default file (the first in the  FILES USED: list above) directly as every time you install or update sunpy, this file will be overwritten.
+
+Depending on your system, it may be useful to have a site-wide configuration file. If it is used, it will be on the FILES USED: list below the default file. To find your system's site configuration
+path for sunpy, use::
+
+    from sunpy.extern.appdirs import AppDirs
+    AppDirs('sunpy', 'sunpy').site_config_dir
+
+In Unixes (including Linux) the site and user configuration paths follow the `XDG specifications <https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>`__.
+
+To maintain your personal customizations place a copy of the default sunpyrc file into the user configuration path. To find this path, use::
+
+    from sunpy.extern.appdirs import AppDirs
+    AppDirs('sunpy', 'sunpy').user_config_dir
+
 You can use `sunpy.util.config.copy_default_config` to write the default config into the correct place.
-Do not edit the default file directly as every time you install or update sunpy, this file will be overwritten.
+
+Note that if your site has a site configuration file, you may want to replicate the site configuration items into your own configuration file, as your own configuration overrides the site configuration.
+
+The user configuration path can also be set using an environment variable ``SUNPY_CONFIGDIR``.
 
 See below for the example config file.
 

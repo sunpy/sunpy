@@ -70,6 +70,13 @@ def _find_config_files():
     module_dir = Path(sunpy.__file__).parent
     config_files.append(str(module_dir / 'data' / 'sunpyrc'))
 
+    # if a site configuration file exists, add that to list of files to read
+    # so that any values set there will override ones specified in the default
+    # config file
+    config_path = Path(dirs.site_config_dir)
+    if config_path.joinpath(config_filename).exists():
+        config_files.append(str(config_path.joinpath(config_filename)))
+
     # if a user configuration file exists, add that to list of files to read
     # so that any values set there will override ones specified in the default
     # config file
@@ -166,6 +173,15 @@ def copy_default_config(overwrite=False):
 
     if not _is_writable_dir(user_config_dir):
         raise RuntimeError(f'Could not write to SunPy config directory {user_config_dir}')
+
+    config_path = Path(dirs.site_config_dir)
+    site_config_file = config_path.joinpath(config_filename)
+    if site_config_file.exists():
+        message = f"Site config file {str(site_config_file)} exists. " \
+            "You must update the User config file to take the " \
+            "site configuration into account manually. Consult your" \
+            "site manager."
+        warn_user(message)
 
     if user_config_file.exists():
         if overwrite:
