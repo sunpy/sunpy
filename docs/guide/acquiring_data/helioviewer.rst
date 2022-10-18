@@ -1,5 +1,3 @@
-.. doctest-skip-all
-
 ************************
 Querying Helioviewer.org
 ************************
@@ -10,9 +8,9 @@ It is called `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ and their documen
 Migration guide
 ===============
 
-If you are using ``HelioviewerClient`` and need to make the switch the following text will hopefully help you.
+If you are using ``HelioviewerClient`` this guide shows to switch to using ``hvpy``.
 
-``HelioviewerClient().data_sources`` is replaced by `hvpy.DataSource`, an `enum.Enum` that lists every known data source for Helioviewer.org.
+``HelioviewerClient().data_sources`` is replaced by `hvpy.DataSource`, an `~enum.Enum` that lists every known data source for Helioviewer.org.
 
 .. code-block:: python
 
@@ -37,7 +35,7 @@ It also supports tab-complete, to find the data source you want.
 
    >>> from datetime import datetime
    >>> import hvpy
-   >>> hvpy.getClosestImage(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171)
+   >>> hvpy.getClosestImage(date=datetime.now(), sourceId=hvpy.DataSource.AIA_171)
    {'id': '133264034',
    ...
 
@@ -82,4 +80,4 @@ Furthermore, the header is returned as a XML string, which you will need to pars
 
 `The documentation for hvpy has more examples of how to use it and examples for each function <https://hvpy.readthedocs.io/en/latest/index.html>`__.
 
-If you encounter a problem with the new API, please open an issue on `GitHub <https://github.com/Helioviewer-Project/python-api/issues>`__.
+If you encounter a problem with the new API, please open an issue on `the hvpy issue tracker <https://github.com/Helioviewer-Project/python-api/issues>`__.
