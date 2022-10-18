@@ -81,13 +81,13 @@ As we also have the source_id for AIA 304, which is ``13``, we could make the sa
 
 Since this is a JPEG 2000 image, to plot this image you can either call Glymur directly::
 
-   >>> import glymur # doctest: +SKIP
-   >>> im = glymur.Jp2k(file)[:]  # doctest: +SKIP
+   >>> import glymur # doctest: +REMOTE_DATA
+   >>> im = glymur.Jp2k(file)[:]  # doctest: +REMOTE_DATA
 
 The better method is to load the image into a sunpy Map object::
 
    >>> from sunpy.map import Map
-   >>> aia = Map(file)  # doctest: +SKIP
+   >>> aia = Map(file)  # doctest: +REMOTE_DATA
    >>> aia.peek()  # doctest: +SKIP
 
 .. image:: helioviewer-1.png
@@ -100,15 +100,18 @@ In this example we will query Helioviewer for the relevant JPEG 2000 file closes
    >>> from sunpy.net.helioviewer import HelioviewerClient
    >>> import matplotlib.pyplot as plt
    >>> from astropy.units import Quantity
+   >>> import astropy.units as u
+   >>> from astropy.coordinates import SkyCoord
    >>> from sunpy.map import Map
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
    >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO',
    ...                            instrument='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
-   >>> hmi = Map(filepath)  # doctest: +SKIP
-   >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
-   >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA
-   >>> hmi.submap(xrange, yrange).peek()  # doctest: +SKIP
+   >>> hmi = Map(filepath)  # doctest: +REMOTE_DATA
+   >>> bottom_left = SkyCoord(200 * u.arcsec, -400 * u.arcsec, frame=hmi.coordinate_frame)  # doctest: +REMOTE_DATA
+   >>> width = 350 * u.arcsec  # doctest: +REMOTE_DATA
+   >>> height = 600 * u.arcsec  # doctest: +REMOTE_DATA
+   >>> hmi_submap = hmi.submap(bottom_left, width=width, height=height)  # doctest: +REMOTE_DATA
+   >>> hmi_submap.peek()  # doctest: +SKIP
 
 .. image:: helioviewer-2.png
 
@@ -122,9 +125,9 @@ We will recreate the first example using the PNG function::
    >>> from sunpy.net.helioviewer import HelioviewerClient
    >>> import matplotlib.pyplot as plt
    >>> from matplotlib.image import imread
-   >>> hv = HelioviewerClient()  # doctest: +SKIP
-   >>> file = hv.download_png('2020/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +SKIP
-   >>> im = imread(file)  # doctest: +SKIP
+   >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
+   >>> file = hv.download_png('2020/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +REMOTE_DATA
+   >>> im = imread(file)  # doctest: +REMOTE_DATA
    >>> plt.imshow(im)  # doctest: +SKIP
    >>> plt.axis('off')  # doctest: +SKIP
    >>> plt.show()  # doctest: +SKIP
@@ -159,7 +162,7 @@ The layer string is extended to include the additional data sources, and opacity
    >>> file = hv.download_png('2012/01/01', 6,
    ...                        "[SDO,AIA,304,1,100],[SDO,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]",
    ...                        x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +REMOTE_DATA
-   >>> im = imread(file)  # doctest: +SKIP
+   >>> im = imread(file)  # doctest: +REMOTE_DATA
    >>> plt.imshow(im)  # doctest: +SKIP
    >>> plt.axis('off')  # doctest: +SKIP
    >>> plt.show()  # doctest: +SKIP
