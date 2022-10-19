@@ -1494,9 +1494,9 @@ def test_map_arithmetic_neg(aia171_test_map):
 
 @pytest.mark.parametrize('value,warn_context', [
     ('map', pytest.warns(RuntimeWarning)),
-    ('foobar', contextlib.nullcontext()),
-    (None, contextlib.nullcontext()),
-    (['foo', 'bar'], contextlib.nullcontext()),
+    ('foobar', pytest.warns(RuntimeWarning)),
+    (None, pytest.warns(RuntimeWarning)),
+    (['foo', 'bar'], pytest.warns(RuntimeWarning)),
 ])
 def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn_context):
     value = aia171_test_map if value == 'map' else value

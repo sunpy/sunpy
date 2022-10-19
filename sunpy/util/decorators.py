@@ -394,14 +394,24 @@ def check_arithmetic_compatibility(func):
         # in future releases.
         if isinstance(value, NDData):
             return NotImplemented
-        try:
-            # We want to support operations between numbers and array-like objects. This includes
-            # floats, ints, lists (of the aforementioned), arrays, quantities. This test acts as
-            # a proxy for these possible inputs. If it can be cast to a unitful quantity, we can
-            # do arithmetic with it. Broadcasting or unit mismatches are handled later in the
-            # actual operations by numpy and astropy respectively.
-            _ = u.Quantity(value, copy=False)
-        except TypeError:
-            return NotImplemented
+        map_unit = u.Unit('') if instance.unit is None else instance.unit
+        if hasattr(value, 'unit'):
+            if isinstance(value, u.Quantity):
+                # NOTE: if the cube does not have units, we cannot
+                # perform arithmetic between a unitful quantity.
+                # This forces a conversion to a dimensionless quantity
+                # so that an error is thrown if value is not dimensionless
+                if func.__name__ == '__add__':
+                    value = value.to_value(map_unit)
+                elif func.__name__ == '__mul__':
+                    value = (value.to_value(), value.unit)
+            else:
+                # NOTE: This explicitly excludes other NDCube objects and NDData objects
+                # which could carry a different WCS than the NDCube
+                return NotImplemented
+        else:
+            if func.__name__ == '__mul__':
+                value = (value, None)
+
         return func(instance, value)
     return inner

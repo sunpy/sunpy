@@ -526,27 +526,28 @@ class GenericMap(NDData):
         """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=False)
 
-    def _new_instance_from_op(self, new_data):
+    def _new_instance_from_op(self, new_data, new_unit):
         """
         Helper function for creating new map instances after arithmetic
         operations.
         """
         new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string('fits')
-        return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
+        new_meta['bunit'] = new_unit.to_string('fits')
+        return self._new_instance(new_data, new_meta, plot_settings=self.plot_settings)
 
     def __neg__(self):
         return self._new_instance(-self.data, self.meta, plot_settings=self.plot_settings)
 
     @check_arithmetic_compatibility
     def __pow__(self, value):
-        new_data = self.quantity ** value
-        return self._new_instance_from_op(new_data)
+        new_data = self.data ** value
+        new_unit = self.unit ** value
+        return self._new_instance_from_op(new_data, new_unit)
 
     @check_arithmetic_compatibility
     def __add__(self, value):
-        new_data = self.quantity + value
-        return self._new_instance_from_op(new_data)
+        new_data = self.data + value
+        return self._new_instance_from_op(new_data, self.unit)
 
     def __radd__(self, value):
         return self.__add__(value)
@@ -559,8 +560,23 @@ class GenericMap(NDData):
 
     @check_arithmetic_compatibility
     def __mul__(self, value):
-        new_data = self.quantity * value
-        return self._new_instance_from_op(new_data)
+        value_data, value_unit = value
+        # Cases where we can multiply:
+        # (1) Both units are None --> final unit is None
+        # (2) Both units are not None --> final unit is the product of units
+        # (3) Value units are None, Map units are not None --> final unit is map unit
+        # Cases where we cannot multiply:
+        # (1) Map units are None, value units are not None
+        if self.unit and value_unit:
+            new_unit = self.unit * value_unit
+        elif not self.unit and not value_unit:
+            new_unit = None
+        elif self.unit and not value_unit:
+            new_unit = self.unit
+        else:
+            raise TypeError(f'Cannot multiply unitful {value} when map unit is {self.unit}.')
+        new_data = self.data * value_data
+        return self._new_instance_from_op(new_data, new_unit)
 
     def __rmul__(self, value):
         return self.__mul__(value)
@@ -568,10 +584,8 @@ class GenericMap(NDData):
     def __truediv__(self, value):
         return self.__mul__(1/value)
 
-    @check_arithmetic_compatibility
     def __rtruediv__(self, value):
-        new_data = value / self.quantity
-        return self._new_instance_from_op(new_data)
+        return self.__pow__(-1).__mul__(value)
 
     @property
     def _meta_hash(self):
