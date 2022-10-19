@@ -284,7 +284,7 @@ class XRSTimeSeries(GenericTimeSeries):
                 ("xrsb_quality", u.dimensionless_unscaled),
             ]
         )
-        # add primary detector info if available
+        # Adds primary detector info for GOES-R satellites
         if detector_info:
             data["xrsa_primary_chan"] = xrsa_primary_chan
             data["xrsb_primary_chan"] = xrsb_primary_chan
