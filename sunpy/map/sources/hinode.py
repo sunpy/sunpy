@@ -1,7 +1,9 @@
 """Hinode XRT and SOT Map subclass definitions"""
 import astropy.units as u
+from astropy.visualization import ImageNormalize, LogStretch
 
 from sunpy.map import GenericMap
+from sunpy.map.sources.source_type import source_stretch
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
@@ -55,6 +57,8 @@ class XRTMap(GenericMap):
             raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
         super().__init__(data, header, **kwargs)
         self.plot_settings['cmap'] = 'hinodexrt'
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, LogStretch()), clip=False)
 
     @property
     def _timesys(self):
