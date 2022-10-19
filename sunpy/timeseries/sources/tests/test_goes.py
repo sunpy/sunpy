@@ -9,11 +9,11 @@ from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
 
 goes_fits_filepath_com = get_test_filepath('go1520120601.fits.gz')
-goes13_filepath_nc = get_test_filepath('goes_truncated_test_goes13.nc')
-goes15_filepath_nc = get_test_filepath('goes_truncated_test_goes15.nc')
-goes17_filepath_nc = get_test_filepath('goes_truncated_test_goes17.nc')
-goes15_1m_avg_filepath = get_test_filepath('goes_truncated_test_1m_avg_goes15.nc')
-goes16_1m_avg_filepath = get_test_filepath('goes_truncated_test_1m_avg_goes16.nc')
+goes13_filepath_nc = get_test_filepath('sci_gxrs-l2-irrad_g13_d20170901_truncated.nc')
+goes15_filepath_nc = get_test_filepath('sci_gxrs-l2-irrad_g15_d20131028_truncated.nc')
+goes17_filepath_nc = get_test_filepath('sci_xrsf-l2-flx1s_g17_d20201016_truncated.nc')
+goes15_1m_avg_filepath = get_test_filepath('sci_xrsf-l2-avg1m_g15_d20190102_truncated.nc')
+goes16_1m_avg_filepath = get_test_filepath('sci_xrsf-l2-avg1m_g16_d20210101_truncated.nc')
 goes13_leap_second_filepath = get_test_filepath('goes_13_leap_second.nc')
 
 
@@ -37,7 +37,6 @@ def test_implicit_goes(goes_nc_files):
                           (goes17_filepath_nc, 'GOES-17'),
                           (goes15_1m_avg_filepath, 'GOES-15'),
                           (goes16_1m_avg_filepath, 'GOES-16')])
-@pytest.mark.xfail
 def test_implicit_goes_satno(goes_nc_files, sat_no):
     # Test that satellite number is correctly parsed from files
     ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source='XRS')

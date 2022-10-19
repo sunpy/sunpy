@@ -1,8 +1,8 @@
 .. _docs_guidelines:
 
-*************************
-SunPy Documentation Rules
-*************************
+*************
+Documentation
+*************
 
 Overview
 ========
@@ -79,7 +79,7 @@ sunpy-Specific Rules
 
 .. code-block:: bash
 
-    $ docformatter -r -i  --pre-summary-newline --make-summary-multi-line
+    docformatter -r -i  --pre-summary-newline --make-summary-multi-line
 
 .. _Docs Guidelines for Data Sources:
 
@@ -127,7 +127,7 @@ The examples from the example gallery can be found in the "examples" folder.
 
 In the root directory run::
 
-    $ tox -e build_docs-gallery
+    tox -e build_docs-gallery
 
 This will generate HTML documentation for sunpy in the "docs/_build/html" directory.
 You can open the "index.html" file to browse the final product.
@@ -136,17 +136,18 @@ Sphinx builds documentation iteratively, only adding things that have changed.
 
 If you want to build the documentation without executing the gallery examples, i.e. to reduce build times while working on other sections of the documentation you can run::
 
-    $ tox -e build_docs
+    tox -e build_docs
 
 If you'd like to start from scratch (i.e., remove the tox cache) then change to the :file:`docs/` directory and run::
 
-    $ make clean
-    $ tox -r -e build_docs-gallery
+    make clean
+    cd ..
+    tox -r -e build_docs-gallery
 
 To build the documentation in your current python environment you must have all the dependencies specified in ``setup.cfg`` installed (``pip install -e .[docs]``).
 Then change to the :file:`docs/` directory and run::
 
-    $ make html
+    make html
 
 For more information on how to use Sphinx, consult the `Sphinx documentation <http://www.sphinx-doc.org/en/stable/contents.html>`_.
 

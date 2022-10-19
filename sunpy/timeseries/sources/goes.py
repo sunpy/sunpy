@@ -123,12 +123,14 @@ class XRSTimeSeries(GenericTimeSeries):
         pattern_new = ("sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
         pattern_old = ("go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits")
         pattern_r = ("sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+        pattern_1m = ("sci_xrsf-l2-avg1m_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
         pattern_telescop = ("GOES {SatelliteNumber:02d}")
         # The ordering of where we get the metadata from is important.
         # We alway want to check ID first as that will most likely have the correct information.
         # The other fields are fallback and sometimes have data in them that is "useless".
         id = (
             self.meta.metas[0].get("id", "").strip()
+            or self.meta.metas[0].get("filename_id", "").strip()
             or self.meta.metas[0].get("TELESCOP", "").strip()
             or self.meta.metas[0].get("Instrument", "").strip()
         )
@@ -138,7 +140,7 @@ class XRSTimeSeries(GenericTimeSeries):
         if id is None:
             log.debug("Unable to get a satellite number from 'Instrument', 'TELESCOP' or 'id' ")
             return None
-        for pattern in [pattern_inst, pattern_new, pattern_old, pattern_r, pattern_telescop]:
+        for pattern in [pattern_inst, pattern_new, pattern_old, pattern_r, pattern_1m, pattern_telescop]:
             parsed = parse(pattern, id)
             if parsed is not None:
                 return f"GOES-{parsed['SatelliteNumber']}"
@@ -228,6 +230,8 @@ class XRSTimeSeries(GenericTimeSeries):
         """
         with h5netcdf.File(filepath, mode="r", **XRSTimeSeries._netcdf_read_kw) as h5nc:
             header = MetaDict(OrderedDict(h5nc.attrs))
+            if len(header["id"].strip()) == 0:  # needed to get observatory number if 'id' empty.
+                header.update({"filename_id": Path(filepath).name})
             flux_name = h5nc.variables.get("a_flux") or h5nc.variables.get("xrsa_flux")
             if flux_name is None:
                 raise ValueError(f"No flux data (either a_flux or xrsa_flux) found in file: {filepath}")
