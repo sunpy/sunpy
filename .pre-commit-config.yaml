@@ -51,7 +51,7 @@ repos:
       - id: check-added-large-files
         args: ['--enforce-all','--maxkb=1054']
       - id: end-of-file-fixer
-        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
+        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$|^CITATION.rst$"
       - id: mixed-line-ending
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
   - repo: https://github.com/devanshshukla99/pre-commit-hook-prohibit-string
