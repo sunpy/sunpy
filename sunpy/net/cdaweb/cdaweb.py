@@ -94,17 +94,21 @@ class CDAWEBClient(BaseClient):
                                            query['end_time']))
 
         if 'FileDescription' not in response:
-            raise RuntimeError
-
-        stimes = [f['StartTime'] for f in response['FileDescription']]
-        etimes = [f['EndTime'] for f in response['FileDescription']]
-        urls = [f['Name'] for f in response['FileDescription']]
-
-        return astropy.table.QTable(
-            {'Dataset': [query['dataset']] * len(stimes),
-             'Start time': Time.strptime(stimes, '%Y-%m-%dT%H:%M:%S.%fZ').iso,
-             'End time': Time.strptime(etimes, '%Y-%m-%dT%H:%M:%S.%fZ').iso,
-             'URL': urls})
+            # No results
+            return astropy.table.QTable(
+                {'Dataset': [],
+                 'Start time': [],
+                 'End time': [],
+                 'URL': []})
+        else:
+            stimes = [f['StartTime'] for f in response['FileDescription']]
+            etimes = [f['EndTime'] for f in response['FileDescription']]
+            urls = [f['Name'] for f in response['FileDescription']]
+            return astropy.table.QTable(
+                {'Dataset': [query['dataset']] * len(stimes),
+                 'Start time': Time.strptime(stimes, '%Y-%m-%dT%H:%M:%S.%fZ').iso,
+                 'End time': Time.strptime(etimes, '%Y-%m-%dT%H:%M:%S.%fZ').iso,
+                 'URL': urls})
 
     @staticmethod
     def _get_remote_files(dataset, start, end):
