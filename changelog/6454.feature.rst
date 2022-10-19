@@ -1,0 +1,1 @@
+Adds in abailabilyi to parse the primary detector information from the GOES-R XRS data if available to XRSTimeSeries.
