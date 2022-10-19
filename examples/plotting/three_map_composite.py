@@ -20,25 +20,37 @@ from sunpy.map import Map
 # shows a hot region of the solar corona, while AIA shows the cooler upper
 # region of the corona. RHESSI data is focused on a solar flare, and will be
 # plotted using contours.
+
 eit = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)
 rhessi = sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE)
 aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 ###############################################################################
-# Next, specify the RHESSI contour levels to be plotted. When creating the
-# plot, choose which Map will be used to create the WCS Axes that the other
-# Maps will be plotted with. The EIT map is plotted first, followed by the
-# RHESSI contours, and lastly the AIA map. Transparency is changed to 50% on
-# the AIA map by specifying the parameter `alpha`, and the image data is
-# autoaligned to the EIT WCS Axes. The parameter `zorder` specifies
-# how each plot is layered (0 is plotted first and 1 is layered on top of 0,
-# and so on). Lastly, note that `draw_grid()` is called using the EIT map.
-levels = [50, 60, 70, 80, 90]*u.percent
+# Before we plot the image, let's zoom in around the solar flare so the RHESSI
+# contours are visible. Also, specify the RHESSI contour levels to be plotted.
+
+bottom_left = [200, -800] * u.arcsec
+top_right = [1000, -200] * u.arcsec
+eit_smap = eit.submap(SkyCoord(*bottom_left, frame=eit.coordinate_frame),
+                      top_right=SkyCoord(*top_right, frame=eit.coordinate_frame))
+aia_smap = aia.submap(SkyCoord(*bottom_left, frame=aia.coordinate_frame),
+                      top_right=SkyCoord(*top_right, frame=aia.coordinate_frame))
+levels = [5, 10, 20, 30, 40]*u.percent
+
+###############################################################################
+# When creating the plot, choose which Map will be used to create the WCS Axes
+# that the other Maps will be plotted with. The EIT map is plotted first,
+# followed by the RHESSI contours, and lastly the AIA map. Transparency is
+# changed to 50% on the AIA map by specifying the parameter ``alpha``, and the
+# image data is autoaligned to the EIT WCS Axes. The parameter ``zorder``
+# specifies how each plot is layered (0 is plotted first and 1 is layered on
+# top of 0, and so on). Lastly, note that ``draw_grid()`` is called using the
+# EIT map.
+
 fig = plt.figure()
-ax = fig.add_subplot(projection=eit)
-eit.plot(axes=ax, zorder=0)
+ax = fig.add_subplot(projection=eit_smap)
+eit_smap.plot(axes=ax, zorder=0)
 rhessi.draw_contours(axes=ax, levels=levels, zorder=1)
-aia.plot(axes=ax, alpha=0.5, autoalign=True, zorder=2)
-eit.draw_grid(axes=ax)
-plt.title("Three Map Composite")
+aia_smap.plot(axes=ax, alpha=0.6, autoalign=True, zorder=2)
+ax.set_title("Three Map Composite")
 plt.show()

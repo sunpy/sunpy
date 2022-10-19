@@ -1,0 +1,2 @@
+Adds three tutorials which replace `~sunpy.map.CompositeMap` functionality.
+A fourth tutorial demonstrates how to create an RGB image with three different maps.
