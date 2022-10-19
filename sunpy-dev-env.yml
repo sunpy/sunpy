@@ -1,0 +1,67 @@
+channels:
+  - conda-forge
+
+dependencies:
+  # Required
+  - asdf
+  - asdf-astropy
+  - astropy
+  - beautifulsoup4
+  - cdflib
+  - drms
+  - glymur
+  - h5netcdf
+  - matplotlib-base
+  - mpl_animators
+  - numpy
+  - pandas
+  - parfive
+  - python
+  - python-dateutil
+  - python_abi
+  - reproject
+  - scikit-image
+  - scipy
+  - setuptools
+  - sqlalchemy
+  - tqdm
+  - zeep
+
+  # Optional
+  - astroquery
+  - jplephem
+  - opencv
+
+  # Testing
+  - hypothesis
+  - pytest
+  - pytest-astropy
+  - pytest-cov
+  - pytest-doctestplus
+  - pytest-mock
+  - pytest-mpl
+  - pytest-xdist
+  - tox
+
+  # Documentation
+  - ruamel.yaml
+  - sphinx
+  - sphinx-automodapi
+  - sphinx-gallery
+  - sphinx-design
+  - towncrier
+
+  # Installation
+  - extension-helpers
+  - pip
+  - setuptools-scm
+
+  # Development
+  - pre-commit
+ 
+  # Not installable through conda
+  - pip:
+    - sphinx-bootstrap-theme
+    - sphinx-changelog
+    - sphinxext-opengraph
+    - sunpy-sphinx-theme
