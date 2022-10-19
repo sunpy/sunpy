@@ -58,7 +58,7 @@ dependencies:
 
   # Development
   - pre-commit
- 
+
   # Not installable through conda
   - pip:
     - sphinx-bootstrap-theme
