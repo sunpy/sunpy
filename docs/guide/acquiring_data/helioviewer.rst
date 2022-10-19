@@ -45,7 +45,7 @@ It also supports tab-complete, to find the data source you want.
    >>> from datetime import datetime
    >>> import hvpy
    >>> filepath = hvpy.save_file(hvpy.getJP2Image(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171), filename="~/example.jpeg")  # doctest: +REMOTE_DATA
-   >>> filepath.unlink()
+   >>> filepath.unlink()  # doctest: +REMOTE_DATA
 
 ``HelioviewerClient().get_jp2_header`` is replaced by :func:`hvpy.getJP2Header`.
 However you will need to make a call to :func:`hvpy.getClosestImage` to get the ID required.
