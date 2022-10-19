@@ -249,7 +249,12 @@ class XRSTimeSeries(GenericTimeSeries):
                 start_time_str = start_time_str.decode("utf-8")
             start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC").strip()
             times = Time(parse_time(start_time_str).unix + h5nc["time"], format="unix")
-
+            # Checks for primary detector information
+            detector_info = False
+            if "xrsa_primary_chan" in h5nc:
+                detector_info = True
+                xrsa_primary_chan = np.array(h5nc["xrsa_primary_chan"])
+                xrsb_primary_chan = np.array(h5nc["xrsb_primary_chan"])
         try:
             times = times.datetime
         except ValueError:
@@ -270,7 +275,6 @@ class XRSTimeSeries(GenericTimeSeries):
             times[idx] = Time(times[idx].isot.tolist()[0][0][:17] + "59.999").unix
             times = times.datetime
         data = DataFrame({"xrsa": xrsa, "xrsb": xrsb, "xrsa_quality": xrsa_quality, "xrsb_quality": xrsb_quality}, index=times)
-        data = data.replace(-9999, np.nan)
         units = OrderedDict(
             [
                 ("xrsa", u.W/u.m**2),
@@ -279,6 +283,14 @@ class XRSTimeSeries(GenericTimeSeries):
                 ("xrsb_quality", u.dimensionless_unscaled),
             ]
         )
+        # Adds primary detector info for GOES-R satellites
+        if detector_info:
+            data["xrsa_primary_chan"] = xrsa_primary_chan
+            data["xrsb_primary_chan"] = xrsb_primary_chan
+            units.update({"xrsa_primary_chan": u.dimensionless_unscaled,
+                          "xrsb_primary_chan": u.dimensionless_unscaled})
+
+        data = data.replace(-9999, np.nan)
         return data, header, units
 
     @classmethod
