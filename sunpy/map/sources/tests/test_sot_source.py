@@ -30,6 +30,11 @@ def test_observatory(sot):
     assert sot.observatory == "Hinode"
 
 
+def test_detector(sot):
+    """Tests the detector property of the SOTMap object"""
+    assert sot.detector == "SOT"
+
+
 def test_measurement(sot):
     """Tests the measurement property of the SOTMap object."""
     assert sot.measurement is None

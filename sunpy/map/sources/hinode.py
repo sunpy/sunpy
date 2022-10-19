@@ -157,7 +157,7 @@ class SOTMap(GenericMap):
 
     @property
     def detector(self):
-        return "XRT"
+        return "SOT"
 
     @property
     def observatory(self):
