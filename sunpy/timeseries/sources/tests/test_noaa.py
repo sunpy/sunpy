@@ -25,7 +25,7 @@ def test_noaa_pre_json():
 
 
 def test_noaa_json_pre_plot_column(noaa_pre_json_test_ts):
-    ax = noaa_pre_json_test_ts.plot(columns=['sunspot', 'sunspot high', 'sunspot low'])
+    ax = noaa_pre_json_test_ts.plot()
     assert len(ax.lines) == 3
     assert 'sunspot' == ax.lines[0].get_label()
     assert 'sunspot high' == ax.lines[1].get_label()
@@ -33,7 +33,7 @@ def test_noaa_json_pre_plot_column(noaa_pre_json_test_ts):
 
 
 def test_noaa_json_ind_plot_column(noaa_ind_json_test_ts):
-    ax = noaa_ind_json_test_ts.plot(columns=['sunspot SWO', 'sunspot SWO smooth'])
+    ax = noaa_ind_json_test_ts.plot()
     assert len(ax.lines) == 2
     assert 'sunspot SWO' == ax.lines[0].get_label()
     assert 'sunspot SWO smooth' == ax.lines[1].get_label()

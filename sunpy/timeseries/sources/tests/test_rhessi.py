@@ -18,11 +18,11 @@ def test_rhessi():
 
 
 def test_rhessi_plot_column(rhessi_test_ts):
-    ax = rhessi_test_ts.plot(columns=['3 - 6 keV', '25 - 50 keV', '100 - 300 keV'])
-    assert len(ax.lines) == 3
+    ax = rhessi_test_ts.plot()
+    assert len(ax.lines) == 9
     assert '3 - 6 keV' == ax.lines[0].get_label()
-    assert '25 - 50 keV' == ax.lines[1].get_label()
-    assert '100 - 300 keV' == ax.lines[2].get_label()
+    assert '6 - 12 keV' == ax.lines[1].get_label()
+    assert '12 - 25 keV' == ax.lines[2].get_label()
 
 
 @figure_test

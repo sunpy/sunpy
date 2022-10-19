@@ -17,11 +17,11 @@ def test_lyra():
     assert isinstance(ts_lyra, sunpy.timeseries.sources.lyra.LYRATimeSeries)
 
 
-def test_lyra_plot_column(lyra_test_ts):
-    axes = lyra_test_ts.plot(columns=['CHANNEL1', 'CHANNEL3'])
-    assert len(axes) == 2
+def test_lyra_plot(lyra_test_ts):
+    axes = lyra_test_ts.plot()
+    assert len(axes) == 4
     assert 'Lyman alpha' in axes[0].get_ylabel()
-    assert 'Al filter' in axes[1].get_ylabel()
+    assert 'Herzberg cont.' in axes[1].get_ylabel()
 
 
 @figure_test

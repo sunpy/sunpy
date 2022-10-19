@@ -20,10 +20,10 @@ def test_fermi_gbm():
 
 
 def test_fermi_gbm_plot_column(fermi_gbm_test_ts):
-    ax = fermi_gbm_test_ts.plot(columns=['4-15 keV', '100-300 keV'])
-    assert len(ax.lines) == 2
+    ax = fermi_gbm_test_ts.plot()
+    assert len(ax.lines) == 7
     assert '4-15 keV' == ax.lines[0].get_label()
-    assert '100-300 keV' == ax.lines[1].get_label()
+    assert '15-25 keV' == ax.lines[1].get_label()
 
 
 # This warning is fixed in matplotlib, and the filter can be removed once

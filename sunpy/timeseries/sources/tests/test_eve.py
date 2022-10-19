@@ -29,11 +29,11 @@ def test_esp():
 
 
 def test_esp_plot_column(esp_test_ts):
-    axes = esp_test_ts.plot(columns=['QD', 'CH_18', 'CH_36'])
-    assert len(axes) == 3
+    axes = esp_test_ts.plot()
+    assert len(axes) == 5
     assert '0.1-7nm' in axes[0].get_ylabel()
     assert '18nm' in axes[1].get_ylabel()
-    assert '36nm' in axes[2].get_ylabel()
+    assert '26nm' in axes[2].get_ylabel()
 
 
 @figure_test

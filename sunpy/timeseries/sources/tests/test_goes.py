@@ -60,33 +60,27 @@ def test_goes_netcdf_time_parsing15():
     # Testing to make sure the time is correctly parsed (to ignore leap seconds)
     # Tests for 13, 14, 15
     ts_goes = sunpy.timeseries.TimeSeries(goes15_filepath_nc, source="XRS")
-    assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2013-10-28 00:00:01.385'
+    assert ts_goes.index[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2013-10-28 00:00:01.385000'
 
 
 def test_goes_netcdf_time_parsing17():
     # Testing to make sure the time is correctly parsed (to ignore leap seconds)
     # Tests for GOES-R (16, 17)
     ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
-    assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2020-10-16 00:00:00.477'
+    assert ts_goes.index[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2020-10-16 00:00:00.476771'
 
 
 def test_goes_leap_seconds():
     # Test for case when leap second present
     with pytest.warns(SunpyUserWarning, match="There is one leap second timestamp present in: goes_13_leap_second"):
         ts = sunpy.timeseries.TimeSeries(goes13_leap_second_filepath)
-    assert ts.time[-1].isot == '2015-06-30T23:59:59.999'
+    assert str(ts.index[-1]) == '2015-06-30 23:59:59.999000'
 
 
 def test_goes_plot_column(goes_test_ts):
-    ax = goes_test_ts.plot(columns=['xrsa'])
-    assert len(ax.lines) == 1
+    ax = goes_test_ts.plot()
+    assert len(ax.lines) == 2
     assert '0.5--4.0' == ax.lines[0].get_label().split()[0]
-
-
-def test_goes_r_primarydetector():
-    # Test that the primary channel column added for the GOES-R satellites
-    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
-    assert "xrsa_primary_chan" in ts_goes.columns
 
 
 @pytest.mark.remote_data

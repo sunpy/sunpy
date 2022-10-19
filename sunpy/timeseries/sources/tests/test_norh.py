@@ -18,7 +18,7 @@ def test_norh():
 
 
 def test_norh_plot_column(norh_test_ts):
-    ax = norh_test_ts.plot(columns=['Correlation Coefficient'])
+    ax = norh_test_ts.plot()
     assert len(ax.lines) == 1
     assert '17GHZ' == ax.lines[0].get_label()
 
