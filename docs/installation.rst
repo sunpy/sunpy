@@ -6,15 +6,15 @@ Installation
 
 The SunPy project `maintains a range of packages <https://sunpy.org/project/affiliated>`__ that leverage the wider ecosystem of scientific Python packages for solar physics.
 
-Python distribution
+Installing Python
 ===================
 These instructions will set you up with `miniforge <https://conda-forge.org/docs/user/introduction.html>`__, which makes it easy to install and manage Python packages.
 
-`To install the miniforge Python distribution follow these instructions <https://github.com/conda-forge/miniforge#install>`__.
+To install the miniforge Python distribution follow `the miniforge installation instructions <https://github.com/conda-forge/miniforge#install>`__.
 
 Installing miniforge will set the default conda channel to ``conda-forge``, which is required for installing ``sunpy`` and many other packages in the scientific Python ecosystem.
 
-Installing a package using miniforge
+Installing a Python package
 ------------------------------------
 To install ``sunpy``, launch a terminal (under a UNIX-like system) or miniforge Prompt (under Windows).
 
@@ -28,10 +28,10 @@ You will want to activate your virtual environment then run:
 
     $ conda install sunpy
 
-This will install ``sunpy`` and each of its dependencies.
+This will install ``sunpy`` and all of its dependencies.
 
-You can replace ``sunpy`` with other packages such as ``ablog`` or ``sunkit-instruments``.
-For the full range of packages available, `see the SunPy Affiliated Packages list <https://sunpy.org/project/affiliated>`__.
+You can replace ``sunpy`` in the above install command with other packages such as``sunkit-instruments`` to install them.
+For a list of some other Python packages for solar physics, `see the SunPy Affiliated Packages list <https://sunpy.org/project/affiliated>`__.
 
 Updating a package
 ------------------
