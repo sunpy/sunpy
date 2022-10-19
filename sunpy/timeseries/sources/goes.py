@@ -249,13 +249,12 @@ class XRSTimeSeries(GenericTimeSeries):
                 start_time_str = start_time_str.decode("utf-8")
             start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC").strip()
             times = Time(parse_time(start_time_str).unix + h5nc["time"], format="unix")
-            # check if the primary detector information exists
+            # Checks for primary detector information
+            detector_info = False
             if "xrsa_primary_chan" in h5nc:
                 detector_info = True
                 xrsa_primary_chan = np.array(h5nc["xrsa_primary_chan"])
                 xrsb_primary_chan = np.array(h5nc["xrsb_primary_chan"])
-            else:
-                detector_info = False
         try:
             times = times.datetime
         except ValueError:
