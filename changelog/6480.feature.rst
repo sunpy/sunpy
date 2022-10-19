@@ -1,0 +1,2 @@
+Change the default normalization of `~sunpy.map.sources.XRTMap` to use `~astropy.visualization.LogStretch`
+to more adequately visualize the intensity range of XRT observations.
