@@ -43,7 +43,7 @@ in a platform specific directory, which you can see the path for by running::
     log_file_format = %(asctime)s, %(origin)s, %(levelname)s, %(message)s
   <BLANKLINE>
 
-Do not edit the default file (the first in the  FILES USED: list above) directly as every time you install or update sunpy, this file will be overwritten.
+Do not edit the default file (the first in the "FILES USED:" list above) directly as every time you install or update sunpy, this file will be overwritten.
 
 Depending on your system, it may be useful to have a site-wide configuration file. If it is used, it will be on the FILES USED: list below the default file. To find your system's site configuration
 path for sunpy, use::
