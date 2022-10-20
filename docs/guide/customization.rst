@@ -56,10 +56,13 @@ To find your system's site configuration path for sunpy, use:
 
 In Unix, the site and user configuration paths follow the `XDG specifications <https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>`__.
 
-To maintain your personal customizations place a copy of the default sunpyrc file into the user configuration path. To find this path, use::
+To maintain your personal customizations place a copy of the default "sunpyrc" file into the user configuration path.
+To find this path, use:
 
-    from sunpy.extern.appdirs import AppDirs
-    AppDirs('sunpy', 'sunpy').user_config_dir
+.. code-block:: python
+
+    >>> from sunpy.extern.appdirs import AppDirs
+    >>> AppDirs('sunpy', 'sunpy').user_config_dir
 
 You can use `sunpy.util.config.copy_default_config` to write the default config into the correct place.
 
