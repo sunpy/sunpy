@@ -40,10 +40,13 @@ dependencies:
   - pytest-doctestplus
   - pytest-mock
   - pytest-mpl
+  - pytest-rerunfailures
+  - pytest-timeout
   - pytest-xdist
   - tox
 
   # Documentation
+  - graphviz
   - ruamel.yaml
   - sphinx
   - sphinx-automodapi
