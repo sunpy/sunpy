@@ -49,8 +49,10 @@ Depending on your system, it may be useful to have a site-wide configuration fil
 If it is used, it will be on the "FILES USED:" list below the default file.
 To find your system's site configuration path for sunpy, use:
 
-    from sunpy.extern.appdirs import AppDirs
-    AppDirs('sunpy', 'sunpy').site_config_dir
+.. code-block:: python
+
+    >>> from sunpy.extern.appdirs import AppDirs
+    >>> AppDirs('sunpy', 'sunpy').site_config_dir
 
 In Unixes (including Linux) the site and user configuration paths follow the `XDG specifications <https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>`__.
 
