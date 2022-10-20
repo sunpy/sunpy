@@ -1,0 +1,1 @@
+Implemented site configuration for sunpyrc, and modified documentation for sunpy customization.
