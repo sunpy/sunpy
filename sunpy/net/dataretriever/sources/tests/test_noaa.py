@@ -1,3 +1,4 @@
+import os
 import datetime
 from unittest import mock
 
@@ -69,7 +70,7 @@ def test_fetch_working(indices_client, tmpdir):
     target_dir = tmpdir.mkdir("down")
     download_list = indices_client.fetch(qr1, path=target_dir)
     assert len(download_list) == len(qr1)
-    assert download_list[0].split('/')[-1] == 'observed-solar-cycle-indices.json'
+    assert os.path.basename(download_list[0]) == 'observed-solar-cycle-indices.json'
 
 
 @pytest.mark.parametrize(
