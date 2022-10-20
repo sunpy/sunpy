@@ -5,6 +5,7 @@ from astropy import units as u
 
 import sunpy.timeseries
 from sunpy.data.test import get_test_filepath
+from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
 
 goes_fits_filepath_com = get_test_filepath('go1520120601.fits.gz')
@@ -73,13 +74,12 @@ def test_goes_leap_seconds():
     # Test for case when leap second present
     with pytest.warns(SunpyUserWarning, match="There is one leap second timestamp present in: goes_13_leap_second"):
         ts = sunpy.timeseries.TimeSeries(goes13_leap_second_filepath)
-    assert ts.index[-1].strftime("%Y-%m-%d %H:%M:%S.%f") == '2015-06-30 23:59:59.999000'
+    assert str(ts.index[-1]) == '2015-06-30 23:59:59.999000'
 
 
-def test_goes_plot_column():
-    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
-    ax = ts_goes.plot(columns=['xrsa'])
-    assert len(ax.lines) == 1
+def test_goes_plot_column(goes_test_ts):
+    ax = goes_test_ts.plot()
+    assert len(ax.lines) == 2
     assert '0.5--4.0' == ax.lines[0].get_label().split()[0]
 
 
@@ -97,3 +97,8 @@ def test_goes_remote():
     goes = sunpy.timeseries.TimeSeries(
         'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/xrsf-l2-flx1s_science/2022/05/sci_xrsf-l2-flx1s_g16_d20220506_v2-1-0.nc')
     assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+
+
+@figure_test
+def test_goes_peek(goes_test_ts):
+    goes_test_ts.peek()
