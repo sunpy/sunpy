@@ -21,9 +21,9 @@ from sunpy.map import Map
 # region of the corona. RHESSI data is focused on a solar flare, and will be
 # plotted using contours.
 
-eit = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)
-rhessi = sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE)
-aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+eit = Map(sunpy.data.sample.EIT_195_IMAGE)
+rhessi = Map(sunpy.data.sample.RHESSI_IMAGE)
+aia = Map(sunpy.data.sample.AIA_171_IMAGE)
 
 ###############################################################################
 # Before we plot the image, let's zoom in around the solar flare so the RHESSI
