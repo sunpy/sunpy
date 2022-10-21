@@ -13,5 +13,6 @@ This section of the guide introduces ways to obtain different kind of solar data
     jsoc
     hek
     helioviewer
+    goes_xrs
     sample-data
     database
