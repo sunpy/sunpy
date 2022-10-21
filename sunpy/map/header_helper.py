@@ -37,7 +37,8 @@ def make_fitswcs_header(data, coordinate,
                         observatory=None,
                         wavelength: u.angstrom = None,
                         exposure: u.s = None,
-                        projection_code="TAN"):
+                        projection_code="TAN",
+                        unit=None):
     """
     Function to create a FITS-WCS header from a coordinate object
     (`~astropy.coordinates.SkyCoord`) that is required to
@@ -81,6 +82,8 @@ def make_fitswcs_header(data, coordinate,
         Exposure time of the observation
     projection_code : `str`, optional
         The FITS standard projection code for the new header.
+    unit : `~astropy.units.Unit`, optional
+        Units of the array data of the Map. This will populate the the ``bunit`` meta keyword.
 
     Returns
     -------
@@ -115,7 +118,7 @@ def make_fitswcs_header(data, coordinate,
 
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
-    meta_wcs = _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure)
+    meta_wcs = _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure, unit)
     meta_wcs = _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape)
     meta_wcs = _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix)
 
@@ -262,7 +265,7 @@ def get_observer_meta(observer, rsun: (u.Mm, None) = None):
     return coord_meta
 
 
-def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure):
+def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure, unit):
     """
     Function to correctly name keywords from keyword arguments
     """
@@ -277,6 +280,8 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelengt
         meta_wcs['waveunit'] = wavelength.unit.to_string("fits")
     if exposure is not None:
         meta_wcs['exptime'] = exposure.to_value(u.s)
+    if unit is not None:
+        meta_wcs['bunit'] = unit.to_string("fits")
 
     return meta_wcs
 

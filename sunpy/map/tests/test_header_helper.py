@@ -164,8 +164,22 @@ def test_hgs_header(hgs_header, hgs_coord):
 
 
 def test_instrument_keyword(map_data, hpc_coord):
-    header = make_fitswcs_header(map_data, hpc_coord, instrument='test name')
-    assert header['instrume'] == 'test name'
+    instrument_kwargs = {
+        'instrument': 'test name',
+        'observatory': 'test observatory',
+        'telescope': 'test telescope',
+        'wavelength': 171 * u.Angstrom,
+        'exposure': 2 * u.s,
+        'unit': u.Unit('ct s-1'),
+    }
+    header = make_fitswcs_header(map_data, hpc_coord, **instrument_kwargs)
+    assert header['instrume'] == instrument_kwargs['instrument']
+    assert header['obsrvtry'] == instrument_kwargs['observatory']
+    assert header['telescop'] == instrument_kwargs['telescope']
+    assert header['wavelnth'] == instrument_kwargs['wavelength'].to_value()
+    assert header['waveunit'] == instrument_kwargs['wavelength'].unit.to_string("fits")
+    assert header['exptime'] == instrument_kwargs['exposure'].to_value('s')
+    assert header['bunit'] == instrument_kwargs['unit'].to_string("fits")
 
     # Check returned MetaDict will make a `sunpy.map.Map`
     map_test = sunpy.map.Map(map_data, header)
