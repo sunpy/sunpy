@@ -177,11 +177,11 @@ def copy_default_config(overwrite=False):
     config_path = Path(dirs.site_config_dir)
     site_config_file = config_path.joinpath(config_filename)
     if site_config_file.exists():
-        message = (f"Site config file {str(site_config_file)} exists. " 
-            "You must update the User config file to take the " 
-            "site configuration into account manually. Consult your" 
-            "site manager."
-            )
+        message = (f"Site config file {str(site_config_file)} exists. "
+                   "You must update the User config file to take the "
+                   "site configuration into account manually. Consult your"
+                   "site manager."
+                   )
         warn_user(message)
 
     if user_config_file.exists():
