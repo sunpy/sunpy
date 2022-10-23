@@ -102,7 +102,7 @@ class XRSTimeSeries(GenericTimeSeries):
         labels = ['A', 'B', 'C', 'M', 'X']
         centers = np.logspace(-7.5, -3.5, len(labels))
         for value, label in zip(centers, labels):
-            axes.text(1.02, value, label, transform=axes.get_yaxis_transform())
+            axes.text(1.02, value, label, transform=axes.get_yaxis_transform(), horizontalalignment='center')
 
         axes.yaxis.grid(True, "major")
         axes.xaxis.grid(False, "major")
