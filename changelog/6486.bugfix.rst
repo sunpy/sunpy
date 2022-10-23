@@ -1,2 +1,2 @@
-The right-hand y-axis of GOES timeseries plots with labelled flare classes
+The right-hand y-axis of the GOES-XRS timeseries plots with labelled flare classes
 now automatically scales with the left-hand y-axis.
