@@ -2648,9 +2648,8 @@ class GenericMap(NDData):
 
         return axes
 
-    @deprecate_positional_args_since("4.1")
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
-                     **reproject_args):
+                     preserve_meta=False, **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
 
@@ -2720,9 +2719,23 @@ class GenericMap(NDData):
         if return_footprint:
             output_array, footprint = output_array
 
-        # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_wcs.to_header(),
-                            plot_settings=self.plot_settings)
+        # Reconstruct header
+        target_header = MetaDict(target_wcs.to_header())
+        if preserve_meta:
+            # TODO: pass through units once that PR is merged
+            # TODO: if we have a telescope attribute, use that property
+            from header_helper import _set_instrument_meta
+            target_header = _set_instrument_meta(target_header,
+                                                 self.instrument,
+                                                 self.meta.get('telescop', None),
+                                                 self.observatory,
+                                                 self.wavelength,
+                                                 self.exposure_time)
+            outmap = self._new_instance(output_array, target_header, plot_settings=self.plot_settings)
+        else:
+            # Create and return a new GenericMap
+            outmap = GenericMap(output_array, target_header,
+                                plot_settings=self.plot_settings)
 
         if return_footprint:
             return outmap, footprint
