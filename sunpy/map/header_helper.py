@@ -123,7 +123,7 @@ def make_fitswcs_header(data, coordinate,
         if unit is None:
             unit = data.unit
         else:
-            log.info("Overwriting Quantity's current unit with specified unit.")
+            log.info("Overwriting data's current unit with specified unit.")
 
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
