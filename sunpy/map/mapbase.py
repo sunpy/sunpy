@@ -970,6 +970,15 @@ class GenericMap(NDData):
                              self.meta.get('telescop', "")).replace("_", " ")
 
     @property
+    def telescope(self):
+        """
+        Telescope name
+
+        This is taken from the 'TELESCOP' FITS keyword.
+        """
+        return self.meta.get('telescop', "").replace("_", " ")
+
+    @property
     def processing_level(self):
         """
         Returns the FITS processing level if present.
