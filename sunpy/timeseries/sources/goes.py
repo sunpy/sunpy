@@ -5,7 +5,6 @@ from pathlib import Path
 from collections import OrderedDict
 
 import h5netcdf
-import matplotlib.ticker as mticker
 import numpy as np
 import packaging.version
 from pandas import DataFrame
@@ -99,18 +98,15 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.set_ylim(1e-9, 1e-2)
         axes.set_ylabel("Watts m$^{-2}$")
         self._setup_x_axis(axes)
-        ax2 = axes.twinx()
-        ax2.set_yscale("log")
-        ax2.set_ylim(1e-9, 1e-2)
-        labels = ["A", "B", "C", "M", "X"]
+
+        labels = ['A', 'B', 'C', 'M', 'X']
         centers = np.logspace(-7.5, -3.5, len(labels))
-        ax2.yaxis.set_minor_locator(mticker.FixedLocator(centers))
-        ax2.set_yticklabels(labels, minor=True)
-        ax2.set_yticklabels([])
+        for value, label in zip(centers, labels):
+            axes.text(1.02, value, label, transform=axes.get_yaxis_transform(), horizontalalignment='center')
+
         axes.yaxis.grid(True, "major")
         axes.xaxis.grid(False, "major")
         axes.legend()
-
         return axes
 
     @property
