@@ -4,6 +4,7 @@ import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import SkyCoord
 
+from sunpy import log
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
 
@@ -46,7 +47,7 @@ def make_fitswcs_header(data, coordinate,
 
     Parameters
     ----------
-    data : `~numpy.ndarray` or `tuple`
+    data : `~numpy.ndarray`, `~astropy.units.Quantity`, or `tuple`
         Array data of Map for which a header is required, or the shape of the
         data array (in numpy order, i.e. ``(y_size, x_size)``).
     coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
@@ -83,7 +84,9 @@ def make_fitswcs_header(data, coordinate,
     projection_code : `str`, optional
         The FITS standard projection code for the new header.
     unit : `~astropy.units.Unit`, optional
-        Units of the array data of the Map. This will populate the the ``bunit`` meta keyword.
+        Units of the array data of the Map. This will populate the the ``'bunit'`` meta keyword.
+        If ``data`` is a `~astropy.units.Quantity`, the unit specified here will take precedence
+        over the unit information attached to ``data``.
 
     Returns
     -------
@@ -115,6 +118,12 @@ def make_fitswcs_header(data, coordinate,
         shape = data.shape
     else:
         shape = data
+
+    if hasattr(data, "unit"):
+        if unit is None:
+            unit = data.unit
+        else:
+            log.info("Overwriting Quantity's current unit with specified unit.")
 
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 

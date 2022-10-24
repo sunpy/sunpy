@@ -186,6 +186,19 @@ def test_instrument_keyword(map_data, hpc_coord):
     assert isinstance(map_test, sunpy.map.mapbase.GenericMap)
 
 
+def test_quantity_input(map_data, hpc_coord):
+    # Test that unit information is extracted correctly when data array is a quantity
+    map_unit = u.Unit('ct / s')
+    map_quantity = u.Quantity(map_data, map_unit)
+    header = make_fitswcs_header(map_quantity, hpc_coord)
+    assert header['bunit'] == map_unit.to_string('fits')
+    # In cases where unit is specified and data is a quantity, specified unit will take
+    # precedence
+    override_unit = u.Unit('erg cm-2 s-1')
+    header = make_fitswcs_header(map_quantity, hpc_coord, unit=override_unit)
+    assert header['bunit'] == override_unit.to_string('fits')
+
+
 def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
     # Raise the HCC error
     with pytest.raises(ValueError):
