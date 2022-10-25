@@ -100,9 +100,6 @@ class XRSTimeSeries(GenericTimeSeries):
         formatter = mdates.ConciseDateFormatter(locator)
         axes.xaxis.set_major_locator(locator)
         axes.xaxis.set_major_formatter(formatter)
-        ax2 = axes.twinx()
-        ax2.set_yscale("log")
-        ax2.set_ylim(1e-9, 1e-2)
         labels = ["A", "B", "C", "M", "X"]
         centers = np.logspace(-7.5, -3.5, len(labels))
         for value, label in zip(centers, labels):
