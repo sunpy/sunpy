@@ -1,3 +1,48 @@
+4.0.6 (2022-10-25)
+==================
+
+Bug Fixes
+---------
+
+- Fix a bug in loading `.XRSTimeSeries` due to unsupported quality flag column names. (`#6410 <https://github.com/sunpy/sunpy/pull/6410>`__)
+- Adds units (dimensionless units) to the quality columns in `.XRSTimeSeries`. (`#6423 <https://github.com/sunpy/sunpy/pull/6423>`__)
+- Refactored `~sunpy.map.sources.SXTMap` to use ITRS observer coordinate information
+  in header rather than incorrect HGS keywords.
+  The `~sunpy.map.sources.SXTMap` also now uses the default ``dsun`` property as this
+  information can be derived from the (now corrected) observer coordinate. (`#6436 <https://github.com/sunpy/sunpy/pull/6436>`__)
+- In `sunpy.map.GenericMap.coordinate_system` and `sunpy.map.GenericMap.date`, the default values
+  will now be used if the expected key(s) used to derive those properties are empty.
+  Previously, empty values of these keys were not treated as missing and thus the default values
+  were not correctly filled in. (`#6436 <https://github.com/sunpy/sunpy/pull/6436>`__)
+- Fixed a bug where the observer coordinate was incorrectly determined for `~sunpy.map.sources.KCorMap`. (`#6447 <https://github.com/sunpy/sunpy/pull/6447>`__)
+- Trying to download an empty search response from the JSOC now results in an empty results object.
+  Previously the results object contained the path to the sunpy download directory. (`#6449 <https://github.com/sunpy/sunpy/pull/6449>`__)
+- Removed an error when searching CDAWEB using `sunpy.net.Fido` and no results are returned.
+  An empty response table is now returned. (`#6450 <https://github.com/sunpy/sunpy/pull/6450>`__)
+- Fix a bug to parse the GOES "observatory" number in `~.XRSTimeSeries` for GOES 13, 14, 15 and for the 1 minute GOES-R data. (`#6451 <https://github.com/sunpy/sunpy/pull/6451>`__)
+- Changed the default scaling for `~sunpy.map.sources.XRTMap` from a linear stretch to `~astropy.visualization.LogStretch`.
+
+  To revert to the previous linear stretch do the following::
+
+       from astropy.visualization import ImageNormalize, LinearStretch
+       xrtmap.plot_settings["norm"] = ImageNormalize(stretch=LinearStretch()) (`#6480 <https://github.com/sunpy/sunpy/pull/6480>`__)
+- Fix the ``detector`` property of `~sunpy.map.sources.SOTMap` to return "SOT". (`#6480 <https://github.com/sunpy/sunpy/pull/6480>`__)
+
+
+Documentation
+-------------
+
+- Fixed bug in un-run code in :ref:`helioviewer` (`#6475 <https://github.com/sunpy/sunpy/pull/6475>`__)
+
+
+Internal Changes
+----------------
+
+- Added tests and test data for `~sunpy.map.sources.SXTMap` (`#6436 <https://github.com/sunpy/sunpy/pull/6436>`__)
+- Fixed a bug where the private attribute ``_default_observer_coordinate`` for `~sunpy.map.GenericMap` was being used even when there was sufficient observer metadata in the header. (`#6447 <https://github.com/sunpy/sunpy/pull/6447>`__)
+- Tidy the GOES XRSTimesSeries tests and add two new XRS files to test. (`#6460 <https://github.com/sunpy/sunpy/pull/6460>`__)
+
+
 4.0.5 (2022-09-12)
 ==================
 

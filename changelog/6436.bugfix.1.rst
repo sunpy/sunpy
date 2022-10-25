@@ -1,4 +1,0 @@
-Refactored `~sunpy.map.sources.SXTMap` to use ITRS observer coordinate information
-in header rather than incorrect HGS keywords.
-The `~sunpy.map.sources.SXTMap` also now uses the default ``dsun`` property as this
-information can be derived from the (now corrected) observer coordinate.
