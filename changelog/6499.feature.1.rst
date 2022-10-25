@@ -1,0 +1,3 @@
+`~sunpy.map.make_fitswcs_header` now includes the keyword argument ``unit`` for setting the
+``BUNIT`` FITS keyword in the resulting header.
+This will take precedence over any unit information attached to ``data``.

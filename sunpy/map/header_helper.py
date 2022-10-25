@@ -4,6 +4,7 @@ import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import SkyCoord
 
+from sunpy import log
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
 
@@ -37,7 +38,8 @@ def make_fitswcs_header(data, coordinate,
                         observatory=None,
                         wavelength: u.angstrom = None,
                         exposure: u.s = None,
-                        projection_code="TAN"):
+                        projection_code="TAN",
+                        unit=None):
     """
     Function to create a FITS-WCS header from a coordinate object
     (`~astropy.coordinates.SkyCoord`) that is required to
@@ -45,7 +47,7 @@ def make_fitswcs_header(data, coordinate,
 
     Parameters
     ----------
-    data : `~numpy.ndarray` or `tuple`
+    data : `~numpy.ndarray`, `~astropy.units.Quantity`, or `tuple`
         Array data of Map for which a header is required, or the shape of the
         data array (in numpy order, i.e. ``(y_size, x_size)``).
     coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
@@ -81,6 +83,10 @@ def make_fitswcs_header(data, coordinate,
         Exposure time of the observation
     projection_code : `str`, optional
         The FITS standard projection code for the new header.
+    unit : `~astropy.units.Unit`, optional
+        Units of the array data of the Map. This will populate the the ``'bunit'`` meta keyword.
+        If ``data`` is a `~astropy.units.Quantity`, the unit specified here will take precedence
+        over the unit information attached to ``data``.
 
     Returns
     -------
@@ -113,9 +119,15 @@ def make_fitswcs_header(data, coordinate,
     else:
         shape = data
 
+    if hasattr(data, "unit"):
+        if unit is None:
+            unit = data.unit
+        else:
+            log.info("Overwriting data's current unit with specified unit.")
+
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
-    meta_wcs = _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure)
+    meta_wcs = _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure, unit)
     meta_wcs = _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape)
     meta_wcs = _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix)
 
@@ -262,7 +274,7 @@ def get_observer_meta(observer, rsun: (u.Mm, None) = None):
     return coord_meta
 
 
-def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure):
+def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure, unit):
     """
     Function to correctly name keywords from keyword arguments
     """
@@ -277,6 +289,8 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelengt
         meta_wcs['waveunit'] = wavelength.unit.to_string("fits")
     if exposure is not None:
         meta_wcs['exptime'] = exposure.to_value(u.s)
+    if unit is not None:
+        meta_wcs['bunit'] = unit.to_string("fits")
 
     return meta_wcs
 

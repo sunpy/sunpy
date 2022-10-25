@@ -164,12 +164,39 @@ def test_hgs_header(hgs_header, hgs_coord):
 
 
 def test_instrument_keyword(map_data, hpc_coord):
-    header = make_fitswcs_header(map_data, hpc_coord, instrument='test name')
-    assert header['instrume'] == 'test name'
+    instrument_kwargs = {
+        'instrument': 'test name',
+        'observatory': 'test observatory',
+        'telescope': 'test telescope',
+        'wavelength': 171 * u.Angstrom,
+        'exposure': 2 * u.s,
+        'unit': u.Unit('ct s-1'),
+    }
+    header = make_fitswcs_header(map_data, hpc_coord, **instrument_kwargs)
+    assert header['instrume'] == instrument_kwargs['instrument']
+    assert header['obsrvtry'] == instrument_kwargs['observatory']
+    assert header['telescop'] == instrument_kwargs['telescope']
+    assert header['wavelnth'] == instrument_kwargs['wavelength'].to_value()
+    assert header['waveunit'] == instrument_kwargs['wavelength'].unit.to_string("fits")
+    assert header['exptime'] == instrument_kwargs['exposure'].to_value('s')
+    assert header['bunit'] == instrument_kwargs['unit'].to_string("fits")
 
     # Check returned MetaDict will make a `sunpy.map.Map`
     map_test = sunpy.map.Map(map_data, header)
     assert isinstance(map_test, sunpy.map.mapbase.GenericMap)
+
+
+def test_quantity_input(map_data, hpc_coord):
+    # Test that unit information is extracted correctly when data array is a quantity
+    map_unit = u.Unit('ct / s')
+    map_quantity = u.Quantity(map_data, map_unit)
+    header = make_fitswcs_header(map_quantity, hpc_coord)
+    assert header['bunit'] == map_unit.to_string('fits')
+    # In cases where unit is specified and data is a quantity, specified unit will take
+    # precedence
+    override_unit = u.Unit('erg cm-2 s-1')
+    header = make_fitswcs_header(map_quantity, hpc_coord, unit=override_unit)
+    assert header['bunit'] == override_unit.to_string('fits')
 
 
 def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
