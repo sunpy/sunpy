@@ -19,7 +19,7 @@ __all__ = [
     'rootdir',
     'file_list',
     'get_test_filepath',
-    'test_data_filenames',
+    'get_test_data_filenames',
     'get_dummy_map_from_header',
     'write_header_file_from_image_file',
 ]
@@ -53,7 +53,7 @@ def get_test_filepath(filename, **kwargs):
     return get_pkg_data_filename(filename, package="sunpy.data.test", **kwargs)
 
 
-def test_data_filenames():
+def get_test_data_filenames():
     """
     Return a list of all test files in ``data/test`` directory.
 
@@ -64,16 +64,16 @@ def test_data_filenames():
     `list`
         The name of all test files in ``data/test`` directory.
     """
-    test_data_filenames_list = []
+    get_test_data_filenames_list = []
     excludes = ['*.pyc', '*'+os.path.sep+'__*__', '*.py']
     excludes = r'|'.join([fnmatch.translate(x) for x in excludes]) or r'$.'
 
     for root, _, files in os.walk(rootdir):
         files = [Path(root) / f for f in files]
         files = [f for f in files if not re.match(excludes, str(f))]
-        test_data_filenames_list.extend(files)
+        get_test_data_filenames_list.extend(files)
 
-    return test_data_filenames_list
+    return get_test_data_filenames_list
 
 
 def write_image_file_from_header_file(header_file, fits_directory):
