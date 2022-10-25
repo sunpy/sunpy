@@ -7,7 +7,7 @@ import pytest
 
 import astropy.io.fits as fits
 
-from sunpy.data.test import get_test_filepath, test_data_filenames
+from sunpy.data.test import get_test_data_filenames, get_test_filepath
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 from sunpy.io import _fits
 from sunpy.util import MetaDict, SunpyMetadataWarning
@@ -139,7 +139,7 @@ def test_fitsheader():
     """Test that all test data can be converted back to a FITS header."""
     extensions = ('.fts', '.fits')
     for ext in extensions:
-        test_files = [f for f in test_data_filenames() if f.suffix == ext]
+        test_files = [f for f in get_test_data_filenames() if f.suffix == ext]
         for ffile in test_files:
             fits_file = fits.open(ffile)
             fits_file.verify("fix")

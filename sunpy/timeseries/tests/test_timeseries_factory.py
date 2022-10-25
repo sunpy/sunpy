@@ -16,7 +16,7 @@ from astropy.time import TimeDelta
 import sunpy.io
 import sunpy.net.attrs as a
 import sunpy.timeseries
-from sunpy.data.test import get_test_filepath, rootdir, test_data_filenames
+from sunpy.data.test import get_test_data_filenames, get_test_filepath, rootdir
 from sunpy.net import Fido
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
@@ -24,7 +24,7 @@ from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.metadata import MetaDict
 
 eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
-eve_many_filepath = [f for f in test_data_filenames()
+eve_many_filepath = [f for f in get_test_data_filenames()
                      if f.parents[0].relative_to(f.parents[1]).name == 'eve']
 goes_filepath = get_test_filepath('go1520110607.fits')
 psp_filepath = get_test_filepath('psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')

@@ -12,10 +12,10 @@ def mockreturn(path):
     return paths
 
 
-def test_test_data_filenames(monkeypatch):
+def test_get_test_data_filenames(monkeypatch):
     monkeypatch.setattr(os, 'walk', mockreturn)
     monkeypatch.setattr(os.path, 'isfile', mockreturn)
-    output = sunpy.data.test.test_data_filenames()
+    output = sunpy.data.test.get_test_data_filenames()
     assert isinstance(output, list)
     # Only the test file and not the py/pyc files should be in the return.
     assert output == [Path('test') / 'data' / 'test_file']

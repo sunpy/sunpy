@@ -10,11 +10,11 @@ from astropy.wcs import WCS
 
 import sunpy
 import sunpy.map
-from sunpy.data.test import get_dummy_map_from_header, get_test_filepath, rootdir, test_data_filenames
+from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
 from sunpy.tests.helpers import skip_glymur
 from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
 
-a_list_of_many = [f for f in test_data_filenames() if 'efz' in f.name]
+a_list_of_many = [f for f in get_test_data_filenames() if 'efz' in f.name]
 
 AIA_171_IMAGE = get_test_filepath('aia_171_level1.fits')
 RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
