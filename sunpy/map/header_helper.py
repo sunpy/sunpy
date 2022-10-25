@@ -378,7 +378,7 @@ _map_meta_keywords = {
 }
 
 
-def make_heliographic_header(date, observer_coordinate, shape, frame, *, projection_code="CAR"):
+def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR"):
     """
     Construct a FITS-WCS header for a heliographic (Carrington or Stonyhurst) coordinate frame.
 
@@ -410,7 +410,7 @@ def make_heliographic_header(date, observer_coordinate, shape, frame, *, project
     >>>
     >>> date = '2020-01-01 12:00:00'
     >>> observer = get_earth(date)
-    >>> header = make_heliographic_header(date, observer, [90, 180], 'carrington')
+    >>> header = make_heliographic_header(date, observer, [90, 180], frame='carrington')
     >>> header
     MetaDict([('wcsaxes', 2), ('crpix1', 90.5), ('crpix2', 45.5), ('cdelt1', 2.0), ('cdelt2', 2.0), ('cunit1', 'deg'), ('cunit2', 'deg'), ('ctype1', 'CRLN-CAR'), ('ctype2', 'CRLT-CAR'), ('crval1', 0.0), ('crval2', 0.0), ('lonpole', 0.0), ('latpole', 90.0), ('mjdref', 0.0), ('date-obs', '2020-01-01T12:00:00.000'), ('rsun_ref', 695700000.0), ('dsun_obs', 147096975776.97), ('hgln_obs', 0.0), ('hglt_obs', -3.0011725838606), ('naxis', 2), ('naxis1', 180), ('naxis2', 90), ('pc1_1', 1.0), ('pc1_2', -0.0), ('pc2_1', 0.0), ('pc2_2', 1.0), ('rsun_obs', 975.5398432033492)])
     """

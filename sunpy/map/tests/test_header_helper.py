@@ -233,7 +233,7 @@ def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
 @pytest.mark.parametrize('shape', [[90, 180], [240, 100]])
 @pytest.mark.parametrize('projection_code', ['CAR', 'CEA'])
 def test_make_heliographic_header(aia171_test_map, shape, projection_code, frame):
-    header = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape, frame, projection_code=projection_code)
+    header = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape, frame=frame, projection_code=projection_code)
     carr_map = aia171_test_map.reproject_to(header)
 
     # Check upper right and lower left coordinates are as expected
@@ -250,7 +250,7 @@ def test_make_heliographic_header(aia171_test_map, shape, projection_code, frame
 
 def test_make_heliographic_header_invalid_inputs(aia171_test_map):
     with pytest.raises(ValueError, match='projection_code must be one of'):
-        make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], 'carrington', projection_code='blah')
+        make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', projection_code='blah')
 
     with pytest.raises(ValueError, match='frame must be one of'):
-        make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], 'blah')
+        make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='blah')

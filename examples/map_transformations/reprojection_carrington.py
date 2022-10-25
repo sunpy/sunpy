@@ -30,7 +30,7 @@ aia_map.plot()
 # coordinate.
 
 shape = (720, 1440)
-carr_header = make_heliographic_header(aia_map.date, aia_map.observer_coordinate, shape, 'carrington')
+carr_header = make_heliographic_header(aia_map.date, aia_map.observer_coordinate, shape, frame='carrington')
 
 ###############################################################################
 # With the new header, re-project the data into the new coordinate system.
