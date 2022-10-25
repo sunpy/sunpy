@@ -35,8 +35,8 @@ It also supports tab-complete, to find the data source you want.
 
    >>> from datetime import datetime
    >>> import hvpy
-   >>> hvpy.getClosestImage(date=datetime.now(), sourceId=hvpy.DataSource.AIA_171)  # doctest: +REMOTE_DATA
-   {'id': '13326...',...
+   >>> hvpy.getClosestImage(date=datetime(2022, 1, 1), sourceId=hvpy.DataSource.AIA_171)  # doctest: +REMOTE_DATA
+    {'id': '79024526', 'date': '2022-01-01 00:04:57', 'name': 'AIA 171', 'scale': 0.5899466652089547, 'width': 4096, 'height': 4096, 'refPixelX': 2048.5, 'refPixelY': 2048.5, 'rsun': 1626.6638, 'sunCenterOffsetParams': [], 'layeringOrder': 1}
 
 ``HelioviewerClient().download_jp2`` is replaced by :func:`hvpy.getJP2Image`, but you will have to wrap the call using :func:`hvpy.save_file` to save the data to disk.
 
