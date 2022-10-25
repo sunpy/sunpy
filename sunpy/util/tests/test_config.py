@@ -7,6 +7,7 @@ import pytest
 
 import sunpy
 from sunpy import config
+from sunpy.extern.appdirs import AppDirs
 from sunpy.util import SunpyUserWarning
 from sunpy.util.config import (
     CONFIG_DIR,
@@ -64,6 +65,40 @@ def test_print_config_files(tmpdir, tmp_path, undo_download_dir_patch):
     assert _find_config_files()[0] in printed
     assert get_and_create_download_dir() in printed
     assert get_and_create_sample_dir() in printed
+
+
+def test__find_config_user_site_files(tmpdir, tmp_path, undo_download_dir_patch, monkeypatch):
+
+    # Set a site config dir
+    tmp_config_site_dir = tmpdir.mkdir("sunpy_test_configdir_site")
+    monkeypatch.setattr(AppDirs, "site_config_dir", tmp_config_site_dir.strpath)
+
+    # Create sunpyrc to site configdir
+    tmp_site_file = tmp_config_site_dir.join("sunpyrc")
+    # Have to write to the file otherwise its seen as a directory(?!)
+    tmp_site_file.write("content")
+
+    # Test that the second config file of two is the site file
+    config_files = _find_config_files()
+    assert len(config_files) == 2
+    assert config_files[1] == tmp_site_file.strpath
+
+    # set a user config dir
+    tmp_config_user_dir = tmpdir.mkdir("sunpy_test_configdir")
+    monkeypatch.setenv("SUNPY_CONFIGDIR", tmp_config_user_dir.strpath)
+
+    # Copy default sunpyrc to user configdir
+    # With a sunpyrc file in the site config dir,
+    # the function should raise a warning.
+    with pytest.warns(SunpyUserWarning):
+        copy_default_config()
+
+    # Test that the second config file of three is the site file
+    # and the third of three is the user config file
+    config_files = _find_config_files()
+    assert len(config_files) == 3
+    assert config_files[1] == tmp_site_file.strpath
+    assert config_files[2] == tmp_config_user_dir.join("sunpyrc").strpath
 
 
 def test_get_and_create_download_dir(undo_download_dir_patch):
@@ -145,3 +180,26 @@ def test_copy_default_config_with_overwrite(tmpdir, undo_config_dir_patch, monke
     # the function does not raise any error.
     with pytest.warns(SunpyUserWarning):
         copy_default_config(overwrite=True)
+
+
+def test_copy_default_config_sitewarn(tmpdir, undo_config_dir_patch, monkeypatch):
+
+    # Set a user config dir
+    tmp_config_dir = tmpdir.mkdir("sunpy_test_configdir")
+    monkeypatch.setenv("SUNPY_CONFIGDIR", tmp_config_dir.strpath)
+
+    assert tmp_config_dir == _get_user_configdir()
+
+    # Set a site config dir
+    tmp_config_site_dir = tmpdir.mkdir("sunpy_test_configdir_site")
+    monkeypatch.setattr(AppDirs, "site_config_dir", tmp_config_site_dir.strpath)
+
+    # Create sunpyrc to site configdir
+    tmp_file = tmp_config_site_dir.join("sunpyrc")
+    # Have to write to the file otherwise its seen as a directory(?!)
+    tmp_file.write("content")
+
+    # With a sunpyrc file in the site config dir,
+    # the function should raise a warning.
+    with pytest.warns(SunpyUserWarning):
+        copy_default_config()
