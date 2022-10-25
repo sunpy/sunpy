@@ -12,7 +12,7 @@ from astropy.time import TimeDelta
 
 import sunpy
 import sunpy.timeseries
-from sunpy.data.test import get_test_filepath, test_data_filenames
+from sunpy.data.test import get_test_data_filenames, get_test_filepath
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
@@ -30,7 +30,7 @@ rhessi_filepath = get_test_filepath('hsi_obssumm_20120601_018_truncated.fits.gz'
 noaa_ind_json_filepath = get_test_filepath('observed-solar-cycle-indices-truncated.json')
 noaa_pre_json_filepath = get_test_filepath('predicted-solar-cycle-truncated.json')
 goes_filepath = get_test_filepath('go1520120601.fits.gz')
-a_list_of_many = [f for f in test_data_filenames() if f.parents[0].relative_to(f.parents[1]).name == 'eve']
+a_list_of_many = [f for f in get_test_data_filenames() if f.parents[0].relative_to(f.parents[1]).name == 'eve']
 
 
 @pytest.fixture

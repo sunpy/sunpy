@@ -11,7 +11,7 @@ import astropy.config.paths
 import astropy.io.fits
 from astropy.utils import iers
 
-from sunpy.data.test import get_test_filepath, test_data_filenames, write_image_file_from_header_file
+from sunpy.data.test import get_test_data_filenames, get_test_filepath, write_image_file_from_header_file
 from sunpy.map import Map
 from sunpy.util import SunpyUserWarning
 
@@ -193,7 +193,7 @@ def eit_fits_directory(tmp_path_factory):
     # from the header data. This directory is then used to
     # test directory and glob patterns for the map factory
     eit_dir = tmp_path_factory.mktemp('EIT')
-    eit_header_files = [f for f in test_data_filenames()
+    eit_header_files = [f for f in get_test_data_filenames()
                         if f.parents[0].relative_to(f.parents[1]).name == 'EIT_header'
                         and f.suffix == '.header']
     for f in eit_header_files:
@@ -207,7 +207,7 @@ def waveunit_fits_directory(tmp_path_factory):
     # from the header data. This directory is then used to
     # test directory patterns for database
     waveunit_dir = tmp_path_factory.mktemp('waveunit')
-    header_files = [f for f in test_data_filenames()
+    header_files = [f for f in get_test_data_filenames()
                     if f.parents[0].relative_to(f.parents[1]).name == 'waveunit']
     for f in header_files:
         _ = write_image_file_from_header_file(f, waveunit_dir)

@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
@@ -102,3 +103,12 @@ def test_goes_remote():
 @figure_test
 def test_goes_peek(goes_test_ts):
     goes_test_ts.peek()
+
+
+@figure_test
+def test_goes_ylim(goes_test_ts):
+    # Check that y-limits of the shared flare category axis are linked
+    # to the LH side y-limits.
+    fig, ax = plt.subplots()
+    goes_test_ts.plot(ax)
+    ax.set_ylim(1e-7, 1e-5)

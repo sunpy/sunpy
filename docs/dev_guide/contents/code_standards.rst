@@ -190,7 +190,7 @@ Data and Configuration
 ======================
 
 * We store test data in ``sunpy/data/test`` as long as it is less than about 100 kB.
-  These data should always be accessed via the :func:`sunpy.data.test.get_test_filepath` and :func:`sunpy.data.test.test_data_filenames` functions.
+  These data should always be accessed via the :func:`sunpy.data.test.get_test_filepath` and :func:`sunpy.data.test.get_test_data_filenames` functions.
 
 * We store data used for examples in the `sample-data repository <https://github.com/sunpy/sample-data>`_.
   This data should not be used for unit tests but can be within our documentation.
