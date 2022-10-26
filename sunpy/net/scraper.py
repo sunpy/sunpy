@@ -373,8 +373,8 @@ class Scraper:
 
     def _check_timerange(self, url, timerange):
         """
-        Checks whether the time extracted from the URL
-        is valid according to the given time range.
+        Checks whether the time range represented in *url* intersects
+        with the given time range.
 
         Parameters
         ----------
@@ -386,15 +386,17 @@ class Scraper:
         Returns
         -------
         `bool`
-            `True` if URL's time overlaps the given timerange, else `False`.
+            `True` if URL's valid time range overlaps the given timerange, else `False`.
         """
         if hasattr(self, 'extractor'):
             exdict = parse(self.extractor, url).named
             tr = get_timerange_from_exdict(exdict)
-            return (tr.end >= timerange.start and tr.start <= timerange.end)
+            return tr.intersects(timerange)
         else:
             datehref = self._extractDateURL(url).to_datetime()
-            return (timerange.start.to_datetime() <= datehref <= timerange.end.to_datetime())
+            smaller_pattern = self._smallerPattern(self.pattern)
+            file_timerange = TimeRange(datehref, datehref + smaller_pattern)
+            return file_timerange.intersects(timerange)
 
     def _smallerPattern(self, directoryPattern):
         """

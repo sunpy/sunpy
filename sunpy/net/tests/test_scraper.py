@@ -201,7 +201,10 @@ def testFilesRange_sameDirectory_months_remote():
     startdate = parse_time((2007, 8, 1))
     enddate = parse_time((2007, 9, 10))
     timerange = TimeRange(startdate, enddate)
-    assert len(s.filelist(timerange)) == 2
+    files = s.filelist(timerange)
+    assert files == ['http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
+                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Jul.1m',
+                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
 @pytest.mark.remote_data
@@ -211,8 +214,8 @@ def test_ftp():
     timerange = TimeRange('2016/5/18 15:28:00', '2016/5/20 16:30:50')
     urls = s.filelist(timerange)
     assert urls[0] == ('ftp://solar-pub.nao.ac.jp'
-                       '/pub/nsro/norh/data/tcx/2016/05/tca160519')
-    assert len(urls) == 2
+                       '/pub/nsro/norh/data/tcx/2016/05/tca160518')
+    assert len(urls) == 3
 
 
 @pytest.mark.remote_data
@@ -291,3 +294,39 @@ def test_get_timerange_with_extractor(exdict, start, end):
     tr = TimeRange(start, end)
     file_timerange = get_timerange_from_exdict(exdict)
     assert file_timerange == tr
+
+
+@pytest.mark.remote_data
+def test_yearly_overlap():
+    # Check that a time range that falls within the interval that a file reprsents
+    # returns a single result.
+    pattern = "https://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/solar-flares/x-rays/goes/xrs/goes-xrs-report_%Y.txt"
+    scraper = Scraper(pattern)
+
+    # Should return a single file for 2013
+    trange = TimeRange("2013-01-02", "2013-01-03")
+    assert len(scraper.filelist(trange)) == 1
+
+
+def test_check_timerange():
+    s = Scraper('%Y.fits')
+    # Valid time range for 2014.fits is the whole of 2014
+    # Test different cases to make sure check_timerange is working as expected
+
+    # Interval exactly on lower boundary
+    assert s._check_timerange('2014.fits', TimeRange("2013-06-01", "2014-01-01"))
+    # Overlaps lower boundary
+    assert s._check_timerange('2014.fits', TimeRange("2013-06-01", "2014-01-02"))
+    # Overlaps upper and lower boundary
+    assert s._check_timerange('2014.fits', TimeRange("2013-06-01", "2015-01-02"))
+    # Entirely within both boundaries
+    assert s._check_timerange('2014.fits', TimeRange("2014-06-01", "2014-07-02"))
+    # Overlaps upper boundary
+    assert s._check_timerange('2014.fits', TimeRange("2014-06-01", "2015-01-02"))
+    # Interval exactly on upper boundary
+    assert s._check_timerange('2014.fits', TimeRange("2015-01-01", "2015-01-02"))
+
+    # Interval below both boundaries
+    assert not s._check_timerange('2014.fits', TimeRange("2002-01-01", "2013-01-02"))
+    # Interval above both boundaries
+    assert not s._check_timerange('2014.fits', TimeRange("2022-01-01", "2025-01-02"))
