@@ -11,9 +11,9 @@ import os
 
 import matplotlib.pyplot as plt
 
-import astropy.time
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.time import Time
 from astropy.visualization import ImageNormalize, SqrtStretch
 
 import sunpy.map
@@ -23,15 +23,15 @@ from sunpy.net import attrs as a
 #####################################################
 # First, query a full frame AIA image.
 
-t0 = astropy.time.Time('2012-09-24T14:56:03', scale='utc', format='isot')
+start_time = Time('2022-01-01T00:00:00', scale='utc', format='isot')
 query = Fido.search(
     a.Instrument.aia,
     a.Physobs.intensity,
     a.Wavelength(171*u.angstrom),
-    a.Time(t0, t0 + 13*u.s),
+    a.Time(start_time, start_time + 13*u.s),
 )
-files = Fido.fetch(query)
-amap = sunpy.map.Map(files)
+file = Fido.fetch(query)
+amap = sunpy.map.Map(file)
 
 #####################################################
 # Next, we will use the coordinate frame from this map to define the top right and bottom

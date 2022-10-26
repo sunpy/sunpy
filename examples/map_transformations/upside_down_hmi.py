@@ -9,31 +9,18 @@ it appears with solar North puting up, and pointing up.
 import matplotlib.pyplot as plt
 
 import sunpy.map
-from sunpy.net import Fido
-from sunpy.net import attrs as a
+from sunpy.data.sample import HMI_LOS_IMAGE
 
 ###############################################################################
-# To download the required data, we use `sunpy.net.Fido`.
-
-result = Fido.search(a.Time('2020/01/20 00:00:00', '2020/01/20 00:01:00'),
-                     a.Instrument.hmi, a.Physobs.los_magnetic_field)
-
-###############################################################################
-# Now we can see what results we obtained from our search, and download them.
-
-print(result)
-downloaded_file = Fido.fetch(result)
-print(downloaded_file)
-
-###############################################################################
-# Now load it into a map and plot it.
+# We will use the ``sunpy`` HMI sample image, load it into a map and plot it.
 # We see that solar North is pointed down instead of up in this image, which is
 # indicated by the coordinates (that range from positive to negative, rather
 # than negative to positive).
 
-hmi_map = sunpy.map.Map(downloaded_file[0])
+hmi_map = sunpy.map.Map(HMI_LOS_IMAGE)
 plt.figure()
 hmi_map.plot()
+
 plt.show()
 
 ###############################################################################
@@ -52,4 +39,5 @@ plt.show()
 hmi_rotated = hmi_map.rotate(order=3)
 plt.figure()
 hmi_rotated.plot()
+
 plt.show()
