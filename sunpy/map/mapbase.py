@@ -2722,15 +2722,15 @@ class GenericMap(NDData):
         # Reconstruct header
         target_header = MetaDict(target_wcs.to_header())
         if preserve_meta:
-            # TODO: pass through units once that PR is merged
-            # TODO: if we have a telescope attribute, use that property
             from header_helper import _set_instrument_meta
             target_header = _set_instrument_meta(target_header,
                                                  self.instrument,
+                                                 # TODO: if we have a telescope attribute, use that property
                                                  self.meta.get('telescop', None),
                                                  self.observatory,
                                                  self.wavelength,
-                                                 self.exposure_time)
+                                                 self.exposure_time,
+                                                 self.unit)
             outmap = self._new_instance(output_array, target_header, plot_settings=self.plot_settings)
         else:
             # Create and return a new GenericMap
