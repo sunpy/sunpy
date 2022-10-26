@@ -55,4 +55,5 @@ norm = matplotlib.colors.Normalize(vmin=-1000, vmax=1000)
 cbar = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap="viridis"), ax=ax)
 cbar.ax.set_title("Gauss", fontsize=10)
 ax.set_title("AIA & HMI Composite Plot")
+
 plt.show()

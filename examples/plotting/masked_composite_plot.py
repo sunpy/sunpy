@@ -1,12 +1,12 @@
 """
 ================================
-Combining off-limb and disc maps
+Combining off-limb and disk maps
 ================================
 
 This example combines creating a composite plot with masking out the
 solar disk. The purpose is to introduce users to the plotting process
-required to overlay multiple Maps that have been modified with other
-**sunpy** functions. The resulting plot in this tutorial shows information
+required to overlay multiple maps that have been modified with other
+``sunpy`` functions. The resulting plot in this tutorial shows information
 on the upper photosphere, quiet corona, and magnetogram contours.
 """
 import matplotlib.pyplot as plt
@@ -57,5 +57,6 @@ scaled_map.plot(axes=ax, clip_interval=(1, 99.95)*u.percent,
                 cmap=colormap, zorder=0)
 aia_1600.plot(axes=ax, cmap=aia171_cmap, autoalign=True, zorder=1)
 hmi.draw_contours(axes=ax, levels=levels, zorder=2)
-ax.set_title("AIA 171 (off limb) + AIA 1600 (on disc) + HMI (contours)")
+ax.set_title("AIA 171 (off limb) + AIA 1600 (on disk) + HMI (contours)")
+
 plt.show()

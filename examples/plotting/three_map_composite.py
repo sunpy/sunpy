@@ -53,4 +53,5 @@ eit_smap.plot(axes=ax, zorder=0)
 rhessi.draw_contours(axes=ax, levels=levels, zorder=1)
 aia_smap.plot(axes=ax, alpha=0.6, autoalign=True, zorder=2)
 ax.set_title("Three Map Composite")
+
 plt.show()
