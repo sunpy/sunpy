@@ -113,6 +113,7 @@ extensions = [
     'sunpy.util.sphinx.generate',
     "sphinxext.opengraph",
     'sphinx_design',
+    'sphinx_copybutton',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -291,6 +292,10 @@ rst_epilog = f"""
 .. _cv2_filter2D: {filter2D_full}
 """
 
+# -- Options for sphinx-copybutton ---------------------------------------------
+# Python Repl + continuation, Bash, ipython and qtconsole + continuation, jupyter-console + continuation
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
 
 # -- Stability Page ------------------------------------------------------------
 with open('./code_ref/sunpy_stability.yaml', 'r') as estability:
