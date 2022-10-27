@@ -1,0 +1,2 @@
+`~sunpy.map.GenericMap.reproject_to` now optionally preserves a subset of the metadata from the input map
+if ``preserve_meta=True``.
