@@ -6,7 +6,6 @@ Requesting cutouts of AIA images from the JSOC
 This example shows how to request a cutout of a series of
 AIA images from the JSOC.
 """
-# sphinx_gallery_thumbnail_number = 2
 import os
 
 import matplotlib.pyplot as plt
@@ -32,6 +31,7 @@ query = Fido.search(
 )
 file = Fido.fetch(query)
 amap = sunpy.map.Map(file)
+
 #####################################################
 # Next, we will use the coordinate frame from this map to define the top right and bottom
 # left coordinates we want for the cutout request.
