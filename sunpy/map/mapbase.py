@@ -2667,6 +2667,9 @@ class GenericMap(NDData):
         return_footprint : `bool`
             If ``True``, the footprint is returned in addition to the new map.
             Defaults to ``False``.
+        preserve_meta : `bool`
+            If ``True``, a subset of the metadata from the input map is passed
+            to the reprojected map.
 
         Returns
         -------
@@ -2680,8 +2683,14 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The reprojected map does not preserve any metadata beyond the WCS-associated
-        metadata.
+        By default, the reprojected map does not preserve any metadata beyond the WCS-associated
+        metadata. If ``preserve_meta=True``, the following map properties are preserved,
+
+        * `~sunpy.map.GenericMap.instrument`
+        * `~sunpy.map.GenericMap.observatory`
+        * `~sunpy.map.GenericMap.wavelength`
+        * `~sunpy.map.GenericMap.exposure_time`
+        * `~sunpy.map.GenericMap.unit`
 
         The supported `reproject` algorithms are:
 
@@ -2722,20 +2731,18 @@ class GenericMap(NDData):
         # Reconstruct header
         target_header = MetaDict(target_wcs.to_header())
         if preserve_meta:
-            from header_helper import _set_instrument_meta
+            from .header_helper import _set_instrument_meta
             target_header = _set_instrument_meta(target_header,
                                                  self.instrument,
-                                                 # TODO: if we have a telescope attribute, use that property
                                                  self.meta.get('telescop', None),
                                                  self.observatory,
                                                  self.wavelength,
                                                  self.exposure_time,
                                                  self.unit)
-            outmap = self._new_instance(output_array, target_header, plot_settings=self.plot_settings)
-        else:
-            # Create and return a new GenericMap
-            outmap = GenericMap(output_array, target_header,
-                                plot_settings=self.plot_settings)
+
+        # Create and return a new GenericMap
+        outmap = GenericMap(output_array, target_header,
+                            plot_settings=self.plot_settings)
 
         if return_footprint:
             return outmap, footprint
