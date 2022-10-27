@@ -198,6 +198,7 @@ intersphinx_mapping = {
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
     "asdf": ("https://asdf.readthedocs.io/en/stable/", None),
+    "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
 }
 
 # -- Options for HTML output ---------------------------------------------------

@@ -2,169 +2,83 @@
 Querying Helioviewer.org
 ************************
 
-sunpy can be used to make several basic requests using the The `Helioviewer.org API <https://api.helioviewer.org/docs/v2/>`_ including generating a PNG screenshot and downloading a `JPEG 2000 <https://wiki.helioviewer.org/wiki/JPEG_2000>`_ image.
+The Helioviewer Project now maintains a Python wrapper around their API.
+It is called `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ and their documentation has several examples of how to use it.
 
-As you can get JPEG 2000 images, you will need two other pieces of software in order to open them in Python.
-The first is OpenJPEG which is an open source library for reading and writing JPEG2000 files.
-The other package you will need is `Glymur <https://pypi.python.org/pypi/Glymur/>`_.
-Both of these are available as `conda <https://www.anaconda.com/>`_ packages and ideally should be installed in this manner.
-Otherwise, please follow the instructions at `the OpenJPEG homepage <http://www.openjpeg.org>`_ and the `Glymur homepage <https://glymur.readthedocs.io/en/latest/>`_.
+Migration guide
+===============
 
-To interact with the Helioviewer API, users first create a `~sunpy.net.helioviewer.HelioviewerClient` instance.
-The client instance can then be used to make various queries against the API using the same parameters one would use when making a web request.
-Note that the HelioviewerClient does not currently offer full access to the HelioViewer API.
+If you are using ``HelioviewerClient`` this guide shows to switch to using ``hvpy``.
 
-We provide the follwing functions:
+``HelioviewerClient().data_sources`` is replaced by `hvpy.DataSource`, an `~enum.Enum` that lists every known data source for Helioviewer.org.
 
-1. Download a JPEG 2000 image for the specified datasource that is the closest match in time to the ``date`` requested.
-2. As above but return the full JSON response instead of an image.
-3. Return all available datasources.
-4. Generates custom screenshots that allow labels and layers of images.
-5. Download the header information present in a JPEG2000 image. This includes:
-    - FITS header
-    - Helioviewer-specific metadata.
+.. code-block:: python
 
-Nearly all requests require the user to specify the data they are interested in.
-Depending on the function, it consists of passing in either: *observatory*, *instrument*,
-*detector* and *measurement* or *source_id* keywords.
+   >>> import hvpy
+   >>> print(hvpy.DataSource.AIA_131)
+   DataSource.AIA_131
 
-To find out what the allowed values are, you can access the `~sunpy.net.helioviewer.HelioviewerClient.data_sources` dictionary that is an attribute of the Helioviewer client.
-Let us begin by retrieving the available list of sources that Helioviewer supports by using `~sunpy.net.helioviewer.HelioviewerClient.data_sources`::
+It also supports tab-complete, to find the data source you want.
 
-    >>> from sunpy.net import helioviewer
-    >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-    >>> for sourceid, obs in hv.data_sources.items():# doctest: +REMOTE_DATA
-    ...     print(f"{sourceid}: {obs}")  # doctest: +REMOTE_DATA
-    ('SOHO', 'EIT', None, '171'): 0
-    ('SOHO', 'EIT', None, '195'): 1
-    ('SOHO', 'EIT', None, '284'): 2
-    ('SOHO', 'EIT', None, '304'): 3
-    ('SOHO', 'LASCO', 'C2', 'white-light'): 4
-    ('SOHO', 'LASCO', 'C3', 'white-light'): 5
-    ('SOHO', 'MDI', None, 'magnetogram'): 6
-    ('SOHO', 'MDI', None, 'continuum'): 7
-    ('SDO', 'AIA', None, '94'): 8
-    ('SDO', 'AIA', None, '131'): 9
-    ('SDO', 'AIA', None, '171'): 10
-    ('SDO', 'AIA', None, '193'): 11
-    ('SDO', 'AIA', None, '211'): 12
-    ('SDO', 'AIA', None, '304'): 13
-    ('SDO', 'AIA', None, '335'): 14
-    ('SDO', 'AIA', None, '1600'): 15
-    ('SDO', 'AIA', None, '1700'): 16
-    ('SDO', 'AIA', None, '4500'): 17
-    ('SDO', 'HMI', None, 'continuum'): 18
-    ('SDO', 'HMI', None, 'magnetogram'): 19
-    ...
+``HelioviewerClient().get_data_sources`` is replaced by :func:`hvpy.getDataSources`.
 
-Every JPEG 2000 file provided by the Helioviewer Project has been processed to generate an image that
-can be used for browsing purposes.
-This typically involves following the standard image processing procedure used by each instrument team to convert their science data into an image for a webpage.
-The JPEG 2000 image is then scaled between 0 and 255 (byte-scaled).
-**Please note that the JPEG 2000 image data is not the same as the original science data.**
+.. code-block:: python
 
-Suppose we want to download a JPEG 2000 image of the latest AIA 304 image available on Helioviewer.org.
-From the list above, we know that SDO/AIA 304  is ``(('SDO', 'AIA', None, '304'), 13)``.
-So ``observatory="SDO"``,``instrument=AIA``, ``detector=None``, ``measurement=304`` and the ``source_id`` is 13.
-So we can use the approach as shown in the following example::
+   >>> import hvpy
+   >>> hvpy.getDataSources()  # doctest: +REMOTE_DATA
+   {'SDO': {'HMI': {'continuum': {'sourceId': 18,
+   ...
 
-   >>> from sunpy.net.helioviewer import HelioviewerClient
-   >>> import matplotlib.pyplot as plt
-   >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> file = hv.download_jp2('2012/01/01', observatory="SDO", instrument="AIA",
-   ...                        measurement="304")  # doctest: +REMOTE_DATA
+``HelioviewerClient().get_closest_image`` is replaced by :func:`hvpy.getClosestImage`.
 
-Since ``detector=None`` we can ignore this keyword and skip it when we call this function.
-As we also have the source_id for AIA 304, which is ``13``, we could make the same request using: ::
+.. code-block:: python
 
-   file = hv.download_jp2('2012/01/01', source_id=13)
+   >>> from datetime import datetime
+   >>> import hvpy
+   >>> hvpy.getClosestImage(date=datetime(2022, 1, 1), sourceId=hvpy.DataSource.AIA_171)  # doctest: +REMOTE_DATA
+    {'id': '79024526', 'date': '2022-01-01 00:04:57', 'name': 'AIA 171', 'scale': 0.5899466652089547, 'width': 4096, 'height': 4096, 'refPixelX': 2048.5, 'refPixelY': 2048.5, 'rsun': 1626.6638, 'sunCenterOffsetParams': [], 'layeringOrder': 1}
 
-Since this is a JPEG 2000 image, to plot this image you can either call Glymur directly::
+``HelioviewerClient().download_jp2`` is replaced by :func:`hvpy.getJP2Image`, but you will have to wrap the call using :func:`hvpy.save_file` to save the data to disk.
 
-   >>> import glymur # doctest: +SKIP
-   >>> im = glymur.Jp2k(file)[:]  # doctest: +SKIP
+.. code-block:: python
 
-The better method is to load the image into a sunpy Map object::
+   >>> from datetime import datetime
+   >>> import hvpy
+   >>> filepath = hvpy.save_file(hvpy.getJP2Image(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171), filename="~/example.jpeg")  # doctest: +REMOTE_DATA
+   >>> filepath.unlink()  # doctest: +REMOTE_DATA
 
-   >>> from sunpy.map import Map
-   >>> aia = Map(file)  # doctest: +SKIP
-   >>> aia.peek()  # doctest: +SKIP
+``HelioviewerClient().get_jp2_header`` is replaced by :func:`hvpy.getJP2Header`.
+However you will need to make a call to :func:`hvpy.getClosestImage` to get the ID required.
+Furthermore, the header is returned as a XML string, which you will need to parse.
 
-.. image:: helioviewer-1.png
+.. code-block:: python
 
-The sunpy Map selects a color table based on the JPEG 2000 image meta data for plotting.
-This will be the color table that is used by the Helioviewer Project to display JPEG 2000 images in their own clients.
+   >>> from datetime import datetime
+   >>> import hvpy
+   >>> metadata = hvpy.getClosestImage(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171)  # doctest: +REMOTE_DATA
+   >>> hvpy.getJP2Header(metadata['id'])  # doctest: +REMOTE_DATA
+   '<?xml version="1.0" encoding="utf-8"?>...
 
-In this example we will query Helioviewer for the relevant JPEG 2000 file closest to the input time, for a SDO/HMI continuum image and crop to focus on an active region::
+``HelioviewerClient().download_png`` is replaced by `hvpy.createScreenshot`, it takes the same arguments as the old method expect for ``progress`` and ``directory`` which do not exist and adds ``filename`` so one is able to save the file, otherwise it will save it in the current working directory.
 
-   >>> from sunpy.net.helioviewer import HelioviewerClient
-   >>> import matplotlib.pyplot as plt
-   >>> from astropy.units import Quantity
-   >>> from sunpy.map import Map
-   >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
-   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO',
-   ...                            instrument='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
-   >>> hmi = Map(filepath)  # doctest: +SKIP
-   >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
-   >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA
-   >>> hmi.submap(xrange, yrange).peek()  # doctest: +SKIP
+.. code-block:: python
 
-.. image:: helioviewer-2.png
+   >>> from datetime import datetime
+   >>> import hvpy
+   >>> screenshot_location = hvpy.createScreenshot(
+   ...     date=datetime.today(),
+   ...     layers=hvpy.create_layers([(hvpy.DataSource.AIA_171, 100)]),
+   ...     events=hvpy.create_events([hvpy.EventType.ACTIVE_REGION]),
+   ...     eventLabels=True,
+   ...     imageScale=1,
+   ...     x0=0,
+   ...     y0=0,
+   ...     width=100,
+   ...     height=100,
+   ...     filename="my_screenshot",
+   ... )  # doctest: +REMOTE_DATA
+   >>> screenshot_location.unlink()  # doctest: +REMOTE_DATA
 
-The other main method is `~sunpy.net.helioviewer.HelioviewerClient.download_png`.
-This allows more complex images to be created but again these are not the original science data.
-The biggest difference is that we do not use the separate keywords but have to pass them as a string of lists.
-This is the ``layer`` keyword in this function.
+`The documentation for hvpy has more examples of how to use it and examples for each function <https://hvpy.readthedocs.io/en/latest/index.html>`__.
 
-We will recreate the first example using the PNG function::
-
-   >>> from sunpy.net.helioviewer import HelioviewerClient
-   >>> import matplotlib.pyplot as plt
-   >>> from matplotlib.image import imread
-   >>> hv = HelioviewerClient()  # doctest: +SKIP
-   >>> file = hv.download_png('2020/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +SKIP
-   >>> im = imread(file)  # doctest: +SKIP
-   >>> plt.imshow(im)  # doctest: +SKIP
-   >>> plt.axis('off')  # doctest: +SKIP
-   >>> plt.show()  # doctest: +SKIP
-
-.. image:: helioviewer-3.png
-
-Since this is just a PNG, we can use matplotlib directly to plot this image.
-Note that the filename of the returned file has the date and time of the request, not of any of the times shown in the image itself.
-**This is not a bug.**
-The reason for this is that the user may ask for images from multiple sources, and each of them may have a different observation time.
-The problem becomes which time is the most appropriate to associate with the resultant image.
-Helioviewer.org doesn't choose between the images times, but instead uses the request time to construct the image filename.
-This means that the image file names for request times in the future (like in this example) can look a little unusual compared to the times in the image.
-
-After the date string, we have a number (``4.8``) which refers to the image resolution in arcseconds per pixel (larger values mean lower resolution).
-The next input is the ``layers`` keyword which is ``"[SDO,AIA,304,1,100]"``.
-The first 4 are the observatory, instrument, detector, measurement values from before.
-Note that since SDO AIA has no detector value, you can skip this within the list.
-The ``1`` and ``100`` in the layer list refer to the visibility and opacity of the datasource.
-You can use the ``sourceid`` instead of the keywords, so it would be ``[13,1,100]`` for this example.
-
-Finally, the ``x0`` and ``y0`` are the center points about which to focus and the ``width`` and ``height`` are the pixel values for the image dimensions.
-These have defaults set so you do not need to supply these.
-
-In this example we will create a composite PNG image using data from two different SDO AIA wavelengths and LASCO C2 coronagraph data.
-The layer string is extended to include the additional data sources, and opacity is throttled down for the second AIA layer so that it does not completely block out the lower layer::
-
-   >>> from sunpy.net.helioviewer import HelioviewerClient
-   >>> import matplotlib.pyplot as plt
-   >>> from matplotlib.image import imread
-   >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> file = hv.download_png('2012/01/01', 6,
-   ...                        "[SDO,AIA,304,1,100],[SDO,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]",
-   ...                        x0=0, y0=0, width=768, height=768, watermark=True)  # doctest: +REMOTE_DATA
-   >>> im = imread(file)  # doctest: +SKIP
-   >>> plt.imshow(im)  # doctest: +SKIP
-   >>> plt.axis('off')  # doctest: +SKIP
-   >>> plt.show()  # doctest: +SKIP
-
-.. image:: helioviewer-4.png
-
-For more information about using querying Helioviewer.org, see the `Helioviewer.org
-API documentation <https://api.helioviewer.org/docs/v2/>`_.
+If you encounter a problem with the new API, please open an issue on `the hvpy issue tracker <https://github.com/Helioviewer-Project/python-api/issues>`__.

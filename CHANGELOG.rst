@@ -1479,7 +1479,7 @@ Improved Documentation
 - Clean up the docstring for `sunpy.physics.differential_rotation.solar_rotate_coordinate` to make the example clearer. (`#2708 <https://github.com/sunpy/sunpy/pull/2708>`__)
 - Added new gallery examples and cleaned up various gallery examples. (`#3181 <https://github.com/sunpy/sunpy/pull/3181>`__)
 - Cleaned and expanded upon the docstrings for each Fido Client. (`#3220 <https://github.com/sunpy/sunpy/pull/3220>`__)
-- Added clarifying hyperlinks to the gallery example ``getting_lasco_observer_location`` to link to ``astroquery`` docs page. (`#3228 <https://github.com/sunpy/sunpy/pull/3228>`__)
+- Added clarifying hyperlinks to the gallery example ``getting_lasco_observer_location`` to link to `astroquery <https://astroquery.readthedocs.io/en/latest/>`__ docs page. (`#3228 <https://github.com/sunpy/sunpy/pull/3228>`__)
 - Added more details to docstrings in `sunpy.coordinates.frames`. (`#3262 <https://github.com/sunpy/sunpy/pull/3262>`__)
 - Added a link to package maintainer list in the API Stability page. (`#3281 <https://github.com/sunpy/sunpy/pull/3281>`__)
 - Improved the contributing guide by updating commands and highlighting text. (`#3394 <https://github.com/sunpy/sunpy/pull/3394>`__)

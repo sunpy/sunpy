@@ -6,50 +6,49 @@ Setting the correct position for SOHO in a LASCO C3 Map
 How to get the correct location of SOHO using JPL HORIZONS
 and update the header.
 
-This requires the intallation of the
+This requires the installation of the
 `astroquery <https://astroquery.readthedocs.io/en/latest/>`__
 package and an internet connection.
-`astroquery <https://astroquery.readthedocs.io/en/latest/>`__ can be installed ontop of
-the existing sunpy conda environment: ``conda install -c astropy astroquery``
+`astroquery <https://astroquery.readthedocs.io/en/latest/>`__ can be installed on-top of
+the existing ``sunpy`` conda environment: ``conda install -c astropy astroquery``
 """
 # sphinx_gallery_thumbnail_number = 2
 
+import hvpy
 import matplotlib.pyplot as plt
 import numpy as np
 
 import sunpy.map
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_horizons_coord
-from sunpy.net import helioviewer
-
-hv = helioviewer.HelioviewerClient()
+from sunpy.time import parse_time
 
 ###############################################################################
-# Let's download a SOHO/LASCO C3 image from Helioviewer which provided
-# pre-processed images and load it into a Map.
+# Let's download a SOHO/LASCO C3 image Helioviewer.org and load it into a Map.
+# The reason to ise Helioviewer.org is that they provide processed images.
 
-f = hv.download_jp2('2000/02/27 07:42', observatory='SOHO', instrument='LASCO', detector='C3')
-lasco = sunpy.map.Map(f)
+lasco_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2000/02/27 07:42').datetime, hvpy.DataSource.LASCO_C3.value), "LASCO_C3.JPEG2000")
+lasco_map = sunpy.map.Map(lasco_file)
 
 ###############################################################################
 # A user warning let's you know that there is missing metadata for the observer
 # location. sunpy goes ahead and assumes that the observer is at Earth.
 
-print(lasco.observer_coordinate)
+print(lasco_map.observer_coordinate)
 
 ###############################################################################
 # To check that this worked let's get the location of Mercury in this exposure
 # and show that it is in the correct location.
 
 mercury_wrong = get_body_heliographic_stonyhurst(
-    'mercury', lasco.date, observer=lasco.observer_coordinate)
-mercury_hpc_wrong = mercury_wrong.transform_to(lasco.coordinate_frame)
+    'mercury', lasco_map.date, observer=lasco_map.observer_coordinate)
+mercury_hpc_wrong = mercury_wrong.transform_to(lasco_map.coordinate_frame)
 print(mercury_hpc_wrong)
 
 ##############################################################################
 # Let's plot how this looks with the incorrect observer information.
 
 fig = plt.figure()
-ax = fig.add_subplot(projection=lasco)
+ax = fig.add_subplot(projection=lasco_map)
 
 # Let's tweak the axis to show in degrees instead of arcsec
 lon, lat = ax.coords
@@ -57,7 +56,7 @@ lon.set_major_formatter('d.dd')
 lat.set_major_formatter('d.dd')
 ax.plot_coord(mercury_hpc_wrong, 's', color='white',
               fillstyle='none', markersize=12, label='Mercury')
-lasco.plot(axes=ax)
+lasco_map.plot(axes=ax)
 
 plt.show()
 
@@ -67,7 +66,7 @@ plt.show()
 # The following functions queries JPL HORIZONS which includes positions of major spacecraft.
 # This function requires an internet connection to fetch the ephemeris data.
 
-soho = get_horizons_coord('SOHO', lasco.date)
+soho = get_horizons_coord('SOHO', lasco_map.date)
 
 ###############################################################################
 # For fun, let's see how far away from the Earth SOHO is by converting to
@@ -78,16 +77,16 @@ print(soho.transform_to('gcrs').distance.to('km'))
 ###############################################################################
 # Let's fix the header.
 
-lasco.meta['HGLN_OBS'] = soho.lon.to('deg').value
-lasco.meta['HGLT_OBS'] = soho.lat.to('deg').value
-lasco.meta['DSUN_OBS'] = soho.radius.to('m').value
+lasco_map.meta['HGLN_OBS'] = soho.lon.to('deg').value
+lasco_map.meta['HGLT_OBS'] = soho.lat.to('deg').value
+lasco_map.meta['DSUN_OBS'] = soho.radius.to('m').value
 
 ###############################################################################
 # Let's get the right position now.
 
 mercury = get_body_heliographic_stonyhurst(
-    'mercury', lasco.date, observer=lasco.observer_coordinate)
-mercury_hpc = mercury.transform_to(lasco.coordinate_frame)
+    'mercury', lasco_map.date, observer=lasco_map.observer_coordinate)
+mercury_hpc = mercury.transform_to(lasco_map.coordinate_frame)
 
 ###############################################################################
 # The difference between the incorrect position and the right one is:
@@ -100,13 +99,13 @@ print(r)
 # Let's plot the results.
 
 fig = plt.figure()
-ax = fig.add_subplot(projection=lasco)
+ax = fig.add_subplot(projection=lasco_map)
 
 # Let's tweak the axis to show in degrees instead of arcsec
 lon, lat = ax.coords
 lon.set_major_formatter('d.dd')
 lat.set_major_formatter('d.dd')
 ax.plot_coord(mercury_hpc, 's', color='white', fillstyle='none', markersize=12, label='Mercury')
-lasco.plot(axes=ax)
+lasco_map.plot(axes=ax)
 
 plt.show()
