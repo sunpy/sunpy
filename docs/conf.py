@@ -57,6 +57,7 @@ is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 if is_release:
     warnings.simplefilter("ignore")
 warnings.filterwarnings("error", category=SunpyDeprecationWarning)
+warnings.filterwarnings("ignore", message='The sunpy.database module is no longer actively maintained', category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
 warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
 warnings.filterwarnings("error", category=AstropyDeprecationWarning)
