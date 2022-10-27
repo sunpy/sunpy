@@ -15,29 +15,18 @@ from astropy.coordinates import SkyCoord
 from astropy.time import Time
 from astropy.visualization import ImageNormalize, SqrtStretch
 
+import sunpy.coordinates  # NOQA
 import sunpy.map
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 #####################################################
-# First, query a full frame AIA image.
+# As this is an example, we have already worked out where
+# we need to crop for the active region we want to showcase.
 
-start_time = Time('2022-01-01T00:00:00', scale='utc', format='isot')
-query = Fido.search(
-    a.Instrument.aia,
-    a.Physobs.intensity,
-    a.Wavelength(171*u.angstrom),
-    a.Time(start_time, start_time + 13*u.s),
-)
-file = Fido.fetch(query)
-amap = sunpy.map.Map(file)
-
-#####################################################
-# Next, we will use the coordinate frame from this map to define the top right and bottom
-# left coordinates we want for the cutout request.
-
-bottom_left = SkyCoord(-100*u.arcsec, -400*u.arcsec, frame=amap.coordinate_frame)
-top_right = SkyCoord(400*u.arcsec, 100*u.arcsec, frame=amap.coordinate_frame)
+start_time = Time('2012-09-24T14:56:03', scale='utc', format='isot')
+bottom_left = SkyCoord(-500*u.arcsec, -275*u.arcsec, obstime=start_time, observer="earth", frame="helioprojective")
+top_right = SkyCoord(150*u.arcsec, 375*u.arcsec, obstime=start_time, observer="earth", frame="helioprojective")
 
 #####################################################
 # Now construct the cutout from the coordinates above
@@ -62,8 +51,8 @@ jsoc_email = os.environ["JSOC_EMAIL"]
 # We request one image every 2 hours.
 
 query = Fido.search(
-    a.Time(amap.date - 6*u.h, amap.date + 6*u.h),
-    a.Wavelength(amap.wavelength),
+    a.Time(start_time - 6*u.h, start_time + 6*u.h),
+    a.Wavelength(171*u.angstrom),
     a.Sample(2*u.h),
     a.jsoc.Series.aia_lev1_euv_12s,
     a.jsoc.Notify(jsoc_email),
