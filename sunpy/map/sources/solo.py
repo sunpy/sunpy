@@ -48,10 +48,6 @@ class EUIMap(GenericMap):
             return int(self.meta.get('level')[1:])
 
     @property
-    def exposure_time(self):
-        return self.meta.get('xposure', 0.0) * self.timeunit
-
-    @property
     def date(self):
         t = self.meta.get('date-avg')
         timesys = self.meta.get('timesys')

@@ -28,10 +28,6 @@ class WISPRMap(GenericMap):
         return int(lvl[1])
 
     @property
-    def exposure_time(self):
-        return self.meta.get('xposure', 0.0) * self.timeunit
-
-    @property
     def name(self):
         return 'WISPR ' + super().name
 
