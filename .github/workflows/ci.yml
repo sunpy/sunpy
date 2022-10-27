@@ -44,11 +44,14 @@ jobs:
       libraries: |
         apt:
           - libopenjp2-7
+          # This can be removed when there are binaries for h5py on 3.11
+          - libhdf5-dev
         brew:
           - openjpeg
       envs: |
-        - macos: py38
+        - linux: py311
         - windows: py39
+        - macos: py38
         - linux: py38-oldestdeps
 
   docs:
@@ -115,9 +118,11 @@ jobs:
       libraries: |
         apt:
           - libopenjp2-7
+          # This can be removed when there are binaries for h5py on 3.11
+          - libhdf5-dev
       envs: |
         - linux: base_deps
-        - linux: py39-devdeps
+        - linux: py311-devdeps
         - linux: py39-conda
           libraries: ''
 
