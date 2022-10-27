@@ -84,10 +84,8 @@ files.sort()
 # them.
 
 sequence = sunpy.map.Map(files, sequence=True)
-# Make sure the colorbar limits are the same for each image
-for each_map in sequence:
-    each_map.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
+
 plt.figure()
-ani = sequence.plot()
+ani = sequence.plot(norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
 
 plt.show()
