@@ -32,12 +32,12 @@ query = Fido.search(
 )
 file = Fido.fetch(query)
 amap = sunpy.map.Map(file)
-
 #####################################################
 # Next, we will use the coordinate frame from this map to define the top right and bottom
 # left coordinates we want for the cutout request.
-bottom_left = SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=amap.coordinate_frame)
-top_right = SkyCoord(150*u.arcsec, 375*u.arcsec, frame=amap.coordinate_frame)
+
+bottom_left = SkyCoord(-100*u.arcsec, -400*u.arcsec, frame=amap.coordinate_frame)
+top_right = SkyCoord(400*u.arcsec, 100*u.arcsec, frame=amap.coordinate_frame)
 
 #####################################################
 # Now construct the cutout from the coordinates above
@@ -74,6 +74,7 @@ print(query)
 
 #####################################################
 # Submit the export request and download the data.
+
 files = Fido.fetch(query)
 files.sort()
 
@@ -81,6 +82,7 @@ files.sort()
 # Now that we've downloaded the files, we can create
 # a `~sunpy.map.MapSequence` from them and animate
 # them.
+
 sequence = sunpy.map.Map(files, sequence=True)
 # Make sure the colorbar limits are the same for each image
 for each_map in sequence:
