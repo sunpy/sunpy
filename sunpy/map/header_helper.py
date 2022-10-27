@@ -428,6 +428,7 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
         frame=f"heliographic_{frame}",
         obstime=date,
         observer=observer_coordinate,
+        rsun=getattr(observer_coordinate, "rsun", None),
     )
 
     if projection_code == "CAR":
