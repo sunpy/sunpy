@@ -128,3 +128,14 @@ def test_deprecated_positional_args(aia171_test_map, hpc_header):
 
     with pytest.warns(SunpyDeprecationWarning, match=r"Pass algorithm=interpolation, return_footprint=True as keyword args"):
         aia171_test_map.reproject_to(hpc_header, 'interpolation', True)
+
+
+def test_preserve_metadata(aia171_test_map, hpc_header):
+    aia171_repr = aia171_test_map.reproject_to(hpc_header, preserve_meta=True)
+    preserved_properties = ['instrument',
+                            'observatory',
+                            'wavelength',
+                            'exposure_time',
+                            'unit']
+    for p in preserved_properties:
+        assert getattr(aia171_repr, p) == getattr(aia171_test_map, p)
