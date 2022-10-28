@@ -9,6 +9,10 @@
       "Charge Time Of Flight mass spectrometer"
     ],
     [
+      "LYRA",
+      "None"
+    ],
+    [
       "HI1",
       "Heliospheric Imager 1"
     ],
@@ -85,6 +89,10 @@
       "Multiple EUV Grating Spectrograph-Photometer"
     ],
     [
+      "LW2",
+      "None"
+    ],
+    [
       "VAULT-2002",
       "None"
     ],
@@ -99,6 +107,10 @@
     [
       "MODULE1",
       "7-shell Si detector (flights #1 & 2)"
+    ],
+    [
+      "SW",
+      "Short wavelengths"
     ],
     [
       "OVI",
@@ -127,6 +139,10 @@
     [
       "COR2",
       "Coronograph 2"
+    ],
+    [
+      "LW",
+      "Long wavelengths"
     ],
     [
       "VAULT-1999",
@@ -329,6 +345,10 @@
       "None"
     ],
     [
+      "DSLP",
+      "None"
+    ],
+    [
       "STE",
       "Suprathermal Electron Telescope"
     ],
@@ -406,6 +426,10 @@
     ]
   ],
   "instrument": [
+    [
+      "LYRA",
+      "LYman alpha RAdiometer"
+    ],
     [
       "WISPR",
       "Wide-Field Imager for Solar Probe Plus"
@@ -663,6 +687,10 @@
       "Spectropolarimeter1"
     ],
     [
+      "SPICE",
+      "Spectral Imaging of the Coronal Environment"
+    ],
+    [
       "RHESSI",
       "Reuven Ramaty High Energy Solar Spectroscopic Imager"
     ],
@@ -701,6 +729,10 @@
     [
       "EIS",
       "EUV Imaging Spectrometer"
+    ],
+    [
+      "DSLP",
+      "None"
     ],
     [
       "CDS",
@@ -889,6 +921,10 @@
       "STEREO Science Center, NASA/Goddard"
     ],
     [
+      "ESA",
+      "European Space Agency"
+    ],
+    [
       "SDAC",
       "Solar Data Analysis Center, NASA/Goddard"
     ],
@@ -933,16 +969,16 @@
       "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris"
     ],
     [
+      "INAF-OACT",
+      "Istituto Nazionale di Astrofisica, Osservatorio Astrofisico di Catania"
+    ],
+    [
       "MPS",
       "Max Planck Institute for Solar System Research"
     ],
     [
       "MWSPADP",
       "Mount Wilson Solar Archive Digitization Project"
-    ],
-    [
-      "INAF-OACT",
-      "Istituto Nazionale di Astrofisica, Osservatorio Astrofisico di Catania"
     ],
     [
       "NOAA",
@@ -1059,10 +1095,6 @@
       "Improved Solar Observing Optical Network"
     ],
     [
-      "SO2",
-      "None"
-    ],
-    [
       "PSP",
       "Parker Solar Probe"
     ],
@@ -1121,6 +1153,10 @@
     [
       "YOHKOH",
       "Yohkoh Satellite, Japan"
+    ],
+    [
+      "MINXSS2",
+      "\tMiniature X-Ray Solar Spectrometer Cubesat #2"
     ],
     [
       "SO",
