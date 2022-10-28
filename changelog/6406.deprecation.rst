@@ -1,0 +1,1 @@
+The ``algorithm``, ``return_footprint`` and any keyword arguments passed through to the underlying `reproject` functions now must be passed as keyword arguments.
