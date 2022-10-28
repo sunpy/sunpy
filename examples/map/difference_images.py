@@ -5,7 +5,7 @@ Plotting a difference image
 
 This example shows how to compute and plot a difference image.
 """
-# sphinx_gallery_thumbnail_number = 2
+# sphinx_gallery_thumbnail_number = 3
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 
@@ -34,13 +34,12 @@ m_seq = sunpy.map.Map([
 ###########################################################################
 # Let's take a look at each image in the sequence. Note that these images
 # are sampled at a 6.4 minute cadence, much lower than the actual 12 s
-# AIA cadence. We first adjust the plot settings on each image to ensure
-# the colorbar is the same at each time step.
-for m in m_seq:
-    m.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch())
+# AIA cadence. We adjust the plot setting to ensure the colorbar is
+# the same at each time step.
 
 plt.figure()
-ani = m_seq.plot()
+ani = m_seq.plot(norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
+
 plt.show()
 
 ###########################################################################
@@ -70,27 +69,21 @@ m_seq_running = sunpy.map.Map(
 )
 
 ###########################################################################
-# Finally, let's plot the difference maps.
-# We'll apply a colormap and re-normalize the intensity so that it shows
-# up well.
+# Finally, let's plot the difference maps. We'll apply a colormap and
+# re-normalize the intensity so that it shows up well.
 # First, we show the base difference map.
 
-norm = colors.Normalize(vmin=-200, vmax=200)
-for m in m_seq_base:
-    m.plot_settings['norm'] = norm
-    m.plot_settings['cmap'] = 'Greys_r'
 plt.figure()
-ani = m_seq_base.plot(title='Base Difference')
+ani = m_seq_base.plot(title='Base Difference', norm=colors.Normalize(vmin=-200, vmax=200), cmap='Greys_r')
 plt.colorbar(extend='both', label=m_seq_base[0].unit.to_string())
+
 plt.show()
 
 ###########################################################################
 # Then, we show the running difference map.
 
-for m in m_seq_running:
-    m.plot_settings['norm'] = norm
-    m.plot_settings['cmap'] = 'Greys_r'
 plt.figure()
-ani = m_seq_running.plot(title='Running Difference')
+ani = m_seq_running.plot(title='Running Difference', norm=colors.Normalize(vmin=-200, vmax=200), cmap='Greys_r')
 plt.colorbar(extend='both', label=m_seq_running[0].unit.to_string())
+
 plt.show()
