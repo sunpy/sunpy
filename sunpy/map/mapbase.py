@@ -49,6 +49,7 @@ from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
+    deprecate_positional_args_since,
 )
 from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
@@ -2643,6 +2644,7 @@ class GenericMap(NDData):
 
         return axes
 
+    @deprecate_positional_args_since("4.1", keyword_only=True)
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
                      **reproject_args):
         """
