@@ -35,6 +35,7 @@ dependencies:
   # Testing
   - hypothesis
   - pytest
+  - pytest-arraydiff
   - pytest-astropy
   - pytest-cov
   - pytest-doctestplus
@@ -44,9 +45,11 @@ dependencies:
   - pytest-timeout
   - pytest-xdist
   - tox
+  - tox-conda
 
   # Documentation
   - graphviz
+  - hvpy
   - ruamel.yaml
   - sphinx
   - sphinx-automodapi
