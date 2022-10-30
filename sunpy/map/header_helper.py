@@ -380,7 +380,7 @@ _map_meta_keywords = {
 
 def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR"):
     """
-    Construct a FITS-WCS header for a heliographic (Carrington or Stonyhurst) coordinate frame.
+    Construct a FITS-WCS header for a full-Sun heliographic (Carrington or Stonyhurst) coordinate frame.
 
     The date-time and observer coordinate of the new coordinate frame
     are taken from the input map. The resulting WCS covers the full surface
@@ -402,6 +402,10 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
     Returns
     -------
     `~sunpy.util.MetaDict`
+
+    See Also
+    --------
+    sunpy.map.header_helper.make_fitswcs_header : A more generic header helper that can be used if more customisation is required.
 
     Examples
     --------
