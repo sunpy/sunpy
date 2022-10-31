@@ -1,7 +1,7 @@
 .. _whatsnew-4.1:
 
 ************************
-What's New in SunPy 4.1?
+What's New in sunpy 4.1?
 ************************
 The SunPy project is pleased to announce the 4.1 release of the ``sunpy`` core package.
 
@@ -23,50 +23,55 @@ This release of ``sunpy`` contains x commits in x merged pull requests closing x
 * x people have contributed since 4.0
 * x of which are new contributors
 
-Deprecating ``sunpy.database``
-==============================
-The sunpy.database module is no longer actively maintained and has a number of outstanding issues.
-It is anticiapted that sunpy.database will be formally deprecated in sunpy 5.0 and removed in sunpy 6.0.
-If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
+The people who have contributed to the code for this release are:
 
-Extracting Values from a `~sunpy.map.GenericMap` Along a Set of Coordinates
-===========================================================================
+TODO: fill this in at release time.
+
+Where a * indicates that this release contains their first code contribution to ``sunpy``.
+
+Extracting map values along coordinate paths
+============================================
 It is now easy to extract data values from a `~sunpy.map.GenericMap` along a curve specified by set of coordinates using the new `sunpy.map.extract_along_coord` function.
 This is done by applying `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`__ between the consecutive coordinates, in pixel space, and then indexing the data array of the map at those points.
-See :ref:`sphx_glr_generated_gallery_units_and_coordinates_map_slit_extraction.py` for an example.
+
+.. minigallery:: sunpy.map.extract_along_coord
 
 Drawing the solar equator and prime meridian
 ============================================
-You can now use the `sunpy.visualization.drawing` module to draw the solar equator and prime meridian (zero Carrington longitude) on Astropy WCS axes.
+The new `sunpy.visualization.drawing` module can be used to draw the solar equator and prime meridian (zero Carrington longitude) on a plot with Astropy WCS Axes.
 
 .. minigallery:: sunpy.visualization.drawing.equator
 
-Deprecation of ``sunpy.visualization.limb``
-===========================================
-The ``sunpy.visualization.limb`` module is deprecated and will be removed in version 5.1.
-The ``sunpy.visualization.limb.draw_limb`` function has been moved into the `sunpy.visualization.drawing` module and renamed :func:`sunpy.visualization.drawing.limb`.
+``sunpy.database`` deprecation
+==============================
+The ``sunpy.database`` module is no longer actively maintained and has a number of outstanding issues.
+It is anticiapted that sunpy.database will be formally deprecated in sunpy 5.0 and removed in sunpy 6.0.
+If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
+
+``sunpy.visualization.limb`` moved
+==================================
+``sunpy.visualization.limb.draw_limb`` has been moved into the `sunpy.visualization.drawing` module and renamed :func:`sunpy.visualization.drawing.limb`.
+The ``sunpy.visualization.limb`` module will remain working, but is deprecated and will be removed in version 5.1.
+
+``HelioviewerClient`` deprecated
+================================
+The Helioviewer Project now maintains a Python Wrapper called `hvpy <https://hvpy.readthedocs.io/en/latest/>`__.
+As such, in consultation with the Helioviewer Project, the ``sunpy.net.helioviewer`` module is deprecated and will be removed in sunpy 5.1.
 
 Changes to timeseries plotting
 ==============================
-In order to make plotting a timeseries as source-independent as possible, we have removed a number of source-specific plot customisations in ``peek()`` and ``plot()`` methods.
-See the changelog for more details on what has changed.
+To make plotting a timeseries as source-independent as possible, a number of source-specific plot customisations in ``peek()`` and ``plot()`` methods have been removed.
+See the changelog for full details on what has changed.
 
-In order to harmonize different ``peek()`` and ``plot()`` signatures, all non-keyword arguments to these methods are deprecated.
+To harmonize different ``peek()`` and ``plot()`` signatures, all non-keyword arguments to these methods are deprecated.
 To avoid a warning pass all arguments with keywords (e.g. ``plot(title='my plot title')``) instead.
 
-Deprecation of ``HelioviewerClient``
-====================================
-The Helioviewer Project now maintains a Python Wrapper called `hvpy <https://hvpy.readthedocs.io/en/latest/>`__.
-As such, in consultation with the Helioviewer Project, we have decided to deprecate the ``HelioviewerClient`` class.
-The ``sunpy.net.helioviewer`` module is deprecated and will be removed in version 5.1.
+Updated data downloader dependency
+==================================
+The pacakge that handles downloading data from remote sources, ``parfive``, has had a recent major release to version 2.0.
+This new version comes with major usability improvements: removal of incomplete files and major error reporting upgrades.
 
-``parfive`` 2.0.0 release
-=========================
-A recent update (2.0.0) to ``parfive`` adds several features and we would encourage users to upgrade to it.
-
-This comes with major usability improvements: removal of incomplete files and major error reporting upgrades.
-We believe it will have an impact on how people experience downloading files.
-
+sunpy users are encouraged to upgrade ``parfive`` to benefit from these improvements.
 To upgrade you can use pip:
 
 .. code-block:: bash
@@ -78,11 +83,3 @@ or conda:
 .. code-block:: bash
 
     $ conda update parfive
-
-Contributors to this Release
-============================
-The people who have contributed to the code for this release are:
-
-TODO: fill this in at release time.
-
-Where a * indicates that this release contains their first code contribution to ``sunpy``.
