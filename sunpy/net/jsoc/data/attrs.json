@@ -433,6 +433,14 @@
       "Averages of power spectra of 30-deg cubes on ring-diagram synoptic grid over full CR"
     ],
     [
+      "hmi.rdvfitsc_avg15",
+      "ring fits to rotation-averaged power spectra of 15-deg HMI Doppler cubes on ring-diagram synoptic grid"
+    ],
+    [
+      "hmi.rdvfitsc_avg30",
+      "ring fits to rotation-averaged power spectra of 30-deg HMI Doppler cubes on ring-diagram synoptic grid"
+    ],
+    [
       "hmi.rdvfitsc_fd05",
       "ring fits to power spectra of 5-deg HMI Doppler cubes on ring-diagram synoptic grid tracked 1/72 CR"
     ],
