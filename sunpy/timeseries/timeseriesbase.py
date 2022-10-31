@@ -26,7 +26,7 @@ from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.decorators import deprecate_positional_args_since
-from sunpy.util.exceptions import warn_deprecated, warn_user
+from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import peek_show
@@ -174,15 +174,6 @@ class GenericTimeSeries:
         return list(self._data.columns.values)
 
     @property
-    def index(self):
-        """
-        The time index of the data.
-        """
-        warn_deprecated('.index is deprecatd. Use .time instead to get an astropy.time.Time object, '
-                        'or ts.to_dataframe().index to get a pandas DateTimeIndex.')
-        return self.to_dataframe().index
-
-    @property
     def time(self):
         """
         The timestamps of the data.
@@ -313,7 +304,7 @@ class GenericTimeSeries:
         for i in range(len(self.columns)):
             if len(self.columns) == 1:
                 axs.plot(
-                    dat.index,
+                    da.indext,
                     dat[self.columns[i]].values,
                     color=cols[i],
                     label=self.columns[i],
