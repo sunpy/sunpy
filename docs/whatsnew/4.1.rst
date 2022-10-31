@@ -42,6 +42,11 @@ The new `sunpy.visualization.drawing` module can be used to draw the solar equat
 
 .. minigallery:: sunpy.visualization.drawing.equator
 
+Sample data downloaded on demand
+================================
+The sample data files provided through `sunpy.data.sample` are now downloaded individually on demand rather than being all downloaded upon import of that module.
+All the sample data files can still be downloaded at once by calling :func:`sunpy.data.sample.download_all`.
+
 ``sunpy.database`` deprecation
 ==============================
 The ``sunpy.database`` module is no longer actively maintained and has a number of outstanding issues.
