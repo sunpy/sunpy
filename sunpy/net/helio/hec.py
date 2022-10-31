@@ -16,7 +16,7 @@ from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.helio import attrs as ha
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
-from sunpy.util.exceptions import warn_deprecated, warn_user
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['HECClient', 'HECResponse']
 
@@ -150,10 +150,6 @@ class HECClient(BaseClient):
                     f"{elem.__class__.__name__} should be a ``attrs.Time``, ``attrs.hek.MaxRecords`` or ``attrs.hek.TableName`` attribute.")
         qrdict.update(kwargs)
         table = qrdict.get('table_name', None)
-        if table:
-            if isinstance(table, bytes):
-                warn_deprecated('type `bytes` for table_name is deprecated, use `str` instead.')
-            table = str.encode(table)
         start_time = qrdict['Time'].start
         end_time = qrdict['Time'].end
         max_records = qrdict.get('max_records', 500)
