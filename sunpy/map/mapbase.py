@@ -50,7 +50,7 @@ from sunpy.util.decorators import (
     cached_property_based_on,
     check_arithmetic_compatibility,
 )
-from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
+from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -2184,29 +2184,16 @@ class GenericMap(NDData):
         the Matplotlib documentation for examples of creating a custom legend.
         """
         # Put imports here to reduce sunpy.map import time
-        from matplotlib import patches
-
         import sunpy.visualization.drawing
 
-        # Don't use _check_axes() here, as drawing the limb works fine on none-WCSAxes,
-        # even if the image is rotated relative to the axes
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
-
-        is_wcsaxes = wcsaxes_compat.is_wcsaxes(axes)
-        if is_wcsaxes:
-            # TODO: supply custom limb radius
-            return sunpy.visualization.drawing.limb(
-                axes, self.observer_coordinate, resolution=resolution,
-                rsun=self.rsun_meters, **kwargs)
-        else:
-            warn_deprecated("Drawing the limb on a non-WCS Axes is deprecated, "
-                            "and will be removed in sunpy 4.1.")
-            # If not WCSAxes use a Circle
-            c_kw.setdefault('radius', self.rsun_obs.value)
-            circ = patches.Circle([0, 0], **c_kw)
-            axes.add_artist(circ)
-            return circ, None
+        axes = self._check_axes(axes)
+        return sunpy.visualization.drawing.limb(
+            axes,
+            self.observer_coordinate,
+            resolution=resolution,
+            rsun=self.rsun_meters,
+            **kwargs
+        )
 
     @u.quantity_input
     def draw_quadrangle(self, bottom_left, *, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
