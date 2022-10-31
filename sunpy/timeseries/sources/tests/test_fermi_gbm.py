@@ -1,4 +1,3 @@
-import pytest
 
 import sunpy.timeseries
 from sunpy.data.test import get_test_filepath
@@ -26,9 +25,6 @@ def test_fermi_gbm_plot_column(fermi_gbm_test_ts):
     assert '100-300 keV' == ax.lines[1].get_label()
 
 
-# This warning is fixed in matplotlib, and the filter can be removed once
-# matplotlib 3.3.1 is released (https://github.com/matplotlib/matplotlib/pull/18101)
-@pytest.mark.filterwarnings('ignore:Support for multi-dimensional indexing.*is deprecated')
 @figure_test
 def test_fermi_gbm_peek(fermi_gbm_test_ts):
     fermi_gbm_test_ts.peek()
