@@ -1,1 +1,1 @@
-:meth:`sunpy.image.resample` will no longer accept "neighbour" as an interpolation method.
+:meth:`sunpy.image.transform.affine_transform` and :func:`sunpy.map.GenericMap.rotate` will no longer accept the ``use_scipy`` keyword.
