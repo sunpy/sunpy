@@ -26,6 +26,7 @@ This section contains the various guidelines to be followed by anyone working on
 
             contents/newcomers
             contents/pr_checklist
+            contents/conda_for_dependencies
 
     .. grid-item-card::
         :class-card: card
