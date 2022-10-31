@@ -1,0 +1,1 @@
+:meth:`sunpy.map.GenericMap.draw_limb` can no longer be used to draw the limb on a non-WCS Axes plot.
