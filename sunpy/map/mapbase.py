@@ -1568,7 +1568,7 @@ class GenericMap(NDData):
     @add_common_docstring(rotation_function_names=_rotation_function_names)
     @u.quantity_input
     def rotate(self, angle: u.deg = None, rmatrix=None, order=3, scale=1.0,
-               recenter=False, missing=np.nan, use_scipy=None, *, method='scipy', clip=True):
+               recenter=False, missing=np.nan, *, method='scipy', clip=True):
         """
         Returns a new rotated and rescaled map.
 
@@ -1644,7 +1644,7 @@ class GenericMap(NDData):
         if order not in range(6):
             raise ValueError("Order must be between 0 and 5.")
 
-        method = _get_transform_method(method, use_scipy)
+        method = _get_transform_method(method)
 
         # The FITS-WCS transform is by definition defined around the
         # reference coordinate in the header.

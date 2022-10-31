@@ -8,7 +8,7 @@ from astropy.coordinates.matrix_utilities import rotation_matrix
 
 from sunpy.image.transform import _rotation_registry, affine_transform
 from sunpy.tests.helpers import figure_test
-from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util import SunpyUserWarning
 
 # Tolerance for tests
 RTOL = 1.0e-10
@@ -243,21 +243,6 @@ def test_float32(identity):
     in_arr = np.array([[100]], dtype=np.float32)
     out_arr = affine_transform(in_arr, rmatrix=identity)
     assert np.issubdtype(out_arr.dtype, np.float32)
-
-
-def test_deprecated_args(identity):
-    in_arr = np.array([[100]])
-    with pytest.warns(SunpyDeprecationWarning, match="The 'use_scipy' argument is deprecated"):
-        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True)
-
-    with pytest.warns(SunpyDeprecationWarning, match="The 'use_scipy' argument is deprecated"):
-        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=False)
-
-    with pytest.raises(ValueError, match="Method blah not in supported methods"):
-        out_arr = affine_transform(in_arr, rmatrix=identity, method='blah')
-
-    with pytest.warns(SunpyUserWarning, match="Using scipy instead of scikit-image for rotation"):
-        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True, method='scikit-image')
 
 
 def test_reproducible_matrix_multiplication():
