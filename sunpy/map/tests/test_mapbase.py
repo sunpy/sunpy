@@ -32,7 +32,7 @@ from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 from sunpy.visualization.colormaps.cm import _get_mpl_cmap
 from .conftest import make_simple_map
@@ -667,58 +667,54 @@ def test_resample(simple_map, shape):
     assert u.allclose(resampled_upper_left.Ty, original_upper_left.Ty)
 
 
-resample_test_data = [('linear', (100, 200) * u.pixel, contextlib.nullcontext()),
-                      ('neighbor', (128, 256) * u.pixel, pytest.warns(SunpyDeprecationWarning)),
-                      ('nearest', (512, 128) * u.pixel, contextlib.nullcontext()),
-                      ('spline', (200, 200) * u.pixel, contextlib.nullcontext())]
+resample_test_data = [('linear', (100, 200) * u.pixel),
+                      ('nearest', (512, 128) * u.pixel),
+                      ('spline', (200, 200) * u.pixel)]
 
 
-@pytest.mark.parametrize('sample_method, new_dimensions, cm', resample_test_data)
-def test_resample_dimensions(generic_map, sample_method, new_dimensions, cm):
+@pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
+def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
-    with cm:
-        resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-        assert resampled_map.dimensions[0] == new_dimensions[0]
-        assert resampled_map.dimensions[1] == new_dimensions[1]
+    resampled_map = generic_map.resample(new_dimensions, method=sample_method)
+    assert resampled_map.dimensions[0] == new_dimensions[0]
+    assert resampled_map.dimensions[1] == new_dimensions[1]
 
 
-@pytest.mark.parametrize('sample_method, new_dimensions, cm', resample_test_data)
-def test_resample_metadata(generic_map, sample_method, new_dimensions, cm):
+@pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
+def test_resample_metadata(generic_map, sample_method, new_dimensions):
     """
     Check that the resampled map has correctly adjusted metadata.
     """
-    with cm:
-        resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-        assert resampled_map.meta['cdelt1'] == generic_map.meta['cdelt1']
-        assert resampled_map.meta['cdelt2'] == generic_map.meta['cdelt2']
-        # TODO: we should really test the numbers here, not just that the correct
-        # header values have been modified. However, I am lazy and we have figure
-        # tests.
-        assert resampled_map.meta['crpix1'] != generic_map.meta['crpix1']
-        assert resampled_map.meta['crpix2'] != generic_map.meta['crpix2']
-        assert u.allclose(resampled_map.meta['crval1'], generic_map.meta['crval1'])
-        assert u.allclose(resampled_map.meta['crval2'], generic_map.meta['crval2'])
-        assert resampled_map.meta['naxis1'] == new_dimensions[0].value
-        assert resampled_map.meta['naxis2'] == new_dimensions[1].value
-        for key in generic_map.meta:
-            if key not in ('crpix1', 'crpix2', 'crval1',
-                           'crval2', 'naxis1', 'naxis2') and not key.startswith('pc'):
-                assert resampled_map.meta[key] == generic_map.meta[key]
+    resampled_map = generic_map.resample(new_dimensions, method=sample_method)
+    assert resampled_map.meta['cdelt1'] == generic_map.meta['cdelt1']
+    assert resampled_map.meta['cdelt2'] == generic_map.meta['cdelt2']
+    # TODO: we should really test the numbers here, not just that the correct
+    # header values have been modified. However, I am lazy and we have figure
+    # tests.
+    assert resampled_map.meta['crpix1'] != generic_map.meta['crpix1']
+    assert resampled_map.meta['crpix2'] != generic_map.meta['crpix2']
+    assert u.allclose(resampled_map.meta['crval1'], generic_map.meta['crval1'])
+    assert u.allclose(resampled_map.meta['crval2'], generic_map.meta['crval2'])
+    assert resampled_map.meta['naxis1'] == new_dimensions[0].value
+    assert resampled_map.meta['naxis2'] == new_dimensions[1].value
+    for key in generic_map.meta:
+        if key not in ('crpix1', 'crpix2', 'crval1',
+                       'crval2', 'naxis1', 'naxis2') and not key.startswith('pc'):
+            assert resampled_map.meta[key] == generic_map.meta[key]
 
 
-@pytest.mark.parametrize('sample_method, new_dimensions, cm', resample_test_data)
-def test_resample_simple_map(simple_map, sample_method, new_dimensions, cm):
+@pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
+def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     # Put the reference pixel at the top-right of the bottom-left pixel
     simple_map.meta['crpix1'] = 1.5
     simple_map.meta['crpix2'] = 1.5
     assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
     # Make the superpixel map
     new_dims = (9, 6) * u.pix
-    with cm:
-        resamp_map = simple_map.resample(new_dims, method=sample_method)
-        # Reference pixel should change, but reference coordinate should not
-        assert list(resamp_map.reference_pixel) == [2.5 * u.pix, 1.5 * u.pix]
-        assert resamp_map.reference_coordinate == simple_map.reference_coordinate
+    resamp_map = simple_map.resample(new_dims, method=sample_method)
+    # Reference pixel should change, but reference coordinate should not
+    assert list(resamp_map.reference_pixel) == [2.5 * u.pix, 1.5 * u.pix]
+    assert resamp_map.reference_coordinate == simple_map.reference_coordinate
 
 
 def test_superpixel_simple_map(simple_map):

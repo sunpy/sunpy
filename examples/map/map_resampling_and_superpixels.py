@@ -21,7 +21,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 ##############################################################################
 # To reduce the angular resolution of the map you can use the `~sunpy.map.GenericMap.resample` method,
 # specifying the new dimensions in pixels. By default, this method uses linear interpolation
-# but this can be changed with the ``method`` argument ('neighbor', 'nearest', 'linear' or 'spline').
+# but this can be changed with the ``method`` argument ('nearest', 'linear' or 'spline').
 
 new_dimensions = [40, 40] * u.pixel
 aia_resampled_map = aia_map.resample(new_dimensions)

@@ -70,8 +70,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
     elif method == 'spline':
         data = _resample_spline(orig, dimensions, offset, m1)
     else:
-        raise UnrecognizedInterpolationMethod("Unrecognized interpolation "
-                                              "method requested.")
+        raise UnrecognizedInterpolationMethod(f"Unrecognized interpolation method requested: {method}")
 
     return data
 

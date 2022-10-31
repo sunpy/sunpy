@@ -5,7 +5,6 @@ import pytest
 import astropy.units as u
 
 from sunpy.image.resample import reshape_image_to_4d_superpixel
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 @pytest.fixture
@@ -23,12 +22,6 @@ def resample_method(aia171_test_map, method):
         for center in [False, True]:
             for minusone in [False, True]:
                 assert resample_meta(aia171_test_map, shape * u.pix, method, center, minusone) == shape
-
-
-def test_resample_neighbor(aia171_test_map):
-    with pytest.warns(SunpyDeprecationWarning,
-                      match='Using "neighbor" as a method for resampling is deprecated.'):
-        resample_method(aia171_test_map, 'neighbor')
 
 
 def test_resample_nearest(aia171_test_map):
