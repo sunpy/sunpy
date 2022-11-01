@@ -307,7 +307,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         epochs = array_time.tdb.jd.tolist()  # Time must be provided in JD TDB
 
     query = Horizons(id=body, id_type=id_type,
-                     location='500@10',      # Heliocentric (mean ecliptic)
+                     location='500@Sun',      # Heliocentric (mean ecliptic)
                      epochs=epochs)
     try:
         result = query.vectors()
