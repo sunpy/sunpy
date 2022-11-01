@@ -12,13 +12,13 @@ import scipy.ndimage
 from scipy.signal import convolve2d
 
 from sunpy import log
-from sunpy.util.exceptions import warn_deprecated, warn_user
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['add_rotation_function', 'affine_transform']
 
 
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
-                     recenter=False, missing=np.nan, use_scipy=None, *, method='scipy', clip=True):
+                     recenter=False, missing=np.nan, *, method='scipy', clip=True):
     """
     Rotates, shifts and scales an image.
 
@@ -90,8 +90,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     displacement = np.dot(rmatrix, rot_center)
     shift = image_center - displacement
 
-    # While `use_scipy` is still supported, we have to check which method to actually use
-    method = _get_transform_method(method, use_scipy)
+    method = _get_transform_method(method)
 
     # Transform the image using the appropriate function
     rotated_image = _rotation_registry[method].function(image, rmatrix, shift, order, missing, clip)
@@ -99,26 +98,11 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     return rotated_image
 
 
-def _get_transform_method(method, use_scipy):
+def _get_transform_method(method):
     # This is re-used in affine_transform and GenericMap.rotate
     if method not in _rotation_registry:
         raise ValueError(f'Method {method} not in supported methods: '
                          f'{_rotation_registry.keys()}')
-
-    if use_scipy is not None:
-        warn_deprecated("The 'use_scipy' argument is deprecated. "
-                        "Specify the rotation method to the 'method' "
-                        "keyword argument instead.")
-        if use_scipy is True and method != 'scipy':
-            warn_user(f"Using scipy instead of {method} for rotation.")
-            method = 'scipy'
-
-    if method == 'scikit-image':
-        try:
-            import skimage  # NoQA
-        except ImportError:
-            raise ImportError("scikit-image must be installed to be usable for rotation.")
-
     return method
 
 
@@ -336,7 +320,10 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     * Does not pass NaN as ``missing`` to :func:`~skimage.transform.warp` due to
       inconsistent handling across interpolation orders
     """
-    import skimage.transform
+    try:
+        import skimage.transform
+    except ImportError:
+        raise ImportError("The scikit-image package is required to use this rotation method.")
 
     # Make the rotation matrix 3x3 to include translation of the image
     skmatrix = np.zeros((3, 3))
