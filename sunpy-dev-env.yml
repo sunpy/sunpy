@@ -52,6 +52,7 @@ dependencies:
   - ruamel.yaml
   - sphinx
   - sphinx-automodapi
+  - sphinx-copybutton
   - sphinx-gallery
   - sphinx-design
   - towncrier

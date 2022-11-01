@@ -64,7 +64,6 @@ def test_unit(mdi):
     assert mdi.unit == u.dimensionless_unscaled
 
 
-@pytest.mark.filterwarnings("error")
 def test_synoptic_source(mdi_synoptic):
     assert isinstance(mdi_synoptic, MDISynopticMap)
     # Check that the WCS is valid
