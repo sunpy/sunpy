@@ -1,0 +1,2 @@
+Added a how-to guide (:ref:`conda_for_dependencies`) for using ``conda`` to set up an environment with the complete set of dependencies to use all optional features, build the documentation, and/or run the full test suite.
+The guide also describes how best to have an editable installation of ``sunpy`` in this environment.
