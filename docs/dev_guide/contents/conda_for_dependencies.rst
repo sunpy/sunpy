@@ -9,14 +9,14 @@ A power user or a developer will instead need the complete set of dependencies t
 We provide a ``conda`` environment file (``sunpy-dev-env.yml``) in the base directory of the GitHub repository.
 You can create a ``conda`` environment (here named ``sunpy-dev``) from this file:
 
-.. code:: bash
+.. code-block:: bash
 
     $ conda env create -n sunpy-dev -f sunpy-dev-env.yml
     $ conda activate sunpy-dev
 
 Alternatively, if you want to add the complete set of dependencies to an existing ``conda`` environment, you can use this file to update that environment (here named ``existing-env``):
 
-.. code:: bash
+.. code-block:: bash
 
     $ conda env update -n existing-env -f sunpy-dev-env.yml
 
@@ -27,21 +27,19 @@ Alternatively, if you want to add the complete set of dependencies to an existin
 This ``conda`` environment file specifies only the *dependencies* for ``sunpy``, and not ``sunpy`` itself.
 Depending on your needs, continue with one of the following two ways to install ``sunpy`` in this ``conda`` environment.
 
-
-Normal Installation of sunpy
-============================
+Normal Installation of ``sunpy``
+================================
 
 If you do not plan to modify the code of ``sunpy`` itself, you can simply install ``sunpy`` via ``conda``:
 
-.. code:: bash
+.. code-block:: bash
 
     $ conda install sunpy
 
 Since the ``conda`` environment already has the complete set of dependencies for ``sunpy``, this call should install only ``sunpy`` and no additional packages.
 
-
-Editable Installation of sunpy
-==============================
+Editable Installation of ``sunpy``
+==================================
 
 If you plan to modify the code of ``sunpy`` itself, you will want to perform an "editable install" of your local repository, via ``pip``, so that Python will link to your local repository.
 Normally it is discouraged to have an environment that mixes package installations via ``conda`` with package installations via ``pip`` because it can lead to enviroment states that confuse the ``conda`` solver.
@@ -60,11 +58,11 @@ Since the ``conda`` environment is designed to already have the complete set of 
 
 You now have a ``conda`` environment with an editable installation of ``sunpy`` and with (nearly) all dependencies managed by ``conda``.
 As you install other packages in this environment, a package that depends on ``sunpy`` will trigger ``conda`` to install ``sunpy``.
-*That is fine!*
+**That is fine!**
 This ``conda`` installation of ``sunpy`` will simply mask the ``pip`` installation of ``sunpy``.
 All you need to do is to remove the ``conda`` installation with the ``--force`` option so that dependencies are left undisturbed:
 
-.. code:: bash
+.. code-block:: bash
 
     $ conda remove --force sunpy
 
@@ -77,7 +75,7 @@ Once the ``conda`` installation of ``sunpy`` is removed, the ``pip`` installatio
 As a tip, you can follow a similar procedure to incorporate editable installations of other packages (e.g., ``astropy``) in a ``conda`` environment.
 You first install the package via ``conda`` to ensure its dependencies are present, then you remove the package alone without disturbing the dependencies, and finally you perform the editable install of the package from the base directory of your local repository:
 
-.. code:: bash
+.. code-block:: bash
 
     $ conda install astropy
     $ conda remove --force astropy
