@@ -1,0 +1,1 @@
+Fixed interal logic in :func:`sunpy.coordinates.get_horizons_coord` to adapt to a recent change in how the remote HORIZONS service handles body specifications.
