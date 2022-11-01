@@ -122,7 +122,7 @@ quantity
 
 ##############################################################################
 # You can add or overwrite a column using :meth:`sunpy.timeseries.GenericTimeSeries.add_column`.
-# This method only accepts an `~astropy.quantity.Quantity` and will convert to the intended units
+# This method only accepts an `~astropy.units.Quantity` and will convert to the intended units
 # if necessary.
 
 new_quantity = quantity.value * 0.01 * ts_eve.units[colname]

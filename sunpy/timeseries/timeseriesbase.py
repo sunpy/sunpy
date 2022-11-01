@@ -304,7 +304,7 @@ class GenericTimeSeries:
         for i in range(len(self.columns)):
             if len(self.columns) == 1:
                 axs.plot(
-                    da.indext,
+                    dat.index,
                     dat[self.columns[i]].values,
                     color=cols[i],
                     label=self.columns[i],
