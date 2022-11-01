@@ -8,7 +8,6 @@ from astropy.visualization import AsinhStretch, ImageNormalize
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
-from sunpy.time import parse_time
 
 __all__ = ['EUIMap']
 
@@ -53,9 +52,8 @@ class EUIMap(GenericMap):
 
     @property
     def date(self):
-        t = self.meta.get('date-avg')
-        timesys = self.meta.get('timesys')
-        return parse_time(t, scale=timesys.lower())
+        # Prioritize date-average over date-obs
+        return self.date_average or super().date
 
     @property
     def waveunit(self):
