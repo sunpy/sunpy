@@ -426,7 +426,7 @@ This function will be called by `parfive` with the ``resp`` and ``url`` argument
         if resp:
             cdheader = resp.headers.get("Content-Disposition", None)
             if cdheader:
-            _, params = cgi.parse_header(cdheader)
+            _, params = sunpy.util.net.parse_header(cdheader)
             name = params.get('filename', "")
 
         return path.format(file=name, **row.response_block_map)
@@ -466,7 +466,7 @@ An example client class may look something like
 
 .. code-block:: python
 
-    import cgi
+    import sunpy.util.net
 
     import sunpy.net.atrrs as a
     from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr
@@ -522,7 +522,7 @@ An example client class may look something like
             if resp:
                 cdheader = resp.headers.get("Content-Disposition", None)
                 if cdheader:
-                _, params = cgi.parse_header(cdheader)
+                _, params = sunpy.util.net.parse_header(cdheader)
                 name = params.get('filename', "")
 
             return path.format(file=name, **row.response_block_map)

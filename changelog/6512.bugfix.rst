@@ -1,0 +1,4 @@
+Add support for Python 3.11.
+
+The deprecated `cgi.parse_header` is now available as
+`sunpy.util.net.parse_header`.
