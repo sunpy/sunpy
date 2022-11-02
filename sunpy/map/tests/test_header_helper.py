@@ -168,6 +168,7 @@ def test_instrument_keyword(map_data, hpc_coord):
         'instrument': 'test name',
         'observatory': 'test observatory',
         'telescope': 'test telescope',
+        'detector': 'test detector',
         'wavelength': 171 * u.Angstrom,
         'exposure': 2 * u.s,
         'unit': u.Unit('ct s-1'),
@@ -176,6 +177,7 @@ def test_instrument_keyword(map_data, hpc_coord):
     assert header['instrume'] == instrument_kwargs['instrument']
     assert header['obsrvtry'] == instrument_kwargs['observatory']
     assert header['telescop'] == instrument_kwargs['telescope']
+    assert header['detector'] == instrument_kwargs['detector']
     assert header['wavelnth'] == instrument_kwargs['wavelength'].to_value()
     assert header['waveunit'] == instrument_kwargs['wavelength'].unit.to_string("fits")
     assert header['exptime'] == instrument_kwargs['exposure'].to_value('s')
