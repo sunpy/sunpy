@@ -45,6 +45,18 @@ in a platform specific directory, which you can see the path for by running::
 
 Do not edit the default file (the first in the "FILES USED:" list above) directly as every time you install or update sunpy, this file will be overwritten.
 
+To maintain your personal customizations place a copy of the default "sunpyrc" file into the user configuration path.
+To find this path, use:
+
+.. code-block:: python
+
+    >>> from sunpy.extern.appdirs import AppDirs
+    >>> AppDirs('sunpy', 'sunpy').user_config_dir  # doctest: +SKIP
+
+You can use `sunpy.util.config.copy_default_config` to write the default config into the correct place.
+
+The user configuration path can also be set using an environment variable ``SUNPY_CONFIGDIR``.
+
 Depending on your system, it may be useful to have a site-wide configuration file.
 If it is used, it will be on the "FILES USED:" list below the default file.
 To find your system's site configuration path for ``sunpy``, use:
@@ -56,19 +68,7 @@ To find your system's site configuration path for ``sunpy``, use:
 
 In Unix, the site and user configuration paths follow the `XDG specifications <https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>`__.
 
-To maintain your personal customizations place a copy of the default "sunpyrc" file into the user configuration path.
-To find this path, use:
-
-.. code-block:: python
-
-    >>> from sunpy.extern.appdirs import AppDirs
-    >>> AppDirs('sunpy', 'sunpy').user_config_dir  # doctest: +SKIP
-
-You can use `sunpy.util.config.copy_default_config` to write the default config into the correct place.
-
-Note that if your site has a site configuration file, you may want to replicate the site configuration items into your own configuration file, as your own configuration overrides the site configuration.
-
-The user configuration path can also be set using an environment variable ``SUNPY_CONFIGDIR``.
+The site configuration is applied before your personal user configuration, thus your configuration file will override the site configuration settings. For this reason, when you create or edit your personal configuration file, you may want to replicate the site configuration items into your own configuration file, or comment out the items in your configuration file that are set in the site configuration file.
 
 See below for the example config file.
 
