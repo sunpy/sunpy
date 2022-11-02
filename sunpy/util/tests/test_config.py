@@ -67,7 +67,7 @@ def test_print_config_files(tmpdir, tmp_path, undo_download_dir_patch):
     assert get_and_create_sample_dir() in printed
 
 
-def test__find_config_user_site_files(tmpdir, tmp_path, undo_download_dir_patch, monkeypatch):
+def test_find_config_user_site_files(tmpdir, tmp_path, undo_download_dir_patch, monkeypatch):
 
     # Set a site config dir
     tmp_config_site_dir = tmpdir.mkdir("sunpy_test_configdir_site")
