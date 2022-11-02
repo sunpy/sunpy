@@ -5,8 +5,6 @@ import numpy as np
 import scipy.interpolate
 import scipy.ndimage
 
-from sunpy.util.exceptions import warn_deprecated
-
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 
 
@@ -28,7 +26,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
         Original input array.
     dimensions : `tuple`
         Dimensions that new `numpy.ndarray` should have.
-    method : {``"neighbor"``, ``"nearest"``, ``"linear"``, ``"spline"``}, optional
+    method : {``"nearest"``, ``"linear"``, ``"spline"``}, optional
         Method to use for resampling interpolation.
             * nearest and linear - Uses "n x 1D" interpolations calculated by
               `scipy.interpolate.interp1d`.
@@ -66,18 +64,13 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
     offset = np.float64(center * 0.5)       # float64(0.) or float64(0.5)
 
     # Resample data
-    if method == 'neighbor':
-        warn_deprecated('Using "neighbor" as a method for resampling is deprecated. '
-                        'Use "nearest" instead.')
-        data = _resample_neighbor(orig, dimensions, offset, m1)
-    elif method in ['nearest', 'linear']:
+    if method in ['nearest', 'linear']:
         data = _resample_nearest_linear(orig, dimensions, method,
                                         offset, m1)
     elif method == 'spline':
         data = _resample_spline(orig, dimensions, offset, m1)
     else:
-        raise UnrecognizedInterpolationMethod("Unrecognized interpolation "
-                                              "method requested.")
+        raise UnrecognizedInterpolationMethod(f"Unrecognized interpolation method requested: {method}")
 
     return data
 
@@ -114,23 +107,6 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
                                          fill_value=None)
 
     return new_data
-
-
-def _resample_neighbor(orig, dimensions, offset, m1):
-    """
-    Resample Map using closest-value interpolation.
-    """
-    # This can be deleted once the deprecation above in resample is expired
-    dimlist = []
-    dimensions = np.asarray(dimensions, dtype=int)
-
-    for i in range(orig.ndim):
-        base = np.indices(dimensions)[i]
-        dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
-                       (base + offset) - offset)
-    cd = np.array(dimlist).round().astype(int)
-
-    return orig[tuple(list(cd))]
 
 
 def _resample_spline(orig, dimensions, offset, m1):

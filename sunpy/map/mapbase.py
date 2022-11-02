@@ -1507,7 +1507,6 @@ class GenericMap(NDData):
             axis and the second argument corresponds to the 'y' axis.
         method : str
             Method to use for resampling interpolation.
-                * ``'neighbor'`` - Take closest value from original data.
                 * ``'nearest'`` and ``'linear'`` - Use n x 1-D interpolations using
                   `scipy.interpolate.interp1d`.
                 * ``'spline'`` - Uses piecewise polynomials (splines) for mapping the input
