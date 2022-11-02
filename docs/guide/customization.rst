@@ -47,7 +47,7 @@ Do not edit the default file (the first in the "FILES USED:" list above) directl
 
 Depending on your system, it may be useful to have a site-wide configuration file.
 If it is used, it will be on the "FILES USED:" list below the default file.
-To find your system's site configuration path for sunpy, use:
+To find your system's site configuration path for ``sunpy``, use:
 
 .. code-block:: python
 
