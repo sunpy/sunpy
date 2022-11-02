@@ -1,7 +1,7 @@
 """
-====================================
-Using `~sunpy.timeseries.TimeSeries`
-====================================
+===================
+Using `.TimeSeries`
+===================
 
 This example is intended to demonstrate the current state of `~sunpy.timeseries.TimeSeries`.
 """
@@ -24,9 +24,9 @@ from sunpy.util.metadata import MetaDict
 
 ##############################################################################
 # We can create a range of supported timeseries:
-
 # There is a ``source`` keyword that allows one to specify the source of the data
 # It should be auto-detected in most cases.
+
 ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
 ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
 ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
@@ -65,6 +65,7 @@ plt.show()
 
 # This will give you a useful dataframe to manipulate the data with.
 lyra_data = ts_lyra.to_dataframe()
+lyra_data
 
 ##############################################################################
 # This will give you the metadata
@@ -77,18 +78,14 @@ ts_lyra.units
 ##############################################################################
 # There are a couple of other useful properties:
 
-# The time range of the data
-ts_lyra.time_range
-# The name of the data columns
-ts_lyra.columns
+# The time range of the data, the name of the data columns
+ts_lyra.time_range, ts_lyra.columns
 
 ##############################################################################
 # Further data is available from within the metadata, you can filter out for a
 # key using the :meth:`.TimeSeriesMetaData.get` method.
 
-combined_goes_ts.meta.get('telescop')
-# This returns a `.TimeSeriesMetaData` object, if you want just a list values
-combined_goes_ts.meta.get('telescop').values()
+combined_goes_ts.meta.get("publisher_name")
 
 ##############################################################################
 # You can access a specific value within the `~sunpy.timeseries.TimeSeries` data
@@ -100,8 +97,7 @@ lyra_data.loc['2011-06-07 00:02:00.010']
 # If this fails, you will need to use parse_time to convert the string to a datetime
 lyra_data.loc[parse_time('2011-06-07 00:02:00.010').datetime]
 # Pandas includes methods to find the indexes of the max/min values in a dataframe:
-ts_lyra.to_dataframe()['CHANNEL1'].idxmax()
-ts_lyra.to_dataframe()['CHANNEL1'].idxmin()
+ts_lyra.to_dataframe()['CHANNEL1'].idxmax(), ts_lyra.to_dataframe()['CHANNEL1'].idxmin()
 
 ##############################################################################
 # An individual column can be extracted
@@ -126,8 +122,7 @@ quantity
 # if necessary.
 
 new_quantity = quantity.value * 0.01 * ts_eve.units[colname]
-new_quantity
-ts_eve.add_column(colname, new_quantity, overwrite=True)
+new_eve_ts = ts_eve.add_column(colname, new_quantity, overwrite=True)
 
 ##############################################################################
 # You can truncate using the :meth:`sunpy.timeseries.GenericTimeSeries.truncate` method.
