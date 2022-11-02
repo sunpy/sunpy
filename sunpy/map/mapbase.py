@@ -914,7 +914,7 @@ class GenericMap(NDData):
         This is taken from the 'XPOSURE' keyword or the 'EXPTIME' FITS keyword,
         in that order.
         """
-        exptime = self.meta.get('xposure', self.meta.get('exptime', None))
+        exptime = self.meta.get('xposure') or self.meta.get('exptime')
         if exptime:
             return exptime * self.timeunit
 
