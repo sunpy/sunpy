@@ -1,1 +1,1 @@
-.. include:: ../CITATION.rst
+.. include:: ../sunpy/CITATION.rst
