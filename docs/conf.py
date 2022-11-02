@@ -16,7 +16,7 @@ if on_rtd:
     os.environ['HOME'] = '/home/docs/'
     os.environ['LANG'] = 'C'
     os.environ['LC_ALL'] = 'C'
-    os.environ['HIDE_PARFIVE_PROGESS'] = 'True'
+    os.environ['PARFIVE_HIDE_PROGRESS'] = 'True'
 
 # -- Check for dependencies ----------------------------------------------------
 from sunpy.util import missing_dependencies_by_extra  # NOQA
