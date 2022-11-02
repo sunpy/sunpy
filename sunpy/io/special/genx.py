@@ -2,7 +2,7 @@
 This module implements a solarsoft genx file reader.
 """
 import copy
-import xdrlib
+import struct
 from collections import OrderedDict
 
 import numpy as np
@@ -10,7 +10,122 @@ import numpy as np
 __all__ = ['read_genx']
 
 
-class SSWUnpacker(xdrlib.Unpacker):
+# This class has been copied from the Python 3.11 stdlib xdrlib.py file under
+# the terms of the PSF licence 2.0
+class Unpacker:
+    """Unpacks various data representations from the given buffer."""
+
+    def __init__(self, data):
+        self.reset(data)
+
+    def reset(self, data):
+        self.__buf = data
+        self.__pos = 0
+
+    def get_position(self):
+        return self.__pos
+
+    def set_position(self, position):
+        self.__pos = position
+
+    def get_buffer(self):
+        return self.__buf
+
+    def done(self):
+        if self.__pos < len(self.__buf):
+            raise Error('unextracted data remains')
+
+    def unpack_uint(self):
+        i = self.__pos
+        self.__pos = j = i+4
+        data = self.__buf[i:j]
+        if len(data) < 4:
+            raise EOFError
+        return struct.unpack('>L', data)[0]
+
+    def unpack_int(self):
+        i = self.__pos
+        self.__pos = j = i+4
+        data = self.__buf[i:j]
+        if len(data) < 4:
+            raise EOFError
+        return struct.unpack('>l', data)[0]
+
+    unpack_enum = unpack_int
+
+    def unpack_bool(self):
+        return bool(self.unpack_int())
+
+    def unpack_uhyper(self):
+        hi = self.unpack_uint()
+        lo = self.unpack_uint()
+        return int(hi) << 32 | lo
+
+    def unpack_hyper(self):
+        x = self.unpack_uhyper()
+        if x >= 0x8000000000000000:
+            x = x - 0x10000000000000000
+        return x
+
+    def unpack_float(self):
+        i = self.__pos
+        self.__pos = j = i+4
+        data = self.__buf[i:j]
+        if len(data) < 4:
+            raise EOFError
+        return struct.unpack('>f', data)[0]
+
+    def unpack_double(self):
+        i = self.__pos
+        self.__pos = j = i+8
+        data = self.__buf[i:j]
+        if len(data) < 8:
+            raise EOFError
+        return struct.unpack('>d', data)[0]
+
+    def unpack_fstring(self, n):
+        if n < 0:
+            raise ValueError('fstring size must be nonnegative')
+        i = self.__pos
+        j = i + (n+3)//4*4
+        if j > len(self.__buf):
+            raise EOFError
+        self.__pos = j
+        return self.__buf[i:i+n]
+
+    unpack_fopaque = unpack_fstring
+
+    def unpack_string(self):
+        n = self.unpack_uint()
+        return self.unpack_fstring(n)
+
+    unpack_opaque = unpack_string
+    unpack_bytes = unpack_string
+
+    def unpack_list(self, unpack_item):
+        list = []
+        while 1:
+            x = self.unpack_uint()
+            if x == 0:
+                break
+            if x != 1:
+                raise ConversionError('0 or 1 expected, got %r' % (x,))
+            item = unpack_item()
+            list.append(item)
+        return list
+
+    def unpack_farray(self, n, unpack_item):
+        list = []
+        for i in range(n):
+            list.append(unpack_item())
+        return list
+
+    def unpack_array(self, unpack_item):
+        n = self.unpack_uint()
+        return self.unpack_farray(n, unpack_item)
+
+
+class SSWUnpacker(Unpacker):
     """
     A `xdrlib.Unpacker` customisation to read strings and complex data as
     written by IDL.

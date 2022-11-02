@@ -8,6 +8,10 @@ requires = [
          ]
 build-backend = 'setuptools.build_meta'
 
+# Until we have h5py binaries we can't test wheels on Python 3.11
+[tool.cibuildwheel]
+test-skip = "cp311-*"
+
 [ tool.gilesbot ]
   [ tool.gilesbot.circleci_artifacts ]
     enabled = true

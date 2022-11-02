@@ -169,8 +169,11 @@ class MetaDict(OrderedDict):
         """
         return OrderedDict.__setitem__(self, key.lower(), value)
 
-    # Note: `OrderedDict.popitem()` does not need to be overridden to prune
-    # keycomments because it calls `__delitem__` internally.
+    def popitem(self, last):
+        key, value = super().popitem(last)
+        self._prune_keycomments()
+        return key, value
+
     def __delitem__(self, key):
         """
         Override ``del dict[key]`` key deletion.
