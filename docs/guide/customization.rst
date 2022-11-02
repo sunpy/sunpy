@@ -68,7 +68,8 @@ To find your system's site configuration path for ``sunpy``, use:
 
 In Unix, the site and user configuration paths follow the `XDG specifications <https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>`__.
 
-The site configuration is applied before your personal user configuration, thus your configuration file will override the site configuration settings. For this reason, when you create or edit your personal configuration file, you may want to replicate the site configuration items into your own configuration file, or comment out the items in your configuration file that are set in the site configuration file.
+The site configuration is applied before your personal user configuration, thus your configuration file will override the site configuration settings.
+For this reason, when you create or edit your personal configuration file, you may want to replicate the site configuration items into your own configuration file, or comment out the items in your configuration file that are set in the site configuration file.
 
 See below for the example config file.
 
