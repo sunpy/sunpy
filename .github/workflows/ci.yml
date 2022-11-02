@@ -145,13 +145,11 @@ jobs:
       test_extras: 'dev'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
-      # This can be removed when there are binaries for h5py on 3.11
-      libraries: 'libhdf5-dev'
       targets: |
         - cp3{8,9,10}-manylinux*_x86_64
         - cp3{8,9,10}-macosx_x86_64
         - cp3{8,9,10}-macosx_arm64
-        # Split these out as building h5py is slower, can be reintegrated when binaries for h5py exist
+        # Split these out for more rapid debugging
         - cp311-manylinux*_x86_64
         - cp311-macosx_x86_64
         - cp311-macosx_arm64
