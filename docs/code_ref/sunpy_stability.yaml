@@ -5,11 +5,11 @@ data:
   status: mature
   comments: Should see no major changes.
 database:
-  status: dev
-  comments: While it has not changed recently, it could be subject to major revisions in future.
+  status: pendingdep
+  comments: Pending deprecation. See https://community.openastronomy.org/t/deprecating-sunpy-database/495/2 for community discussion.
 image:
-  status: dev
-  comments: While it has not changed recently, it could be subject to major revisions in future.
+  status: stable
+  comments: Any future changes should largely maintain backwards compatibility.
 io:
   status: mature
   comments: Should see no major changes.
@@ -24,7 +24,7 @@ physics:
   comments: While it has not changed recently, it could be subject to major revisions in future.
 sun:
   status: dev
-  comments: Sub-module `constants` is stable. Sub-module `models` will likely have major changes.
+  comments: Sub-module ``constants`` is stable. Sub-module ``models`` will likely have major changes.
 time:
   status: stable
   comments: Any future changes should largely maintain backwards compatibility.
