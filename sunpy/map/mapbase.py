@@ -2644,7 +2644,7 @@ class GenericMap(NDData):
 
         return axes
 
-    @deprecate_positional_args_since("4.1", keyword_only=True)
+    @deprecate_positional_args_since("4.1")
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
                      **reproject_args):
         """
