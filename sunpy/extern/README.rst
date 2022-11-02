@@ -15,5 +15,4 @@ To replace any of the other Python modules included in this package, simply remo
 .. _AppDirs: https://github.com/ActiveState/appdirs
 .. _distro: https://github.com/nir0s/distro
 .. _inflect: https://github.com/jaraco/inflect
-.. _modest_image: https://github.com/glue-viz/glue/blob/main/glue/external/modest_image.py
 .. _parse: https://github.com/r1chardj0n3s/parse
