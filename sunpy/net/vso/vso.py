@@ -3,7 +3,6 @@ This module provides a wrapper around the VSO API.
 """
 
 import os
-import cgi
 import copy
 import json
 import socket
@@ -24,7 +23,7 @@ from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
 from sunpy.util.exceptions import warn_user
-from sunpy.util.net import slugify
+from sunpy.util.net import parse_header, slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
 from .exceptions import (
@@ -272,7 +271,7 @@ class VSOClient(BaseClient):
         if resp:
             cdheader = resp.headers.get("Content-Disposition", None)
             if cdheader:
-                _, params = cgi.parse_header(cdheader)
+                _, params = parse_header(cdheader)
                 name = params.get('filename', "")
                 # Work around https://github.com/sunpy/sunpy/issues/3372
                 if name.count('"') >= 2:

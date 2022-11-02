@@ -70,3 +70,42 @@ def test_date():
     creation = datetime.datetime.strptime(creation_str, '%a %b %d %H:%M:%S %Y')
     assert int(''.join(chr(x)
                        for x in TESTING['MYSTRUCTURE']['RANDOMNUMBERS'][-4:])) == creation.year
+
+
+def test_unpacker():
+    """
+    This test exercises the Unpacker class that was extracted from the stdlib
+    """
+    data = b'\x00\x00\x00*\xff\xff\xff\xef\x00\x00\x00\t\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00-?\xf333?\xfeffffff\x00\x00\x00\x0bhello world\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x03\x00\x00\x00\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x04what\x00\x00\x00\x02is\x00\x00\x00\x00\x00\x06hapnin\x00\x00\x00\x00\x00\x06doctor\x00\x00'
+
+    s = b'hello world'
+    a = [b'what', b'is', b'hapnin', b'doctor']
+
+    up = genx.Unpacker(data)
+
+    assert up.get_position() == 0
+
+    assert up.unpack_int() == 42
+    assert up.unpack_int() == -17
+    assert up.unpack_uint() == 9
+    assert up.unpack_bool() is True
+
+    # remember position
+    pos = up.get_position()
+    assert up.unpack_bool() is False
+
+    # rewind and unpack again
+    up.set_position(pos)
+    assert up.unpack_bool() is False
+
+    assert up.unpack_uhyper() == 45
+    np.testing.assert_allclose(up.unpack_float(), 1.9)
+    np.testing.assert_allclose(up.unpack_double(), 1.9)
+    assert up.unpack_string() == s
+    assert up.unpack_list(up.unpack_uint) == list(range(5))
+    assert up.unpack_array(up.unpack_string) == a
+
+    up.done()
+
+    with pytest.raises(EOFError):
+        up.unpack_uint()
