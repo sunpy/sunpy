@@ -13,21 +13,44 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 4.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-By the numbers:
+This release of ``sunpy`` contains 1408 commits in 191 merged pull requests closing 86 issues from 28 people, 18 of which are first-time contributors.
 
-This release of ``sunpy`` contains x commits in x merged pull requests closing x issues from x people, x of which are first-time contributors to ``sunpy``.
-
-* x commits have been added since 4.0
-* x issues have been closed since 4.0
-* x pull requests have been merged since 4.0
-* x people have contributed since 4.0
-* x of which are new contributors
+* 1408 commits have been added since 4.0
+* 86 issues have been closed since 4.0
+* 191 pull requests have been merged since 4.0
+* 28 people have contributed since 4.0
+* 18 of which are new contributors
 
 The people who have contributed to the code for this release are:
 
-TODO: fill this in at release time.
+-  Akash Verma  *
+-  Alasdair Wilson
+-  Albert Y. Shih
+-  Alex Kaszynski  *
+-  Alex W  *
+-  Andy Tang  *
+-  Chris Bard  *
+-  Conor MacBride
+-  Daniel Garcia Briseno  *
+-  David Stansby
+-  Jan Gieseler  *
+-  Jia Qing  *
+-  Karthikeyan Singaravelan  *
+-  Krish Agrawal  *
+-  Laura Hayes
+-  Lazar Zivadinovic
+-  Marius Giger  *
+-  Matt Wentzel-Long  *
+-  Nabil Freij
+-  Naveen Srinivasan  *
+-  Stuart Mumford
+-  Timo Laitinen  *
+-  Will Barnes
+-  William Jamieson  *
+-  William Russell  *
+-  tal66  *
 
-Where a * indicates that this release contains their first code contribution to ``sunpy``.
+Where a * indicates that this release contains their first contribution to ``sunpy``.
 
 Extracting map values along coordinate paths
 ============================================
