@@ -1,1 +1,0 @@
-Added the current bugfix release policy to the docs.

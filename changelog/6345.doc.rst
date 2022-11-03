@@ -1,1 +1,0 @@
-The :ref:`map_guide` and :ref:`timeseries_guide` have been reviewed and updated.

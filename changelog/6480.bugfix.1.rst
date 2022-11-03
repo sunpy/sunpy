@@ -1,6 +1,0 @@
-Changed the default scaling for `~sunpy.map.sources.XRTMap` from a linear stretch to `~astropy.visualization.LogStretch`.
-
-To revert to the previous linear stretch do the following::
-
-     from astropy.visualization import ImageNormalize, LinearStretch
-     xrtmap.plot_settings["norm"] = ImageNormalize(stretch=LinearStretch())

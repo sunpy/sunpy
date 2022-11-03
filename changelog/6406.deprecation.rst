@@ -1,1 +1,0 @@
-Passing the ``algorithm``, ``return_footprint`` arguments as positional arguments is deprecated. Pass them as keyword arguments (e.g. ``..., return_footprint=True, ...``) instead.

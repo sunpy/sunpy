@@ -1,1 +1,0 @@
-Added a ``columns`` keyword to each plot method for all `sunpy.timeseries.GenericTimeSeries` sources.

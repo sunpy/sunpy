@@ -1,1 +1,0 @@
-``sunpy.util.scraper`` has been removed. Use `sunpy.net.scraper` instead.
