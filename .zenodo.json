@@ -157,7 +157,9 @@
             "name": "Rajul Srivastava"
         },
         {
-            "name": "Matt Wentzel-Long"
+            "name": "Matt Wentzel-Long",
+            "orcid": "0000-0002-3106-4598",
+            "affiliation": "Stark State College"
         },
         {
             "name": "Yash Jain",
@@ -245,7 +247,9 @@
             "name": "Kateryna Ivashkiv"
         },
         {
-            "name": "Timo Laitinen"
+            "name": "Timo Laitinen",
+            "orcid": "0000-0002-7719-7783",
+            "affiliation": "Jeremiah Horrocks Institute, University of Central Lancashire, UK"
         },
         {
             "name": "Agneet Chatterjee",
@@ -349,7 +353,9 @@
             "affiliation": "Sardar Vallabhbhai National Institute of Technology, Surat, India"
         },
         {
-            "name": "Marius Giger"
+            "name": "Marius Giger",
+            "orcid": "0000-0002-6863-6502",
+            "affiliation": "University of Applied Sciences and Arts Northwestern Switzerland"
         },
         {
             "name": "Pankaj Mishra"
@@ -740,7 +746,9 @@
             "name": "Varun Bankar"
         },
         {
-            "name": "William Jamieson"
+            "name": "William Jamieson",
+            "orcid": "0000-0001-5976-4492",
+            "affiliation": "Space Telescope Science Institute"
         },
         {
             "name": "Yudhik Agrawal",
