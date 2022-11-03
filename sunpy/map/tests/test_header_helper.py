@@ -8,6 +8,7 @@ from astropy.wcs import WCS
 import sunpy.map
 from sunpy.coordinates import frames, sun
 from sunpy.map import make_fitswcs_header
+from sunpy.map.header_helper import make_heliographic_header
 from sunpy.util.metadata import MetaDict
 
 
@@ -225,3 +226,31 @@ def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
         header = make_fitswcs_header(map_data, hpc_coord, scale=u.Quantity([0, 0]))
     with pytest.raises(u.UnitsError):
         header = make_fitswcs_header(map_data, hpc_coord, scale=u.Quantity([0, 0]*u.arcsec))
+
+
+@pytest.mark.parametrize('frame', ['carrington', 'stonyhurst'])
+# Second case here chosen to produce non-square pixels
+@pytest.mark.parametrize('shape', [[90, 180], [240, 100]])
+@pytest.mark.parametrize('projection_code', ['CAR', 'CEA'])
+def test_make_heliographic_header(aia171_test_map, shape, projection_code, frame):
+    header = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape, frame=frame, projection_code=projection_code)
+    carr_map = aia171_test_map.reproject_to(header)
+
+    # Check upper right and lower left coordinates are as expected
+    ll_coord = carr_map.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
+    assert ll_coord.lon in [-180 * u.deg, 180*u.deg]
+    assert ll_coord.lat == -90 * u.deg
+    assert ll_coord.frame.name == f"heliographic_{frame}"
+
+    ur_coord = carr_map.pixel_to_world((shape[1] - 0.5) * u.pix, (shape[0] - 0.5) * u.pix)
+    assert ur_coord.lon in [-180 * u.deg, 180*u.deg]
+    assert ur_coord.lat == 90 * u.deg
+    assert ur_coord.frame.name == f"heliographic_{frame}"
+
+
+def test_make_heliographic_header_invalid_inputs(aia171_test_map):
+    with pytest.raises(ValueError, match='projection_code must be one of'):
+        make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', projection_code='blah')
+
+    with pytest.raises(ValueError, match='frame must be one of'):
+        make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='blah')

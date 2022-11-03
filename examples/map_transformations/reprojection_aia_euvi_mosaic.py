@@ -70,7 +70,7 @@ plt.show()
 ######################################################################
 # The next step is to calculate the output coordinate system for the combined
 # map. We select a heliographic Stonyhurst frame, and a Plate Carree (CAR)
-# projection, and generate a header using `sunpy.map.make_fitswcs_header` and
+# projection, and generate a header using `sunpy.map.header_helper.make_fitswcs_header` and
 # then construct a World Coordinate System (WCS) object for that header.
 
 shape_out = (180, 360)  # This is set deliberately low to reduce memory consumption

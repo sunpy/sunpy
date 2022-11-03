@@ -43,7 +43,7 @@ New Features
 
 - Added support for Python 3.10 (`#5568 <https://github.com/sunpy/sunpy/pull/5568>`__)
 - Added support for ``"%Y.%m.%d_%H:%M:%S_UTC"`` and ``"%Y.%m.%d_%H:%M:%S"`` time formats in `sunpy.time.parse_time`. (`#5647 <https://github.com/sunpy/sunpy/pull/5647>`__)
-- The ``rsun`` argument to :func:`~sunpy.map.get_observer_meta` is now
+- The ``rsun`` argument to :func:`~sunpy.map.header_helper.get_observer_meta` is now
   optional. (`#5655 <https://github.com/sunpy/sunpy/pull/5655>`__)
 - Added the :meth:`~sunpy.net.base_client.QueryResponseTable.total_size`, which
   estimates the total size of the results from a Fido query. If this is supported
@@ -110,7 +110,7 @@ Bug Fixes
   If the maximum number of records are returned, a message is shown. (`#5738 <https://github.com/sunpy/sunpy/pull/5738>`__)
 - Reading a series of CDF files where at least one of them is empty no longer
   raises an error. A message for each empty file is logged at the DEBUG level. (`#5751 <https://github.com/sunpy/sunpy/pull/5751>`__)
-- :func:`sunpy.map.make_fitswcs_header` now includes a PC_ij matrix in the returned
+- :func:`sunpy.map.header_helper.make_fitswcs_header` now includes a PC_ij matrix in the returned
   header if no rotation is specified. (`#5763 <https://github.com/sunpy/sunpy/pull/5763>`__)
 - In the case where a map header has no PC_ij values, CROTA2 != 0, and
   CDELT1 != CDELT2, the calculation of the map rotation matrix has been fixed.
@@ -324,7 +324,7 @@ New Features
 - Add default color map and normalization for `~sunpy.map.sources.HMISynopticMap`
   The default color map is 'hmimag' and the default normalization is linear between
   -1.5e-3 and +1.5e3, the expected normalization for this particular color map. (`#5464 <https://github.com/sunpy/sunpy/pull/5464>`__)
-- The headers produced by :func:`~sunpy.map.make_fitswcs_header` now include ``NAXIS``, ``NAXIS1``, and ``NAXIS2`` keywords. (`#5470 <https://github.com/sunpy/sunpy/pull/5470>`__)
+- The headers produced by :func:`~sunpy.map.header_helper.make_fitswcs_header` now include ``NAXIS``, ``NAXIS1``, and ``NAXIS2`` keywords. (`#5470 <https://github.com/sunpy/sunpy/pull/5470>`__)
 - The `~astropy.wcs.WCS` instance returned by the `sunpy.map.GenericMap.wcs` property now includes the shape of the data array. (`#5470 <https://github.com/sunpy/sunpy/pull/5470>`__)
 - Added the method :meth:`sunpy.map.GenericMap.reproject_to` for reprojecting a `~sunpy.map.Map` to a different WCS.
   This method requires the optional package `reproject` to be installed. (`#5470 <https://github.com/sunpy/sunpy/pull/5470>`__)
@@ -386,7 +386,7 @@ Bug Fixes
   changes from e.g. degrees to arc-minutes. This could previously lead to
   situations where the axis label units were incorrect. (`#5432 <https://github.com/sunpy/sunpy/pull/5432>`__)
 - Implement automatic fallback to helioviewer mirrors if API is non-functional. (`#5440 <https://github.com/sunpy/sunpy/pull/5440>`__)
-- Fixed the incorrect value for the FITS WCS ``LONPOLE`` keyword when using :func:`~sunpy.map.make_fitswcs_header` for certain combinations of WCS projection and reference coordinate. (`#5448 <https://github.com/sunpy/sunpy/pull/5448>`__)
+- Fixed the incorrect value for the FITS WCS ``LONPOLE`` keyword when using :func:`~sunpy.map.header_helper.make_fitswcs_header` for certain combinations of WCS projection and reference coordinate. (`#5448 <https://github.com/sunpy/sunpy/pull/5448>`__)
 - The date returned by `~sunpy.map.GenericMap.date` for Solar Orbiter/EUI maps
   has been adjusted to be taken from the DATE-AVG keyword
   (the middle of the image acquisition period), instead of the DATE-OBS
@@ -400,7 +400,7 @@ Bug Fixes
 - Fixed a bug where the property `sunpy.map.GenericMap.rsun_meters` would always internally determine the observer location, even when it is not needed, particularly for Stonyhurst heliographic maps, which have no notion of an observer.
   Thus, when working with a Stonyhurst heliographic map, a user could get an irrelevant warning message about having to assume an observer location (Earth center). (`#5478 <https://github.com/sunpy/sunpy/pull/5478>`__)
 - Fixed the unintended insertion of (assumed) observer location information when accessing the property `sunpy.map.GenericMap.wcs` for Stonyhurst heliographic maps. (`#5478 <https://github.com/sunpy/sunpy/pull/5478>`__)
-- Fixed an incorrect value for the FITS WCS ``LONPOLE`` keyword when using :func:`~sunpy.map.make_fitswcs_header` for `~sunpy.coordinates.frames.Helioprojective` maps with certain values of latitude for the reference coordinate. (`#5490 <https://github.com/sunpy/sunpy/pull/5490>`__)
+- Fixed an incorrect value for the FITS WCS ``LONPOLE`` keyword when using :func:`~sunpy.map.header_helper.make_fitswcs_header` for `~sunpy.coordinates.frames.Helioprojective` maps with certain values of latitude for the reference coordinate. (`#5490 <https://github.com/sunpy/sunpy/pull/5490>`__)
 - A non-standard ``CROTA`` keyword included in a `sunpy.map.sources.EUIMap` FITS header is now renamed to the recommended ``CROTA2`` so a warning is no longer raised. (`#5493 <https://github.com/sunpy/sunpy/pull/5493>`__)
 - The plotting x-limits of :meth:`sunpy.timeseries.sources.NOAAIndicesTimeSeries.plot`
   are now adjusted to only include finite points in the timeseries data. (`#5496 <https://github.com/sunpy/sunpy/pull/5496>`__)
@@ -590,7 +590,7 @@ Bug Fixes
   This resulted in the unexpected use of transformation machinery when transforming a coordinate to its own coordinate frame. (`#5127 <https://github.com/sunpy/sunpy/pull/5127>`__)
 - Fixed a bug with failing downloads in 2010 with the `~sunpy.net.dataretriever.sources.noaa.SRSClient`. (`#5159 <https://github.com/sunpy/sunpy/pull/5159>`__)
 - If the property `sunpy.map.GenericMap.rsun_obs` needs to calculate the solar angular radius from header information, it now properly uses the ``rsun_ref`` keyword if it is present and does not emit any warning. (`#5172 <https://github.com/sunpy/sunpy/pull/5172>`__)
-- Added a "rsun_obs" keyword to the output of :func:`sunpy.map.make_fitswcs_header` if the coordinate argument has a "rsun" frame attribute. (`#5177 <https://github.com/sunpy/sunpy/pull/5177>`__)
+- Added a "rsun_obs" keyword to the output of :func:`sunpy.map.header_helper.make_fitswcs_header` if the coordinate argument has a "rsun" frame attribute. (`#5177 <https://github.com/sunpy/sunpy/pull/5177>`__)
 - Fixed small inaccuracies in the grid plotted by :meth:`~sunpy.map.GenericMap.draw_grid` for maps that specify a radius of the Sun that is different from the constant in `sunpy.sun.constants`. (`#5211 <https://github.com/sunpy/sunpy/pull/5211>`__)
 - Fixed :meth:`sunpy.map.GenericMap.draw_contours` so that the contours from a map can be plotted on axes with a different coordinate system. (`#5239 <https://github.com/sunpy/sunpy/pull/5239>`__)
 - When using the cylindrical representation of ``Heliocentric`` to work in the Heliocentric Radial coordinate frame, the ``psi`` component now goes from 0 to 360 degrees instead of -180 to 180 degrees. (`#5242 <https://github.com/sunpy/sunpy/pull/5242>`__)
@@ -598,7 +598,7 @@ Bug Fixes
 - :func:`sunpy.coordinates.solar_frame_to_wcs_mapping` now sets the observer auxiliary
   information when a `~sunpy.coordinates.HeliographicCarrington` frame with
   ``observer='self'`` is passed. (`#5264 <https://github.com/sunpy/sunpy/pull/5264>`__)
-- Calling :func:`sunpy.map.make_fitswcs_header` with a
+- Calling :func:`sunpy.map.header_helper.make_fitswcs_header` with a
   `~sunpy.coordinates.HeliographicCarrington` coordinate that with ``observer='self'``
   set now correctly sets the observer information in the header. (`#5264 <https://github.com/sunpy/sunpy/pull/5264>`__)
 - :meth:`sunpy.map.GenericMap.superpixel` now keeps the reference coordinate of the
@@ -1242,7 +1242,7 @@ Bug Fixes
   frame of the input map to the output coordinates. Previously only the observer
   coordinate, and no other frame attributes, were propagated. (`#4141 <https://github.com/sunpy/sunpy/pull/4141>`__)
 - Fix an off-by-one error in the reference pixel returned by
-  `sunpy.map.make_fitswcs_header`. (`#4152 <https://github.com/sunpy/sunpy/pull/4152>`__)
+  :func:`sunpy.map.header_helper.make_fitswcs_header`. (`#4152 <https://github.com/sunpy/sunpy/pull/4152>`__)
 - `sunpy.map.GenericMap.reference_pixel` now uses zero-based indexing, in order
   to be consistent with the rest of the `sunpy.map` API. (`#4154 <https://github.com/sunpy/sunpy/pull/4154>`__)
 - Previously `sunpy.map.GenericMap.resample` with ``method='linear'`` was
@@ -1389,7 +1389,7 @@ Features
 - `~sunpy.map.GenericMap` objects now have a ``.cmap`` attribute, which returns the full `~matplotlib.colors.Colormap`.
   object. (`#3412 <https://github.com/sunpy/sunpy/pull/3412>`__)
 - `sunpy.io.write_file()` now accepts `~pathlib.Path` objects as filename inputs. (`#3469 <https://github.com/sunpy/sunpy/pull/3469>`__)
-- `sunpy.map.make_fitswcs_header` now accepts a `tuple` representing the shape of an array as well as the actual array as the ``data`` argument. (`#3483 <https://github.com/sunpy/sunpy/pull/3483>`__)
+- :func:`sunpy.map.header_helper.make_fitswcs_header` now accepts a `tuple` representing the shape of an array as well as the actual array as the ``data`` argument. (`#3483 <https://github.com/sunpy/sunpy/pull/3483>`__)
 - Made a couple of module imports lazy to reduce the import time of sunpy.map by
   ~40%. (`#3495 <https://github.com/sunpy/sunpy/pull/3495>`__)
 - `sunpy.map.GenericMap.wcs` now uses the full FITS header to construct the WCS.
@@ -1410,13 +1410,13 @@ Bug Fixes
 ---------
 
 - Fixed accuracy issues with the calculations of Carrington longitude (`~sunpy.coordinates.sun.L0`) and Carrington rotation number (`~sunpy.coordinates.sun.carrington_rotation_number`). (`#3178 <https://github.com/sunpy/sunpy/pull/3178>`__)
-- Updated `sunpy.map.make_fitswcs_header` to be more strict on the inputs it accepts. (`#3183 <https://github.com/sunpy/sunpy/pull/3183>`__)
-- Fix the calculation of ``rsun_ref`` in `~sunpy.map.make_fitswcs_header` and and
+- Updated :func:`sunpy.map.header_helper.make_fitswcs_header` to be more strict on the inputs it accepts. (`#3183 <https://github.com/sunpy/sunpy/pull/3183>`__)
+- Fix the calculation of ``rsun_ref`` in :func:`~sunpy.map.header_helper.make_fitswcs_header` and and
   ensure that the default reference pixel is indexed from 1. (`#3184 <https://github.com/sunpy/sunpy/pull/3184>`__)
 - Fixed the missing transformation between two `~sunpy.coordinates.HeliographicCarrington` frames with different observation times. (`#3186 <https://github.com/sunpy/sunpy/pull/3186>`__)
 - `sunpy.map.sources.AIAMap` and `sunpy.map.sources.HMIMap` will no longer assume
   the existance of certain header keys. (`#3217 <https://github.com/sunpy/sunpy/pull/3217>`__)
-- `sunpy.map.make_fitswcs_header` now supports specifying the map projection
+- :func:`sunpy.map.header_helper.make_fitswcs_header` now supports specifying the map projection
   rather than defaulting to ``TAN``. (`#3218 <https://github.com/sunpy/sunpy/pull/3218>`__)
 - Fix the behaviour of
   ``sunpy.coordinates.frames.Helioprojective.calculate_distance`` if the
@@ -1443,7 +1443,7 @@ Bug Fixes
 - Fixed bugs with `~sunpy.coordinates.wcs_utils.solar_frame_to_wcs_mapping` if the input frame does not include an observation time or an observer. (`#3305 <https://github.com/sunpy/sunpy/pull/3305>`__)
 - `~sunpy.coordinates.utils.GreatArc` now accounts for the start and end points of the arc having different observers. (`#3334 <https://github.com/sunpy/sunpy/pull/3334>`__)
 - Fixed situations where 2D coordinates provided to `~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` were not converted to 3D as intended.  Furthermore, the stored data will always be the post-conversion, 3D version. (`#3351 <https://github.com/sunpy/sunpy/pull/3351>`__)
-- Fix off by one error in `sunpy.map.make_fitswcs_header` where when using the
+- Fix off by one error in :func:`sunpy.map.header_helper.make_fitswcs_header` where when using the
   default ``reference_pixel=None`` keyword argument the pixel coordinate of the
   reference pixel was off by +1. (`#3356 <https://github.com/sunpy/sunpy/pull/3356>`__)
 - Updated both GOES XRS and LYRA dataretriever clients to use ``sunpy.util.scraper.Scraper``, to make sure that files are actually on the servers being queried. (`#3367 <https://github.com/sunpy/sunpy/pull/3367>`__)
@@ -1636,7 +1636,7 @@ Features
 - The default style for Map plots have changed to reflect the changes in Astropy
   3.2. (`#3054 <https://github.com/sunpy/sunpy/pull/3054>`__)
 - `sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst` can now account for light travel time when computing the (apparent) body position, as long as the observer location is provided. (`#3055 <https://github.com/sunpy/sunpy/pull/3055>`__)
-- Added a helper function (`sunpy.map.make_fitswcs_header`) that allows users to create a meta header for custom created `sunpy.map.GenericMap`. (`#3083 <https://github.com/sunpy/sunpy/pull/3083>`__)
+- Added a helper function (:func:`sunpy.map.header_helper.make_fitswcs_header`) that allows users to create a meta header for custom created `sunpy.map.GenericMap`. (`#3083 <https://github.com/sunpy/sunpy/pull/3083>`__)
 - Map plotting now accepts the optional keyword ``clip_interval`` for specifying a percentile interval for clipping.  For example, if the interval (5%, 99%) is specified, the bounds of the z axis are chosen such that the lowest 5% of pixels and the highest 1% of pixels are excluded. (`#3100 <https://github.com/sunpy/sunpy/pull/3100>`__)
 - The new function `~sunpy.coordinates.get_horizons_coord` enables querying JPL HORIZONS for the locations of a wide range of solar-system bodies, including spacecraft. (`#3113 <https://github.com/sunpy/sunpy/pull/3113>`__)
 
@@ -1692,7 +1692,7 @@ Bug Fixes
   that `astropy.wcs.WCS` objects are correctly converted to
   `sunpy.coordinates.frames` objects irrespective of the ordering of the axes. (`#3116 <https://github.com/sunpy/sunpy/pull/3116>`__)
 - The `~sunpy.physics.differential_rotation.solar_rotate_coordinate` function returns a coordinate that accounts for the location of the new observer. (`#3123 <https://github.com/sunpy/sunpy/pull/3123>`__)
-- Add support for rotation parameters to `sunpy.map.make_fitswcs_header`. (`#3139 <https://github.com/sunpy/sunpy/pull/3139>`__)
+- Add support for rotation parameters to :func:`sunpy.map.header_helper.make_fitswcs_header`. (`#3139 <https://github.com/sunpy/sunpy/pull/3139>`__)
 - Improve the implementation of `~sunpy.physics.differential_rotation.differential_rotate` the image warping when transforming Maps for differential rotation and change in observer position. (`#3149 <https://github.com/sunpy/sunpy/pull/3149>`__)
 - Fix a bug where new helioviewer sources potentially cause `~sunpy.net.helioviewer.HelioviewerClient.data_sources` to error. (`#3162 <https://github.com/sunpy/sunpy/pull/3162>`__)
 

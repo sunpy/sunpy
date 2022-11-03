@@ -64,7 +64,7 @@ plt.legend([limb_aia[0], limb_euvi[0]],
 
 ######################################################################
 # We now need to construct an output WCS. We build a custom header using
-# :func:`sunpy.map.make_fitswcs_header` but we use a lot of the ``map_aia``
+# :func:`sunpy.map.header_helper.make_fitswcs_header` but we use a lot of the ``map_aia``
 # properties to do it.
 
 out_header = sunpy.map.make_fitswcs_header(

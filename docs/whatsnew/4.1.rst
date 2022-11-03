@@ -36,6 +36,13 @@ This is done by applying `Bresenham's line algorithm <http://en.wikipedia.org/wi
 
 .. minigallery:: sunpy.map.extract_along_coord
 
+Easier reprojecting to Carrington and Stonyhurst coordinates
+============================================================
+``sunpy.map.header_helper`` has a new :func:`~sunpy.map.header_helper.make_heliographic_header` function that simplifies creating map headers that span the whole solar surface in Carrington or Stonyhurst coordinates.
+When used in combination with :meth:`sunpy.map.GenericMap.reproject_to` this greatly simplifies reprojecting helioprojective maps into heliographic full-Sun maps.
+
+.. minigallery:: sunpy.map.make_heliographic_header
+
 Drawing the solar equator and prime meridian
 ============================================
 The new `sunpy.visualization.drawing` module can be used to draw the solar equator and prime meridian (zero Carrington longitude) on a plot with Astropy WCS Axes.

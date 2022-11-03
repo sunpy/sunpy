@@ -69,6 +69,20 @@ All sunpy Maps are derived from `sunpy.map.GenericMap`, all the methods and attr
     :no-main-docstr:
     :inherited-members:
     :include-all-objects:
+    :skip: make_fitswcs_header
+    :skip: meta_keywords
+    :skip: get_observer_meta
+    :skip: make_heliographic_header
+
+Header helpers
+==============
+
+The header_helper sub-module contains helper functions for generating FITS-WCS headers from Python objects.
+
+.. automodapi:: sunpy.map.header_helper
+    :no-main-docstr:
+    :inherited-members:
+    :include-all-objects:
 
 .. _map-sources:
 
