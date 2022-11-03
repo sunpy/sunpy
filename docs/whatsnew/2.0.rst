@@ -110,7 +110,7 @@ In particular:
 - `sunpy.map.GenericMap.reference_pixel` now returns a zero-based reference pixel.
   This is one pixel less than the previously returned value.
   Note that this means the ``reference_pixel`` now does **not** have the same value as the FITS ``CRPIX`` values, which are one-based indices.
-- `sunpy.map.header_helper.make_fitswcs_header` now correctly interprets the ``reference_pixel`` argument as being zero-based, in previous releases it incorrectly interpreted the ``reference_pixel`` as one-based.
+- :func:`sunpy.map.header_helper.make_fitswcs_header` now correctly interprets the ``reference_pixel`` argument as being zero-based, in previous releases it incorrectly interpreted the ``reference_pixel`` as one-based.
 
 .. _whatsnew-2.0-standards:
 

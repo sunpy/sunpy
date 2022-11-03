@@ -101,7 +101,6 @@ which data and metadata pairs match its instrument.
     :inherited-members:
 
 
-
 Writing a new Instrument Map Class
 ==================================
 

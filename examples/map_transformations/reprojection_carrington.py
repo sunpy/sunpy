@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 import sunpy.data.sample
 import sunpy.map
-from sunpy.map import make_heliographic_header
+from sunpy.map.header_helper import make_heliographic_header
 
 ###############################################################################
 # We will start with using sunpy's sample data for this example.

@@ -18,8 +18,9 @@ For many solar studies we may want to plot this data in some Sun-centered coordi
 such as `~sunpy.coordinates.frames.Helioprojective`. In this example we read the data and
 header information from the LOFAR FITS file and then create a new header with updated WCS
 information to create a `~sunpy.map.Map` with a HPC coordinate frame. We will make use of the
-`astropy.coordinates` and `sunpy.coordinates` submodules together with `~sunpy.map.header_helper.make_fitswcs_header`
-to create a new header and generate a `~sunpy.map.Map`.
+`astropy.coordinates` and `sunpy.coordinates` submodules together with
+:func:`~sunpy.map.header_helper.make_fitswcs_header` to create a new header and generate a
+`~sunpy.map.Map`.
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -110,13 +111,14 @@ P1 = sun.P(obstime)
 
 ##########################################################################
 # Now we can use this information to create a new header using the helper
-# function `~sunpy.map.header_helper.make_fitswcs_header()`. This will create a MetaDict
-# which we contain all the necessay WCS information to create a `~sunpy.map.Map`.
-# We provide a reference coordinate (in HPC), the spatial
-# scale of the observation (i.e. ``cdelt1`` and ``cdelt2``), and the rotation angle (P1).
-# Note that here, 1 is subtracted from the crpix1 and crpix2 values, this is because
-# the ``reference_pixel`` keyword in ~sunpy.map.header_helper.make_fitswcs_header` is zero indexed rather
-# than the fits convention of 1 indexed.
+# function :func:`~sunpy.map.header_helper.make_fitswcs_header`. This will
+# create a MetaDict which we contain all the necessary WCS information to
+# create a `~sunpy.map.Map`. We provide a reference coordinate (in HPC),
+# the spatial scale of the observation (i.e., ``cdelt1`` and ``cdelt2``),
+# and the rotation angle (P1). Note that here, 1 is subtracted from the
+# ``crpix1`` and ``crpix2`` values, this is because the ``reference_pixel``
+# keyword in :func:~sunpy.map.header_helper.make_fitswcs_header` is zero
+# indexed rather than the fits convention of 1 indexed.
 
 new_header = sunpy.map.make_fitswcs_header(data, reference_coord_arcsec,
                                            reference_pixel=u.Quantity([header['crpix1']-1,

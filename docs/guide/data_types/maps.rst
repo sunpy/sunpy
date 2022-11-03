@@ -492,7 +492,7 @@ See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a bri
 
 The keys required for the header information follow the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`__.
 **sunpy** provides a Map header helper function to assist in creating a header that contains the correct meta information.
-This includes a `~sunpy.map.header_helper.meta_keywords` function that will return a `dict` of the meta keywords used when creating a Map.
+This includes a :func:`~sunpy.map.header_helper.meta_keywords` function that will return a `dict` of the meta keywords used when creating a Map.
 
 .. code-block:: python
 
@@ -504,12 +504,12 @@ This includes a `~sunpy.map.header_helper.meta_keywords` function that will retu
      'crval1': 'Coordinate value at reference point on naxis1 **required'
      ...
 
-The utility function `~sunpy.map.header_helper.make_fitswcs_header` will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
+The utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
 The `astropy.coordinates.SkyCoord` is defined by the user and contains information on the reference frame, reference coordinate, and observer location.
 This function returns a `sunpy.util.MetaDict`.
 The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.
 
-The `~sunpy.map.header_helper.make_fitswcs_header` function also takes optional keyword arguments including ``reference_pixel`` and ``scale`` that describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinates.SkyCoord`) and the spatial scale of the pixels, respectively.
+The :func:`~sunpy.map.header_helper.make_fitswcs_header` function also takes optional keyword arguments including ``reference_pixel`` and ``scale`` that describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinates.SkyCoord`) and the spatial scale of the pixels, respectively.
 If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
 
 Here's an example of creating a header from some generic data and an `astropy.coordinates.SkyCoord`:
@@ -598,8 +598,8 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     rsun_obs: 965.3829548285768
 
 As we can see, a list of WCS and observer meta information is contained within the generated headers, however we may want to include other meta information including the observatory name, the wavelength and waveunit of the observation.
-Any of the keywords listed in ``header_helper.meta_keywords`` can be passed to the `~sunpy.map.header_helper.make_fitswcs_header` and will then populate the returned MetaDict header.
-Furthermore, the following observation keywords can be passed to the `~sunpy.map.header_helper.make_fitswcs_header` function: ``observtory``, ``instrument``, ``telescope``, ``wavelength``, ``exposure``.
+Any of the keywords in the dictionary returned by :func:`~sunpy.map.header_helper.meta_keywords` can be passed to the :func:`~sunpy.map.header_helper.make_fitswcs_header` and will then populate the returned MetaDict header.
+Furthermore, the following observation keywords can be passed to the `~sunpy.map.header_helper.make_fitswcs_header` function: ``observatory``, ``instrument``, ``telescope``, ``wavelength``, ``exposure``.
 
 An example of creating a header with these additional keywords:
 

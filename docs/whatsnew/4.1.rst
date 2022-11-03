@@ -37,8 +37,8 @@ See :ref:`sphx_glr_generated_gallery_units_and_coordinates_map_slit_extraction.p
 
 Easier reprojecting to Carrington and Stonyhurst coordinates
 ============================================================
-``sunpy.map.header_helper`` has a new `~sunpy.map.header_helper.make_heliographic_header` function that simplifies creating map headers that span the whole solar surface in Carrington or Stonyhurst coordinates.
-When used in combination with `sunpy.map.GenericMap.reproject_to` this greatly simplifies reprojecting helioprojective maps into heliographic full-Sun maps.
+``sunpy.map.header_helper`` has a new :func:`~sunpy.map.header_helper.make_heliographic_header` function that simplifies creating map headers that span the whole solar surface in Carrington or Stonyhurst coordinates.
+When used in combination with :meth:`sunpy.map.GenericMap.reproject_to` this greatly simplifies reprojecting helioprojective maps into heliographic full-Sun maps.
 
 .. minigallery:: sunpy.map.make_heliographic_header
 
