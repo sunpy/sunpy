@@ -13,6 +13,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.data.sample
+from sunpy.coordinates import Helioprojective
 from sunpy.map import Map
 
 ###############################################################################
@@ -26,8 +27,13 @@ rhessi = Map(sunpy.data.sample.RHESSI_IMAGE)
 aia = Map(sunpy.data.sample.AIA_171_IMAGE)
 
 ###############################################################################
-# Before we plot the image, let's zoom in around the solar flare so the RHESSI
-# contours are visible. Also, specify the RHESSI contour levels to be plotted.
+# Before we plot the image, let's reproject the off-disk AIA coordinates onto
+# a spherical screen at the same distance as the EIT map, so they can be
+# overlayed. Next, zoom in around the solar flare so the RHESSI contours are
+# visible. Also, specify the RHESSI contour levels to be plotted.
+
+with Helioprojective.assume_spherical_screen(eit.observer_coordinate):
+    aia = aia.reproject_to(eit.wcs)
 
 bottom_left = [200, -800] * u.arcsec
 top_right = [1000, -200] * u.arcsec
@@ -40,18 +46,18 @@ levels = [5, 10, 20, 30, 40]*u.percent
 ###############################################################################
 # When creating the plot, choose which Map will be used to create the WCS Axes
 # that the other Maps will be plotted with. The EIT map is plotted first,
-# followed by the RHESSI contours, and lastly the AIA map. Transparency is
-# changed to 50% on the AIA map by specifying the parameter ``alpha``, and the
+# followed by the AIA map, and lastly the RHESSI contours. Transparency is
+# changed to 70% on the AIA map by specifying the parameter ``alpha``, and the
 # image data is autoaligned to the EIT WCS Axes. The parameter ``zorder``
 # specifies how each plot is layered (0 is plotted first and 1 is layered on
-# top of 0, and so on). Lastly, note that ``draw_grid()`` is called using the
-# EIT map.
+# top of 0, and so on).
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=eit_smap)
-eit_smap.plot(axes=ax, zorder=0)
-rhessi.draw_contours(axes=ax, levels=levels, zorder=1)
-aia_smap.plot(axes=ax, alpha=0.6, autoalign=True, zorder=2)
+eit_smap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent, zorder=0)
+aia_smap.plot(axes=ax, clip_interval=(1, 99.97)*u.percent, alpha=0.7,
+              autoalign=True, zorder=1)
+rhessi.draw_contours(axes=ax, levels=levels, zorder=2)
 ax.set_title("Three Map Composite")
 
 plt.show()
