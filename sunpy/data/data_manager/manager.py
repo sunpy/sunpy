@@ -15,7 +15,7 @@ class DataManager:
 
     Parameters
     ----------
-    cache: `sunpy.data.data_manager.cache.Cache`
+    cache: `sunpy.data.data_manager.Cache`
         Cache object to be used by `~sunpy.data.data_manager.manager.DataManager`.
     """
 

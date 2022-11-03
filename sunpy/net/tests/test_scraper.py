@@ -5,7 +5,7 @@ import pytest
 from dateutil.relativedelta import relativedelta
 
 from sunpy.data.test import rootdir
-from sunpy.net.scraper import Scraper, get_timerange_from_exdict
+from sunpy.net import Scraper
 from sunpy.time import TimeRange, parse_time
 
 PATTERN_EXAMPLES = [
@@ -160,7 +160,7 @@ def testURL_patternMillisecondsZeroPadded():
     # Asserts solution to ticket #1954.
     # Milliseconds must be zero-padded in order to match URL lengths.
     now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
-    with patch('sunpy.net.scraper.datetime', now=now_mock):
+    with patch('sunpy.net._scraper.datetime', now=now_mock):
         s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
     now_mock.assert_called_once()
     assert s.now == 'fd_20190419_000000_004.fts'
@@ -291,7 +291,7 @@ def test_extract_files_meta():
      '2020-07-31 23:59:59', '2020-07-31 23:59:59.999000')])
 def test_get_timerange_with_extractor(exdict, start, end):
     tr = TimeRange(start, end)
-    file_timerange = get_timerange_from_exdict(exdict)
+    file_timerange = Scraper.get_timerange_from_exdict(exdict)
     assert file_timerange == tr
 
 

@@ -3,7 +3,7 @@ import astropy.units as u
 import sunpy
 from sunpy import config
 from sunpy.data._sample import download_sample_data
-from sunpy.data.data_manager.cache import Cache
+from sunpy.data.data_manager._cache import Cache
 from sunpy.data.data_manager.downloader import ParfiveDownloader
 from sunpy.data.data_manager.manager import DataManager
 from sunpy.data.data_manager.storage import SqliteStorage

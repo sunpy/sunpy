@@ -5,10 +5,10 @@ import numpy as np
 
 import sunpy
 from sunpy import config
+from sunpy.net import Scraper
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
 from sunpy.net.base_client import BaseClient, QueryResponseRow, QueryResponseTable
-from sunpy.net.scraper import Scraper, get_timerange_from_exdict
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 
@@ -73,7 +73,7 @@ class GenericClient(BaseClient):
         Constructs a dictionary using the query and registered Attrs that represents
         all possible values of the extracted metadata for files that matches the query.
         The returned dictionary is used to validate the metadata of searched files
-        in :func:`~sunpy.net.scraper.Scraper._extract_files_meta`.
+        in :func:`~sunpy.net.Scraper._extract_files_meta`.
 
         Parameters
         ----------
@@ -160,7 +160,7 @@ class GenericClient(BaseClient):
             to show results.
         """
         rowdict = OrderedDict()
-        tr = get_timerange_from_exdict(exdict)
+        tr = Scraper.get_timerange_from_exdict(exdict)
         start = tr.start
         start.format = 'iso'
         end = tr.end

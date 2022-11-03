@@ -1,6 +1,6 @@
 import numpy as np
 
-from sunpy.net.helio.chaincode import Chaincode
+from sunpy.net.helio import Chaincode
 
 
 def test_ends():

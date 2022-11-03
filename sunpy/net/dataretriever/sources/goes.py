@@ -9,9 +9,9 @@ import astropy.units as u
 from astropy.time import Time
 
 from sunpy import config
+from sunpy.net import Scraper
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
-from sunpy.net.scraper import Scraper, get_timerange_from_exdict
 from sunpy.time import TimeRange, parse_time
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -87,7 +87,7 @@ class XRSClient(GenericClient):
                 "16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/")
 
     def post_search_hook(self, i, matchdict):
-        tr = get_timerange_from_exdict(i)
+        tr = Scraper.get_timerange_from_exdict(i)
         rowdict = OrderedDict()
         rowdict['Start Time'] = tr.start
         rowdict['Start Time'].format = 'iso'

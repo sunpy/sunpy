@@ -146,10 +146,10 @@ def split_database(source_database, destination_database, *query_string):
 
     Parameters
     ----------
-    source_database : `~sunpy.database.database.Database`
+    source_database : `~sunpy.database.Database`
         A SunPy `~Database` object. This is the database on which the queries
         will be made.
-    destination_database : `~sunpy.database.database.Database`
+    destination_database : `~sunpy.database.Database`
         A SunPy `~Database` object. This is the database to which the matched
         entries will be moved.
     *query_string : `list`

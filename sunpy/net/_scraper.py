@@ -107,7 +107,7 @@ class Scraper:
 
         Parameters
         ----------
-        timerange : `~sunpy.time.timerange.TimeRange`
+        timerange : `~sunpy.time.TimeRange`
             Time interval where to find the directories for a given pattern.
 
         Returns
@@ -386,7 +386,7 @@ class Scraper:
         """
         if hasattr(self, 'extractor'):
             exdict = parse(self.extractor, url).named
-            tr = get_timerange_from_exdict(exdict)
+            tr = Scraper.get_timerange_from_exdict(exdict)
             return tr.intersects(timerange)
         else:
             datehref = self._extractDateURL(url).to_datetime()
@@ -452,49 +452,49 @@ class Scraper:
                     metalist.append(metadict)
         return metalist
 
+    @staticmethod
+    def get_timerange_from_exdict(exdict):
+        """
+        Function to get URL's timerange using extracted metadata.
+        It computes start and end times first using the given
+        dictionary and then returns a timerange.
 
-def get_timerange_from_exdict(exdict):
-    """
-    Function to get URL's timerange using extracted metadata.
-    It computes start and end times first using the given
-    dictionary and then returns a timerange.
+        Parameters
+        ----------
+        exdict : `dict`
+            Metadata extracted from the file's url.
 
-    Parameters
-    ----------
-    exdict : `dict`
-        Metadata extracted from the file's url.
+        Returns
+        -------
+        `~sunpy.time.TimeRange`
+            The time range of the file.
+        """
+        # This function deliberately does NOT use astropy.time because it is not
+        # needed, and the performance overheads in dealing with astropy.time.Time
+        # objects are large
+        datetypes = ['year', 'month', 'day']
+        timetypes = ['hour', 'minute', 'second', 'millisecond']
+        dtlist = [int(exdict.get(d, 1)) for d in datetypes]
+        dtlist.extend([int(exdict.get(t, 0)) for t in timetypes])
+        startTime = datetime(*dtlist)
 
-    Returns
-    -------
-    `~sunpy.time.TimeRange`
-        The time range of the file.
-    """
-    # This function deliberately does NOT use astropy.time because it is not
-    # needed, and the performance overheads in dealing with astropy.time.Time
-    # objects are large
-    datetypes = ['year', 'month', 'day']
-    timetypes = ['hour', 'minute', 'second', 'millisecond']
-    dtlist = [int(exdict.get(d, 1)) for d in datetypes]
-    dtlist.extend([int(exdict.get(t, 0)) for t in timetypes])
-    startTime = datetime(*dtlist)
+        tdelta = TIME_QUANTITIES['millisecond']
+        if "second" in exdict:
+            tdelta = TIME_QUANTITIES['second']
+        elif "minute" in exdict:
+            tdelta = TIME_QUANTITIES['minute']
+        elif "hour" in exdict:
+            tdelta = TIME_QUANTITIES['hour']
+        elif "day" in exdict:
+            tdelta = TIME_QUANTITIES['day']
+        elif "month" in exdict:
+            days_in_month = calendar.monthrange(int(exdict['year']), int(exdict['month']))[1]
+            tdelta = days_in_month*TIME_QUANTITIES['day']
+        elif "year" in exdict:
+            if calendar.isleap(int(exdict['year'])):
+                tdelta = 366*TIME_QUANTITIES['day']
+            else:
+                tdelta = 365*TIME_QUANTITIES['day']
 
-    tdelta = TIME_QUANTITIES['millisecond']
-    if "second" in exdict:
-        tdelta = TIME_QUANTITIES['second']
-    elif "minute" in exdict:
-        tdelta = TIME_QUANTITIES['minute']
-    elif "hour" in exdict:
-        tdelta = TIME_QUANTITIES['hour']
-    elif "day" in exdict:
-        tdelta = TIME_QUANTITIES['day']
-    elif "month" in exdict:
-        days_in_month = calendar.monthrange(int(exdict['year']), int(exdict['month']))[1]
-        tdelta = days_in_month*TIME_QUANTITIES['day']
-    elif "year" in exdict:
-        if calendar.isleap(int(exdict['year'])):
-            tdelta = 366*TIME_QUANTITIES['day']
-        else:
-            tdelta = 365*TIME_QUANTITIES['day']
-
-    endTime = startTime + tdelta - TIME_QUANTITIES['millisecond']
-    return TimeRange(startTime, endTime)
+        endTime = startTime + tdelta - TIME_QUANTITIES['millisecond']
+        return TimeRange(startTime, endTime)

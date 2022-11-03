@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from sunpy.data.data_manager.cache import Cache
+from sunpy.data.data_manager import Cache
 from sunpy.data.data_manager.manager import DataManager
 from sunpy.data.data_manager.storage import InMemStorage, SqliteStorage
 from sunpy.data.data_manager.tests import mocks
@@ -40,7 +40,7 @@ def sqlstorage():
 def cache(tmp_path, downloader, storage, mocker):
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
-    mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
+    mocker.patch('sunpy.data.data_manager._cache.urlopen', return_value=m)
     cache = Cache(downloader, storage, tmp_path)
     yield cache
 
@@ -51,7 +51,7 @@ def manager(tmp_path, downloader, storage, mocker):
     manager._tempdir = str(tmp_path)
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
-    mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
+    mocker.patch('sunpy.data.data_manager._cache.urlopen', return_value=m)
     yield manager
 
 
@@ -61,7 +61,7 @@ def sqlmanager(tmp_path, downloader, sqlstorage, mocker):
     sqlmanager._tempdir = str(tmp_path)
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
-    mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
+    mocker.patch('sunpy.data.data_manager._cache.urlopen', return_value=m)
     yield sqlmanager
 
 
@@ -84,7 +84,7 @@ def module_patched_manager(tmp_path, downloader, storage, mocker):
     module_patched_manager._get_module = _get_module
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
-    mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
+    mocker.patch('sunpy.data.data_manager._cache.urlopen', return_value=m)
     yield module_patched_manager
 
 

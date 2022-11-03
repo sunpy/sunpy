@@ -12,9 +12,9 @@ from sunpy import log
 from sunpy.data import cache
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
-from sunpy.map.compositemap import CompositeMap
+from sunpy.map._compositemap import CompositeMap
+from sunpy.map._mapsequence import MapSequence
 from sunpy.map.mapbase import GenericMap, MapMetaValidationError
-from sunpy.map.mapsequence import MapSequence
 from sunpy.util import expand_list
 from sunpy.util.datatype_factory_base import (
     BasicRegistrationFactory,

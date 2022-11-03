@@ -19,22 +19,6 @@ __all__ = ['CompositeMap']
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-# Valid keyword arguments for each plotting method
-ACCEPTED_IMSHOW_KWARGS = get_keywords(
-    [GenericMap.plot, plt.Axes.imshow, AxesImage.__init__, _ImageBase.__init__]
-) | get_set_methods(AxesImage)
-
-ACCEPTED_PCOLORMESH_KWARGS = (get_keywords(
-    [GenericMap.plot, plt.Axes.pcolormesh, QuadMesh.__init__, Collection.__init__]
-) | get_set_methods(QuadMesh)) - {
-    'color', 'ec', 'edgecolor', 'facecolor', 'linestyle', 'linestyles',
-    'linewidth', 'linewidths', 'ls', 'lw'
-}
-
-ACCEPTED_CONTOUR_KWARGS = get_keywords(
-    [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args]
-)
-
 
 class CompositeMap:
     """
@@ -58,6 +42,22 @@ class CompositeMap:
     >>> comp_map.peek()  # doctest: +SKIP
 
     """
+
+    # Valid keyword arguments for each plotting method
+    ACCEPTED_IMSHOW_KWARGS = get_keywords(
+        [GenericMap.plot, plt.Axes.imshow, AxesImage.__init__, _ImageBase.__init__]
+    ) | get_set_methods(AxesImage)
+
+    ACCEPTED_PCOLORMESH_KWARGS = (get_keywords(
+        [GenericMap.plot, plt.Axes.pcolormesh, QuadMesh.__init__, Collection.__init__]
+    ) | get_set_methods(QuadMesh)) - {
+        'color', 'ec', 'edgecolor', 'facecolor', 'linestyle', 'linestyles',
+        'linewidth', 'linewidths', 'ls', 'lw'
+    }
+
+    ACCEPTED_CONTOUR_KWARGS = get_keywords(
+        [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args]
+    )
 
     def __init__(self, *args, **kwargs):
         self._maps = expand_list(args)
@@ -397,12 +397,12 @@ class CompositeMap:
         The ``sunpy.map.compositemap`` module includes variables which list the
         full set of arguments passed to each plotting method. These are:
 
-        >>> import sunpy.map.compositemap
-        >>> sorted(sunpy.map.compositemap.ACCEPTED_IMSHOW_KWARGS)
+        >>> import sunpy.map
+        >>> sorted(sunpy.map.CompositeMap.ACCEPTED_IMSHOW_KWARGS)
         {ACCEPTED_IMSHOW_KWARGS}
-        >>> sorted(sunpy.map.compositemap.ACCEPTED_PCOLORMESH_KWARGS)
+        >>> sorted(sunpy.map.CompositeMap.ACCEPTED_PCOLORMESH_KWARGS)
         {ACCEPTED_PCOLORMESH_KWARGS}
-        >>> sorted(sunpy.map.compositemap.ACCEPTED_CONTOUR_KWARGS)
+        >>> sorted(sunpy.map.CompositeMap.ACCEPTED_CONTOUR_KWARGS)
         {ACCEPTED_CONTOUR_KWARGS}
 
         If a transformation is required to overlay the maps with the correct
@@ -444,9 +444,9 @@ class CompositeMap:
 
                 # Filter `matplot_args`
                 if params.get('autoalign', None) in (True, 'pcolormesh'):
-                    accepted_kwargs = ACCEPTED_PCOLORMESH_KWARGS
+                    accepted_kwargs = self.ACCEPTED_PCOLORMESH_KWARGS
                 else:
-                    accepted_kwargs = ACCEPTED_IMSHOW_KWARGS
+                    accepted_kwargs = self.ACCEPTED_IMSHOW_KWARGS
                 for item in matplot_args.keys():
                     if item not in accepted_kwargs:
                         del params[item]
@@ -458,7 +458,7 @@ class CompositeMap:
             else:
                 # Filter `matplot_args`
                 for item in matplot_args.keys():
-                    if item not in ACCEPTED_CONTOUR_KWARGS:
+                    if item not in self.ACCEPTED_CONTOUR_KWARGS:
                         del params[item]
                     else:  # mark as used
                         unused_kwargs -= {item}

@@ -2,8 +2,7 @@
 #
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
-from sunpy.database.commands import NonRemovableTagError, NoSuchEntryError
-from sunpy.database.database import (
+from sunpy.database._database import (
     Database,
     EntryAlreadyAddedError,
     EntryAlreadyStarredError,
@@ -15,6 +14,7 @@ from sunpy.database.database import (
     disable_undo,
     split_database,
 )
+from sunpy.database.commands import NonRemovableTagError, NoSuchEntryError
 from sunpy.util.exceptions import warn_deprecated
 
 warn_deprecated(

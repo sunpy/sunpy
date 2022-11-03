@@ -472,7 +472,7 @@ The data within a `~sunpy.timeseries.TimeSeriesMetaData` object is stored as a l
 The tuple will contain a `~sunpy.time.TimeRange` telling us which rows the metadata applies to, a list of column name strings for which the metadata applies to and finally a `~sunpy.util.metadata.MetaDict` object for storing the key/value pairs of the metadata itself.
 Each time a TimeSeries is concatenated to the original a new set of rows and/or columns will be added to the `~pandas.DataFrame` and a new entry will be added into the metadata.
 Note that entries are ordered chronologically based on
-`~sunpy.time.timerange.TimeRange.start` and generally it's expected that no two
+`~sunpy.time.TimeRange.start` and generally it's expected that no two
 TimeSeries will overlap on both columns and time range.
 For example, it is not good practice for alternate row values in a single column to be relevant to different metadata entries as this would make it impossible to uniquely identify the metadata relevant to each cell.
 

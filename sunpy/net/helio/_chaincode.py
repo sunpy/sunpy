@@ -31,7 +31,7 @@ class Chaincode(np.ndarray):
 
     Examples
     --------
-    >>> from sunpy.net.helio.chaincode import Chaincode
+    >>> from sunpy.net.helio import Chaincode
     >>> cc = Chaincode([-88, 812], "44464655567670006011212222324",
     ...     xdelta=2.629, ydelta=2.629)
     >>> fig = plt.figure()   # doctest: +SKIP

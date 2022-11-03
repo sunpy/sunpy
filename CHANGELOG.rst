@@ -42,7 +42,7 @@ Removals
   Please update your imports to replace ``sunpy.visualization.animator`` with ``mpl_animators``. (`#6434 <https://github.com/sunpy/sunpy/pull/6434>`__)
 - Remove ``GenericMap.shift`` method and the ``GenericMap.shifted_value``.
   Use `~sunpy.map.GenericMap.shift_reference_coord` instead. (`#6437 <https://github.com/sunpy/sunpy/pull/6437>`__)
-- ``sunpy.util.scraper`` has been removed. Use `sunpy.net.scraper` instead. (`#6438 <https://github.com/sunpy/sunpy/pull/6438>`__)
+- ``sunpy.util.scraper.Scraper`` has been removed. Use `sunpy.net.Scraper` instead. (`#6438 <https://github.com/sunpy/sunpy/pull/6438>`__)
 - ``sunpy.image.coalignment`` has been removed. Use `sunkit_image.coalignment` instead, which contains all the same functionality. (`#6440 <https://github.com/sunpy/sunpy/pull/6440>`__)
 - :meth:`sunpy.map.GenericMap.draw_limb` can no longer be used to draw the limb on a non-WCS Axes plot. (`#6533 <https://github.com/sunpy/sunpy/pull/6533>`__)
 - :meth:`sunpy.image.resample` no longer accepts "neighbour" as an interpolation method.
@@ -396,7 +396,7 @@ Internal Changes
 - Declare in our dependencies that we are not compatible with asdf 3.0.0 until we
   are. (`#6077 <https://github.com/sunpy/sunpy/pull/6077>`__)
 - Improved performance of the code that parses dates in clients that use the
-  `~sunpy.net.scraper.Scraper` to get available files. (`#6101 <https://github.com/sunpy/sunpy/pull/6101>`__)
+  `~sunpy.net.Scraper` to get available files. (`#6101 <https://github.com/sunpy/sunpy/pull/6101>`__)
 
 
 3.1.0 (2021-10-29)
@@ -1672,7 +1672,7 @@ Bug Fixes
 - Fixed ``map.__repr__`` when the coordinate system information contained in the
   ``CUNIT1/2`` metadata is not set to a known value. (`#3569 <https://github.com/sunpy/sunpy/pull/3569>`__)
 - Fixed bugs with some coordinate transformations when ``obstime`` is ``None`` on the destination frame but can be assumed to be the same as the ``obstime`` of the source frame. (`#3576 <https://github.com/sunpy/sunpy/pull/3576>`__)
-- Updated `sunpy.map.mapsequence.MapSequence` so that calling ``_derotate()`` raises ``NotImplementedError``.
+- Updated `sunpy.map.MapSequence` so that calling ``_derotate()`` raises ``NotImplementedError``.
   Added associated tests. (`#3613 <https://github.com/sunpy/sunpy/pull/3613>`__)
 - Fixed pandas plotting registration in `sunpy.timeseries`. (`#3633 <https://github.com/sunpy/sunpy/pull/3633>`__)
 - Correctly catch and emit a warning when converting a map metadata to a FITS

@@ -2,7 +2,7 @@
 A Module for accessing the HELIO web service
 """
 
-from .chaincode import *
+from ._chaincode import *
 from .hec import *
 from .parser import *
 

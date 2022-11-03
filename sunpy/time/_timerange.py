@@ -49,7 +49,7 @@ class TimeRange:
     >>> import astropy.units as u
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.s)
     >>> TimeRange('2010/03/04 00:10', 400 * u.day)
-       <sunpy.time.timerange.TimeRange object at ...>
+       <sunpy.time._timerange.TimeRange object at ...>
         Start: 2010-03-04 00:10:00
         End:   2011-04-08 00:10:00
         Center:2010-09-20 00:10:00
@@ -228,7 +228,7 @@ class TimeRange:
 
         Parameters
         ----------
-        other : `~sunpy.time.timerange.TimeRange`
+        other : `~sunpy.time.TimeRange`
             The second `sunpy.time.TimeRange` to compare to.
 
         Returns
@@ -248,7 +248,7 @@ class TimeRange:
 
         Parameters
         ----------
-        other : `~sunpy.time.timerange.TimeRange`
+        other : `~sunpy.time.TimeRange`
             The second `sunpy.time.TimeRange` to compare to.
 
         Returns
@@ -333,7 +333,7 @@ class TimeRange:
         >>> from sunpy.time import TimeRange
         >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 01:20')
         >>> time_range.window(60*60*u.s, window=12*u.s)   # doctest:  +SKIP
-        [   <sunpy.time.timerange.TimeRange object at 0x7f0214bfc208>
+        [   <sunpy.time._timerange.TimeRange object at 0x7f0214bfc208>
             Start: 2010-03-04 00:10:00
             End:   2010-03-04 00:10:12
             Center:2010-03-04 00:10:06
@@ -341,7 +341,7 @@ class TimeRange:
                     0.003333333333333333 hours or
                     0.2 minutes or
                     12.0 seconds,
-            <sunpy.time.timerange.TimeRange object at 0x7f01fe43ac50>
+            <sunpy.time._timerange.TimeRange object at 0x7f01fe43ac50>
             Start: 2010-03-04 01:10:00
             End:   2010-03-04 01:10:12
             Center:2010-03-04 01:10:06
@@ -349,7 +349,7 @@ class TimeRange:
                     0.003333333333333333 hours or
                     0.2 minutes or
                     12.0 seconds,
-            <sunpy.time.timerange.TimeRange object at 0x7f01fb90b898>
+            <sunpy.time._timerange.TimeRange object at 0x7f01fb90b898>
             Start: 2010-03-04 02:10:00
             End:   2010-03-04 02:10:12
             Center:2010-03-04 02:10:06
