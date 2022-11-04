@@ -1,3 +1,5 @@
+import pickle
+
 import pytest
 from hypothesis import given, settings
 
@@ -276,3 +278,11 @@ def test_tranformation_to_nonobserver_frame(indirect_fixture):
     hgs_coord = rot_frame.transform_to(hgs_frame)
 
     assert hgs_coord.obstime == hgs_frame.obstime
+
+
+def test_pickle_rotatedsunframe():
+    base_coord = SkyCoord(1*u.deg, 2*u.deg, obstime="2003-04-05", rsun=600*u.Mm,
+                          frame='heliographic_stonyhurst')
+    rotated_coord = RotatedSunFrame(base=base_coord, duration=7*u.day)
+    pickled_coord = pickle.loads(pickle.dumps(rotated_coord))
+    assert pickled_coord == rotated_coord
