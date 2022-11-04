@@ -216,6 +216,13 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
         """
         return self.base.obstime + self.duration
 
+    def __reduce__(self):
+        return (_rotatedsunframe_reducer, (self.base,), self.__dict__)
+
+
+def _rotatedsunframe_reducer(base):
+    return RotatedSunFrame.__new__(RotatedSunFrame, base=base)
+
 
 # For Astropy 4.3+, we need to manually remove the `obstime` frame attribute from RotatedSunFrame
 if 'obstime' in RotatedSunFrame.frame_attributes:
