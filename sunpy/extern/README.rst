@@ -1,16 +1,16 @@
-************
-sunpy.extern
-************
+****************
+``sunpy.extern``
+****************
 
-This sub-package contains third-party Python packages/modules that are
-required for some of SunPy's core functionality.
+This sub-package contains third-party Python packages/modules that are required for parts of ``sunpy``.
 
-In particular, this currently includes for Python:
+This currently includes the following:
 
-- `AppDirs`_ (Python 2 and 3 versions): This provides the core config file handling for SunPy's configuration system.
-- `distro`_ This provides the functionality of the deprecated `platform.linux_distribution()`, which we need (and more)
-
-To replace any of the other Python modules included in this package, simply remove them and update any imports in SunPy to import the system versions rather than the bundled copies.
+- `AppDirs`_ This provides the core config file handling for ``sunpy``'s configuration system.
+- `distro`_ This provides the functionality of the deprecated `platform.linux_distribution()`, which is used for ``sysinfo``.
+- `inflect`_ This provides a way to transform numbers into words, which is used for the ``attrs`` system.
+  **THIS IS NEVER UPDATED TO AVOID A NEW DEPENDENCY**
+- `parse`_ This provides the functionality required for ``Scraper`` to parse URLs which powers ``GenericClient``.
 
 .. _AppDirs: https://github.com/ActiveState/appdirs
 .. _distro: https://github.com/nir0s/distro

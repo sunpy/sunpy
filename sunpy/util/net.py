@@ -12,8 +12,8 @@ from urllib.request import urlopen
 
 from sunpy.util import replacement_filename
 
-__all__ = ['parse_header', 'slugify', 'get_content_disposition', 'get_filename', 'get_system_filename',
-           'download_file', 'download_fileobj']
+__all__ = ['parse_header', 'slugify', 'get_content_disposition', 'get_filename',
+           'get_system_filename', 'download_file', 'download_fileobj']
 
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
