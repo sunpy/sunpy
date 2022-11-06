@@ -4,27 +4,25 @@
 Time in sunpy
 *************
 
-Working with times and time ranges is a standard task in solar data analysis and as such
-sunpy strives to provide convenient and easy methods to do the simple stuff. Python
-already provides an object for a time or date through `datetime.datetime`.
-However, `datetime.datetime` does not provide support for common time formats used in
-solar physics nor leap seconds. To alleviate this, we use `astropy.time.Time` internally
-which allows us to provide a superior user experience.
+Working with times and time ranges is a standard task in solar data analysis and as such sunpy strives to provide convenient and easy methods to do the simple stuff.
+Python already provides an object for a time or date through `datetime.datetime`.
+However, `datetime.datetime` does not provide support for common time formats used in solar physics nor leap seconds.
+To alleviate this, we use `astropy.time.Time` internally which allows us to provide a superior user experience.
 
 .. _parse-time:
 
 1. Parsing Times
 ================
 
-Solar data is associated with a number of different time formats. sunpy provides a simple
-parsing function which can deal with most every format that a user may encounter. Called
-`sunpy.time.parse_time()`, this function can take a variety of inputs.
+Solar data is associated with a number of different time formats.
+sunpy provides a simple parsing function which can deal with most every format that a user may encounter.
+Called `sunpy.time.parse_time()`, this function can take a variety of inputs.
 
 Strings
 -------
 
-The most commonly used are strings and we support a selection of formats
-which are matched using regrex. We currently support the following style of string formats::
+The most commonly used are strings and we support a selection of formats which are matched using regrex.
+We currently support the following style of string formats::
 
     "2007-05-04T21:08:12.999999"
     "2007/05/04T21:08:12.999999"
@@ -109,10 +107,10 @@ For example::
 `astropy.time.Time` API comparison
 ----------------------------------
 
-`sunpy.time.parse_time` is a wrapper around `astropy.time.Time`. The API is
-nearly identical as `~astropy.time.Time` but supports more time input formats.
-You can specify the format, scale, precision, location and other arguments just
-as you would do with `~astropy.time.Time`. An example::
+`sunpy.time.parse_time` is a wrapper around `astropy.time.Time`.
+The API is nearly identical as `~astropy.time.Time` but supports more time input formats.
+You can specify the format, scale, precision, location and other arguments just as you would do with `~astropy.time.Time`.
+An example::
 
     >>> times = ['1999-01-01T00:00:00.123456789', '2010-01-01T00:00:00']
     >>> parse_time(times, format='isot', scale='tai')
@@ -123,10 +121,10 @@ Please be aware that all sunpy functions which require time as an input sanitize
 2. Time Ranges
 ==============
 
-A very standard task in data analysis is to have to deal with pairs of times or time
-ranges. This occurs very often with plotting or when searching for data. To deal with
-time ranges sunpy provides the `sunpy.time.TimeRange` object. A TimeRange object can be created
-very easily by providing it with two time strings, a start time and an end time: ::
+A very standard task in data analysis is to have to deal with pairs of times or time ranges.
+This occurs very often with plotting or when searching for data.
+To deal with time ranges sunpy provides the `sunpy.time.TimeRange` object.
+A TimeRange object can be created very easily by providing it with two time strings, a start time and an end time: ::
 
     >>> from sunpy.time import TimeRange
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
@@ -137,9 +135,7 @@ You can also pass the start and end times as a tuple: ::
 
 This object makes use of parse_time() so it can accept a wide variety of time formats.
 A time range object can also be created by providing a start time and a duration.
-The duration must be provided as a `~astropy.time.TimeDelta` or
-time-equivalent `astropy.units.Quantity` or `datetime.timedelta` object
-example: ::
+The duration must be provided as a `~astropy.time.TimeDelta` or time-equivalent `astropy.units.Quantity` or `datetime.timedelta` object example: ::
 
     >>> import astropy.units as u
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.second)
@@ -155,9 +151,8 @@ or: ::
     >>> from datetime import timedelta
     >>> time_range = TimeRange('2010/03/04 00:10', timedelta(0, 400))
 
-The time range objects provides a number of useful functions. For example, you can easily
-get the time at the center of your interval or the length of your interval in minutes
-or days or seconds: ::
+The time range objects provides a number of useful functions.
+For example, you can easily get the time at the center of your interval or the length of your interval in minutes or days or seconds: ::
 
     >>> time_range.center
     <Time object: scale='utc' format='isot' value=2010-03-04T00:13:20.000>
@@ -168,10 +163,10 @@ or days or seconds: ::
     >>> time_range.seconds
     <Quantity 400. s>
 
-It also makes it easy to create new time ranges. The functions next() and previous()
-do an inplace update to the object by either adding or subtracting the same time interval
-. This could be useful if you need to step through a number of time ranges. For example,
-if you needed time ranges that spanned 30 minutes over a period of 4 hours you could do: ::
+It also makes it easy to create new time ranges.
+The functions next() and previous() do an inplace update to the object by either adding or subtracting the same time interval.
+This could be useful if you need to step through a number of time ranges.
+For example, if you needed time ranges that spanned 30 minutes over a period of 4 hours you could do: ::
 
     >>> for a in range(8):
     ...     print(time_range.next())  # doctest: +IGNORE_OUTPUT
@@ -240,8 +235,7 @@ if you needed time ranges that spanned 30 minutes over a period of 4 hours you c
                400.0 seconds
     <BLANKLINE>
 
-A time range can also be easily split into sub-intervals of equal length, for example to
-split a TimeRange object into two new TimeRange objects: ::
+A time range can also be easily split into sub-intervals of equal length, for example to split a TimeRange object into two new TimeRange objects: ::
 
     time_range.split(2)
 

@@ -375,7 +375,7 @@ The parameters for such a method should be::
 The parameters here are:
 
 * ``query_results`` which is an instance of `~.QueryResponseTable` or `~sunpy.net.base_client.QueryResponseRow`, these are the results the user wants to download.
-* ``path=`` This is the path that the user wants the file to be downloaded to, this can be a template string (i.e. expects to have ``.format()`` called on it).
+* ``path=`` This is the path that the user wants the file to be downloaded to, this can be a template string (i.e., expects to have ``.format()`` called on it).
 * ``downloader=`` This is a `parfive.Downloader` object which should be mutated by the ``fetch()`` method.
 * ``**kwargs`` It is very important that ``fetch()`` methods accept extra keyword arguments that they don't use, as the user might be passing them to other clients via ``Fido``.
 

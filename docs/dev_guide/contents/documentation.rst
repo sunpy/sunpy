@@ -134,7 +134,7 @@ You can open the "index.html" file to browse the final product.
 The gallery examples are located under "docs/_build/html/generated/gallery".
 Sphinx builds documentation iteratively, only adding things that have changed.
 
-If you want to build the documentation without executing the gallery examples, i.e. to reduce build times while working on other sections of the documentation you can run::
+If you want to build the documentation without executing the gallery examples, i.e., to reduce build times while working on other sections of the documentation you can run::
 
     tox -e build_docs
 
@@ -216,8 +216,7 @@ To avoid, use double-underscores instead of single ones after the URL.
 
 **ERROR: Malformed table. Column span alignment problem at line offset n**
 
-Make sure there is a space before and after each colon in your class and
-function docs (e.g. attribute : type, instead of attribute: type).
+Make sure there is a space before and after each colon in your class and function docs (e.g. attribute : type, instead of attribute: type).
 Also, for some sections (e.g. Attributes) numpydoc seems to complain when a description spans more than one line, particularly if it is the first attribute listed.
 
 **WARNING: Block quote ends without a blank line; unexpected unindent.**

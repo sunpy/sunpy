@@ -90,7 +90,7 @@ If you are unsure where to start we suggest the `Good First Issue label`_.
 These are issues that have been deemed a good way to be eased into sunpy and are achievable with little understanding of the sunpy codebase.
 Please be aware that this does not mean the issue is "easy", just that you do not need to be aware of the underlying structure of sunpy.
 
-We also tag issues for specific events such as  `Hacktoberfest`_ under the `Hacktoberfest label`_.
+We also tag issues for specific events such as `Hacktoberfest`_ under the `Hacktoberfest label`_.
 The scope of the issues should be appropriate for that specific event.
 We do particpate in several other events but right now we do not have dedicated labels.
 So please use the above labels for starting issues!
@@ -153,7 +153,8 @@ This will make submitting changes easier in the long term for you:
 
 .. warning::
 
-    Do not clone the sunpy repository into ``$HOME/sunpy``. Depending on the operating system this location is used to store downloaded data files.
+    Do not clone the sunpy repository into ``$HOME/sunpy``.
+    Depending on the operating system this location is used to store downloaded data files.
     This will cause conflicts later on, so the last argument (``sunpy-git``) on the ``git clone`` line will become the local folder name of the cloned repository.
     Otherwise you are free to clone to any other location.
 

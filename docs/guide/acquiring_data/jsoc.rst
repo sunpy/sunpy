@@ -661,7 +661,7 @@ Only then, can we download them. The download request can be staged like this::
 
 The function `~sunpy.net.jsoc.JSOCClient.request_data` stages the request.
 It returns a `drms.client.ExportRequest` object, which has many attributes.
-The most important ones are ``id`` and ``status``. Only when the status is 0, we can move to the third step, i.e. downloading the data.
+The most important ones are ``id`` and ``status``. Only when the status is 0, we can move to the third step, i.e., downloading the data.
 
 If you are making more than 1 query at a time, it will return a list of `~drms.client.ExportRequest` objects.
 Hence, access the list elements accordingly. You can get the id and status of the request (if it is not a list) by::

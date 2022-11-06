@@ -107,14 +107,9 @@ plot()
 For more advanced plotting the base sunpy objects also provide a `~sunpy.map.mapbase.GenericMap.plot` command.
 This command is similar to the pyplot `~matplotlib.pyplot.imshow` command in that it will create a figure and axes object for you if you haven't already.
 
-When you create a plot with `~sunpy.map.GenericMap.peek` or
-`~sunpy.map.GenericMap.plot`, sunpy will use `astropy.visualization.wcsaxes` to
-represent coordinates on the image accurately, for more information see
-:ref:`wcsaxes-plotting`.
+When you create a plot with `~sunpy.map.GenericMap.peek` or `~sunpy.map.GenericMap.plot`, sunpy will use `astropy.visualization.wcsaxes` to represent coordinates on the image accurately, for more information see :ref:`wcsaxes-plotting`.
 
-Using `~sunpy.map.GenericMap.plot` it is possible to customise the look of the
-plot by combining sunpy and matplotlib commands, for example you can over plot
-contours on the Map:
+Using `~sunpy.map.GenericMap.plot` it is possible to customise the look of the plot by combining sunpy and matplotlib commands, for example you can over plot contours on the Map:
 
 .. plot::
     :include-source:
@@ -136,9 +131,7 @@ contours on the Map:
     plt.show()
 
 
-In this example, the `~matplotlib.figure.Figure` and
-`~astropy.visualization.wcsaxes.WCSAxes` instances are created explicitly, and
-then used to modify the plot:
+In this example, the `~matplotlib.figure.Figure` and `~astropy.visualization.wcsaxes.WCSAxes` instances are created explicitly, and then used to modify the plot:
 
 .. plot::
     :include-source:
@@ -182,22 +175,15 @@ Please see this example :ref:`sphx_glr_generated_gallery_map_plot_frameless_imag
 Maps with coordinate systems
 ----------------------------
 
-By default :ref:`map` uses the `astropy.visualization.wcsaxes` module to improve
-the representation of world coordinates, and calling
-`~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.peek()` will use wcsaxes
-for plotting. Unless a standard `matplotlib.axes.Axes` object is explicitly
-created.
+By default :ref:`map` uses the `astropy.visualization.wcsaxes` module to improve the representation of world coordinates, and calling `~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.peek()` will use wcsaxes for plotting.
+Unless a standard `matplotlib.axes.Axes` object is explicitly created.
 
-To explicitly create a `~astropy.visualization.wcsaxes.WCSAxes` instance do the
-following ::
+To explicitly create a `~astropy.visualization.wcsaxes.WCSAxes` instance do the following ::
 
     >>> fig = plt.figure()   # doctest: +SKIP
     >>> ax = plt.subplot(projection=smap)   # doctest: +SKIP
 
-when plotting on an `~astropy.visualization.wcsaxes.WCSAxes` axes, it will by
-default plot in pixel coordinates, you can override this behavior and plot in
-'world' coordinates by getting the transformation from the axes with
-``ax.get_transform('world')``.
+when plotting on an `~astropy.visualization.wcsaxes.WCSAxes` axes, it will by default plot in pixel coordinates, you can override this behavior and plot in 'world' coordinates by getting the transformation from the axes with ``ax.get_transform('world')``.
 
 .. note::
 
@@ -209,8 +195,7 @@ default plot in pixel coordinates, you can override this behavior and plot in
     >>> ax.plot((100*u.arcsec).to_value(u.deg), (500*u.arcsec).to_value(u.deg),
     ...         transform=ax.get_transform('world'))   # doctest: +SKIP
 
-Finally, here is a more complex example using sunpy maps, wcsaxes and Astropy
-units to plot a AIA image and a zoomed in view of an active region.
+Finally, here is a more complex example using sunpy maps, wcsaxes and Astropy units to plot a AIA image and a zoomed in view of an active region.
 
 .. plot::
     :include-source:

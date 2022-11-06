@@ -279,7 +279,7 @@ So in this case the first result would be ``results[0, 0]`` rather than ``result
 
 As we have seen above the `~sunpy.net.fido_factory.UnifiedResponse` object contains many response tables which make up the search results.
 Each of the responses are `~sunpy.net.base_client.QueryResponseTable` objects, which are `astropy.table` objects meaning that you can interact with them and filter them like any other tabular data.
-This can be used to interact with results which are metadata only, i.e. searches from the HEK, or it can be used to reduce the number of files downloaded by `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
+This can be used to interact with results which are metadata only, i.e., searches from the HEK, or it can be used to reduce the number of files downloaded by `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 
 For example if we did a query for some AIA and HMI data::
 
@@ -511,7 +511,7 @@ You can see the list of options that can be specified in path for all the files 
 
 Retrying Downloads
 ^^^^^^^^^^^^^^^^^^
-If any files failed to download, the progress bar will show an incomplete number of files (i.e. 100/150) and the `parfive.Results` object will contain a list of the URLs that failed to transfer and the error associated with them.
+If any files failed to download, the progress bar will show an incomplete number of files (i.e., 100/150) and the `parfive.Results` object will contain a list of the URLs that failed to transfer and the error associated with them.
 This can be accessed with the ``.errors`` attribute or by printing the `~parfive.Results` object::
 
     >>> print(downloaded_files.errors)  # doctest: +SKIP

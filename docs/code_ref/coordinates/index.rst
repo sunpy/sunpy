@@ -9,8 +9,7 @@ This sub-package contains:
 * Functions to obtain the locations of solar-system bodies (`sunpy.coordinates.ephemeris`)
 * Functions to calculate Sun-specific coordinate information (`sunpy.coordinates.sun`)
 
-The SunPy coordinate framework extends the
-:ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
+The SunPy coordinate framework extends the :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
 
 .. _sunpy-coordinate-systems:
 
@@ -102,9 +101,7 @@ The easiest interface to work with coordinates is through the `~astropy.coordina
       (70., -30.)>
 
 
-It is also possible to use strings to specify the frame but in that case make sure to
-explicitly import `sunpy.coordinates` as it registers SunPy's coordinate frames with
-the Astropy coordinates framework::
+It is also possible to use strings to specify the frame but in that case make sure to explicitly import `sunpy.coordinates` as it registers SunPy's coordinate frames with the Astropy coordinates framework::
 
   >>> import astropy.units as u
   >>> from astropy.coordinates import SkyCoord
@@ -116,13 +113,9 @@ the Astropy coordinates framework::
       (-100., 500.)>
 
 
-`~astropy.coordinates.SkyCoord` and all coordinate frames
-support array coordinates. These work the same as single-value coordinates,
-but they store multiple coordinates in a single object. When you're going to
-apply the same operation to many different coordinates, this is a better choice
-than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
-*much* faster than applying the operation to each
-`~astropy.coordinates.SkyCoord` in a ``for`` loop::
+`~astropy.coordinates.SkyCoord` and all coordinate frames support array coordinates.
+These work the same as single-value coordinates, but they store multiple coordinates in a single object.
+When you're going to apply the same operation to many different coordinates, this is a better choice than a list of `~astropy.coordinates.SkyCoord` objects, because it will be *much* faster than applying the operation to each `~astropy.coordinates.SkyCoord` in a ``for`` loop::
 
    >>> c = SkyCoord([-500, 400]*u.arcsec, [100, 200]*u.arcsec, frame=frames.Helioprojective)
    >>> c
@@ -136,9 +129,7 @@ than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
 Accessing Coordinates
 ---------------------
 
-Individual coordinates can be accessed via attributes on the SkyCoord object,
-but the names of the components of the coordinates can depend on the the frame and the chosen
-representation (e.g., Cartesian versus spherical).
+Individual coordinates can be accessed via attributes on the SkyCoord object, but the names of the components of the coordinates can depend on the the frame and the chosen representation (e.g., Cartesian versus spherical).
 
 `~sunpy.coordinates.Helioprojective`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -178,9 +169,8 @@ Both of the heliographic frames have the components of latitude, longitude and r
    >>> c.radius
    <Distance 1. AU>
 
-Heliographic Stonyhurst, when used with Cartesian components, is known as Heliocentric
-Earth Equatorial (HEEQ).  Here's an example of how to use
-`~sunpy.coordinates.frames.HeliographicStonyhurst` for HEEQ coordinates::
+Heliographic Stonyhurst, when used with Cartesian components, is known as Heliocentric Earth Equatorial (HEEQ).
+Here's an example of how to use `~sunpy.coordinates.frames.HeliographicStonyhurst` for HEEQ coordinates::
 
   >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km,
   ...              representation_type='cartesian', frame=frames.HeliographicStonyhurst)
@@ -194,13 +184,9 @@ Earth Equatorial (HEEQ).  Here's an example of how to use
 Transforming Between Coordinate Frames
 ======================================
 
-Both `~astropy.coordinates.SkyCoord` and
-`~astropy.coordinates.BaseCoordinateFrame` instances have a
-`~astropy.coordinates.SkyCoord.transform_to` method. This can be used to
-transform the frame to any other frame, either implemented in SunPy or in
-Astropy (see also :ref:`astropy-coordinates-transforming`).
-An example of transforming the center of the solar disk to Carrington
-coordinates is::
+Both `~astropy.coordinates.SkyCoord` and `~astropy.coordinates.BaseCoordinateFrame` instances have a `~astropy.coordinates.SkyCoord.transform_to` method.
+This can be used to transform the frame to any other frame, either implemented in SunPy or in Astropy (see also :ref:`astropy-coordinates-transforming`).
+An example of transforming the center of the solar disk to Carrington coordinates is::
 
    >>> c = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26",
    ...              observer="earth")
@@ -226,29 +212,17 @@ It is also possible to transform to any coordinate system implemented in Astropy
 Observer Location Information
 =============================
 
-The `~sunpy.coordinates.frames.Helioprojective`, `~sunpy.coordinates.frames.Heliocentric`
-and `~sunpy.coordinates.frames.HeliographicCarrington` frames are defined by the location of
-the observer. For example in `~sunpy.coordinates.frames.Helioprojective` the
-observer is at the origin of the coordinate system. This information is encoded
-in such observer-based frames as the ``observer`` attribute, which is itself an instance of the
-`~sunpy.coordinates.frames.HeliographicStonyhurst` frame.
-The ``observer`` can be a string for a solar-system body (e.g., "earth" or
-"mars"), and
-`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst` will be used
-with the specified ``obstime`` to fully specify the observer location.  If
-the observer location is not fully specified, or not present at all, most
-transformations cannot be performed.
-The location of the observer is automatically populated from meta data when
-coordinate frames are created using map.
+The `~sunpy.coordinates.frames.Helioprojective`, `~sunpy.coordinates.frames.Heliocentric` and `~sunpy.coordinates.frames.HeliographicCarrington` frames are defined by the location of the observer.
+For example in `~sunpy.coordinates.frames.Helioprojective` the observer is at the origin of the coordinate system.
+This information is encoded in such observer-based frames as the ``observer`` attribute, which is itself an instance of the `~sunpy.coordinates.frames.HeliographicStonyhurst` frame.
+The ``observer`` can be a string for a solar-system body (e.g., "earth" or "mars"), and `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst` will be used with the specified ``obstime`` to fully specify the observer location.
+If the observer location is not fully specified, or not present at all, most transformations cannot be performed.
+The location of the observer is automatically populated from meta data when coordinate frames are created using map.
 
 In the case of `~sunpy.coordinates.frames.HeliographicCarrington`, one can specify ``observer='self'`` to indicate that the coordinate itself should be used as the observer for defining the coordinate frame.
 
-It is possible to convert from a `~sunpy.coordinates.frames.Helioprojective`
-frame with one observer location to another
-`~sunpy.coordinates.frames.Helioprojective` frame with a different observer
-location, by converting through `~sunpy.coordinates.frames.HeliographicStonyhurst`, this
-does involve making an assumption of the radius of the Sun to calculate the
-position on the solar sphere. The conversion can be performed as follows::
+It is possible to convert from a `~sunpy.coordinates.frames.Helioprojective` frame with one observer location to another `~sunpy.coordinates.frames.Helioprojective` frame with a different observer location, by converting through `~sunpy.coordinates.frames.HeliographicStonyhurst`, this does involve making an assumption of the radius of the Sun to calculate the position on the solar sphere.
+The conversion can be performed as follows::
 
   # Input coordinate
   >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, observer="earth", obstime="2017-07-26", frame=frames.Helioprojective)
@@ -269,49 +243,32 @@ An example with two maps, named ``aia`` and ``stereo``::
 Design of the Coordinates Sub-Package
 =====================================
 
-This sub-package works by defining a collection of ``Frames``
-(`sunpy.coordinates.frames`), which exists on a transformation graph, where the
-transformations between the coordinate frames are then defined and registered
-with the transformation graph (`sunpy.coordinates.transformations`). It is also
-possible to transform SunPy frames to Astropy frames.
+This sub-package works by defining a collection of ``Frames`` (`sunpy.coordinates.frames`), which exists on a transformation graph, where the transformations between the coordinate frames are then defined and registered with the transformation graph (`sunpy.coordinates.transformations`).
+It is also possible to transform SunPy frames to Astropy frames.
 
-Positions within these ``Frames`` are stored as a ``Representation`` of a
-coordinate, a representation being a description of a point in a Cartesian,
-spherical or cylindrical system (see :ref:`astropy-coordinates-representations`). A frame
-that contains a representation of one or many points is said to have been
-'realized'.
+Positions within these ``Frames`` are stored as a ``Representation`` of a coordinate, a representation being a description of a point in a Cartesian, spherical or cylindrical system (see :ref:`astropy-coordinates-representations`).
+A frame that contains a representation of one or many points is said to have been 'realized'.
 
-For a more in depth look at the design and concepts of the Astropy coordinates
-system see :ref:`astropy-coordinates-overview`
+For a more in depth look at the design and concepts of the Astropy coordinates system see :ref:`astropy-coordinates-overview`
 
 
 
 Frames and SkyCoord
 -------------------
 
-The `~astropy.coordinates.SkyCoord` class is a high level wrapper around the
-`astropy.coordinates` sub-package. It provides an easier way to create and transform
-coordinates, by using string representations for frames rather than the classes
-themselves and some other usability improvements, for more information see the
-`~astropy.coordinates.SkyCoord` documentation.
+The `~astropy.coordinates.SkyCoord` class is a high level wrapper around the `astropy.coordinates` sub-package.
+It provides an easier way to create and transform coordinates, by using string representations for frames rather than the classes themselves and some other usability improvements, for more information see the `~astropy.coordinates.SkyCoord` documentation.
 
-The main advantage provided by `~astropy.coordinates.SkyCoord` is the support it
-provides for caching Frame attributes. Frame attributes are extra data specified
-with a frame, some examples in `sunpy.coordinates` are ``obstime`` or
-``observer`` for observer location. Only the frames where this data is
-meaningful have these attributes, i.e. only the Helioprojective frames have
-``observer``. However, when you transform into another frame and then back to a
-projective frame using `~astropy.coordinates.SkyCoord` it will remember the attributes previously
-provided, and repopulate the final frame with them. If you were to do
-transformations using the Frames alone this would not happen.
+The main advantage provided by `~astropy.coordinates.SkyCoord` is the support it provides for caching Frame attributes.
+Frame attributes are extra data specified with a frame, some examples in `sunpy.coordinates` are ``obstime`` or ``observer`` for observer location.
+Only the frames where this data is meaningful have these attributes, i.e., only the Helioprojective frames have ``observer``.
+However, when you transform into another frame and then back to a projective frame using `~astropy.coordinates.SkyCoord` it will remember the attributes previously provided, and repopulate the final frame with them.
+If you were to do transformations using the Frames alone this would not happen.
 
-The most important implication for this in `sunpy.coordinates` is the ``rsun``
-parameter in the projective frames. If you create a projective frame with a
-``rsun`` attribute, if you convert back to a projective frame it will be set
-correctly. It should also be noted that, if you create a Heliographic frame and
-then transform to a projective frame with an ``rsun`` attribute, it will not
-match the ``radius`` coordinate in the Heliographic frame. This is because you may
-mean to be describing a point above the defined 'surface' of the Sun.
+The most important implication for this in `sunpy.coordinates` is the ``rsun`` parameter in the projective frames.
+If you create a projective frame with a ``rsun`` attribute, if you convert back to a projective frame it will be set correctly.
+It should also be noted that, if you create a Heliographic frame and then transform to a projective frame with an ``rsun`` attribute, it will not match the ``radius`` coordinate in the Heliographic frame.
+This is because you may mean to be describing a point above the defined 'surface' of the Sun.
 
 More Detailed Information
 =========================

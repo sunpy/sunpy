@@ -35,7 +35,8 @@ Contribution Guidelines
 
 * When creating a plot, particularly of a map, the example should follow these rules of thumb to minimize verbosity and maintain consistency with the other gallery examples:
 
-  * Do not use `~sunpy.map.GenericMap.peek` in examples. Instead, use `~sunpy.map.GenericMap.plot`.
+  * Do not use `~sunpy.map.GenericMap.peek` in examples.
+    Instead, use `~sunpy.map.GenericMap.plot`.
 
   * Always create a figure instance using ``plt.figure()`` prior to creating a plot.
 
@@ -43,6 +44,7 @@ Contribution Guidelines
 
   * If an axes instance is created, it should be explicitly passed as a keyword argument wherever possible (e.g. in `~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.draw_grid`).
 
-  * After each figure is created, call ``plt.show()``. While not explicitly needed for the gallery to render, this ensures that, when run as a script, the gallery will display each figure sequentially.
+  * After each figure is created, call ``plt.show()``.
+    While not explicitly needed for the gallery to render, this ensures that, when run as a script, the gallery will display each figure sequentially.
 
   * If you need to use ``astropy.visualization.{quantity_support, time_support}``, import these functions at the top of the example, and call them directly before the first plot that needs them.

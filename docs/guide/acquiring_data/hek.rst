@@ -2,8 +2,7 @@
 Searching the Heliophysics Event Knowledgebase
 **********************************************
 
-The Heliophysics Event Knowledgebase (HEK) is a repository of feature
-and event information about the Sun.
+The Heliophysics Event Knowledgebase (HEK) is a repository of feature and event information about the Sun.
 Entries are generated both by automated algorithms and human observers.
 sunpy accesses this information through the `~sunpy.net.hek` module, which was developed through support from the European Space Agency Summer of Code in Space (ESA-SOCIS) 2011.
 
@@ -122,7 +121,7 @@ You'll see that one of the attributes is a flare object::
     FL = <sunpy.net.hek.attrs.FL object>
 
 We can replace a.hek.EventType('FL') with a.hek.FL - they do the same thing, setting the query to look for flare events.
-Both methods of setting the event type are provided as a convenience
+Both methods of setting the event type are provided as a convenience.
 
 Let's look further at the FRM attribute::
 

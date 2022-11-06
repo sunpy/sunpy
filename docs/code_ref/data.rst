@@ -1,8 +1,7 @@
 Data (`sunpy.data`)
 *******************
 
-``sunpy.data`` contains ways to access sample data and small test files for
-running the sunpy test suite.
+``sunpy.data`` contains ways to access sample data and small test files for running the sunpy test suite.
 
 .. automodapi:: sunpy.data
    :include-all-objects:

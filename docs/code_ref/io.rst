@@ -26,21 +26,16 @@ Special File Readers
 asdf (Advanced Scientific Data Format)
 --------------------------------------
 
-`ASDF <https://asdf-standard.readthedocs.io/en/latest/>`__ is a modern file format
-designed to meet the needs of the astronomy community. It has deep integration
-with Python, SunPy, and Astropy, as well as implementations in other languages.
-It can be used to store known Python objects in a portable, well defined file
-format. It is primarily useful for storing complex Astropy and SunPy objects in
-a way that can be loaded back into the same form as they were saved.
-It is designed to be an archive file format, with human readable metadata and a
-simple on-disk layout.
+`ASDF <https://asdf-standard.readthedocs.io/en/latest/>`__ is a modern file format designed to meet the needs of the astronomy community.
+It has deep integration with Python, SunPy, and Astropy, as well as implementations in other languages.
+It can be used to store known Python objects in a portable, well defined file format.
+It is primarily useful for storing complex Astropy and SunPy objects in a way that can be loaded back into the same form as they were saved.
+It is designed to be an archive file format, with human readable metadata and a simple on-disk layout.
 
-sunpy currently implements support for saving `Map <sunpy.map.GenericMap>` and
-`coordinate frame <sunpy.coordinates.frames>` objects into asdf files. As asdf
-tightly integrates into Python, saving a map to an asdf file will save the
-metadata, data and mask. In comparison, the mask is not currently saved
-to FITS. The following code shows to to save and load a sunpy Map to an asdf
-file
+sunpy currently implements support for saving `Map <sunpy.map.GenericMap>` and `coordinate frame <sunpy.coordinates.frames>` objects into asdf files.
+As asdf tightly integrates into Python, saving a map to an asdf file will save the metadata, data and mask.
+In comparison, the mask is not currently saved to FITS.
+The following code shows to to save and load a sunpy Map to an asdf file
 
 .. doctest-requires:: asdf
 
@@ -94,9 +89,7 @@ It also follows the philosophy of the way maps are saved and loaded in the FITS 
 CDF (common data format)
 ------------------------
 
-CDF files are commonly used to store timeseries data observed by instruments
-taking in-situ measurements of plasmas throughout the heliosphere.
-sunpy provides support for reading in CDF files that conform to the
-`Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`_.
+CDF files are commonly used to store timeseries data observed by instruments taking in-situ measurements of plasmas throughout the heliosphere.
+sunpy provides support for reading in CDF files that conform to the `Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`_.
 
 .. automodapi:: sunpy.io.cdf

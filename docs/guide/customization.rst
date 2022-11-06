@@ -9,10 +9,9 @@ Customizing sunpy
 The :file:`sunpyrc` file
 ========================
 
-The sunpy core package uses a :file:`sunpyrc` configuration file to customize
-certain properties. You can control a number of key features of sunpy such as
-where your data will download to. sunpy looks for the ``sunpyrc`` file
-in a platform specific directory, which you can see the path for by running::
+The sunpy core package uses a :file:`sunpyrc` configuration file to customize certain properties.
+You can control a number of key features of sunpy such as where your data will download to.
+sunpy looks for the ``sunpyrc`` file in a platform specific directory, which you can see the path for by running::
 
   >>> import sunpy
   >>> sunpy.print_config()  # doctest: +SKIP
@@ -78,10 +77,9 @@ See below for the example config file.
 Dynamic settings
 ===================
 
-You can also dynamically change the default settings in a python script or
-interactively from the python shell. All of the settings are stored in a
-Python ConfigParser instance called ``sunpy.config``, which is global to
-the sunpy package. Settings can be modified directly, for example::
+You can also dynamically change the default settings in a python script or interactively from the python shell.
+All of the settings are stored in a Python ConfigParser instance called ``sunpy.config``, which is global to the sunpy package.
+Settings can be modified directly, for example::
 
     import sunpy
     sunpy.config.set('downloads', 'download_dir', '/home/user/Downloads')

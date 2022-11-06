@@ -3,20 +3,14 @@
 Coordinates and WCS
 *******************
 
-The `sunpy.coordinates` sub-package provides a mapping between FITS-WCS CTYPE
-convention and the coordinate frames as defined in `sunpy.coordinates`. This is
-used via the `astropy.wcs.utils.wcs_to_celestial_frame` function, with which the
-SunPy frames are registered upon being imported. This list is used by packages
-such as ``wcsaxes`` to convert from `astropy.wcs.WCS` objects to coordinate
-frames.
+The `sunpy.coordinates` sub-package provides a mapping between FITS-WCS CTYPE convention and the coordinate frames as defined in `sunpy.coordinates`.
+This is used via the `astropy.wcs.utils.wcs_to_celestial_frame` function, with which the SunPy frames are registered upon being imported.
+This list is used by packages such as ``wcsaxes`` to convert from `astropy.wcs.WCS` objects to coordinate frames.
 
-The `sunpy.map.GenericMap` class creates `astropy.wcs.WCS` objects as
-``amap.wcs``, however, it adds some extra attributes to the `~astropy.wcs.WCS`
-object to be able to fully specify the coordinate frame. It adds
-``heliographic_observer`` and ``rsun``.
+The `sunpy.map.GenericMap` class creates `astropy.wcs.WCS` objects as ``amap.wcs``, however, it adds some extra attributes to the `~astropy.wcs.WCS` object to be able to fully specify the coordinate frame.
+It adds ``heliographic_observer`` and ``rsun``.
 
-If you want to obtain a un-realized coordinate frame corresponding to a
-`~sunpy.map.GenericMap` object you can do the following::
+If you want to obtain a un-realized coordinate frame corresponding to a `~sunpy.map.GenericMap` object you can do the following::
 
   >>> import sunpy.map
   >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
