@@ -1,5 +1,5 @@
 """
-This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
+This module provides NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 """
 from pathlib import Path
 from collections import OrderedDict

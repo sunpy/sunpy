@@ -1,5 +1,5 @@
 """
-This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
+This module provides GOES XRS `~sunpy.timeseries.TimeSeries` source.
 """
 from pathlib import Path
 from collections import OrderedDict

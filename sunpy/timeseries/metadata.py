@@ -1,5 +1,5 @@
 """
-This module provies metadata support for `~sunpy.timeseries.TimeSeries`.
+This module provides metadata support for `~sunpy.timeseries.TimeSeries`.
 """
 import copy
 import itertools

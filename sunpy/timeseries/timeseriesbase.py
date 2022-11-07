@@ -1,5 +1,5 @@
 """
-This module provies `sunpy.timeseries.GenericTimeSeries` which all other
+This module provides `sunpy.timeseries.GenericTimeSeries` which all other
 `sunpy.timeseries.TimeSeries` classes inherit from.
 """
 import copy
