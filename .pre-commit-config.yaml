@@ -73,6 +73,6 @@ repos:
     rev: v2.2.2
     hooks:
       - id: codespell
-
+        args: ['--config setup.cfg']
 ci:
   autofix_prs: false
