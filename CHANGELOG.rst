@@ -1535,7 +1535,7 @@ Backwards Incompatible Changes
   https://docs.scipy.org/doc/numpy/user/numpy-for-matlab-users.html for more information. (`#2719 <https://github.com/sunpy/sunpy/pull/2719>`__)
 - The ``sunpy.cm.show_colormaps`` function now accepts the keyword 'search' instead of 'filter'. (`#2731 <https://github.com/sunpy/sunpy/pull/2731>`__)
 - The keyword arguments to all client ``.fetch`` methods have been changed to
-  support the new parfive downloader and to ensure consisteny across all Fido
+  support the new parfive downloader and to ensure consistency across all Fido
   clients. (`#2797 <https://github.com/sunpy/sunpy/pull/2797>`__)
 - The Helioviewer client has been switched to using the newer Helioviewer API.
   This has meant that we have changed some of the keywords that were passed into client's methods.
@@ -2465,7 +2465,7 @@ detection \* Automatic fits file detection improved \* extract\_waveunit
 added to io.fits for detection of common ways of storing wavelength unit
 in fits files.
 
--  A major re-work of all interal imports has resulted in a much cleaner
+-  A major re-work of all internal imports has resulted in a much cleaner
    namespace, i.e. sunpy.util.util is no longer used to import util.
 -  Some SOHO and STEREO files were not reading properly due to a
    date\_obs parameter.

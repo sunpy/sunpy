@@ -199,7 +199,7 @@ Performance improvements
 ========================
 Several functions in `sunpy.map` have been significantly sped up with improved algorithms.
 
-In addition, `sunpy.map.GenericMap.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications which make mutiple requests for the map WCS (e.g. plotting), and reducing the number of repeated warnings thrown when metadata is missing.
+In addition, `sunpy.map.GenericMap.wcs` is now cached when the map metadata remains unchanged, significantly improving performance in applications which make multiple requests for the map WCS (e.g. plotting), and reducing the number of repeated warnings thrown when metadata is missing.
 
 .. _whatsnew-2.1-python:
 
