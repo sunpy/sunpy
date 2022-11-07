@@ -398,7 +398,7 @@ class TimeSeriesMetaData:
 
         # Now update each matching entries
         for i in indices:
-            # Seperate keys for new and current pairs
+            # Separate keys for new and current pairs
             old_keys = set(dictionary.keys())
             old_keys.intersection_update(set(self.metadata[i][2].keys()))
             new_keys = set(dictionary.keys())

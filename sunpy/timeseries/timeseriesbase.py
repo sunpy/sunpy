@@ -351,7 +351,7 @@ class GenericTimeSeries:
                 )
                 plt.title(self.columns[i] + " [click for other channels]")
                 plt.xlabel(self.units[self.columns[i]])
-                plt.ylabel("# of occurences")
+                plt.ylabel("# of occurrences")
                 hlist.append(_figure_to_base64(fig))
                 plt.close(fig)
 
@@ -857,7 +857,7 @@ class GenericTimeSeries:
         # Truncate the metadata
         self.meta._truncate(self.time_range)
 
-        # Remove non-existant columns
+        # Remove non-existent columns
         redundant_cols = list(set(self.meta.columns) - set(self.columns))
         self.meta._remove_columns(redundant_cols)
 
