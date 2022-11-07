@@ -390,7 +390,7 @@ class CompositeMap:
         `~matplotlib.axes.Axes.pcolormesh`, and contours are plotted using
         `~matplotlib.axes.Axes.contour`.
         The Matplotlib arguments accepted by the plotting method are passed to it.
-        (For compatability reasons, we enforce a more restrictive set of
+        (For compatibility reasons, we enforce a more restrictive set of
         accepted `~matplotlib.axes.Axes.pcolormesh` arguments.)
         If any Matplotlib arguments are not used by any plotting method,
         a ``TypeError`` will be raised.
