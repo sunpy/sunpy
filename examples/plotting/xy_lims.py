@@ -37,7 +37,7 @@ xlims_world = [500, 1100]*u.arcsec
 ylims_world = [-800, 0]*u.arcsec
 
 ###############################################################################
-# We can then covert these into a SkyCoord which can be passed to :func:`~sunpy.map.GenericMap.world_to_pixel` to
+# We can then convert these into a SkyCoord which can be passed to :func:`~sunpy.map.GenericMap.world_to_pixel` to
 # determine which pixel coordinates these represent on the Map.
 
 world_coords = SkyCoord(Tx=xlims_world, Ty=ylims_world, frame=aia_map.coordinate_frame)
