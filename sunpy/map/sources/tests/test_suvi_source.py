@@ -44,8 +44,8 @@ def test_norm_clip(suvi):
 
 
 # SUVI provides observer coordinate information in an OBSGEO system, so this test
-# needs remote data to access the latest IERS table to do a coordiante transformation from
-# OBSGEO to heliographic Stonyhurst coordiantes.
+# needs remote data to access the latest IERS table to do a coordinate transformation from
+# OBSGEO to heliographic Stonyhurst coordinates.
 @pytest.mark.remote_data
 def test_wcs(suvi):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates

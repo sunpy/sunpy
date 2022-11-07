@@ -53,7 +53,7 @@ class EITMap(GenericMap):
     @property
     def waveunit(self):
         """
-        If WAVEUNIT FITS keyword isn't present, deafults to Angstrom.
+        If WAVEUNIT FITS keyword isn't present, defaults to Angstrom.
         """
         unit = self.meta.get("waveunit", "Angstrom") or "Angstrom"
         return u.Unit(unit)
@@ -91,7 +91,7 @@ class LASCOMap(GenericMap):
     1.1 to 32 solar radii.
 
     The C1 images rom 1.1 to 3 solar radii. The C2 telescope images the corona
-    from 2 to 6 solar radii, overlaping the outer field-of-view of C1 from 2 to
+    from 2 to 6 solar radii, overlapping the outer field-of-view of C1 from 2 to
     3 solar radii. The C3 telescope extends the field-of-view to 32 solar radii.
 
     SOHO was launched on 2 December 2 1995 into a sun-synchronous orbit.
@@ -131,7 +131,7 @@ class LASCOMap(GenericMap):
     @property
     def date(self):
         date = self.meta.get('date-obs', self.meta.get('date_obs'))
-        # Incase someone fixes the header
+        # In case someone fixes the header
         if 'T' in date:
             return parse_time(date)
 
@@ -188,7 +188,7 @@ class MDIMap(GenericMap):
     @property
     def _date_obs(self):
         if 'T' in self.meta['date-obs']:
-            # Helioviewer MDI files have the full date in DATE_OBS, but we stil
+            # Helioviewer MDI files have the full date in DATE_OBS, but we still
             # want to let normal FITS files use DATE-OBS
             return parse_time(self.meta['date-obs'])
         else:
