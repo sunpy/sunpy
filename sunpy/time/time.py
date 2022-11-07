@@ -1,5 +1,5 @@
 """
-This module provies a collection of time handing functions.
+This module provides a collection of time handing functions.
 """
 import re
 import textwrap
