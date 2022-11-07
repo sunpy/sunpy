@@ -32,7 +32,7 @@ class ESPTimeSeries(GenericTimeSeries):
     by 4 photodiodes) provides the soft X-ray measurements from 0.1-7nm.
 
     The ESP level 1 fits files are fully calibrated. The TimeSeries object created from
-    an ESP fits file will conatain 4 columns namely:
+    an ESP fits file will contain 4 columns namely:
 
         * 'QD' - sum of 4 quad diodes, this is the soft X-ray measurements 0.1-7nm
         * 'CH_18' - EUV irradiance 18nm
@@ -189,7 +189,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`__
     * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`__
     * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`__
-    * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`__
+    * `EVE Data Access <http://lasp.colorado.edu/home/eve/data/data-access/>`__
     * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`__
     """
     # Class attribute used to specify the source class of the TimeSeries.
