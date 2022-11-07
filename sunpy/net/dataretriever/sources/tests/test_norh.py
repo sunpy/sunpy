@@ -108,7 +108,7 @@ def test_query(time, wave):
     if qr1:
         # There are no observations everyday
         #  so the results found have to be equal or later than the queried time
-        #  (looking at the date because it may search for miliseconds, but only date is available)
+        #  (looking at the date because it may search for milliseconds, but only date is available)
         assert qr1[0]['Start Time'].strftime('%Y-%m-%d') >= time.start.strftime('%Y-%m-%d')
         #  and the end time equal or smaller.
         # hypothesis can give same start-end, but the query will give you from start to end (so +1)
