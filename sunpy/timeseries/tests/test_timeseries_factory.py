@@ -139,7 +139,7 @@ def test_read_cdf_empty_variable():
     ts = sunpy.timeseries.TimeSeries(filename)
     assert ts.quantity('nH').unit == u.cm**-3
 
-    # Reset again to check that registring units via. astropy works too
+    # Reset again to check that registering units via. astropy works too
     sunpy_cdf._known_units = {}
     u.add_enabled_units([u.def_unit('#/cm^3', represents=u.cm**-3)])
     ts = sunpy.timeseries.TimeSeries(filename)
@@ -157,7 +157,7 @@ def test_read_empty_cdf(caplog):
 
 
 def test_meta_from_fits_header():
-    # Generate the data and the corrisponding dates
+    # Generate the data and the corresponding dates
     base = parse_time(datetime.datetime.today())
     times = base - TimeDelta(np.arange(24*60)*u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
@@ -183,7 +183,7 @@ def test_meta_from_fits_header():
 
 
 def test_generic_construction_basic():
-    # Generate the data and the corrisponding dates
+    # Generate the data and the corresponding dates
     base = parse_time(datetime.datetime.today())
     times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
@@ -207,7 +207,7 @@ def test_generic_construction_basic():
 
 
 def test_generic_construction_basic_omitted_details():
-    # Generate the data and the corrisponding dates
+    # Generate the data and the corresponding dates
     base = parse_time(datetime.datetime.today())
     times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
@@ -233,7 +233,7 @@ def test_generic_construction_basic_omitted_details():
 
 
 def test_generic_construction_basic_different_meta_types():
-    # Generate the data and the corrisponding dates
+    # Generate the data and the corresponding dates
     base = parse_time(datetime.datetime.today())
     times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
@@ -258,7 +258,7 @@ def test_generic_construction_basic_different_meta_types():
 
 
 def test_generic_construction_ts_list():
-    # Generate the data and the corrisponding dates
+    # Generate the data and the corresponding dates
     base = parse_time(datetime.datetime.today())
     times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
@@ -289,7 +289,7 @@ def test_generic_construction_ts_list():
 
 
 def test_generic_construction_concatenation():
-    # Generate the data and the corrisponding dates
+    # Generate the data and the corresponding dates
     base = parse_time(datetime.datetime.today())
     times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
@@ -308,7 +308,7 @@ def test_generic_construction_concatenation():
     ts_2 = sunpy.timeseries.TimeSeries(data2, meta2, units2)
     ts_concat_1 = ts_1.concatenate(ts_2)
 
-    # Concatinate during construction
+    # Concatenate during construction
     ts_concat_2 = sunpy.timeseries.TimeSeries(
         data, meta, units, data2, meta2, units2, concatenate=True)
     assert isinstance(ts_concat_2, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
