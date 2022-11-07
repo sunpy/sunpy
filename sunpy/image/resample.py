@@ -16,7 +16,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
     Currently only supports maintaining the same number of dimensions.
     To use 1-D arrays, first promote them to shape (x,1).
 
-    Uses the same parameters and creates the same co-ordinate lookup points
+    Uses the same parameters and creates the same coordinate lookup points
     as IDL's ``congrid`` routine (which apparently originally came from a
     VAX/VMS routine of the same name.)
 
