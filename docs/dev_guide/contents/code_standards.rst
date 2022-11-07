@@ -74,7 +74,7 @@ The decision is up to the developer, but if these might be useful for other pack
 Formatting
 ==========
 
-We enforce a minimum level of code style with our continuous intergration (the name is ``sunpy.sunpy (python_codestyle [linux]``).
+We enforce a minimum level of code style with our continuous integration (the name is ``sunpy.sunpy (python_codestyle [linux]``).
 This runs a tool called `pre-commit <https://pre-commit.com/>`__.
 
 The settings and tools we use for the pre-commit can be found in the file :file:`.pre-commit-config.yaml` at the root of the sunpy git repository.
