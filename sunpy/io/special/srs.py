@@ -38,7 +38,7 @@ def read_srs(filepath):
 
 def make_table(header, section_lines):
     """
-    From the seperated section lines and the header, clean up the data and
+    From the separated section lines and the header, clean up the data and
     convert to a `~astropy.table.QTable`.
     """
     meta_data = get_meta_data(header)
