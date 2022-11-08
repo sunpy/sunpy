@@ -1,0 +1,1 @@
+Adds two tutorials that demonstrate how to use LASCO data in overlaying maps (:ref:`sphx_glr_generated_gallery_plotting_lasco_overlay.py`) and how to create a custom mask for a LASCO C2 image (:ref:`sphx_glr_generated_gallery_map_lasco_mask.py`).
