@@ -160,7 +160,7 @@ class MapFactory(BasicRegistrationFactory):
         try:
             pairs = read_file(os.fspath(fname), **kwargs)
         except Exception as e:
-            msg = f"Failed to read {fname}."
+            msg = f"Failed to read {fname}"
             raise IOError(msg) from e
 
         new_pairs = []
