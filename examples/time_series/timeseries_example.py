@@ -1,7 +1,7 @@
 """
-===================
-Using `.TimeSeries`
-===================
+================
+Using TimeSeries
+================
 
 This example is intended to demonstrate the current state of `~sunpy.timeseries.TimeSeries`.
 """
