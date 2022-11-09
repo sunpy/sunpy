@@ -37,6 +37,7 @@ def make_fitswcs_header(data,
                         instrument=None,
                         telescope=None,
                         observatory=None,
+                        detector=None,
                         wavelength: u.angstrom = None,
                         exposure: u.s = None,
                         projection_code="TAN",
@@ -77,6 +78,8 @@ def make_fitswcs_header(data,
         Name of the telescope of the observation.
     observatory : `~str`, optional
         Name of the observatory of the observation.
+    detector : `str`, optional
+        Name of the detector of the observation.
     wavelength : `~astropy.units.Quantity`, optional
         Wavelength of the observation as an astropy quanitity, e.g. 171*u.angstrom.
         From this keyword, the meta keywords ``wavelnth`` and ``waveunit`` will be populated.
@@ -128,7 +131,7 @@ def make_fitswcs_header(data,
 
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
-    meta_wcs = _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure, unit)
+    meta_wcs = _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector, wavelength, exposure, unit)
     meta_wcs = _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape)
     meta_wcs = _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix)
 
@@ -275,7 +278,7 @@ def get_observer_meta(observer, rsun: (u.Mm, None) = None):
     return coord_meta
 
 
-def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelength, exposure, unit):
+def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector, wavelength, exposure, unit):
     """
     Function to correctly name keywords from keyword arguments
     """
@@ -285,6 +288,8 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, wavelengt
         meta_wcs['telescop'] = str(telescope)
     if observatory is not None:
         meta_wcs['obsrvtry'] = str(observatory)
+    if detector is not None:
+        meta_wcs['detector'] = str(detector)
     if wavelength is not None:
         meta_wcs['wavelnth'] = wavelength.to_value()
         meta_wcs['waveunit'] = wavelength.unit.to_string("fits")
