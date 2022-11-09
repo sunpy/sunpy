@@ -912,10 +912,12 @@ class GenericMap(NDData):
         """
         Exposure time of the image.
 
-        This is taken from the 'EXPTIME' FITS keyword.
+        This is taken from the 'XPOSURE' keyword or the 'EXPTIME' FITS keyword,
+        in that order.
         """
-        if 'exptime' in self.meta:
-            return self.meta['exptime'] * self.timeunit
+        exptime = self.meta.get('xposure') or self.meta.get('exptime')
+        if exptime:
+            return exptime * self.timeunit
 
     @property
     def instrument(self):

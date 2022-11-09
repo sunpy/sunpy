@@ -210,6 +210,19 @@ def test_timeunit(generic_map):
     assert generic_map.timeunit == u.Unit('h')
 
 
+def test_exposure_time(generic_map):
+    exptime = 2 * u.s
+    generic_map.meta['exptime'] = exptime.to_value('s')
+    assert generic_map.exposure_time == exptime
+    exptime = 3 * u.s
+    # XPOSURE should take priority over EXPTIME
+    generic_map.meta['xposure'] = exptime.to_value('s')
+    assert generic_map.exposure_time == exptime
+    del generic_map.meta['exptime']
+    del generic_map.meta['xposure']
+    assert generic_map.exposure_time is None
+
+
 def test_dsun(generic_map):
     assert_quantity_allclose(generic_map.dsun, sun.earth_distance(generic_map.date))
 
