@@ -360,7 +360,7 @@ def true_declination(t='now', equinox_of_date=True):
         result = np.arcsin(np.sin(lat) * np.cos(obl) + np.cos(lat) * np.sin(obl) * np.sin(lon))
     else:
         # J2000.0 epoch
-        # Calculate Earth's true geometric declination relative to the Sun and multipy by -1.
+        # Calculate Earth's true geometric declination relative to the Sun and multiply by -1.
         # This approach is used because Astropy's GCRS includes aberration.
         earth = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='gcrs', obstime=parse_time(t))
         result = -earth.hcrs.dec

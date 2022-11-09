@@ -173,7 +173,7 @@ def test_read_and_write_MockOpenTextFile():
     assert rd_wr.readable() is True
     assert rd_wr.writable() is True
 
-    # Initailly empty
+    # Initially empty
     assert rd_wr.read() == ''
 
     data = '0123456789'

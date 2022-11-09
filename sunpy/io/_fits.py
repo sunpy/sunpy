@@ -4,7 +4,7 @@ This module provides a FITS file reader.
 .. warning::
 
    ``sunpy.io.fits`` is deprecated, and will be removed in sunpy 4.1. This is
-   because it was designed for interal use only. We instead recommend users
+   because it was designed for internal use only. We instead recommend users
    use the `astropy.io.fits` module, which provides more generic functionality
    to read FITS files.
 

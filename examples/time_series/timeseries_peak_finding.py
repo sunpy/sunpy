@@ -52,7 +52,7 @@ def findpeaks(series, DELTA):
         Lists consisting of pos, val pairs for both local minima points and
         local maxima points.
     """
-    # Set inital values
+    # Set initial values
     mn, mx = np.Inf, -np.Inf
     minpeaks = []
     maxpeaks = []

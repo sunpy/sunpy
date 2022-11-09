@@ -179,7 +179,7 @@ def test_errors(tmpdir):
         # Check a random unsupported type (int) fails
         sunpy.map.Map(78)
 
-    # If one file failed to load, make sure it's raised as an expection.
+    # If one file failed to load, make sure it's raised as an exception.
     p = tmpdir.mkdir("sub").join("hello.fits")
     p.write("content")
     files = [AIA_171_IMAGE, p.strpath]

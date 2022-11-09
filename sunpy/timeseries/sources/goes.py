@@ -1,5 +1,5 @@
 """
-This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
+This module provides GOES XRS `~sunpy.timeseries.TimeSeries` source.
 """
 from pathlib import Path
 from collections import OrderedDict
@@ -122,7 +122,7 @@ class XRSTimeSeries(GenericTimeSeries):
         pattern_1m = ("sci_xrsf-l2-avg1m_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
         pattern_telescop = ("GOES {SatelliteNumber:02d}")
         # The ordering of where we get the metadata from is important.
-        # We alway want to check ID first as that will most likely have the correct information.
+        # We always want to check ID first as that will most likely have the correct information.
         # The other fields are fallback and sometimes have data in them that is "useless".
         id = (
             self.meta.metas[0].get("id", "").strip()

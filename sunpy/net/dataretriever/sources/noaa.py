@@ -51,7 +51,7 @@ class NOAAIndicesClient(GenericClient):
                 rowdict[key] = rowdict[key][0]
         rowdict['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
         rowdict['Instrument'] = 'NOAA-Indices'
-        # These results are not dependant on time, but we allow time as a
+        # These results are not dependent on time, but we allow time as a
         # parameter for easy searching, so remove time from the results table
         # injected by GenericClient.
         rowdict.pop('Start Time', None)
@@ -112,7 +112,7 @@ class NOAAPredictClient(GenericClient):
                 rowdict[key] = rowdict[key][0]
         rowdict['url'] = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'
         rowdict['Instrument'] = 'NOAA-Predict'
-        # These results are not dependant on time, but we allow time as a
+        # These results are not dependent on time, but we allow time as a
         # parameter for easy searching, so remove time from the results table
         # injected by GenericClient.
         rowdict.pop('Start Time', None)

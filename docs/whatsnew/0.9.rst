@@ -36,7 +36,7 @@ By the numbers:
 * 19 new contributors
 
 There have been numerous improvements to large parts of SunPy, notably in the content of SunPy's documentation, and the continuous integration testing of SunPy.
-In addition, SunPy co-ordinate system functionality has been improved, and the transformation between SunPy specific co-ordinate systems and those implemented by Astropy is now tested.
+In addition, SunPy coordinate system functionality has been improved, and the transformation between SunPy specific coordinate systems and those implemented by Astropy is now tested.
 The `sunpy.map.CompositeMap` object has received numerous bugfixes, improving its functionality.
 Bugfixes for various animation functionality have also been implemented.
 

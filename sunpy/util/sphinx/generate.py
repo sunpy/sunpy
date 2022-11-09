@@ -36,7 +36,7 @@ class Generate(Directive):
 
         old_stdout, sys.stdout = sys.stdout, StringIO()
         try:
-            # Exceute the Python code and capture its output
+            # Execute the Python code and capture its output
             exec('\n'.join(self.content))
             text = sys.stdout.getvalue()
 

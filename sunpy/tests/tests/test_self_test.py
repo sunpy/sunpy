@@ -56,6 +56,6 @@ def test_main_figure_only(monkeypatch):
 
 
 def test_warnings():
-    # Ensure that our warning trickery dosen't stop pytest.warns working
+    # Ensure that our warning trickery doesn't stop pytest.warns working
     with pytest.warns(SunpyDeprecationWarning):
         warn_deprecated("Hello")
