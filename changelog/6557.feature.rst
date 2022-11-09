@@ -1,2 +1,2 @@
 `~sunpy.map.GenericMap.exposure_time` now looks for the exposure time in the ``XPOSURE`` key first
-and then the ``EXP_TIME`` key.
+and then the ``EXPTIME`` key.
