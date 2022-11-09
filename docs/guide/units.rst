@@ -8,7 +8,7 @@ sunpy makes use of the `astropy.units` for this task.
 
 Quantity objects
 ================
-All functions in sunpy that accept or return numbers associated with physcial quantities accept and return `~astropy.units.Quantity` objects.
+All functions in sunpy that accept or return numbers associated with physical quantities accept and return `~astropy.units.Quantity` objects.
 These objects represent a number (or an array of numbers) and a unit.
 This means sunpy is always explicit about the units associated with a value.
 Quantities and units are powerful tools for keeping track of variables with a physical meaning and make it straightforward to convert the same physical quantity into different units.

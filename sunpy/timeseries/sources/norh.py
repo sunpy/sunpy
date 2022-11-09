@@ -1,5 +1,5 @@
 """
-This module provies a Nobeyama Radioheliograph `~sunpy.timeseries.TimeSeries`
+This module provides a Nobeyama Radioheliograph `~sunpy.timeseries.TimeSeries`
 source.
 """
 from collections import OrderedDict

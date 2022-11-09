@@ -37,7 +37,7 @@ except ImportError:
             A shape ``(6, )`` array representing ``OBSGEO-[XYZ], OBSGEO-[BLH]`` as
             returned by ``WCS.wcs.obsgeo``.
         obstime : time-like
-            The time assiociated with the coordinate, will be passed to
+            The time associated with the coordinate, will be passed to
             `~.builtin_frames.ITRS` as the obstime keyword.
 
         Returns
@@ -100,11 +100,11 @@ def solar_wcs_frame_mapping(wcs):
 
     dateobs = wcs.wcs.dateobs or None
 
-    # Get observer coordinate from the WCS auxillary information
+    # Get observer coordinate from the WCS auxiliary information
     required_attrs = {HeliographicStonyhurst: ['hgln_obs', 'hglt_obs', 'dsun_obs'],
                       HeliographicCarrington: ['crln_obs', 'hglt_obs', 'dsun_obs']}
 
-    # Get rsun from the WCS auxillary information
+    # Get rsun from the WCS auxiliary information
     rsun = wcs.wcs.aux.rsun_ref
     if rsun is not None:
         rsun *= u.m

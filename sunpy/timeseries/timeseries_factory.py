@@ -1,5 +1,5 @@
 """
-This module provies the `~sunpy.timeseries.TimeSeriesFactory` class.
+This module provides the `~sunpy.timeseries.TimeSeriesFactory` class.
 """
 import os
 import copy

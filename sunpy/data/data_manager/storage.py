@@ -22,7 +22,7 @@ class StorageProviderBase(metaclass=ABCMeta):
     @abstractmethod
     def find_by_key(self, key, value):
         """
-        Returns the file details if value coresponding to the key
+        Returns the file details if value corresponding to the key
         found in storage. Returns `None` if hash not found.
 
         Parameters
@@ -137,7 +137,7 @@ class SqliteStorage(StorageProviderBase):
         Parameters
         ----------
         commit : `bool`
-            Whether to commit after succesful execution of db command.
+            Whether to commit after successful execution of db command.
         """
         conn = sqlite3.connect(str(self._db_path))
         self._create_table(conn)

@@ -77,7 +77,7 @@ def test_wcs(aia171_test_map):
 def test_wcs_cache(aia171_test_map):
     wcs1 = aia171_test_map.wcs
     wcs2 = aia171_test_map.wcs
-    # Check that without any changes to the header, retreiving the wcs twice
+    # Check that without any changes to the header, retrieving the wcs twice
     # returns the same object instead of recomputing the wcs
     assert wcs1 is wcs2
 

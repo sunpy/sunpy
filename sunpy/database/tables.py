@@ -411,7 +411,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
         if self.wavemin is None and other.wavemin is None:
             wavemins_equal = True
         elif not all([self.wavemin, other.wavemin]):
-            # This means one is None and the other isnt
+            # This means one is None and the other isn't
             wavemins_equal = False
         else:
             wavemins_equal = np.allclose([self.wavemin], [other.wavemin], equal_nan=True)
@@ -419,7 +419,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
         if self.wavemax is None and other.wavemax is None:
             wavemaxs_equal = True
         elif not all([self.wavemax, other.wavemax]):
-            # This means one is None and the other isnt
+            # This means one is None and the other isn't
             wavemaxs_equal = False
         else:
             wavemaxs_equal = np.allclose([self.wavemax], [other.wavemax], equal_nan=True)

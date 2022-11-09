@@ -42,7 +42,7 @@ Editable Installation of ``sunpy``
 ==================================
 
 If you plan to modify the code of ``sunpy`` itself, you will want to perform an "editable install" of your local repository, via ``pip``, so that Python will link to your local repository.
-Normally it is discouraged to have an environment that mixes package installations via ``conda`` with package installations via ``pip`` because it can lead to enviroment states that confuse the ``conda`` solver.
+Normally it is discouraged to have an environment that mixes package installations via ``conda`` with package installations via ``pip`` because it can lead to environment states that confuse the ``conda`` solver.
 That is the reason why our instructions for new developers recommends that dependencies be installed exclusively via ``pip``.
 However, some of the dependencies in the complete set are difficult or even impossible to install via ``pip`` alone, yet are straightforward to install via ``conda``.
 

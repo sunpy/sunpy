@@ -69,5 +69,10 @@ repos:
         pass_filenames: false
         always_run: true
 
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.2
+    hooks:
+      - id: codespell
+        args: ['--config setup.cfg']
 ci:
   autofix_prs: false

@@ -365,7 +365,7 @@ def cached_property_based_on(attr_name):
             cache = instance.__dict__
             prop_key = prop.__name__
 
-            # Check if our caching method has changed ouptut
+            # Check if our caching method has changed output
             new_attr_val = getattr(instance, attr_name)
             old_attr_val = cache.get(attr_name, _NOT_FOUND)
             if (old_attr_val is _NOT_FOUND or

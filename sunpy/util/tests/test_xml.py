@@ -293,7 +293,7 @@ def test_with_multiple_children_in_list():
     assert len(actual['Config']['Children']) == 2
 
     # As the child dictionaries are in lists we cannot be certain what order
-    # they are in. Test individualy.
+    # they are in. Test individually.
 
     expected_children = expected['Config']['Children']
     actual_children = actual['Config']['Children']

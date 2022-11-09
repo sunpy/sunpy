@@ -101,7 +101,7 @@ class MapSequence:
             warn_user(f"Rendering the summary for a MapSequence of {nmaps} Maps "
                       "may take a while.")
 
-        # Assemble the individual HTML repr from each Map, all hidden initally
+        # Assemble the individual HTML repr from each Map, all hidden initially
         repr_list = [f"<div style='display: none' index={i}>{m._repr_html_()}</div>"
                      for i, m in enumerate(self.maps)]
 

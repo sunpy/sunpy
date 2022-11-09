@@ -7,7 +7,7 @@ Extending Fido with New Sources of Data
 Sunpy's data search and retrieval tool (``Fido``) is designed to be extensible, so that new sources of data or metadata can be supported, either inside or outside the sunpy core package.
 There are two ways of defining a new client, depending on the complexity of the web service.
 A "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` which provides helper methods for downloading from a list of URLs.
-If the service you want to add has easily accesible HTTP or FTP URLs that have a well defined folder and filename structure, this is probably the best approach.
+If the service you want to add has easily accessible HTTP or FTP URLs that have a well defined folder and filename structure, this is probably the best approach.
 If the service you want to add requires making requests to an API with parameters for the search and getting a list of results in return, then you probably want to write a "full" client.
 
 Before writing a new client, ensure you are familiar with how searches are specified by the `sunpy.net.attr` system, including combining them with logical operations.
@@ -75,7 +75,7 @@ A good example of the use of these two methods is the `sunpy.net.dataretriever.s
 
 It may also be possible that the ``baseurl`` property needs to be customised based on attrs other than Time.
 Since `~sunpy.net.scraper.Scraper` doesn't currently support generating directories that have non-time variables, the :meth:`~sunpy.net.dataretriever.client.GenericClient.search` needs to be customised.
-The search method should in this case, generate a ``baseurl`` dependant on the values of these attrs, and then call ``super().search`` or `~sunpy.net.scraper.Scraper` for each ``baseurl`` generated.
+The search method should in this case, generate a ``baseurl`` dependent on the values of these attrs, and then call ``super().search`` or `~sunpy.net.scraper.Scraper` for each ``baseurl`` generated.
 For an example of a complex modification of the ``search()`` method see the implementation of `.SUVIClient.search`.
 
 Customizing the Downloader
@@ -105,7 +105,7 @@ Suppose any file of a data archive can be described by this URL ``https://some-d
 ``baseurl`` becomes ``r'https://some-domain.com/%Y/%m/%d/satname_(\d){2}_(\d){1}_(\d){12}_(\d){2}\.fits'``.
 
 Note all variables in the filename are converted to regex that will match any possible value for it.
-A character enclosed within ``()`` followed by a number enclosed within ``{}`` is used to match the specified number of occurences of that special sequence.
+A character enclosed within ``()`` followed by a number enclosed within ``{}`` is used to match the specified number of occurrences of that special sequence.
 For example, ``%y%m%d%H%M%S`` is a twelve digit variable (with 2 digits for each item) and thus represented by ``r'(\d){12}'``.
 Note that ``\`` is used to escape the special character ``.``.
 
@@ -169,7 +169,7 @@ it would be passed to the client as
 So you can process each element of the OR in turn without having to consult any other part of the query.
 
 If the query the user provided contains an OR statement you get passed an instance of `~sunpy.net.attr.AttrOr` and each sub-element of that `~sunpy.net.attr.AttrOr` will be `~sunpy.net.attr.AttrAnd` (or a single other attr class).
-If the user query dosen't contain an OR you get a single `~.Attr` instance or an `~.AttrAnd`.
+If the user query doesn't contain an OR you get a single `~.Attr` instance or an `~.AttrAnd`.
 
 For example you could get any of the following queries (using ``&`` for AND and ``|`` for OR):
 
@@ -194,7 +194,7 @@ A class is provided to facilitate this conversion, `~sunpy.net.attr.AttrWalker`.
 The `~sunpy.net.attr.AttrWalker` class consists of three main components:
 
 * **Creators**: The `~sunpy.net.attr.AttrWalker.create` method is one of two generic functions for which a different function is called for each Attr type.
-  The intended use for creators is to return a new object dependant on different attrs.
+  The intended use for creators is to return a new object dependent on different attrs.
   It is commonly used to dispatch on `~sunpy.net.attr.AttrAnd` and `~sunpy.net.attr.AttrOr`.
 
 * **Appliers**: The `~sunpy.net.attr.AttrWalker.apply` method is the same as `~sunpy.net.attr.AttrWalker.create` in that it is a generic function.

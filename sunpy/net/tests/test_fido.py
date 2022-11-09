@@ -243,7 +243,7 @@ def test_path_read_only(tmp_path):
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
 
-    # chmod dosen't seem to work correctly on the windows CI
+    # chmod doesn't seem to work correctly on the windows CI
     os.chmod(tmp_path, S_IREAD | S_IRGRP | S_IROTH)
     # Check to see if it's actually read only before running the test
     if not os.access(tmp_path, os.W_OK):

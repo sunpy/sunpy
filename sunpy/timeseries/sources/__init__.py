@@ -1,5 +1,5 @@
 """
-This module provies a collection of datasource-specific
+This module provides a collection of datasource-specific
 `~sunpy.timeseries.TimeSeries` classes.
 
 Each mission should have its own file with one or more classes defined.
