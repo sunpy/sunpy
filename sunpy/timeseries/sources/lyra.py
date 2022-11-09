@@ -1,5 +1,5 @@
 """
-This module provies Proba-2 `~sunpy.timeseries.TimeSeries` source.
+This module provides Proba-2 `~sunpy.timeseries.TimeSeries` source.
 """
 import sys
 from collections import OrderedDict

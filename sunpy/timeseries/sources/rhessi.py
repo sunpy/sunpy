@@ -1,5 +1,5 @@
 """
-This module provies a RHESSI `~sunpy.timeseries.TimeSeries` source.
+This module provides a RHESSI `~sunpy.timeseries.TimeSeries` source.
 """
 import itertools
 from collections import OrderedDict

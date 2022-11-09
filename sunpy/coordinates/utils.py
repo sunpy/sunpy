@@ -47,16 +47,16 @@ class GreatArc:
     -------
     inner_angles : `~astropy.units.Quantity`
         Angles of the points along the great arc from the start to end
-        co-ordinate.
+        coordinate.
 
     distances : `~astropy.units.Quantity`
         Distances of the points along the great arc from the start to end
-        co-ordinate.  The units are defined as those returned after transforming
-        the co-ordinate system of the start co-ordinate into its Cartesian
+        coordinate.  The units are defined as those returned after transforming
+        the coordinate system of the start coordinate into its Cartesian
         equivalent.
 
     coordinates : `~astropy.coordinates.SkyCoord`
-        Co-ordinates along the great arc in the co-ordinate frame of the
+        Coordinates along the great arc in the coordinate frame of the
         start point.
 
     References
@@ -88,7 +88,7 @@ class GreatArc:
         # Observer
         self.observer = start.observer
 
-        # Co-ordinate frame of the starting point
+        # Coordinate frame of the starting point
         self.start_frame = start.frame
 
         # Observation time
@@ -175,7 +175,7 @@ class GreatArc:
     def inner_angles(self, points=None):
         """
         Calculates the inner angles for the parameterized points along the arc
-        and returns the value in radians, from the start co-ordinate to the
+        and returns the value in radians, from the start coordinate to the
         end.
 
         Parameters
@@ -193,7 +193,7 @@ class GreatArc:
         -------
         inner_angles : `~astropy.units.Quantity`
             Angles of the points along the great arc from the start to
-            end co-ordinate.
+            end coordinate.
 
         """
         these_points = self._points_handler(points)
@@ -201,8 +201,8 @@ class GreatArc:
 
     def distances(self, points=None):
         """
-        Calculates the distance from the start co-ordinate to the end
-        co-ordinate on the sphere for all the parameterized points.
+        Calculates the distance from the start coordinate to the end
+        coordinate on the sphere for all the parameterized points.
 
         Parameters
         ----------
@@ -219,16 +219,16 @@ class GreatArc:
         -------
         distances : `~astropy.units`
             Distances of the points along the great arc from the start to end
-            co-ordinate.  The units are defined as those returned after
-            transforming the co-ordinate system of the start co-ordinate into
+            coordinate.  The units are defined as those returned after
+            transforming the coordinate system of the start coordinate into
             its Cartesian equivalent.
         """
         return self.radius * self.inner_angles(points=points).value
 
     def coordinates(self, points=None):
         """
-        Calculates the co-ordinates on the sphere from the start to the end
-        co-ordinate for all the parameterized points.  Co-ordinates are
+        Calculates the coordinates on the sphere from the start to the end
+        coordinate for all the parameterized points.  Coordinates are
         returned in the frame of the start coordinate.
 
         Parameters
@@ -245,7 +245,7 @@ class GreatArc:
         Returns
         -------
         arc : `~astropy.coordinates.SkyCoord`
-            Co-ordinates along the great arc in the co-ordinate frame of the
+            Coordinates along the great arc in the coordinate frame of the
             start point.
 
         """

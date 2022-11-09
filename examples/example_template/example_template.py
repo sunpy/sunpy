@@ -23,7 +23,7 @@ import numpy as np
 # continues to start with a **comment hash and space** (respecting code style)
 # is text that has to be rendered in
 # html format. Keep in mind to always keep your comments always together by
-# comment hashes. That means to break a paragraph you still need to commend
+# comment hashes. That means to break a paragraph you still need to comment
 # that line break.
 #
 # In this example the next block of code produces some plotable data. Code is

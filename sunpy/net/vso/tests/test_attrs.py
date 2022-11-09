@@ -133,7 +133,7 @@ def test_wave_toangstrom():
 
     with pytest.raises(u.UnitsError) as excinfo:
         core_attrs.Wavelength(10 * u.g, 23 * u.g)
-    assert ('This unit is not convertable to any of [Unit("Angstrom"), Unit("kHz"), '
+    assert ('This unit is not convertible to any of [Unit("Angstrom"), Unit("kHz"), '
             'Unit("keV")]' in str(excinfo.value))
 
 

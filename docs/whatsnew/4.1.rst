@@ -103,7 +103,7 @@ To avoid a warning pass all arguments with keywords (e.g. ``plot(title='my plot 
 
 Updated data downloader dependency
 ==================================
-The pacakge that handles downloading data from remote sources, ``parfive``, has had a recent major release to version 2.0.
+The package that handles downloading data from remote sources, ``parfive``, has had a recent major release to version 2.0.
 This new version comes with major usability improvements: removal of incomplete files and major error reporting upgrades.
 
 sunpy users are encouraged to upgrade ``parfive`` to benefit from these improvements.

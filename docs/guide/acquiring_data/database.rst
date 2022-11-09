@@ -538,7 +538,7 @@ year:
 Attributes for entries in the database can be manually edited. The
 :meth:`Database.edit` method receives the database entry to be edited and any
 number of keyword arguments to describe which values to change and how. For
-example, to change the time entires that are ``None`` to the start of the
+example, to change the time entries that are ``None`` to the start of the
 observation time (because it's possible, not because it is accurate!):
 
     >>> for database_entry in database:

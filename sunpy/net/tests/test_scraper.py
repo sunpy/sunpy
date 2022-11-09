@@ -298,7 +298,7 @@ def test_get_timerange_with_extractor(exdict, start, end):
 
 @pytest.mark.remote_data
 def test_yearly_overlap():
-    # Check that a time range that falls within the interval that a file reprsents
+    # Check that a time range that falls within the interval that a file represents
     # returns a single result.
     pattern = "https://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/solar-flares/x-rays/goes/xrs/goes-xrs-report_%Y.txt"
     scraper = Scraper(pattern)

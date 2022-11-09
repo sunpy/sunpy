@@ -54,7 +54,7 @@ The `~sunpy.timeseries.TimeSeries` factory has the ability to create a list of T
     >>> my_ts_list = ts.TimeSeries('/goesdirectory/', source='XRS')   # doctest: +SKIP
     >>> my_ts_list = ts.TimeSeries(glob, source='XRS')   # doctest: +SKIP
 
-When manually specifing the source this functionality will only work with files from the same single source, generating a source specific child of the `~sunpy.timeseries.GenericTimeSeries` class such as the `~sunpy.timeseries.sources.goes.XRSTimeSeries` above.
+When manually specifying the source this functionality will only work with files from the same single source, generating a source specific child of the `~sunpy.timeseries.GenericTimeSeries` class such as the `~sunpy.timeseries.sources.goes.XRSTimeSeries` above.
 
 Instead of creating a list of one TimeSeries object per file, you can create a single time series from multiple files using the keyword argument ``concatenate=True``:
 

@@ -394,7 +394,7 @@ def test_popitem_with_keycomments(atomic_weights_keycomments, empty_keycomments)
 def test_update_with_distinct_keys(seas_metadict, sea_locations, atomic_weights):
     """
     Update the MetaDict 'world_seas', with another MetaDict, 'chem_elems' which
-    has a completley different set of keys.
+    has a completely different set of keys.
 
     This should result in adding 'chem_elems' onto 'world_seas'.
     Original insertion order of 'world_seas' should be preserved.

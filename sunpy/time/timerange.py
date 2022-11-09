@@ -1,5 +1,5 @@
 """
-This module provies a object that can handle a time range.
+This module provides an object that can handle a time range.
 """
 from datetime import timedelta
 

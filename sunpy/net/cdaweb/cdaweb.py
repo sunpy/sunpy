@@ -67,7 +67,7 @@ class CDAWEBClient(BaseClient):
     See Also
     --------
     sunpy.net.cdaweb.get_datasets : Find dataset IDs for a given observatory
-    sunpy.net.cdaweb.get_observatory_groups : Get all observatories avaiable from CDAWeb
+    sunpy.net.cdaweb.get_observatory_groups : Get all observatories available from CDAWeb
     """
     @property
     def info_url(self):
