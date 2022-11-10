@@ -1,0 +1,1 @@
+Fixed a bug with the `sunpy.map.GenericMap.rotation_matrix` property for maps using the CDij matrix formulism where the rotation matrix would be calculated incorrectly for non-square pixels.
