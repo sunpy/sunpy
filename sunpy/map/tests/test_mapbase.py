@@ -762,6 +762,32 @@ def test_superpixel_dims_values(aia171_test_map, f):
     assert_quantity_allclose(superpix_map.data[0, 0], expected)
 
 
+@pytest.mark.parametrize('f, dimensions', [(np.sum, (2, 3)*u.pix),
+                                           (np.mean, (3, 2)*u.pix)])
+def test_superpixel_metadata(generic_map, f, dimensions):
+    superpix_map = generic_map.superpixel(dimensions, func=f)
+
+    scale_x, scale_y = dimensions.value
+
+    assert superpix_map.meta['cdelt1'] == scale_x * generic_map.meta['cdelt1']
+    assert superpix_map.meta['cdelt2'] == scale_y * generic_map.meta['cdelt2']
+    assert superpix_map.meta['pc1_1'] == generic_map.meta['pc1_1']
+    assert superpix_map.meta['pc1_2'] == scale_y / scale_x * generic_map.meta['pc1_2']
+    assert superpix_map.meta['pc2_1'] == scale_x / scale_y * generic_map.meta['pc2_1']
+    assert superpix_map.meta['pc2_2'] == generic_map.meta['pc2_2']
+
+    assert superpix_map.meta['crpix1'] - 0.5 == (generic_map.meta['crpix1'] - 0.5) / scale_x
+    assert superpix_map.meta['crpix2'] - 0.5 == (generic_map.meta['crpix2'] - 0.5) / scale_y
+    assert u.allclose(superpix_map.meta['crval1'], generic_map.meta['crval1'])
+    assert u.allclose(superpix_map.meta['crval2'], generic_map.meta['crval2'])
+    assert superpix_map.meta['naxis1'] == generic_map.meta['naxis1'] / scale_x
+    assert superpix_map.meta['naxis2'] == generic_map.meta['naxis2'] / scale_y
+    for key in generic_map.meta:
+        if key not in ('cdelt1', 'cdelt2', 'pc1_2', 'pc2_1', 'crpix1', 'crpix2', 'crval1',
+                       'crval2', 'naxis1', 'naxis2'):
+            assert superpix_map.meta[key] == generic_map.meta[key]
+
+
 def test_superpixel_masked(aia171_test_map_with_mask):
     input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
     dimensions = (2, 2) * u.pix

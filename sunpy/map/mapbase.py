@@ -2058,6 +2058,8 @@ class GenericMap(NDData):
                                0.5 - offset[0]) / dimensions[0]) + 0.5
         new_meta['crpix2'] = ((self.reference_pixel.y.to_value(u.pix) +
                                0.5 - offset[1]) / dimensions[1]) + 0.5
+        new_meta['naxis1'] = new_array.shape[1]
+        new_meta['naxis2'] = new_array.shape[0]
 
         # Create new map instance
         if self.mask is not None:
