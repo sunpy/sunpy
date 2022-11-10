@@ -321,12 +321,12 @@ def test_rotation_matrix_cd_cdelt():
         'CRVAL2': 0,
         'CRPIX1': 5,
         'CRPIX2': 5,
-        'CDELT1': 10,
-        'CDELT2': 9,
-        'CD1_1': 0,
-        'CD1_2': -9,
-        'CD2_1': 10,
-        'CD2_2': 0,
+        'CDELT1': 2,
+        'CDELT2': 3,
+        'CD1_1': 1,
+        'CD1_2': -2,
+        'CD2_1': 3,
+        'CD2_2': 6,
         'NAXIS1': 6,
         'NAXIS2': 6,
         'CUNIT1': 'arcsec',
@@ -335,7 +335,7 @@ def test_rotation_matrix_cd_cdelt():
         'CTYPE2': 'HPLT-TAN',
     }
     cd_map = sunpy.map.Map((data, header))
-    np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1.], [1., 0]]))
+    np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0.5, -1.], [1., 2.]]))
 
 
 def test_rotation_matrix_cd_cdelt_square():
@@ -1514,3 +1514,26 @@ def test_parse_fits_units():
 
     out_unit = GenericMap._parse_fits_unit("G")
     assert out_unit == u.G
+
+
+def test_only_cd():
+    data = np.ones([6, 6], dtype=np.float64)
+    header = {
+        'CRVAL1': 0,
+        'CRVAL2': 0,
+        'CRPIX1': 5,
+        'CRPIX2': 5,
+        'CD1_1': 3,
+        'CD1_2': -4,
+        'CD2_1': 5,
+        'CD2_2': 12,
+        'NAXIS1': 6,
+        'NAXIS2': 6,
+        'CUNIT1': 'arcsec',
+        'CUNIT2': 'arcsec',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
+    }
+    cd_map = sunpy.map.Map((data, header))
+    np.testing.assert_allclose(u.Quantity(cd_map.scale).value, np.array([5, 13]))
+    np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
