@@ -735,21 +735,30 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions, cm):
     """
     with cm:
         resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-        assert resampled_map.meta['cdelt1'] == generic_map.meta['cdelt1']
-        assert resampled_map.meta['cdelt2'] == generic_map.meta['cdelt2']
-        # TODO: we should really test the numbers here, not just that the correct
-        # header values have been modified. However, I am lazy and we have figure
-        # tests.
-        assert resampled_map.meta['crpix1'] != generic_map.meta['crpix1']
-        assert resampled_map.meta['crpix2'] != generic_map.meta['crpix2']
-        assert u.allclose(resampled_map.meta['crval1'], generic_map.meta['crval1'])
-        assert u.allclose(resampled_map.meta['crval2'], generic_map.meta['crval2'])
-        assert resampled_map.meta['naxis1'] == new_dimensions[0].value
-        assert resampled_map.meta['naxis2'] == new_dimensions[1].value
-        for key in generic_map.meta:
-            if key not in ('crpix1', 'crpix2', 'crval1',
-                           'crval2', 'naxis1', 'naxis2') and not key.startswith('pc'):
-                assert resampled_map.meta[key] == generic_map.meta[key]
+
+    scale_x = generic_map.data.shape[1] / resampled_map.data.shape[1]
+    scale_y = generic_map.data.shape[0] / resampled_map.data.shape[0]
+
+    assert resampled_map.meta['cdelt1'] == scale_x * generic_map.meta['cdelt1']
+    assert resampled_map.meta['cdelt2'] == scale_y * generic_map.meta['cdelt2']
+    assert resampled_map.meta['pc1_1'] == generic_map.meta['pc1_1']
+    assert resampled_map.meta['pc1_2'] == scale_y / scale_x * generic_map.meta['pc1_2']
+    assert resampled_map.meta['pc2_1'] == scale_x / scale_y * generic_map.meta['pc2_1']
+    assert resampled_map.meta['pc2_2'] == generic_map.meta['pc2_2']
+
+    # TODO: we should really test the numbers here, not just that the correct
+    # header values have been modified. However, I am lazy and we have figure
+    # tests.
+    assert resampled_map.meta['crpix1'] != generic_map.meta['crpix1']
+    assert resampled_map.meta['crpix2'] != generic_map.meta['crpix2']
+    assert u.allclose(resampled_map.meta['crval1'], generic_map.meta['crval1'])
+    assert u.allclose(resampled_map.meta['crval2'], generic_map.meta['crval2'])
+    assert resampled_map.meta['naxis1'] == new_dimensions[0].value
+    assert resampled_map.meta['naxis2'] == new_dimensions[1].value
+    for key in generic_map.meta:
+        if key not in ('cdelt1', 'cdelt2', 'pc1_2', 'pc2_1', 'crpix1', 'crpix2', 'crval1',
+                       'crval2', 'naxis1', 'naxis2'):
+            assert resampled_map.meta[key] == generic_map.meta[key]
 
 
 @pytest.mark.parametrize('sample_method, new_dimensions, cm', resample_test_data)
@@ -801,6 +810,32 @@ def test_superpixel_dims_values(aia171_test_map, f):
     # Check value of lower left pixel is calculated correctly
     expected = f(aia171_test_map.data[0:2, 0:2])
     assert_quantity_allclose(superpix_map.data[0, 0], expected)
+
+
+@pytest.mark.parametrize('f, dimensions', [(np.sum, (2, 3)*u.pix),
+                                           (np.mean, (3, 2)*u.pix)])
+def test_superpixel_metadata(generic_map, f, dimensions):
+    superpix_map = generic_map.superpixel(dimensions, func=f)
+
+    scale_x, scale_y = dimensions.value
+
+    assert superpix_map.meta['cdelt1'] == scale_x * generic_map.meta['cdelt1']
+    assert superpix_map.meta['cdelt2'] == scale_y * generic_map.meta['cdelt2']
+    assert superpix_map.meta['pc1_1'] == generic_map.meta['pc1_1']
+    assert superpix_map.meta['pc1_2'] == scale_y / scale_x * generic_map.meta['pc1_2']
+    assert superpix_map.meta['pc2_1'] == scale_x / scale_y * generic_map.meta['pc2_1']
+    assert superpix_map.meta['pc2_2'] == generic_map.meta['pc2_2']
+
+    assert superpix_map.meta['crpix1'] - 0.5 == (generic_map.meta['crpix1'] - 0.5) / scale_x
+    assert superpix_map.meta['crpix2'] - 0.5 == (generic_map.meta['crpix2'] - 0.5) / scale_y
+    assert u.allclose(superpix_map.meta['crval1'], generic_map.meta['crval1'])
+    assert u.allclose(superpix_map.meta['crval2'], generic_map.meta['crval2'])
+    assert superpix_map.meta['naxis1'] == generic_map.meta['naxis1'] / scale_x
+    assert superpix_map.meta['naxis2'] == generic_map.meta['naxis2'] / scale_y
+    for key in generic_map.meta:
+        if key not in ('cdelt1', 'cdelt2', 'pc1_2', 'pc2_1', 'crpix1', 'crpix2', 'crval1',
+                       'crval2', 'naxis1', 'naxis2'):
+            assert superpix_map.meta[key] == generic_map.meta[key]
 
 
 def test_superpixel_masked(aia171_test_map_with_mask):
@@ -867,6 +902,8 @@ def test_resample_rotated_map_cd(cd, method):
     smap = make_simple_map()
 
     smap.meta.update(cd)
+    for key in ['cdelt1', 'cdelt2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
+        del smap.meta[key]
     # Check superpixel with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
     new_map = getattr(smap, method)(new_dims)
@@ -1481,6 +1518,7 @@ def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
 
     ax2 = fig.add_subplot(122, projection=derotated_map)
     derotated_map.plot(axes=ax2, title=f'De-rotated map via {method}')
+    ax2.set_aspect(derotated_map.scale[1] / derotated_map.scale[0])
 
     return fig
 
