@@ -1,2 +1,2 @@
-`~sunpy.map.make_fitswcs_header` now includes the keyword argument ``detector`` for setting the
+`~sunpy.map.header_helper.make_fitswcs_header` now includes the keyword argument ``detector`` for setting the
 ``DETECTOR`` FITS keyword in the resulting header.
