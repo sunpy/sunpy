@@ -27,12 +27,19 @@ def test_parse_time_24_2():
     assert dt.scale == 'utc'
 
 
-def test_parse_time_trailing_zeros():
-    # see issue #289 at https://github.com/sunpy/sunpy/issues/289
-    dt = parse_time('2010-10-10T00:00:00.00000000')
-    assert dt == Time('2010-10-10')
+def test_parse_time_microseconds_excess_trailing_zeros():
+    dt = parse_time('2010-Oct-10 00:00:00.1234560')
+    assert dt == Time('2010-10-10 00:00:00.123456')
     assert dt.format == 'isot'
     assert dt.scale == 'utc'
+
+    # Excess digits beyond 6 digits should error if they are not zeros
+    with pytest.raises(ValueError):
+        dt = parse_time('2010-Oct-10 00:00:00.1234567')
+
+    # An ending run of zeros should still error if they are not a microsecond field
+    with pytest.raises(ValueError):
+        dt = parse_time('10-Oct-2010.0000000')
 
 
 def test_parse_time_tuple():
