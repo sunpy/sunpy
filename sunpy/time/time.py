@@ -49,12 +49,14 @@ TIME_FORMAT_LIST = [
     "%Y-%m-%d %H:%M:%S.%f",  # Example 2007-05-04 21:08:12.999999
     "%Y-%m-%d %H:%M:%S",  # Example 2007-05-04 21:08:12
     "%Y-%m-%d %H:%M",  # Example 2007-05-04 21:08
+    "%Y-%b-%d %H:%M:%S.%f",  # Example 2007-May-04 21:08:12.999999
     "%Y-%b-%d %H:%M:%S",  # Example 2007-May-04 21:08:12
     "%Y-%b-%d %H:%M",  # Example 2007-May-04 21:08
     "%Y-%b-%d",  # Example 2007-May-04
     "%Y-%m-%d",  # Example 2007-05-04
     "%Y/%m/%d",  # Example 2007/05/04
     "%d-%b-%Y",  # Example 04-May-2007
+    "%d-%b-%Y %H:%M:%S",  # Example 04-May-2007 21:08:12
     "%d-%b-%Y %H:%M:%S.%f",  # Example 04-May-2007 21:08:12.999999
     "%Y%m%d_%H%M%S",  # Example 20070504_210812
     "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
