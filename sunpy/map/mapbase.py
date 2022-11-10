@@ -1271,10 +1271,22 @@ class GenericMap(NDData):
         """
         Image scale along the x and y axes in units/pixel
         (i.e. cdelt1, cdelt2).
+
+        If the CDij matrix is defined but no CDELTi values are explicitly defined,
+        effective CDELTi values are constructed from the CDij matrix.  The effective
+        CDELTi values are chosen so that each row of the PCij matrix has unity norm.
+        This choice is optimal if the PCij matrix is a pure rotation matrix, but may not
+        be as optimal if the PCij matrix includes any skew.
         """
-        # TODO: Fix this if only CDi_j matrix is provided
-        return SpatialPair(self.meta.get('cdelt1', 1.) * self.spatial_units[0] / u.pixel,
-                           self.meta.get('cdelt2', 1.) * self.spatial_units[1] / u.pixel)
+        if 'cd1_1' in self.meta and 'cdelt1' not in self.meta and 'cdelt2' not in self.meta:
+            cdelt1 = np.sqrt(self.meta['cd1_1']**2 + self.meta['cd1_2']**2)
+            cdelt2 = np.sqrt(self.meta['cd2_1']**2 + self.meta['cd2_2']**2)
+        else:
+            cdelt1 = self.meta.get('cdelt1', 1.)
+            cdelt2 = self.meta.get('cdelt2', 1.)
+
+        return SpatialPair(cdelt1 * self.spatial_units[0] / u.pixel,
+                           cdelt2 * self.spatial_units[1] / u.pixel)
 
     @property
     def spatial_units(self):
@@ -1312,7 +1324,8 @@ class GenericMap(NDData):
 
             cdelt = u.Quantity(self.scale).value
 
-            return cd / cdelt
+            # Divide each row by each CDELT
+            return cd / np.expand_dims(cdelt, axis=1)
         else:
             return self._rotation_matrix_from_crota()
 
