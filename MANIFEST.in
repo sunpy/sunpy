@@ -10,6 +10,8 @@ exclude .test_package_pins.txt
 exclude .zenodo.json
 exclude asv.conf.json
 exclude CITATION.cff
+exclude sunpy-dev-env.yml
+exclde tox.ini
 
 prune .circleci
 prune .github
@@ -18,4 +20,5 @@ prune benchmarks
 prune binder
 prune changelog
 prune tools
+
 prune sunpy/_dev

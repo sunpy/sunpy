@@ -17,8 +17,8 @@ dependencies:
   - pandas
   - parfive
   - python
-  - python-dateutil
   - python_abi
+  - python-dateutil
   - reproject
   - scikit-image
   - scipy
@@ -33,6 +33,7 @@ dependencies:
   - opencv
 
   # Testing
+  - hvpy
   - hypothesis
   - pytest
   - pytest-arraydiff
@@ -53,8 +54,8 @@ dependencies:
   - sphinx
   - sphinx-automodapi
   - sphinx-copybutton
-  - sphinx-gallery
   - sphinx-design
+  - sphinx-gallery
   - towncrier
 
   # Installation
@@ -65,12 +66,7 @@ dependencies:
   # Development
   - pre-commit
 
-  # Remove once hvpy can be installed through conda
-  - pydantic
-
-  # Not installable through conda
   - pip:
-    - hvpy
     - sphinx-bootstrap-theme
     - sphinx-changelog
     - sphinxext-opengraph
