@@ -4,6 +4,7 @@
 Bug Fixes
 ---------
 
+- Fixed the incorrect calculation in :func:`~sunpy.map.header_helper.make_fitswcs_header` of the rotation matrix from a rotation angle when the pixels are non-square. (`#6597 <https://github.com/sunpy/sunpy/pull/6597>`__)
 - Fixed bug that prevented `~sunpy.coordinates.metaframes.RotatedSunFrame` instances from being pickled. (`#6342 <https://github.com/sunpy/sunpy/pull/6342>`__)
 - The right-hand y-axis of the GOES-XRS timeseries plots with labelled flare classes
   now automatically scales with the left-hand y-axis. (`#6486 <https://github.com/sunpy/sunpy/pull/6486>`__)
