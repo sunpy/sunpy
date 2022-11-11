@@ -1,3 +1,23 @@
+4.0.7 (2022-11-11)
+==================
+
+Bug Fixes
+---------
+
+- Fixed bug that prevented `~sunpy.coordinates.metaframes.RotatedSunFrame` instances from being pickled. (`#6342 <https://github.com/sunpy/sunpy/pull/6342>`__)
+- The right-hand y-axis of the GOES-XRS timeseries plots with labelled flare classes
+  now automatically scales with the left-hand y-axis. (`#6486 <https://github.com/sunpy/sunpy/pull/6486>`__)
+- Add support for Python 3.11.
+
+  The deprecated `cgi.parse_header` is now available as
+  `sunpy.util.net.parse_header`. (`#6512 <https://github.com/sunpy/sunpy/pull/6512>`__)
+- Fixed the metadata handling of :meth:`~sunpy.map.GenericMap.resample` and :meth:`~sunpy.map.GenericMap.superpixel` so that the CDELTi values are scaled and the PCi_j matrix (if used) is modified in the correct manner for asymmetric scaling.
+  The previous approach of having the PCi_j matrix store all of the scaling resulted in non-intuitive behaviors when accessing the `~sunpy.map.GenericMap.scale` and `~sunpy.map.GenericMap.rotation_matrix` properties, and when de-rotating a map via :meth:`~sunpy.map.GenericMap.rotate`. (`#6571 <https://github.com/sunpy/sunpy/pull/6571>`__)
+- Fixed a bug with the `sunpy.map.GenericMap.rotation_matrix` property for maps using the CDij matrix formulism where the rotation matrix would be calculated incorrectly for non-square pixels. (`#6573 <https://github.com/sunpy/sunpy/pull/6573>`__)
+- Fixd a bug with the `sunpy.map.GenericMap.scale` property for maps containing only the CDij matrix where the scale was not being determined from the CDij matrix. (`#6573 <https://github.com/sunpy/sunpy/pull/6573>`__)
+- Fixed a bug where :func:`~sunpy.time.parse_time` would always disregard the remainder of a time string starting with the final period if it was followed by only zeros, which could affect the parsing of the time string. (`#6581 <https://github.com/sunpy/sunpy/pull/6581>`__)
+
+
 4.0.6 (2022-10-25)
 ==================
 

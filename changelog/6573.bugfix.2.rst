@@ -1,1 +1,0 @@
-Fixd a bug with the `sunpy.map.GenericMap.scale` property for maps containing only the CDij matrix where the scale was not being determined from the CDij matrix.
