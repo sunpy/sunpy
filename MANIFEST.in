@@ -11,7 +11,7 @@ exclude .zenodo.json
 exclude asv.conf.json
 exclude CITATION.cff
 exclude sunpy-dev-env.yml
-exclde tox.ini
+exclude tox.ini
 
 prune .circleci
 prune .github
