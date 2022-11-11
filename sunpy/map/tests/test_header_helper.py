@@ -66,7 +66,14 @@ def test_metakeywords():
     assert isinstance(meta, dict)
 
 
-def test_deafult_rotation(map_data, hpc_coord):
+def test_scale_conversion(map_data, hpc_coord):
+    # The header will have cunit1/2 of arcsec
+    header = make_fitswcs_header(map_data, hpc_coord, scale=[1, 2] * u.arcmin / u.pix)
+    assert header['cdelt1'] == 60
+    assert header['cdelt2'] == 120
+
+
+def test_default_rotation(map_data, hpc_coord):
     header = make_fitswcs_header(map_data, hpc_coord)
     wcs = WCS(header)
     np.testing.assert_allclose(wcs.wcs.pc, [[1, 0], [0, 1]], atol=1e-5)
@@ -77,6 +84,13 @@ def test_rotation_angle(map_data, hpc_coord):
                                  rotation_angle=90*u.deg)
     wcs = WCS(header)
     np.testing.assert_allclose(wcs.wcs.pc, [[0, -1], [1, 0]], atol=1e-5)
+
+
+def test_rotation_angle_rectangular_pixels(map_data, hpc_coord):
+    header = make_fitswcs_header(map_data, hpc_coord, scale=[2, 5] * u.arcsec / u.pix,
+                                 rotation_angle=45*u.deg)
+    wcs = WCS(header)
+    np.testing.assert_allclose(wcs.wcs.pc, np.sqrt(0.5) * np.array([[1, -2.5], [0.4, 1]]), atol=1e-5)
 
 
 def test_rotation_matrix(map_data, hpc_coord):
