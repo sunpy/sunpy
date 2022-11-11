@@ -1,3 +1,0 @@
-Deprecated the ``sunpy.visualization.limb`` module.
-The ``sunpy.visualization.limb.draw_limb`` function has been moved into
-`~sunpy.visualization.drawing` as :func:`~sunpy.visualization.drawing.limb`.

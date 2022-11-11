@@ -1,1 +1,0 @@
-:meth:`sunpy.image.transform.affine_transform` and :func:`sunpy.map.GenericMap.rotate` no longer accepts the ``use_scipy`` keyword.

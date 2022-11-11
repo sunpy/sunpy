@@ -1,2 +1,0 @@
-Sample data files provided through `sunpy.data.sample` are now downloaded individually on demand rather than being all downloaded upon import of that module.
-To download all sample data files, call :func:`sunpy.data.sample.download_all`.
