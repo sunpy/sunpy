@@ -1,2 +1,0 @@
-Trying to download an empty search response from the JSOC now results in an empty results object.
-Previously the results object contained the path to the sunpy download directory.

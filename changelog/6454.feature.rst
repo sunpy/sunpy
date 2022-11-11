@@ -1,1 +1,0 @@
-`~.XRSTimeSeries` is now able to parse the primary detector information from the GOES-R XRS data if available.

@@ -1,1 +1,0 @@
-Fixed a bug where the observer coordinate was incorrectly determined for `~sunpy.map.sources.KCorMap`.

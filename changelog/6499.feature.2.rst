@@ -1,2 +1,0 @@
-If the ``data`` argument to :func:`~sunpy.map.header_helper.make_fitswcs_header` is an `~astropy.units.Quantity`,
-the associated unit will be used to set the ``BUNIT`` FITS keyword in the resulting header.

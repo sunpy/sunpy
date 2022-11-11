@@ -1,1 +1,0 @@
-Adds a pull request check list to the Developer's Guide.

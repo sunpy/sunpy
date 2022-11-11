@@ -1,2 +1,0 @@
-Added the `sunpy.timeseries.GenericTimeSeries.time` property to get the times
-of a timeseries as a `~astropy.time.Time` object.

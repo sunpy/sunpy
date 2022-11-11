@@ -1,1 +1,0 @@
-Switched to using the standard matrix-multiplication operator (available in Python 3.5+) instead of a custom function.

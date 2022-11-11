@@ -1,1 +1,0 @@
-Fixed a bug where :func:`~sunpy.time.parse_time` would always disregard the remainder of a time string starting with the final period if it was followed by only zeros, which could affect the parsing of the time string.
