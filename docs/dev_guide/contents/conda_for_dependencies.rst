@@ -1,8 +1,8 @@
 .. _conda_for_dependencies:
 
-****************************************
-Using conda for Development Dependencies
-****************************************
+********************************************
+Using ``conda`` for Development Dependencies
+********************************************
 
 The ``conda`` package for ``sunpy`` specifies only those dependencies that are relevant for the typical user.
 A power user or a developer will instead need the complete set of dependencies to use all optional features, build the documentation, and/or run the full test suite.
@@ -20,9 +20,16 @@ Alternatively, if you want to add the complete set of dependencies to an existin
 
     $ conda env update -n existing-env -f sunpy-dev-env.yml
 
+The above calls assume that you have already downloaded ``sunpy-dev-env.yml``, either by itself or along with the whole repository.
+You can alternatively supply the URL for the file, as hosted on GitHub, to either of the above calls, e.g.:
+
+.. code-block:: bash
+
+    $ conda env create -n sunpy-dev -f https://raw.githubusercontent.com/sunpy/sunpy/main/sunpy-dev-env.yml
+
 .. note::
 
-    This conda environment file intentionally does not specify restrictions on release versions for any dependency.
+    This ``conda`` environment file intentionally does not specify restrictions on release versions for any dependency.
 
 This ``conda`` environment file specifies only the *dependencies* for ``sunpy``, and not ``sunpy`` itself.
 Depending on your needs, continue with one of the following two ways to install ``sunpy`` in this ``conda`` environment.
