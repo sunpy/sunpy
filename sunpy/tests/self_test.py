@@ -55,7 +55,7 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
         print(list(test_missing.keys()))
         print("If are using conda, you will want to run `conda install <package name>`")
         print('Otherwise you will want run `pip install "sunpy[all,tests]"`')
-        return
+        return 1
     import pytest
     print("Starting the sunpy test suite:")
     print()
