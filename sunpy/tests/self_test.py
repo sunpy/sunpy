@@ -23,22 +23,22 @@ def print_missing_dependencies_report(missing, package="sunpy"):
 
 
 def _self_test_args(*, package=None, online=False, online_only=False, figure_only=False):
-    args = ["-W", "ignore"]
+    test_args = ["-W", "ignore"]
     if online:
-        args.append("--remote-data=any")
+        test_args.append("--remote-data=any")
     if online_only:
-        args.append("--remote-data=any -m remote_data")
+        test_args.append("--remote-data=any -m remote_data")
     if package:
         try:
             importlib.import_module(f"sunpy.{package}")
         except ModuleNotFoundError:
             raise ModuleNotFoundError(f"sunpy.{package} was not found.")
-        args.extend(["--pyargs", f"sunpy.{package}"])
+        test_args.extend(["--pyargs", f"sunpy.{package}"])
     else:
-        args.extend(["--pyargs", "sunpy"])
+        test_args.extend(["--pyargs", "sunpy"])
     if figure_only:
-        args.extend(["-m", "mpl_image_compare"])
-    return args
+        test_args.extend(["-m", "mpl_image_compare"])
+    return test_args
 
 
 def self_test(*, package=None, online=False, online_only=False, figure_only=False):
@@ -59,6 +59,22 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
     import pytest
     print("Starting the sunpy test suite:")
     print()
-    args = _self_test_args(package=package, online=online,
-                           online_only=online_only, figure_only=figure_only)
-    return pytest.main(args)
+    test_args = _self_test_args(package=package, online=online,
+                                online_only=online_only, figure_only=figure_only)
+    return pytest.main(test_args)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run the sunpy test suite")
+    parser.add_argument("--package", help="The sunpy subpackage to test.")
+    parser.add_argument("--online", action="store_true",
+                        help="Run the tests that require internet access.")
+    parser.add_argument("--online-only", action="store_true",
+                        help="Run only the tests that require internet access.")
+    parser.add_argument("--figure-only", action="store_true",
+                        help="Run only the tests that generate figures.")
+    test_args = parser.parse_args()
+    self_test(package=test_args.package, online=test_args.online,
+              online_only=test_args.online_only, figure_only=test_args.figure_only)
