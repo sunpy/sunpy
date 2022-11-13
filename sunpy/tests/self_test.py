@@ -65,6 +65,7 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
 
 
 if __name__ == "__main__":
+    import sys
     import argparse
 
     parser = argparse.ArgumentParser(description="Run the sunpy test suite")
@@ -76,5 +77,5 @@ if __name__ == "__main__":
     parser.add_argument("--figure-only", action="store_true",
                         help="Run only the tests that generate figures.")
     test_args = parser.parse_args()
-    self_test(package=test_args.package, online=test_args.online,
-              online_only=test_args.online_only, figure_only=test_args.figure_only)
+    sys.exit(self_test(package=test_args.package, online=test_args.online,
+                       online_only=test_args.online_only, figure_only=test_args.figure_only))
