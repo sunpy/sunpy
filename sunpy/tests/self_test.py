@@ -1,7 +1,3 @@
-import importlib
-
-from sunpy.util.sysinfo import missing_dependencies_by_extra
-
 
 def print_missing_dependencies_report(missing, package="sunpy"):
     printed = False
@@ -22,7 +18,9 @@ def print_missing_dependencies_report(missing, package="sunpy"):
     return printed
 
 
-def _self_test_args(*, package=None, online=False, online_only=False, figure_only=False):
+def _self_test_args(*, package=None, online=False, online_only=False, figure_only=False, verbose=False):
+    import importlib
+
     test_args = ["-W", "ignore"]
     if online:
         test_args.append("--remote-data=any")
@@ -38,12 +36,16 @@ def _self_test_args(*, package=None, online=False, online_only=False, figure_onl
         test_args.extend(["--pyargs", "sunpy"])
     if figure_only:
         test_args.extend(["-m", "mpl_image_compare"])
+    if verbose:
+        test_args.append("-vvv")
     return test_args
 
 
-def self_test(*, package=None, online=False, online_only=False, figure_only=False):
-    print("\n\n")
+def self_test(*, package=None, online=False, online_only=False, figure_only=False, verbose=False):
+    from sunpy.util.sysinfo import missing_dependencies_by_extra
+
     print("Starting sunpy self test...")
+    print()
     print("Checking for packages needed to run sunpy:")
     missing = missing_dependencies_by_extra(exclude_extras=["asdf", "dask", "dev", "all", "docs"])
     test_missing = missing.pop("tests")
@@ -56,11 +58,15 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
         print("If are using conda, you will want to run `conda install <package name>`")
         print('Otherwise you will want run `pip install "sunpy[all,tests]"`')
         return 1
-    import pytest
-    print("Starting the sunpy test suite:")
     print()
+    print("Starting the sunpy test suite:")
     test_args = _self_test_args(package=package, online=online,
-                                online_only=online_only, figure_only=figure_only)
+                                online_only=online_only, figure_only=figure_only, verbose=verbose)
+    import pytest
+
+    if verbose:
+        print(f"Running pytest with arguments: {test_args}")
+
     return pytest.main(test_args)
 
 
@@ -76,6 +82,7 @@ if __name__ == "__main__":
                         help="Run only the tests that require internet access.")
     parser.add_argument("--figure-only", action="store_true",
                         help="Run only the tests that generate figures.")
+    parser.add_argument('--verbose', action='store_true', help="Run in verbose mode")
     test_args = parser.parse_args()
     sys.exit(self_test(package=test_args.package, online=test_args.online,
-                       online_only=test_args.online_only, figure_only=test_args.figure_only))
+                       online_only=test_args.online_only, figure_only=test_args.figure_only, verbose=test_args.verbose))
