@@ -1,0 +1,1 @@
+Update :func:`_update_cdaweb_dataset_data` from :meth:`sunpy.net.cdaweb.helpers` to send only one request when fetching instruments data, effectively making it faster.
