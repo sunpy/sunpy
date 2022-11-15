@@ -124,15 +124,13 @@ def _update_cdaweb_dataset_data():
     ])
     # Mapping from dataset ID to description
     all_datasets = {}
-    for group in all_obs['Group']:
-        print(f'🛰 Getting datasets for {group}')
-        group_url = url + f'?observatoryGroup={group}'
-        response = requests.get(group_url, headers=_CDAS_HEADERS)
-
-        datasets = response.json()['DatasetDescription']
-        dataset_ids = {ds['Id']: ds['Label'] for ds in datasets}
-        all_datasets.update(dataset_ids)
-
+    # Generate list of tuples with query parameters
+    query_parameters = [('observatoryGroup', group) for group in all_obs['Group']]
+    # Send request and fetch data
+    resp = requests.get(url, params=query_parameters, headers=_CDAS_HEADERS)
+    datasets = resp.json()['DatasetDescription']
+    dataset_ids = {ds['Id']: ds['Label'] for ds in datasets}
+    all_datasets.update(dataset_ids)
     attr_file = pathlib.Path(__file__).parent / 'data' / 'attrs.json'
     with open(attr_file, 'w') as attrs_file:
         json.dump(dict(sorted(all_datasets.items())), attrs_file, indent=2)
