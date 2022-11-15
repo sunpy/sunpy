@@ -49,12 +49,14 @@ TIME_FORMAT_LIST = [
     "%Y-%m-%d %H:%M:%S.%f",  # Example 2007-05-04 21:08:12.999999
     "%Y-%m-%d %H:%M:%S",  # Example 2007-05-04 21:08:12
     "%Y-%m-%d %H:%M",  # Example 2007-05-04 21:08
+    "%Y-%b-%d %H:%M:%S.%f",  # Example 2007-May-04 21:08:12.999999
     "%Y-%b-%d %H:%M:%S",  # Example 2007-May-04 21:08:12
     "%Y-%b-%d %H:%M",  # Example 2007-May-04 21:08
     "%Y-%b-%d",  # Example 2007-May-04
     "%Y-%m-%d",  # Example 2007-05-04
     "%Y/%m/%d",  # Example 2007/05/04
     "%d-%b-%Y",  # Example 04-May-2007
+    "%d-%b-%Y %H:%M:%S",  # Example 04-May-2007 21:08:12
     "%d-%b-%Y %H:%M:%S.%f",  # Example 04-May-2007 21:08:12.999999
     "%Y%m%d_%H%M%S",  # Example 20070504_210812
     "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
@@ -102,18 +104,28 @@ def _regex_parse_time(inp, format):
     match = re.match(format, inp)
     if match is None:
         return None, None
-    try:
-        hour = match.group("hour")
-    except IndexError:
-        return inp, False
-    if hour == "24":
+
+    found_groups = match.groupdict()
+
+    # Special handling to strip any excess zeros beyond the six digits of the microsecond field
+    if "microsecond" in found_groups and re.match(r"\d{6}0+", match.group("microsecond")):
+        from_, to = match.span("microsecond")
+        inp = inp[:from_] + match.group("microsecond")[:6] + inp[to:]
+        match = re.match(format, inp)
+
+    # Special handling to add a day if the hour is 24 and the minute/second/microsecond are all zero
+    add_one_day = False
+    if "hour" in found_groups and match.group("hour") == "24":
         if not all(
                 _n_or_eq(_group_or_none(match, g, int), 00)
                 for g in ["minute", "second", "microsecond"]):
             raise ValueError
         from_, to = match.span("hour")
-        return inp[:from_] + "00" + inp[to:], True
-    return inp, False
+        inp = inp[:from_] + "00" + inp[to:]
+        add_one_day = True
+        match = re.match(format, inp)
+
+    return inp, add_one_day
 
 
 def find_time(string, format):
@@ -215,11 +227,6 @@ def convert_time_list(time_list, format=None, **kwargs):
 
 @convert_time.register(str)
 def convert_time_str(time_string, **kwargs):
-    # remove trailing zeros and the final dot to allow any
-    # number of zeros. This solves issue #289
-    if '.' in time_string:
-        time_string = time_string.rstrip("0").rstrip(".")
-
     if 'TAI' in time_string:
         kwargs['scale'] = 'tai'
 

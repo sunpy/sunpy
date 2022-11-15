@@ -30,6 +30,7 @@ def get_observatory_groups():
     >>> groups['Group'] #doctest: +REMOTE_DATA
         <Column name='Group' dtype='str55' length=...>
                         ACE
+                        AIM
                       AMPTE
         ...
                     Voyager

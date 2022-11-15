@@ -1557,20 +1557,14 @@ class GenericMap(NDData):
         new_meta = self.meta.copy()
 
         # Update metadata
+        for key in {'cdelt1', 'cd1_1', 'cd2_1'} & self.meta.keys():
+            new_meta[key] *= scale_factor_x
+        for key in {'cdelt2', 'cd1_2', 'cd2_2'} & self.meta.keys():
+            new_meta[key] *= scale_factor_y
         if 'pc1_1' in self.meta:
-            new_meta['pc1_1'] *= scale_factor_x
-            new_meta['pc2_1'] *= scale_factor_x
-            new_meta['pc1_2'] *= scale_factor_y
-            new_meta['pc2_2'] *= scale_factor_y
-        if 'cd1_1' in self.meta:
-            new_meta['cd1_1'] *= scale_factor_x
-            new_meta['cd2_1'] *= scale_factor_x
-            new_meta['cd1_2'] *= scale_factor_y
-            new_meta['cd2_2'] *= scale_factor_y
-        if 'cd1_1' not in self.meta and 'pc1_1' not in self.meta:
-            # Using the CROTA2 and CDELT formalism
-            new_meta['cdelt1'] *= scale_factor_x
-            new_meta['cdelt2'] *= scale_factor_y
+            new_meta['pc1_2'] *= scale_factor_y / scale_factor_x
+            new_meta['pc2_1'] *= scale_factor_x / scale_factor_y
+
         new_meta['crpix1'] = (self.reference_pixel.x.to_value(u.pix) + 0.5) / scale_factor_x + 0.5
         new_meta['crpix2'] = (self.reference_pixel.y.to_value(u.pix) + 0.5) / scale_factor_y + 0.5
         new_meta['naxis1'] = new_data.shape[1]
@@ -2067,25 +2061,20 @@ class GenericMap(NDData):
         new_meta = self.meta.copy()
 
         # Update metadata
+        for key in {'cdelt1', 'cd1_1', 'cd2_1'} & self.meta.keys():
+            new_meta[key] *= dimensions[0]
+        for key in {'cdelt2', 'cd1_2', 'cd2_2'} & self.meta.keys():
+            new_meta[key] *= dimensions[1]
         if 'pc1_1' in self.meta:
-            new_meta['pc1_1'] *= dimensions[0]
-            new_meta['pc2_1'] *= dimensions[0]
-            new_meta['pc1_2'] *= dimensions[1]
-            new_meta['pc2_2'] *= dimensions[1]
-        if 'cd1_1' in self.meta:
-            new_meta['cd1_1'] *= dimensions[0]
-            new_meta['cd2_1'] *= dimensions[0]
-            new_meta['cd1_2'] *= dimensions[1]
-            new_meta['cd2_2'] *= dimensions[1]
-        if 'cd1_1' not in self.meta and 'pc1_1' not in self.meta:
-            # Using the CROTA2 and CDELT formalism
-            new_meta['cdelt1'] *= dimensions[0]
-            new_meta['cdelt2'] *= dimensions[1]
+            new_meta['pc1_2'] *= dimensions[1] / dimensions[0]
+            new_meta['pc2_1'] *= dimensions[0] / dimensions[1]
 
         new_meta['crpix1'] = ((self.reference_pixel.x.to_value(u.pix) +
                                0.5 - offset[0]) / dimensions[0]) + 0.5
         new_meta['crpix2'] = ((self.reference_pixel.y.to_value(u.pix) +
                                0.5 - offset[1]) / dimensions[1]) + 0.5
+        new_meta['naxis1'] = new_array.shape[1]
+        new_meta['naxis2'] = new_array.shape[0]
 
         # Create new map instance
         if self.mask is not None:

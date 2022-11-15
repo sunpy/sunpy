@@ -169,7 +169,7 @@ def _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix):
         rotation_angle = 0 * u.deg
 
     if rotation_angle is not None:
-        lam = meta_wcs['cdelt1'] / meta_wcs['cdelt2']
+        lam = meta_wcs['cdelt2'] / meta_wcs['cdelt1']
         p = np.deg2rad(rotation_angle)
 
         rotation_matrix = np.array([[np.cos(p), -1 * lam * np.sin(p)],
