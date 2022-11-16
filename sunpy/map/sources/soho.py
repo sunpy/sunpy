@@ -45,9 +45,7 @@ class EITMap(GenericMap):
     @property
     def date(self):
         # Old EIT data has date-obs in format of dd-JAN-yy so we use date_obs where available
-        date = self.meta.get('date_obs', self.meta.get('date-obs'))
-        if 'T' in date:
-            return parse_time(date)
+        return self._get_date('date_obs') or super().date
 
     @property
     def spatial_units(self):

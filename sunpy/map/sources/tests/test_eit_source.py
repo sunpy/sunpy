@@ -5,7 +5,8 @@ import pytest
 
 import astropy.units as u
 
-from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames
+from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath
+from sunpy.map import Map
 from sunpy.map.sources.soho import EITMap
 
 header_list = [f for f in get_test_data_filenames() if 'efz' in f.name and '.header' in f.name]
@@ -54,3 +55,8 @@ def test_norm_clip(eit_map):
 def test_wcs(eit_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     eit_map.pixel_to_world(0*u.pix, 0*u.pix)
+
+
+def test_old_eit_date():
+    eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
+    assert eit_map.date.value == '1996-12-11T19:00:14.254'
