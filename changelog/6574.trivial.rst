@@ -1,3 +1,0 @@
-Added a pre-commit hook for `codespell
-<https://github.com/codespell-project/codespell>`__, and applied
-spelling fixes throughout the package.

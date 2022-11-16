@@ -1,1 +1,0 @@
-Added a 304 sample data file called ``AIA_304_IMAGE``.

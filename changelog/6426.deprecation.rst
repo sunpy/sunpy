@@ -1,2 +1,0 @@
-:func:`sunpy.data.download_sample_data` is now deprecated.
-Use :func:`sunpy.data.sample.download_all` instead.

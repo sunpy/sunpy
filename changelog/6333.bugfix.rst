@@ -1,3 +1,0 @@
-If a level 1 XRT file does not specify the heliographic longitude of the spacecraft,
-a silent assumption is made that the spacecraft is at zero Stonyhurst
-heliographic longitude (i.e., the same longitude as Earth).
