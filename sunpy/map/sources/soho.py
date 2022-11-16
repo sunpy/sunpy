@@ -43,6 +43,13 @@ class EITMap(GenericMap):
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
+    def date(self):
+        # Old EIT data has date-obs in format of dd-JAN-yy so we use date_obs where available
+        date = self.meta.get('date_obs', self.meta.get('date-obs'))
+        if 'T' in date:
+            return parse_time(date)
+
+    @property
     def spatial_units(self):
         """
         If not present in CUNIT{1,2} keywords, defaults to arcsec.
