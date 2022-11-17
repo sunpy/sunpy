@@ -6,7 +6,6 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath
-from sunpy.map import Map
 from sunpy.map.sources.soho import EITMap
 
 header_list = [f for f in get_test_data_filenames() if 'efz' in f.name and '.header' in f.name]
