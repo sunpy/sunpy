@@ -19,22 +19,18 @@ from sunpy.util import SunpyUserWarning
 try:
     import matplotlib
     import matplotlib.pyplot as plt
-except ImportError:
-    HAVE_MATPLOTLIB = False
-else:
+
     HAVE_MATPLOTLIB = True
     matplotlib.use('Agg')
+except ImportError:
+    HAVE_MATPLOTLIB = False
 
 # Don't actually import pytest_remotedata because that can do things to the
 # entrypoints code in pytest.
 remotedata_spec = importlib.util.find_spec("pytest_remotedata")
 HAVE_REMOTEDATA = remotedata_spec is not None
-
-
 # Do not collect the sample data file because this would download the sample data.
 collect_ignore = ["data/sample.py"]
-
-
 console_logger = logging.getLogger()
 console_logger.setLevel('INFO')
 
