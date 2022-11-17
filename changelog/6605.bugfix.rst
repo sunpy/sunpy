@@ -1,0 +1,1 @@
+Fixed an issue with loading old EIT fits files with `sunpy.map.Map` where the date could not be parsed.

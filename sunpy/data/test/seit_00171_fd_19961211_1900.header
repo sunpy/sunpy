@@ -1,0 +1,41 @@
+SIMPLE  =                    T / conforms to FITS standard                      
+BITPIX  =                  -64 / array data type                                
+NAXIS   =                    2 / number of array dimensions                     
+NAXIS1  =                  128                                                  
+NAXIS2  =                  128                                                  
+DATE    = '11/12/96'           / Date of file creation                          
+TIME-OBS= '19:00:14'                                                            
+DATE-OBS= '11-DEC-96'          / UTC at spacecraft                              
+ORIGIN  = 'Rocket Science'     / Rocket Science = NASA GSFC                     
+DATASRC = 'realtime telemetry'                                                  
+TELESCOP= 'SOHO    '                                                            
+INSTRUME= 'EIT     '                                                            
+OBJECT  = 'full FOV'                                                            
+BUNIT   = 'counts / pixel'                                                      
+WAVELNTH=                  171 / 171 = Fe IX/X, 195 = Fe XII,                   
+FILTER  = 'Clear   '                                                            
+DATE_OBS= '1996-12-11T19:00:14.254Z'                                            
+SCI_OBJ = '    1705'                                                            
+OBS_PROG= 'none    '                                                            
+CMP_NO  = 'TBD     '                                                            
+EXPTIME =                0.875 / seconds                                        
+EXPMODE = 'backside'                                                            
+FILENAME= 'efr19961211.190014'                                                  
+CFTEMP  =   -66.70999999999999 / CCD cold finger temperature (C)                
+CCDTEMP =                 7.47 / CCD temperature (DN/100)                       
+CTYPE1  = 'Solar-X '                                                            
+CTYPE2  = 'Solar-Y '                                                            
+CRPIX1  =           20.1796875 / Sun center x, EIT pixels                       
+CRPIX2  =          20.52421875 / Sun center y, EIT pixels                       
+CRVAL1  =                  0.0                                                  
+CRVAL2  =                  0.0                                                  
+CDELT1  =               67.072 / Pixel scale x                                  
+CDELT2  =               67.072 / Pixel scale y                                  
+SOLAR_R =               188.11 / Solar radius, EIT pixels                       
+SOLAR_B0=                -0.44 / Degrees                                        
+COMMENT SHUTTER CLOSE TIME =    2.024 s  LINE_SYNC = 'no'  CAMERA_ERR = 'yes'  I
+COMMENT MAGE_OF_SEQ =                    0  NUM_LEB_PROC =                    3 
+COMMENT  LEB_PROC = 26 (no image mask table)  LEB_PROC = 27 (no occ mask)  LEB_PCOMMENT ROC = 12 (Rice)  BLOCKS_HORZ =   16  BLOCKS_VERT =   16  P1_X =         
+COMMENT   1  P2_X =        1024  P1_Y =          20  P2_Y =        1043  N_MISSI
+COMMENT NG_BLOCKS =    1                                                        
+HISTORY Version 1.5, 1996 September 19
