@@ -153,6 +153,8 @@ jobs:
         - cp311-manylinux*_x86_64
         - cp311-macosx_x86_64
         - cp311-macosx_arm64
+      # This can be removed when there are binaries for h5py on 3.11
+      libraries: libhdf5-dev
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
