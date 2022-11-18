@@ -21,7 +21,7 @@ You can either read it without running any code, or copy and paste the code snip
 Each chapter of the tutorial provides a self-contained set of codes.
 
 Later chapters build on the concepts introduced in earlier chapters.
-The one exception is the final two chapters that explore Maps and TimeSeries - these are independent, but depend on all earlier chapters.
+The one exception is the two chapters that explore Maps and Timeseries - these are independent, but depend on all earlier chapters.
 
 .. toctree::
    :maxdepth: 2
