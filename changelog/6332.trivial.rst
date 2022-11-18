@@ -1,1 +1,0 @@
-All internal code for limb drawing now uses :func:`~sunpy.visualization.drawing.limb`.

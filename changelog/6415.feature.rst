@@ -1,1 +1,0 @@
-Added a new function :func:`sunpy.map.header_helper.make_heliographic_header` to help with generating FITS-WCS headers in Carrington or Stonyhurst coordinate systems that span the entire solar surface.

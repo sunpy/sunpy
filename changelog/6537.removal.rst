@@ -1,2 +1,0 @@
-:meth:`sunpy.image.resample` no longer accepts "neighbour" as an interpolation method.
-Use "nearest" instead.

@@ -1,1 +1,0 @@
-Improved the plotting guide.
