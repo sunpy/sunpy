@@ -1,5 +1,6 @@
 .. _units-sunpy:
 
+*****
 Units
 *****
 

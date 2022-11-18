@@ -1,8 +1,8 @@
 .. _plotting:
 
-*****************
-Plotting in sunpy
-*****************
+********
+Plotting
+********
 
 sunpy makes use of `Matplotlib <https://matplotlib.org/>`_ for all of its plotting - as such, it tries to follow the Matplotlib plotting philosophy.
 We'll start by going over the basics of plotting in Matplotlib.

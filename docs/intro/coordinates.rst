@@ -1,5 +1,6 @@
 .. _coordinates-sunpy:
 
+***********
 Coordinates
 ***********
 

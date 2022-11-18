@@ -1,8 +1,8 @@
 .. _time-in-sunpy:
 
-*************
-Time in sunpy
-*************
+*****
+Times
+*****
 
 Working with times and time ranges is a standard task in solar data analysis and as such
 sunpy strives to provide convenient and easy methods to do the simple stuff. Python

@@ -1,8 +1,8 @@
 .. _map_guide:
 
-**************
-Map data guide
-**************
+****
+Maps
+****
 
 Map objects in **sunpy** are two-dimensional data associated with a coordinate system.
 This class offers many advantages over using packages such as `astropy.io.fits` to open 2D solar data in Python.

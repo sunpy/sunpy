@@ -27,11 +27,11 @@ The one exception is the final two chapters that explore Maps and TimeSeries - t
    :maxdepth: 2
 
    installation
-   Data Acquisition <acquiring_data/index>
-   Units <units>
-   Coordinates <coordinates>
-   Time <time>
-   Maps <maps>
-   Timeseries <timeseries>
-   Plotting <plotting>
+   units
+   time
+   coordinates
+   acquiring_data/index
+   maps
+   timeseries
+   plotting
    logger
