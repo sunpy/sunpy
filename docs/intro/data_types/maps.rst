@@ -20,8 +20,8 @@ Lastly, :ref:`custom-maps` shows how you can create Maps from data sources not s
 
 .. _creating-maps:
 
-1. Creating Maps
-================
+Creating Maps
+=============
 
 To make things easy, **sunpy** can download sample data which are used throughout the docs.
 These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE``.
@@ -52,8 +52,8 @@ See :ref:`sphx_glr_generated_gallery_saving_and_loading_data_genericmap_in_fits.
 
 .. _inspecting-maps:
 
-2. Inspecting Maps
-==================
+Inspecting Maps
+===============
 
 A Map contains a number of data-associated attributes.
 To get a quick look at your Map simply type:
@@ -125,8 +125,8 @@ To see if the metadata of a Map source has been modified, see :ref:`sphx_glr_gen
 
 .. _map-data:
 
-3. Map Data
-===========
+Map Data
+========
 
 The data in a Map object is accessible through the `~sunpy.map.GenericMap.data` attribute.
 The data is stored as a NumPy `~numpy.ndarray`.
@@ -191,8 +191,8 @@ For example:
 
 .. _plotting-maps:
 
-4. Plotting Maps
-================
+Plotting Maps
+=============
 
 The `~sunpy.map.GenericMap` object has a built-in plot method such that it is easy to quickly view your map.
 To create a plot just type:
@@ -215,8 +215,8 @@ Check out the following foundational examples in the Example Gallery for plottin
 
 * :ref:`sphx_glr_generated_gallery_plotting_grid_plotting.py`
 
-4.1 Plotting Keywords
----------------------
+Plotting Keywords
+-----------------
 
 For Map plotting, `~matplotlib.pyplot.imshow` does most of the heavy lifting in the background while **sunpy** makes a number of choices for you (e.g. colortable, plot title).
 Changing these defaults is made possible through two simple interfaces.
@@ -239,8 +239,8 @@ You can also view or make changes to the default settings through the ``sunpy.ma
 See :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py` for an example of this workflow for changing plot settings.
 
 
-4.2 Colormaps and Normalization
--------------------------------
+Colormaps and Normalization
+---------------------------
 
 Image data is generally shown in false color in order to better identify it or to better visualize structures in the image.
 Matplotlib handles this colormapping process through the `~matplotlib.colors` module.
@@ -324,8 +324,8 @@ Note how the colorbar does not change since these two plots share the same color
 Meanwhile, the data values associated with each color do change because the normalization is different.
 
 
-4.3 Clipping and Masking Data
------------------------------
+Clipping and Masking Data
+-------------------------
 
 It is often necessary to ignore certain data in an image.
 For example, a large data value could be due to cosmic ray hits and should be ignored.
@@ -394,8 +394,8 @@ See the following two examples for applications of this technique:
 
 .. _map-sequences:
 
-5. Map Sequences
-================
+Map Sequences
+=============
 
 A `~sunpy.map.MapSequence` is an ordered list of maps.
 By default, the maps are ordered by their observation date, from earliest to latest date.
@@ -451,8 +451,8 @@ For information on coaligning images and compensating for solar rotation in Map 
 
 .. _composite-maps:
 
-6. Composite Maps and Overlaying Maps
-=====================================
+Composite Maps and Overlaying Maps
+==================================
 
 The `~sunpy.map.Map` method can also handle a list of maps.
 If a series of maps are supplied as inputs, `~sunpy.map.Map` will return a list of maps as the output.
@@ -482,8 +482,8 @@ For a more advanced tutorial on combining data from several maps, see :ref:`sphx
 
 .. _custom-maps:
 
-7. Creating Custom Maps
-=======================
+Creating Custom Maps
+====================
 
 It is also possible to create Maps using custom data (e.g. from a simulation or an observation from a data source that is not explicitly supported in **sunpy**).
 To do this, you need to provide `sunpy.map.Map` with both the data array as well as appropriate meta information.

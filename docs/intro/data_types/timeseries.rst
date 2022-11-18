@@ -18,8 +18,8 @@ Lastly, :ref:`ts-metadata` describes how to view and extract information from th
 
 .. _creating-timeseries:
 
-1. Creating a TimeSeries
-========================
+Creating a TimeSeries
+=====================
 
 A TimeSeries object can be created from local files.
 For convenience, **sunpy** can download several example time series of observational data.
@@ -67,8 +67,8 @@ The `.GenericTimeSeries.concatenate` method can be used to make a single time se
 
 .. _inspecting-timeseries:
 
-2. Inspecting TimeSeries & Accessing the Data
-=============================================
+Inspecting TimeSeries & Accessing the Data
+==========================================
 
 A TimeSeries object holds both data as well as metadata and unit data.
 For a quick look at a TimeSeries, type:
@@ -143,8 +143,8 @@ To get a column of the data use the `~sunpy.timeseries.GenericTimeSeries.quantit
 
 .. _plotting-timeseries:
 
-3. Plotting TimeSeries
-======================
+Plotting TimeSeries
+===================
 
 The **sunpy** TimeSeries object has its own built-in plot methods so that it is easy to quickly view your time series.
 To create a plot just type:
@@ -180,11 +180,11 @@ This makes it possible to use the **sunpy** plot as the foundation for a more co
 
 .. _manipulating-timeseries:
 
-4. Manipulating TimeSeries
-==========================
+Manipulating TimeSeries
+=======================
 
-4.1 Modifying the Data
-----------------------
+Modifying the Data
+------------------
 TimeSeries provides the `~sunpy.timeseries.GenericTimeSeries.add_column` method which will either add a new column or update a current column if the colname is already present.
 This can take numpy array or preferably an Astropy `~astropy.units.quantity.Quantity` value.
 For example:
@@ -200,8 +200,8 @@ Adding a column is not done in place, but instead returns a new TimeSeries with 
 Note that the values will be converted into the column units if an Astropy `~astropy.units.quantity.Quantity` is given.
 Caution should be taken when adding a new column because this column won't have any associated MetaData entry.
 
-4.2 Truncating a TimeSeries
----------------------------
+Truncating a TimeSeries
+-----------------------
 
 It is often useful to truncate an existing TimeSeries object to retain a specific time range.
 This is easily achieved by using the `~sunpy.timeseries.GenericTimeSeries.truncate` method.
@@ -221,8 +221,8 @@ If you want to truncate using slice-like values you can, for example taking ever
 
     >>> my_timeseries_trunc = my_timeseries.truncate(0, 100000, 2) # doctest: +REMOTE_DATA
 
-4.3 More complicated time series operations
--------------------------------------------
+More complicated time series operations
+---------------------------------------
 If you want to do any more complicated analysis on a TimeSeries, we recommend converting it to a `pandas.DataFrame` object first.
 Although this conversion will use the unit information and metadata, pandas has a wide array of methods that can be used e.g. for resampling data.
 As an example to downsample you can do:
@@ -234,8 +234,8 @@ As an example to downsample you can do:
 Here ``10T`` means sample every 10 minutes and 'mean' is the method used to combine the data in each 10 minute bin.
 See the `pandas` documentation for more details on other functionality they offer for time series analysis.
 
-4.4 Concatenating TimeSeries
-----------------------------
+Concatenating TimeSeries
+------------------------
 It's common to want to combine a number of TimeSeries together into a single TimeSeries.
 In the simplest scenario this is to combine data from a single source over several time ranges, for example if you wanted to combine the daily GOES data to get a week or more of constant data in one TimeSeries.
 This can be performed using the TimeSeries factory with the ``concatenate=True`` keyword argument:
@@ -299,8 +299,8 @@ Note that the more complex `~sunpy.timeseries.TimeSeriesMetaData` object now has
 The metadata object is described in more detail in the next section.
 
 
-4.5 Creating an Astropy Table from a TimeSeries
------------------------------------------------
+Creating an Astropy Table from a TimeSeries
+-------------------------------------------
 
 If you want to take the data from your TimeSeries and use it as a `~astropy.table.Table` this can be done using the `~sunpy.timeseries.GenericTimeSeries.to_table` method.
 For example:
@@ -351,14 +351,14 @@ For further details about editing Astropy tables you can read the `Astropy docum
 
 .. _custom-timeseries:
 
-5. Creating Custom TimeSeries
-=============================
+Creating Custom TimeSeries
+==========================
 
 Sometimes you will have data that you want to create into a TimeSeries.
 You can use the factory to create a `~sunpy.timeseries.GenericTimeSeries` from a variety of data sources currently including `pandas.DataFrame` and `astropy.table.Table`.
 
-5.1 Creating a TimeSeries from a Pandas DataFrame
--------------------------------------------------
+Creating a TimeSeries from a Pandas DataFrame
+---------------------------------------------
 
 A TimeSeries object must be supplied with some data when it is created.
 The data can either be in your current Python session, in a local file, or in a remote file.
@@ -396,8 +396,8 @@ This `~pandas.DataFrame` can then be used to construct a TimeSeries:
     >>> units = {'intensity': u.W/u.m**2}
     >>> ts_custom = ts.TimeSeries(data, header, units)
 
-5.2 Creating Custom TimeSeries from an Astropy Table
-----------------------------------------------------
+Creating Custom TimeSeries from an Astropy Table
+------------------------------------------------
 
 A Pandas `~pandas.DataFrame` is the underlying object used to store the data within a TimeSeries, so the above example is the most lightweight to create a custom TimeSeries, but being scientific data it will often be more convenient to use an Astropy `~astropy.table.Table` and let the factory convert this.
 An advantage of this method is it allows you to include metadata and Astropy `~astropy.units.quantity.Quantity` values, which are both supported in tables, without additional arguments.
@@ -435,8 +435,8 @@ You can also explicitly add metadata and units, these will be added to the relev
 
 .. _ts-metadata:
 
-6. A Detailed Look at the Metadata
-==================================
+A Detailed Look at the Metadata
+===============================
 
 TimeSeries store metadata in a `~sunpy.timeseries.TimeSeriesMetaData` object, this object is designed to be able to store multiple basic `~sunpy.util.metadata.MetaDict` (case-insensitive ordered dictionary) objects and able to identify the relevant metadata for a given cell in the data.
 This enables a single TimeSeries to be created by combining/concatenating multiple TimeSeries source files together into one and to keep a reliable track of all the metadata relevant to each cell, column or row.

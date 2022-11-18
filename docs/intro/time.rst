@@ -13,8 +13,8 @@ which allows us to provide a superior user experience.
 
 .. _parse-time:
 
-1. Parsing Times
-================
+Parsing Times
+=============
 
 Solar data is associated with a number of different time formats. sunpy provides a simple
 parsing function which can deal with most every format that a user may encounter. Called
@@ -120,8 +120,8 @@ as you would do with `~astropy.time.Time`. An example::
 
 Please be aware that all sunpy functions which require time as an input sanitize the input using `~sunpy.time.parse_time`.
 
-2. Time Ranges
-==============
+Time Ranges
+===========
 
 A very standard task in data analysis is to have to deal with pairs of times or time
 ranges. This occurs very often with plotting or when searching for data. To deal with
