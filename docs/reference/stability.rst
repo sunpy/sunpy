@@ -1,3 +1,5 @@
+.. _stability:
+
 Current status of sub-packages
 ******************************
 

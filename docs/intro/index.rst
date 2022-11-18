@@ -1,8 +1,8 @@
 .. _guide:
 
-************
-User's Guide
-************
+***************
+Getting Started
+***************
 
 Welcome to the user guide for the sunpy core package. sunpy is a community-
 developed, free and open-source solar data analysis environment. It is meant to
@@ -13,14 +13,11 @@ For more details checkout the :ref:`reference`.
 .. toctree::
    :maxdepth: 2
 
-   Brief Tour <tour>
+   installation
    Data Acquisition <acquiring_data/index>
    Data Types <data_types/index>
    Plotting <plotting>
    Units <units>
    Coordinates <coordinates>
    Time <time>
-   customization
    logger
-   ssw
-   troubleshooting

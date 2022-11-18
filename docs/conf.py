@@ -299,7 +299,7 @@ copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: 
 copybutton_prompt_is_regexp = True
 
 # -- Stability Page ------------------------------------------------------------
-with open('./code_ref/sunpy_stability.yaml', 'r') as estability:
+with open('./reference/sunpy_stability.yaml', 'r') as estability:
     sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
 
 html_context = {
@@ -315,7 +315,7 @@ def rstjinja(app, docname, source):
     # Make sure we're outputting HTML
     if app.builder.format != 'html':
         return
-    files_to_render = ["code_ref/stability", "dev_guide/index"]
+    files_to_render = ["reference/stability", "dev_guide/index"]
     if docname in files_to_render:
         print(f"Jinja rendering {docname}")
         rendered = app.builder.templates.render_string(

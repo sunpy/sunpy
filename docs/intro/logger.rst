@@ -36,7 +36,7 @@ Configuring the logging system
 The default configuration for the logger is determined by the default sunpy
 configuration file. To make permanent changes to the logger configuration
 see the ``[logger]`` section of the Sunpy configuration
-file (:doc:`sunpyrc </guide/customization>`).
+file (:ref:`sunpyrc <customizing-sunpy>`).
 
 If you'd like to control the logger configuration for your current session
 first import the logger::
@@ -56,7 +56,7 @@ This will display DEBUG and all messages with that level and above. If you'd lik
 relevant messages you'd set the logging level to WARNING or above.
 
 For other options such as whether to log to a file or what level of messages the log file should
-contain, see the the Sunpy configuration file (:doc:`sunpyrc </guide/customization>`).
+contain, see the the Sunpy configuration file (:ref:`sunpyrc <customizing-sunpy>`).
 
 Context managers
 ================

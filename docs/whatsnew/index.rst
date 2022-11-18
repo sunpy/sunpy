@@ -1,3 +1,5 @@
+.. _whatsnew:
+
 ***************
 Release History
 ***************

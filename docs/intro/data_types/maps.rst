@@ -7,7 +7,7 @@ Map data guide
 Map objects in **sunpy** are two-dimensional data associated with a coordinate system.
 This class offers many advantages over using packages such as `astropy.io.fits` to open 2D solar data in Python.
 **sunpy** Maps be used with any image with two spatial axes that has FITS standard compliant metadata.
-There are also 19 sources (see :doc:`/code_ref/map` for a complete list) that provide instrument-specific information when plotting and in some cases interpret missing metadata when it is missing from the original file.
+There are also 19 sources (see :ref:`map` for a complete list) that provide instrument-specific information when plotting and in some cases interpret missing metadata when it is missing from the original file.
 
 Part of the philosophy of the Map object is to provide most of the basic functionality that a scientist would want.
 Therefore, a Map also contains a number of methods such as resizing or grabbing a subview.
@@ -47,7 +47,7 @@ If the type of FITS file is not recognized then **sunpy** will try some default 
 **sunpy** can also create Maps using the JPEG 2000 files from `helioviewer.org <https://helioviewer.org/>`__.
 
 The :ref:`sphx_glr_generated_gallery_acquiring_data` section of the Example Gallery has several examples of retrieving data using the `~sunpy.net.Fido` tool.
-For more details, check out the :doc:`/guide/acquiring_data/fido` guide.
+For more details, check out the :ref:`fido_guide` guide.
 See :ref:`sphx_glr_generated_gallery_saving_and_loading_data_genericmap_in_fits.py` for a demonstration of saving a map as a FITS file and `~sunpy.map.GenericMap.save` for more details on saving.
 
 .. _inspecting-maps:
