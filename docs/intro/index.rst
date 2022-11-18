@@ -28,9 +28,10 @@ The one exception is the final two chapters that explore Maps and TimeSeries - t
 
    installation
    Data Acquisition <acquiring_data/index>
-   Data Types <data_types/index>
-   Plotting <plotting>
    Units <units>
    Coordinates <coordinates>
    Time <time>
+   Maps <maps>
+   Timeseries <timeseries>
+   Plotting <plotting>
    logger
