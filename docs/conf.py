@@ -205,11 +205,22 @@ intersphinx_mapping = {
 
 # -- Options for hoverxref -----------------------------------------------------
 hoverxref_domains = ['py']
-hoverxref_intersphinx = intersphinx_mapping.difference(
+hoverxref_intersphinx = list(set(intersphinx_mapping.keys()).difference(
     {
         'matplotlib',
     }
-)
+))
+hoverxref_role_types = {
+    'hoverxref': 'modal',
+    'ref': 'modal',  # for hoverxref_auto_ref config
+    'confval': 'tooltip',  # for custom object
+    'mod': 'tooltip',  # for Python Sphinx Domain
+    'class': 'tooltip',  # for Python Sphinx Domain
+    'obj': 'tooltip',
+    'func': 'tooltip',
+    'meth': 'tooltip',
+    'exc': 'tooltip',
+}
 
 # -- Options for HTML output ---------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
