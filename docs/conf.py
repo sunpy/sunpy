@@ -38,6 +38,7 @@ from sunpy import __version__  # NOQA
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA
 from matplotlib import MatplotlibDeprecationWarning  # NOQA
 from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
+
 # -- Project information -------------------------------------------------------
 project = 'SunPy'
 author = 'The SunPy Community'
@@ -114,6 +115,7 @@ extensions = [
     "sphinxext.opengraph",
     'sphinx_design',
     'sphinx_copybutton',
+    'hoverxref.extension',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -200,6 +202,14 @@ intersphinx_mapping = {
     "asdf": ("https://asdf.readthedocs.io/en/stable/", None),
     "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
 }
+
+# -- Options for hoverxref -----------------------------------------------------
+hoverxref_domains = ['py']
+hoverxref_intersphinx = intersphinx_mapping.difference(
+    {
+        'matplotlib',
+    }
+)
 
 # -- Options for HTML output ---------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
