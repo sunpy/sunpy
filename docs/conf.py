@@ -204,22 +204,42 @@ intersphinx_mapping = {
 }
 
 # -- Options for hoverxref -----------------------------------------------------
-hoverxref_domains = ['py']
-hoverxref_intersphinx = list(set(intersphinx_mapping.keys()).difference(
-    {
-        'matplotlib',
-    }
-))
+# adapted from sphinx-hoverxref conf.py
+if os.environ.get("READTHEDOCS"):
+    # Building on Read the Docs
+    hoverxref_api_host = "https://readthedocs.org"
+
+    if os.environ.get("PROXIED_API_ENDPOINT"):
+        # Use the proxied API endpoint
+        # - A RTD thing to avoid a CSRF block when docs are using a
+        #   custom domain
+        hoverxref_api_host = "/_"
+
+hoverxref_tooltip_maxwidth = 600  # RTD main window is 696px
+hoverxref_auto_ref = True
+hoverxref_mathjax = True
+
+# hoverxref has to be applied to these
+hoverxref_domains = ["py"]
+#hoverxref_roles = ["confval", "term"]
+
 hoverxref_role_types = {
-    'hoverxref': 'modal',
-    'ref': 'modal',  # for hoverxref_auto_ref config
-    'confval': 'tooltip',  # for custom object
-    'mod': 'tooltip',  # for Python Sphinx Domain
-    'class': 'tooltip',  # for Python Sphinx Domain
-    'obj': 'tooltip',
-    'func': 'tooltip',
-    'meth': 'tooltip',
-    'exc': 'tooltip',
+    # roles with py domain
+    "attr": "tooltip",
+    "class": "tooltip",
+    "const": "tooltip",
+    "data": "tooltip",
+    "exc": "tooltip",
+    "func": "tooltip",
+    "meth": "tooltip",
+    "mod": "tooltip",
+    "obj": "tooltip",
+    #
+    # roles with std domain
+    "confval": "tooltip",
+    "hoverxref": "tooltip",
+    "ref": "tooltip",
+    "term": "tooltip",
 }
 
 # -- Options for HTML output ---------------------------------------------------
