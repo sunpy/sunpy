@@ -12,7 +12,7 @@ Who this is for
 ---------------
 This tutorial assumes you know how to run code in Python, but doesn't make any assumptions beyond that.
 sunpy depends heavily on other packages in the scientific Python ecosystem, inclduing astropy, numpy, and Matplotlib.
-This tutorial explains the basics of these packages needed to use sunpy, but is not a comprehensive tutorial to these pacakges and references their own introductoriy tutorials where relevant.
+This tutorial explains the basics of these packages needed to use sunpy, but is not a comprehensive tutorial to these packages and references their own introductoriy tutorials where relevant.
 
 How to use this tutorial
 ------------------------
