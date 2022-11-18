@@ -12,6 +12,6 @@ download the sample data simply run the following command::
     import sunpy.data.sample
 
 This will download the data to your sample-data directory which can be
-customized by editing the sunpyrc file (see :doc:`../customization`).
+customized by editing the sunpyrc file (see :ref:`customizing-sunpy`).
 After running this you can then import the sample data files shortcuts which
 are used below.

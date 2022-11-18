@@ -1,3 +1,5 @@
+.. _citing_sunpy:
+
 Acknowledging or Citing SunPy
 =============================
 

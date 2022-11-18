@@ -7,7 +7,7 @@ Time series data guide
 Time series data are a fundamental part of many data analysis projects in heliophysics as well as other areas.
 **sunpy** provides a TimeSeries object to handle this type of data.
 Much like the `~sunpy.map.Map` object, the `~sunpy.timeseries.TimeSeries` object can load generic filetypes, and recognizes data from nine specific sources to provide instrument specific data loading and plotting capabilities.
-For more information about TimeSeries, and what file types and data sources are supported, check out :doc:`/code_ref/timeseries`.
+For more information about TimeSeries, and what file types and data sources are supported, check out :ref:`timeseries_code_ref`.
 
 :ref:`creating-timeseries` describes how to create a TimeSeries object from single or multiple observational sources.
 :ref:`inspecting-timeseries` describes how to examine the data and metadata.

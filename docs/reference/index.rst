@@ -1,8 +1,8 @@
 .. _reference:
 
-*************
-API Reference
-*************
+*********
+Reference
+*********
 
 .. toctree::
    :maxdepth: 2
@@ -21,3 +21,6 @@ API Reference
    timeseries
    util
    visualization
+   customization
+   troubleshooting
+   ssw
