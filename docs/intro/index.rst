@@ -1,18 +1,18 @@
 .. _guide:
 
-**************
-Intro tutorial
-**************
+**********************
+The ``sunpy`` tutorial
+**********************
 
-Welcome to the introductory tutorial for the sunpy core package.
-sunpy is a community-developed, free and open-source solar data analysis environment.
+Welcome to the introductory tutorial for the ``sunpy`` core package.
+``sunpy`` is a community-developed, free and open-source solar data analysis environment.
 It is meant to provide the core functionality and tools to analyze solar data with Python.
 
 Who this is for
 ---------------
 This tutorial assumes you know how to run code in Python, but doesn't make any assumptions beyond that.
-sunpy depends heavily on other packages in the scientific Python ecosystem, inclduing astropy, numpy, and Matplotlib.
-This tutorial explains the basics of these packages needed to use sunpy, but is not a comprehensive tutorial to these packages and references their own introductoriy tutorials where relevant.
+``sunpy`` depends heavily on other packages in the scientific Python ecosystem, inclduing Astropy, NumPy, and Matplotlib.
+This tutorial explains the basics of these packages needed to use ``sunpy``, but is not a comprehensive tutorial to these packages and references their own introductoriy tutorials where relevant.
 
 How to use this tutorial
 ------------------------
