@@ -473,6 +473,10 @@ def extract_along_coord(smap, coord):
     -------
     values : `~astropy.units.Quantity`
     value_coords : `~astropy.coordinates.SkyCoord`
+
+    Examples
+    --------
+    .. minigallery:: sunpy.map.extract_along_coord
     """
     if not len(coord.shape) or coord.shape[0] < 2:
         raise ValueError('At least two points are required for extracting intensity along a '
