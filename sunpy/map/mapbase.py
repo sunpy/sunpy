@@ -103,7 +103,7 @@ to the standard PC_ij described in section 6.1 of .
     rest will be discarded.
 """
 
-__all__ = ['GenericMap', 'MapMetaValidationError']
+__all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
 
 
 class MapMetaValidationError(AttributeError):
