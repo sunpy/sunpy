@@ -1,7 +1,7 @@
 .. _guide:
 
 **********************
-The ``sunpy`` tutorial
+The sunpy tutorial
 **********************
 
 Welcome to the introductory tutorial for the ``sunpy`` core package.
