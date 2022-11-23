@@ -9,18 +9,25 @@ New Users
 ==========
 
 For help installing ``sunpy`` refer to our :ref:`installation guide <installing>`.
-..
-        * :Introduction to sunpy core [new page described in #6615]
+
+
+.. todo::
+
+    if #6615 is completed link here
+    Introduction to sunpy core
 
 If you are a first time user or new to Python, our **tutorial** provides a walkthrough on how to use the key features of sunpy core.
 Once you've installed sunpy, start here.
 
-.. toctree::
-    :maxdepth: 2
-
-    intro/index
-
-
+* :ref:`guide`
+    #. :ref:`installing`
+    #. :ref:`units-sunpy`
+    #. :ref:`time-in-sunpy`
+    #. :ref:`coordinates-sunpy`
+    #. :ref:`acquiring_data`
+    #. :ref:`map_guide`
+    #. :ref:`timeseries_guide`
+    #. :ref:`plotting`
 
 
 Next Steps
@@ -29,10 +36,15 @@ Next Steps
 * :doc:`Example gallery <generated/gallery/index>` contains short-form guides on accomplishing common tasks using sunpy.
 * :ref:`API reference<reference>` contains a technical description of the inputs, outputs, and behaviour of each component of sunpy core.
 
-..
-    * [if we have how-tos?] How to guides provide detailed overview on some of the features of sunpy. These assume some level of experience using sunpy.
-..
-    * [we dont have a link to these but we do have some explanation pages] Topic guides (name?) provide
+.. todo::
+
+    When a page or subgallery containing more diataxis like how-to (longer form) guides is added then link here
+    [How to guides] provide detailed overview on some of the features of sunpy. These assume some level of experience using sunpy.
+
+.. todo::
+
+    Index explanation pages (e.g. different map rotation methods and then link here.)
+    [Topic guides] discuss key topics and concepts at a fairly high level and provide useful background information and explanation.
 
 
 Further Info
@@ -52,6 +64,8 @@ Further Info
     :maxdepth: 1
     :hidden:
 
+    intro/index
+    intro/installation
     generated/gallery/index
     reference/index
     whatsnew/index
