@@ -2,49 +2,46 @@
 sunpy core Documentation
 ************************
 
-``sunpy`` is a community-developed, free and open-source solar
-data analysis environment for Python.
+``sunpy`` is a community-developed, free and open-source solar data analysis environment for Python.
+
 
 New Users
-*********
+==========
 
-If you are a first time user or new to Python,
-
+For help installing ``sunpy`` refer to our :ref:`installation guide <installing>`.
 ..
         * :Introduction to sunpy core [new page described in #6615]
 
-* :doc:`installation guide <intro/installation>`
+If you are a first time user or new to Python, our **tutorial** provides a walkthrough on how to use the key features of sunpy core.
+Once you've installed sunpy, start here.
 
-Our **tutorial** provides a walkthrough on how to use the key features of sunpy core, we recommend new users start here.
+.. toctree::
+    :maxdepth: 2
 
-* :doc:`Getting Started <intro/index>`
+    intro/index
 
-  #. :doc:`Data Acquisition <intro/acquiring_data/index>`
-  #. :doc:`Data Types <intro/data_types/index>`
-  #. :doc:`Plotting <intro/plotting>`
-  #. :doc:`Units <intro/units>`
-  #. :doc:`Coordinates <intro/coordinates>`
-  #. :doc:`Time <intro/time>`
+
 
 
 Next Steps
-**********
+==========
 
 * :doc:`Example gallery <generated/gallery/index>` contains short-form guides on accomplishing common tasks using sunpy.
-* :doc:`API reference<reference/index>` contains a technical description of the functionality of sunpy core's modules. It describes how they work and how to use them but assume you have a good understanding of sunpy and the scientific python ecosystem in general.
+* :ref:`API reference<reference>` contains a technical description of the inputs, outputs, and behaviour of each component of sunpy core.
 
 ..
     * [if we have how-tos?] How to guides provide detailed overview on some of the features of sunpy. These assume some level of experience using sunpy.
 ..
     * [we dont have a link to these but we do have some explanation pages] Topic guides (name?) provide
 
-Further Info
-************
 
-* Find out :doc:`what's new <whatsnew/index>` with sunpy.
-* View a list of :doc:`known issues <reference/known_issues>` or report new issues on our `GitHub issue tracker`_.
+Further Info
+============
+
+* Find out :ref:`what's new <whatsnew>` with sunpy.
+* View a list of :ref:`known issues <known_issues>` or report new issues on our `GitHub issue tracker`_.
 * Join our `chat room`_ or post to our `discourse`_ for help.
-* Read the :doc:`Developers guide <dev_guide/index>` to start contributing to the sunpy project.
+* Read the :ref:`Developers guide <dev_guide>` to start contributing to the sunpy project.
 
 
 .. _chat room: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
@@ -55,7 +52,6 @@ Further Info
     :maxdepth: 1
     :hidden:
 
-    intro/index
     generated/gallery/index
     reference/index
     whatsnew/index
