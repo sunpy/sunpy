@@ -1,1 +1,3 @@
+# This file is used to pin test packages across sunpy coordinated packages
+# Do not remove, even if it's empty!
 jsonschema<4.10.0
