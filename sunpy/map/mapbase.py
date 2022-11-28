@@ -916,7 +916,7 @@ class GenericMap(NDData):
         in that order.
         """
         exptime = self.meta.get('xposure') or self.meta.get('exptime')
-        if exptime:
+        if exptime is not None:
             return exptime * self.timeunit
 
     @property
