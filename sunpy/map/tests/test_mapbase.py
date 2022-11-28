@@ -221,6 +221,9 @@ def test_exposure_time(generic_map):
     del generic_map.meta['exptime']
     del generic_map.meta['xposure']
     assert generic_map.exposure_time is None
+    # Test that an exposure time of 0.0 s does not yield None
+    generic_map.meta['exptime'] = 0.0
+    assert generic_map.exposure_time == 0.0 * u.s
 
 
 def test_dsun(generic_map):
