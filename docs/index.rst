@@ -53,7 +53,7 @@ Further Info
 * Find out :ref:`what's new <whatsnew>` with sunpy.
 * View a list of :ref:`known issues <known_issues>` or report new issues on our `GitHub issue tracker`_.
 * Join our `chat room`_ or post to our `discourse`_ for help.
-* Read the :ref:`Developers guide <dev_guide>` to start contributing to the sunpy project.
+* Read the :ref:`Developers guide <dev_guide>` to start contributing to the SunPy project.
 
 
 .. _chat room: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
