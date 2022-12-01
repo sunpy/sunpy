@@ -22,7 +22,7 @@ For help installing ``sunpy`` refer to our :ref:`installation guide <installing>
 If you are a first time user or new to Python, our **tutorial** provides a walkthrough on how to use the key features of sunpy core.
 Once you've installed sunpy, start here.
 
-* :ref:`guide`
+* :ref:`tutorial`
     #. :ref:`installing`
     #. :ref:`units-sunpy`
     #. :ref:`time-in-sunpy`
@@ -36,6 +36,7 @@ Once you've installed sunpy, start here.
 Next Steps
 ==========
 
+* :ref:`guide` contains in depth guides for different parts of sunpy.
 * :doc:`Example gallery <generated/gallery/index>` contains short-form guides on accomplishing common tasks using sunpy.
 * :ref:`API reference<reference>` contains a technical description of the inputs, outputs, and behaviour of each component of sunpy core.
 
