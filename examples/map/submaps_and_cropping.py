@@ -29,8 +29,14 @@ swap_submap = swap_map.submap(bottom_left, top_right=top_right)
 ###############################################################################
 # Let's plot the results.
 
-plt.figure()
-swap_submap.plot()
+fig = plt.figure()
+image = swap_submap.plot()
 swap_submap.draw_limb()
 swap_submap.draw_grid()
+
+# Make some room and put the title at the top of the figure
+ax = image.axes
+ax.set_position([0.1, 0.1, 0.8, 0.7])
+ax.set_title(ax.get_title(), pad=45)
+
 plt.show()
