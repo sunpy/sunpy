@@ -102,8 +102,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         to_plot = self.to_dataframe()[to_plot]
         to_plot.plot(ax=axes, **kwargs)
 
-        axes.set_xlim(min(to_plot.dropna(how='all').index),
-                      max(to_plot.dropna(how='all').index))
         axes.set_ylim(0)
         axes.set_ylabel(ylabel)
         axes.legend()
