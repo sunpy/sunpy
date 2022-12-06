@@ -1,8 +1,8 @@
 .. _guide:
 
-***************
-The sunpy guide
-***************
+*****
+Guide
+*****
 
 Welcome to the guide for the ``sunpy`` core package.
 
