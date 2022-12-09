@@ -25,7 +25,7 @@ jobs:
     with:
       submodules: false
       coverage: codecov
-      toxdeps: "'tox<4' tox-pypi-filter"
+      toxdeps: tox-pypi-filter
       posargs: -n auto
       libraries: |
         apt:
@@ -41,7 +41,7 @@ jobs:
     with:
       submodules: false
       coverage: codecov
-      toxdeps: "'tox<4' tox-pypi-filter"
+      toxdeps: tox-pypi-filter
       posargs: -n auto
       libraries: |
         brew:
@@ -60,7 +60,7 @@ jobs:
       default_python: '3.9'
       submodules: false
       pytest: false
-      toxdeps: "'tox<4' tox-pypi-filter"
+      toxdeps: tox-pypi-filter
       cache-path: |
         docs/_build/
         docs/generated/
@@ -81,7 +81,7 @@ jobs:
       default_python: '3.9'
       submodules: false
       coverage: codecov
-      toxdeps: "'tox<4' tox-pypi-filter"
+      toxdeps: tox-pypi-filter
       posargs: -n auto --dist loadgroup
       libraries: |
         apt:
@@ -114,7 +114,7 @@ jobs:
       default_python: '3.9'
       submodules: false
       coverage: codecov
-      toxdeps: "'tox<4' tox-pypi-filter"
+      toxdeps: tox-pypi-filter
       posargs: -n auto
       libraries: |
         apt:
