@@ -28,7 +28,7 @@ repos:
           ]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    rev: 5.11.1
     hooks:
       - id: isort
         args: ["--sp", "setup.cfg"]
