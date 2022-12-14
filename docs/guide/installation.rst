@@ -8,6 +8,8 @@ The SunPy project `maintains a range of packages <https://sunpy.org/project/affi
 
 conda
 =====
+Full instructions for installing using conda are in :ref:`installing`.
+This is the recommended way to install sunpy, because it creates a fresh Python environment that is independent from any other Python install or packages on your system.
 
 Updating a package
 ------------------
