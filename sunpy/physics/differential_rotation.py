@@ -287,30 +287,27 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     # Calculate the interval between the start and end time
     interval = (new_observer.obstime - coordinate.obstime).to(u.s)
 
-    # Ignore some invalid NaN comparisons within astropy
-    # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
-    with np.errstate(invalid='ignore'):
-        # Compute Stonyhurst Heliographic coordinates - returns (longitude,
-        # latitude). Points off the limb are returned as nan.
-        heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
+    # Compute Stonyhurst Heliographic coordinates - returns (longitude,
+    # latitude). Points off the limb are returned as nan.
+    heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
 
-        # Compute the differential rotation
-        drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+    # Compute the differential rotation
+    drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
-        # Rotate the input coordinate as seen by the original observer
-        heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
-                                        heliographic_coordinate.lat,
-                                        heliographic_coordinate.radius,
-                                        obstime=coordinate.obstime,
-                                        frame=HeliographicStonyhurst)
+    # Rotate the input coordinate as seen by the original observer
+    heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
+                                    heliographic_coordinate.lat,
+                                    heliographic_coordinate.radius,
+                                    obstime=coordinate.obstime,
+                                    frame=HeliographicStonyhurst)
 
-        # Calculate where the rotated coordinate appears as seen by new observer
-        # for the coordinate system of the input coordinate.  The translational
-        # motion of the Sun will be ignored for the transformation.
-        frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
-                                                               obstime=new_observer.obstime)
-        with transform_with_sun_center():
-            return heliographic_rotated.transform_to(frame_newobs)
+    # Calculate where the rotated coordinate appears as seen by new observer
+    # for the coordinate system of the input coordinate.  The translational
+    # motion of the Sun will be ignored for the transformation.
+    frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
+                                                           obstime=new_observer.obstime)
+    with transform_with_sun_center():
+        return heliographic_rotated.transform_to(frame_newobs)
 
 
 def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
