@@ -29,7 +29,7 @@ aia = Map(sunpy.data.sample.AIA_171_IMAGE)
 ###############################################################################
 # Before we plot the image, let's reproject the off-disk AIA coordinates onto
 # a spherical screen at the same distance as the EIT map, so they can be
-# overlayed. Next, zoom in around the solar flare so the RHESSI contours are
+# overlaid. Next, zoom in around the solar flare so the RHESSI contours are
 # visible. Also, specify the RHESSI contour levels to be plotted.
 
 with Helioprojective.assume_spherical_screen(eit.observer_coordinate):
