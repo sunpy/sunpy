@@ -1,8 +1,15 @@
+import warnings
+
 import numpy as np
 import pytest
-import skimage.data as images
+
+# Ignore skimage deprecation warnings due to numpy 1.24.0
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=DeprecationWarning)
+    import skimage.data as images
+    from skimage import transform as tf
+
 from matplotlib.figure import Figure
-from skimage import transform as tf
 
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
