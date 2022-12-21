@@ -63,16 +63,14 @@ class Scraper:
 
     Examples
     --------
-    >>> # Downloading data from SolarMonitor.org
     >>> from sunpy.net import Scraper
-    >>> solmon_pattern = ('http://solarmonitor.org/data/'
-    ...                   '%Y/%m/%d/fits/{instrument}/'
-    ...                   '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
-    >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)
-    >>> print(solmon.pattern)
-    http://solarmonitor.org/data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz
-    >>> print(solmon.now)  # doctest: +SKIP
-    http://solarmonitor.org/data/2017/11/20/fits/swap/swap_00174_fd_20171120_193933.fts.gz
+    >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/%Y/%m/%d/'
+    ...            '{instrument}_lv1_%Y%m%d_%H%M%S.fits')
+    >>> swap = Scraper(pattern, instrument='swap')
+    >>> print(swap.pattern)
+    http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits
+    >>> print(swap.now)  # doctest: +SKIP
+    http://proba2.oma.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
 
     Notes
     -----
@@ -260,17 +258,15 @@ class Scraper:
         Examples
         --------
         >>> from sunpy.net import Scraper
-        >>> solmon_pattern = ('http://solarmonitor.org/data/'
-        ...                   '%Y/%m/%d/fits/{instrument}/'
-        ...                   '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
-        >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)
+        >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/%Y/%m/%d/'
+        ...            '{instrument}_lv1_%Y%m%d_%H%M%S.fits')
+        >>> swap = Scraper(pattern, instrument='swap')
         >>> from sunpy.time import TimeRange
-        >>> timerange = TimeRange('2015-01-01','2015-01-01T16:00:00')
-        >>> print(solmon.filelist(timerange))  # doctest: +REMOTE_DATA
-        ['http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_025423.fts.gz',
-         'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_061145.fts.gz',
-         'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_093037.fts.gz',
-         'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_124927.fts.gz']
+        >>> timerange = TimeRange('2015-01-01T00:08:00','2015-01-01T00:12:00')
+        >>> print(swap.filelist(timerange))  # doctest: +REMOTE_DATA
+        ['http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
+         'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
+         'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001157.fits']
 
         Notes
         -----
