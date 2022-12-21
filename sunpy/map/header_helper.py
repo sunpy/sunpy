@@ -28,7 +28,7 @@ def meta_keywords():
          'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
          ...
     """
-    return MappingProxyType(_map_meta_keywords)
+    return _map_meta_keywords.copy()
 
 
 @u.quantity_input(equivalencies=u.spectral())
