@@ -189,11 +189,11 @@ def test_entries_from_fido_search_result(fido_search_result):
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=17634850.470588233, wavemax=17634850.470588233,
         instrument='NORH')
-    # 1 entry from rhessi
+    # 2 entries from rhessi
+    assert entries[66].fileid.endswith("/metadata/catalog/hsi_obssumm_20120101_032.fits")
     assert entries[66] == DatabaseEntry(
         source="RHESSI", provider='NASA', physobs='summary_lightcurve',
-        fileid=("https://hesperia.gsfc.nasa.gov/"
-                "hessidata/metadata/catalog/hsi_obssumm_20120101_032.fits"),
+        fileid=entries[66].fileid,
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,

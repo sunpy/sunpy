@@ -26,7 +26,7 @@ It also supports tab-complete, to find the data source you want.
 
    >>> import hvpy
    >>> hvpy.getDataSources()  # doctest: +REMOTE_DATA
-   {'SDO': {'HMI': {'continuum': {'sourceId': 18,
+   {...'SDO': {...'HMI': {'continuum': {'sourceId': 18,
    ...
 
 ``HelioviewerClient().get_closest_image`` is replaced by :func:`hvpy.getClosestImage`.
