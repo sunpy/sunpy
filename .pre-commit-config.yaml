@@ -62,6 +62,12 @@ repos:
         exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py|sunpy/extern/|sunpy/util/tests/test_logger.py"
   - repo: local
     hooks:
+      - id: generate-sunpy-net-hek-attrs
+        name: generate sunpy.net.hek.attrs
+        entry: python tools/hek_mkcls.py
+        language: system
+        pass_filenames: false
+        files: (^tools/(hek_mkcls|hektemplate)\.py$)|(^sunpy/net/hek/attrs\.py$)
       - id: git-diff
         name: git diff
         entry: git diff --color --exit-code
