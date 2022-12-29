@@ -72,7 +72,7 @@ def test_wcs_frame_mapping_observer_hgc_self():
 
 def test_wcs_aux():
     """
-    Make sure auxillary information round trips properly from coordinate frames
+    Make sure auxiliary information round trips properly from coordinate frames
     to WCS and back.
     """
     data = np.ones([6, 6], dtype=np.float64)

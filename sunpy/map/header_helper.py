@@ -214,7 +214,7 @@ def _get_wcs_meta(coordinate, projection_code):
             * ctype1, ctype2
             * cunit1, cunit2
             * date_obs
-            * observer auxillary information, if set on `coordinate`
+            * observer auxiliary information, if set on `coordinate`
     """
 
     coord_meta = {}

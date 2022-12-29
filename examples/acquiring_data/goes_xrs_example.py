@@ -76,7 +76,7 @@ df = df[(df["xrsa_quality"] == 0) & (df["xrsb_quality"] == 0)]
 goes_15 = ts.TimeSeries(df, goes_15.meta, goes_15.units)
 
 ###############################################################
-# We can also pull out the individual GOES chanels and plot. The 0.5-4 angstrom
+# We can also pull out the individual GOES channels and plot. The 0.5-4 angstrom
 # channel is known as the "xrsa" channel and the 1-8 angstrom channel is known
 # as the "xrsb" channel.
 

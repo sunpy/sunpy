@@ -23,7 +23,7 @@ ts = sunpy.timeseries.TimeSeries(RHESSI_TIMESERIES)
 ###############################################################################
 # We now use SciPy's `~scipy.signal.periodogram` to estimate the
 # power spectra of the first column of the Timeseries. The first column contains
-# X-Ray emmisions in the range of 3-6 keV. An alternative version is Astropy's
+# X-Ray emissions in the range of 3-6 keV. An alternative version is Astropy's
 # `~astropy.timeseries.LombScargle` periodogram.
 
 x_ray = ts.columns[0]

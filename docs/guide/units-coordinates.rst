@@ -11,7 +11,7 @@ both these tasks.
 Units in sunpy
 ==============
 
-All functions in sunpy that accept or return numbers associated with physcial
+All functions in sunpy that accept or return numbers associated with physical
 quantities accept and return `~astropy.units.Quantity` objects. These objects
 represent a number (or an array of numbers) and a unit. This means sunpy is
 always explicit about the units associated with a value. Quantities and units
@@ -19,7 +19,7 @@ are powerful tools for keeping track of variables with a physical meaning and
 make it straightforward to convert the same physical quantity into different units.
 
 In this section of the guide we will give a quick introduction to `astropy.units`
-and then demostrate how to use units with sunpy.
+and then demonstrate how to use units with sunpy.
 
 To use units we must first import them from Astropy. To save on typing we usually
 import units as ``u``::

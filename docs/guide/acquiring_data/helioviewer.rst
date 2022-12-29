@@ -16,7 +16,7 @@ To interact with the Helioviewer API, users first create a `~sunpy.net.helioview
 The client instance can then be used to make various queries against the API using the same parameters one would use when making a web request.
 Note that the HelioviewerClient does not currently offer full access to the HelioViewer API.
 
-We provide the follwing functions:
+We provide the following functions:
 
 1. Download a JPEG 2000 image for the specified datasource that is the closest match in time to the ``date`` requested.
 2. As above but return the full JSON response instead of an image.

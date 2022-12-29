@@ -399,7 +399,7 @@ def contains_coordinate(smap, coordinates):
     bool
         `True` if ``coordinates`` falls within the bounds of ``smap``.
         This includes the edges of the map. If multiple coordinates are input,
-        returns a boolean arrary.
+        returns a boolean array.
     """
     # Dimensions of smap
     xs, ys = smap.dimensions

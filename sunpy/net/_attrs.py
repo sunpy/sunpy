@@ -124,7 +124,7 @@ class Wavelength(Range):
             if wavemin.unit.is_equivalent(unit):
                 break
         else:
-            raise u.UnitsError(f"This unit is not convertable to any of {supported_units}")
+            raise u.UnitsError(f"This unit is not convertible to any of {supported_units}")
 
         wavemin, wavemax = sorted([wavemin.to(unit), wavemax.to(unit)])
         self.unit = unit

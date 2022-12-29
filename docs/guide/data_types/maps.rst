@@ -61,7 +61,7 @@ that will return a `dict` of all the current meta keywords and their description
 
 There is also functionality also includes a utility function
 `~sunpy.map.make_fitswcs_header` that will return a header with the
-appropiate FITS keywords once the map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames`
+appropriate FITS keywords once the map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames`
 is passed. The `astropy.coordinates.SkyCoord` is defined by the user, and contains information on the reference frame,
 reference coordinate and observer location. The function returns a `sunpy.util.MetaDict`.
 The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.

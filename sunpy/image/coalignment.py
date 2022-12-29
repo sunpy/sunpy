@@ -525,10 +525,10 @@ def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
         A dictionary with two keys, 'x' and 'y'.  Key 'x' is an astropy
         quantities array of corresponding to the amount of shift in the
         x-direction (in arcseconds, assuming the helio-projective
-        Cartesian co-ordinate system) that is applied to the input
+        Cartesian coordinate system) that is applied to the input
         `~sunpy.map.MapSequence`.  Key 'y' is an `~astropy.units.Quantity` array
         corresponding to the amount of shift in the y-direction (in arcseconds,
-        assuming the helio-projective Cartesian co-ordinate system) that is
+        assuming the helio-projective Cartesian coordinate system) that is
         applied to the input `~sunpy.map.MapSequence`. The number of elements in
         each array must be the same as the number of maps in the
         `~sunpy.map.MapSequence`.  If a shift is passed in to the function, that

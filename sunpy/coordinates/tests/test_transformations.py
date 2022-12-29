@@ -43,7 +43,7 @@ from sunpy.time import parse_time
 def test_hcc_to_hgs():
     '''
     Check that a coordinate pointing to the observer in Heliocentric
-    coordinates maps to the lattitude/longitude of the observer in
+    coordinates maps to the latitude/longitude of the observer in
     HeliographicStonyhurst coordinates.
     '''
     lat = 10 * u.deg

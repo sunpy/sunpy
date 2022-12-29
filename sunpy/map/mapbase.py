@@ -68,7 +68,7 @@ _META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-m
 _meta_doc = """
 The map metadata.
 
-This is used to intepret the map data. It may
+This is used to interpret the map data. It may
 have been modified from the original metadata by sunpy. See the
 `~sunpy.util.MetaDict.added_items`, `~sunpy.util.MetaDict.removed_items`
 and `~sunpy.util.MetaDict.modified_items` properties of MetaDict
@@ -597,7 +597,7 @@ class GenericMap(NDData):
         w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
         # Make these a quantity array to prevent the numpy setting element of
         # array with sequence error.
-        # Explicityly call ``.to()`` to check that scale is in the correct units
+        # Explicitly call ``.to()`` to check that scale is in the correct units
         w2.wcs.cdelt = u.Quantity([self.scale[0].to(self.spatial_units[0] / u.pix),
                                    self.scale[1].to(self.spatial_units[1] / u.pix)])
         w2.wcs.crval = u.Quantity([self._reference_longitude, self._reference_latitude])
@@ -836,7 +836,7 @@ class GenericMap(NDData):
         Average time of the image acquisition.
 
         Taken from the DATE-AVG FITS keyword if present, otherwise halfway
-        between `date_start` and `date_end` if both peices of metadata are
+        between `date_start` and `date_end` if both pieces of metadata are
         present.
         """
         avg = self._get_date('date-avg')
@@ -1325,7 +1325,7 @@ class GenericMap(NDData):
         Matrix describing the transformation needed to align the reference
         pixel with the coordinate axes.
 
-        The order or precendence of FITS keywords which this is taken from is:
+        The order or precedence of FITS keywords which this is taken from is:
         - PC\*_\*
         - CD\*_\*
         - CROTA\*
@@ -1526,7 +1526,7 @@ class GenericMap(NDData):
         """
         Resample to new dimension sizes.
 
-        Uses the same parameters and creates the same co-ordinate lookup points
+        Uses the same parameters and creates the same coordinate lookup points
         as IDL''s congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
 

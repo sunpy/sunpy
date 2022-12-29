@@ -228,7 +228,7 @@ Messages can have one of several levels, in increasing order of importance:
 * DEBUG: Detailed information, typically of interest only when diagnosing problems.
 * INFO: A message conveying information about the current task, and confirming that things are working as expected.
 * WARNING: An indication that something unexpected happened, and that user action may be required.
-* ERROR: An indication that a more serious issue has occured, where something failed but the task is continuing.
+* ERROR: An indication that a more serious issue has occurred, where something failed but the task is continuing.
 * CRITICAL: A serious error, indicating that the program itself may be unable to continue running.
 
 By default, all messages except for DEBUG messages are displayed. Messages can also be sent to a file and time stamped.
@@ -383,7 +383,7 @@ Config File Location Moved
 
 If you have customised your :ref:`customizing-with-sunpyrc-files` you will need to move it to the new config file location.
 Your old file should be in ``~/.sunpy/sunpyrc`` file and the new location, which is now platform specific, can be found by running `sunpy.print_config`.
-We recommand that your take a look at the new file as available configuration options have increased.
+We recommend that your take a look at the new file as available configuration options have increased.
 
 .. _whatsnew-1.0-renamed-removed:
 

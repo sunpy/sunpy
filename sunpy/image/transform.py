@@ -34,7 +34,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Linear transformation rotation matrix.
     order : `int` 0-5, optional
         Interpolation order to be used, defaults to 3.  The precise meaning depends
-        on the rotation method specifed by ``method``.
+        on the rotation method specified by ``method``.
     scale : `float`
         A scale factor for the image with the default being no scaling.
     image_center : tuple, optional

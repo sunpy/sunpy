@@ -290,22 +290,22 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     # Ignore some invalid NaN comparisons within astropy
     # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
     with np.errstate(invalid='ignore'):
-        # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
+        # Compute Stonyhurst Heliographic coordinates - returns (longitude,
         # latitude). Points off the limb are returned as nan.
         heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
 
         # Compute the differential rotation
         drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
-        # Rotate the input co-ordinate as seen by the original observer
+        # Rotate the input coordinate as seen by the original observer
         heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
                                         heliographic_coordinate.lat,
                                         heliographic_coordinate.radius,
                                         obstime=coordinate.obstime,
                                         frame=HeliographicStonyhurst)
 
-        # Calculate where the rotated co-ordinate appears as seen by new observer
-        # for the co-ordinate system of the input co-ordinate.  The translational
+        # Calculate where the rotated coordinate appears as seen by new observer
+        # for the coordinate system of the input coordinate.  The translational
         # motion of the Sun will be ignored for the transformation.
         frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
                                                                obstime=new_observer.obstime)
@@ -483,7 +483,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
             # Re-project the pixels which are on disk back to location of the original observer
             coordinates_at_map_observer = rotated_coord.transform_to(smap.coordinate_frame)
 
-        # Go back to pixel co-ordinates
+        # Go back to pixel coordinates
         x2, y2 = smap.world_to_pixel(coordinates_at_map_observer)
 
     # Re-stack the data to make it correct output form

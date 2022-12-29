@@ -223,7 +223,7 @@ The result is::
     test.py:5: AssertionError
     =========================== 1 failed in 0.07 seconds ===========================
 
-Sometimes the output from the test suite will have ``xfail`` meaning a test has passed although it has been marked as ``@pytest.mark.xfail``), or ``skipped`` meaing a test that has been skipped due to not meeting some condition (online and figure tests are the most common).
+Sometimes the output from the test suite will have ``xfail`` meaning a test has passed although it has been marked as ``@pytest.mark.xfail``), or ``skipped`` meaning a test that has been skipped due to not meeting some condition (online and figure tests are the most common).
 
 You need to use the option ``-rs`` for skipped tests and ``-rx`` for xfailed tests, respectively.
 Or use ``-rxs`` for detailed information on both skipped and xfailed tests.
