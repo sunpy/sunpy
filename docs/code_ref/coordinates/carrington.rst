@@ -82,7 +82,7 @@ Compared to |AA| and older methods of calculation
 |AA| publishes the apparent sub-Earth Carrington longitude (|L0|), and these values include the stellar-aberration correction.
 Consequently, SunPy values will be consistently ~0.006 degrees (~20 arcseconds) greater than |AA| values, although these discrepancies are not always apparent at the printed precision (0.01 degrees).
 
-Since |AA| specifically tuned the IAU parameters to minimize the discrepancies with older methods of calulation under their prescription that includes the stellar-aberration correction, SunPy values will also be ~20 arcseconds greater than values calculated using older methods.
+Since |AA| specifically tuned the IAU parameters to minimize the discrepancies with older methods of calculation under their prescription that includes the stellar-aberration correction, SunPy values will also be ~20 arcseconds greater than values calculated using older methods.
 Be aware that older methods of calculation may not have accounted for the variable light travel time between the Sun and the Earth, which can cause additional discrepancies of up to ~5 arcseconds.
 
 |AA| does not appear to account for the difference in light travel time between the sub-Earth point on the Sun's surface and the center of the Sun (~2.3 lightseconds), which results in a fixed discrepancy of ~1.4 arcseconds in |L0|.

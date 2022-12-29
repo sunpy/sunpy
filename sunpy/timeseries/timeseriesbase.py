@@ -1,5 +1,5 @@
 """
-This module provies `sunpy.timeseries.GenericTimeSeries` which all other
+This module provides `sunpy.timeseries.GenericTimeSeries` which all other
 `sunpy.timeseries.TimeSeries` classes inherit from.
 """
 import copy
@@ -646,7 +646,7 @@ class GenericTimeSeries:
         # Truncate the metadata
         self.meta._truncate(self.time_range)
 
-        # Remove non-existant columns
+        # Remove non-existent columns
         redundant_cols = list(set(self.meta.columns) - set(self.columns))
         self.meta._remove_columns(redundant_cols)
 

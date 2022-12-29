@@ -34,7 +34,7 @@ class HEKAttr(_attr.AttrComparison):
     """
 
 
-class HEKComparisonParamAttrWrapper(_attr.ComparisonParamAttrWrapper):
+class HEKComparisonParamAttrWrapper:
     def __init__(self, name):
         self.name = name
 

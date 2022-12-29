@@ -1,5 +1,5 @@
 """
-This module provies a collection of time handing functions.
+This module provides a collection of time handing functions.
 """
 import re
 import textwrap
@@ -245,7 +245,7 @@ def convert_time_str(time_string, **kwargs):
         except ValueError:
             pass
 
-    # when no format matches, call default fucntion
+    # when no format matches, call default function
     return convert_time.dispatch(object)(time_string, **kwargs)
 
 

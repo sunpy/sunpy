@@ -179,16 +179,15 @@ def testFilesRange_sameDirectory_local():
 
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_remote():
-    pattern = ('http://solarmonitor.org/data/%Y/%m/%d/'
-               'fits/{instrument}/'
-               '{instrument}_00174_fd_%Y%m%d_%H%M%S.fts.gz')
+    pattern = ('http://proba2.oma.be/{instrument}/data/bsd/%Y/%m/%d/'
+               '{instrument}_lv1_%Y%m%d_%H%M%S.fits')
     s = Scraper(pattern, instrument='swap')
     startdate = parse_time((2014, 5, 14, 0, 0))
-    enddate = parse_time((2014, 5, 14, 6, 30))
+    enddate = parse_time((2014, 5, 14, 0, 5))
     timerange = TimeRange(startdate, enddate)
     assert len(s.filelist(timerange)) == 2
-    startdate = parse_time((2014, 5, 14, 21, 0))
-    enddate = parse_time((2014, 5, 14, 23, 30))
+    startdate = parse_time((2014, 5, 14, 0, 6))
+    enddate = parse_time((2014, 5, 14, 0, 7))
     timerange = TimeRange(startdate, enddate)
     assert len(s.filelist(timerange)) == 0
 

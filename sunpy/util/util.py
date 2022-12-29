@@ -148,7 +148,7 @@ def dict_keys_same(list_of_dicts):
     Parameters
     ----------
     list_of_dicts : `list` of `dict`
-          A list containing each dictonary to parse.
+          A list containing each dictionary to parse.
 
     Returns
     ------

@@ -142,7 +142,7 @@ class SOTMap(GenericMap):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
 
-        # TODO (add other options, Now all threated as intensity. This follows
+        # TODO (add other options, Now all treated as intensity. This follows
         # Hinode SDC archive) StokesQUV -> grey, Velocity -> EIS, Width -> EIS,
         # Mag Field Azi -> IDL 5 (STD gamma II)
         # 'WB' -> red

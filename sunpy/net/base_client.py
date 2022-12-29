@@ -412,7 +412,7 @@ class BaseClient(ABC):
             if name not in attrs.__all__:
                 attrs.__all__.append(name)
 
-        # Register client attrs after it has regsitered its own attrs
+        # Register client attrs after it has registered its own attrs
         from sunpy.net import attr
         values = cls.register_values()
         # If the client has no support, we won't try to register attrs

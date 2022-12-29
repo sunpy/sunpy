@@ -1,5 +1,5 @@
 """
-This module provies a non-comprehensive collection of solar physical constants.
+This module provides a non-comprehensive collection of solar physical constants.
 """
 # TODO: Need better sources for some constants as well as error values.
 import astropy.constants.astropyconst20 as astrocon

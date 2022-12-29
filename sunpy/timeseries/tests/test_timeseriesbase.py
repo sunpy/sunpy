@@ -357,7 +357,7 @@ def test_concatenation_different_data_ts_error(eve_test_ts, fermi_gbm_test_ts):
 
 def test_generic_construction_concatenation():
     nrows = 10
-    # Generate the data and the corrisponding dates
+    # Generate the data and the corresponding dates
     base = parse_time(datetime.datetime.today())
     times = base - TimeDelta(np.arange(nrows)*u.minute)
     intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (nrows))))
@@ -400,7 +400,7 @@ def test_add_column_from_quantity(eve_test_ts, column_quantity):
     new_ts = eve_test_ts.add_column('quantity_added', column_quantity)
     # Test the column similar to the original quantity?
     assert_quantity_allclose(new_ts.quantity('quantity_added'), column_quantity)
-    # Test the full list of columns are pressent
+    # Test the full list of columns are present
     assert set(new_ts.to_dataframe().columns) == set(
         eve_test_ts.to_dataframe().columns) | {'quantity_added'}
 
@@ -418,7 +418,7 @@ def test_remove_column(eve_test_ts):
     # Check data updated correctly
     assert len(removed.columns) == removed.to_dataframe().shape[1]
 
-    # Check that removing a non-existant column errors
+    # Check that removing a non-existent column errors
     with pytest.raises(ValueError):
         eve_test_ts.remove_column('random column name')
 
@@ -430,7 +430,7 @@ def test_add_column_from_array(eve_test_ts, column_quantity):
     assert_quantity_allclose(
         new_ts.quantity('array_added'), column_quantity)
 
-    # Test the full list of columns are pressent
+    # Test the full list of columns are present
     assert set(new_ts.to_dataframe().columns) == set(
         eve_test_ts.to_dataframe().columns) | {'array_added'}
 
@@ -489,7 +489,7 @@ def test_equality(generic_ts, table_ts):
 
 
 def test_equality_different_ts_types(generic_ts, eve_test_ts):
-    # this should fail as they're not the smae type and can't match
+    # this should fail as they're not the same type and can't match
     assert not (generic_ts == eve_test_ts)
 
 

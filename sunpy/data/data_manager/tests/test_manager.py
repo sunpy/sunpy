@@ -212,7 +212,7 @@ def test_namespacing_with_manager_override_file(module_patched_manager, download
     # Request the original file again
     data_function_from_fake_module()
 
-    # File dosn't get redownloaded, instead it is retrieved using the file hash
+    # File doesn't get redownloaded, instead it is retrieved using the file hash
     assert downloader.times_called == 2
 
     # new_file entry in manager._file_cache is replaced with the original test_file

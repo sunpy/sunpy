@@ -78,7 +78,7 @@ Generally the more people that can look over a pull request the better it will t
 Code
 ----
 
-If you would prefer to code instead, the best way to start is to work on an exisiting and known `issues`_.
+If you would prefer to code instead, the best way to start is to work on an existing and known `issues`_.
 We have several repositories you can investigate.
 The main one is the sunpy repository with where all the known `issues`_ with sunpy are detailed.
 Each issue should have a series of labels that provide information about the nature of the issue.
@@ -154,7 +154,7 @@ Next we will want to setup the conda environment and we will need to add the `co
     $ conda activate sunpy-dev
 
 This will create a new conda environment called "sunpy-dev" and install the latest version of pip from the conda-forge channel.
-The next step is get a developement version of sunpy.
+The next step is get a development version of sunpy.
 This will require that `git`_ be installed.
 If you have a `GitHub`_ account, we suggest that you `fork`_ the `sunpy repository`_ (the fork button is to the top right) and **use that url for the clone step**.
 This will make submitting changes easier in the long term for you:
@@ -202,7 +202,7 @@ Now that you have written some code to address an issue.
 You will need to check two things:
 
 1. The changes you have made are correct, i.e., it fixes a bug or the feature works.
-   This requires you to run the code either manually or by writting/running a test function.
+   This requires you to run the code either manually or by writing/running a test function.
    `pytest`_ is the framework we use for this.
 
 2. The changes you have made follow the correct coding style.

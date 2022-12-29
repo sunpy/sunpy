@@ -6,10 +6,10 @@ Setting the correct position for SOHO in a LASCO C3 Map
 How to get the correct location of SOHO using JPL HORIZONS
 and update the header.
 
-This requires the intallation of the
+This requires the installation of the
 `astroquery <https://astroquery.readthedocs.io/en/latest/>`__
 package and an internet connection.
-`astroquery <https://astroquery.readthedocs.io/en/latest/>`__ can be installed ontop of
+`astroquery <https://astroquery.readthedocs.io/en/latest/>`__ can be installed on top of
 the existing sunpy conda environment: ``conda install -c astropy astroquery``
 """
 # sphinx_gallery_thumbnail_number = 2

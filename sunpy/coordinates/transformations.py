@@ -243,19 +243,19 @@ def _transformation_debug(description):
             debug_output = log.getEffectiveLevel() <= logging.DEBUG
 
             if debug_output:
-                # Indention for transformation layer
-                indention = u"\u2502   " * _layer_level
+                # Indentation for transformation layer
+                indentation = u"\u2502   " * _layer_level
 
-                # For the input arguments, add indention to any lines after the first line
-                from_str = str(args[0]).replace("\n", f"\n       {indention}\u2502       ")
-                to_str = str(args[1]).replace("\n", f"\n       {indention}\u2502       ")
+                # For the input arguments, add indentation to any lines after the first line
+                from_str = str(args[0]).replace("\n", f"\n       {indentation}\u2502       ")
+                to_str = str(args[1]).replace("\n", f"\n       {indentation}\u2502       ")
 
                 # Log the description and the input arguments
-                log.debug(f"{indention}{description}")
-                log.debug(f"{indention}\u251c\u2500From: {from_str}")
-                log.debug(f"{indention}\u251c\u2500To  : {to_str}")
+                log.debug(f"{indentation}{description}")
+                log.debug(f"{indentation}\u251c\u2500From: {from_str}")
+                log.debug(f"{indentation}\u251c\u2500To  : {to_str}")
 
-                # Increment the layer level to increase the indention for nested transformations
+                # Increment the layer level to increase the indentation for nested transformations
                 _layer_level += 1
 
             result = func(*args, **kwargs)
@@ -265,10 +265,10 @@ def _transformation_debug(description):
                 _layer_level -= 1
 
                 # For the output, add intention to any lines after the first line
-                out_str = str(result).replace("\n", f"\n       {indention}        ")
+                out_str = str(result).replace("\n", f"\n       {indentation}        ")
 
                 # Log the output
-                log.debug(f"{indention}\u2514\u2500Out : {out_str}")
+                log.debug(f"{indentation}\u2514\u2500Out : {out_str}")
 
             return result
         return wrapped_func

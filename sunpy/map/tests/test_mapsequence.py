@@ -139,7 +139,7 @@ def test_all_meta(mapsequence_all_the_same):
 
 def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
     """
-    Tests that overidden __repr__ functionality works as expected. Test
+    Tests that overridden __repr__ functionality works as expected. Test
     for mapsequence of same maps as well that of different maps.
     """
     # Test the case of MapSequence having same maps
