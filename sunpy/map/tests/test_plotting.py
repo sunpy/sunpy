@@ -302,6 +302,7 @@ def test_draw_limb_different_observer(aia171_test_map):
 
 
 @figure_test
+@pytest.mark.filterwarnings('ignore:invalid value encountered in cast:RuntimeWarning')
 def test_draw_limb_heliographic_stonyhurst(aia171_test_map):
     # Create the WCS header for HGS axes
     header = {
