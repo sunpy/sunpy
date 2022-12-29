@@ -231,10 +231,7 @@ def test_differential_rotate_observer_straddles_limb(straddles_limb_map):
     # Test a map that straddles the limb - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_observer = get_earth(straddles_limb_map.date + 48*u.hr)
-    # Ignore some invalid NaN comparisons within astropy
-    # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
-    with np.errstate(invalid='ignore'):
-        dmap = differential_rotate(straddles_limb_map, observer=new_observer)
+    dmap = differential_rotate(straddles_limb_map, observer=new_observer)
     assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
     # The output map should have the positional properties of the observer
     assert dmap.date.isot == new_observer.obstime.isot
@@ -273,11 +270,8 @@ def test_differential_rotate_time_straddles_limb(straddles_limb_map):
     # Test a map that straddles the limb - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_time = straddles_limb_map.date + 48*u.hr
-    # Ignore some invalid NaN comparisons within astropy
-    # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
-    with np.errstate(invalid='ignore'):
-        with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
-            dmap = differential_rotate(straddles_limb_map, time=new_time)
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = differential_rotate(straddles_limb_map, time=new_time)
     assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
     # The output map should have the same time as the new time now.
     assert dmap.date.isot == new_time.isot
@@ -370,19 +364,13 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
     for this_edge in (1, 2):  # Bottom and left edges do move
         pixels = edges[this_edge]
         res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
-        # Ignore some invalid NaN comparisons within astropy
-        # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
-        with np.errstate(invalid='ignore'):
-            assert all(res.Tx != (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
-            assert all(res.Ty != (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
+        assert all(res.Tx != (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
+        assert all(res.Ty != (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
 
 
 def test_get_extreme_position():
-    # Ignore some invalid NaN comparisons within astropy
-    # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
-    with np.errstate(invalid='ignore'):
-        coords = SkyCoord([-1, 0, 1, np.nan]*u.arcsec, [-2, 0, 2, -np.nan]
-                          * u.arcsec, frame=frames.Helioprojective)
+    coords = SkyCoord([-1, 0, 1, np.nan]*u.arcsec, [-2, 0, 2, -np.nan]
+                      * u.arcsec, frame=frames.Helioprojective)
 
     with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1
