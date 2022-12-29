@@ -60,23 +60,6 @@ class HEKComparisonParamAttrWrapper:
         return isinstance(other, HEKComparisonParamAttrWrapper)
 
 
-class Time(_attrs.Time):
-    f"""
-    `sunpy.net.hek.attrs.Time` is deprecated, please use `sunpy.net.attrs.Time`
-
-    {_attrs.Time.__doc__}
-    """
-
-    def __init__(self, *args, **kwargs):
-        # Do this here to not clutter the namespace
-        from sunpy.util.exceptions import SunpyDeprecationWarning, _warn
-
-        name = type(self).__name__
-        _warn(f"`sunpy.net.hek.attrs.{name}` is deprecated, please use `sunpy.net.attrs.{name}`",
-              SunpyDeprecationWarning)
-        super().__init__(*args, **kwargs)
-
-
 class EventType(_attr.Attr):
     def __init__(self, item):
         super().__init__()
