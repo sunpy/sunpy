@@ -1,1 +1,0 @@
-Fixed the incorrect calculation in :func:`~sunpy.map.header_helper.make_fitswcs_header` of the rotation matrix from a rotation angle when the pixels are non-square.
