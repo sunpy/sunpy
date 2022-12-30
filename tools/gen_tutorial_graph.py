@@ -1,5 +1,4 @@
-import pydot
-from pydot import Edge, Dot, Node
+from pydot import Dot, Edge, Node
 
 graph = Dot("my_graph", graph_type="graph", bgcolor="white")
 
