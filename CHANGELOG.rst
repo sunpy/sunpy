@@ -1,3 +1,25 @@
+4.0.8 (2022-12-30)
+==================
+
+New Features
+------------
+
+- Added three tutorials which replicate `~sunpy.map.CompositeMap` functionality (:ref:`sphx_glr_generated_gallery_plotting_AIA_HMI_composite.py`, :ref:`sphx_glr_generated_gallery_plotting_masked_composite_plot.py`, :ref:`sphx_glr_generated_gallery_plotting_three_map_composite.py`).
+  A fourth tutorial (:ref:`sphx_glr_generated_gallery_plotting_rgb_composite.py`) demonstrates how to create an RGB image with three different maps. (`#6459 <https://github.com/sunpy/sunpy/pull/6459>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed an issue with loading old EIT fits files with `sunpy.map.Map` where the date could not be parsed. (`#6605 <https://github.com/sunpy/sunpy/pull/6605>`__)
+
+
+Documentation
+-------------
+
+- Added `sunpy.map.PixelPair` to the reference documentation. (`#6620 <https://github.com/sunpy/sunpy/pull/6620>`__)
+
+
 4.0.7 (2022-11-11)
 ==================
 
