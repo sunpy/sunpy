@@ -190,7 +190,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=17634850.470588233, wavemax=17634850.470588233,
         instrument='NORH')
     # 2 entries from rhessi
-    assert entries[66].fileid.endswith("/metadata/catalog/hsi_obssumm_20120101_032.fits")
+    assert entries[66].fileid.endswith("/metadata/catalog/hsi_obssumm_20120101_016.fits")
     assert entries[66] == DatabaseEntry(
         source="RHESSI", provider='NASA', physobs='summary_lightcurve',
         fileid=entries[66].fileid,
