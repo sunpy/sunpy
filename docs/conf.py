@@ -38,6 +38,7 @@ from sunpy import __version__  # NOQA
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA
 from matplotlib import MatplotlibDeprecationWarning  # NOQA
 from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
+
 # -- Project information -------------------------------------------------------
 project = 'SunPy'
 author = 'The SunPy Community'
@@ -114,6 +115,7 @@ extensions = [
     "sphinxext.opengraph",
     'sphinx_design',
     'sphinx_copybutton',
+    'hoverxref.extension',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -199,6 +201,45 @@ intersphinx_mapping = {
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
     "asdf": ("https://asdf.readthedocs.io/en/stable/", None),
     "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
+}
+
+# -- Options for hoverxref -----------------------------------------------------
+# adapted from sphinx-hoverxref conf.py
+if os.environ.get("READTHEDOCS"):
+    # Building on Read the Docs
+    hoverxref_api_host = "https://readthedocs.org"
+
+    if os.environ.get("PROXIED_API_ENDPOINT"):
+        # Use the proxied API endpoint
+        # - A RTD thing to avoid a CSRF block when docs are using a
+        #   custom domain
+        hoverxref_api_host = "/_"
+
+hoverxref_tooltip_maxwidth = 600  # RTD main window is 696px
+hoverxref_auto_ref = True
+hoverxref_mathjax = True
+
+# hoverxref has to be applied to these
+hoverxref_domains = ["py"]
+#hoverxref_roles = ["confval", "term"]
+
+hoverxref_role_types = {
+    # roles with py domain
+    "attr": "tooltip",
+    "class": "tooltip",
+    "const": "tooltip",
+    "data": "tooltip",
+    "exc": "tooltip",
+    "func": "tooltip",
+    "meth": "tooltip",
+    "mod": "tooltip",
+    "obj": "tooltip",
+    #
+    # roles with std domain
+    "confval": "tooltip",
+    "hoverxref": "tooltip",
+    "ref": "tooltip",
+    "term": "tooltip",
 }
 
 # -- Options for HTML output ---------------------------------------------------
