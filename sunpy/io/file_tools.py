@@ -216,7 +216,7 @@ def detect_filetype(filepath):
     # FITS
     # Checks for gzip signature. 
     # If found, decompresses first few bytes and checks for FITS
-    if cdf_magic_number[:4] == '1f8b':
+    if first80[:3] == b"\x1f\x8b\x08":
         import gzip
         with gzip.open(filepath, 'rb') as fp:
             first80 = fp.read(80)
