@@ -220,10 +220,6 @@ def detect_filetype(filepath):
         import gzip
         with gzip.open(filepath, 'rb') as fp:
             first80 = fp.read(80)
-            match = re.match(br"[A-Z0-9_]{0,8} *=", first80)
-            if match is not None:
-                return 'fits'
-          
 
     # Check for "KEY_WORD  =" at beginning of file
     match = re.match(br"[A-Z0-9_]{0,8} *=", first80)
