@@ -214,14 +214,16 @@ def detect_filetype(filepath):
         cdf_magic_number = fp.read(4).hex()
 
     # FITS
-    # Check the extensions to see if it is a gzipped FITS file
-    filepath_rest_ext1, ext1 = os.path.splitext(filepath)
-    _, ext2 = os.path.splitext(filepath_rest_ext1)
-
-    gzip_extensions = [".gz"]
-    fits_extensions = [".fts", ".fit", ".fits"]
-    if (ext1 in gzip_extensions and ext2 in fits_extensions):
-        return 'fits'
+    # Checks for gzip signature. 
+    # If found, decompresses first few bytes and checks for FITS
+    if cdf_magic_number[:4] == '1f8b':
+        import gzip
+        with gzip.open(filepath, 'rb') as fp:
+            first80 = fp.read(80)
+            match = re.match(br"[A-Z0-9_]{0,8} *=", first80)
+            if match is not None:
+                return 'fits'
+          
 
     # Check for "KEY_WORD  =" at beginning of file
     match = re.match(br"[A-Z0-9_]{0,8} *=", first80)
