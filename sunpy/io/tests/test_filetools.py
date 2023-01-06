@@ -49,25 +49,15 @@ def test_read_file_fits_multple_hdu():
 
 def test_read_file_fits_gzip():
     # Test read gzipped fits file
-    for fits_extension in [".fts", ".fit", ".fits"]:
-        pair = sunpy.io.read_file(get_test_filepath(f"gzip_test{fits_extension}.gz"))
+    gzip_fits_files = ["gzip_test.fts.gz", "gzip_test.fits.gz","gzip_test.fit.gz","gzip_fits_test.file"]
+    for filename in gzip_fits_files:
+        pair = sunpy.io.read_file(filename)
         assert isinstance(pair, list)
         assert len(pair) == 1
         assert len(pair[0]) == 2
         assert isinstance(pair[0][0], np.ndarray)
         assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
         assert np.all(pair[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
-
-
-def test_read_file_fits_gzip_not_gz_extension():
-    # Test read gzipped fits file without the .gz extension
-    pair = sunpy.io.read_file(get_test_filepath(f"gzip_fits_test.file"))
-    assert isinstance(pair, list)
-    assert len(pair) == 1
-    assert len(pair[0]) == 2
-    assert isinstance(pair[0][0], np.ndarray)
-    assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
-    assert np.all(pair[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
 
 
 @skip_glymur
