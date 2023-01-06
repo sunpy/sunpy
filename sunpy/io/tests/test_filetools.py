@@ -59,6 +59,17 @@ def test_read_file_fits_gzip():
         assert np.all(pair[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
 
 
+def test_read_file_fits_gzip_not_gz_extension():
+    # Test read gzipped fits file without the .gz extension
+    pair = sunpy.io.read_file(get_test_filepath(f"gzip_fits_test.file"))
+    assert isinstance(pair, list)
+    assert len(pair) == 1
+    assert len(pair[0]) == 2
+    assert isinstance(pair[0][0], np.ndarray)
+    assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
+    assert np.all(pair[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
+
+
 @skip_glymur
 def test_read_file_jp2():
     # Test read jp2
