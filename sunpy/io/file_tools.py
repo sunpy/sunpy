@@ -4,6 +4,7 @@ This module provides a generic file reader.
 import os
 import re
 import pathlib
+import gzip
 
 try:
     from . import _fits as fits
@@ -217,7 +218,6 @@ def detect_filetype(filepath):
     # Checks for gzip signature. 
     # If found, decompresses first few bytes and checks for FITS
     if first80[:3] == b"\x1f\x8b\x08":
-        import gzip
         with gzip.open(filepath, 'rb') as fp:
             first80 = fp.read(80)
 
