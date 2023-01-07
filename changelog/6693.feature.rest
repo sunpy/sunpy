@@ -1,0 +1,3 @@
+Able to detect gzip-compressed FITS files even if they don't have the ``.gz`` extension in the filename.
+`~sunpy.io.detect_filetype` now looks for the right file signature while checking
+for gzipped FITS files.
