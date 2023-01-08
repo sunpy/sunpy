@@ -420,7 +420,7 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     <BLANKLINE>
 
 To give an example of filtering post-search, let's only return the rows in the table which are line-of-sight magnetograms from HMI or the 94Å passband from AIA.
-You can also always do this filtering with the `a.vso.Physobs <sunpy.net.attrs.Physobs>` and `a.Wavelength <sunpy.net.attrs.Wavelength>` attrs in the search command.
+You can also always do this filtering with the `a.Physobs <sunpy.net.attrs.Physobs>` and `a.Wavelength <sunpy.net.attrs.Wavelength>` attrs in the search command.
 
 First we split the results in to a table for AIA and a table for HMI::
 
