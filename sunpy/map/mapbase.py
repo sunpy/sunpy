@@ -1768,7 +1768,8 @@ class GenericMap(NDData):
         return new_map
 
     @u.quantity_input
-    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None):
+    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
+               missing=0.0):
         """
         Returns a submap defined by a rectangle.
 
@@ -1909,33 +1910,53 @@ class GenericMap(NDData):
         bottom = np.floor(bottom + 0.5)
         left = np.floor(left + 0.5)
 
-        # Round the top right pixel to the nearest integer, then add 1 for array indexing
+        # Round the top right pixel to the nearest integer
         # We want e.g. 2.5 to be rounded down to 2, so use ceil(x - 0.5)
-        top = np.ceil(top - 0.5) + 1
-        right = np.ceil(right - 0.5) + 1
+        top = np.ceil(top - 0.5)
+        right = np.ceil(right - 0.5)
+
+        # Calculate padding if any. This is used later to pad the array
+        # selected corners are outside the bounds of the original submap
+        bottom_pad = int(np.abs(np.min((bottom, 0))))
+        left_pad = int(np.abs(np.min((left, 0))))
+        top_pad = int(np.max((top - (self.data.shape[0] - 1), 0)))
+        right_pad = int(np.max((right - (self.data.shape[1] - 1), 0)))
 
         # Clip pixel values to max of array, prevents negative
         # indexing
+        # Add 1 to the upper bounds (top, right) for array indexing
         bottom = int(np.clip(bottom, 0, self.data.shape[0]))
-        top = int(np.clip(top, 0, self.data.shape[0]))
+        top = int(np.clip(top+1, 0, self.data.shape[0]))
         left = int(np.clip(left, 0, self.data.shape[1]))
-        right = int(np.clip(right, 0, self.data.shape[1]))
+        right = int(np.clip(right+1, 0, self.data.shape[1]))
 
         arr_slice = np.s_[bottom:top, left:right]
         # Get ndarray representation of submap
         new_data = self.data[arr_slice].copy()
 
+        # Pad array in cases where the selected bounds are outside the original
+        # bounds of the image
+        new_data = np.pad(new_data,
+                          ((bottom_pad, top_pad), (left_pad, right_pad)),
+                          mode='constant',
+                          constant_values=(missing, missing))
+
         # Make a copy of the header with updated centering information
         new_meta = self.meta.copy()
         # Add one to go from zero-based to one-based indexing
-        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - left
-        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - bottom
+        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - left + left_pad
+        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - bottom + bottom_pad
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
         if self.mask is not None:
             new_mask = self.mask[arr_slice].copy()
+            # Any expanded values are unmasked
+            new_mask = np.pad(new_mask,
+                              ((bottom_pad, top_pad), (left_pad, right_pad)),
+                              mode='constant',
+                              constant_values=(False, False))
             # Create new map with the modification
             new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
             return new_map
@@ -1946,8 +1967,8 @@ class GenericMap(NDData):
     @seconddispatch
     def _parse_submap_input(self, bottom_left, top_right, width, height):
         """
-        Should take any valid input to submap() and return bottom_left and
-        top_right in pixel coordinates.
+        Should take any valid input to submap() and return the bottom left, top left,
+        top right, and bottom right corners (in that order) in pixel coordinates.
         """
 
     @_parse_submap_input.register(u.Quantity)
@@ -1973,8 +1994,8 @@ class GenericMap(NDData):
             # Add width and height to get top_right
             top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
 
-        top_left = u.Quantity([top_right[0], bottom_left[1]])
-        bottom_right = u.Quantity([bottom_left[0], top_right[1]])
+        bottom_right = u.Quantity([top_right[0], bottom_left[1]])
+        top_left = u.Quantity([bottom_left[0], top_right[1]])
         return bottom_left, top_left, top_right, bottom_right
 
     @_parse_submap_input.register(SkyCoord)
