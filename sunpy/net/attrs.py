@@ -35,7 +35,7 @@ from ._attrs import (
     Time,
     Wavelength,
 )
-from .attr import AttrAnd , AttrOr
+from .attr import AttrAnd, AttrOr
 
 # Trick the docs into thinking these attrs are defined in here.
 for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs, Source, Provider, ExtentType, AttrAnd, AttrOr):
