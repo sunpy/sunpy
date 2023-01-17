@@ -1,2 +1,2 @@
 Added ``AttrAnd`` and ``AttrOr`` to the namespace in ``sunpy.net.attrs``.
-This allows users to to avoid `|` or `&` when creating a query a larger query.
+This allows users to to avoid ``|`` or ``&`` when creating a query a larger query.
