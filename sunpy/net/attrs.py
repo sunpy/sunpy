@@ -43,4 +43,3 @@ for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Ph
 
 __all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'ExtentType',
            'Sample', 'Detector', 'Resolution', 'Physobs', 'Source', 'Provider', 'AttrAnd', 'AttrOr']
-           
