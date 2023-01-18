@@ -168,8 +168,8 @@ it would be passed to the client as
 
 So you can process each element of the OR in turn without having to consult any other part of the query.
 
-If the query the user provided contains an OR statement you get passed an instance of `~sunpy.net.attrs.AttrOr` and each sub-element of that `~sunpy.net.attrs.AttrOr` will be `~sunpy.net.attrs.AttrAnd` (or a single other attrs class).
-If the user query doesn't contain an OR you get a single `~.Attr` instance or an `~.AttrAnd`.
+If the query the user provided contains an OR statement you get passed an instance of `~sunpy.net.attrs.AttrOr` and each sub-element of that `~sunpy.net.attrs.AttrOr` will be `~sunpy.net.attrs.AttrAnd` (or a single other attr class).
+If the user query doesn't contain an OR you get a single `~sunpy.net.attr.Attr` instance or an `~sunpy.net.attrs.AttrAnd`.
 
 For example you could get any of the following queries (using ``&`` for AND and ``|`` for OR):
 
