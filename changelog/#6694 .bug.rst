@@ -1,2 +1,2 @@
 the current version of ``sqlalchemy`` has been pinned < ``2.0`` till investigation is being done on new
-release of version ``2.0`` so thhat it does not break the current databse implementation 
+release of version ``2.0`` so that it does not break the current databse implementation 
