@@ -168,7 +168,7 @@ it would be passed to the client as
 
 So you can process each element of the OR in turn without having to consult any other part of the query.
 
-If the query the user provided contains an OR statement you get passed an instance of `~sunpy.net.attr.AttrOr` and each sub-element of that `~sunpy.net.attr.AttrOr` will be `~sunpy.net.attr.AttrAnd` (or a single other attr class).
+If the query the user provided contains an OR statement you get passed an instance of `~sunpy.net.attrs.AttrOr` and each sub-element of that `~sunpy.net.attrs.AttrOr` will be `~sunpy.net.attrs.AttrAnd` (or a single other attr class).
 If the user query doesn't contain an OR you get a single `~.Attr` instance or an `~.AttrAnd`.
 
 For example you could get any of the following queries (using ``&`` for AND and ``|`` for OR):
@@ -297,7 +297,7 @@ The ``search()`` method has the job of taking a set of user queries and returnin
 The general flow of a ``search()`` method is:
 
 * Call your instance of an `.AttrWalker` to convert the input into a form expected by your API.
-* Make as many requests to your API as needed to fulfill the query. (Generally one per element of the outer `.AttrOr`).
+* Make as many requests to your API as needed to fulfill the query. (Generally one per element of the outer `sunpy.net.attrs.AttrOr`).
 * Process the response from your API into an instance of `.QueryResponseTable`.
 
 To process the query with the `.AttrWalker`, call the :meth:`.AttrWalker.create` method::
