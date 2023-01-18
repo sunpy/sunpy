@@ -1,0 +1,1 @@
+The current version of ``SQLAlchemy`` has been fixed to be <2.0 until we have ensured that the current database module works with it.
