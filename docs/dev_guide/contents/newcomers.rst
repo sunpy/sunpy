@@ -8,7 +8,7 @@ If you have come across this page, you just might be new to the SunPy project - 
 SunPy is an open project that encourages anyone to contribute in any way possible.
 The people who help develop or contribute to SunPy are varied in ability and experience, with the vast majority being volunteers.
 
-If you have any questions, comments, or just want to say hello, we have an active `chat room`_ , a `mailing list`_ and a `community forum`_  .
+If you have any questions, comments, or just want to say hello, we have an active `chat room`_, a `mailing list`_ and a `community forum`_.
 
 .. _chat room: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
 .. _mailing list: https://groups.google.com/forum/#!forum/sunpy
