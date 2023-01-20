@@ -346,7 +346,7 @@ class MapSequence:
             ani_data = self.maps
 
         im = ani_data[0].plot(axes=axes, **kwargs)
-      
+
         def updatefig(i, im, annotate, ani_data, removes):
             while removes:
                 removes.pop(0).remove()
