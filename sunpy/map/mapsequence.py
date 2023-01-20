@@ -271,6 +271,8 @@ class MapSequence:
         plot_function : function
             A function to be called as each map is plotted.
             For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
+        norm : can be explicitly used to call mapsequence.plot function
+        cmap : can be explicitly used to call mapsequence.plot function
 
         Returns
         -------
@@ -344,7 +346,7 @@ class MapSequence:
             ani_data = self.maps
 
         im = ani_data[0].plot(axes=axes, **kwargs)
-
+      
         def updatefig(i, im, annotate, ani_data, removes):
             while removes:
                 removes.pop(0).remove()
