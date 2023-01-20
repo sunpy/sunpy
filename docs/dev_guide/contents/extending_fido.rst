@@ -304,8 +304,6 @@ An example for this can be seen as implemented in the JSOC client:
 
 This adds all attrs that exist within ``sunpy.net.jsoc.attrs``, such as ``Keyword``, to ``attrs.jsoc``. These can now be accessed via an import of the main attrs module, e. g. at ``a.jsoc.Keyword``.
 
-This import can be any module, external as well.
-
 Writing a Search Method
 -----------------------
 
