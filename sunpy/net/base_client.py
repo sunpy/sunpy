@@ -397,7 +397,6 @@ class BaseClient(ABC):
 
         cls._registry[cls] = cls._can_handle_query
 
-        # If a client has an _attrs_module() classmethod, import that module's contents into the attrs namespace.
         if hasattr(cls, "_attrs_module"):
             from sunpy.net import attrs
 
