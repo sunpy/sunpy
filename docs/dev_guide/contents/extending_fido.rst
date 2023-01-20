@@ -293,7 +293,9 @@ Registering custom attrs in the ``attrs`` namespace
 ---------------------------------------------------
 
 When you have custom attrs defined in a separate attrs module, you can add them to the namespace using the :meth:`~sunpy.net.BaseClient._attrs_module` class method.
-The method returns a tuple of length 2, where the first element is the target module name under which you want to add the custom attrs to the main attrs namespace. The second is the import path to the source module where the custom attrs are defined. Note that the source module here need not be an internal SunPy module, it could very well be external.
+The method returns a tuple of length 2, where the first element is the target module name under which you want to add the custom attrs to the main attrs namespace.
+The second is the import path to the source module where the custom attrs are defined.
+Note that the source module here need not be an internal ``sunpy`` module, it could very well be external.
 An example for this can be seen as implemented in the JSOC client:
 
 .. code-block:: python
