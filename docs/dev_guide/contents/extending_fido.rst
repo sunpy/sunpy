@@ -289,6 +289,18 @@ An Example of ``register_values()``
 
         return adict
 
+Registering custom attrs in the ``attrs`` namespace
+---------------------------------------------------
+When you have custom attrs defined in a separate attrs module, you can add them to the namespace using the :meth:`~sunpy.net.BaseClient._attrs_module` class method.
+The method returns a tuple having the name of the target namespace and the module to be imported in that namespace.
+An example for this can be seen as implemented in the JSOC client:
+
+.. code-block:: python
+
+    @classmethod
+    def _attrs_module(cls):
+        return 'jsoc', 'sunpy.net.jsoc.attrs'
+
 Writing a Search Method
 -----------------------
 
