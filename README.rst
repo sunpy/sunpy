@@ -61,6 +61,7 @@ For more information or to ask questions about ``sunpy`` or any other SunPy libr
 -  `sunpy documentation <https://docs.sunpy.org/en/stable/>`__
 -  `SunPy Chat`_
 -  `SunPy mailing list <https://groups.google.com/forum/#!forum/sunpy>`__
+-  `SunPy Community forum <https://community.openastronomy.org/c/sunpy/5>`__
 
 Acknowledging or Citing ``sunpy``
 =================================
