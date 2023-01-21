@@ -22,7 +22,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 # Here are four different ways to draw a rectangle. The first three ways
 # directly calls the `~astropy.coordinates.SkyCoord` class. The fourth way
 # converts pixel coordinates to the equivalent `~astropy.coordinates.SkyCoord`
-# objects using the :meth:`~sunpy.map.GenericMap.pixel_to_world`.
+# objects using the :meth:`~sunpy.map.GenericMap.wcs.pixel_to_world`.
 
 # sphinx_gallery_defer_figures
 
@@ -89,8 +89,8 @@ aia_map.draw_quadrangle(
 ################################################################################
 # Draw a desired rectangle in pixel coordinates by first converting to SkyCoord objects.
 
-bottom_left = aia_map.pixel_to_world(600 * u.pixel, 350 * u.pixel)
-top_right = aia_map.pixel_to_world(800 * u.pixel, 450 * u.pixel)
+bottom_left = aia_map.wcs.pixel_to_world(600 * u.pixel, 350 * u.pixel)
+top_right = aia_map.wcs.pixel_to_world(800 * u.pixel, 450 * u.pixel)
 aia_map.draw_quadrangle(
     bottom_left,
     axes=ax,
@@ -98,7 +98,7 @@ aia_map.draw_quadrangle(
     edgecolor="red",
     linestyle=":",
     linewidth=2,
-    label='pixel_to_world()'
+    label='wcs.pixel_to_world()'
 )
 ax.legend()
 
