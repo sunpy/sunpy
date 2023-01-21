@@ -1,6 +1,7 @@
 import json
 import pathlib
 
+import aiohttp
 import requests
 
 from astropy.table import Table
@@ -116,7 +117,7 @@ def get_datasets(observatory):
     return t
 
 
-def _update_cdaweb_dataset_data():
+async def _update_cdaweb_dataset_data():
     all_obs = get_observatory_groups()
     url = '/'.join([
         _CDAS_BASEURL,
@@ -128,11 +129,13 @@ def _update_cdaweb_dataset_data():
     for group in all_obs['Group']:
         print(f'🛰 Getting datasets for {group}')
         group_url = url + f'?observatoryGroup={group}'
-        response = requests.get(group_url, headers=_CDAS_HEADERS)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(group_url) as response:
+                response = requests.get(group_url, headers=_CDAS_HEADERS)
 
-        datasets = response.json()['DatasetDescription']
-        dataset_ids = {ds['Id']: ds['Label'] for ds in datasets}
-        all_datasets.update(dataset_ids)
+                datasets = response.json()['DatasetDescription']
+                dataset_ids = {ds['Id']: ds['Label'] for ds in datasets}
+                all_datasets.update(dataset_ids)
 
     attr_file = pathlib.Path(__file__).parent / 'data' / 'attrs.json'
     with open(attr_file, 'w') as attrs_file:
