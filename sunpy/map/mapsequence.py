@@ -271,7 +271,7 @@ class MapSequence:
         plot_function : function
             A function to be called as each map is plotted.
             For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
-        norm : string 
+        norm : astropy.visualization.mpl_normalize.ImageNormalize 
             Normalization used in scaling the plot.
             This will override the predefined value in ``plot_settings['norm']``.
         cmap : string 
