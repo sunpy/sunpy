@@ -98,7 +98,7 @@ aia_map.draw_quadrangle(
     edgecolor="red",
     linestyle=":",
     linewidth=2,
-    label='wcs.pixel_to_world()'
+    label='pixel_to_world()'
 )
 ax.legend()
 
