@@ -8,6 +8,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+
 from sunpy.coordinates import Helioprojective, sun
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
@@ -163,6 +164,7 @@ def _edge_coordinates(smap):
     edge_pixels = u.Quantity(np.concatenate(edges).value, unit=u.pix, copy=False)
     # Calculate the edge of the world
     return smap.wcs.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
+
 
 def contains_full_disk(smap):
     """
