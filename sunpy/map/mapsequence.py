@@ -271,9 +271,7 @@ class MapSequence:
         plot_function : function
             A function to be called as each map is plotted.
             For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
-        norm : can be explicitly used to call mapsequence.plot function
-        cmap : can be explicitly used to call mapsequence.plot function
-
+      
         Returns
         -------
         `matplotlib.animation.FuncAnimation`
