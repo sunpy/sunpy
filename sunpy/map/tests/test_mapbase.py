@@ -580,7 +580,7 @@ def test_submap_world(simple_map, rect, submap_out):
     corner1 = simple_map.wcs.pixel_to_world(*rect[0])
     corner2 = simple_map.wcs.pixel_to_world(*rect[1])
     corners = simple_map.wcs.pixel_to_world(u.Quantity([rect[0][0], rect[1][0]]),
-                                        u.Quantity([rect[0][1], rect[1][1]]))
+                                            u.Quantity([rect[0][1], rect[1][1]]))
     for r in [dict(bottom_left=corner1, top_right=corner2),
               dict(bottom_left=corner2, top_right=corner1),
               dict(bottom_left=corners, ),
@@ -677,7 +677,7 @@ def test_resample(simple_map, shape):
     assert u.allclose(resampled_lower_left.Ty, original_lower_left.Ty)
 
     resampled_upper_left = resampled.wcs.pixel_to_world((shape[0] - 0.5) * u.pix,
-                                                    (shape[1] - 0.5) * u.pix)
+                                                        (shape[1] - 0.5) * u.pix)
     original_upper_left = simple_map.wcs.pixel_to_world(2.5 * u.pix, 2.5 * u.pix)
     assert u.allclose(resampled_upper_left.Tx, original_upper_left.Tx)
     assert u.allclose(resampled_upper_left.Ty, original_upper_left.Ty)
