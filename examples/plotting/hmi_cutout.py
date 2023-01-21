@@ -108,12 +108,12 @@ lat.set_ticklabel_position('r')
 
 # sphinx_gallery_defer_figures
 
-xpix, ypix = magnetogram_big.world_to_pixel(right_corner)
+xpix, ypix = magnetogram_big.wcs.world_to_pixel(right_corner)
 con1 = ConnectionPatch(
     (0, 1), (xpix.value, ypix.value), 'axes fraction', 'data', axesA=ax2, axesB=ax1,
     arrowstyle='-', color='black', lw=1
 )
-xpix, ypix = magnetogram_big.world_to_pixel(
+xpix, ypix = magnetogram_big.wcs.world_to_pixel(
     SkyCoord(right_corner.Tx, left_corner.Ty, frame=magnetogram_big.coordinate_frame))
 con2 = ConnectionPatch(
     (0, 0), (xpix.value, ypix.value), 'axes fraction', 'data', axesA=ax2, axesB=ax1,

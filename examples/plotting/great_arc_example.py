@@ -46,7 +46,7 @@ plt.show()
 # Now we can calculate the nearest integer pixels of the data that correspond
 # to the location of arc.
 
-pixels = np.asarray(np.rint(m.world_to_pixel(great_arc.coordinates())), dtype=int)
+pixels = np.asarray(np.rint(m.wcs.world_to_pixel(great_arc.coordinates())), dtype=int)
 x = pixels[0, :]
 y = pixels[1, :]
 

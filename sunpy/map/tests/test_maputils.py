@@ -95,11 +95,11 @@ def test_all_coordinates_from_map(sub_smap):
     assert isinstance(coordinates.frame, BaseCoordinateFrame)
     assert coordinates.frame.name == sub_smap.coordinate_frame.name
 
-    xpix, ypix = sub_smap.world_to_pixel(coordinates[0, 0])
+    xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[0, 0])
     assert_quantity_allclose(xpix, 0*u.pix, atol=1e-7*u.pix)
     assert_quantity_allclose(ypix, 0*u.pix, atol=1e-7*u.pix)
 
-    xpix, ypix = sub_smap.world_to_pixel(coordinates[-1, -1])
+    xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[-1, -1])
     assert_quantity_allclose(xpix, sub_smap.dimensions[0] - 1*u.pix)
     assert_quantity_allclose(ypix, sub_smap.dimensions[1] - 1*u.pix)
 
@@ -112,11 +112,11 @@ def test_all_corner_coordinates_from_map(sub_smap):
     assert isinstance(coordinates.frame, BaseCoordinateFrame)
     assert coordinates.frame.name == sub_smap.coordinate_frame.name
 
-    xpix, ypix = sub_smap.world_to_pixel(coordinates[0, 0])
+    xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[0, 0])
     assert_quantity_allclose(xpix, -0.5*u.pix)
     assert_quantity_allclose(ypix, -0.5*u.pix)
 
-    xpix, ypix = sub_smap.world_to_pixel(coordinates[-1, -1])
+    xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[-1, -1])
     assert_quantity_allclose(xpix, sub_smap.dimensions[0] - 0.5*u.pix)
     assert_quantity_allclose(ypix, sub_smap.dimensions[1] - 0.5*u.pix)
 
@@ -209,7 +209,7 @@ def test_on_disk_bounding_coordinates(aia171_test_map):
 def test_data_at_coordinates(aia171_test_map, aia_test_arc):
     data = sample_at_coords(aia171_test_map, aia_test_arc.coordinates())
     pixels = np.asarray(np.rint(
-        aia171_test_map.world_to_pixel(aia_test_arc.coordinates())), dtype=int)
+        aia171_test_map.wcs.world_to_pixel(aia_test_arc.coordinates())), dtype=int)
     x = pixels[0, :]
     y = pixels[1, :]
     intensity_along_arc = aia171_test_map.data[y, x]
@@ -277,7 +277,7 @@ def test_contains_coord(aia171_test_map):
 
 def test_extract_along_coord(aia171_test_map):
     nmax = max(*aia171_test_map.data.shape)
-    top_right = aia171_test_map.pixel_to_world((nmax-1)*u.pix, (nmax-1)*u.pix)
+    top_right = aia171_test_map.wcs.pixel_to_world((nmax-1)*u.pix, (nmax-1)*u.pix)
     line = SkyCoord([aia171_test_map.bottom_left_coord, top_right])
     intensity, line_discrete = extract_along_coord(aia171_test_map, line)
     pix_diag = np.array([(i, i) for i in range(nmax)])
@@ -285,7 +285,7 @@ def test_extract_along_coord(aia171_test_map):
         [aia171_test_map.data[i[0], i[1]] for i in pix_diag],
         aia171_test_map.unit
     )
-    line_discrete_pix = aia171_test_map.world_to_pixel(line_discrete)
+    line_discrete_pix = aia171_test_map.wcs.world_to_pixel(line_discrete)
     assert np.allclose(pix_diag[:, 0], line_discrete_pix.x.value)
     assert np.allclose(pix_diag[:, 1], line_discrete_pix.y.value)
     assert u.quantity.allclose(intensity_diag, intensity)
@@ -299,6 +299,6 @@ def test_extract_along_coord_one_point_exception(aia171_test_map):
 
 
 def test_extract_along_coord_out_of_bounds_exception(aia171_test_map):
-    point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
+    point = aia171_test_map.wcs.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
     with pytest.raises(ValueError, match='At least one coordinate is not within the bounds of the map.*'):
         _ = extract_along_coord(aia171_test_map, point)
