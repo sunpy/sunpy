@@ -57,4 +57,4 @@ def test_unit(hmi_synoptic):
 def test_wcs(hmi_synoptic):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        hmi_synoptic.pixel_to_world(0*u.pix, 0*u.pix)
+        hmi_synoptic.wcs.pixel_to_world(0*u.pix, 0*u.pix)

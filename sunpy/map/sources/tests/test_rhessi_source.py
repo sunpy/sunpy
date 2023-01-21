@@ -64,4 +64,4 @@ def test_wcs(rhessi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning,
                       match='Missing metadata for observer: assuming Earth-based observer.*'):
-        rhessi_map.pixel_to_world(0*u.pix, 0*u.pix)
+        rhessi_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

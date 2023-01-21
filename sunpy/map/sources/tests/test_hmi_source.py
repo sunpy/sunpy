@@ -42,4 +42,4 @@ def test_measurement(hmi_map):
 
 def test_wcs(hmi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    hmi_map.pixel_to_world(0*u.pix, 0*u.pix)
+    hmi_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

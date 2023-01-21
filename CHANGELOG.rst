@@ -483,8 +483,8 @@ Removals
   attributes are set on a `~astropy.wcs.WCS`. (`#5348 <https://github.com/sunpy/sunpy/pull/5348>`__)
 - Support for passing non-unit levels to :meth:`sunpy.map.GenericMap.draw_contours`
   when map data has units set has been removed, and with now raise an error. (`#5352 <https://github.com/sunpy/sunpy/pull/5352>`__)
-- The ``origin`` argument to :meth:`sunpy.map.GenericMap.world_to_pixel` and
-  :meth:`sunpy.map.GenericMap.pixel_to_world` has been removed. (`#5353 <https://github.com/sunpy/sunpy/pull/5353>`__)
+- The ``origin`` argument to :meth:`sunpy.map.GenericMap.wcs.world_to_pixel` and
+  :meth:`sunpy.map.GenericMap.wcs.pixel_to_world` has been removed. (`#5353 <https://github.com/sunpy/sunpy/pull/5353>`__)
 - Support for plotting or contouring `~sunpy.map.GenericMap` on axes that are not
   `~astropy.visualization.wcsaxes.WCSAxes` has been removed. To create a
   ``WCSAxes``, use the ``projection`` argument when the axes is created, e.g.
@@ -1196,7 +1196,7 @@ Bug Fixes
 - ``sunpy.io.fits.header_to_fits`` now excludes any keys that have associated NaN
   values, as these are not valid in a FITS header, and throws a warning if this
   happens. (`#4676 <https://github.com/sunpy/sunpy/pull/4676>`__)
-- Fixed an assumption in `sunpy.map.GenericMap.pixel_to_world` that the first
+- Fixed an assumption in `sunpy.map.GenericMap.wcs.pixel_to_world` that the first
   data axis is longitude, and the second is latitude. This will affect you if
   you are using data where the x/y axes are latitude/longitude, and now returns
   correct values in methods and properties that call ``pixel_to_world``,
@@ -1473,7 +1473,7 @@ Improved Documentation
 - Removed obsolete Astropy Helpers submodule section in :file:`CONTRIBUTING.rst`;
   Also removed mentions of astropy_helpers in all files of the project. (`#3676 <https://github.com/sunpy/sunpy/pull/3676>`__)
 - Corrected misleading `~sunpy.timeseries.metadata.TimeSeriesMetaData` documentation about optional parameters. (`#3680 <https://github.com/sunpy/sunpy/pull/3680>`__)
-- Added an example for `~sunpy.map.GenericMap.world_to_pixel` function in the Units & Coordinates guide. (`#3776 <https://github.com/sunpy/sunpy/pull/3776>`__)
+- Added an example for `~sunpy.map.GenericMap.wcs.world_to_pixel` function in the Units & Coordinates guide. (`#3776 <https://github.com/sunpy/sunpy/pull/3776>`__)
 - Added a :ref:`page <sunpy-coordinates-carrington>` describing how SunPy calculates Carrington longitudes. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
 - Changed padding value of an example in the example gallery to fix the overlap of titles and x-label axes. (`#3835 <https://github.com/sunpy/sunpy/pull/3835>`__)
 - More information and links about how to create changelogs. (`#3856 <https://github.com/sunpy/sunpy/pull/3856>`__)
@@ -1787,7 +1787,7 @@ Deprecations and Removals
 - Removed ``MapCube`` in favour of `~sunpy.map.MapSequence` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``solar_north`` in favour of ``get_sun_P`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``database.download`` in favour of `sunpy.database.Database.fetch` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``sunpy.map.GenericMap.pixel_to_data`` in favour of `sunpy.map.GenericMap.pixel_to_world` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``sunpy.map.GenericMap.pixel_to_data`` in favour of `sunpy.map.GenericMap.wcs.pixel_to_world` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``GenericClient.get`` in favour of `sunpy.net.dataretriever.GenericClient.fetch`. This changes applies to the other clients as well. (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``Map.xrange`` and ``Map.yrange`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``sunpy.net.attrs.Wave`` in favour of ``sunpy.net.vso.attrs.Wavelength`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
@@ -2145,7 +2145,7 @@ New Features
 -  ``GenericMap.draw_grid`` now uses ``WCSAxes``, it will only work on a
    ``WCSAxes`` plot, this may be less performant than the previous
    implementation.
--  ``GenericMap.world_to_pixel`` and ``GenericMap.pixel_to_world`` now
+-  ``GenericMap.wcs.world_to_pixel`` and ``GenericMap.wcs.pixel_to_world`` now
    accept and return ``SkyCoord`` objects only.
 -  ``GenericMap`` has a new property ``observer_coordinate`` which
    returns a ``SkyCoord`` describing the position of the observer.

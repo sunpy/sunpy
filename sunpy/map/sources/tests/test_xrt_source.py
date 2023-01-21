@@ -61,4 +61,4 @@ def test_wheel_measurements(xrt_map):
 
 def test_wcs(xrt_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    xrt_map.pixel_to_world(0*u.pix, 0*u.pix)
+    xrt_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

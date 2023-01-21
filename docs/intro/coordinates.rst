@@ -88,9 +88,9 @@ Using Coordinates with Maps
        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
        (100., 10.)>
 
-   The `~astropy.coordinates.SkyCoord` object can be converted to a PixelPair object using `~sunpy.map.GenericMap.world_to_pixel`:
+   The `~astropy.coordinates.SkyCoord` object can be converted to a PixelPair object using `~sunpy.map.GenericMap.wcs.world_to_pixel`:
 
-   >>> pixel_obj = m.world_to_pixel(coord) # doctest: +REMOTE_DATA
+   >>> pixel_obj = m.wcs.world_to_pixel(coord) # doctest: +REMOTE_DATA
    >>> pixel_obj # doctest: +REMOTE_DATA
    PixelPair(x=<Quantity 551.7680511 pix>, y=<Quantity 515.18266871 pix>)
 
