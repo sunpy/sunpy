@@ -274,7 +274,7 @@ class MapSequence:
         norm : astropy.visualization.mpl_normalize.ImageNormalize 
             Normalization used in scaling the plot.
             This will override the predefined value in ``plot_settings['norm']``.
-        cmap : string 
+        cmap : `matplotlib.colors.Colormap` or `str`
             Color map to be used in coloring the plot.
             This will override the predefined value in ``plot_settings['cmap']``.
 
