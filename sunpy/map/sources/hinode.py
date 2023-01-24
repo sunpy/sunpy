@@ -98,6 +98,15 @@ class XRTMap(GenericMap):
             return
         return int(lvl)
 
+    @property
+    def unit(self):
+        unit = "DN"
+        response = self.meta.get('HISTORY')
+        for i in response:
+            if i[:15] == "XRT_RENORMALIZE":
+                unit = "DN/sec"
+        return unit
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an XRT image"""
