@@ -100,11 +100,11 @@ class XRTMap(GenericMap):
 
     @property
     def unit(self):
-        unit = "DN"
+        unit = u.astrophys.dn
         response = self.meta.get('HISTORY')
         for i in response:
             if i[:15] == "XRT_RENORMALIZE":
-                unit = "DN/sec"
+                unit = u.astrophys.dn / u.second
         return unit
 
     @classmethod
