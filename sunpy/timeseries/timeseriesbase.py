@@ -261,7 +261,7 @@ class GenericTimeSeries:
                    Observatory:\t\t\t{obs}
                    Instrument:\t\t\t{link}
                    Channel(s):\t\t\t{channels}
-                   Start Date:\t\t\tdat.index.min().round('s')}
+                   Start Date:\t\t\t{dat.index.min().round('s')}
                    End Date:\t\t\t{dat.index.max().round('s')}
                    Center Date:\t\t\t{center}
                    Resolution:\t\t\t{resolution}
