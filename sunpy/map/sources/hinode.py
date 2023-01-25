@@ -100,11 +100,13 @@ class XRTMap(GenericMap):
 
     @property
     def unit(self):
-        unit = u.astrophys.dn
-        response = self.meta.get('HISTORY')
-        for i in response:
-            if i[:15] == "XRT_RENORMALIZE":
-                unit = u.astrophys.dn / u.second
+        unit = self.meta.get('BUNIT')
+        if not unit:
+            unit = u.astrophys.dn
+            hvalues = self.meta.get('HISTORY')
+            for value in hvalues:
+                if "XRT_RENORMALIZE" in value:
+                    unit = u.astrophys.dn / u.second
         return unit
 
     @classmethod
