@@ -13,6 +13,7 @@ import astropy.io.fits
 from astropy.utils.data import get_pkg_data_filename
 
 import sunpy
+import sunpy.io._fits as _fits
 import sunpy.map
 
 __all__ = [
@@ -110,8 +111,8 @@ def get_dummy_map_from_header(filename):
     as specified by the header.
     """
     filepath = get_test_filepath(filename)
-    header = astropy.io.fits.Header.fromtextfile(filepath)
-    data = np.random.rand(header['naxis2'], header['naxis1'])
+    header = _fits.format_comments_and_history(astropy.io.fits.Header.fromtextfile(filepath))
+    data = np.random.rand(header['NAXIS2'], header['NAXIS1'])
     if 'BITPIX' in header:
         data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
     # NOTE: by reading straight from the data header pair, we are skipping
