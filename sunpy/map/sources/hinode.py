@@ -105,7 +105,7 @@ class XRTMap(GenericMap):
         # See Table 1.1 and Section 2.11 of the XRT Analysis Guide.
         unit = super().unit
         if not unit:
-            unit = u.astrophys.dn
+            unit = u.ct
             if "XRT_RENORMALIZE" in self.meta.get('HISTORY')
                     unit = u.ct / u.second
         return unit
