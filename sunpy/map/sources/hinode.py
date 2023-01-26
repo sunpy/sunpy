@@ -102,7 +102,7 @@ class XRTMap(GenericMap):
     def unit(self):
         # XRT data values are in DN and are converted into DN/s if the data has been normalized.
         # A tag starting with "XRT_RENORMALIZE" is added to the HISTORY tag in that case.
-        # Ref. Section 2.11 of the XRT Analysis Guide.
+        # See Table 1.1 and Section 2.11 of the XRT Analysis Guide.
         unit = super().unit
         if not unit:
             unit = u.astrophys.dn
