@@ -37,24 +37,21 @@ xlims_world = [500, 1100]*u.arcsec
 ylims_world = [-800, 0]*u.arcsec
 
 ###############################################################################
-# We can then convert these into a SkyCoord which can be passed to :func:`~sunpy.map.GenericMap.world_to_pixel` to
-# determine which pixel coordinates these represent on the Map.
+# We can then convert these into a `~astropy.coordinates.SkyCoord` which can be passed to
+# :meth:`GenericMap.wcs.world_to_pixel <astropy.wcs.WCS.world_to_pixel>`
+# to determine the corresponding pixel coordinates.
 
 world_coords = SkyCoord(Tx=xlims_world, Ty=ylims_world, frame=aia_map.coordinate_frame)
-pixel_coords = aia_map.world_to_pixel(world_coords)
-
-# we can then pull out the x and y values of these limits.
-xlims_pixel = pixel_coords.x.value
-ylims_pixel = pixel_coords.y.value
+pixel_coords_x, pixel_coords_y = aia_map.wcs.world_to_pixel(world_coords)
 
 ###############################################################################
-# We can now plot this Map and then use the x_lims_pixel and y_lims_pixel to set
-# the range of the axes for which to plot.
+# We can now plot this Map and then use ``pixel_coords_x`` and ``pixel_coords_y`` to set
+# the limits on the axes.
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=aia_map)
 aia_map.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
-ax.set_xlim(xlims_pixel)
-ax.set_ylim(ylims_pixel)
+ax.set_xlim(pixel_coords_x)
+ax.set_ylim(pixel_coords_y)
 
 plt.show()
