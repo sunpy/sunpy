@@ -258,16 +258,16 @@ class GenericTimeSeries:
         return textwrap.dedent(f"""\
                    SunPy TimeSeries
                    ----------------
-                   Observatory:\t\t {obs}
-                   Instrument:\t\t {link}
-                   Channel(s):\t\t {channels}
-                   Start Date:\t\t {dat.index.min().round('s')}
-                   End Date:\t\t {dat.index.max().round('s')}
-                   Center Date:\t\t {center}
-                   Resolution:\t\t {resolution}
-                   Samples per Channel:\t\t {self.shape[0]}
-                   Data Range(s):\t\t {drange}
-                   Units:\t\t {uni}""")
+                   Observatory:\t\t\t{obs}
+                   Instrument:\t\t\t{link}
+                   Channel(s):\t\t\t{channels}
+                   Start Date:\t\t\t{dat.index.min().round('s')}
+                   End Date:\t\t\t{dat.index.max().round('s')}
+                   Center Date:\t\t\t{center}
+                   Resolution:\t\t\t{resolution}
+                   Samples per Channel:\t\t{self.shape[0]}
+                   Data Range(s):\t\t{drange}
+                   Units:\t\t\t{uni}""")
 
     def __str__(self):
         return f"{self._text_summary()}\n{self._data.__repr__()}"
