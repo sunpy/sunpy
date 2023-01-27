@@ -1,0 +1,1 @@
+Now provide the re-processed GOES-XRS 8-13 data from NOAA site when querying with the XRSClient.
