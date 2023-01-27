@@ -1,3 +1,20 @@
+4.0.9 (2023-01-27)
+==================
+
+New Features
+------------
+
+- Able to detect gzip-compressed FITS files even if they don't have the ``.gz`` extension in the filename.
+  `~sunpy.io.detect_filetype` now looks for the right file signature while checking
+  for gzipped FITS files. (`#6693 <https://github.com/sunpy/sunpy/pull/6693>`__)
+
+
+Internal Changes
+----------------
+
+- The current version of ``SQLAlchemy`` has been fixed to be <2.0 until we have ensured that the current database module works with it. (`#6694 <https://github.com/sunpy/sunpy/pull/6694>`__)
+
+
 4.0.8 (2022-12-30)
 ==================
 
