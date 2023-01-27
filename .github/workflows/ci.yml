@@ -31,7 +31,7 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: py310
+        - linux: py311
 
   test:
     needs: [core]
@@ -42,14 +42,9 @@ jobs:
       toxdeps: "'tox<4' tox-pypi-filter"
       posargs: -n auto
       libraries: |
-        apt:
-          - libopenjp2-7
-          # This can be removed when there are binaries for h5py on 3.11
-          - libhdf5-dev
         brew:
           - openjpeg
       envs: |
-        - linux: py311
         - windows: py310
         - macos: py39
         - linux: py39-oldestdeps
