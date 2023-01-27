@@ -24,18 +24,18 @@ class XRSClient(GenericClient):
     Provides access to the GOES XRS fits files archive.
 
     Searches for GOES XRS data both on NASA servers prior to re-processed
-    GOES 13, 14 and 15 and on the NOAA archive for > GOES 13.
+    GOES 8-15 and on the NOAA archive for > GOES 13.
     For satellite numbers > 13 the XRSClient searches the NOAA archive, and
-    returns the re-processed science-quality data for GOES 13, 14 and 15, and
+    returns the re-processed science-quality data for GOES 8-15, and
     also the new GOES-R series 16 and 17.
 
-    Note - the new science quality data have scaling factors removed for 13, 14 and 15
+    Note - the new science quality data have scaling factors removed for 8-15
     and they are not added to GOES 16 AND 17. This means the peak flux will be different to
     the older version of the data, such as those collected from the NASA servers.
 
     See the following readmes about the data
 
-    * Reprocessed 13, 14, 15 :
+    * Reprocessed 8 - 15 :
         https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/GOES_1-15_XRS_Science-Quality_Data_Readme.pdf
 
     * GOES-R 16, 17 :
@@ -51,7 +51,7 @@ class XRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     4 Results from the XRSClient:
-    Source: <13: https://umbra.nascom.nasa.gov/goes/fits
+    Source: <8: https://umbra.nascom.nasa.gov/goes/fits
     13, 14, 15: https://satdat.ngdc.noaa.gov/sem/goes/data/science/
     16, 17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
     <BLANKLINE>
@@ -71,7 +71,7 @@ class XRSClient(GenericClient):
     pattern_old = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
     # GOES XRS 13, 14, 15 from NOAA (re-processed data)
     baseurl_new = (r"https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/"
-                   r"goes{SatelliteNumber}/gxrs-l2-irrad_science/%Y/%m/sci_gxrs-l2-irrad_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
+                   r"goes{SatelliteNumber:02d}/gxrs-l2-irrad_science/%Y/%m/sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d%Y%m%d_.*\.nc")
     pattern_new = ("{}/goes{SatelliteNumber:02d}/gxrs-l2-irrad_science/{year:4d}/"
                    "{month:2d}/sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
     # GOES XRS data for GOES-R Series - 16, 17
@@ -82,8 +82,8 @@ class XRSClient(GenericClient):
 
     @property
     def info_url(self):
-        return ("<13: https://umbra.nascom.nasa.gov/goes/fits \n"
-                "13, 14, 15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/ \n"
+        return ("<8: https://umbra.nascom.nasa.gov/goes/fits \n"
+                "8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/ \n"
                 "16, 17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/")
 
     def post_search_hook(self, i, matchdict):
@@ -108,10 +108,10 @@ class XRSClient(GenericClient):
     def search(self, *args, **kwargs):
         matchdict = self._get_match_dict(*args, **kwargs)
         # this is for the case when the timerange overlaps with the provider change.
-        if matchdict["Start Time"] < "2009-09-01" and matchdict["End Time"] >= "2009-09-01":
+        if matchdict["Start Time"] < "2001-03-01" and matchdict["End Time"] >= "2001-03-01":
             matchdict_before, matchdict_after = matchdict.copy(), matchdict.copy()
-            matchdict_after["Start Time"] = parse_time('2009-09-01')
-            matchdict_before["End Time"] = parse_time('2009-08-31')
+            matchdict_after["Start Time"] = parse_time('2001-03-01')
+            matchdict_before["End Time"] = parse_time('2001-03-01')
             metalist_before = self._get_metalist(matchdict_before)
             metalist_after = self._get_metalist(matchdict_after)
             metalist = metalist_before + metalist_after
@@ -124,6 +124,7 @@ class XRSClient(GenericClient):
         Function to help get list of OrderedDicts.
         """
         metalist = []
+        print(baseurl)
         scraper = Scraper(baseurl, regex=True)
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
         filemeta = scraper._extract_files_meta(tr, extractor=pattern,
@@ -139,8 +140,8 @@ class XRSClient(GenericClient):
         This makes it easier for when searching for overlapping providers.
         """
         metalist = []
-        # the data before the re-processed GOES 13, 14, 15 data.
-        if (matchdict["End Time"] < "2009-09-01") or (matchdict["End Time"] >= "2009-09-01" and matchdict["Provider"] == ["sdac"]):
+        # the data before the re-processed GOES 8-15 data.
+        if (matchdict["End Time"] < "2001-03-01") or (matchdict["End Time"] >= "2001-03-01" and matchdict["Provider"] == ["sdac"]):
             metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
         # new data from NOAA.
         else:
@@ -149,7 +150,7 @@ class XRSClient(GenericClient):
                     metalist += self._get_metalist_fn(matchdict,
                                                       self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
             if matchdict["End Time"] <= "2020-03-04":
-                for sat in [13, 14, 15]:
+                for sat in [8, 9, 10, 11, 12, 13, 14, 15]:
                     metalist += self._get_metalist_fn(matchdict,
                                                       self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
         return metalist
