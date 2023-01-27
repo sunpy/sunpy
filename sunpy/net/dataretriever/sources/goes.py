@@ -36,7 +36,7 @@ class XRSClient(GenericClient):
     See the following readmes about the data
 
     * Reprocessed 13, 14, 15 :
-        https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf
+        https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/GOES_1-15_XRS_Science-Quality_Data_Readme.pdf
 
     * GOES-R 16, 17 :
         https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/docs/GOES-R_EXIS_XRS_L1b_Science-Quality_Data_ReadMe.pdf
@@ -70,7 +70,7 @@ class XRSClient(GenericClient):
     baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
     pattern_old = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
     # GOES XRS 13, 14, 15 from NOAA (re-processed data)
-    baseurl_new = (r"https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/"
+    baseurl_new = (r"https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/"
                    r"goes{SatelliteNumber}/gxrs-l2-irrad_science/%Y/%m/sci_gxrs-l2-irrad_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
     pattern_new = ("{}/goes{SatelliteNumber:02d}/gxrs-l2-irrad_science/{year:4d}/"
                    "{month:2d}/sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
@@ -83,7 +83,7 @@ class XRSClient(GenericClient):
     @property
     def info_url(self):
         return ("<13: https://umbra.nascom.nasa.gov/goes/fits \n"
-                "13, 14, 15: https://satdat.ngdc.noaa.gov/sem/goes/data/science/ \n"
+                "13, 14, 15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/ \n"
                 "16, 17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/")
 
     def post_search_hook(self, i, matchdict):
