@@ -3,3 +3,4 @@ The minimum required versions of several dependencies have been updated to:
 - Python 3.9
 - astropy 5.0.0
 - numpy 1.21.0
+- Matplotlib 3.5.0
