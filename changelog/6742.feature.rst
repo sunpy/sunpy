@@ -4,3 +4,4 @@ The minimum required versions of several dependencies have been updated to:
 - astropy 5.0.0
 - numpy 1.21.0
 - Matplotlib 3.5.0
+- scikit-image 0.18.0
