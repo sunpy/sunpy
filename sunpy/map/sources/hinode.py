@@ -106,8 +106,9 @@ class XRTMap(GenericMap):
         unit = super().unit
         if not unit:
             unit = u.ct
-            if "XRT_RENORMALIZE" in self.meta.get('HISTORY')
-                    unit = u.ct / u.second
+            unit = self.meta.get('HISTORY')
+            if "XRT_RENORMALIZE" in self.meta.get('HISTORY'):
+                unit = u.ct / u.second
         return unit
 
     @classmethod
