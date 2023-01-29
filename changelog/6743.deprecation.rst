@@ -1,0 +1,2 @@
+Using `~sunpy.map.header_helper.meta_keywords()` is deprecated.
+Use `~sunpy.map.header_helper.META_KEYWORDS` as a `MappingProxyType` dictionary of the meta keywords.
