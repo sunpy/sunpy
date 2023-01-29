@@ -6,7 +6,7 @@
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient, QueryResponse
 
-__all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
+__all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient','WeatherDataClient']
 
 
 class NOAAIndicesClient(GenericClient):
@@ -174,3 +174,29 @@ class SRSClient(GenericClient):
                  attrs.Source: [('SWPC', 'The Space Weather Prediction Center.')],
                  attrs.Provider: [('NOAA', 'The National Oceanic and Atmospheric Administration.')]}
         return adict
+    
+class WeatherDataClient(GenericClient):
+    """documentation review required from mentor"""
+    required = {a.Instrument}
+    
+    @property
+    def get_base_url(self):
+        return 'https://services.swpc.noaa.gov/json/goes/primary/differential-electrons-1-day.json'
+
+    def search(self, *args, **kwargs):
+        rowdict = self._get_match_dict(*args, **kwargs)
+        for key in rowdict:
+            if isinstance(rowdict[key], list):
+                # uses first value among the list of possible values corresponding to an Attr
+                # returned by `get_match_dict()` to be shown in query response table.
+                rowdict[key] = rowdict[key][0]
+        rowdict['url'] = 'https://services.swpc.noaa.gov/json/goes/primary/differential-electrons-1-day.json'
+        rowdict['Instrument'] = 'NOAA-Predict' # not sure about this , needs help
+        # These results are not dependent on time, but we allow time as a
+        # parameter for easy searching, so remove time from the results table
+        # injected by GenericClient.
+        #this is useless as this data is time invariant 
+        rowdict.pop('Start Time', None)
+        rowdict.pop('End Time', None)
+        return QueryResponse([rowdict], client=self)
+    
