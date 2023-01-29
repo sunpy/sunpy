@@ -1,1 +1,1 @@
-XRT Maps now detect and include the unit property.
+`~sunpy.map.sources.XRTMap`` will now set the units for all files correctly.
