@@ -107,7 +107,7 @@ class CompositeOperation(DatabaseOperation):
                 if not isinstance(operation.entry, DatabaseEntry):
                     # undo all ~database.commands.RemoveEntry where type is not ~database.tables.DatabaseEntry
                     operation.undo()
-            elif not isinstance(operation, RemoveEntry):
+            else:
                 # and we also undo all other commands, e.g. ~database.commands.RemoveTag.
                 operation.undo()
 
