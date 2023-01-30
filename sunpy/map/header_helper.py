@@ -14,7 +14,7 @@ from sunpy.util.decorators import deprecated
 __all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header']
 
 
-@deprecated(since="4.1.2", message="We will be removing this", alternative="sunpy.map.header_helper.META_KEYWORDS")
+@deprecated(since="5.0", message="Will be removed in 6.0", alternative="sunpy.map.header_helper.META_KEYWORDS")
 def meta_keywords():
     """
     Returns the metadata keywords that are used when creating a `sunpy.map.GenericMap`.
