@@ -98,17 +98,17 @@ class CompositeOperation(DatabaseOperation):
     def undo(self):
         # To prevent errors in SQLa 2.0 we have to first add all removed entries back in before we add any ~database.Tags.
         for operation in self._operations:
-            if type(operation) is RemoveEntry:
+            if isinstance(operation, RemoveEntry):
                 # we also filter out ~database.commands.RemoveEntry where type is not ~database.tables.DatabaseEntry to do later.
-                if type(operation.entry) is DatabaseEntry:
+                if isinstance(operation.entry, DatabaseEntry):
                     operation.undo()
         for operation in self._operations:
-            if type(operation) is RemoveEntry:
-                if type(operation.entry) is not DatabaseEntry:
+            if isinstance(operation, RemoveEntry):
+                if not isinstance(operation.entry, DatabaseEntry):
                     # undo all ~database.commands.RemoveEntry where type is not ~database.tables.DatabaseEntry
                     operation.undo()
-            elif type(operation) is not RemoveEntry:
-                # lastly we undo all other commands, e.g. ~database.commands.RemoveTag.
+            elif not isinstance(operation, RemoveEntry):
+                # and we also undo all other commands, e.g. ~database.commands.RemoveTag.
                 operation.undo()
 
     def __len__(self):
