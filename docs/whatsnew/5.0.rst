@@ -1,0 +1,25 @@
+.. _whatsnew-5.0:
+
+************************
+What's New in sunpy 5.0?
+************************
+The SunPy project is pleased to announce the 5.0 release of the ``sunpy`` core package.
+
+On this page, you can read about some of the big changes in this release.
+
+.. contents::
+    :local:
+    :depth: 1
+
+``sunpy`` 5.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+
+Updates to minimum dependencies
+===============================
+The minimum required versions of several dependencies have been updated to:
+
+- Python 3.9
+- astropy 5.0.0
+- numpy 1.21.0
+- Matplotlib 3.5.0
+- scikit-image 0.18.0
