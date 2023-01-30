@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import make_transient
 
+from sunpy.database.tables import DatabaseEntry
+
 __all__ = [
     'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',
     'DatabaseOperation', 'AddEntry', 'RemoveEntry', 'EditEntry',
@@ -94,8 +96,20 @@ class CompositeOperation(DatabaseOperation):
             operation()
 
     def undo(self):
+        # To prevent errors in SQLa 2.0 we have to first add all removed entries back in before we add any ~database.Tags.
         for operation in self._operations:
-            operation.undo()
+            if isinstance(operation, RemoveEntry):
+                # we also filter out ~database.commands.RemoveEntry where type is not ~database.tables.DatabaseEntry to do later.
+                if isinstance(operation.entry, DatabaseEntry):
+                    operation.undo()
+        for operation in self._operations:
+            if isinstance(operation, RemoveEntry):
+                if not isinstance(operation.entry, DatabaseEntry):
+                    # undo all ~database.commands.RemoveEntry where type is not ~database.tables.DatabaseEntry
+                    operation.undo()
+            else:
+                # and we also undo all other commands, e.g. ~database.commands.RemoveTag.
+                operation.undo()
 
     def __len__(self):
         return len(self._operations)
