@@ -6,7 +6,7 @@ repos:
   # F823 - local variable name referenced before assignment
   # Others are taken care of by autopep8
   - repo: https://github.com/PyCQA/flake8
-    rev: 5.0.4
+    rev: 6.0.0
     hooks:
       - id: flake8
         args:
@@ -17,7 +17,7 @@ repos:
           ]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|sunpy/visualization/colormaps/color_tables.py)$"
   - repo: https://github.com/PyCQA/autoflake
-    rev: v1.7.7
+    rev: v2.0.0
     hooks:
       - id: autoflake
         args:
@@ -28,19 +28,19 @@ repos:
           ]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    rev: 5.12.0
     hooks:
       - id: isort
         args: ["--sp", "setup.cfg"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v2.0.0
+    rev: v2.0.1
     hooks:
     -   id: autopep8
         args: ["--in-place","--max-line-length", "200"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|sunpy/visualization/colormaps/color_tables.py)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v4.4.0
     hooks:
       - id: check-ast
       - id: check-case-conflict
