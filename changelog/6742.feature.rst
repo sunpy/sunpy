@@ -5,3 +5,4 @@ The minimum required versions of several dependencies have been updated to:
 - numpy 1.21.0
 - Matplotlib 3.5.0
 - scikit-image 0.18.0
+- scipy 1.7.0
