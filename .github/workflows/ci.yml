@@ -31,7 +31,7 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: py310
+        - linux: py311
 
   test:
     needs: [core]
@@ -42,23 +42,18 @@ jobs:
       toxdeps: "'tox<4' tox-pypi-filter"
       posargs: -n auto
       libraries: |
-        apt:
-          - libopenjp2-7
-          # This can be removed when there are binaries for h5py on 3.11
-          - libhdf5-dev
         brew:
           - openjpeg
       envs: |
-        - linux: py311
-        - windows: py39
-        - macos: py38
-        - linux: py38-oldestdeps
+        - windows: py310
+        - macos: py39
+        - linux: py39-oldestdeps
 
   docs:
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.8'
+      default_python: '3.9'
       submodules: false
       pytest: false
       toxdeps: "'tox<4' tox-pypi-filter"
@@ -79,7 +74,7 @@ jobs:
     needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.8'
+      default_python: '3.9'
       submodules: false
       coverage: codecov
       toxdeps: "'tox<4' tox-pypi-filter"
@@ -110,7 +105,7 @@ jobs:
       )
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.8'
+      default_python: '3.9'
       submodules: false
       coverage: codecov
       toxdeps: "'tox<4' tox-pypi-filter"
@@ -118,8 +113,6 @@ jobs:
       libraries: |
         apt:
           - libopenjp2-7
-          # This can be removed when there are binaries for h5py on 3.11
-          - libhdf5-dev
       envs: |
         - linux: base_deps
         - linux: py311-devdeps
@@ -146,15 +139,9 @@ jobs:
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       targets: |
-        - cp3{8,9,10}-manylinux*_x86_64
-        - cp3{8,9,10}-macosx_x86_64
-        - cp3{8,9,10}-macosx_arm64
-        # Split these out for more rapid debugging
-        - cp311-manylinux*_x86_64
-        - cp311-macosx_x86_64
-        - cp311-macosx_arm64
-      # This can be removed when there are binaries for h5py on 3.11
-      libraries: libhdf5-dev
+        - cp3{9,10,11}-manylinux*_x86_64
+        - cp3{9,10,11}-macosx_x86_64
+        - cp3{9,10,11}-macosx_arm64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
