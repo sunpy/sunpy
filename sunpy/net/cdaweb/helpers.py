@@ -1,4 +1,5 @@
 import json
+import asyncio
 import pathlib
 
 import aiohttp
@@ -117,25 +118,44 @@ def get_datasets(observatory):
     return t
 
 
-async def _update_cdaweb_dataset_data():
+async def make_one_request(sem, session, group):
+    async with sem:
+        print(f'🛰 Getting datasets for {group}')
+        url = '/'.join([
+            _CDAS_BASEURL,
+            'dataviews', _DATAVIEW,
+            'datasets'
+        ])
+        group_url = url + f'?observatoryGroup={group}'
+        resp = await session.get(group_url, headers=_CDAS_HEADERS)
+        if sem.locked():
+            print(f"{group} waiting for 5 secs")
+            await asyncio.sleep(5)
+        return resp
+
+
+def get_tasks(session):
+    sem = asyncio.Semaphore(5)
+    tasks = []
     all_obs = get_observatory_groups()
-    url = '/'.join([
-        _CDAS_BASEURL,
-        'dataviews', _DATAVIEW,
-        'datasets'
-    ])
+
+    for group in all_obs['Group']:
+        tasks.append(asyncio.create_task(make_one_request(sem, session, group)))
+    return tasks
+
+
+async def _update_cdaweb_dataset_data():
+
     # Mapping from dataset ID to description
     all_datasets = {}
-    for group in all_obs['Group']:
-        print(f'🛰 Getting datasets for {group}')
-        group_url = url + f'?observatoryGroup={group}'
-        async with aiohttp.ClientSession() as session:
-            async with session.get(group_url) as response:
-                response = requests.get(group_url, headers=_CDAS_HEADERS)
 
-                datasets = response.json()['DatasetDescription']
-                dataset_ids = {ds['Id']: ds['Label'] for ds in datasets}
-                all_datasets.update(dataset_ids)
+    async with aiohttp.ClientSession() as session:
+        tasks = get_tasks(session)
+        responses = await asyncio.gather(*tasks)
+        for response in responses:
+            datasets = (await response.json())['DatasetDescription']
+            dataset_ids = {ds['Id']: ds['Label'] for ds in datasets}
+            all_datasets.update(dataset_ids)
 
     attr_file = pathlib.Path(__file__).parent / 'data' / 'attrs.json'
     with open(attr_file, 'w') as attrs_file:
