@@ -2,6 +2,7 @@ import os
 import pathlib
 import tempfile
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
@@ -303,6 +304,7 @@ def test_map_jp2_HMI():
     jp2_map = sunpy.map.Map(HMI_LOS_JP2)
     assert isinstance(jp2_map, sunpy.map.GenericMap)
     jp2_map.plot()
+    plt.colorbar()
 
 
 def test_map_fits():
