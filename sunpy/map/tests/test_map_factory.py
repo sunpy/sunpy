@@ -11,7 +11,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
-from sunpy.tests.helpers import skip_glymur
+from sunpy.tests.helpers import figure_test, skip_glymur
 from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
 
 a_list_of_many = [f for f in get_test_data_filenames() if 'efz' in f.name]
@@ -19,6 +19,7 @@ a_list_of_many = [f for f in get_test_data_filenames() if 'efz' in f.name]
 AIA_171_IMAGE = get_test_filepath('aia_171_level1.fits')
 RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
 AIA_193_JP2 = get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
+HMI_LOS_JP2 = get_test_filepath("2023_01_31__03_39_23_200__SDO_HMI_HMI_continuum.jp2")
 AIA_MAP = sunpy.map.Map(AIA_171_IMAGE)
 VALID_MAP_INPUTS = [
     (AIA_171_IMAGE, ),
@@ -283,7 +284,7 @@ def test_no_2d_hdus(tmpdir):
 
 
 @skip_glymur
-def test_map_jp2():
+def test_map_jp2_AIA():
     jp2_map = sunpy.map.Map(AIA_193_JP2, memmap=False)
     assert isinstance(jp2_map, sunpy.map.GenericMap)
     # The base of an array that owns its memory is None
@@ -292,6 +293,16 @@ def test_map_jp2():
     jp2_map = sunpy.map.Map(AIA_193_JP2, memmap=True)
     assert isinstance(jp2_map, sunpy.map.GenericMap)
     assert jp2_map.data.base is not None
+
+
+@skip_glymur
+@figure_test
+def test_map_jp2_HMI():
+    # We failed to read the HMI JP2 file with map before
+    # See https://github.com/sunpy/sunpy/issues/6709
+    jp2_map = sunpy.map.Map(HMI_LOS_JP2)
+    assert isinstance(jp2_map, sunpy.map.GenericMap)
+    jp2_map.plot()
 
 
 def test_map_fits():
