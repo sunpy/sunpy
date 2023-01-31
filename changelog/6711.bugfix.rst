@@ -1,0 +1,2 @@
+The ``data_manager`` was not raising failed downloads correctly and would continue as if the file existed locally.
+Now it will raise any errors from ``parfive``.
