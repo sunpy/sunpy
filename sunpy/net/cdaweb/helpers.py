@@ -127,15 +127,21 @@ async def make_one_request(sem, session, group):
             'datasets'
         ])
         group_url = url + f'?observatoryGroup={group}'
-        resp = await session.get(group_url, headers=_CDAS_HEADERS)
+        try:
+            resp = await session.get(group_url, headers=_CDAS_HEADERS)
+        except:  # bit of a dirty hack for when sometimes the connection still loses despite the semaphore's limiting
+            print(f"[CONNNECTIONLOSTT] won't give up on {group}")
+            await asyncio.sleep(5)
+            resp = await session.get(group_url, headers=_CDAS_HEADERS)  # try the same thing again after waiting 5 secs
         if sem.locked():
             print(f"{group} waiting for 5 secs")
             await asyncio.sleep(5)
+        print(f"Got {group} data!")
         return resp
 
 
 def get_tasks(session):
-    sem = asyncio.Semaphore(5)
+    sem = asyncio.Semaphore(5)  # The number of make_one_request(...)'s at a time won't exceed 5
     tasks = []
     all_obs = get_observatory_groups()
 
