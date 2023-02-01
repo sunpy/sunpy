@@ -313,7 +313,7 @@ If you want to check what the images look like, you can do::
 
     $ tox -e py311-figure -- --mpl-generate-path=baseline
 
-The images output from the tests will be stored in a folder called ``.tmp/pypy311-figure/baseline`` or ``baseline`` in the sunpy folder, so you can double check the test works as you expected.
+The images output from the tests will be stored in a folder called ``.tmp/py311-figure/baseline`` or ``baseline`` in the sunpy folder, so you can double check the test works as you expected.
 
 .. _doctests:
 
