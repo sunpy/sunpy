@@ -1,1 +1,1 @@
-Update to the new url for which the GOES-XRS 8-15 data is provided by NOAA.
+`~sunpy.net.dataretriever.XRSClient` update use the new url for which the GOES-XRS 8-15 data is provided by NOAA.
