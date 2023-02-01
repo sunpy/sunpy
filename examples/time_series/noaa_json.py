@@ -43,11 +43,10 @@ time_array = parse_time(data_short["time_tag"])
 units = OrderedDict([("xrsa", u.W/u.m**2), ("xrsb", u.W/u.m**2)])
 
 #####################################################
-# The units variable is defined as an OrderedDict that maps the names of the two columns,
-# "xrsa" and "xrsb", to the corresponding physical units, u.W/u.m**2.
-# this plots data for energy range from data_short as xrsa and energy range from dta_long as xrsb
+# Typically `sunpy.timeseries.TimeSeries` will read metadata from the file,
+# however, here we need to define our own metadata and we will keep it fairly simple.
 
-meta = OrderedDict({"instrument": "GOES X-ray sensor", "measurments": "primary", "type": "quicklook"})
+meta = dict({"instrument": "GOES X-ray sensor", "measurements": "primary", "type": "quicklook"})
 
 #######################################################
 # The meta variable is defined as an OrderedDict that contains information about the data,
