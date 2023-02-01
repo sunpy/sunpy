@@ -32,6 +32,8 @@ jobs:
           - libopenjp2-7
       envs: |
         - linux: py311
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test:
     needs: [core]
@@ -48,6 +50,8 @@ jobs:
         - windows: py310
         - macos: py39
         - linux: py39-oldestdeps
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   docs:
     needs: [core]
@@ -96,6 +100,8 @@ jobs:
               - libopenjp2-7
               - graphviz
         - linux: py39-online
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   cron:
     if: |
@@ -118,6 +124,8 @@ jobs:
         - linux: py311-devdeps
         - linux: py39-conda
           libraries: ''
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   publish:
     # Build wheels when pushing to any branch except main
