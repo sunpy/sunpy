@@ -98,6 +98,19 @@ class XRTMap(GenericMap):
             return
         return int(lvl)
 
+    @property
+    def unit(self):
+        # XRT data values are in DN and are converted into DN/s if the data has been normalized.
+        # A tag starting with "XRT_RENORMALIZE" is added to the HISTORY tag in that case.
+        # See Table 1.1 and Section 2.11 of the XRT Analysis Guide.
+        unit = super().unit
+        if not unit:
+            unit = u.ct
+            history = self.meta.get('HISTORY', '')
+            if "xrt_renormalize" in history.lower():
+                unit = u.ct / u.second
+        return unit
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an XRT image"""
