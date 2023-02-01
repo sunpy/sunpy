@@ -1,0 +1,1 @@
+Added an example (:ref:`sphx_glr_generated_gallery_acquiring_data_searching_multiple_wavelengths.py`) of how to search for multiple wavelengths attributes for AIA data using `sunpy.net.attrs.AttrOr`.
