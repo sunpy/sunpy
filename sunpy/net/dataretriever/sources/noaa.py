@@ -174,69 +174,7 @@ class SRSClient(GenericClient):
                  attrs.Source: [('SWPC', 'The Space Weather Prediction Center.')],
                  attrs.Provider: [('NOAA', 'The National Oceanic and Atmospheric Administration.')]}
         return adict
-"""    
-class NOAAWeatherClient(GenericClient):
     
-     Fetches the data from  NOAA SWPC weather data summary.
-     This data gets updated every minute.
-     As there are multiple files, the user is expected to enter the file-name as a param 
-     while calling client constructor.
-
-     the files are fetched from this base_url : 'https://services.swpc.noaa.gov/json/goes/primary/'
-
-     The querying is independent of date(timeseries) as the link doesnt provide this functionality
-     Example :
-     >>> from sunpy.net.dataretreiver import NOAAWeatherClient
-     >>> from sunpy.net import attrs as a
-     >>> client = NOAAWeatherClient('differential-electrion-1-day.json')
-     >>> files = client.fetch(client.search(a.Time("2016/1/1", "2016/1/2")),path = '....')
-    
-    file_name = 'differential-electrion-1-day.json'
-    final_url = ''
-    required = {a.Instrument}
-    @property
-    def get_base_url(self):
-        
-        base_url = r'https://services.swpc.noaa.gov/json/goes/primary/'
-        base_url += self.file_name
-        
-        return 'https://services.swpc.noaa.gov/json/goes/primary/differential-electrons-1-day.json'
-    
-    
-    def __init__(self , file_name):
-        self.file_name = file_name
-        self.final_url = self.get_base_url
-    
-    
-    
-    def search(self, *args, **kwargs):
-        rowdict = self._get_match_dict(*args, **kwargs)
-        for key in rowdict:
-            if isinstance(rowdict[key], list):
-                # uses first value among the list of possible values corresponding to an Attr
-                # returned by `get_match_dict()` to be shown in query response table.
-                rowdict[key] = rowdict[key][0]
-        rowdict['url'] = 'https://services.swpc.noaa.gov/json/goes/primary/differential-electrons-1-day.json'
-        #rowdict['url'] = self.final_url
-        rowdict['Instrument'] = 'GOES' 
-        # These results are not dependent on time, but we allow time as a
-        # parameter for easy searching, so remove time from the results table
-        # injected by GenericClient.
-        #this is useless as this data is time invariant 
-        rowdict.pop('Start Time', None)
-        rowdict.pop('End Time', None)
-        return QueryResponse([rowdict], client=self)
-    @classmethod
-    def register_values(cls):
-        from sunpy.net import attrs
-        adict = {attrs.Instrument: [
-            ('GOES', 'GOES series satellite')],
-            attrs.Physobs: [('na', 'na')],
-            attrs.Source: [('NOAA', 'National Oceanic an Atmospheic Administration')],
-            attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')],
-            attrs.Time: [('*')]}
-        return adict
-        """
 
     
     
