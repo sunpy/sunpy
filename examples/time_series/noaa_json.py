@@ -65,6 +65,3 @@ test_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 # Now we have created the timeseries, we will finally plot it.
 
 test_ts.peek()
-
-############################################################
-# Plotting the time series: The peek method of the test_ts object is called to plot the time series data.
