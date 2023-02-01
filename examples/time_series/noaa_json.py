@@ -1,7 +1,7 @@
 """
-===================================================================
-Plotting of near real time (NRT) data by fetching it from json file
-====================================================================
+==================================
+GOES XRS Near Real Time (NRT) data
+==================================
 
 How to query and visualize nrt data(json format) using pandas and plot
 it using TimeSeries Library
