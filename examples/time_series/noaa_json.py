@@ -7,8 +7,6 @@ Currently, ``sunpy`` has no mechanism to directly download several of the the GO
 
 We will showcase an example of how to download it and load it into a `sunpy.timeseries.TimeSeries`.
 """
-
-
 from collections import OrderedDict
 
 import pandas as pd
