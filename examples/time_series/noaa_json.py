@@ -64,4 +64,6 @@ test_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 ####################################################################
 # Now we have created the timeseries, we will finally plot it.
 
-test_ts.peek()
+test_ts.plot()
+
+plt.show()
