@@ -118,3 +118,8 @@ def _(wlk, attr, params):
 @walker.add_applier(Product, Identifier)
 def _(wlk, attr, params):
     params.append(f"descriptor='{attr.value}'")
+
+
+@walker.add_applier(a.Provider)
+def _(wlk, attr, params):
+    params.append(f"provider='{attr.value}'")

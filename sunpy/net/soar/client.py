@@ -26,6 +26,8 @@ class SOARClient(BaseClient):
 
         results = []
         for query_parameters in queries:
+            if "provider='SOAR'" in query_parameters:
+                query_parameters.remove("provider='SOAR'")
             results.append(self._do_search(query_parameters))
         table = astropy.table.vstack(results)
         qrt = QueryResponseTable(table, client=self)
@@ -105,7 +107,7 @@ class SOARClient(BaseClient):
                                      'End time': info['end_time'],
                                      'Data item ID': info['data_item_id'],
                                      'Filename': info['filename'],
-                                     'Filesize': info['filesize']
+                                     'Filesize': info['filesize'],
                                      })
 
     def fetch(self, query_results, *, path, downloader, **kwargs):
@@ -144,6 +146,7 @@ class SOARClient(BaseClient):
     def _can_handle_query(cls, *query):
         """
         Check if this client can handle a given Fido query.
+        Checks to see if a SOAR instrument or product is provided in the query.
 
         Returns
         -------
@@ -151,8 +154,18 @@ class SOARClient(BaseClient):
             True if this client can handle the given query.
         """
         required = {a.Time}
-        optional = {a.Instrument, a.Level, Product, Identifier}
-        return cls.check_attr_types_in_query(query, required, optional)
+        optional = {a.Instrument, a.Level, a.Provider, Product, Identifier}
+        if not cls.check_attr_types_in_query(query, required, optional):
+            return False
+        # check to make sure the instrument attr passed is one provided by the SOAR.
+        # also check to make sure that the provider passed is the SOAR for which this client can handle.
+        instr = [i[0].lower() for i in cls.register_values()[a.Instrument]]
+        for x in query:
+            if isinstance(x, a.Instrument) and str(x.value).lower() not in instr:
+                return False
+            if isinstance(x, a.Provider) and str(x.value).lower() != "soar":
+                return False
+        return True
 
     @classmethod
     def _attrs_module(cls):
@@ -171,4 +184,11 @@ class SOARClient(BaseClient):
 
         # Convert from dict to list of tuples
         all_datasets = [(id, desc) for id, desc in all_datasets.items()]
-        return {Product: all_datasets}
+
+        instr_path = pathlib.Path(__file__).parent / 'data' / 'instrument_attrs.json'
+        with open(instr_path, 'r') as instr_attrs_file:
+            all_instr = json.load(instr_attrs_file)
+
+        all_instr = [(id, desc) for id, desc in all_instr.items()]
+
+        return {Product: all_datasets, a.Instrument: all_instr, a.Provider:  [('SOAR', 'Solar Orbiter Archive.')]}
