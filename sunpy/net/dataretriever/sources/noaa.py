@@ -174,4 +174,3 @@ class SRSClient(GenericClient):
                  attrs.Source: [('SWPC', 'The Space Weather Prediction Center.')],
                  attrs.Provider: [('NOAA', 'The National Oceanic and Atmospheric Administration.')]}
         return adict
-     
