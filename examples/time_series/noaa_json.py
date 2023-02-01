@@ -62,8 +62,7 @@ goes_data = pd.DataFrame({"xrsa": data_short["flux"].values, "xrsb": data_long["
 test_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
 ####################################################################
-# Creating the time series object: The TimeSeries class from the sunpy.timeseries module is used to create a time series object,
-# test_ts, from the goes_data dataframe, the meta metadata, the units units, and a source string "xrs".
+# Now we have created the timeseries, we will finally plot it.
 
 test_ts.peek()
 
