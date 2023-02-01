@@ -17,7 +17,6 @@ from astropy import units as u
 from sunpy import timeseries as ts
 from sunpy.time import parse_time
 
-data = pd.read_json("https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json")
 
 ############################################
 # over here the json is transformed and stored as a pandas dataframe
