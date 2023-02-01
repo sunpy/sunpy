@@ -5,7 +5,7 @@ GOES XRS Near Real Time (NRT) data
 
 Currently, ``sunpy`` has no mechanism to directly download several of the the GOES XRS Near Real Time (NRT) data.
 
-We will showcase an example of how to download it and load it into a `sunpy.timeseries.TimeSeries`.
+We will showcase an example of how to download and load these files into a `sunpy.timeseries.TimeSeries`.
 """
 from collections import OrderedDict
 
@@ -18,27 +18,33 @@ from sunpy.time import parse_time
 
 
 ###############################################################################
-# over here the json is transformed and stored as a pandas dataframe
+# We will start by getting reading the GOES JSON file using `pandas`.
+# It allows us to download the file and get it straight into a `pandas.DataFrame`.
+# This file updates every minute and contains only the last 7 days worth of data.
 
-data_short = data[data["energy"] == "0.05-0.4nm"]
-
-###############################################################################
-# Filtering the data: A new dataframes are created by filtering the original data.
-# The data_short dataframe contains only the rows where the value of the "energy" column is "0.05-0.4nm"
-
-data_long = data[data["energy"] == "0.1-0.8nm"]
+goes_json_data = pd.read_json("https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json")
 
 ###############################################################################
-# Again a new temporary dataframe is formed ,and the data_long contains only
-# the rows where the value of the "energy" column is "0.1-0.8nm".
+# The aim here is to display the two seperate energy bands that GOES can measure.
+# These being: "0.05-0.4nm" and "0.1-0.8nm". Therefore we will need to filter the data.
+
+# This will get us the short wavelength data.
+goes_short = data[data["energy"] == "0.05-0.4nm"]
+# This will get us the long wavelength data.
+goes_long = data[data["energy"] == "0.1-0.8nm"]
+
+###############################################################################
+# Similar to a `pandas.DataFrame`, `sunpy.timeseries.TimeSeries` requires
+# a datetime index which we can get directly and transform into `astropy.time.Time`.
 
 time_array = parse_time(data_short["time_tag"])
 
 ###############################################################################
-# The "time_tag" column from the data_short dataframe is passed
-# to the parse_time function to parse the strings into Time objects.
+# `sunpy.timeseries.TimeSeries` requires that there are units for data variables.
+# To do this, we will create a dictionary that will map the names of the two columns,
+# "xrsa" and "xrsb" (the channel names for GOES XRS), to their corresponding physical units, ``u.W/u.m**2``.
 
-units = OrderedDict([("xrsa", u.W/u.m**2), ("xrsb", u.W/u.m**2)])
+units = dict([("xrsa", u.W/u.m**2), ("xrsb", u.W/u.m**2)])
 
 ###############################################################################
 # Typically `sunpy.timeseries.TimeSeries` will read metadata from the file,
