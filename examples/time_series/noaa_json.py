@@ -57,10 +57,7 @@ meta = OrderedDict({"instrument": "GOES X-ray sensor", "measurments": "primary",
 goes_data = pd.DataFrame({"xrsa": data_short["flux"].values, "xrsb": data_long["flux"].values}, index=time_array.datetime)
 
 ###########################################################
-# after filtering all the data the final data is merged into goes_data as final dataset
-# Creating the time series data: A new Pandas dataframe, goes_data, is created
-# using the values of the "flux" columns from the data_short
-# and data_long dataframes, with the parsed time data as the index.
+# Now we will create a `sunpy.timeseries.TimeSeries` by passing in the data, the metadata and the units.
 
 test_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
