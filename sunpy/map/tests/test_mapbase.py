@@ -941,8 +941,8 @@ def test_rotate(aia171_test_map):
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
-@pytest.mark.skipif(version.parse(np.__version__) >= version.parse("1.20.0"),
-                    reason="Numpy >= 1.20.0 doesn't allow NaN to int conversion")
+@pytest.mark.xfail(version.parse(np.__version__) >= version.parse("1.20.0"),
+                   reason="Numpy >= 1.20.0 doesn't allow NaN to int conversion")
 def test_rotate_with_incompatible_missing_dtype_warning():
     data = np.arange(0, 100).reshape(10, 10)
     coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime='2013-10-28',
