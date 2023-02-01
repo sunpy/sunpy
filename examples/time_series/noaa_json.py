@@ -3,8 +3,9 @@
 GOES XRS Near Real Time (NRT) data
 ==================================
 
-How to query and visualize nrt data(json format) using pandas and plot
-it using TimeSeries Library
+Currently, ``sunpy`` has no mechanism to directly download several of the the GOES XRS Near Real Time (NRT) data.
+
+We will showcase an example of how to download it and load it into a `sunpy.timeseries.TimeSeries`.
 """
 
 
