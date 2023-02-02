@@ -1,7 +1,7 @@
 """
-==========================================
-Querying SHARP data and constructing a Map
-==========================================
+===============================
+Querying and loading SHARP data
+===============================
 
 How to query SHARP data through use of
 sunpy's jsoc client and construct a map.
