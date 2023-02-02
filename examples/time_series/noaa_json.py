@@ -60,7 +60,8 @@ meta = dict({"instrument": "GOES X-ray sensor", "measurements": "primary", "type
 goes_data = pd.DataFrame({"xrsa": data_short["flux"].values, "xrsb": data_long["flux"].values}, index=time_array.datetime)
 
 ###############################################################################
-# Now we will create a `sunpy.timeseries.TimeSeries` by passing in the data, the metadata and the units.
+# Now we will create a `sunpy.timeseries.TimeSeries` by passing in the data, 
+# the metadata and the units.
 
 test_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
