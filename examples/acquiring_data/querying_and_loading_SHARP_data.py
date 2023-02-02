@@ -18,6 +18,8 @@ from sunpy.net import attrs as a
 # We will use `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`
 # and make use of the JSOC attributes that allow us to query the JSOC.
 
+# You will need to replace this with your own registered email address:
+# http://jsoc.stanford.edu/ajax/register_email.html
 jsoc_email = os.environ["JSOC_EMAIL"]
 
 result = Fido.search(a.Time("2023-02-01 21:00:00", "2023-02-01 22:30:00"),
