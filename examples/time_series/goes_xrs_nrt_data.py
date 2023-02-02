@@ -7,7 +7,6 @@ Currently, ``sunpy`` has no mechanism to directly download several of the the GO
 
 We will showcase an example of how to download and load these files into a `sunpy.timeseries.TimeSeries`.
 """
-from collections import OrderedDict
 
 import pandas as pd
 
@@ -15,7 +14,6 @@ from astropy import units as u
 
 from sunpy import timeseries as ts
 from sunpy.time import parse_time
-
 
 ###############################################################################
 # We will start by getting reading the GOES JSON file using `pandas`.
@@ -60,7 +58,7 @@ meta = dict({"instrument": "GOES X-ray sensor", "measurements": "primary", "type
 goes_data = pd.DataFrame({"xrsa": data_short["flux"].values, "xrsb": data_long["flux"].values}, index=time_array.datetime)
 
 ###############################################################################
-# Now we will create a `sunpy.timeseries.TimeSeries` by passing in the data, 
+# Now we will create a `sunpy.timeseries.TimeSeries` by passing in the data,
 # the metadata and the units.
 
 test_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
