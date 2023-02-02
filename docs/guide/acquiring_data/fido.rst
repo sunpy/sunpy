@@ -35,7 +35,7 @@ Fido supports a number of different remote data sources. To see a list the Fido 
     CDAWEBClient      Provides access to query and download from the Coordinated Data Analysis Web (CDAWeb).
     EVEClient         Provides access to Level 0CS Extreme ultraviolet Variability Experiment (EVE) data.
     GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
-    XRSClient         Provides access to the GOES XRS fits files archive.
+    XRSClient         Provides access to several GOES XRS files archive.
     SUVIClient        Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
     GONGClient        Provides access to the Magnetogram products of NSO-GONG synoptic Maps.
     LYRAClient        Provides access to the LYRA/Proba2 data archive.
