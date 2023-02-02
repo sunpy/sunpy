@@ -3,8 +3,7 @@
 Querying and loading SHARP data
 ===============================
 
-How to query SHARP data through use of
-sunpy's jsoc client and construct a map.
+In this example we will demonstrate how to acquire [Spaceweather HMI Active Region Patch (SHARP)](http://jsoc.stanford.edu/doc/data/hmi/sharp/sharp.htm) data and load it into a `sunpy.map.Map`.
 """
 import astropy.units as u
 
@@ -13,40 +12,24 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###################################################################
-# We use Fido to query the SHARP data. We want data in the time range
-# between ``tstart`` and ``tend``, having the time interval for the
-# data sampling as ``sampling_rate``. We include the SHARP series
-# which we want to query with ``series``, passing the primekey
-# using ``primekey_label`` and ``primekey_value``. When JSOC has
-# staged our request, a notification will be sent to the ``notify_email``
-# address.
-# Sometimes, there can be more than one file present for each record.
-# ``segment`` is used then to define which files to download.
+# To get access to SHARP data, we will need to query the [JSOC/Stanford](http://jsoc.stanford.edu/).
+# We will use `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` 
+# and make use of the JSOC attributes that allow us to query the JSOC.
 
-tstart = "2011-02-10 22:00:00"
-tend = "2011-02-10 22:30:00"
-sampling_rate = 1*u.hour
-series = "hmi.sharp_cea_720s"
-primekey_label = "HARPNUM"
-primekey_value = 377
-notify_email = "sunnycrockett@sunpy.org"
-segment = "Bp"
 
-###################################################################
-# We plug all these attributes into Fido to conduct the search.
-# Once the search is done we can use Fido to fetch the data.
-
-results = Fido.search(a.Time(tstart, tend),
-                      a.Sample(sampling_rate),
-                      a.jsoc.Series(series),
-                      a.jsoc.PrimeKey(primekey_label, primekey_value),
+result = Fido.search(a.Time("2023-02-01 21:00:00", "2023-02-01 22:30:00"),
+                      a.Sample(1*u.hour),
+                      a.jsoc.Series("hmi.sharp_cea_720s"),
+                      a.jsoc.PrimeKey("HARPNUM", 7871),
                       a.jsoc.Notify(notify_email),
-                      a.jsoc.Segment(segment))
-
-files = Fido.fetch(results)
+                      a.jsoc.Segment("Bp"))
+# Then fetch the file.
+file = Fido.fetch(result)
 
 ###################################################################
-# Once the data has been queried, we can construct a map with it
-# using ``sunpy.map.Map()``
+# Now we have the file, we will construct a `sunpy.map.Map`.
 
-sharp_bp = sunpy.map.Map(files)
+sharp_map = sunpy.map.Map(file)
+sharp_map.plot()
+
+plt.show()
