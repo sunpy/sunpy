@@ -14,7 +14,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###################################################################
-# To get access to SHARP data, we will need to query the [JSOC/Stanford](http://jsoc.stanford.edu/).
+# To search for SHARP data, we will need to query the [JSOC/Stanford](http://jsoc.stanford.edu/).
 # We will use `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`
 # and make use of the JSOC attributes that allow us to query the JSOC.
 
@@ -28,11 +28,15 @@ result = Fido.search(a.Time("2023-02-01 21:00:00", "2023-02-01 22:30:00"),
                      a.jsoc.PrimeKey("HARPNUM", 7871),
                      a.jsoc.Notify(jsoc_email),
                      a.jsoc.Segment("Bp"))
-# Then fetch the file.
+print(result)
+
+###################################################################
+# Next, we can download the file
+
 file = Fido.fetch(result)
 
 ###################################################################
-# Now we have the file, we will construct a `sunpy.map.Map`.
+# Now that we have the file, we can construct a `sunpy.map.Map` and plot it.
 
 sharp_map = sunpy.map.Map(file)
 sharp_map.plot()
