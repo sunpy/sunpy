@@ -13,7 +13,7 @@ TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
 def test_read():
     data, header = jp2.read(AIA_193_JP2)[0]
     assert isinstance(data, np.ndarray)
-    assert data.shape == (4096, 4096)
+    assert data.shape == (410, 410)
     assert isinstance(header, FileHeader)
 
 
