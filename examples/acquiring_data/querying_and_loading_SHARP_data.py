@@ -15,7 +15,7 @@ from sunpy.net import attrs as a
 
 ###################################################################
 # To search for SHARP data, we will need to query the [JSOC/Stanford](http://jsoc.stanford.edu/).
-# We will use `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`
+# We will use `Fido <sunpy.net.fido_factory.Fido>`
 # and make use of the JSOC attributes that allow us to query the JSOC.
 
 # You will need to replace this with your own registered email address:
