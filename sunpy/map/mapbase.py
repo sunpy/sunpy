@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
+from packaging import version
 
 try:
     from dask.array import Array as DaskArray
@@ -1686,21 +1687,19 @@ class GenericMap(NDData):
         unpad_x = -np.min((diff[0], 0))
         unpad_y = -np.min((diff[1], 0))
 
-        # Pad the image array
-
-        if issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
+        # Numpy 1.20+ prevents np.pad from padding with NaNs in integer arrays
+        # Before it would be cast to 0, but now it raises an error.
+        if version.parse(np.__version__) < version.parse("1.20.0") and issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
             warn_user("The specified `missing` value is not an integer, but the data "
                       "array is of integer type, so the output may be strange.")
-
+        # Pad the image array
         new_data = np.pad(self.data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
                           mode='constant',
                           constant_values=(missing, missing))
 
         # All of the following pixel calculations use a pixel origin of 0
-
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
-
         pixel_rotation_center = u.Quantity(self.reference_pixel).value + [pad_x, pad_y]
 
         if recenter:
