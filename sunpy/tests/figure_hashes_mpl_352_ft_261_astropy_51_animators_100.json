@@ -50,7 +50,6 @@
   "sunpy.map.tests.test_reproject_to.test_reproject_to_hpc_interpolation": "b82e6462d4ccb8c188b5f6deac3258326ba6840ef624c18f044a9d4cadce3cf2",
   "sunpy.map.tests.test_reproject_to.test_reproject_to_hpc_exact": "93171456dfac771f53bc0465922cf5811048df0b56100d329a55f71b36bdc8f5",
   "sunpy.map.tests.test_reproject_to.test_reproject_to_hpc_adaptive": "40cb43b7431941e8977449f5ed5d1439e7dddf9f0ec0aa21d0c18f09a25e259c",
-  "sunpy.net.tests.test_helioviewer.test_download_jp2_map": "a71654a4a7ceea689869c68f4cd7f0ebfc5e970caed73f2e73e677745c99e0e0",
   "sunpy.timeseries.sources.tests.test_eve.test_esp_peek": "28b1e7af0e1894d22fd9db90d9e2bc5eb76e291c9e41fa1bb1d33d95bd13cce3",
   "sunpy.timeseries.sources.tests.test_eve.test_eve_peek": "2a22f93af44971411800e4fcd0d93d2128fe2b9e6b97e576e8372c2cd12d7d78",
   "sunpy.timeseries.sources.tests.test_fermi_gbm.test_fermi_gbm_peek": "83f0b53ca6f1cd809bd03e4aff80b3c02c8078e552b0c3e90b2cb3cf26932a51",
