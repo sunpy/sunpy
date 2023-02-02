@@ -1,0 +1,1 @@
+`~sunpy.net.dataretriever.SUVIClient` now provides GOES-18 SUVI data.
