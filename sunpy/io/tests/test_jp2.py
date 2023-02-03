@@ -16,6 +16,7 @@ def test_read_data():
     import glymur
     data = glymur.Jp2k(AIA_193_JP2)[...]
     assert isinstance(data, np.ndarray)
+    assert data.shape == (410, 410)
 
 
 @skip_glymur
