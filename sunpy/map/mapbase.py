@@ -579,7 +579,9 @@ class GenericMap(NDData):
         return self.meta.item_hash()
 
     def _set_symmetric_vmin_vmax(self):
-        # Set symmetric vmin/vmax about zero
+        """
+        Set symmetric vmin and vmax about zero
+        """
         threshold = np.nanmax(abs(self.data))
         self.plot_settings['norm'].vmin = -threshold
         self.plot_settings['norm'].vmax = threshold
