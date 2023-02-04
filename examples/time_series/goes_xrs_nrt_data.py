@@ -40,7 +40,7 @@ time_array = parse_time(data_short["time_tag"])
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires that there are units for data variables.
 # To do this, we will create a dictionary that will map the names of the two columns,
-# "xrsa" and "xrsb" (the channel names for GOES XRS), to their corresponding physical units, ``u.W/u.m**2``.
+# "xrsa" and "xrsb" (the channel names for GOES XRS), to their corresponding physical flux units, ``u.W/u.m**2``.
 
 units = dict([("xrsa", u.W/u.m**2), ("xrsb", u.W/u.m**2)])
 
