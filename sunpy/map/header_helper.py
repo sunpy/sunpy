@@ -1,4 +1,3 @@
-from types import MappingProxyType
 
 import numpy as np
 
@@ -385,8 +384,6 @@ _map_meta_keywords = {
     'CD2_2':
     'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.'
 }
-
-META_KEYWORDS = MappingProxyType(_map_meta_keywords)
 
 
 def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR"):
