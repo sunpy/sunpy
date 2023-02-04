@@ -17,7 +17,7 @@ from sunpy.time import parse_time
 
 ###############################################################################
 # We will start by getting reading the GOES JSON file using `pandas`.
-# It allows us to download the file and get it straight into a `pandas.DataFrame`.
+# This allows us to download the file and load it straight into a `pandas.DataFrame`.
 # This file updates every minute and contains only the last 7 days worth of data.
 
 goes_json_data = pd.read_json("https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json")
