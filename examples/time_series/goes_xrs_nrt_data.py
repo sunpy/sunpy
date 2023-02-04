@@ -1,6 +1,6 @@
 """
 ==================================
-GOES XRS Near Real Time (NRT) data
+How to create a `sunpy.timeseries.TimeSeries` from the GOES-XRS near real time (NRT). 
 ==================================
 
 Currently, ``sunpy`` has no mechanism to directly download the GOES XRS Near Real Time (NRT) data.
