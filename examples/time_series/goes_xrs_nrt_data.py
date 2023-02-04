@@ -61,11 +61,11 @@ goes_data = pd.DataFrame({"xrsa": data_short["flux"].values, "xrsb": data_long["
 # Now we will create a `sunpy.timeseries.TimeSeries` by passing in the data,
 # the metadata and the units.
 
-test_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
+goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
 ###############################################################################
 # Finally, we can plot the timeseries.
 
-test_ts.plot()
+goes_ts.plot()
 
 plt.show()
