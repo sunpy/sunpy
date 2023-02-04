@@ -16,7 +16,7 @@ from sunpy import timeseries as ts
 from sunpy.time import parse_time
 
 ###############################################################################
-# We will start by getting reading the GOES JSON file using `pandas`.
+# We will start by getting reading the GOES-XRS JSON file using `pandas.read_json`.
 # This allows us to download the file and load it straight into a `pandas.DataFrame`.
 # This file updates every minute and contains only the last 7 days worth of data.
 
