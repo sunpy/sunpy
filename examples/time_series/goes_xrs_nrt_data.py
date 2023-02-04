@@ -32,7 +32,7 @@ goes_short = data[data["energy"] == "0.05-0.4nm"]
 goes_long = data[data["energy"] == "0.1-0.8nm"]
 
 ###############################################################################
-# Similar to a `pandas.DataFrame`, `sunpy.timeseries.TimeSeries` requires
+# `sunpy.timeseries.TimeSeries` requires
 # a datetime index which we can get directly and transform into `astropy.time.Time`.
 
 time_array = parse_time(data_short["time_tag"])
