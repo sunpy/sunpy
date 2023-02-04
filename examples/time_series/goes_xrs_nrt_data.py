@@ -45,7 +45,7 @@ time_array = parse_time(data_short["time_tag"])
 units = dict([("xrsa", u.W/u.m**2), ("xrsb", u.W/u.m**2)])
 
 ###############################################################################
-# Typically `sunpy.timeseries.TimeSeries` will read metadata from the file,
+# To create a `sunpy.timeseries.TimeSeries` we can create a meta dictionary that provides the detailed of the data. Typically, `sunpy.timeseries.TimeSeries` reads the metadata directly from the file.
 # however, here we need to define our own metadata and we will keep it fairly simple.
 
 meta = dict({"instrument": "GOES X-ray sensor", "measurements": "primary", "type": "quicklook"})
