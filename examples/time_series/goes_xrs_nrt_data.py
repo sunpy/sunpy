@@ -3,7 +3,7 @@
 GOES XRS Near Real Time (NRT) data
 ==================================
 
-Currently, ``sunpy`` has no mechanism to directly download several of the the GOES XRS Near Real Time (NRT) data.
+Currently, ``sunpy`` has no mechanism to directly download the GOES XRS Near Real Time (NRT) data.
 
 We will showcase an example of how to download and load these files into a `sunpy.timeseries.TimeSeries`.
 """
