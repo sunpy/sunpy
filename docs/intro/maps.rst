@@ -491,20 +491,51 @@ The meta information informs `sunpy.map.Map` of the correct coordinate informati
 See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a brief demonstration of generating a Map from a data array.
 
 The keys required for the header information follow the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`__.
-**sunpy** provides a Map header helper function to assist in creating a header that contains the correct meta information.
-This includes a :func:`~sunpy.map.header_helper.meta_keywords` function that will return a `dict` of the meta keywords used when creating a Map.
+All the meta keywords used when creating a Map along with their description are listed below.
 
-.. code-block:: python
-
-    >>> from sunpy.map.header_helper import meta_keywords
-
-    >>> meta_keywords() # doctest: +SKIP
-    {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
-     'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
-     'crval1': 'Coordinate value at reference point on naxis1 **required'
+`cunit1`: Units of the coordinate increments along naxis1 e.g. arcsec \**required
+`cunit2`: Units of the coordinate increments along naxis2 e.g. arcsec \**required
+`crval1`: Coordinate value at reference point on naxis1 \**required
+`crval2`: Coordinate value at reference point on naxis2 \**required
+`cdelt1`: Spatial scale of pixels for naxis1, i.e. coordinate increment at reference point
+`cdelt2`: Spatial scale of pixels for naxis2, i.e. coordinate increment at reference point
+`crpix1`: Pixel coordinate at reference point naxis1
+`crpix2`: Pixel coordinate at reference point naxis2
+`ctype1`: Coordinate type projection along naxis1 of data e.g. HPLT-TAN
+`ctype2`: Coordinate type projection along naxis2 of data e.g. HPLN-TAN
+`hgln_obs`: Heliographic longitude of observation
+`hglt_obs`: Heliographic latitude of observation
+`dsun_obs`: distance to Sun from observation in metres
+`rsun_obs`: radius of Sun in meters from observation
+`dateobs`: date of observation e.g. 2013-10-28 00:00
+`date_obs`: date of observation e.g. 2013-10-28 00:00
+`rsun_ref`: reference radius of Sun in meters
+`solar_r`: radius of Sun in meters from observation
+`radius`: radius of Sun in meters from observation
+`crln_obs`: Carrington longitude of observation
+`crlt_obs`: Heliographic latitude of observation
+`solar_b0`: Solar B0 angle
+`detector`: name of detector e.g. AIA
+`exptime`: exposure time of observation, in seconds e.g 2
+`instrume`: name of instrument
+`wavelnth`: wavelength of observation
+`waveunit`: unit for which observation is taken e.g. angstom
+`obsrvtry`: name of observatory of observation
+`telescop`: name of telescope of observation
+`lvl_num`: FITS processing level
+`crota2`: Rotation of the horizontal and vertical axes in degrees
+`PC1_1`: Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
+`PC1_2`: Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
+`PC2_1`: Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
+`PC2_2`: Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
+`CD1_1`: Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
+`CD1_2`: Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
+`CD2_1`: Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
+`CD2_2`: Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
      ...
 
-The utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
+**sunpy** provides a Map header helper function to assist in creating a header that contains the correct meta information.
+This includes a utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` that will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
 The `astropy.coordinates.SkyCoord` is defined by the user and contains information on the reference frame, reference coordinate, and observer location.
 This function returns a `sunpy.util.MetaDict`.
 The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.

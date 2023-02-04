@@ -61,11 +61,6 @@ def hpc_coord_notime():
     return SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective)
 
 
-def test_metakeywords():
-    meta = sunpy.map.meta_keywords()
-    assert isinstance(meta, dict)
-
-
 def test_scale_conversion(map_data, hpc_coord):
     # The header will have cunit1/2 of arcsec
     header = make_fitswcs_header(map_data, hpc_coord, scale=[1, 2] * u.arcmin / u.pix)
