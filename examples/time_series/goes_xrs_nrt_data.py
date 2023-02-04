@@ -23,8 +23,8 @@ from sunpy.time import parse_time
 goes_json_data = pd.read_json("https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json")
 
 ###############################################################################
-# The aim here is to display the two separate energy bands that GOES can measure.
-# These being: "0.05-0.4nm" and "0.1-0.8nm". Therefore we will need to filter the data.
+# XRS collects data in two energy channels, "0.05-0.4nm" and "0.1-0.8nm".
+# We separate these `short` and `long` wavelength readings into two arrays.
 
 # This will get us the short wavelength data.
 goes_short = data[data["energy"] == "0.05-0.4nm"]
