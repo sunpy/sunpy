@@ -64,7 +64,7 @@ goes_data = pd.DataFrame({"xrsa": data_short["flux"].values, "xrsb": data_long["
 test_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
 ###############################################################################
-# Now we have created the timeseries, we will finally plot it.
+# Finally, we can plot the timeseries.
 
 test_ts.plot()
 
