@@ -532,10 +532,9 @@ All the meta keywords used when creating a Map along with their description are 
 `CD1_2`: Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
 `CD2_1`: Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
 `CD2_2`: Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
-     ...
 
-**sunpy** provides a Map header helper function to assist in creating a header that contains the correct meta information.
-This includes a utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` that will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
+``sunpy`` provides a helper, :func:`~sunpy.map.header_helper.make_fitswcs_header`, to assist in creating a header that contains the correct metadata.
+This will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
 The `astropy.coordinates.SkyCoord` is defined by the user and contains information on the reference frame, reference coordinate, and observer location.
 This function returns a `sunpy.util.MetaDict`.
 The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.
