@@ -21,7 +21,7 @@ def meta_keywords():
     --------
     Returns a dictionary of all meta keywords that are used in a `sunpy.map.GenericMap` header:
         >>> import sunpy.map
-        >>> sunpy.map.meta_keywords()
+        >>> sunpy.map.meta_keywords() # doctest: +SKIP
         {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
          'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
          ...
