@@ -491,7 +491,7 @@ The meta information informs `sunpy.map.Map` of the correct coordinate informati
 See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a brief demonstration of generating a Map from a data array.
 
 The keys required for the header information follow the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`__.
-All the meta keywords used when creating a Map along with their description are listed below.
+All the metadata keywords that a Map will parse along with their description are listed below:
 
 `cunit1`: Units of the coordinate increments along naxis1 e.g. arcsec \**required
 `cunit2`: Units of the coordinate increments along naxis2 e.g. arcsec \**required
