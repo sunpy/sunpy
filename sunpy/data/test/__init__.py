@@ -29,7 +29,7 @@ rootdir = Path(os.path.dirname(sunpy.__file__)) / "data" / "test"
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
 
 
-def get_test_filepath(filename, **kwargs):
+def get_test_filepath(filename, package="sunpy.data.test", **kwargs):
     """
     Return the full path to a test file in the ``data/test`` directory.
 
@@ -37,6 +37,10 @@ def get_test_filepath(filename, **kwargs):
     ----------
     filename : `str`
         The name of the file inside the ``data/test`` directory.
+    package : `str`
+        The package name, defaults to ``sunpy.data.test``.
+    kwargs : `dict`
+        Passed to `astropy.utils.data.get_pkg_data_filename`.
 
     Returns
     -------
@@ -51,7 +55,7 @@ def get_test_filepath(filename, **kwargs):
     if isinstance(filename, Path):
         # NOTE: get_pkg_data_filename does not accept Path objects
         filename = filename.as_posix()
-    return get_pkg_data_filename(filename, package="sunpy.data.test", **kwargs)
+    return get_pkg_data_filename(filename, package=package, **kwargs)
 
 
 def get_test_data_filenames():
@@ -103,16 +107,15 @@ def write_image_file_from_header_file(header_file, fits_directory):
     return fits_file
 
 
-def get_dummy_map_from_header(filename):
+def get_dummy_map_from_header(filepath):
     """
     Generate a dummy `~sunpy.map.Map` from header-only test data.
 
     The "image" will be random numbers with the correct shape
     as specified by the header.
     """
-    filepath = get_test_filepath(filename)
     header = _fits.format_comments_and_history(astropy.io.fits.Header.fromtextfile(filepath))
-    data = np.random.rand(header['NAXIS2'], header['NAXIS1'])
+    data = np.random.randint(low=0, high=100, size=(header['NAXIS2'], header['NAXIS1']))
     if 'BITPIX' in header:
         data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
     # NOTE: by reading straight from the data header pair, we are skipping
