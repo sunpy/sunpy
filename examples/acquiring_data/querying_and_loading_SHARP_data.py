@@ -7,6 +7,8 @@ In this example we will demonstrate how to acquire `Spaceweather HMI Active Regi
 """
 import os
 
+import matplotlib.pyplot as plt
+
 import astropy.units as u
 
 import sunpy.map
@@ -42,4 +44,4 @@ file = Fido.fetch(result)
 sharp_map = sunpy.map.Map(file)
 sharp_map.plot(vmin=-1500, vmax=1500)
 
-sharp_map.show()
+plt.show()
