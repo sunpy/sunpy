@@ -1,0 +1,1 @@
+Added an example gallery entry for querying SHARP data and loading it into a `Map`.
