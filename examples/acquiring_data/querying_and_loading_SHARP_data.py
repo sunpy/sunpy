@@ -39,7 +39,7 @@ print(result)
 file = Fido.fetch(result)
 
 ###################################################################
-# Now that we have the file, we can construct a `sunpy.map.Map` and plot it.
+# Now that we have the file, we can construct a `~sunpy.map.Map` and plot it.
 
 sharp_map = sunpy.map.Map(file)
 sharp_map.plot(vmin=-1500, vmax=1500)
