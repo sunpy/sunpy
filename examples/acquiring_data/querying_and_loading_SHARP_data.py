@@ -34,7 +34,7 @@ result = Fido.search(a.Time("2011-03-09 23:20:00", "2011-03-09 23:30:00"),
 print(result)
 
 ###################################################################
-# Next, we can download the file
+# Next, we can download the file.
 
 file = Fido.fetch(result)
 
