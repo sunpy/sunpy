@@ -1,3 +1,11 @@
+"""
+===================================
+Getting the location of STEREO-A using solarmach
+===================================
+
+How to get the position of planetary bodies im the solar system using
+`astropy's solar system ephemeris <http://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
+"""
 from solarmach import SolarMACH
 import datetime
 

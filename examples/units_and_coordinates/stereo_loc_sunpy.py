@@ -1,3 +1,11 @@
+"""
+===================================
+Getting the location of STEREO-A using sunpy
+===================================
+
+How to get the position of planetary bodies im the solar system using
+`astropy's solar system ephemeris <http://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
+"""
 import matplotlib.pyplot as plt
 from astropy.time import Time
 import datetime
