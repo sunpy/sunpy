@@ -17,12 +17,12 @@ from solarmach import SolarMACH
 # You can make use of `~datetime.datetime.now` to pass current date and time.
 
 body_list = ['STEREO-A', 'Earth', 'Mars']
-vsw_list = [400, 400, 400] 
+vsw_list = [400, 400, 400]
 time = datetime.datetime.now()
 date = str(time)
 
 ##############################################################################
-# If you want to make the plot look more clean and shart then you can pass 
+# If you want to make the plot look more clean and shart then you can pass
 # these optional arguments as parameters to ``solarMACH()``.
 # You can refer to `this <https://github.com/jgieseler/solarmach#readme>`__
 # for docs.

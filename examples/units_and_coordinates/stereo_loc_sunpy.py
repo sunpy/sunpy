@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 from astropy.time import Time
 
 from sunpy.coordinates import get_body_heliographic_stonyhurst
-
 from sunpy.coordinates.ephemeris import get_horizons_coord
 
 ##############################################################################
@@ -31,7 +30,7 @@ aia = get_horizons_coord('STEREO-A', obstime)
 # Now We are using `get_body_heliographic_stonyhurst()` to get the coordinates
 # of other bodies.
 # We have not used `get_body_heliographic_stonyhurst()` to find the coordinates
-# of STEREO-A as it's position and velocity cannot be calculated with the 
+# of STEREO-A as it's position and velocity cannot be calculated with the
 # 'builtin' ephemeris.
 
 planet_list = ['mars', 'sun', 'earth']
