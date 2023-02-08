@@ -1,0 +1,1 @@
+Added an example to find the location of STEREO-A using `sunpy` and `solarmach`
