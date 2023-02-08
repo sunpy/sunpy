@@ -11,15 +11,9 @@ We aim to be a comprehensive Python package that allows solar physicists to deep
 Firstly, we want to thank you for your interest in contributing to SunPy!
 SunPy is an open project that encourages everyone to contribute in any way possible.
 
-The people who help develop or contribute to SunPy are varied in ability and experience with the vast majority being volunteers who dedicate time each week.
-We pride ourselves on being a welcoming community and we would love to have you become a part of our community.
-
-Although this document mainly focuses on how to make contributions to the core sunpy libraries code and documentation, there are other ways to get involved with the SunPy community.
-
-If you have any questions, comments or just want to say hello, we have online chat on `Matrix`_ which requires no registration or a `Google Group`_ which you message.
-
-.. _Matrix: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
-.. _Google Group: https://groups.google.com/forum/#!forum/sunpy
+.. _chat room: https://app.element.io/#/room/#sunpy:openastronomy.org
+.. _mailing list: https://groups.google.com/forum/#!forum/sunpy
+.. _community forum: https://community.openastronomy.org/c/sunpy/5
 
 How to Contribute to sunpy
 ==========================
@@ -193,7 +187,7 @@ If you get stuck or want help, just `ask here`_!
 .. _GitHub: https://github.com/
 .. _fork: https://guides.github.com/activities/forking/
 .. _sunpy repository: https://github.com/sunpy/sunpy
-.. _ask here: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
+.. _ask here: https://app.element.io/#/room/#sunpy:openastronomy.org
 
 Checking the code you have written
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
