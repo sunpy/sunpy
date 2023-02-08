@@ -14,14 +14,26 @@ from sunpy.coordinates import get_body_heliographic_stonyhurst
 today = datetime.datetime.now()
 obstime = Time(today)
 
+##############################################################################
+# Lets grab the positions of STEREO-A in Heliographic Stonyhurst
+# coordinates.
+
 from sunpy.coordinates.ephemeris import get_horizons_coord
 aia = get_horizons_coord('STEREO-A', obstime)
+
+##############################################################################
+# Lets grab the positions of each of the planets in Heliographic Stonyhurst
+# coordinates.
 
 planet_list = ['mars', 'sun', 'earth']
 planet_coord = [get_body_heliographic_stonyhurst(
     this_planet, time=obstime) for this_planet in planet_list]
 planet_list.append('STEREO-A')
 planet_coord.append(aia)
+
+##############################################################################
+# Let's plot the results. Remember the Sun is at the center of this coordinate
+# system.
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')

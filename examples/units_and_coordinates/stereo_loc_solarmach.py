@@ -9,13 +9,17 @@ How to get the position of planetary bodies im the solar system using
 from solarmach import SolarMACH
 import datetime
 
-# necessary options
+##############################################################################
+# These are necessary options
+
 body_list = ['STEREO-A', 'Earth', 'Mars']
 vsw_list = [400, 400, 400]  
 time = datetime.datetime.now()
 date = str(time)
 
-# optional parameters
+##############################################################################
+# These are optional parameters
+
 coord_sys = 'Stonyhurst'                                                                                        
 reference_long = 273                                                 
 reference_lat = 0                                
@@ -27,7 +31,14 @@ return_plot_object = False
 transparent = False                            
 numbered_markers = True                       
 
+##############################################################################
+# initializing
+
 sm = SolarMACH(date, body_list, vsw_list, reference_long, reference_lat, coord_sys)
+
+##############################################################################
+# Let's plot the results. Remember the Sun is at the center of this coordinate
+# system.
 
 sm.plot(
    plot_spirals=plot_spirals,
