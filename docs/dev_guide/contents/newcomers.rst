@@ -10,7 +10,7 @@ The people who help develop or contribute to SunPy are varied in ability and exp
 
 If you have any questions, comments, or just want to say hello, we have an active `chat room`_ or a `mailing list`_.
 
-.. _chat room: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
+.. _chat room: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. _mailing list: https://groups.google.com/forum/#!forum/sunpy
 
 How to Contribute to sunpy
@@ -185,7 +185,7 @@ If you get stuck or want help, just `ask here`_!
 .. _GitHub: https://github.com/
 .. _fork: https://guides.github.com/activities/forking/
 .. _sunpy repository: https://github.com/sunpy/sunpy
-.. _ask here: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
+.. _ask here: https://app.element.io/#/room/#sunpy:openastronomy.org
 
 Checking the code you have written
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
