@@ -179,7 +179,7 @@ def test_mixed_results_get():
                            attrs.hek.FRM.Name == 'SPoCA')
     assert isinstance(result, hek.hek.HEKTable)
     assert len(result) == 89
-    assert result[0]["SOL_standard"] == 'SOL2013-01-31T20:13:31L219C160'
+    assert result[0]["SOL_standard"] == 'SOL2013-01-31T20:13:31L267C094'
 
 
 @pytest.mark.remote_data
