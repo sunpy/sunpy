@@ -204,24 +204,19 @@ intersphinx_mapping = {
 }
 
 # -- Options for hoverxref -----------------------------------------------------
-# adapted from sphinx-hoverxref conf.py
 if os.environ.get("READTHEDOCS"):
-    # Building on Read the Docs
     hoverxref_api_host = "https://readthedocs.org"
 
     if os.environ.get("PROXIED_API_ENDPOINT"):
         # Use the proxied API endpoint
-        # - A RTD thing to avoid a CSRF block when docs are using a
-        #   custom domain
+        # A RTD thing to avoid a CSRF block when docs are using a custom domain
         hoverxref_api_host = "/_"
 
 hoverxref_tooltip_maxwidth = 600  # RTD main window is 696px
 hoverxref_auto_ref = True
 hoverxref_mathjax = True
-
 # hoverxref has to be applied to these
 hoverxref_domains = ["py"]
-#hoverxref_roles = ["confval", "term"]
 
 hoverxref_role_types = {
     # roles with py domain
@@ -234,13 +229,13 @@ hoverxref_role_types = {
     "meth": "tooltip",
     "mod": "tooltip",
     "obj": "tooltip",
-    #
     # roles with std domain
     "confval": "tooltip",
     "hoverxref": "tooltip",
     "ref": "tooltip",
     "term": "tooltip",
 }
+hoverxref_intersphinx = ["numpy", "astropy", "python"]
 
 # -- Options for HTML output ---------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
