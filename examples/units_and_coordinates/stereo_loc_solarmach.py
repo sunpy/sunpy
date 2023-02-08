@@ -1,6 +1,5 @@
 from solarmach import SolarMACH
 import datetime
-from astropy.time import Time
 
 # necessary options
 body_list = ['STEREO-A', 'Earth', 'Mars']
