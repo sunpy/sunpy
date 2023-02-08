@@ -6,7 +6,6 @@ Getting the location of STEREO-A using sunpy
 How to get the position of planetary bodies im the solar system using
 `astropy's solar system ephemeris <http://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
 """
-from sunpy.coordinates.ephemeris import get_horizons_coord
 import datetime
 
 import matplotlib.pyplot as plt
@@ -14,6 +13,7 @@ import matplotlib.pyplot as plt
 from astropy.time import Time
 
 from sunpy.coordinates import get_body_heliographic_stonyhurst
+from sunpy.coordinates.ephemeris import get_horizons_coord
 
 today = datetime.datetime.now()
 obstime = Time(today)
