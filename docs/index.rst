@@ -56,7 +56,7 @@ Further Info
 * Read the :ref:`Developers guide <dev_guide>` to start contributing to the SunPy project.
 
 
-.. _chat room: https://openastronomy.element.io/#/room/#sunpy:openastronomy.org
+.. _chat room: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. _GitHub issue tracker: https://github.com/sunpy/sunpy/issues
 .. _discourse: https://community.openastronomy.org/c/sunpy/5
 
