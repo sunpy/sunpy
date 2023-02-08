@@ -3,23 +3,29 @@
 Getting the location of STEREO-A using solarmach
 ================================================
 
-How to get the position of planetary bodies im the solar system using
-`astropy's solar system ephemeris <http://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
+This example showcases how to get the position the planetary bodies within the solar system using `solarmach <https://github.com/jgieseler/solarmach/>`__.
 """
+##############################################################################
+# Import the required modules.
+
 import datetime
 
 from solarmach import SolarMACH
 
 ##############################################################################
-# These are necessary options
+# These are the necessary arguments which are to be passed to ``solarMACH()``.
+# You can make use of `~datetime.datetime.now` to pass current date and time.
 
 body_list = ['STEREO-A', 'Earth', 'Mars']
-vsw_list = [400, 400, 400]
+vsw_list = [400, 400, 400] 
 time = datetime.datetime.now()
 date = str(time)
 
 ##############################################################################
-# These are optional parameters
+# If you want to make the plot look more clean and shart then you can pass 
+# these optional arguments as parameters to ``solarMACH()``.
+# You can refer to `this <https://github.com/jgieseler/solarmach#readme>`__
+# for docs.
 
 coord_sys = 'Stonyhurst'
 reference_long = 273
@@ -33,12 +39,12 @@ transparent = False
 numbered_markers = True
 
 ##############################################################################
-# initializing
+# Now pass all the necessary and optional arguments as parameters to ``solarMACH()``.
 
 sm = SolarMACH(date, body_list, vsw_list, reference_long, reference_lat, coord_sys)
 
 ##############################################################################
-# Let's plot the results. Remember the Sun is at the center of this coordinate
+# Now plot the results. Remember the Sun is at the center of this coordinate
 # system.
 
 sm.plot(
