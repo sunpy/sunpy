@@ -1,1 +1,1 @@
-Added an example to find the location of STEREO-A using `sunpy` and `solarmach`
+Added an example to find the location of STEREO-A using (:ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_loc_solarmach.py`) and (:ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_loc_sunpy.py`)
