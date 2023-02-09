@@ -53,3 +53,8 @@ ax.plot(coord.lon.to('deg'), coord.radius, label='Trajectory of STEREO-A', color
 ax.legend(bbox_to_anchor=(1.25, 1.30), ncol=2)
 
 plt.show()
+
+##############################################################################
+# Other packages that will achieve this task:
+#
+# * `solarmach <https://github.com/jgieseler/solarmach>`__
