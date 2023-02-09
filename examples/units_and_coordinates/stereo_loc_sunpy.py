@@ -23,7 +23,7 @@ from sunpy.coordinates.ephemeris import get_horizons_coord
 today = datetime.datetime.now()
 obstime = Time(today)
 aia = get_horizons_coord('STEREO-A', obstime)
-trajectory_coords = get_horizons_coord('STEREO-A', {'start': '2006-10-27', 'stop': '2023-2-27', 'step': '5d'})
+trajectory_coords = get_horizons_coord('STEREO-A', {'start': '2012-11-11', 'stop': '2013-05-11', 'step': '5d'})
 
 ##############################################################################
 # Now We are using `get_body_heliographic_stonyhurst()` to get the coordinates
