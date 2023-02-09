@@ -3,7 +3,7 @@
 Getting the location of STEREO-A using solarmach
 ================================================
 
-This example showcases how to get the position the planetary bodies within the solar system using `solarmach <https://github.com/jgieseler/solarmach/>`__.
+This example showcases how to get and plot the position of STEREO (Solar Terrestrial Relations Observatory) and other planetary bodies within the solar system using `solarmach <https://github.com/jgieseler/solarmach/>`__.
 """
 ##############################################################################
 # Import the required modules.
