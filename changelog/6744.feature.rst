@@ -1,0 +1,2 @@
+In  `examples\time_series` added a new example `goes_xrs_nrt_json.py`
+This example shows  `how the goes_nrt` data can be queried using `matplotlib` and `sunpy.Timseries`
