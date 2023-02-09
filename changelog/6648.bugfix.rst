@@ -1,0 +1,1 @@
+Fixed a bug that prevented specifying a `~astropy.coordinates.BaseCoordinateFrame` (as opposed to a `~astropy.coordinates.SkyCoord`) to :meth:`sunpy.map.GenericMap.draw_quadrangle`.
