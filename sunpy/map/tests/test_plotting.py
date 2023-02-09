@@ -126,7 +126,7 @@ def test_quadrangle_aia17_width_height(aia171_test_map):
         50 * u.deg, -10 * u.deg, frame=HeliographicStonyhurst, obstime=aia171_test_map.date)
     w = 30 * u.deg
     h = 90 * u.deg
-    aia171_test_map.draw_quadrangle(bottom_left=bottom_left, width=w, height=h)
+    aia171_test_map.draw_quadrangle(bottom_left=bottom_left.frame, width=w, height=h)
 
 
 @figure_test
