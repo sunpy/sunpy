@@ -20,24 +20,9 @@ wind_speeds = [400, 400, 400]
 today = str(datetime.datetime.now())
 
 ##############################################################################
-# If you want to make the plot look more clean and shart then you can pass
-# these optional arguments as parameters to ``solarMACH()``.
-# You can refer to `this <https://github.com/jgieseler/solarmach#readme>`__
-# for docs.
-
-coord_sys = 'Stonyhurst'
-reference_long = 273
-reference_lat = 0
-plot_spirals = True
-plot_sun_body_line = True
-long_offset = 270
-reference_vsw = 400
-return_plot_object = False
-transparent = False
-numbered_markers = True
-
 ##############################################################################
-# Now pass all the necessary and optional arguments as parameters to ``solarMACH()``.
+# ``solarmach.SolarMACH`` has many optional parameters and they are detailed in `GitHub readme <https://github.com/jgieseler/solarmach#usage>`__.
+# For this example, the defaults fit exactly what we are after:
 
 sm = SolarMACH(date, body_list, vsw_list, reference_long, reference_lat, coord_sys)
 
