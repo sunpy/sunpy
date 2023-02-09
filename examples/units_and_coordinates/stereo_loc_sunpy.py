@@ -32,7 +32,7 @@ trajectory_coords = get_horizons_coord('STEREO-A', {'start': '2012-11-11', 'stop
 # of STEREO-A as it's position and velocity cannot be calculated with the
 # 'builtin' ephemeris.
 
-planets = ['mars', 'sun', 'earth']
+planets = ['sun', 'earth']
 planet_coords = [get_body_heliographic_stonyhurst(
     planet, time=obstime) for planet in planets]
 planets.append('STEREO-A')
