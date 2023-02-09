@@ -52,6 +52,6 @@ for planet, coord in zip(planets, planet_coords):
 # You have to seperately insert the label.
 
 ax.plot(coord.lon.to('deg'), coord.radius, label='Trajectory of STEREO-A', color='yellow')
-ax.legend(loc = 'upper right')
+ax.legend(loc='upper right')
 
 plt.show()
