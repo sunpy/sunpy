@@ -6,8 +6,9 @@ Creating a TimeSeries from GOES-XRS near real time data
 We will showcase an example of how to download and load GOES XRS Near Real Time (NRT) data into a `sunpy.timeseries.TimeSeries`.
 """
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
+
 from astropy import units as u
 
 from sunpy import timeseries as ts
