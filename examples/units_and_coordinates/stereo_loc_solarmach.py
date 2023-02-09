@@ -15,10 +15,9 @@ from solarmach import SolarMACH
 # You can find an example of more complex use on the `GitHub readme <https://github.com/jgieseler/solarmach#usage>`__.
 # For now we will define the bodies we want, the position-sensitive solar wind speed and the time for the image.
 
-body_list = ['STEREO-A', 'Earth', 'Mars']
-vsw_list = [400, 400, 400]
-time = datetime.datetime.now()
-date = str(time)
+bodies = ['STEREO-A', 'Earth', 'Mars']
+wind_speeds = [400, 400, 400]
+today = str(datetime.datetime.now())
 
 ##############################################################################
 # If you want to make the plot look more clean and shart then you can pass
