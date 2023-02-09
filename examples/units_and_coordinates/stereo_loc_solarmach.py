@@ -11,8 +11,9 @@ import datetime
 from solarmach import SolarMACH
 
 ##############################################################################
-# These are the necessary arguments which are to be passed to ``solarMACH()``.
-# You can make use of `~datetime.datetime.now` to pass current date and time.
+# Since we will use ``solarmach``, we will need to define the required paramters:
+# You can find an example of more complex use on the `GitHub readme <https://github.com/jgieseler/solarmach#usage>`__.
+# For now we will define the bodies we want, the position-sensitive solar wind speed and the time for the image.
 
 body_list = ['STEREO-A', 'Earth', 'Mars']
 vsw_list = [400, 400, 400]
