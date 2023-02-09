@@ -22,8 +22,7 @@ from sunpy.coordinates.ephemeris import get_horizons_coord
 # You can make use of `~datetime.datetime.now` to pass current date and time.
 # Now can use `get_horizons_coord()` to get the coordinates of STEREO-A.
 
-today = datetime.datetime.now()
-obstime = Time(today)
+obstime = Time(datetime.datetime.now())
 aia = get_horizons_coord('STEREO-A', obstime)
 
 ##############################################################################
@@ -36,8 +35,8 @@ aia = get_horizons_coord('STEREO-A', obstime)
 planets = ['mars', 'sun', 'earth']
 planet_coords = [get_body_heliographic_stonyhurst(
     planet, time=obstime) for planet in planets]
-planet_list.append('STEREO-A')
-planet_coord.append(aia)
+planets.append('STEREO-A')
+planet_coords.append(aia)
 
 ##############################################################################
 # Finally, we will create a polar plot of these locations.
