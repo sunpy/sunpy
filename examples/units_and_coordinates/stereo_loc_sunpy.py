@@ -1,7 +1,7 @@
 """
-==============================================
-Getting the trajectory of STEREO-A using sunpy
-==============================================
+==================================
+Getting the trajectory of STEREO-A
+==================================
 
 This example shows how to get and plot the position of planetary bodies within the solar system using
 `astropy's solar system ephemeris <http://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
