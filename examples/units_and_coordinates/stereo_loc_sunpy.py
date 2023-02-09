@@ -48,8 +48,6 @@ for coord in trajectory_coords:
 for planet, coord in zip(planets, planet_coords):
     ax.plot(coord.lon.to('rad'), coord.radius, 'o', label=planet)
 
-##############################################################################
-# You have to seperately insert the label.
 
 ax.plot(coord.lon.to('deg'), coord.radius, label='Trajectory of STEREO-A', color='yellow')
 ax.legend(bbox_to_anchor=(1.25, 1.30), ncol=2)
