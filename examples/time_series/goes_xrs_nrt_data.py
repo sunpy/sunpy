@@ -7,7 +7,7 @@ We will showcase an example of how to download and load GOES XRS Near Real Time 
 """
 
 import pandas as pd
-
+import matplotlib.pyplot as plt
 from astropy import units as u
 
 from sunpy import timeseries as ts
