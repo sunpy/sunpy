@@ -2291,7 +2291,7 @@ class GenericMap(NDData):
             width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
             height = top_right.spherical.lat - bottom_left.spherical.lat
             anchor = self._get_lon_lat(bottom_left)
-            transform = axes.get_transform(bottom_left.frame.replicate_without_data())
+            transform = axes.get_transform(bottom_left.replicate_without_data())
 
         kwergs = {
             "transform": transform,

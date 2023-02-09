@@ -34,7 +34,7 @@ point = SkyCoord(187*u.arcsec, 283*u.arcsec, frame=aiamap.coordinate_frame)
 # times.  Let's define a daily cadence for +/- five days.
 
 durations = np.concatenate([range(-5, 0), range(1, 6)]) * u.day
-diffrot_point = RotatedSunFrame(base=point, duration=durations)
+diffrot_point = SkyCoord(RotatedSunFrame(base=point, duration=durations))
 
 ##############################################################################
 # To see what this coordinate looks like in "real" helioprojective
