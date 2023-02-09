@@ -1,14 +1,11 @@
 """
 ============================================
-Getting the location of STEREO-A using sunpy
+Getting the location and trajectory of STEREO-A using sunpy
 ============================================
 
 This example shows how to get and plot the position of planetary bodies within the solar system using
 `astropy's solar system ephemeris <http://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
 """
-##############################################################################
-# Import the required modules.
-
 import datetime
 
 import matplotlib.pyplot as plt
@@ -20,10 +17,13 @@ from sunpy.coordinates.ephemeris import get_horizons_coord
 
 ##############################################################################
 # You can make use of `~datetime.datetime.now` to pass current date and time.
-# Now can use `get_horizons_coord()` to get the coordinates of STEREO-A.
+# Now can use `get_horizons_coord() <https://docs.sunpy.org/en/stable/generated/api/sunpy.coordinates.get_horizons_coord.html>`__ 
+# to get the coordinates of STEREO-A.
 
-obstime = Time(datetime.datetime.now())
+today = datetime.datetime.now()
+obstime = Time(today)
 aia = get_horizons_coord('STEREO-A', obstime)
+trajectory_coords = get_horizons_coord('STEREO-A', {'start': '2006-10-27', 'stop': '2023-2-27', 'step': '5d'})
 
 ##############################################################################
 # Now We are using `get_body_heliographic_stonyhurst()` to get the coordinates
@@ -39,12 +39,19 @@ planets.append('STEREO-A')
 planet_coords.append(aia)
 
 ##############################################################################
-# Finally, we will create a polar plot of these locations.
+# Now we will create a polar plot of these coordinates.
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')
+for coord in trajectory_coords:
+    ax.plot(coord.lon.to('deg'), coord.radius, 'y.', markersize = 2)
 for planet, coord in zip(planets, planet_coords):
     ax.plot(coord.lon.to('rad'), coord.radius, 'o', label=planet)
-ax.legend()
+
+##############################################################################
+# You have to seperately insert the label.
+
+ax.plot(coord.lon.to('deg'), coord.radius, label = 'Trajectory of STEREO-A', color = 'yellow')
+ax.legend(bbox_to_anchor =(1.25, 1.30), ncol= 2)
 
 plt.show()
