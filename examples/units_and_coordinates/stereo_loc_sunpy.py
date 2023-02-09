@@ -44,8 +44,8 @@ planet_coord.append(aia)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')
-for this_planet, this_coord in zip(planet_list, planet_coord):
-    ax.plot(this_coord.lon.to('rad'), this_coord.radius, 'o', label=this_planet)
+for planet, coord in zip(planets, planet_coords):
+    ax.plot(coord.lon.to('rad'), coord.radius, 'o', label=planet)
 ax.legend()
 
 plt.show()
