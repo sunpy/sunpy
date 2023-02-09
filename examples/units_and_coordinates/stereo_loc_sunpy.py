@@ -40,8 +40,7 @@ planet_list.append('STEREO-A')
 planet_coord.append(aia)
 
 ##############################################################################
-# Now you can plot the results. Remember the Sun is at the center of this coordinate
-# system.
+# Finally, we will create a polar plot of these locations.
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')
