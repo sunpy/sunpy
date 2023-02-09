@@ -1,7 +1,7 @@
 """
-============================================
-Getting the location and trajectory of STEREO-A using sunpy
-============================================
+==================================
+Getting the trajectory of STEREO-A
+==================================
 
 This example shows how to get and plot the position of planetary bodies within the solar system using
 `astropy's solar system ephemeris <http://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
@@ -48,10 +48,13 @@ for coord in trajectory_coords:
 for planet, coord in zip(planets, planet_coords):
     ax.plot(coord.lon.to('rad'), coord.radius, 'o', label=planet)
 
-##############################################################################
-# You have to seperately insert the label.
 
 ax.plot(coord.lon.to('deg'), coord.radius, label='Trajectory of STEREO-A', color='yellow')
 ax.legend(bbox_to_anchor=(1.25, 1.30), ncol=2)
 
 plt.show()
+
+##############################################################################
+# Other packages that will achieve this task:
+#
+# * `solarmach <https://github.com/jgieseler/solarmach>`__

@@ -1,1 +1,1 @@
-Added an example to find the location and trajectory of STEREO-A using (:ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_loc_sunpy.py`)
+Added an example (:ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_loc_sunpy.py`) to plot the trajectory of STEREO-A.
