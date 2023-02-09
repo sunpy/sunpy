@@ -25,15 +25,15 @@ goes_json_data = pd.read_json("https://services.swpc.noaa.gov/json/goes/primary/
 # We separate these "short" and "long" wavelength readings into two arrays.
 
 # This will get us the short wavelength data.
-goes_short = data[data["energy"] == "0.05-0.4nm"]
+goes_short = goes_json_data[goes_json_data["energy"] == "0.05-0.4nm"]
 # This will get us the long wavelength data.
-goes_long = data[data["energy"] == "0.1-0.8nm"]
+goes_long = goes_json_data[goes_json_data["energy"] == "0.1-0.8nm"]
 
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires a datetime index which we can get 
 # directly and transform into `astropy.time.Time`.
 
-time_array = parse_time(data_short["time_tag"])
+time_array = parse_time(goes_short["time_tag"])
 
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires that there are units for data variables.
@@ -54,7 +54,7 @@ meta = dict({"instrument": "GOES X-ray sensor", "measurements": "primary", "type
 #  The final pre-step is create a new `pandas.DataFrame` which we can pass to
 # `sunpy.timeseries.TimeSeries` as the data input.
 
-goes_data = pd.DataFrame({"xrsa": data_short["flux"].values, "xrsb": data_long["flux"].values}, index=time_array.datetime)
+goes_data = pd.DataFrame({"xrsa": goes_short["flux"].values, "xrsb": goes_long["flux"].values}, index=time_array.datetime)
 
 ###############################################################################
 # Now we will create a `sunpy.timeseries.TimeSeries` by passing in the data,
