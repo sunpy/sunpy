@@ -35,7 +35,7 @@ aia = get_horizons_coord('STEREO-A', obstime)
 
 planets = ['mars', 'sun', 'earth']
 planet_coords = [get_body_heliographic_stonyhurst(
-    this_planet, time=obstime) for this_planet in planet_list]
+    planet, time=obstime) for planet in planets]
 planet_list.append('STEREO-A')
 planet_coord.append(aia)
 
