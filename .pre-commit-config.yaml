@@ -17,7 +17,7 @@ repos:
           ]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|sunpy/visualization/colormaps/color_tables.py)$"
   - repo: https://github.com/PyCQA/autoflake
-    rev: v2.0.0
+    rev: v2.0.1
     hooks:
       - id: autoflake
         args:
@@ -28,7 +28,7 @@ repos:
           ]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/PyCQA/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
         args: ["--sp", "setup.cfg"]

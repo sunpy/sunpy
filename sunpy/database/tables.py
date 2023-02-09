@@ -8,8 +8,7 @@ from datetime import datetime
 
 import numpy as np
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Table
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import declarative_base, relationship
 
 import astropy.table
 import astropy.units as u

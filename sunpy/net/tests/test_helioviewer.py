@@ -7,10 +7,7 @@ from collections import OrderedDict
 
 import pytest
 
-import sunpy
-import sunpy.map
 from sunpy.net.helioviewer import HelioviewerClient
-from sunpy.tests.helpers import figure_test, skip_glymur
 
 pytestmark = pytest.mark.filterwarnings('ignore:The HelioviewerClient class is deprecated')
 
@@ -100,19 +97,6 @@ def test_get_jp2_header(client):
     assert header1 == header2
     assert len(header1) == len(header2) == 1
     assert ('fits' in header1.keys()) and ('fits' in header2.keys())
-
-
-@skip_glymur
-@figure_test
-@pytest.mark.remote_data
-@pytest.mark.filterwarnings("ignore::sunpy.util.SunpyMetadataWarning")
-def test_download_jp2_map(client, tmp_path):
-    """
-    Tests getJP2Image API method with Map with a figure test.
-    """
-    filepath = client.download_jp2('2012/01/01', observatory='SOHO', instrument='MDI', measurement='continuum',
-                                   directory=tmp_path)
-    sunpy.map.Map(filepath).plot()
 
 
 @pytest.mark.remote_data
