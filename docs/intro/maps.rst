@@ -507,8 +507,7 @@ This includes a :func:`~sunpy.map.header_helper.meta_keywords` function that wil
 The utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
 All the metadata keywords that a Map will parse along with their description are listed in the :ref:`Meta Keywords Table` at the end of this page.
 
-
-``sunpy`` provides a helper, :func:`~sunpy.map.header_helper.make_fitswcs_header`, to assist in creating a header that contains the correct metadata.
+``sunpy`` provides :func:`~sunpy.map.header_helper.make_fitswcs_header`, to assist in creating a FITS header that contains the correct metadata.
 This will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
 The `astropy.coordinates.SkyCoord` is defined by the user and contains information on the reference frame, reference coordinate, and observer location.
 This function returns a `sunpy.util.MetaDict`.
@@ -654,7 +653,6 @@ From these header MetaDict's that are generated, we can now create a custom map:
 .. code-block:: python
 
     >>> my_map = sunpy.map.Map(data, header)
-
 
 .. _Meta Keywords Table:
 
