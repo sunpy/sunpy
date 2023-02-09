@@ -17,7 +17,7 @@ from sunpy.coordinates.ephemeris import get_horizons_coord
 
 ##############################################################################
 # You can make use of `~datetime.datetime.now` to pass current date and time.
-# Now can use `get_horizons_coord() <https://docs.sunpy.org/en/stable/generated/api/sunpy.coordinates.get_horizons_coord.html>`__ 
+# Now can use `get_horizons_coord() <https://docs.sunpy.org/en/stable/generated/api/sunpy.coordinates.get_horizons_coord.html>`__
 # to get the coordinates of STEREO-A.
 
 today = datetime.datetime.now()
@@ -44,14 +44,14 @@ planet_coords.append(aia)
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')
 for coord in trajectory_coords:
-    ax.plot(coord.lon.to('deg'), coord.radius, 'y.', markersize = 2)
+    ax.plot(coord.lon.to('deg'), coord.radius, 'y.', markersize=2)
 for planet, coord in zip(planets, planet_coords):
     ax.plot(coord.lon.to('rad'), coord.radius, 'o', label=planet)
 
 ##############################################################################
 # You have to seperately insert the label.
 
-ax.plot(coord.lon.to('deg'), coord.radius, label = 'Trajectory of STEREO-A', color = 'yellow')
-ax.legend(bbox_to_anchor =(1.25, 1.30), ncol= 2)
+ax.plot(coord.lon.to('deg'), coord.radius, label='Trajectory of STEREO-A', color='yellow')
+ax.legend(bbox_to_anchor=(1.25, 1.30), ncol=2)
 
 plt.show()
