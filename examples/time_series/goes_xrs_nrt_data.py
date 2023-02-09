@@ -1,11 +1,9 @@
 """
-==================================
-How to create a `sunpy.timeseries.TimeSeries` from the GOES-XRS near real time (NRT).
-==================================
+=======================================================
+Creating a TimeSeries from GOES-XRS near real time data
+=======================================================
 
-Currently, ``sunpy`` has no mechanism to directly download the GOES XRS Near Real Time (NRT) data.
-
-We will showcase an example of how to download and load these files into a `sunpy.timeseries.TimeSeries`.
+We will showcase an example of how to download and load GOES XRS Near Real Time (NRT) data into a `sunpy.timeseries.TimeSeries`.
 """
 
 import pandas as pd
@@ -24,7 +22,7 @@ goes_json_data = pd.read_json("https://services.swpc.noaa.gov/json/goes/primary/
 
 ###############################################################################
 # XRS collects data in two energy channels, "0.05-0.4nm" and "0.1-0.8nm".
-# We separate these `short` and `long` wavelength readings into two arrays.
+# We separate these "short" and "long" wavelength readings into two arrays.
 
 # This will get us the short wavelength data.
 goes_short = data[data["energy"] == "0.05-0.4nm"]
@@ -32,28 +30,29 @@ goes_short = data[data["energy"] == "0.05-0.4nm"]
 goes_long = data[data["energy"] == "0.1-0.8nm"]
 
 ###############################################################################
-# `sunpy.timeseries.TimeSeries` requires
-# a datetime index which we can get directly and transform into `astropy.time.Time`.
+# `sunpy.timeseries.TimeSeries` requires a datetime index which we can get 
+# directly and transform into `astropy.time.Time`.
 
 time_array = parse_time(data_short["time_tag"])
 
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires that there are units for data variables.
 # To do this, we will create a dictionary that will map the names of the two columns,
-# "xrsa" and "xrsb" (the channel names for GOES XRS), to their corresponding physical flux units, ``u.W/u.m**2``.
+# "xrsa" and "xrsb" (the channel names for GOES XRS), to their corresponding
+# physical flux units, ``u.W/u.m**2``.
 
 units = dict([("xrsa", u.W/u.m**2), ("xrsb", u.W/u.m**2)])
 
 ###############################################################################
-# To create a `sunpy.timeseries.TimeSeries` we can create a meta dictionary that provides the detailed of the data. Typically, `sunpy.timeseries.TimeSeries` reads the metadata directly from the file.
-# however, here we need to define our own metadata and we will keep it fairly simple.
+# We need to create a metadata dictionary for the data.
+# Typically, `sunpy.timeseries.TimeSeries` reads the metadata directly from the file.
+# However, here we need to define our own metadata and we will keep it fairly simple.
 
 meta = dict({"instrument": "GOES X-ray sensor", "measurements": "primary", "type": "quicklook"})
 
 ###############################################################################
-# The meta variable is defined as an OrderedDict that contains information about the data,
-# such as the instrument used to obtain the data and the type of data.
-# it can contain other types of metadata as well
+#  The final pre-step is create a new `pandas.DataFrame` which we can pass to
+# `sunpy.timeseries.TimeSeries` as the data input.
 
 goes_data = pd.DataFrame({"xrsa": data_short["flux"].values, "xrsb": data_long["flux"].values}, index=time_array.datetime)
 
@@ -66,6 +65,7 @@ goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 ###############################################################################
 # Finally, we can plot the timeseries.
 
+plt.figure()
 goes_ts.plot()
 
 plt.show()
