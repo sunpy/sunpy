@@ -18,7 +18,7 @@ from sunpy.coordinates.ephemeris import get_horizons_coord
 # Now can use `get_horizons_coord() <https://docs.sunpy.org/en/stable/generated/api/sunpy.coordinates.get_horizons_coord.html>`__
 # to get the coordinates of Parker Solar Probe.
 
-now = Time(datetime.datetime.now())
+now = parse_time("now")
 trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': '2021-10-11', 'stop': '2022-01-12', 'step': '180m'})
 
 ##############################################################################
