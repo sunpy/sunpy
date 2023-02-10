@@ -8,7 +8,7 @@ This example shows how to plot the trajectory of Parker Solar Probe within the s
 
 import matplotlib.pyplot as plt
 
-from astropy.time import Time
+from sunpy.time import parse_time
 
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.coordinates.ephemeris import get_horizons_coord
