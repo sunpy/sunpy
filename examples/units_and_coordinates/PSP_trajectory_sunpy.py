@@ -28,7 +28,7 @@ trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': '2021-10-
 `~sunpy.coordinates.get_body_heliographic_stonyhurst` which uses astropy to calculate
 # the barycentric position:
 
-planets = ['EARTH', 'SUN']
+planets = ['Earth', 'Sun']
 planet_coords = [get_body_heliographic_stonyhurst(
     planet, time=now) for planet in planets]
 
