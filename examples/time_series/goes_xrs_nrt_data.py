@@ -3,7 +3,7 @@
 Creating a TimeSeries from GOES-XRS near real time data
 =======================================================
 
-We will showcase an example of how to download and load GOES XRS Near Real Time (NRT) data into a `sunpy.timeseries.TimeSeries`.
+This example will demonstrate how to download and load GOES XRS Near Real Time (NRT) data into a `sunpy.timeseries.TimeSeries`.
 """
 
 import matplotlib.pyplot as plt
