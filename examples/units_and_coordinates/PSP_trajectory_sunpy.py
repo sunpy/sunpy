@@ -19,8 +19,7 @@ from sunpy.coordinates.ephemeris import get_horizons_coord
 # Now can use `get_horizons_coord() <https://docs.sunpy.org/en/stable/generated/api/sunpy.coordinates.get_horizons_coord.html>`__
 # to get the coordinates of Parker Solar Probe.
 
-today = datetime.datetime.now()
-obstime = Time(today)
+now = Time(datetime.datetime.now())
 trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': '2021-10-11', 'stop': '2022-01-12', 'step': '180m'})
 
 ##############################################################################
@@ -30,9 +29,9 @@ trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': '2021-10-
 # of Parker Solar Probe as it's position and velocity cannot be calculated with the
 # 'builtin' ephemeris.
 
-planets = ['earth', 'sun']
+planets = ['EARTH', 'SUN']
 planet_coords = [get_body_heliographic_stonyhurst(
-    planet, time=obstime) for planet in planets]
+    planet, time=now) for planet in planets]
 
 ##############################################################################
 # Now we will create a polar plot of these coordinates.
