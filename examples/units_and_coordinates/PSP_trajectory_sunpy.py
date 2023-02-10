@@ -32,7 +32,7 @@ planets = ['Earth', 'Sun']
 planet_coords = [get_body_heliographic_stonyhurst(planet, time=now) for planet in planets]
 
 ##############################################################################
-# Now we will create a polar plot of these coordinates.
+# Finally, we will create a polar plot.
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')
