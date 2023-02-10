@@ -14,7 +14,6 @@ from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.coordinates.ephemeris import get_horizons_coord
 
 ##############################################################################
-##############################################################################
 # By using `~sunpy.coordinates.ephemeris.get_horizons_coord`, we can query the 
 # Jet Propulsion Laboratory `Horizons System <https://ssd.jpl.nasa.gov/horizons/>`__ 
 # to get the location of any body they support, but here we will use it to get
