@@ -1,1 +1,2 @@
-Using `~sunpy.map.header_helper.meta_keywords()` is deprecated.
+Using `~sunpy.map.header_helper.meta_keywords` is deprecated.
+Please see :ref:`Meta Keywords Table` for the list of metadata keywords used by `~sunpy.map.Map`.
