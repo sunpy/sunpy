@@ -14,9 +14,11 @@ from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.coordinates.ephemeris import get_horizons_coord
 
 ##############################################################################
-# You can make use of `~datetime.datetime.now` to pass current date and time.
-# Now can use `get_horizons_coord() <https://docs.sunpy.org/en/stable/generated/api/sunpy.coordinates.get_horizons_coord.html>`__
-# to get the coordinates of Parker Solar Probe.
+##############################################################################
+# By using `~sunpy.coordinates.ephemeris.get_horizons_coord`, we can query the 
+# Jet Propulsion Laboratory `Horizons System <https://ssd.jpl.nasa.gov/horizons/>`__ 
+# to get the location of any body they support, but here we will use it to get
+# the coordinates of Parker Solar Probe.
 
 now = parse_time("now")
 trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': '2021-10-11', 'stop': '2022-01-12', 'step': '180m'})
