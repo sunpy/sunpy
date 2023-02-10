@@ -29,8 +29,7 @@ trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': '2021-10-
 # the barycentric position:
 
 planets = ['Earth', 'Sun']
-planet_coords = [get_body_heliographic_stonyhurst(
-    planet, time=now) for planet in planets]
+planet_coords = [get_body_heliographic_stonyhurst(planet, time=now) for planet in planets]
 
 ##############################################################################
 # Now we will create a polar plot of these coordinates.
