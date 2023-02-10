@@ -3,8 +3,7 @@
 Getting the trajectory of Parker Solar Probe
 ============================================
 
-This example shows how to plot the trajectory of Parker Solar Probe within the solar system using
-`astropy's solar system ephemeris <http://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
+This example shows how to plot the trajectory of Parker Solar Probe within the solar system.
 """
 import datetime
 
