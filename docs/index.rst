@@ -13,7 +13,6 @@ New Users
 
 For help installing ``sunpy`` refer to our :ref:`installation guide <installing>`.
 
-
 .. todo::
 
     if #6615 is completed link here
@@ -32,7 +31,6 @@ Once you've installed sunpy, start here.
     #. :ref:`timeseries_guide`
     #. :ref:`plotting`
 
-
 Next Steps
 ==========
 
@@ -49,7 +47,6 @@ Next Steps
 
     Index explanation pages (e.g. different map rotation methods and then link here.)
     [Topic guides] discuss key topics and concepts at a fairly high level and provide useful background information and explanation.
-
 
 Further Info
 ============
