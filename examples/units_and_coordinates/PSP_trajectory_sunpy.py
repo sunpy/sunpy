@@ -24,11 +24,9 @@ now = parse_time("now")
 trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': '2021-10-11', 'stop': '2022-01-12', 'step': '180m'})
 
 ##############################################################################
-# Now We are using `get_body_heliographic_stonyhurst()` to get the coordinates
-# of other bodies such as sun ans earth.
-# We have not used `get_body_heliographic_stonyhurst()` to find the coordinates
-# of Parker Solar Probe as it's position and velocity cannot be calculated with the
-# 'builtin' ephemeris.
+# Now to get the location of solar bodies, we can use
+`~sunpy.coordinates.get_body_heliographic_stonyhurst` which uses astropy to calculate
+# the barycentric position:
 
 planets = ['EARTH', 'SUN']
 planet_coords = [get_body_heliographic_stonyhurst(
