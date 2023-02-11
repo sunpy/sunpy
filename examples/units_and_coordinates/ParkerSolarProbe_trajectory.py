@@ -9,6 +9,7 @@ This example shows how to plot the trajectory of Parker Solar Probe (PSP) within
 import matplotlib.pyplot as plt
 
 from sunpy.time import parse_time
+import datetime
 
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.coordinates.ephemeris import get_horizons_coord
@@ -20,7 +21,7 @@ from sunpy.coordinates.ephemeris import get_horizons_coord
 # the coordinates of Parker Solar Probe.
 
 now = parse_time("now")
-trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': '2021-10-11', 'stop': '2022-01-12', 'step': '180m'})
+trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': str(now - datetime.timedelta(days = 90)), 'stop': str(now + datetime.timedelta(days = 90)), 'step': '180m'})
 
 ##############################################################################
 # Now to get the location of solar bodies, we can use
@@ -40,7 +41,7 @@ for coord in trajectory_coords:
 for planet, coord in zip(planets, planet_coords):
     ax.plot(coord.lon.to('rad'), coord.radius, 'o', label=planet)
 ax.plot(coord.lon.to('rad'), coord.radius, label='PSP', color='#c8c825')
-ax.legend(loc='upper right')
+ax.legend(loc='upper center')
 
 plt.show()
 
