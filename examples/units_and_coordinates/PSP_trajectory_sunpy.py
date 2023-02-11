@@ -43,3 +43,7 @@ ax.plot(coord.lon.to('rad'), coord.radius, label='Trajectory of Parker Solar Pro
 ax.legend(loc='upper right')
 
 plt.show()
+
+##############################################################################
+# There are other tools that enable a similar style of figure.
+# `solarmach <https://github.com/jgieseler/solarmach#usage>`__ is one such example.
