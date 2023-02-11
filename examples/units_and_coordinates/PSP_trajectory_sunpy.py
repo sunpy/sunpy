@@ -39,7 +39,7 @@ for coord in trajectory_coords:
     ax.plot(coord.lon.to('rad'), coord.radius, 'y.', markersize=2)
 for planet, coord in zip(planets, planet_coords):
     ax.plot(coord.lon.to('rad'), coord.radius, 'o', label=planet)
-ax.plot(coord.lon.to('rad'), coord.radius, label='Trajectory of Parker Solar Probe', color='#c8c825')
+ax.plot(coord.lon.to('rad'), coord.radius, label='PSP', color='#c8c825')
 ax.legend(loc='upper right')
 
 plt.show()
