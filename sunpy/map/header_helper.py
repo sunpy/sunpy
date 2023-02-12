@@ -7,10 +7,12 @@ from astropy.coordinates import SkyCoord
 from sunpy import log
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
+from sunpy.util.decorators import deprecated
 
 __all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header']
 
 
+@deprecated(since="5.0", message="Unused and will be removed in 6.0")
 def meta_keywords():
     """
     Returns the metadata keywords that are used when creating a `sunpy.map.GenericMap`.
@@ -19,12 +21,12 @@ def meta_keywords():
     --------
     Returns a dictionary of all meta keywords that are used in a `sunpy.map.GenericMap` header:
         >>> import sunpy.map
-        >>> sunpy.map.meta_keywords()
+        >>> sunpy.map.meta_keywords() # doctest: +SKIP
         {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
          'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
          ...
     """
-    return _map_meta_keywords
+    return _map_meta_keywords.copy()
 
 
 @u.quantity_input(equivalencies=u.spectral())
