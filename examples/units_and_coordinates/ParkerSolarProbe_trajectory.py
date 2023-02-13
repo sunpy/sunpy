@@ -51,11 +51,13 @@ def coord_to_polar(coord):
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')
-for coord in trajectory_coords:
-    ax.plot(coord.lon.to('rad'), coord.radius, 'y.', markersize=2)
-for planet, coord in zip(planets, planet_coords):
-    ax.plot(coord.lon.to('rad'), coord.radius, 'o', label=planet)
-ax.plot(coord.lon.to('rad'), coord.radius, label='PSP', color='#c8c825')
+ax.plot(0, 0, 'o', label='Sun', color='orange')
+ax.plot(*coord_to_polar(earth), 'o', label='Earth', color='blue')
+ax.plot(*coord_to_polar(psp),
+        label='PSP (as seen from Earth)', color='purple')
+ax.plot(*coord_to_polar(psp.transform_to(earth)),
+        label='PSP (non-rotating frame)', color='purple', linestyle='dashed')
+ax.set_title('Stonyhurst heliographic coordinates')
 ax.legend(loc='upper center')
 
 plt.show()
