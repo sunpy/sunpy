@@ -15,8 +15,9 @@ You will need `astroquery <https://astroquery.readthedocs.io/>`__ installed.
 
 import matplotlib.pyplot as plt
 
+import astropy.units as u
+
 from sunpy.time import parse_time
-import datetime
 
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.coordinates.ephemeris import get_horizons_coord
