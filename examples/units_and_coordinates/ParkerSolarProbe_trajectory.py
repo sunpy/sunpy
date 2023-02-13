@@ -17,9 +17,8 @@ import matplotlib.pyplot as plt
 
 import astropy.units as u
 
-from sunpy.time import parse_time
-
 from sunpy.coordinates import get_body_heliographic_stonyhurst, get_horizons_coord
+from sunpy.time import parse_time
 
 ##############################################################################
 # We use :func:`~sunpy.coordinates.get_horizons_coord` to query JPL Horizons
@@ -43,6 +42,7 @@ earth = get_body_heliographic_stonyhurst('Earth', perihelion_14)
 # For the purposes of plotting on a Matplotlib polar plot, we create a short
 # convenience function to extract the necessary values in the appropriate units.
 
+
 def coord_to_polar(coord):
     return coord.lon.to_value('rad'), coord.radius.to_value('AU')
 
@@ -57,6 +57,7 @@ def coord_to_polar(coord):
 # transformed to the coordinate frame of Earth at the single time of
 # PSP perihelion (``earth``), so that the trajectory is represented in
 # a non-rotating coordinate frame.
+
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')
