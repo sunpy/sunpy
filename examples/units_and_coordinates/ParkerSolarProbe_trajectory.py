@@ -41,6 +41,13 @@ planets = ['Earth', 'Sun']
 planet_coords = [get_body_heliographic_stonyhurst(planet, time=now) for planet in planets]
 
 ##############################################################################
+# For the purposes of plotting on a Matplotlib polar plot, we create a short
+# convenience function to extract the necessary values in the appropriate units.
+
+def coord_to_polar(coord):
+    return coord.lon.to_value('rad'), coord.radius.to_value('AU')
+
+##############################################################################
 # Finally, we will create a polar plot.
 
 fig = plt.figure()
