@@ -1,7 +1,7 @@
 """
-============================================
-Getting the trajectory of Parker Solar Probe
-============================================
+===================================================
+Obtaining a spacecraft trajectory from JPL Horizons
+===================================================
 
 This example shows how to plot the trajectory of Parker Solar Probe (PSP) within the solar system.
 """
