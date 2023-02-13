@@ -34,7 +34,7 @@ psp = get_horizons_coord('Parker Solar Probe',
 
 ##############################################################################
 # We also obtain the location of Earth at PSP perihelion.  We could query
-# JPL Horizons again, but :func:`get_body_heliographic_stonyhurst` returns
+# JPL Horizons again, but :func:`~sunpy.coordinates.get_body_heliographic_stonyhurst` returns
 # a comparably accurate location using the Astropy ephemeris.
 
 earth = get_body_heliographic_stonyhurst('Earth', perihelion_14)
