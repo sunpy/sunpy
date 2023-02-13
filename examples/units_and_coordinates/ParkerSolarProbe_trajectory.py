@@ -19,8 +19,7 @@ import astropy.units as u
 
 from sunpy.time import parse_time
 
-from sunpy.coordinates import get_body_heliographic_stonyhurst
-from sunpy.coordinates.ephemeris import get_horizons_coord
+from sunpy.coordinates import get_body_heliographic_stonyhurst, get_horizons_coord
 
 ##############################################################################
 # By using `~sunpy.coordinates.ephemeris.get_horizons_coord`, we can query the 
