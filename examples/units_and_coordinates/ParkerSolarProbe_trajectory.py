@@ -28,7 +28,10 @@ from sunpy.coordinates.ephemeris import get_horizons_coord
 # the coordinates of Parker Solar Probe.
 
 now = parse_time("now")
-trajectory_coords = get_horizons_coord('Parker Solar Probe', {'start': str(now - datetime.timedelta(days = 90)), 'stop': str(now + datetime.timedelta(days = 90)), 'step': '180m'})
+psp = get_horizons_coord('Parker Solar Probe',
+                         {'start': perihelion_14 - 50 * u.day,
+                          'stop': perihelion_14 + 50 * u.day,
+                          'step': '180m'})
 
 ##############################################################################
 # Now to get the location of solar bodies, we can use
