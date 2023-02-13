@@ -33,12 +33,11 @@ psp = get_horizons_coord('Parker Solar Probe',
                           'step': '180m'})
 
 ##############################################################################
-# Now to get the location of solar bodies, we can use
-# `~sunpy.coordinates.get_body_heliographic_stonyhurst` which uses astropy to calculate
-# the barycentric position:
+# We also obtain the location of Earth at PSP perihelion.  We could query
+# JPL Horizons again, but :func:`get_body_heliographic_stonyhurst` returns
+# a comparably accurate location using the Astropy ephemeris.
 
-planets = ['Earth', 'Sun']
-planet_coords = [get_body_heliographic_stonyhurst(planet, time=now) for planet in planets]
+earth = get_body_heliographic_stonyhurst('Earth', perihelion_14)
 
 ##############################################################################
 # For the purposes of plotting on a Matplotlib polar plot, we create a short
