@@ -22,12 +22,11 @@ from sunpy.time import parse_time
 from sunpy.coordinates import get_body_heliographic_stonyhurst, get_horizons_coord
 
 ##############################################################################
-# By using `~sunpy.coordinates.ephemeris.get_horizons_coord`, we can query the 
-# Jet Propulsion Laboratory `Horizons System <https://ssd.jpl.nasa.gov/horizons/>`__ 
-# to get the location of any body they support, but here we will use it to get
-# the coordinates of Parker Solar Probe.
+# We use :func:`~sunpy.coordinates.get_horizons_coord` to query JPL Horizons
+# for the trajectory of Parker Solar Probe (PSP).  Let's request 50 days on
+# either side of PSP's 14th closest approach to the Sun.
 
-now = parse_time("now")
+perihelion_14 = parse_time('2022-12-11 13:16')
 psp = get_horizons_coord('Parker Solar Probe',
                          {'start': perihelion_14 - 50 * u.day,
                           'stop': perihelion_14 + 50 * u.day,
