@@ -3,7 +3,14 @@
 Obtaining a spacecraft trajectory from JPL Horizons
 ===================================================
 
-This example shows how to plot the trajectory of Parker Solar Probe (PSP) within the solar system.
+This example shows how to obtain the trajectory of a spacecraft from JPL Horizons
+and plot it relative to other bodies in the solar system.
+
+JPL `Horizons <https://ssd.jpl.nasa.gov/horizons/>`__ can return the locations of
+planets and minor bodies (e.g., asteroids) in the solar system, and it can also
+return the location of a variety of major spacecraft.
+
+You will need `astroquery <https://astroquery.readthedocs.io/>`__ installed.
 """
 
 import matplotlib.pyplot as plt
