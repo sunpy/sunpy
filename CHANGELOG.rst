@@ -1,3 +1,32 @@
+4.1.3 (2023-02-14)
+==================
+
+Breaking Changes
+----------------
+
+- `~sunpy.net.dataretriever.XRSClient` now provides the re-processed GOES-XRS 8-15 data from NOAA.
+  These files are now all NetCDF and not FITS files. (`#6737 <https://github.com/sunpy/sunpy/pull/6737>`__)
+
+
+New Features
+------------
+
+- `~sunpy.net.dataretriever.SUVIClient` now provides GOES-18 SUVI data. (`#6737 <https://github.com/sunpy/sunpy/pull/6737>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed a bug that prevented specifying a `~astropy.coordinates.BaseCoordinateFrame` (as opposed to a `~astropy.coordinates.SkyCoord`) to :meth:`sunpy.map.GenericMap.draw_quadrangle`. (`#6648 <https://github.com/sunpy/sunpy/pull/6648>`__)
+- HMI JPEG2000 files from Helioviewer could not be loaded due to a bug in setting the plotting normalization.
+  This has been fixed. (`#6710 <https://github.com/sunpy/sunpy/pull/6710>`__)
+- The ``data_manager`` was not raising failed downloads correctly and would continue as if the file existed locally.
+  Now it will raise any errors from ``parfive``. (`#6711 <https://github.com/sunpy/sunpy/pull/6711>`__)
+- `~sunpy.map.sources.XRTMap` will now set the unit for XRT files if the ``BUNIT`` key is missing. (`#6725 <https://github.com/sunpy/sunpy/pull/6725>`__)
+- `~sunpy.net.dataretriever.XRSClient` update use the new url for which the GOES-XRS 8-15 data is provided by NOAA. (`#6737 <https://github.com/sunpy/sunpy/pull/6737>`__)
+- Updated `~sunpy.database` to be compatible with ``SQLAlchemy`` versions >=2.0 (`#6749 <https://github.com/sunpy/sunpy/pull/6749>`__)
+
+
 4.1.2 (2023-01-27)
 ==================
 
