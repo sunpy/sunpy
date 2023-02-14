@@ -60,9 +60,11 @@ Once the environment active, to acquire a full ``sunpy`` installation:
 .. note::
 
     We strive to provide binary wheels for all of our packages.
-    If you are using a Python distribution or operating system that is missing a binary wheel.
-    ``pip`` will try to compile the package from source and this is likely to fail without a C compiler (e.g., ``gcc`` or ``clang``).
-    Getting the compiler either from your system package manager or XCode should address this.
+    If you are using a Python distribution or operating system that is missing a binary wheel, ``pip`` will install a pure Python wheel.
+    This pure Python wheel does not contain the ``sunpy.io.ana`` compiled extension.
+    If you require this extension, install with ``pip install --no-binary sunpy "sunpy[all]"`` instead and ``pip`` will try to compile the package from source.
+    This is likely to fail without a C compiler (e.g., ``gcc`` or ``clang``).
+    Getting the compiler either from your system package manager or Xcode should address this.
 
 If you have a reason to want a more minimal installation, you can install sunpy with no optional dependencies, however this means a lot of submodules will not import:
 
