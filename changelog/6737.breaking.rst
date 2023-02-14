@@ -1,2 +1,0 @@
-`~sunpy.net.dataretriever.XRSClient` now provides the re-processed GOES-XRS 8-15 data from NOAA.
-These files are now all NetCDF and not FITS files.

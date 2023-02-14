@@ -1,2 +1,0 @@
-HMI JPEG2000 files from Helioviewer could not be loaded due to a bug in setting the plotting normalization.
-This has been fixed.
