@@ -25,11 +25,19 @@ Before the "merge" button is clicked the following criteria must be met:
 
 * All the continuous integration must pass unless there is a known issue.
 
-* At least two members (not the author of the PR) of the "sunpy-developers" group must have approved the PR, one should, ideally, be a relevant subpackage maintainer.
+* At least two members (excluding the PR author) of the "sunpy-developers" group must have approved the PR.
+  One should, ideally, be a relevant subpackage maintainer.
 
 * All comments posted on the thread must be resolved.
 
-It is important that approval for merging the PR is done on the comment thread, as this becomes part of the "permanent record", this includes in during community meetings or in chat.
+It is important that approval for merging the PR is always done on the comment thread, as this becomes part of the "permanent record".
+
+Minor changes
+-------------
+
+If a PR only makes minor changes, it can be merged by the first reviewer, if they are confident they fully understand the changes.
+If this happens, the reviewer who merges should add the ``DocFix`` or ``CodeFix`` labels to the PR to indicate that they took a conscious decision that it only needed on reviewer.
+The original PR author should not decide whether the change is minor or not.
 
 Continuous Integration
 ======================
