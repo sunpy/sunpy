@@ -228,7 +228,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.
     _source = 'noaapredictindices'
-    _url = "https://www.swpc.noaa.gov/products-and-data"
+    _url = "https://www.swpc.noaa.gov/products/solar-cycle-progression"
 
     _peek_title = "Solar Cycle Sunspot Number Prediction"
 
