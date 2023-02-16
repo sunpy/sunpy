@@ -56,6 +56,7 @@ dependencies:
   - sphinx-copybutton
   - sphinx-design
   - sphinx-gallery
+  - sphinx-hoverxref
   - towncrier
 
   # Installation
