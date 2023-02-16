@@ -56,7 +56,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.
     _source = 'noaaindices'
-    _url = "https://www.swpc.noaa.gov/products-and-data"
+    _url = "https://www.swpc.noaa.gov/products/solar-cycle-progression"
 
     def plot(self, axes=None, plot_type='sunspot SWO', columns=None, **kwargs):
         """
