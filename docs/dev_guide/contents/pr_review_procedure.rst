@@ -26,6 +26,7 @@ Before the "merge" button is clicked the following criteria must be met:
 * All the continuous integration must pass unless there is a known issue.
 
 * At least two members (excluding the PR author) of the "sunpy-developers" group must have approved the PR.
+  Exceptions can be made for minor changes, see below.
 
 * All comments posted on the thread must be resolved.
 
