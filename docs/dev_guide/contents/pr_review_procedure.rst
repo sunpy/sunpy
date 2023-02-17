@@ -30,7 +30,7 @@ Before the "merge" button is clicked the following criteria must be met:
 
 * All comments posted on the thread must be resolved.
 
-It is important that approval for merging the PR is always done on the comment thread, as this becomes part of the "permanent record".
+It is important that approval for merging the PR is always done by explicitly approving the PR through the GitHub UI before merging, so a record of approval is left in the PR thread.
 
 Minor changes
 -------------
