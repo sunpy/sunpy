@@ -36,8 +36,8 @@ Minor changes
 -------------
 
 If a PR only makes minor changes, it can be merged by the first reviewer, if they are confident they fully understand the changes.
-If this happens, the reviewer who merges should add the ``DocFix`` or ``CodeFix`` labels to the PR to indicate that they took a conscious decision that it only needed on reviewer.
-The original PR author should not decide whether the change is minor or not.
+If this happens, a ``DocFix`` or ``CodeFix`` label should be added to the PR to indicate that it has been considered minor enough to need only one reviewer.
+The PR author can add one of these labels as a suggestion, but the first reviewer can always request a second reviewer if they think the PR would benefit from it.
 
 Continuous Integration
 ======================
