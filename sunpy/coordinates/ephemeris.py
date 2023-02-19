@@ -63,7 +63,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
     angular direction relative to the observer, the correction can be negligible because the
     apparent location of the body will shift in tandem with the Sun. As Astropy's built-in ephemeris
     is not as accurate as JPL ephemeris so you can use `~astropy.coordinates.solar_system_ephemeris`
-    in order to change the ephemeris.
+    in order to change the ephemeris. You can refer `~astropy.coordinates.solarsystem` for docs.
 
     Examples
     --------
