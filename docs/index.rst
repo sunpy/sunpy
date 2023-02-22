@@ -6,7 +6,7 @@ sunpy core Documentation
 It can be used for downloading solar data, such as maps and time series, it can also be used to calculate coordinates among other uses.
 
 .. image:: tour.svg
-  :width: 1000
+  :width: 700
   :align: center
 New Users
 ==========
