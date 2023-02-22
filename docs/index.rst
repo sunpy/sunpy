@@ -6,7 +6,6 @@ sunpy core Documentation
 It provides search and download functionality, data containers for image and time series data, as well as commonly used coordinate frames and transformations between such frames.
 
 .. image:: tour.svg
-  :width: 700
   :align: center
 
 New Users
