@@ -143,6 +143,7 @@ jobs:
     needs: [test]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
+      sdist: false
       test_extras: 'dev'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
@@ -153,9 +154,21 @@ jobs:
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
+  publish_pure:
+    needs: [publish]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@main
+    with:
+      test_extras: 'dev'
+      test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
+      submodules: false
+      env: |
+        SUNPY_NO_BUILD_ANA_EXTENSION: 1
+    secrets:
+      pypi_token: ${{ secrets.pypi_token }}
+
   notify:
     if: always() && github.event_name == 'workflow_dispatch'
-    needs: [publish, online, cron]
+    needs: [publish_pure, online, cron]
     runs-on: ubuntu-latest
     steps:
       - uses: Cadair/matrix-notify-action@main

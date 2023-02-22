@@ -1,0 +1,6 @@
+A pure Python ``sunpy`` wheel is now published on PyPI with each release.
+``pip`` will now default to installing the pure Python wheel instead of the source distribution on platforms other than Linux (x86-64) and macOS (x86-64 and ARM64).
+This should mean simpler and faster installs on such platforms, which includes the Raspberry Pi as well as some cloud computing services.
+
+This wheel does not contain the ``sunpy.io.ana`` compiled extension.
+If you need this extension (not available on Windows) you can install the ``sunpy`` source distribution with ``pip install --no-binary sunpy "sunpy[all]"``.
