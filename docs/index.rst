@@ -8,6 +8,7 @@ It can be used for downloading solar data, such as maps and time series, it can 
 .. image:: tour.svg
   :width: 700
   :align: center
+
 New Users
 ==========
 
