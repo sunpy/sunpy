@@ -1,6 +1,8 @@
+import requests
+
 import astropy.table
 
-from sunpy.net import attr
+from sunpy.net import attrs as a
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 
 
@@ -29,6 +31,47 @@ class Proba2Client(BaseClient):
     def info_url(self):
         return 'http://p2sa.esac.esa.int/p2sa/'
 
-    def search(self, *query, **kwargs):
+    @classmethod
+    def _can_handle_query(cls, *query):
+        required = {a.Time}
+        optional = {a.proba2.ProcessingLevel, a.Instrument}
+        return cls.check_attr_types_in_query(query, required, optional)
+
+    @classmethod
+    def _attrs_module(cls):
+        return 'proba2', 'sunpy.net.proba2.attrs'
+
+    def search(self, *args, **kwargs):
         response = Proba2Response(client=self)
-        query = attr.and_(*query)
+        qrdict = {}
+        for elem in args:
+            if isinstance(elem, a.Time):
+                qrdict['Time'] = elem
+            elif isinstance(elem, a.proba2.ProcessingLevel):
+                qrdict['ProcessingLevel'] = elem.value
+            elif isinstance(elem, a.Instrument):
+                qrdict['Instrument'] = elem.value
+            else:
+                raise ValueError(
+                    f"{elem.__class__.__name__} should be a ``attrs.Time``, ``attrs.Instrument`` or ``attrs.proba2.ProcessingLevel`` attribute.")
+        qrdict.update(kwargs)
+        processing_level = qrdict.get('ProcessingLevel')
+        start_time = qrdict['Time'].start.isot.replace('T', ' ')[:-4]
+        end_time = qrdict['Time'].end.isot.replace('T', ' ')[:-4]
+        Instrument = qrdict.get('Instrument')
+        results = self.makequery(start_time=start_time, end_time=end_time, processing_level=processing_level, Instrument=Instrument)
+        return results
+
+    def makequery(self, start_time, end_time, processing_level, Instrument):
+        s = f"SELECT * FROM p2sa.v_file WHERE (file_date >= '{start_time}') AND (file_date <= '{end_time}') "
+        if processing_level:
+            s += f"AND (processing_level = {processing_level}) "
+        if Instrument:
+            s += f"AND (instrument_name in ('{Instrument}')) "
+        s += "ORDER BY file_date ASC"
+        print("s is:", s)
+        response = requests.get(f"http://p2sa.esac.esa.int/p2sa-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=JSON&PHASE=RUN&QUERY={s}")
+        return response
+
+    def fetch():
+        pass
