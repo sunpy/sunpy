@@ -2547,8 +2547,8 @@ class GenericMap(NDData):
                 imshow_args.setdefault('linewidth', 0)
 
             ret = axes.pcolormesh(np.arange(data.shape[1] + 1) - 0.5,
-                      np.arange(data.shape[0] + 1) - 0.5,
-                      data, **imshow_args)
+                                  np.arange(data.shape[0] + 1) - 0.5,
+                                  data, **imshow_args)
         else:
             ret = axes.imshow(data, **imshow_args)
 
