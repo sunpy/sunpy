@@ -3,7 +3,10 @@ sunpy core Documentation
 ************************
 
 ``sunpy`` is a community-developed, free and open-source solar data analysis environment for Python.
+It provides search and download functionality, data containers for image and time series data, as well as commonly used coordinate frames and transformations between such frames.
 
+.. image:: tour.svg
+  :align: center
 
 New Users
 ==========
