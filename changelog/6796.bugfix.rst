@@ -1,0 +1,1 @@
+Fixed a bug in ### sunpy/map/mapbase.py file to supply the pixeledges to the ####pcolormesh() function explicitly while calling pcolormesh() function, so it does not treat integer pixels as pixel edges.
