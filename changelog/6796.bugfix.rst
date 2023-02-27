@@ -1,1 +1,1 @@
-When using ``autoalign=True`` when plotting maps, the result was off by half a pixel as the ``pcolormesh`` call was not supplying the pixel edges explicitly.
+When using ``autoalign=True`` when plotting maps, the result was misaligned by half a pixel.
