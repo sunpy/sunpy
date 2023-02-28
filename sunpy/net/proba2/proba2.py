@@ -70,8 +70,12 @@ class Proba2Client(BaseClient):
             s += f"AND (instrument_name in ('{Instrument}')) "
         s += "ORDER BY file_date ASC"
         print("s is:", s)
+        print("url is:", f"http://p2sa.esac.esa.int/p2sa-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=JSON&PHASE=RUN&QUERY={s}")
         response = requests.get(f"http://p2sa.esac.esa.int/p2sa-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=JSON&PHASE=RUN&QUERY={s}")
-        return response
+        response = response.json()
+        names = [field['name'] for field in response['metadata']]
+        response_table = QueryResponseTable(rows=response['data'], names=names)
+        return response_table
 
     def fetch():
         pass
