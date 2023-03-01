@@ -39,6 +39,17 @@ If a PR only makes minor changes, it can be merged by the first reviewer, if the
 If this happens, the ``minor-change`` label should be added to the PR to indicate that it has been considered minor enough to need only one reviewer.
 The PR author can add one of these labels as a suggestion, but the first reviewer can always request a second reviewer if they think the PR would benefit from it.
 
+Exactly what constitutes a minor-change is left up the the reviewer but some examples might include:
+- Improvements to existing documentation
+- Small bugfixes
+- Changes in code style rather than substance
+
+As a guideline, minor-changes don't include:
+
+- New features
+- New documentation pages
+- Changes to the public facing API
+
 Continuous Integration
 ======================
 
