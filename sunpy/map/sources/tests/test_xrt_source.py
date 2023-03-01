@@ -38,6 +38,11 @@ def test_measurement(xrt_map):
     assert xrt_map.measurement == 'Be thin-Open'
 
 
+def test_unit(xrt_map):
+    """Tests the unit property of the XRTMap object."""
+    assert xrt_map.unit == u.ct / u.second
+
+
 def test_level_number(xrt_map):
     assert xrt_map.processing_level == 1
 

@@ -730,6 +730,7 @@ def test_clear_database(filled_database):
     assert filled_database.session.query(Tag).all() == []
     filled_database.undo()
     assert len(filled_database) == 10
+    assert len(filled_database.session.query(Tag).all()) == 2
     filled_database.redo()
     assert not filled_database
     assert filled_database.session.query(JSONDump).all() == []

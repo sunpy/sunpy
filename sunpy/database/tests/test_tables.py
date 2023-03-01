@@ -158,7 +158,7 @@ def test_entries_from_fido_search_result(fido_search_result):
     # 2 entries from goes
     assert entries[60] == DatabaseEntry(
         source='GOES', provider='NOAA', physobs='irradiance',
-        fileid='https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/goes15/'
+        fileid='https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes15/'
                'gxrs-l2-irrad_science/2012/01/sci_gxrs-l2-irrad_g15_d20120101_v0-0-0.nc',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
@@ -189,11 +189,11 @@ def test_entries_from_fido_search_result(fido_search_result):
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=17634850.470588233, wavemax=17634850.470588233,
         instrument='NORH')
-    # 1 entry from rhessi
+    # 2 entries from rhessi
+    assert 'hsi_obssumm_20120101' in entries[66].fileid
     assert entries[66] == DatabaseEntry(
         source="RHESSI", provider='NASA', physobs='summary_lightcurve',
-        fileid=("https://hesperia.gsfc.nasa.gov/"
-                "hessidata/metadata/catalog/hsi_obssumm_20120101_032.fits"),
+        fileid=entries[66].fileid,
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,

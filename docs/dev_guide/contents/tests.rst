@@ -113,7 +113,7 @@ Remote data
 -----------
 By default, no online tests are selected and so to run the online tests you have to::
 
-    $ tox -e py38-online
+    $ tox -e py311-online
 
 or::
 
@@ -123,7 +123,7 @@ Figure tests
 ------------
 In order to avoid changes in figures due to different package versions, we recommend using tox to run the figure tests::
 
-    $ tox -e py38-figure
+    $ tox -e py311-figure
 
 This will ensure that any figures created are checked using the package versions that were used to create the original figure hashes.
 Running this will create a folder, "figure_test_images", within your work folder ("<local clone location>/figure_test_images"), which is ignored by git.
@@ -299,21 +299,21 @@ If the hashes do not match, the figure has changed, and thus the test is conside
 
 If you are adding a new figure test you will need to generate a new hash library::
 
-    $ tox -e py38-figure -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_332_ft_261_astropy_42.json
+    $ tox -e py311-figure -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_332_ft_261_astropy_42.json
 
 The filename changes if the version of astropy or Matplotlib or freetype gets updated.
 So you might need to adjust this command.
 For the development figure tests::
 
-    $ tox -e py38-figure-devdeps -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_dev_ft_261_astropy_dev.json
+    $ tox -e py311-figure-devdeps -- --mpl-generate-hash-library=sunpy/tests/figure_hashes_mpl_dev_ft_261_astropy_dev.json
 
 This will run the figure test suite and update the hashes stored.
 
 If you want to check what the images look like, you can do::
 
-    $ tox -e py38-figure -- --mpl-generate-path=baseline
+    $ tox -e py311-figure -- --mpl-generate-path=baseline
 
-The images output from the tests will be stored in a folder called ``.tmp/py38-figure/baseline`` or ``baseline`` in the sunpy folder, so you can double check the test works as you expected.
+The images output from the tests will be stored in a folder called ``.tmp/py311-figure/baseline`` or ``baseline`` in the sunpy folder, so you can double check the test works as you expected.
 
 .. _doctests:
 

@@ -4,11 +4,9 @@
 Example Gallery
 ***************
 
-The purpose of the page is to describe the contribution guidelines for the `sunpy Example Gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`_.
+The purpose of the page is to describe the contribution guidelines for the `sunpy Example Gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__.
 
-All potential contributors to the sunpy Example Gallery should read and abide by the following guidelines.
-
-.. note:: We have an example template located at ``examples/example_template/example_template.py``.
+All potential contributors to the ``sunpy`` example gallery should read and abide by the following guidelines.
 
 Contribution Guidelines
 =======================
@@ -18,13 +16,13 @@ Contribution Guidelines
 
 * Each example should begin with a paragraph that gives a brief overview of the entire example, including relevant astronomy concepts, and motivates the described functionality.
 
-* The examples must be compatible with the versions supported by the last major release of the sunpy core package (i.e., Python >= 3.7).
+* The examples must be compatible with the versions supported by the last major release of the ``sunpy`` core package.
 
-* All the examples must be fully PEP8 compliant, we recommend using one of the many PEP8 linters that are available (autopep8, flake8 as some examples).
+* All the examples must be fully PEP8 compliant, the ``pre-commit`` hook should be used to ensure this.
 
-* Wherever possible, the examples should include linked references with links pointing to the appropriate `DOI <https://zenodo.org/record/2551710>`_ or `ADS <https://ui.adsabs.harvard.edu/>`_ entry.
+* Wherever possible, the examples should include linked references with links pointing to the appropriate `DOI <https://zenodo.org/record/2551710>`__ or `ADS <https://ui.adsabs.harvard.edu/>`__ entry.
 
-* The example should include links to relevant documentation pages.
+* The example should include links (URL or `sphinx intersphinx <https://coderefinery.github.io/sphinx-lesson/intersphinx/>`__) to relevant documentation pages.
 
 * Each example should, where possible, include at least one image, map, or plot to use as the icon in the example gallery.
 
@@ -43,6 +41,9 @@ Contribution Guidelines
 
   * If an axes instance is created, it should be explicitly passed as a keyword argument wherever possible (e.g. in `~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.draw_grid`).
 
-  * After each figure is created, call ``plt.show()``. While not explicitly needed for the gallery to render, this ensures that, when run as a script, the gallery will display each figure sequentially.
+  * At the end of the example,  call ``plt.show()``.
+    While not explicitly needed for the gallery to render, this ensures that when run as a script, the plots will appear.
 
   * If you need to use ``astropy.visualization.{quantity_support, time_support}``, import these functions at the top of the example, and call them directly before the first plot that needs them.
+
+.. note:: We have an example template located at :file:`sunpy/examples/example_template/example_template.py`.

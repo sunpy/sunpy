@@ -168,8 +168,8 @@ it would be passed to the client as
 
 So you can process each element of the OR in turn without having to consult any other part of the query.
 
-If the query the user provided contains an OR statement you get passed an instance of `~sunpy.net.attr.AttrOr` and each sub-element of that `~sunpy.net.attr.AttrOr` will be `~sunpy.net.attr.AttrAnd` (or a single other attr class).
-If the user query doesn't contain an OR you get a single `~.Attr` instance or an `~.AttrAnd`.
+If the query the user provided contains an OR statement you get passed an instance of `~sunpy.net.attrs.AttrOr` and each sub-element of that `~sunpy.net.attrs.AttrOr` will be `~sunpy.net.attrs.AttrAnd` (or a single other attr class).
+If the user query doesn't contain an OR you get a single `~sunpy.net.attr.Attr` instance or an `~sunpy.net.attrs.AttrAnd`.
 
 For example you could get any of the following queries (using ``&`` for AND and ``|`` for OR):
 
@@ -195,7 +195,7 @@ The `~sunpy.net.attr.AttrWalker` class consists of three main components:
 
 * **Creators**: The `~sunpy.net.attr.AttrWalker.create` method is one of two generic functions for which a different function is called for each Attr type.
   The intended use for creators is to return a new object dependent on different attrs.
-  It is commonly used to dispatch on `~sunpy.net.attr.AttrAnd` and `~sunpy.net.attr.AttrOr`.
+  It is commonly used to dispatch on `~sunpy.net.attrs.AttrAnd` and `~sunpy.net.attrs.AttrOr`.
 
 * **Appliers**: The `~sunpy.net.attr.AttrWalker.apply` method is the same as `~sunpy.net.attr.AttrWalker.create` in that it is a generic function.
   The only difference between it and `~sunpy.net.attr.AttrWalker.create` is its intended use.
@@ -289,6 +289,23 @@ An Example of ``register_values()``
 
         return adict
 
+Registering custom attrs in the ``attrs`` namespace
+---------------------------------------------------
+
+When you have custom attrs defined in a separate attrs module, you can add them to the namespace using the :meth:`~sunpy.net.BaseClient._attrs_module` class method.
+The method returns a tuple of length 2, where the first element is the target module name under which you want to add the custom attrs to the main attrs namespace.
+The second is the import path to the source module where the custom attrs are defined.
+Note that the source module here need not be an internal ``sunpy`` module, it could very well be external.
+An example for this can be seen as implemented in the JSOC client:
+
+.. code-block:: python
+
+    @classmethod
+    def _attrs_module(cls):
+        return 'jsoc', 'sunpy.net.jsoc.attrs'
+
+This adds all attrs that exist within ``sunpy.net.jsoc.attrs``, such as ``Keyword``, to ``attrs.jsoc``. These can now be accessed via an import of the main attrs module, e. g. at ``a.jsoc.Keyword``.
+
 Writing a Search Method
 -----------------------
 
@@ -297,7 +314,7 @@ The ``search()`` method has the job of taking a set of user queries and returnin
 The general flow of a ``search()`` method is:
 
 * Call your instance of an `.AttrWalker` to convert the input into a form expected by your API.
-* Make as many requests to your API as needed to fulfill the query. (Generally one per element of the outer `.AttrOr`).
+* Make as many requests to your API as needed to fulfill the query. (Generally one per element of the outer `sunpy.net.attrs.AttrOr`).
 * Process the response from your API into an instance of `.QueryResponseTable`.
 
 To process the query with the `.AttrWalker`, call the :meth:`.AttrWalker.create` method::

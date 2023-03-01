@@ -9,11 +9,11 @@ dependencies:
   - beautifulsoup4
   - cdflib
   - drms
-  - glymur
   - h5netcdf
   - matplotlib-base
   - mpl_animators
   - numpy
+  - packaging
   - pandas
   - parfive
   - python
@@ -29,7 +29,10 @@ dependencies:
 
   # Optional
   - astroquery
+  - dask
+  - glymur
   - jplephem
+  - lxml
   - opencv
 
   # Testing
@@ -56,6 +59,7 @@ dependencies:
   - sphinx-copybutton
   - sphinx-design
   - sphinx-gallery
+  - sphinx-hoverxref
   - towncrier
 
   # Installation

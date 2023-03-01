@@ -1,1 +1,0 @@
-Fixed bug that prevented `~sunpy.coordinates.metaframes.RotatedSunFrame` instances from being pickled.

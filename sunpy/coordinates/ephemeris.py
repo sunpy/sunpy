@@ -63,6 +63,11 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
     angular direction relative to the observer, the correction can be negligible because the
     apparent location of the body will shift in tandem with the Sun.
 
+    For planets other than Earth, Astropy's built-in ephemeris is not as accurate as JPL
+    ephemerides, so one can use `astropy.coordinates.solar_system_ephemeris` to switch
+    to a JPL ephemeris. See :ref:`astropy-coordinates-solarsystem` for more information, and see
+    :ref:`sphx_glr_generated_gallery_units_and_coordinates_venus_transit.py` for an example.
+
     Examples
     --------
     >>> from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst

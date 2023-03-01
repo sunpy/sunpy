@@ -109,8 +109,11 @@ class HMIMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         if self.unit is not None and self.unit.is_equivalent(u.T):
-            # Magnetic field maps, not intensity maps
-            self._set_symmetric_vmin_vmax()
+            # Avoid JP2K images not having a norm due to UNIT8 data
+            # This means they are not scaled correctly.
+            if self.plot_settings.get('norm') is not None:
+                # Magnetic field maps, not intensity maps
+                self._set_symmetric_vmin_vmax()
         self._nickname = self.detector
 
     @property

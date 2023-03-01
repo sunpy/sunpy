@@ -38,6 +38,7 @@ from sunpy import __version__  # NOQA
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA
 from matplotlib import MatplotlibDeprecationWarning  # NOQA
 from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
+
 # -- Project information -------------------------------------------------------
 project = 'SunPy'
 author = 'The SunPy Community'
@@ -114,6 +115,7 @@ extensions = [
     "sphinxext.opengraph",
     'sphinx_design',
     'sphinx_copybutton',
+    'hoverxref.extension',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -200,6 +202,40 @@ intersphinx_mapping = {
     "asdf": ("https://asdf.readthedocs.io/en/stable/", None),
     "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
 }
+
+# -- Options for hoverxref -----------------------------------------------------
+if os.environ.get("READTHEDOCS"):
+    hoverxref_api_host = "https://readthedocs.org"
+
+    if os.environ.get("PROXIED_API_ENDPOINT"):
+        # Use the proxied API endpoint
+        # A RTD thing to avoid a CSRF block when docs are using a custom domain
+        hoverxref_api_host = "/_"
+
+hoverxref_tooltip_maxwidth = 600  # RTD main window is 696px
+hoverxref_auto_ref = True
+hoverxref_mathjax = True
+# hoverxref has to be applied to these
+hoverxref_domains = ["py"]
+
+hoverxref_role_types = {
+    # roles with py domain
+    "attr": "tooltip",
+    "class": "tooltip",
+    "const": "tooltip",
+    "data": "tooltip",
+    "exc": "tooltip",
+    "func": "tooltip",
+    "meth": "tooltip",
+    "mod": "tooltip",
+    "obj": "tooltip",
+    # roles with std domain
+    "confval": "tooltip",
+    "hoverxref": "tooltip",
+    "ref": "tooltip",
+    "term": "tooltip",
+}
+hoverxref_intersphinx = ["numpy", "astropy", "python"]
 
 # -- Options for HTML output ---------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -299,7 +335,7 @@ copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: 
 copybutton_prompt_is_regexp = True
 
 # -- Stability Page ------------------------------------------------------------
-with open('./code_ref/sunpy_stability.yaml', 'r') as estability:
+with open('./reference/sunpy_stability.yaml', 'r') as estability:
     sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
 
 html_context = {
@@ -315,7 +351,7 @@ def rstjinja(app, docname, source):
     # Make sure we're outputting HTML
     if app.builder.format != 'html':
         return
-    files_to_render = ["code_ref/stability", "dev_guide/index"]
+    files_to_render = ["reference/stability", "dev_guide/index"]
     if docname in files_to_render:
         print(f"Jinja rendering {docname}")
         rendered = app.builder.templates.render_string(

@@ -6,6 +6,9 @@ This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
 .. warning::
 
     The reading and writing of ana files is not supported under Windows.
+
+    By default, this module is not installed on platforms other than Linux (x86-64) and macOS (x86-64 and ARM64).
+    See the installation guide for more info.
 """
 import os
 
@@ -16,6 +19,11 @@ try:
     from sunpy.io import _pyana
 except ImportError:
     _pyana = None
+
+ANA_NOT_INSTALLED = (
+    "C extension for ANA is missing. For more details see: "
+    "https://docs.sunpy.org/en/stable/installation.html#installing-without-conda"
+)
 
 
 __all__ = ['read', 'get_header', 'write']
@@ -48,7 +56,7 @@ def read(filename, debug=False, **kwargs):
         raise OSError("File does not exist!")
 
     if _pyana is None:
-        raise ImportError("C extension for ANA is missing, please rebuild.")
+        raise ImportError(ANA_NOT_INSTALLED)
 
     data = _pyana.fzread(filename, debug)
     return [HDPair(data['data'], FileHeader(data['header']))]
@@ -77,7 +85,7 @@ def get_header(filename, debug=False):
     >>> header = sunpy.io.ana.get_header(filename)  # doctest: +SKIP
     """
     if _pyana is None:
-        raise ImportError("C extension for ANA is missing, please rebuild")
+        raise ImportError(ANA_NOT_INSTALLED)
 
     data = _pyana.fzread(filename, debug)
     return [FileHeader(data['header'])]
@@ -111,7 +119,7 @@ def write(filename, data, comments=False, compress=True, debug=False):
     >>> written = sunpy.io.ana.write(filename, data, comments=False, compress=True)  # doctest: +SKIP
     """
     if _pyana is None:
-        raise ImportError("C extension for ANA is missing, please rebuild")
+        raise ImportError(ANA_NOT_INSTALLED)
 
     if comments:
         return _pyana.fzwrite(filename, data, int(compress), comments, debug)
