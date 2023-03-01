@@ -345,3 +345,25 @@ def test_plot_autoalign(aia171_test_map):
 def test_plot_autoalign_bad_inputs(aia171_test_map):
     with pytest.raises(ValueError):
         aia171_test_map.plot(autoalign='bad')
+
+
+@figure_test
+def test_plot_autoalign_pixel_alignment(aia171_test_map):
+    # Verify that autoalign=True does not affect pixel alignment
+    x, y = [z.value for z in aia171_test_map.reference_pixel]
+
+    fig = Figure(figsize=(10, 4))
+
+    ax1 = fig.add_subplot(121, projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax1, autoalign=False, title='autoalign=False')
+    ax1.grid(False)
+    ax1.set_xlim(x - 2, x + 2)
+    ax1.set_ylim(y - 2, y + 2)
+
+    ax2 = fig.add_subplot(122, projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax2, autoalign=True, title='autoalign=True')
+    ax2.grid(False)
+    ax2.set_xlim(x - 2, x + 2)
+    ax2.set_ylim(y - 2, y + 2)
+
+    return fig
