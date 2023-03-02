@@ -1,0 +1,1 @@
+Fixed a bug with :func:`~sunpy.map.extract_along_coord` where some of the pixels sampled were not in fact the closest pixels to the coordinate line segments.

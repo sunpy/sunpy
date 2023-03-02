@@ -443,10 +443,10 @@ def _bresenham(*, x1, y1, x2, y2):
         if (x == x2) and (y == y2):
             break
         e2 = 2 * err
-        if e2 > -dy:
+        if e2 >= -dy:
             err = err - dy
             x += sx
-        if e2 < dx:
+        if e2 <= dx:
             err = err + dx
             y += sy
     return np.array(res)
