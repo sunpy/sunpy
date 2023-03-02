@@ -1,8 +1,8 @@
 import json
 import pathlib
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
-from concurrent.futures import ThreadPoolExecutor
 
 from astropy.table import Table
 
