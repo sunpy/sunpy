@@ -128,6 +128,7 @@ def _update_cdaweb_dataset_data():
     all_datasets = {}
     # Number of parallel threads we spawn
     N = 3
+
     def _fetch_cdaweb_dataset(group, url=url):
         print(f'🛰 Getting datasets for {group}')
         u = url + f'?observatoryGroup={group}'
