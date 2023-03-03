@@ -454,25 +454,34 @@ def _bresenham(*, x1, y1, x2, y2):
 
 def extract_along_coord(smap, coord):
     """
-    Return the value of the image array at every pixel the coordinate path intersects.
+    Extract pixel values from a map along a path that approximates a coordinate path.
 
-    For a given coordinate ``coord``, find all the pixels that cross the coordinate
-    and extract the values of the image array in ``smap`` at these points. This is done by applying
-    `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`_
-    between the consecutive coordinates, in pixel space, and then indexing the data
-    array of ``smap`` at those points.
+    Each pair of consecutive coordinates in the provided coordinate array defines a
+    line segment in pixel space.  The approximate pixel path for each line segment is
+    determined by applying
+    `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`_.
+    The resulting pixel path does not necessarily include every pixel that is
+    intersected by each line segment.
 
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
         The sunpy map.
     coord : `~astropy.coordinates.SkyCoord`
-        Coordinate along which to extract intensity.
+        The coordinate array that defines the path for extraction.
 
     Returns
     -------
-    values : `~astropy.units.Quantity`
-    value_coords : `~astropy.coordinates.SkyCoord`
+    pixel_values : `~astropy.units.Quantity`
+         The pixel values along a path that approximates the coordinate path.
+    pixel_coords : `~astropy.coordinates.SkyCoord`
+         The coordinates for the pixels from which the values were extracted.
+
+    Notes
+    -----
+    The provided coordinates are first rounded to the nearest corresponding pixel,
+    which means that the coordinates used for calculations may be shifted relative
+    to the provided coordinates by up to half a pixel.
 
     Examples
     --------
@@ -498,7 +507,7 @@ def extract_along_coord(smap, coord):
         pix.append(b)
     pix = np.vstack(pix)
 
-    intensity = u.Quantity(smap.data[pix[:, 0], pix[:, 1]], smap.unit)
-    coord_new = smap.wcs.pixel_to_world(pix[:, 1], pix[:, 0])
+    pixel_values = u.Quantity(smap.data[pix[:, 0], pix[:, 1]], smap.unit)
+    pixel_coords = smap.wcs.pixel_to_world(pix[:, 1], pix[:, 0])
 
-    return intensity, coord_new
+    return pixel_values, pixel_coords
