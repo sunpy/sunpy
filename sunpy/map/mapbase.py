@@ -26,7 +26,10 @@ except ImportError:
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
+from astropy.coordinates import (BaseCoordinateFrame, 
+                                 Longitude, 
+                                 SkyCoord, 
+                                 UnitSphericalRepresentation,)
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
@@ -1979,13 +1982,18 @@ class GenericMap(NDData):
         return bottom_left, top_left, top_right, bottom_right
 
     @_parse_submap_input.register(SkyCoord)
+    @_parse_submap_input.register(BaseCoordinateFrame)
     def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
         # Use helper function to get top_right as a SkyCoord
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
-        frame = bottom_left.frame
+        
+        if isinstance(bottom_left,SkyCoord):
+            frame = bottom_left.frame
+        
+        frame = bottom_left
         left_lon, bottom_lat = self._get_lon_lat(bottom_left)
         right_lon, top_lat = self._get_lon_lat(top_right)
         corners = SkyCoord([left_lon, left_lon, right_lon, right_lon],
