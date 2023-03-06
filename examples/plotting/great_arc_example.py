@@ -7,15 +7,16 @@ How to define and draw a great arc on an image of the
 Sun, and to extract intensity values along that arc.
 """
 import matplotlib.pyplot as plt
-import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.visualization import quantity_support
 
 import sunpy.map
 from sunpy.coordinates.utils import GreatArc
 from sunpy.data.sample import AIA_171_IMAGE
 
+quantity_support()
 ###############################################################################
 # We start with the sample data.
 
@@ -43,28 +44,18 @@ ax.plot_coord(great_arc.coordinates(), color='c')
 plt.show()
 
 ###############################################################################
-# Now we can calculate the nearest integer pixels of the data that correspond
-# to the location of arc.
-
-pixels = np.asarray(np.rint(m.world_to_pixel(great_arc.coordinates())), dtype=int)
-x = pixels[0, :]
-y = pixels[1, :]
-
-###############################################################################
-# Get the intensity along the arc from the start to the end point.
-intensity_along_arc = m.data[y, x]
-
-###############################################################################
-# Define the angular location of each pixel along the arc from the start point
-# to the end.
-
-angles = great_arc.inner_angles().to(u.deg)
+# Now we can get the intensity along the great arc coordinates, along with the
+# angular distance from the start of the arc
+coords = great_arc.coordinates()
+intensity, intensity_coords = sunpy.map.extract_along_coord(m, coords)
+separation = intensity_coords.separation(intensity_coords[0]).to(u.arcsec)
 
 ###############################################################################
 # Plot the intensity along the arc from the start to the end point.
 
-plt.plot(angles, intensity_along_arc)
-plt.xlabel(f'Distance along arc [{angles.unit}]')
+plt.figure()
+plt.plot(separation, intensity)
+plt.xlabel(f'Separation from start of arc [{separation.unit}]')
 plt.ylabel(f'Intensity [{m.unit}]')
 
 plt.show()
