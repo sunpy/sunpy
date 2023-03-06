@@ -49,18 +49,19 @@ params = np.polyfit(rsun_array[rsun_array < 1.5],
 # Let's plot the results using LaTeX for all the text.
 
 fontsize = 14
-plt.plot(rsun_array, y, label='data')
+fig, ax = plt.subplots()
+
+ax.plot(rsun_array, y, label='data')
 best_fit = np.exp(np.poly1d(params)(rsun_array))
 label = r'best fit: {:.2f}$e^{{{:.2f}r}}$'.format(best_fit[0], params[0])
-plt.plot(rsun_array, best_fit, label=label)
-plt.yscale('log')
-plt.ylabel(r'mean DN', fontsize=fontsize)
-plt.xlabel(r'radius r ($R_{\odot}$)', fontsize=fontsize)
-plt.xticks(fontsize=fontsize)
-plt.yticks(fontsize=fontsize)
-plt.title(r'observed off limb mean DN and best fit', fontsize=fontsize)
-plt.legend(fontsize=fontsize)
-plt.tight_layout()
+ax.plot(rsun_array, best_fit, label=label)
+ax.set_yscale('log')
+ax.set_ylabel(r'mean DN', fontsize=fontsize)
+ax.set_xlabel(r'radius r ($R_{\odot}$)', fontsize=fontsize)
+ax.tick_params(axis='both', size=fontsize)
+ax.set_title(r'observed off limb mean DN and best fit', fontsize=fontsize)
+ax.legend(fontsize=fontsize)
+fig.tight_layout()
 
 plt.show()
 
