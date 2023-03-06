@@ -1603,3 +1603,11 @@ def test_only_cd():
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(u.Quantity(cd_map.scale).value, np.array([5, 13]))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
+
+
+def test_basecoordianteframe_submap(aia171_test_map):
+    #test that submap runs with BaseCoordinateFrame objects
+    aia = sunpy.map.Map(aia171_test_map)
+    bottom_left = aia.bottom_left_coord.frame
+    top_right = aia.top_right_coord.frame
+    basecoordianteframe_value = aia.submap(bottom_left, top_right=top_right)
