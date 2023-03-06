@@ -56,6 +56,6 @@ separation = intensity_coords.separation(intensity_coords[0]).to(u.arcsec)
 plt.figure()
 plt.plot(separation, intensity)
 plt.xlabel(f'Separation from start of arc [{separation.unit}]')
-plt.ylabel(f'Intensity [{m.unit}]')
+plt.ylabel(f'Intensity [{intensity.unit}]')
 
 plt.show()
