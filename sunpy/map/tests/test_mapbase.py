@@ -1606,7 +1606,7 @@ def test_only_cd():
 
 
 def test_basecoordianteframe_submap(aia171_test_map):
-    #test that submap runs with BaseCoordinateFrame objects
+    # Tests the fix for https://github.com/sunpy/sunpy/issues/6252
     aia = sunpy.map.Map(aia171_test_map)
     bottom_left = aia.bottom_left_coord.frame
     top_right = aia.top_right_coord.frame
