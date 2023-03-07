@@ -25,11 +25,30 @@ Before the "merge" button is clicked the following criteria must be met:
 
 * All the continuous integration must pass unless there is a known issue.
 
-* At least two members (not the author of the PR) of the "sunpy-developers" group must have approved the PR, one should, ideally, be a relevant subpackage maintainer.
+* At least two members (excluding the PR author) of the "sunpy-developers" group must have approved the PR.
+  Exceptions can be made for minor changes, see below.
 
 * All comments posted on the thread must be resolved.
 
-It is important that approval for merging the PR is done on the comment thread, as this becomes part of the "permanent record", this includes in during community meetings or in chat.
+It is important that approval for merging the PR is always done by explicitly approving the PR through the GitHub UI before merging, so a record of approval is left in the PR thread.
+
+Minor changes
+-------------
+
+If a PR only makes minor changes, it can be merged by the first reviewer, if they are confident they fully understand the changes.
+If this happens, the ``minor-change`` label should be added to the PR to indicate that it has been considered minor enough to need only one reviewer.
+The PR author can add this label as a suggestion, but the first reviewer can remove the label as part of their evaluation.
+
+Exactly what constitutes a minor-change is left up to the the reviewer but some examples might include:
+- Improvements to existing documentation
+- Small bugfixes
+- Changes in code style rather than substance
+
+As a guideline, minor-changes don't include:
+
+- New features
+- New documentation pages
+- Changes to the public facing API
 
 Continuous Integration
 ======================
