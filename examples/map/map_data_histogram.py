@@ -38,30 +38,31 @@ hist, bin_edges = np.histogram(aia_smap.data, bins=bins)
 # Let's plot the histogram as well as some standard values such as mean
 # upper, and lower value and the one-sigma range.
 
-plt.figure()
+fig, ax = plt.subplots()
 # Note that we have to use ``.ravel()`` here to avoid matplotlib interpreting each
 # row in the array as a different dataset to histogram.
-plt.hist(aia_smap.data.ravel(), bins=bins, label='Histogram', histtype='step')
-plt.xlabel('Intensity')
-plt.axvline(aia_smap.min(), label='Data min={:.2f}'.format(aia_smap.min()), color='black')
-plt.axvline(aia_smap.max(), label='Data max={:.2f}'.format(aia_smap.max()), color='black')
-plt.axvline(aia_smap.data.mean(),
-            label='mean={:.2f}'.format(aia_smap.data.mean()), color='green')
+ax.hist(aia_smap.data.ravel(), bins=bins, label='Histogram', histtype='step')
+ax.set_xlabel('Intensity')
+ax.axvline(aia_smap.min(), label='Data min={:.2f}'.format(aia_smap.min()), color='black')
+ax.axvline(aia_smap.max(), label='Data max={:.2f}'.format(aia_smap.max()), color='black')
+ax.axvline(aia_smap.data.mean(),
+           label='mean={:.2f}'.format(aia_smap.data.mean()), color='green')
 one_sigma = np.array([aia_smap.data.mean() - aia_smap.data.std(),
                       aia_smap.data.mean() + aia_smap.data.std()])
-plt.axvspan(one_sigma[0], one_sigma[1], alpha=0.3, color='green',
-            label='mean +/- std = [{:.2f}, {:.2f}]'.format(
-            one_sigma[0], one_sigma[1]))
-plt.axvline(one_sigma[0], color='green')
-plt.axvline(one_sigma[1], color='red')
-plt.yscale('log')
-plt.legend(loc=9)
+ax.axvspan(one_sigma[0], one_sigma[1], alpha=0.3, color='green',
+           label='mean +/- std = [{:.2f}, {:.2f}]'.format(
+           one_sigma[0], one_sigma[1]))
+ax.axvline(one_sigma[0], color='green')
+ax.axvline(one_sigma[1], color='red')
+ax.set_yscale('log')
+ax.legend(loc=9)
 
 ###############################################################################
 # Finally let's overplot the one-sigma contours.
 
-plt.figure()
-aia_smap.plot()
+fig = plt.figure()
+ax = fig.add_subplots(projection=aia_smap)
+aia_smap.plot(axes=ax)
 levels = one_sigma / aia_smap.max() * u.percent * 100
-aia_smap.draw_contours(levels=levels, colors=['blue'])
+aia_smap.draw_contours(axes=ax, levels=levels, colors=['blue'])
 plt.show()

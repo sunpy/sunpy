@@ -35,8 +35,9 @@ mask = aiamap.data < aiamap.max() * 0.10
 
 aiamap_mask.mask = mask
 
-plt.figure()
-aiamap_mask.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aiamap_mask)
+aiamap_mask.plot(axes=ax)
 plt.colorbar()
 
 plt.show()
@@ -72,9 +73,10 @@ labels, n = ndimage.label(aiamap2.data)
 # the number of distinct regions. We can see that approximately 6 distinct hot
 # regions are present above the 10% of the maximum level.
 
-plt.figure()
-aiamap.plot()
-plt.contour(labels)
+fig = plt.figure()
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax)
+ax.contour(labels)
 plt.figtext(0.3, 0.2, f'Number of regions = {n}', color='white')
 
 plt.show()
