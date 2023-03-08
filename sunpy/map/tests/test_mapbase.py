@@ -1604,4 +1604,3 @@ def test_only_cd():
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(u.Quantity(cd_map.scale).value, np.array([5, 13]))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
-

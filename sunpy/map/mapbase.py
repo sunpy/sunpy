@@ -26,10 +26,7 @@ except ImportError:
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import (BaseCoordinateFrame, 
-                                 Longitude, 
-                                 SkyCoord, 
-                                 UnitSphericalRepresentation,)
+from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
@@ -1989,10 +1986,10 @@ class GenericMap(NDData):
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
-        
-        if isinstance(bottom_left,SkyCoord):
+
+        if isinstance(bottom_left, SkyCoord):
             frame = bottom_left.frame
-        
+
         frame = bottom_left
         left_lon, bottom_lat = self._get_lon_lat(bottom_left)
         right_lon, top_lat = self._get_lon_lat(top_right)
