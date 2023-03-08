@@ -84,8 +84,9 @@ scaled_map.plot_settings['norm'] = ImageNormalize(stretch=aia.plot_settings['nor
 ###############################################################################
 # Let's plot the results.
 
-plt.figure()
-scaled_map.plot(clip_interval=(5, 99.9)*u.percent)
-scaled_map.draw_limb()
-plt.colorbar()
+fig = plt.figure()
+ax = fig.add_subplot(projection=scaled_map)
+im = scaled_map.plot(axes=ax, clip_interval=(5, 99.9)*u.percent)
+scaled_map.draw_limb(axes=ax)
+fig.colorbar(im)
 plt.show()
