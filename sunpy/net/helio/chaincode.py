@@ -61,11 +61,12 @@ class Chaincode(np.ndarray):
                       y_steps[int(step)] * ydelta]]
 
     def matchend(self, end):
-        return np.alltrue(np.equal(self.coordinates[:, -1], np.asarray(end)))
+        return np.all(np.equal(self.coordinates[:, -1], np.asarray(end)))
 
     def matchany(self, coordinates, index):
-        return np.alltrue(np.allclose(self.coordinates[:, index],
-                                      np.asarray(coordinates)))
+        return np.all(
+            np.allclose(self.coordinates[:, index],  np.asarray(coordinates))
+        )
 
     def boundingbox(self):
         """
