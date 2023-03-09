@@ -9,7 +9,7 @@ from sunpy.tests.helpers import skip_ana
 
 # Create a test image, store it, reread it and compare
 img_size = (456, 345)
-img_src = np.arange(np.product(img_size))
+img_src = np.arange(np.prod(img_size))
 img_src.shape = img_size
 img_i8 = img_src*2**8/img_src.max()
 img_i8 = img_i8.astype(np.int8)
