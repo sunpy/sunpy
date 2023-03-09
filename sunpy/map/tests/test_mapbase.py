@@ -1309,6 +1309,7 @@ def test_submap_inputs(generic_map2, coords):
         ((bl_tr_coord,), {}),
         ((bl_pix,), dict(top_right=tr_pix)),
         ((bl_pix,), dict(width=width_pix, height=height_pix)),
+        ((bl_tr_coord.frame,), {}),
     )
 
     for args, kwargs in inputs:
