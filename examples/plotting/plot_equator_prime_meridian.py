@@ -46,7 +46,7 @@ outmap = aia_map.reproject_to(header)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=outmap)
-outmap.plot()
+outmap.plot(axes=ax)
 drawing.equator(ax, color='blue')
 drawing.prime_meridian(ax, color='red')
 plt.show()

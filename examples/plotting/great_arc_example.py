@@ -52,10 +52,9 @@ separation = intensity_coords.separation(intensity_coords[0]).to(u.arcsec)
 
 ###############################################################################
 # Plot the intensity along the arc from the start to the end point.
-
-plt.figure()
-plt.plot(separation, intensity)
-plt.xlabel(f'Separation from start of arc [{separation.unit}]')
-plt.ylabel(f'Intensity [{intensity.unit}]')
+fig, ax = plt.subplots()
+ax.plot(separation, intensity)
+ax.set_xlabel(f'Separation from start of arc [{separation.unit}]')
+ax.set_ylabel(f'Intensity [{intensity.unit}]')
 
 plt.show()
