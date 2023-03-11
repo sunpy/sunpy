@@ -1,7 +1,7 @@
 from astropy.time import Time
 
-# This registers TimeUTime in astropy.time.Time
-from sunpy.time import TimeUTime  # NOQA
+# This registers TimeUTime int astropy.time.Time
+from sunpy.time import TimeUTime  # NOQA: F401
 
 
 def test_utime_t0():

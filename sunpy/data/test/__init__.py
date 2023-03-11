@@ -27,6 +27,7 @@ __all__ = [
 
 rootdir = Path(os.path.dirname(sunpy.__file__)) / "data" / "test"
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
+rng = np.random.Generator()
 
 
 def get_test_filepath(filename, **kwargs):
@@ -94,7 +95,7 @@ def write_image_file_from_header_file(header_file, fits_directory):
     """
     header = astropy.io.fits.Header.fromtextfile(header_file)
     shape = [header[f'naxis{i+1}'] for i in range(header['naxis'])]
-    data = np.random.rand(*shape[::-1])
+    data = rng.random(shape[::-1])
     if 'BITPIX' in header:
         data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
     hdu = astropy.io.fits.PrimaryHDU(data=data, header=header, do_not_scale_image_data=True, scale_back=True)
@@ -112,7 +113,7 @@ def get_dummy_map_from_header(filename):
     """
     filepath = get_test_filepath(filename)
     header = _fits.format_comments_and_history(astropy.io.fits.Header.fromtextfile(filepath))
-    data = np.random.rand(header['NAXIS2'], header['NAXIS1'])
+    data = rng.random((header['NAXIS2'], header['NAXIS1']))
     if 'BITPIX' in header:
         data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
     # NOTE: by reading straight from the data header pair, we are skipping

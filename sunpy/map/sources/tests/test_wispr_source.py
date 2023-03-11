@@ -11,6 +11,8 @@ from astropy.io import fits
 from sunpy.map import Map
 from sunpy.map.sources import WISPRMap
 
+rng = np.random.Generator()
+
 
 @pytest.fixture
 def wispr_map(scope="module"):
@@ -241,7 +243,7 @@ def wispr_map(scope="module"):
         HISTORY Id: get_wispr_pointing.pro,v 1.29 2020/06/02 19:29:24 nathan Exp
         """)
     header = fits.Header.fromstring(raw_header, sep='\n')
-    data = np.random.rand(header['naxis1'], header['naxis2'])
+    data = rng.random((header['naxis1'], header['naxis2']))
     return Map(data, header)
 
 

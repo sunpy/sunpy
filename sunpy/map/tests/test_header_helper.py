@@ -15,7 +15,8 @@ from sunpy.util.metadata import MetaDict
 
 @pytest.fixture
 def map_data():
-    return np.random.rand(20, 10)
+    rng = np.random.default_rng()
+    return rng.random((20, 10))
 
 
 @pytest.fixture

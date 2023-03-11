@@ -38,6 +38,8 @@ from sunpy.visualization.colormaps.cm import _get_mpl_cmap
 from .conftest import make_simple_map
 from .strategies import matrix_meta
 
+rng = np.random.Generator()
+
 
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
@@ -1136,7 +1138,7 @@ def test_more_than_two_dimensions():
     loaded.  We need to load a >2-dim dataset with a TELESCOP header"""
 
     # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.
-    bad_data = np.random.rand(4, 4, 3, 5)
+    bad_data = rng.random((4, 4, 3, 5))
     hdr = fits.Header()
     hdr['TELESCOP'] = 'XXX'
     hdr['cunit1'] = 'arcsec'
@@ -1156,7 +1158,7 @@ def test_missing_metadata_warnings():
         header['cunit2'] = 'arcsec'
         header['ctype1'] = 'HPLN-TAN'
         header['ctype2'] = 'HPLT-TAN'
-        array_map = sunpy.map.Map(np.random.rand(20, 15), header)
+        array_map = sunpy.map.Map(rng.random((20, 15)), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
     assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 2
@@ -1509,9 +1511,9 @@ def check_arithmetic_value_and_units(map_new, data_expected):
     10 * u.ct,
     10 * u.mct,
     u.Quantity([10], u.ct),
-    u.Quantity(np.random.rand(128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.mct),
+    u.Quantity(rng.random((128,)), u.ct),
+    u.Quantity(rng.random((128, 128)), u.ct),
+    u.Quantity(rng.random((128, 128)), u.mct),
 ])
 def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
     new_map = aia171_test_map + value
@@ -1527,11 +1529,11 @@ def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
 @pytest.mark.parametrize('value', [
     10 * u.ct,
     u.Quantity([10], u.ct),
-    u.Quantity(np.random.rand(128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.ct),
+    u.Quantity(rng.random((128,)), u.ct),
+    u.Quantity(rng.random((128, 128)), u.ct),
     10.0,
-    np.random.rand(128),
-    np.random.rand(128, 128),
+    rng.random((128,)),
+    rng.random((128, 128)),
 ])
 def test_map_arithmetic_multiplication_division(aia171_test_map, value):
     new_map = aia171_test_map * value
