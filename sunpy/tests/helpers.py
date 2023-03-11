@@ -64,9 +64,10 @@ else:
 
 
 @pytest.fixture
-def warnings_as_errors(request):
+def warnings_as_errors():
     warnings.simplefilter('error')
-    request.addfinalizer(lambda *args: warnings.resetwarnings())
+    yield
+    warnings.resetwarnings()
 
 
 def get_hash_library_name():

@@ -14,7 +14,7 @@ def GSClient():
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("timerange,url_start,url_end", [
+@pytest.mark.parametrize(("timerange", "url_start", "url_end"), [
     (a.Time('2020/1/30', '2020/2/1'),
      'https://gong2.nso.edu/oQR/zqs/202001/mrzqs200130/mrzqs200130t0004c2227_349.fits.gz',
      'https://gong2.nso.edu/oQR/zqs/202001/mrzqs200131/mrzqs200131t2314c2227_323.fits.gz'
@@ -37,7 +37,7 @@ def test_get_url_for_time_range(GSClient, timerange, url_start, url_end):
 
 
 @pytest.mark.parametrize(
-    "query, result",
+    ("query", "result"),
     [((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong')), True),
      ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('goes')), False),
      ((a.Time('2020/1/1', '2020/1/2'), a.Instrument('gong'), a.Physobs('LOS_MAGNETIC_FIELD'),
@@ -51,7 +51,7 @@ def test_can_handle_query(query, result):
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("time,instrument", [
+@pytest.mark.parametrize(("time", "instrument"), [
     (Time('2013/8/27', '2013/8/27'), Instrument('gong')),
     (Time('2020/4/23 17:00', '2020/4/23 21:00'), Instrument('gong')),
 ])
@@ -64,7 +64,7 @@ def test_get(GSClient, time, instrument):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
-    "time, instrument",
+    ("time", "instrument"),
     [(a.Time('2019/10/4', '2019/10/4 2:00'), a.Instrument('gong')),
      (a.Time('2019/12/31 21:00', '2020/1/1'), a.Instrument('gong'))])
 def test_fido(time, instrument):

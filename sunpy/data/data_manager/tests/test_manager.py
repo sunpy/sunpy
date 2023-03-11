@@ -98,7 +98,7 @@ def test_override_file(manager, storage, downloader, data_function, tmpdir):
     with manager.override_file('test_file', f'file://{folder}/another_file', MOCK_HASH):
         data_function(override_file_tester)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError):  # noqa: PT012
         # check if functions errors with the wrong hash
         with manager.override_file('test_file', f'file://{folder}/another_file', 'wrong_hash'):
             # Inside the file is replaced

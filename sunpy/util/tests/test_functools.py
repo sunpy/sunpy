@@ -20,9 +20,9 @@ class TestSingleDispatch(unittest.TestCase):
         def g_int(dummy, i):
             return "integer"
         g.register(int, g_int)
-        self.assertEqual(g(None, "str"), "base")
-        self.assertEqual(g(None, 1), "integer")
-        self.assertEqual(g(None, [1, 2, 3]), "base")
+        assert g(None, "str") == "base"
+        assert g(None, 1) == "integer"
+        assert g(None, [1, 2, 3]) == "base"
 
     def test_mro(self):
 
@@ -49,10 +49,10 @@ class TestSingleDispatch(unittest.TestCase):
             return "B"
         g.register(A, g_A)
         g.register(B, g_B)
-        self.assertEqual(g(None, A()), "A")
-        self.assertEqual(g(None, B()), "B")
-        self.assertEqual(g(None, C()), "A")
-        self.assertEqual(g(None, D()), "B")
+        assert g(None, A()) == "A"
+        assert g(None, B()) == "B"
+        assert g(None, C()) == "A"
+        assert g(None, D()) == "B"
 
     def test_register_decorator(self):
 
@@ -63,10 +63,10 @@ class TestSingleDispatch(unittest.TestCase):
         @g.register(int)
         def g_int(dummy, i):
             return f"int {i}"
-        self.assertEqual(g(None, ""), "base")
-        self.assertEqual(g(None, 12), "int 12")
-        self.assertIs(g.dispatch(int), g_int)
-        self.assertIs(g.dispatch(object), g.dispatch(str))
+        assert g(None, "") == "base"
+        assert g(None, 12) == "int 12"
+        assert g.dispatch(int) is g_int
+        assert g.dispatch(object) is g.dispatch(str)
         # Note: in the assert above this is not g.
         # @singledispatch returns the wrapper.
 
@@ -75,9 +75,9 @@ class TestSingleDispatch(unittest.TestCase):
         def g(dummy, obj):
             "Simple test"
             return "Test"
-        self.assertEqual(g.__name__, "g")
+        assert g.__name__ == "g"
         if sys.flags.optimize < 2:
-            self.assertEqual(g.__doc__, "Simple test")
+            assert g.__doc__ == "Simple test"
 
     @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
     def test_annotations(self):
@@ -92,11 +92,11 @@ class TestSingleDispatch(unittest.TestCase):
         @i.register
         def _(dummy, arg: "collections.abc.Sequence"):
             return "sequence"
-        self.assertEqual(i(None, None), "base")
-        self.assertEqual(i(None, {"a": 1}), "mapping")
-        self.assertEqual(i(None, [1, 2, 3]), "sequence")
-        self.assertEqual(i(None, (1, 2, 3)), "sequence")
-        self.assertEqual(i(None, "str"), "sequence")
+        assert i(None, None) == "base"
+        assert i(None, {"a": 1}) == "mapping"
+        assert i(None, [1, 2, 3]) == "sequence"
+        assert i(None, (1, 2, 3)) == "sequence"
+        assert i(None, "str") == "sequence"
 
         # Registering classes as callables doesn't work with annotations,
         # you need to pass the type explicitly.
@@ -107,4 +107,4 @@ class TestSingleDispatch(unittest.TestCase):
 
             def __eq__(self, other):
                 return self.arg == other
-        self.assertEqual(i(None, "str"), "str")
+        assert i(None, "str") == "str"

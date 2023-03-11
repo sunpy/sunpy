@@ -190,7 +190,7 @@ def test_errors(tmpdir):
 
 
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
-@pytest.mark.parametrize('silence,error,match',
+@pytest.mark.parametrize(('silence', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
                              (False, sunpy.map.mapbase.MapMetaValidationError,
                               'Image coordinate units for axis 1 not present in metadata.')])
@@ -248,7 +248,7 @@ def test_map_list_urls_cache():
 
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
-@pytest.mark.parametrize('file, mapcls', [
+@pytest.mark.parametrize(('file', 'mapcls'), [
     ["EIT_header/efz20040301.000010_s.header", sunpy.map.sources.EITMap],
     ["lasco_c2_25299383_s.header", sunpy.map.sources.LASCOMap],
     ["mdi.fd_Ic.20101015_230100_TAI.data.header", sunpy.map.sources.MDIMap],

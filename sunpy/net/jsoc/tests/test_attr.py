@@ -8,7 +8,7 @@ from sunpy.net import _attrs as core_attrs
 from sunpy.net.attr import AttrAnd, AttrOr
 
 
-@pytest.mark.parametrize(("attr1, attr2"),
+@pytest.mark.parametrize((("attr1", "attr2")),
                          [(attrs.Series('foo'), attrs.Series('boo')),
                           (attrs.Protocol('a1'), attrs.Protocol('a2')),
                           (attrs.Notify('email@somemail.com'),

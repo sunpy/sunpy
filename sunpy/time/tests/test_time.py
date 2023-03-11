@@ -267,7 +267,7 @@ def test_parse_time_leap_second():
 # This warning shouldn't really be ignored; see https://github.com/astropy/astropy/issues/10564
 # for the issue that will help decide how to handle this
 @pytest.mark.filterwarnings('ignore:FITS time strings should no longer have embedded time scale')
-@pytest.mark.parametrize("ts,fmt", [
+@pytest.mark.parametrize(('ts', 'fmt'), [
     (1950.0, 'byear'),
     ('B1950.0', 'byear_str'),
     (63072064.184, 'cxcsec'),
