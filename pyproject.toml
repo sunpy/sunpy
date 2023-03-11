@@ -83,3 +83,36 @@ test-requires = ["opencv_python==4.6.0.66"]
       directory = "trivial"
       name = "Internal Changes"
       showcontent = true
+
+
+[tool.ruff]
+target-version = "py38"
+line-length = 110
+exclude=[
+    ".git,",
+    "__pycache__",
+    "build",
+    "sunpy/extern/**",
+]
+
+select = ["E", "F"]
+extend-ignore = [
+    # pycodestyle (E, W)
+    "E501",  # LineTooLong                             # TODO! fix
+]
+
+[tool.ruff.per-file-ignores]
+"setup.py" = ["INP001"]  # Part of configuration, not a package.
+"__init__.py" = ["E402", "F401", "F403"]
+"test_*.py" = ["B011", "D", "E402", "PGH001", "S101"]
+"conftest.py" = ["INP001"]  # Part of configuration, not a package.
+"docs/*.py" = [
+    "INP001",  # implicit-namespace-package. The examples are not a package.
+]
+
+[tool.ruff.isort]
+    known-third-party = ["astropy", "asdf"]
+    known-first-party = ["sunpy"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"

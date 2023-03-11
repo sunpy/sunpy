@@ -1,44 +1,17 @@
 repos:
-# The warnings/errors we check for here are:
-  # E901 - SyntaxError or IndentationError
-  # E902 - IOError
-  # F822 - undefined name in __all__
-  # F823 - local variable name referenced before assignment
-  # Others are taken care of by autopep8
-  - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+  # This should be before any formatting hooks like isort
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: "v0.0.254"
     hooks:
-      - id: flake8
-        args:
-          [
-            "--count",
-            "--select",
-            "E901,E902,F822,F823",
-          ]
-        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|sunpy/visualization/colormaps/color_tables.py)$"
-  - repo: https://github.com/PyCQA/autoflake
-    rev: v2.0.1
-    hooks:
-      - id: autoflake
-        args:
-          [
-            "--in-place",
-            "--remove-all-unused-imports",
-            "--remove-unused-variable",
-          ]
-        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|__init__.py|sunpy/extern|docs/conf.py)$"
+      - id: ruff
+        args: ["--fix"]
+
   - repo: https://github.com/PyCQA/isort
     rev: 5.12.0
     hooks:
       - id: isort
         args: ["--sp", "setup.cfg"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|docs/conf.py)$"
-  - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v2.0.2
-    hooks:
-    -   id: autopep8
-        args: ["--in-place","--max-line-length", "200"]
-        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|sunpy/visualization/colormaps/color_tables.py)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
@@ -54,12 +27,14 @@ repos:
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|.json)$|^CITATION.rst$"
       - id: mixed-line-ending
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
+
   - repo: https://github.com/devanshshukla99/pre-commit-hook-prohibit-string
     rev: v1.2
     hooks:
       - id: prohibit-string
         args: [--prohibit-string, "from warnings import warn,warnings.warn"]
         exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py|sunpy/extern/|sunpy/util/tests/test_logger.py"
+
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
