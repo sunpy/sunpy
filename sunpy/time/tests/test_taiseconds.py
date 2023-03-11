@@ -4,7 +4,7 @@ from astropy.time import Time
 from astropy.time.formats import erfa
 
 # This registers the TimeTaiSeconds format with astropy
-from sunpy.time import *  # NOQA
+from sunpy.time import *  # NOQA: F403
 
 
 def test_time_t0():

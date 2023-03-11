@@ -107,6 +107,17 @@ select = [
        "PLE",
        "NPY",
        "RUF",
+       "PGH",
+       #"PTH",
+       #"BLE",
+       #"FBT",
+       #"B",
+       #"A",
+       #"COM",
+       #"C4",
+       #"T20",
+       #"RSE",
+       #"ERA",
 
 ]
 extend-ignore = [

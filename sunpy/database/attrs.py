@@ -200,7 +200,7 @@ def _create(wlk, root, session):
             path, = value
             base_query = _inverter_helper(DatabaseEntry.path == path, inverted)
             if inverted:
-                base_query = or_(base_query, DatabaseEntry.path == None)  # NOQA
+                base_query = or_(base_query, DatabaseEntry.path == None)  # NOQA: E711
             query = query.filter(base_query)
 
         elif typ == core_attrs.Wavelength.type_name:

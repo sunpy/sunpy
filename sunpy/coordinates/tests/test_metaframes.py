@@ -114,7 +114,7 @@ def test_as_base(rot_hgs):
     # Check the as_base() method
     a = rot_hgs[1].as_base()
 
-    assert type(a) == type(rot_hgs[1].base)  # noqa: E721
+    assert type(a) == type(rot_hgs[1].base)  # NOQA: E721
 
     assert_longitude_allclose(a.lon, rot_hgs[1].lon)
     assert_quantity_allclose(a.lat, rot_hgs[1].lat)
@@ -170,7 +170,7 @@ def test_base_skycoord(rot_hgs):
     s = SkyCoord(1*u.deg, 2*u.deg, 3*u.AU, frame=f.HeliographicStonyhurst, obstime='2001-01-01')
     r = RotatedSunFrame(base=s)
 
-    assert type(r) == type(rot_hgs[1])  # noqa: E721
+    assert type(r) == type(rot_hgs[1])  # NOQA: E721
     assert r.has_data
     assert not r.base.has_data
 

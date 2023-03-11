@@ -307,7 +307,7 @@ def test_rectangle_bottom_left_different_types(rectangle_args):
 
     assert bottom_left.spherical.lon + width == top_right_1.spherical.lon
     assert bottom_left.spherical.lat + height == top_right_1.spherical.lat
-    assert type(bottom_left_1) == type(top_right_1) == type(bottom_left.frame)  # noqa: E721
+    assert type(bottom_left_1) == type(top_right_1) == type(bottom_left.frame)  # NOQA: E721
 
     bottom_left_2, top_right_2 = get_rectangle_coordinates(bottom_left, width=width, height=height)
 

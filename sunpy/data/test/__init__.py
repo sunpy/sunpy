@@ -27,7 +27,7 @@ __all__ = [
 
 rootdir = Path(os.path.dirname(sunpy.__file__)) / "data" / "test"
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
-rng = np.random.Generator()
+rng = np.random.default_rng()
 
 
 def get_test_filepath(filename, **kwargs):

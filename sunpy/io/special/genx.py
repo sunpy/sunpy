@@ -309,7 +309,7 @@ def read_genx(filename):
     arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int)
     # the number of upper level strs
     # This is used somehow
-    mainsize = arr_size[2]  # NOQA
+    mainsize = arr_size[2]  # noqa: F841
 
     skeleton = read_struct_skeleton(xdrdata)
     struct_to_data(xdrdata, skeleton)

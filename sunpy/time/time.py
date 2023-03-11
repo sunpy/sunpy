@@ -13,7 +13,7 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 # This is not called but imported to register time formats
-from sunpy.time.timeformats import *  # NOQA
+from sunpy.time.timeformats import *  # NOQA: F403
 from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
@@ -287,7 +287,7 @@ def _variables_for_parse_time_docstring():
     try:
         # Need to try importing cdflib, as if it is present it will register
         # extra formats with time
-        import cdflib  # NOQA
+        import cdflib  # NOQA: F401
     except Exception:
         pass
     ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),

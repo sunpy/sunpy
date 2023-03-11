@@ -11,7 +11,7 @@ from astropy.io import fits
 from sunpy.map import Map
 from sunpy.map.sources import WISPRMap
 
-rng = np.random.Generator()
+rng = np.random.default_rng()
 
 
 @pytest.fixture
