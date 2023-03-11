@@ -26,6 +26,7 @@ class QueryResponse(QueryResponseTable):
         """
         if 'Start Time' in self.colnames and 'End Time' in self.colnames:
             return TimeRange(np.min(self['Start Time']), np.max(self['End Time']))
+        return None
 
     def response_block_properties(self):
         """
@@ -299,6 +300,6 @@ class GenericClient(BaseClient):
             downloader.enqueue_file(url, filename=filename, **self.enqueue_file_kwargs)
 
         if dl_set and not wait:
-            return
+            return None
 
         return downloader.download()

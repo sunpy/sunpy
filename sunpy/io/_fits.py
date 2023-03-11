@@ -328,6 +328,7 @@ def extract_waveunit(header):
     def parse_waveunit_comment(waveunit_comment):
         if waveunit_comment == 'in meters':
             return 'm'
+        return None
 
     if 'KEYCOMMENTS' not in header:
         return None

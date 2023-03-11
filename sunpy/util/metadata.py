@@ -195,7 +195,7 @@ class MetaDict(OrderedDict):
         try:
             return hash(frozenset(self_copy.items()))
         except Exception:
-            return
+            return None
 
     def get(self, key, default=None):
         """

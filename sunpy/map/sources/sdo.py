@@ -77,7 +77,7 @@ class AIAMap(GenericMap):
     def unit(self):
         unit_str = self.meta.get('bunit', self.meta.get('pixlunit'))
         if unit_str is None:
-            return
+            return None
 
         return self._parse_fits_unit(unit_str)
 
@@ -201,7 +201,7 @@ class HMISynopticMap(HMIMap):
     def unit(self):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
-            return
+            return None
         # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
         # The mapbase unit property forces this validation, so we must override it to prevent it.
         return u.Unit(unit_str)

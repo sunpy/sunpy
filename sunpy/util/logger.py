@@ -53,8 +53,10 @@ class SunpyLogger(AstropyLogger):
 
         if mod_name is not None:
             self.warning(message, extra={'origin': mod_name})
+            return None
         else:
             self.warning(message)
+            return None
 
 
 def _init_log(config=None):

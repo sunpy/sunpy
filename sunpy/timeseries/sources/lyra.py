@@ -202,3 +202,4 @@ class LYRATimeSeries(GenericTimeSeries):
         # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('INSTRUME', '').startswith('LYRA')
+        return None

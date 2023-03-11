@@ -35,6 +35,7 @@ def init_frame(frame, args, kwargs):
         return frame(*args)
     elif kwargs:
         return frame(**kwargs)
+    return None
 
 
 """

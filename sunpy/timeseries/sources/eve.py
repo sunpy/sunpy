@@ -152,6 +152,7 @@ class ESPTimeSeries(GenericTimeSeries):
             return kwargs.get('source', '').lower().startswith(cls._source)
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('TELESCOP', '').endswith('SDO/EVE')
+        return None
 
 
 class EVESpWxTimeSeries(GenericTimeSeries):
@@ -261,6 +262,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             return cls._parse_average_csv(filepath)
         elif line1.startswith(";"):
             return cls._parse_level_0cs(filepath)
+        return None
 
     @staticmethod
     def _parse_average_csv(filepath):
@@ -363,3 +365,4 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
+        return None

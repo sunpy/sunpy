@@ -191,6 +191,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('INSTRUME', '').startswith('GBM')
+        return None
 
 
 def _bin_data_for_summary(energy_bins, count_data):

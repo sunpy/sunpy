@@ -748,7 +748,7 @@ class GenericMap(NDData):
         """
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
-            return
+            return None
 
         return self._parse_fits_unit(unit_str)
 
@@ -789,7 +789,7 @@ class GenericMap(NDData):
     def _get_date(self, key):
         time = self.meta.get(key, None)
         if not time:
-            return
+            return None
 
         # Get the time scale
         if 'TAI' in time:
@@ -921,6 +921,7 @@ class GenericMap(NDData):
         exptime = self.meta.get('xposure') or self.meta.get('exptime')
         if exptime is not None:
             return exptime * self.timeunit
+        return None
 
     @property
     def instrument(self):
@@ -952,6 +953,7 @@ class GenericMap(NDData):
             wunit = sunpy.io._fits.extract_waveunit(self.meta)
             if wunit is not None:
                 return u.Unit(wunit)
+            return None
 
     @property
     def wavelength(self):
@@ -964,6 +966,7 @@ class GenericMap(NDData):
         """
         if 'wavelnth' in self.meta:
             return u.Quantity(self.meta['wavelnth'], self.waveunit)
+        return None
 
     @property
     def observatory(self):

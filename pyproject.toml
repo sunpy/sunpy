@@ -102,7 +102,7 @@ select = [
        "W",
        "UP",
        "PT",
-       #"RET",
+       "RET",
        "TID",
 
 ]
@@ -116,6 +116,15 @@ extend-ignore = [
     "PT007",  # Parametrize should be lists of tuples  # TODO! fix
     "PT011",  # Too broad exception assert             # TODO! fix
     "PT023",  # Always use () on pytest decorators
+
+    # Return (RET)
+    # Ignore all non-autofix
+    # TODO! fix
+    "RET504",  # Unnecessary variable assignment before return statement
+    "RET505",  # Unnecessary {branch} after return statement
+    "RET506",  # Unnecessary {branch} after raise statement
+    "RET507",  # Unnecessary {branch} after continue statement
+    "RET508",  # Unnecessary {branch} after break statement
 ]
 
 [tool.ruff.flake8-tidy-imports]

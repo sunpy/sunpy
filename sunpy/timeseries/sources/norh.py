@@ -173,3 +173,4 @@ class NoRHTimeSeries(GenericTimeSeries):
                 return kwargs.get('source', '').lower().startswith(cls._source)
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('ORIGIN', '').startswith('NOBEYAMA RADIO OBS')
+        return None

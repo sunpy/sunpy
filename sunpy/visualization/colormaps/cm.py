@@ -30,6 +30,7 @@ def _get_mpl_cmap(name):
 def _register_cmap(name, cmap):
     if version.parse(matplotlib.__version__) >= version.parse("3.5"):
         matplotlib.colormaps.register(cmap, name=name)
+        return None
     else:
         return mplcm.register_cmap(name, cmap)
 

@@ -72,6 +72,7 @@ def replacement_filename(path: str):
             newpath = os.path.join(dir_, name)
             if not os.path.exists(newpath):
                 return newpath
+        return None
 
 
 def expand_list(inp):

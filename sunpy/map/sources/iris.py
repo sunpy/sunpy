@@ -62,7 +62,7 @@ class SJIMap(GenericMap):
     def unit(self):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
-            return
+            return None
         # Remove "corrected" so that the unit can be parsed
         unit_str = unit_str.lower().replace('corrected', '').strip()
         return self._parse_fits_unit(unit_str)

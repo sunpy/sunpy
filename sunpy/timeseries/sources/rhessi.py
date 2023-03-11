@@ -226,3 +226,4 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('telescop', '').startswith('HESSI')
+        return None

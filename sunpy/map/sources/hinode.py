@@ -95,7 +95,7 @@ class XRTMap(GenericMap):
     def processing_level(self):
         lvl = self.meta.get('DATA_LEV', None)
         if lvl is None:
-            return
+            return None
         return int(lvl)
 
     @property

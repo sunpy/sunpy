@@ -45,6 +45,7 @@ class EUIMap(GenericMap):
         if self.meta.get('level'):
             # The level number is prepended by the letter L
             return int(self.meta.get('level')[1:])
+        return None
 
     @property
     def date(self):

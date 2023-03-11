@@ -66,6 +66,7 @@ def get_online_vso_url():
     for mirror in DEFAULT_URL_PORT:
         if check_connection(mirror['url']):
             return mirror
+    return None
 
 
 def build_client(url=None, port_name=None, **kwargs):

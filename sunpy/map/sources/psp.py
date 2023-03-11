@@ -24,7 +24,7 @@ class WISPRMap(GenericMap):
     def processing_level(self):
         lvl = self.meta.get('level', None)
         if lvl is None:
-            return
+            return None
         return int(lvl[1])
 
     @property

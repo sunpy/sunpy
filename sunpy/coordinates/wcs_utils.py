@@ -159,6 +159,7 @@ def solar_wcs_frame_mapping(wcs):
             frame_args.pop('rsun', None)
 
         return frame_class(**frame_args)
+    return None
 
 
 def _sunpy_frame_class_from_ctypes(ctypes):
@@ -175,6 +176,7 @@ def _sunpy_frame_class_from_ctypes(ctypes):
     for frame_class, ctype_pair in mapping.items():
         if ctype_pair <= ctypes:
             return frame_class
+    return None
 
 
 def _set_wcs_aux_obs_coord(wcs, obs_frame):

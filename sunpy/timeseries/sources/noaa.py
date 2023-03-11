@@ -189,6 +189,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
+        return None
 
 
 class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
@@ -281,6 +282,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
+        return None
 
     @staticmethod
     def _parse_json_file(filepath):

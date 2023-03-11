@@ -258,6 +258,7 @@ def _get_time_fmt(time_string):
         ts, _ = _regex_parse_time(time_string, time_format)
         if ts is not None:
             return time_format
+    return None
 
 
 def _variables_for_parse_time_docstring():

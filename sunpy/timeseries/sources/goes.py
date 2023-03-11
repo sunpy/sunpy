@@ -312,3 +312,4 @@ class XRSTimeSeries(GenericTimeSeries):
             except Exception as e:
                 log.debug(f'Reading {kwargs["filepath"]} failed with the following exception:\n{e}')
                 return False
+        return None
