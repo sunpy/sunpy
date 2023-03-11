@@ -341,7 +341,7 @@ class Scraper:
                         if self._check_timerange(fullpath, timerange):
                             filesurls.append(fullpath)
 
-        filesurls = [f'ftp://' + "{0.netloc}{0.path}".format(urlsplit(url))
+        filesurls = ['ftp://' + "{0.netloc}{0.path}".format(urlsplit(url))
                      for url in filesurls]
 
         return filesurls

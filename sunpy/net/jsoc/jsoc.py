@@ -481,7 +481,7 @@ class JSOCClient(BaseClient):
         # Private communication from JSOC say we should not use more than one connection.
         max_splits = kwargs.get('max_splits', 1)
         if max_splits != 1:
-            log.info(f"Setting max_splits to it's maximum allowed value of 1 for requests made by the JSOCClient.")
+            log.info("Setting max_splits to it's maximum allowed value of 1 for requests made by the JSOCClient.")
         kwargs['max_splits'] = 1
 
         # Convert Responses to a list if not already
@@ -531,7 +531,7 @@ class JSOCClient(BaseClient):
             dl_set = False
             # Private communication from JSOC say we should not use more than one connection.
             if max_conn != self.default_max_conn:
-                log.info(f"Setting max parallel downloads to 1 for the JSOC client.")
+                log.info("Setting max parallel downloads to 1 for the JSOC client.")
             downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=1)
 
         urls = []

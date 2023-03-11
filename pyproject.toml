@@ -98,7 +98,7 @@ exclude=[
 
 select = [
        "E",
-       #"F",
+       "F",
        #"W",
        #"UP",
        #"PT",
@@ -123,6 +123,7 @@ extend-ignore = [
 "docs/*.py" = [
     "INP001",  # implicit-namespace-package. The examples are not a package.
 ]
+"sunpy/net/__init__.py" = ["F811"]
 # These files are allowed to use warnings.warn
 "sunpy/util/exceptions.py" = ["TID251"]
 "sunpy/util/tests/test_logger.py" = ["TID251"]

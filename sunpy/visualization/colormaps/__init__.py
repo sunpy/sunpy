@@ -11,5 +11,5 @@ The following colormaps are provided by this module.
 """
 from sunpy.visualization.colormaps.cm import *
 
-for cmname in cmlist.keys():
+for cmname in cmlist.keys():  # noqa: F405
     __doc__ += f"\n* '{cmname}'\n"

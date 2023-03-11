@@ -94,7 +94,7 @@ def test_empty():
 @pytest.mark.parametrize("different_type", [
     int, str, float, list, set, tuple, dict, object
 ])
-def test_empty(different_type):
+def test_empty_type(different_type):
     attr_ = attr.Attr()
     assert attr_ != different_type()
 

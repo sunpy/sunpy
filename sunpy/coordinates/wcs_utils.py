@@ -13,7 +13,6 @@ from astropy.wcs import WCS
 
 from sunpy import log
 from .frames import (
-    BaseCoordinateFrame,
     Heliocentric,
     HeliographicCarrington,
     HeliographicStonyhurst,
