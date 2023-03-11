@@ -66,7 +66,7 @@ three_D_parameters = [
 # ==============================================================================
 
 
-@pytest.mark.parametrize('args, kwargs',
+@pytest.mark.parametrize(('args', 'kwargs'),
                          two_D_parameters + [(None, {'Tx': 0 * u.deg,
                                                      'Ty': 0 * u.arcsec})])
 def test_create_hpc_2d(args, kwargs):
@@ -93,7 +93,7 @@ def test_create_hpc_2d(args, kwargs):
 
 
 @pytest.mark.parametrize(
-    'args, kwargs',
+    ('args', 'kwargs'),
     three_D_parameters + [(None, {'Tx': 0 * u.deg,
                                   'Ty': 0 * u.arcsec,
                                   'distance': 1 * u.Mm}),
@@ -248,7 +248,7 @@ def test_HEEQ_creation():
 
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
-@pytest.mark.parametrize("args, kwargs", two_D_parameters +
+@pytest.mark.parametrize(('args', 'kwargs'), two_D_parameters +
                          [(None, {'lat': 0*u.deg, 'lon': 0*u.arcsec})])
 def test_create_hgs_2d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
@@ -279,7 +279,7 @@ def test_create_hgs_2d(frame, args, kwargs):
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
 @pytest.mark.parametrize(
-    "args, kwargs",
+    ('args', 'kwargs'),
     three_D_parameters + [(None, {'lat': 0 * u.deg,
                                   'lon': 0 * u.arcsec,
                                   'radius': 1 * u.Mm}),
@@ -345,7 +345,7 @@ def test_hgc_wrapping_360():
 # ## Heliocentric Tests
 # ==============================================================================
 @pytest.mark.parametrize(
-    'args, kwargs',
+    ('args', 'kwargs'),
     [((10 * u.km, 10 * u.km, 10 * u.km), None), (None, {'x': 10 * u.km,
                                                         'y': 10 * u.km,
                                                         'z': 10 * u.km}),
@@ -378,7 +378,7 @@ def test_hcc_default_observer():
     assert not hcc.is_frame_attr_default('observer')
 
 
-@pytest.mark.parametrize('x, y, psi', [(0*u.km, -1*u.km, 270*u.deg),
+@pytest.mark.parametrize(('x', 'y', 'psi'), [(0*u.km, -1*u.km, 270*u.deg),
                                        (0*u.km, 1*u.km, 90*u.deg),
                                        (-1*u.km, 0*u.km, 180*u.deg)])
 def test_heliocentric_radial_psi(x, y, psi):
@@ -405,7 +405,7 @@ two_D_parameters = [
 ]
 
 
-@pytest.mark.parametrize("args, kwargs",
+@pytest.mark.parametrize(('args', 'kwargs'),
                          two_D_parameters + [([0 * u.deg, 0 * u.arcsec],
                                               {'representation_type': 'unitspherical'})])
 def test_skycoord_hpc(args, kwargs):

@@ -287,7 +287,7 @@ def test_incorrect_content_disposition(client):
     assert "Content" not in files[0]
 
 
-@pytest.mark.parametrize("query, handle", [
+@pytest.mark.parametrize(('query', 'handle'), [
     ((a.Time("2011/01/01", "2011/01/02"),), True),
     ((a.Physobs.los_magnetic_field,), False),
     ((a.Time("2011/01/01", "2011/01/02"), a.Provider("SDAC"),), True),

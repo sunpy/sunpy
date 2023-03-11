@@ -182,7 +182,7 @@ def test_window(timerange_a):
     assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
-@pytest.mark.parametrize("td1,td2", [
+@pytest.mark.parametrize(('td1', 'td2'), [
     (TimeDelta(12*u.hour), TimeDelta(10*u.second)),
     (timedelta(hours=12), timedelta(seconds=10))
 ])

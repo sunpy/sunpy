@@ -68,7 +68,7 @@ def testNoDateDirectory():
     assert s.range(timerange) == directory_list
 
 
-@pytest.mark.parametrize('pattern, mintime', PATTERN_EXAMPLES)
+@pytest.mark.parametrize(('pattern', 'mintime'), PATTERN_EXAMPLES)
 def test_smallerPattern(pattern, mintime):
     assert mintime == Scraper('')._smallerPattern(pattern)
 
@@ -240,7 +240,7 @@ def test_filelist_relative_hrefs():
     assert fileurls[1] == s.domain + 'pub/archive/2016/05/18/bbso_halph_fr_20160518_160033.fts'
 
 
-@pytest.mark.parametrize('pattern, check_file', [
+@pytest.mark.parametrize(('pattern', 'check_file'), [
     (r'MyFile_%Y_%M_%e\.(\D){2}\.fits', 'MyFile_2020_55_234.aa.fits'),
     (r'(\d){5}_(\d){2}\.fts', '01122_25.fts'),
     (r'_%Y%m%d__%ec(\d){5}_(\d){2}\s.fts', '_20201535__012c12345_33 .fts')])
@@ -283,7 +283,7 @@ def test_extract_files_meta():
     assert metalist1[-1]['url'] == urls[-1]
 
 
-@pytest.mark.parametrize('exdict, start, end', [
+@pytest.mark.parametrize(('exdict', 'start', 'end'), [
     ({"year": 2000}, '2000-01-01 00:00:00', '2000-12-31 23:59:59.999000'),
     ({"year": 2016, "month": 2}, '2016-02-01 00:00:00', '2016-02-29 23:59:59.999000'),
     ({'year': 2019, 'month': 2, 'day': 28}, '2019-02-28 00:00:00', '2019-02-28 23:59:59.999000'),

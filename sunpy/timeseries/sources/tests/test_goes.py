@@ -31,7 +31,7 @@ def test_implicit_goes(goes_nc_files):
     assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
 
-@pytest.mark.parametrize("goes_nc_files, sat_no",
+@pytest.mark.parametrize(('goes_nc_files', 'sat_no'),
                          [(goes_fits_filepath_com, 'GOES-15'),
                           (goes13_filepath_nc, 'GOES-13'),
                           (goes15_filepath_nc, 'GOES-15'),

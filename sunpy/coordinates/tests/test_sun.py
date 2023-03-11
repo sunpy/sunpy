@@ -437,7 +437,7 @@ def test_orientation():
 
 
 # Validate against published values from the Astronomical Almanac (2013, C4)
-@pytest.mark.parametrize("date, day_fraction, rotation_number",
+@pytest.mark.parametrize(("date", "day_fraction", "rotation_number"),
                          [('2012-12-29', 0.49, 2132),
                           ('2013-01-25', 0.83, 2133),
                           ('2013-02-22', 0.17, 2134),
@@ -459,7 +459,7 @@ def test_carrington_rotation_number(date, day_fraction, rotation_number):
                     rotation_number, rtol=0, atol=2e-4)
 
 
-@pytest.mark.parametrize("crot, julian_days",
+@pytest.mark.parametrize(("crot", "julian_days"),
                          [(1, 2398167.4),
                           (2, 2398194.6756),
                           (1860, 2448872.027509),
@@ -473,7 +473,7 @@ def test_carrington_rotation_starttime(crot, julian_days):
                                  julian_days * u.day, atol=0.11*u.s)
 
 
-@pytest.mark.parametrize("crot, longitude, crot_fractional",
+@pytest.mark.parametrize(("crot", "longitude", "crot_fractional"),
                          [(2000, 360, 2000.0),
                           (2000.0, 270, 2000.25)
                           ])
@@ -482,7 +482,7 @@ def test_carrington_rotation_time_longitude(crot, longitude, crot_fractional):
         sun.carrington_rotation_time(crot_fractional*u.one)
 
 
-@pytest.mark.parametrize("crot, longitude, crot_fractional",
+@pytest.mark.parametrize(("crot", "longitude", "crot_fractional"),
                          [
                              (np.array([2000, 2000]), np.array(
                                  [180, 90]), np.array([2000.5, 2000.75])),
@@ -494,7 +494,7 @@ def test_carrington_rotation_time_longitude_numpy(crot, longitude, crot_fraction
                sun.carrington_rotation_time(crot_fractional*u.one))
 
 
-@pytest.mark.parametrize("crot, longitude",
+@pytest.mark.parametrize(("crot", "longitude"),
                          [
                              (2000, 0),
                              (2000, -10),

@@ -22,7 +22,7 @@ pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in heade
 
 
 @pytest.mark.parametrize(
-    'fname, hdus, length',
+    ('fname', 'hdus', 'length'),
     [(TEST_RHESSI_IMAGE, None, 4),
      (TEST_RHESSI_IMAGE, 1, 1),
      (TEST_RHESSI_IMAGE, [1, 2], 2),
@@ -34,7 +34,7 @@ def test_read_hdus(fname, hdus, length):
 
 
 @pytest.mark.parametrize(
-    'fname, waveunit',
+    ('fname', 'waveunit'),
     [(TEST_RHESSI_IMAGE, None),
      (TEST_EIT_HEADER, None),
      (TEST_AIA_IMAGE, 'angstrom'),
@@ -90,7 +90,7 @@ def test_simple_write_compressed_difftypeinst(tmpdir):
 
 
 @pytest.mark.parametrize(
-    'kwargs, should_fail',
+    ('kwargs', 'should_fail'),
     [({}, False),
      ({'quantize_level': -32}, True)]
 )

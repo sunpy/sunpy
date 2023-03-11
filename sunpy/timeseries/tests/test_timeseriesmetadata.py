@@ -431,7 +431,8 @@ def test_to_string_depth(basic_1_md):
     depth_2_str = basic_1_md.to_string(depth=2)
     assert len(depth_2_str.split('\n')) == 8
     assert len(depth_2_str.split('...')) == 2
-    assert (basic_1_md.metadata[0][1][0] in depth_2_str) and (
+    assert (basic_1_md.metadata[0][1][0] in depth_2_str)
+    assert (
         basic_1_md.metadata[0][1][1] in depth_2_str)
 
 

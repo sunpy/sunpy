@@ -21,7 +21,7 @@ def test_invalid_show_cmaps():
 
 
 @pytest.mark.parametrize(
-    'f, match',
+    ('f', 'match'),
     [[ct.aia_color_table, 'Invalid AIA wavelength.'],
      [ct.eit_color_table, 'Invalid EIT wavelength.'],
      [ct.sswidl_lasco_color_table, 'Invalid LASCO number.'],

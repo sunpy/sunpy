@@ -20,7 +20,7 @@ def LCClient():
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("timerange,url_start,url_end", [
+@pytest.mark.parametrize(("timerange", "url_start", "url_end"), [
     (Time('2012/1/7', '2012/1/7'),
      'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits',
      'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits'
@@ -65,7 +65,7 @@ def test_query(LCClient, time):
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("time,instrument", [
+@pytest.mark.parametrize(("time", "instrument"), [
     (Time('2013/8/27', '2013/8/27'), Instrument('lyra'))])
 def test_get(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
@@ -75,7 +75,7 @@ def test_get(LCClient, time, instrument):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
-    "time, instrument",
+    ("time", "instrument"),
     [(a.Time('2012/10/4', '2012/10/6'), a.Instrument.lyra)])
 def test_fido(time, instrument):
     qr = Fido.search(time, instrument)

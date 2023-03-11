@@ -21,7 +21,7 @@ def LCClient():
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
-    "timerange,url_start,url_end",
+    ("timerange", "url_start", "url_end"),
     [(Time('1995/06/03 1:00', '1995/06/05'),
       'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',
       'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
@@ -42,7 +42,7 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("timerange, url_start, url_end",
+@pytest.mark.parametrize(("timerange", "url_start", "url_end"),
                          [(a.Time('1999/01/10 00:10', '1999/01/20'),
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits')])
@@ -55,7 +55,7 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("timerange, url_start, url_end",
+@pytest.mark.parametrize(("timerange", "url_start", "url_end"),
                          [(a.Time("2009/08/30 00:10", "2009/09/02"),
                            "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/gxrs-l2-irrad_science/2009/08/sci_gxrs-l2-irrad_g10_d20090830_v0-0-0.nc",
                            "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes14/gxrs-l2-irrad_science/2009/09/sci_gxrs-l2-irrad_g14_d20090902_v0-0-0.nc")])
@@ -68,7 +68,7 @@ def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("timerange, url_old, url_new",
+@pytest.mark.parametrize(("timerange", "url_old", "url_new"),
                          [(a.Time('2013/10/28', '2013/10/29'),
                            "https://umbra.nascom.nasa.gov/goes/fits/2013/go1520131028.fits",
                            "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes13/gxrs-l2-irrad_science/2013/10/sci_gxrs-l2-irrad_g13_d20131028_v0-0-0.nc")])
@@ -131,7 +131,7 @@ def test_query(LCClient, time):
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("time, instrument", [
+@pytest.mark.parametrize(("time", "instrument"), [
     (Time('1983/06/17', '1983/06/18'), Instrument('XRS')),
     (Time('2012/10/4', '2012/10/6'), Instrument('XRS')),
 ])
@@ -150,7 +150,7 @@ def test_new_logic(LCClient):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
-    "time, instrument, expected_num_files",
+    ("time", "instrument", "expected_num_files"),
     [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes, 4),
      (a.Time('2013-10-28 01:00', '2013-10-28 03:00'), a.Instrument('XRS'), 2)])
 def test_fido(time, instrument, expected_num_files):

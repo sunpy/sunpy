@@ -100,7 +100,7 @@ def sunpy_cache(mocker, tmp_path):
     def func(mocked):
         mocker.patch(mocked, cache)
         return cache
-    yield func
+    return func
 
 
 @pytest.fixture()

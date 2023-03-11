@@ -12,7 +12,7 @@ from sunpy.net.helioviewer import HelioviewerClient
 pytestmark = pytest.mark.filterwarnings('ignore:The HelioviewerClient class is deprecated')
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def client():
     """
     Fixture to create a client and skip tests if not available
@@ -96,7 +96,8 @@ def test_get_jp2_header(client):
     header2 = client.get_jp2_header('1994/01/01', jp2_id=1795504)
     assert header1 == header2
     assert len(header1) == len(header2) == 1
-    assert ('fits' in header1.keys()) and ('fits' in header2.keys())
+    assert ('fits' in header1.keys())
+    assert ('fits' in header2.keys())
 
 
 @pytest.mark.remote_data

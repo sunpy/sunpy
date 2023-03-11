@@ -24,7 +24,7 @@ from sunpy.coordinates.wcs_utils import (
 )
 
 
-@pytest.mark.parametrize('ctype, frame', [[['HPLN', 'HPLT'], Helioprojective],
+@pytest.mark.parametrize(('ctype', 'frame'), [[['HPLN', 'HPLT'], Helioprojective],
                                           [['HPLT', 'HPLN'], Helioprojective],
                                           [['HGLN', 'HGLT'], HeliographicStonyhurst],
                                           [['CRLN', 'CRLT'], HeliographicCarrington],
