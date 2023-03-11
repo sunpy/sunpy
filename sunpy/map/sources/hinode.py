@@ -10,8 +10,8 @@ __email__ = "jack.ireland@nasa.gov"
 __all__ = ['XRTMap', 'SOTMap']
 
 
-def _lower_list(l):
-    return [item.lower() for item in l]
+def _lower_list(alist):
+    return [item.lower() for item in alist]
 
 
 class XRTMap(GenericMap):
