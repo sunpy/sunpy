@@ -54,5 +54,4 @@ operator_t.SCREEN.patch_artist(im131)
 # Plot the result we get
 
 ax.set_title('mplcairo composite using screen blending')
-
 plt.show()
