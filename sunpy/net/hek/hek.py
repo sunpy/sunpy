@@ -73,7 +73,7 @@ class HEKClient(BaseClient):
                 result = codecs.decode(fd.read(), encoding='utf-8', errors='replace')
                 result = json.loads(result)
             except Exception as e:
-                raise IOError("Failed to load return from the HEKClient.") from e
+                raise OSError("Failed to load return from the HEKClient.") from e
             finally:
                 fd.close()
             results.extend(result['result'])

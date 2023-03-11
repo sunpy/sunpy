@@ -37,8 +37,7 @@ class QueryResponse(BaseQueryResponse):
         return len(self._data)
 
     def __iter__(self):
-        for block in self._data:
-            yield block
+        yield from self._data
 
     @property
     def blocks(self):
