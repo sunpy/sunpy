@@ -36,7 +36,7 @@ for _keyname, _filename in sorted(_SAMPLE_DATA.items()):
 
 
 # file_dict and file_list are not normal variables; see __getattr__() below
-__all__ = list(sorted(_SAMPLE_DATA.keys())) + ['download_all', 'file_dict', 'file_list']  # noqa: F822
+__all__ = list(sorted(_SAMPLE_DATA.keys())) + ['download_all', 'file_dict', 'file_list']  # noqa: F822, PLE0605
 
 
 # See PEP 562 (https://peps.python.org/pep-0562/) for module-level __dir__()
