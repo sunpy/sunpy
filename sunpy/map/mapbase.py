@@ -1201,14 +1201,12 @@ class GenericMap(NDData):
         default = self._default_observer_coordinate
         if default is not None:
             # If a map source specifies a default observer, we log a message at the debug level
-            warning_message = (["Missing metadata for observer: assuming custom default observer."]
-                               + warning_message)
+            warning_message = (["Missing metadata for observer: assuming custom default observer.", *warning_message])
             log.debug("\n".join(warning_message))
             return default
         else:
             # If a map source does not specify a default observer, we assume Earth center and warn
-            warning_message = (["Missing metadata for observer: assuming Earth-based observer."]
-                               + warning_message + [""])
+            warning_message = (["Missing metadata for observer: assuming Earth-based observer.", *warning_message] + [""])
             warn_metadata("\n".join(warning_message), stacklevel=3)
             return get_earth(self.date)
 
@@ -1705,7 +1703,7 @@ class GenericMap(NDData):
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
-        pixel_rotation_center = u.Quantity(self.reference_pixel).value + [pad_x, pad_y]
+        pixel_rotation_center = [*u.Quantity(self.reference_pixel).value, pad_x, pad_y]
 
         if recenter:
             pixel_center = pixel_rotation_center

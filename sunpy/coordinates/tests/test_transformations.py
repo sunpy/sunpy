@@ -819,15 +819,7 @@ def test_no_observer():
                  Heliocentric(0*u.km, 0*u.km, 0*u.km, observer=None, obstime='2001-01-01'),
                  Helioprojective(0*u.deg, 0*u.deg, observer=None),
                  Helioprojective(0*u.deg, 0*u.deg, observer=None, obstime='2001-01-01')]
-    frames_out = frames_in + [
-        HeliographicStonyhurst(0*u.deg, 0*u.deg, obstime=None),
-        HeliographicStonyhurst(0*u.deg, 0*u.deg, obstime='2001-01-01'),
-        Heliocentric(0*u.km, 0*u.km, 0*u.km, observer=None, obstime='2012-12-12'),
-        Heliocentric(0*u.km, 0*u.km, 0*u.km, observer="earth", obstime=None),
-        Heliocentric(0*u.km, 0*u.km, 0*u.km, observer="earth", obstime='2001-01-01'),
-        Helioprojective(0*u.deg, 0*u.deg, observer=None, obstime='2012-12-12'),
-        Helioprojective(0*u.deg, 0*u.deg, observer="earth", obstime=None),
-        Helioprojective(0*u.deg, 0*u.deg, observer="earth", obstime='2001-01-01')]
+    frames_out = [*frames_in, HeliographicStonyhurst(0 * u.deg, 0 * u.deg, obstime=None), HeliographicStonyhurst(0 * u.deg, 0 * u.deg, obstime='2001-01-01'), Heliocentric(0 * u.km, 0 * u.km, 0 * u.km, observer=None, obstime='2012-12-12'), Heliocentric(0 * u.km, 0 * u.km, 0 * u.km, observer='earth', obstime=None), Heliocentric(0 * u.km, 0 * u.km, 0 * u.km, observer='earth', obstime='2001-01-01'), Helioprojective(0 * u.deg, 0 * u.deg, observer=None, obstime='2012-12-12'), Helioprojective(0 * u.deg, 0 * u.deg, observer='earth', obstime=None), Helioprojective(0 * u.deg, 0 * u.deg, observer='earth', obstime='2001-01-01')]
 
     # Self-transformations should succeed
     for f in frames_in:

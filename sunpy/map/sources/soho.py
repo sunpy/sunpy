@@ -73,13 +73,7 @@ class EITMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('hec_x', 'hec_y', 'hec_z'), {'x': self.meta.get('hec_x'),
-                                               'y': self.meta.get('hec_y'),
-                                               'z': self.meta.get('hec_z'),
-                                               'unit': u.km,
-                                               'representation_type': CartesianRepresentation,
-                                               'frame': HeliocentricMeanEcliptic})
-                ] + super()._supported_observer_coordinates
+        return [(('hec_x', 'hec_y', 'hec_z'), {'x': self.meta.get('hec_x'), 'y': self.meta.get('hec_y'), 'z': self.meta.get('hec_z'), 'unit': u.km, 'representation_type': CartesianRepresentation, 'frame': HeliocentricMeanEcliptic}), *super()._supported_observer_coordinates]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -224,12 +218,7 @@ class MDIMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('obs_l0', 'obs_b0', 'obs_dist'), {'lon': self.meta.get('obs_l0'),
-                                                    'lat': self.meta.get('obs_b0'),
-                                                    'radius': self.meta.get('obs_dist'),
-                                                    'unit': (u.deg, u.deg, u.AU),
-                                                    'frame': "heliographic_carrington"}),
-                ] + super()._supported_observer_coordinates
+        return [(('obs_l0', 'obs_b0', 'obs_dist'), {'lon': self.meta.get('obs_l0'), 'lat': self.meta.get('obs_b0'), 'radius': self.meta.get('obs_dist'), 'unit': (u.deg, u.deg, u.AU), 'frame': 'heliographic_carrington'}), *super()._supported_observer_coordinates]
 
     @property
     def instrument(self):

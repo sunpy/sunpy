@@ -62,13 +62,7 @@ class EUIMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('hcix_obs', 'hciy_obs', 'hciz_obs'),
-                 {'x': self.meta.get('hcix_obs'),
-                  'y': self.meta.get('hciy_obs'),
-                  'z': self.meta.get('hciz_obs'),
-                  'unit': u.m,
-                  'representation_type': CartesianRepresentation,
-                  'frame': HeliocentricInertial})] + super()._supported_observer_coordinates
+        return [(('hcix_obs', 'hciy_obs', 'hciz_obs'), {'x': self.meta.get('hcix_obs'), 'y': self.meta.get('hciy_obs'), 'z': self.meta.get('hciz_obs'), 'unit': u.m, 'representation_type': CartesianRepresentation, 'frame': HeliocentricInertial}), *super()._supported_observer_coordinates]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

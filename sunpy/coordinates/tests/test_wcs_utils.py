@@ -292,7 +292,7 @@ def test_obsgeo_frame_mapping_cartesian(dkist_location, caplog):
     obstime = Time("2021-05-21T03:00:00")
     wcs = WCS(naxis=2)
     wcs.wcs.ctype = ['HPLT', 'HPLN']
-    wcs.wcs.obsgeo = list(dkist_location.to_value(u.m).tolist()) + [0, 0, 0]
+    wcs.wcs.obsgeo = [*list(dkist_location.to_value(u.m).tolist()), 0, 0, 0]
     wcs.wcs.dateobs = obstime.isot
 
     frame = solar_wcs_frame_mapping(wcs)
@@ -329,7 +329,7 @@ def test_obsgeo_cartesian(dkist_location):
     obstime = Time("2021-05-21T03:00:00")
     wcs = WCS(naxis=2)
     # tolist() returns a tuple.
-    wcs.wcs.obsgeo = list(dkist_location.to_value(u.m).tolist()) + [0, 0, 0]
+    wcs.wcs.obsgeo = [*list(dkist_location.to_value(u.m).tolist()), 0, 0, 0]
     wcs.wcs.dateobs = obstime.isot
 
     frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)

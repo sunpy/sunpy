@@ -70,12 +70,7 @@ class XRTMap(GenericMap):
     def _supported_observer_coordinates(self):
         # Assume observer is at zero Stonyhurst heliographic longitude if not otherwise specified
         # https://community.openastronomy.org/t/sunpymetadatawarnings-when-using-hinode-xrt-data/393/7 for more information
-        return (super()._supported_observer_coordinates
-                + [(('solar_b0', 'dsun_obs'), {'lon': 0*u.deg,
-                                               'lat': self.meta.get('solar_b0'),
-                                               'radius': self.meta.get('dsun_obs'),
-                                               'unit': (u.deg, u.deg, u.m),
-                                               'frame': "heliographic_stonyhurst"})])
+        return ([*super()._supported_observer_coordinates, (("solar_b0", "dsun_obs"), {"lon": 0 * u.deg, "lat": self.meta.get("solar_b0"), "radius": self.meta.get("dsun_obs"), "unit": (u.deg, u.deg, u.m), "frame": "heliographic_stonyhurst"})])
 
     @property
     def detector(self):

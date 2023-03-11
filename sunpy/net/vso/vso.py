@@ -420,7 +420,7 @@ class VSOClient(BaseClient):
     def make_getdatarequest(self, response, methods=None, info=None):
         """ Make datarequest with methods from response. """
         if methods is None:
-            methods = self.method_order + ['URL']
+            methods = [*self.method_order, 'URL']
 
         return self.create_getdatarequest(
             {g[0]['Provider']: list(g['fileid']) for g in response.group_by('Provider').groups},

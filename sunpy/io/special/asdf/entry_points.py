@@ -40,7 +40,7 @@ def get_extensions():
     from sunpy.io.special.asdf.converters.frames import SUNPY_FRAME_CONVERTERS
     from sunpy.io.special.asdf.converters.generic_map import GenericMapConverter
 
-    sunpy_converters = [GenericMapConverter()] + SUNPY_FRAME_CONVERTERS
+    sunpy_converters = [GenericMapConverter(), *SUNPY_FRAME_CONVERTERS]
 
     return [
         ManifestExtension.from_uri("asdf://sunpy.org/sunpy/manifests/sunpy-1.0.0",

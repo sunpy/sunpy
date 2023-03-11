@@ -68,8 +68,7 @@ three_D_parameters = [
 
 
 @pytest.mark.parametrize(('args', 'kwargs'),
-                         two_D_parameters + [(None, {'Tx': 0 * u.deg,
-                                                     'Ty': 0 * u.arcsec})])
+                         [*two_D_parameters, (None, {'Tx': 0 * u.deg, 'Ty': 0 * u.arcsec})])
 def test_create_hpc_2d(args, kwargs):
     hpc1 = init_frame(Helioprojective, args, kwargs)
 
@@ -95,10 +94,7 @@ def test_create_hpc_2d(args, kwargs):
 
 @pytest.mark.parametrize(
     ('args', 'kwargs'),
-    three_D_parameters + [(None, {'Tx': 0 * u.deg,
-                                  'Ty': 0 * u.arcsec,
-                                  'distance': 1 * u.Mm}),
-                          ([0 * u.deg, 0 * u.arcsec], {'distance': 1 * u.Mm})])
+    [*three_D_parameters, (None, {'Tx': 0 * u.deg, 'Ty': 0 * u.arcsec, 'distance': 1 * u.Mm}), ([0 * u.deg, 0 * u.arcsec], {'distance': 1 * u.Mm})])
 def test_create_3d(args, kwargs):
     hpc1 = init_frame(Helioprojective, args, kwargs)
 
@@ -249,8 +245,7 @@ def test_HEEQ_creation():
 
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
-@pytest.mark.parametrize(('args', 'kwargs'), two_D_parameters +
-                         [(None, {'lat': 0*u.deg, 'lon': 0*u.arcsec})])
+@pytest.mark.parametrize(('args', 'kwargs'), [*two_D_parameters, (None, {'lat': 0 * u.deg, 'lon': 0 * u.arcsec})])
 def test_create_hgs_2d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
 
@@ -281,10 +276,7 @@ def test_create_hgs_2d(frame, args, kwargs):
                          [HeliographicStonyhurst, HeliographicCarrington])
 @pytest.mark.parametrize(
     ('args', 'kwargs'),
-    three_D_parameters + [(None, {'lat': 0 * u.deg,
-                                  'lon': 0 * u.arcsec,
-                                  'radius': 1 * u.Mm}),
-                          ([0 * u.deg, 0 * u.arcsec], {'radius': 1 * u.Mm})])
+    [*three_D_parameters, (None, {'lat': 0 * u.deg, 'lon': 0 * u.arcsec, 'radius': 1 * u.Mm}), ([0 * u.deg, 0 * u.arcsec], {'radius': 1 * u.Mm})])
 def test_create_hgs_3d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
 
@@ -407,8 +399,7 @@ two_D_parameters = [
 
 
 @pytest.mark.parametrize(('args', 'kwargs'),
-                         two_D_parameters + [([0 * u.deg, 0 * u.arcsec],
-                                              {'representation_type': 'unitspherical'})])
+                         [*two_D_parameters, ([0 * u.deg, 0 * u.arcsec], {'representation_type': 'unitspherical'})])
 def test_skycoord_hpc(args, kwargs):
     """
     Test that when instantiating a HPC frame with SkyCoord that make_3d

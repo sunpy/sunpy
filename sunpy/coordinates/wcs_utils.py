@@ -65,7 +65,7 @@ except ImportError:
             or len(obsgeo) != 6
             or np.all(np.array(obsgeo) == 0)
             or np.all(~np.isfinite(obsgeo))
-        ):  # NOQA
+        ):
             raise ValueError(f"Can not parse the 'obsgeo' location ({obsgeo}). "
                              "obsgeo should be a length 6 non-zero, finite numpy array")
 

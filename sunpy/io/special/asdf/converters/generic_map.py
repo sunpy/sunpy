@@ -11,7 +11,7 @@ class GenericMapConverter(Converter):
     @property
     def types(self):
         from sunpy.map.mapbase import GenericMap
-        return [GenericMap] + list(GenericMap._registry.keys())
+        return [GenericMap, *list(GenericMap._registry.keys())]
 
     def select_tag(self, obj, tags, ctx):
         # Sort the tags in reverse alphabetical order and pick the first (i.e.

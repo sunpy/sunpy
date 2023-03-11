@@ -61,13 +61,7 @@ class SXTMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('long', 'lat', 'radius'), {'lon': self.meta.get('long'),
-                                             'lat': self.meta.get('lat'),
-                                             'distance': self.meta.get('radius'),
-                                             'unit': (u.deg, u.deg, u.km),
-                                             'representation_type': SphericalRepresentation,
-                                             'frame': ITRS, })
-                ] + super()._supported_observer_coordinates
+        return [(("long", "lat", "radius"), {"lon": self.meta.get("long"), "lat": self.meta.get("lat"), "distance": self.meta.get("radius"), "unit": (u.deg, u.deg, u.km), "representation_type": SphericalRepresentation, "frame": ITRS}), *super()._supported_observer_coordinates]
 
     @property
     def observatory(self):

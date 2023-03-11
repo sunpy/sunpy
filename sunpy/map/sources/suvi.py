@@ -80,13 +80,7 @@ class SUVIMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('obsgeo-x', 'obsgeo-y', 'obsgeo-z'), {'x': self.meta.get('obsgeo-x'),
-                                                        'y': self.meta.get('obsgeo-y'),
-                                                        'z': self.meta.get('obsgeo-z'),
-                                                        'unit': u.m,
-                                                        'representation_type': CartesianRepresentation,
-                                                        'frame': "itrs"})
-                ] + super()._supported_observer_coordinates
+        return [(("obsgeo-x", "obsgeo-y", "obsgeo-z"), {"x": self.meta.get("obsgeo-x"), "y": self.meta.get("obsgeo-y"), "z": self.meta.get("obsgeo-z"), "unit": u.m, "representation_type": CartesianRepresentation, "frame": "itrs"}), *super()._supported_observer_coordinates]
 
     @property
     def observatory(self):

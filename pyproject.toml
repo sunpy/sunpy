@@ -106,7 +106,7 @@ select = [
        "TID",
        "PLE",
        "NPY",
-       # "RUF",
+       "RUF",
 
 ]
 extend-ignore = [

@@ -450,7 +450,7 @@ class MapSequence:
         >>> mplani = ani.get_animation()   # doctest: +SKIP
         """
         # Move the import for speed reasons
-        from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator  # noqa
+        from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
         if resample:
             if self.all_maps_same_shape():

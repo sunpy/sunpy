@@ -196,7 +196,7 @@ def read_struct_skeleton(xdrdata):
             else:
                 tagdict[tt] = read_struct_skeleton(xdrdata)
         else:
-            tagdict[tt] = [dim] + arr_size
+            tagdict[tt] = [dim, *arr_size]
     return tagdict
 
 
