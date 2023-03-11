@@ -6,7 +6,7 @@ have its own file with one or more classes defined. Typically, these classes
 will be subclasses of the :mod`sunpy.map.Map` class.
 """
 
-from ..map_factory import Map
+from sunpy.map.map_factory import Map
 from .hinode import *
 from .iris import *
 from .mlso import *
