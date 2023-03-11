@@ -161,9 +161,9 @@ class UnifiedResponse(Sequence):
     def _repr_html_(self):
         nprov = len(self)
         if nprov == 1:
-            ret = 'Results from {} Provider:</br></br>'.format(len(self))
+            ret = f'Results from {len(self)} Provider:</br></br>'
         else:
-            ret = 'Results from {} Providers:</br></br>'.format(len(self))
+            ret = f'Results from {len(self)} Providers:</br></br>'
         for block in self:
             ret += "{} Results from the {}:</br>".format(len(block),
                                                          block.client.__class__.__name__)
@@ -178,9 +178,9 @@ class UnifiedResponse(Sequence):
     def __str__(self):
         nprov = len(self)
         if nprov == 1:
-            ret = 'Results from {} Provider:\n\n'.format(len(self))
+            ret = f'Results from {len(self)} Provider:\n\n'
         else:
-            ret = 'Results from {} Providers:\n\n'.format(len(self))
+            ret = f'Results from {len(self)} Providers:\n\n'
         for block in self:
             ret += f"{len(block)} Results from the {block.client.__class__.__name__}:\n"
             if block.client.info_url is not None:

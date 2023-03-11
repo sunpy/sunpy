@@ -563,7 +563,7 @@ def test_create_display_table():
         'wavemin', 'path', 'starred', 'tags']
     table = _create_display_table(entries, columns)
     filedir = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(filedir, 'test_table.txt'), 'r') as f:
+    with open(os.path.join(filedir, 'test_table.txt')) as f:
         stored_table = f.read()
     assert table.__str__().strip() == stored_table.strip()
     conf.reset('max_width')

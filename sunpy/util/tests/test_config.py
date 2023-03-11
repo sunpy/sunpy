@@ -143,8 +143,8 @@ def test_copy_default_config(tmpdir, undo_config_dir_patch, monkeypatch):
 
     # Create a new config file
     copy_default_config()
-    with open(user_config_file, 'r') as ucf:
-        with open(config_file, 'r') as cf:
+    with open(user_config_file) as ucf:
+        with open(config_file) as cf:
             assert ucf.read() == cf.read()
 
 

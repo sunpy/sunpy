@@ -350,7 +350,7 @@ def test_plot_autoalign_bad_inputs(aia171_test_map):
 @figure_test
 def test_plot_autoalign_pixel_alignment(aia171_test_map):
     # Verify that autoalign=True does not affect pixel alignment
-    x, y = [z.value for z in aia171_test_map.reference_pixel]
+    x, y = (z.value for z in aia171_test_map.reference_pixel)
 
     fig = Figure(figsize=(10, 4))
 

@@ -522,7 +522,7 @@ def test_quicklook(mocker, generic_ts):
     file_url = mockwbopen.call_args[0][0]
     assert file_url.startswith("file://")
     # Open the file specified in the URL and confirm that it contains the HTML
-    with open(file_url[7:], 'r') as f:
+    with open(file_url[7:]) as f:
         html_string = f.read()
     if generic_ts.source is None:
         name = "None"

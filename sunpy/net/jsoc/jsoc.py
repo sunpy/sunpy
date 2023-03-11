@@ -660,7 +660,7 @@ class JSOCClient(BaseClient):
                     wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
                     wavelength = str(wavelength)
                 else:
-                    wavelength = '{}'.format(int(np.ceil(wavelength.to(u.AA).value)))
+                    wavelength = f'{int(np.ceil(wavelength.to(u.AA).value))}'
             else:
                 # This is executed when wavelength has been passed both through PrimeKey()
                 # and Wavelength().
@@ -836,7 +836,7 @@ class JSOCClient(BaseClient):
         from sunpy.net import attrs as a
 
         here = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(here, 'data', 'attrs.json'), 'r') as attrs_file:
+        with open(os.path.join(here, 'data', 'attrs.json')) as attrs_file:
             keyword_info = json.load(attrs_file)
         # Create attrs out of them.
         series_dict = {a.jsoc.Series: keyword_info["series_store"]}

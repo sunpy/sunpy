@@ -5,7 +5,6 @@ This module provides a wrapper around the VSO API.
 import os
 import copy
 import json
-import socket
 import inspect
 import datetime
 import itertools
@@ -55,7 +54,7 @@ class _Str(str):
 def check_connection(url):
     try:
         return urlopen(url).getcode() == 200
-    except (socket.error, socket.timeout, HTTPError, URLError) as e:
+    except (OSError, HTTPError, URLError) as e:
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return None
 
@@ -619,7 +618,7 @@ class VSOClient(BaseClient):
         from sunpy.net import attrs as a
 
         here = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(here, 'data', 'attrs.json'), 'r') as attrs_file:
+        with open(os.path.join(here, 'data', 'attrs.json')) as attrs_file:
             keyword_info = json.load(attrs_file)
 
         # Now to traverse the saved dict and give them attr keys.

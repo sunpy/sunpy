@@ -94,7 +94,7 @@ class MapSequenceAnimator(BaseFuncAnimator):
         This may overwrite some stuff in `sunpy.map.GenericMap.plot`
         """
         # Normal plot
-        self.axes.set_title("{s.name}".format(s=self.data[ind]))
+        self.axes.set_title(f"{self.data[ind].name}")
 
         self.axes.set_xlabel(axis_labels_from_ctype(self.data[ind].coordinate_system[0],
                                                     self.data[ind].spatial_units[0]))

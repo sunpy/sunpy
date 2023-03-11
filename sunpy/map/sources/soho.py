@@ -109,7 +109,7 @@ class LASCOMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
 
-        self.plot_settings['cmap'] = 'soholasco{det!s}'.format(det=self.detector[1])
+        self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 

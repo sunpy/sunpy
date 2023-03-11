@@ -32,8 +32,8 @@ class EUVIMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
 
-        self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = 'euvi{wl:d}'.format(wl=int(self.wavelength.value))
+        self._nickname = f"{self.detector}-{self.observatory[-1]}"
+        self.plot_settings['cmap'] = f'euvi{int(self.wavelength.value):d}'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
 
@@ -86,8 +86,8 @@ class CORMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
 
-        self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = 'stereocor{det!s}'.format(det=self.detector[-1])
+        self._nickname = f"{self.detector}-{self.observatory[-1]}"
+        self.plot_settings['cmap'] = f'stereocor{self.detector[-1]!s}'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
@@ -124,8 +124,8 @@ class HIMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
 
-        self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = 'stereohi{det!s}'.format(det=self.detector[-1])
+        self._nickname = f"{self.detector}-{self.observatory[-1]}"
+        self.plot_settings['cmap'] = f'stereohi{self.detector[-1]!s}'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
 

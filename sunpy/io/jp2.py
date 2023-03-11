@@ -2,7 +2,7 @@
 This module provides a JPEG 2000 file reader.
 """
 import os
-from xml.etree import cElementTree as ET
+from xml.etree import ElementTree as ET
 
 import numpy as np
 

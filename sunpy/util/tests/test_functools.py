@@ -62,7 +62,7 @@ class TestSingleDispatch(unittest.TestCase):
 
         @g.register(int)
         def g_int(dummy, i):
-            return "int %s" % (i,)
+            return f"int {i}"
         self.assertEqual(g(None, ""), "base")
         self.assertEqual(g(None, 12), "int 12")
         self.assertIs(g.dispatch(int), g_int)
