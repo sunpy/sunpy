@@ -142,15 +142,15 @@ def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
     for mapsequence of same maps as well that of different maps.
     """
     # Test the case of MapSequence having same maps
-    expected_out = f'MapSequence of 2 elements, with maps from AIAMap'
+    expected_out = 'MapSequence of 2 elements, with maps from AIAMap'
     obtained_out = repr(mapsequence_all_the_same)
     assert obtained_out.startswith(object.__repr__(mapsequence_all_the_same))
     assert len(mapsequence_all_the_same) == 2
     assert expected_out in obtained_out
 
     # Test the case of MapSequence having different maps
-    expected_out1 = f'MapSequence of 2 elements, with maps from AIAMap, EITMap'
-    expected_out2 = f'MapSequence of 2 elements, with maps from EITMap, AIAMap'
+    expected_out1 = 'MapSequence of 2 elements, with maps from AIAMap, EITMap'
+    expected_out2 = 'MapSequence of 2 elements, with maps from EITMap, AIAMap'
     obtained_out = repr(mapsequence_different_maps)
     assert obtained_out.startswith(object.__repr__(mapsequence_different_maps))
     assert len(mapsequence_different_maps) == 2

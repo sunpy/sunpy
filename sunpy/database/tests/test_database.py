@@ -515,7 +515,7 @@ def test_vso_query_block_caching_with_overwrite_true_flag(database,
 
     # Only downloading for the first query response block with caching disabled
 
-    num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
+    num_entries_from_vso_query(database, download_qr[:1],
                                                        path=str(tmpdir.join('{file}.type1')),
                                                        file_pattern=str(tmpdir.join('*.type1')),
                                                        overwrite=True)
@@ -884,7 +884,7 @@ def test_query(filled_database):
         DatabaseEntry(id=10, tags=[bar])]
 
 
-def test_fetch_missing_arg(database):
+def test_fetch_missing_arg_error(database):
     with pytest.raises(TypeError):
         database.fetch()
 
@@ -948,7 +948,7 @@ def test_fetch_missing_arg(database):
 
 @pytest.mark.remote_data
 @pytest.mark.skip
-def test_fetch(database, download_query, tmpdir):
+def test_fetch2(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))

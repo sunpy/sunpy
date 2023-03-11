@@ -185,7 +185,7 @@ def test_errors(tmpdir):
     p = tmpdir.mkdir("sub").join("hello.fits")
     p.write("content")
     files = [AIA_171_IMAGE, p.strpath]
-    with pytest.raises(OSError, match=(fr"Failed to read *")):
+    with pytest.raises(OSError, match=(r"Failed to read *")):
         sunpy.map.Map(files)
 
 

@@ -12,6 +12,27 @@ __all__ = ['read_genx']
 
 # This class has been copied from the Python 3.11 stdlib xdrlib.py file under
 # the terms of the PSF licence 2.0
+class Error(Exception):
+    """Exception class for this module. Use:
+    except xdrlib.Error as var:
+        # var has the Error instance for the exception
+    Public ivars:
+        msg -- contains the message
+    """
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __repr__(self):
+        return repr(self.msg)
+
+    def __str__(self):
+        return str(self.msg)
+
+
+class ConversionError(Error):
+    pass
+
+
 class Unpacker:
     """Unpacks various data representations from the given buffer."""
 

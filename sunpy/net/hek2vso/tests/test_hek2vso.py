@@ -142,7 +142,7 @@ def test_full_query(h2v_client, hek_client):
 @pytest.mark.remote_data
 def test_quick_clean(h2v_client, hek_client):
     h2v = h2v_client
-    h2v_q = h2v.full_query(
+    h2v.full_query(
         (a.Time(startTime, endTime), a.hek.EventType(eventType), a.hek.FL.PeakFlux > 1000)
     )
 
