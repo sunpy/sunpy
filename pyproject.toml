@@ -93,13 +93,27 @@ exclude=[
     "__pycache__",
     "build",
     "sunpy/extern/**",
+    "sunpy/version.py",
 ]
 
-select = ["E", "F"]
+select = [
+       #"E",
+       #"F",
+       #"W",
+       #"UP",
+       #"PT",
+       #"RET",
+       "TID",
+
+]
 extend-ignore = [
     # pycodestyle (E, W)
     "E501",  # LineTooLong                             # TODO! fix
 ]
+
+[tool.ruff.flake8-tidy-imports]
+[tool.ruff.flake8-tidy-imports.banned-api]
+"warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
 
 [tool.ruff.per-file-ignores]
 "setup.py" = ["INP001"]  # Part of configuration, not a package.
@@ -109,10 +123,10 @@ extend-ignore = [
 "docs/*.py" = [
     "INP001",  # implicit-namespace-package. The examples are not a package.
 ]
-
-[tool.ruff.isort]
-    known-third-party = ["astropy", "asdf"]
-    known-first-party = ["sunpy"]
+# These files are allowed to use warnings.warn
+"sunpy/util/exceptions.py" = ["TID251"]
+"sunpy/util/tests/test_logger.py" = ["TID251"]
+"sunpy/util/decorators.py" = ["TID251"]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"

@@ -28,13 +28,6 @@ repos:
       - id: mixed-line-ending
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
 
-  - repo: https://github.com/devanshshukla99/pre-commit-hook-prohibit-string
-    rev: v1.2
-    hooks:
-      - id: prohibit-string
-        args: [--prohibit-string, "from warnings import warn,warnings.warn"]
-        exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py|sunpy/extern/|sunpy/util/tests/test_logger.py"
-
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
