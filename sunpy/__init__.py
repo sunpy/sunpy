@@ -27,7 +27,7 @@ def _get_bibtex():
         ref = citation.read().partition(".. code:: bibtex\n\n")[2]
         lines = ref.split("\n")
         # Only read the lines which are indented
-        lines = lines[:[l.startswith("    ") for l in lines].index(False)]
+        lines = lines[:[line.startswith("    ") for line in lines].index(False)]
         ref = textwrap.dedent('\n'.join(lines))
     return ref
 

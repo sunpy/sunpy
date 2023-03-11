@@ -97,7 +97,7 @@ exclude=[
 ]
 
 select = [
-       #"E",
+       "E",
        #"F",
        #"W",
        #"UP",

@@ -258,7 +258,7 @@ class XRSTimeSeries(GenericTimeSeries):
             # Therefore, we need to find it:
             # To do so, we convert the times to isot strings, use numpy to find the the leap second string,
             # then use that to workout the index of the leap timestamp.
-            idx = np.argwhere((np.char.find(times.isot, ":60.") != -1) == True)
+            idx = np.argwhere((np.char.find(times.isot, ':60.') != -1) == True)  # NOQA: E712
             # We only handle the case there is only 1 leap second in the file.
             # I don't think there every would be a case where it would be more than 1.
             if len(idx) != 1:

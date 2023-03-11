@@ -132,8 +132,8 @@ def split_lines(file_lines):
     header += [file_lines[s] for s in section_lines]
 
     # Append comments to the comment lines
-    for l in section_lines:
-        file_lines[l] = '# ' + file_lines[l]
+    for line in section_lines:
+        file_lines[line] = '# ' + file_lines[line]
     t1_lines = file_lines[section_lines[0]:section_lines[1]]
     # Remove the space so table reads it correctly
     t1_lines[1] = t1_lines[1].replace('Mag Type', 'MagType')
@@ -153,9 +153,9 @@ def get_meta_data(header):
     Convert a list of header lines into a meta data dict.
     """
     meta_lines = []
-    for l in header:
-        if l.startswith(':'):
-            meta_lines.append(l)
+    for line in header:
+        if line.startswith(':'):
+            meta_lines.append(line)
 
     meta_data = {}
     for m in meta_lines:
