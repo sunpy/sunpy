@@ -88,6 +88,9 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
         headers = get_header(hdulist)
         pairs = []
 
+        if memmap == True and (headers[0]['BZERO'] != 0 or headers[0]['BSCALE'] != 1):
+            warn_user("Data array is not actually memory mapped. Use 'disable_image_compression=True' or 'do_not_scale_image_data=True' to preserve memory mapping.")
+
         for i, (hdu, header) in enumerate(zip(hdulist, headers)):
             try:
                 pairs.append(HDPair(hdu.data, header))
