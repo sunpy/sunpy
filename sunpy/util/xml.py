@@ -9,7 +9,6 @@ __all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text', '
 class NotTextNodeError(Exception):
     pass
 
-
 def xml_to_dict(xmlstring):
     """
     Converts an XML string to a Python dictionary.
