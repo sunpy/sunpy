@@ -13,7 +13,7 @@ import numpy as np
 
 from sunpy.io.header import FileHeader
 from sunpy.util.io import HDPair, string_is_float
-from sunpy.util.xml import xml_to_dict, xml_comments_to_dict
+from sunpy.util.xml import xml_comments_to_dict, xml_to_dict
 
 __all__ = ['read', 'get_header', 'write']
 

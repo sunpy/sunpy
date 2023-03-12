@@ -156,7 +156,6 @@ def xml_comments_to_dict(xmlstring):
         {u'inner': 'Two'}
     """
     key_comments_dict = {}
-    dom = parseString(xmlstring)
     node_comments_to_dict(parseString(xmlstring), key_comments_dict)
     return key_comments_dict
 
