@@ -13,7 +13,7 @@ import numpy as np
 
 from sunpy.io.header import FileHeader
 from sunpy.util.io import HDPair, string_is_float
-from sunpy.util.xml import xml_to_dict
+from sunpy.util.xml import xml_to_dict, xml_comments_to_dict
 
 __all__ = ['read', 'get_header', 'write']
 
@@ -76,7 +76,7 @@ def get_header(filepath):
 
     # Is this file a Helioviewer Project JPEG2000 file?
     pydict['helioviewer'] = xml_box[0].xml.find('helioviewer') is not None
-
+    pydict.update({'KEYCOMMENTS': xml_comments_to_dict(xmlstring)})
     return [FileHeader(pydict)]
 
 
