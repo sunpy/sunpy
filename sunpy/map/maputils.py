@@ -18,7 +18,7 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'contains_limb', 'coordinate_is_on_solar_disk',
            'on_disk_bounding_coordinates',
            'contains_coordinate', 'contains_solar_center',
-           'extract_along_coord']
+           'extract_along_coord', 'pixelate_coord_path']
 
 
 def all_pixel_indices_from_map(smap):
@@ -414,7 +414,7 @@ def contains_coordinate(smap, coordinates):
 
 def _bresenham(*, x1, y1, x2, y2):
     """
-    Returns an array of all pixel coordinates which the line defined by `x1, y1` and
+    Returns an array of pixel coordinates which the line defined by `x1, y1` and
     `x2, y2` crosses. Uses Bresenham's line algorithm to enumerate the pixels along
     a line. This was adapted from ginga.
 
@@ -510,3 +510,83 @@ def extract_along_coord(smap, coord):
     pixel_coords = smap.wcs.pixel_to_world(pix[:, 1], pix[:, 0])
 
     return pixel_values, pixel_coords
+
+
+def _intersected_pixels(*, x1, y1, x2, y2):
+    """
+    Returns an array of all pixel coordinates which the line defined by `x1, y1` and
+    `x2, y2` crosses.
+
+    Parameters
+    ----------
+    x1, y1, x2, y2 : `float`
+    """
+    dx = x2 - x1
+    dy = y2 - y1
+    dr = np.sqrt(dx ** 2 + dy ** 2)
+
+    # Get the integer pixels for the start and end points
+    ix1, iy1, ix2, iy2 = np.rint([x1, y1, x2, y2]).astype(int)
+
+    # Create the arrays for pixel indices
+    nx = np.abs(ix2 - ix1) + 1
+    ny = np.abs(iy2 - iy1) + 1
+    x, y = np.indices((nx, ny))
+    x = x * np.sign(dx) + ix1
+    y = y * np.sign(dy) + iy1
+
+    # Calculate the distance from the line segment in pixels
+    distance = np.abs(dy * (x - x1) - dx * (y - y1)) / dr
+
+    # The threshold distance is half a pixel times an adjustment for line angle
+    threshold = 0.5 * (np.abs(dx) + np.abs(dy)) / dr
+
+    use = distance <= threshold
+    return np.stack([x[use], y[use]], axis=1)
+
+
+def pixelate_coord_path(smap, coord_path):
+    """
+    Return the pixel coordinates for every pixel that intersects with a coordinate
+    path.
+
+    Each pair of consecutive coordinates in the provided coordinate array defines a
+    line segment.  Each pixel that intersects with a line segment has the
+    coordinates of its center returned in the output.
+
+    To obtain the values of these pixels, pass the output to
+    :func:`~sunpy.map.sample_at_coords`.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        The sunpy map.
+    coord : `~astropy.coordinates.SkyCoord`
+        The coordinate path.
+
+    Notes
+    -----
+    If a pixel intersects the coordinate path at only its corner, it may not be
+    returned due to the limitations of floating-point comparisons.
+
+    Returns
+    -------
+    `~astropy.coordinates.SkyCoord`
+         The coordinates for the pixels that intersect with the coordinate path.
+    """
+    if not len(coord_path.shape) or coord_path.shape[0] < 2:
+        raise ValueError("The coordinate path must have at least two points.")
+
+    px, py = smap.wcs.world_to_pixel(coord_path)
+    pix = []
+    for i in range(len(px) - 1):
+        this_pix = _intersected_pixels(x1=px[i], y1=py[i], x2=px[i+1], y2=py[i+1])
+        # After the first line segment, skip the start point since it is the same as the end point
+        # of the previous line segment
+        if i > 0:
+            this_pix = this_pix[1:]
+        pix.append(this_pix)
+    pix = np.vstack(pix)
+
+    pixel_coords = smap.wcs.pixel_to_world(pix[:, 0], pix[:, 1])
+    return pixel_coords
