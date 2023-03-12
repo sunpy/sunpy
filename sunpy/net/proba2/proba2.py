@@ -3,7 +3,7 @@ import requests
 import astropy.table
 
 from sunpy.net import attrs as a
-from sunpy.net.base_client import BaseClient, QueryResponseTable
+from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
 
 
 class Proba2Response(QueryResponseTable):
@@ -27,9 +27,6 @@ class Proba2Client(BaseClient):
     human observers.
     will insert description here
     """
-    @property
-    def info_url(self):
-        return 'http://p2sa.esac.esa.int/p2sa/'
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -47,28 +44,17 @@ class Proba2Client(BaseClient):
         for elem in args:
             if isinstance(elem, a.Time):
                 qrdict['Time'] = elem
-            elif isinstance(elem, a.proba2.ProcessingLevel):
-                qrdict['ProcessingLevel'] = elem.value
-            elif isinstance(elem, a.Instrument):
-                qrdict['Instrument'] = elem.value
             else:
                 raise ValueError(
-                    f"{elem.__class__.__name__} should be a ``attrs.Time``, ``attrs.Instrument`` or ``attrs.proba2.ProcessingLevel`` attribute.")
+                    f"{elem.__class__.__name__} should be a ``attrs.Time`` attribute.")
         qrdict.update(kwargs)
-        processing_level = qrdict.get('ProcessingLevel')
         start_time = qrdict['Time'].start.isot.replace('T', ' ')[:-4]
         end_time = qrdict['Time'].end.isot.replace('T', ' ')[:-4]
-        Instrument = qrdict.get('Instrument')
-        results = self.makequery(start_time=start_time, end_time=end_time, processing_level=processing_level, Instrument=Instrument)
+        results = self.makequery(start_time=start_time, end_time=end_time)
         return results
 
-    def makequery(self, start_time, end_time, processing_level, Instrument):
-        s = f"SELECT * FROM p2sa.v_file WHERE (file_date >= '{start_time}') AND (file_date <= '{end_time}') "
-        if processing_level:
-            s += f"AND (processing_level = {processing_level}) "
-        if Instrument:
-            s += f"AND (instrument_name in ('{Instrument}')) "
-        s += "ORDER BY file_date ASC"
+    def makequery(self, start_time, end_time):
+        s = f"SELECT * FROM p2sa.v_file WHERE (file_date >= '{start_time}') AND (file_date <= '{end_time}') AND (instrument_name in ('DSLP')) ORDER BY file_date ASC"
         print("s is:", s)
         print("url is:", f"http://p2sa.esac.esa.int/p2sa-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=JSON&PHASE=RUN&QUERY={s}")
         response = requests.get(f"http://p2sa.esac.esa.int/p2sa-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=JSON&PHASE=RUN&QUERY={s}")
@@ -77,5 +63,13 @@ class Proba2Client(BaseClient):
         response_table = QueryResponseTable(rows=response['data'], names=names)
         return response_table
 
-    def fetch():
-        pass
+    @convert_row_to_table
+    def fetch(self, query_results, *, path=None, downloader, **kwargs):
+        for row in query_results:
+            filename = row['file_name']
+            filepath = path.format(file=filename,  **row.response_block_map)
+            url = f"http://p2sa.esac.esa.int/"+row['file_path'].replace('\\', '')+'/'+filename
+            print(url, filename)
+            downloader.enqueue_file(url, filepath)
+            res = downloader.download()
+            return res
