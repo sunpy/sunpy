@@ -3,7 +3,7 @@ This module provides XML helper functions.
 """
 from xml.dom.minidom import parseString
 
-__all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text']
+__all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text', 'xml_comments_to_dict', 'node_comments_to_dict']
 
 
 class NotTextNodeError(Exception):
@@ -124,3 +124,64 @@ def get_node_text(node):
         else:
             raise NotTextNodeError
     return t
+
+def xml_comments_to_dict(xmlstring):
+    """
+    Parses all the XML comments provided in an XML string into a dictionary
+
+    .. warning::
+        This method does not support multiple values of comments for elements
+        of the same name but with different values. It always takes the last value.
+
+    Parameters
+    ----------
+    xmlstring : `str`
+        A `str` of xml content.
+
+    Returns
+    -------
+    `dict`:
+        The comments present in the string xml input as a dictionary.
+    Examples
+    --------
+    ::
+
+        <outer>
+            <inner comment = "One">one</inner>
+            <inner comment = "Two">two</inner>
+        </outer>
+
+    gives you the dict::
+
+        {u'inner': 'Two'}
+    """
+    key_comments_dict = {}
+    dom = parseString(xmlstring)
+    node_comments_to_dict(parseString(xmlstring), key_comments_dict)
+    return key_comments_dict
+
+
+def node_comments_to_dict(node, dic):
+    """
+    Scans through the children of the node and updates the dictionary with their 'Comment'
+    Attributes
+
+    Parameters
+    ----------
+    node : `xml.etree.ElementTree.Element`
+        A XML element node.
+
+    Returns
+    -------
+    `None`
+    """
+    for n in node.childNodes:
+        if n.nodeType == n.TEXT_NODE:
+            continue
+        if n.nodeType == n.ELEMENT_NODE:
+            if n.getAttribute("comment") is not None:
+                dic.update({n.nodeName: n.getAttribute("comment")})
+        node_comments_to_dict(n, dic)
+
+
+
