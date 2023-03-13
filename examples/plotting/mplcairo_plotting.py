@@ -32,15 +32,13 @@ with Helioprojective.assume_spherical_screen(a171.observer_coordinate):
 ###############################################################################
 # Now, using matplotlib and mplcairo to blend the two solar images.
 # Setting axes according to ``a171`` image.
-
-fig = plt.figure()
-ax = fig.add_subplot(projection=a171)
-
-###############################################################################
 # Plotting both the images, The clip_interval argument in both 
 # plot() functions sets the range of pixel values to display in the 
 # plot, with values outside of this range being clipped.
 
+
+fig = plt.figure()
+ax = fig.add_subplot(projection=a171)
 _ = a171.plot(clip_interval=(1, 99.9995)*u.percent)
 im131 = a131.plot(clip_interval=(1, 99.95)*u.percent)
 
