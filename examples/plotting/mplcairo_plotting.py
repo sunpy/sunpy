@@ -11,15 +11,14 @@ contrast, ``mplcairo`` provides a wide range of blending operators
 for image overlays.
 """
 
-import matplotlib; matplotlib.use("module://mplcairo.qt")
-import matplotlib.pyplot as plt
-from mplcairo import operator_t
-
-import astropy.units as u
-
+from sunpy.coordinates import Helioprojective
 import sunpy.map
 import sunpy.data.sample
-from sunpy.coordinates import Helioprojective
+import astropy.units as u
+from mplcairo import operator_t
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use("module://mplcairo.qt")
 
 ###############################################################################
 # Let's load two solar images, ``a171`` and ``a131`` we want to blend together
