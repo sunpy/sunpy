@@ -11,14 +11,16 @@ contrast, ``mplcairo`` provides a wide range of blending operators
 for image overlays.
 """
 
-from sunpy.coordinates import Helioprojective
-import sunpy.map
-import sunpy.data.sample
-import astropy.units as u
-from mplcairo import operator_t
-import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use("module://mplcairo.qt")
+import matplotlib.pyplot as plt
+from mplcairo import operator_t
+
+import astropy.units as u
+
+import sunpy.data.sample
+import sunpy.map
+from sunpy.coordinates import Helioprojective
 
 ###############################################################################
 # Let's load two solar images, ``a171`` and ``a131`` we want to blend together
@@ -42,10 +44,14 @@ ax = fig.add_subplot(projection=a171)
 _ = a171.plot(clip_interval=(1, 99.9995)*u.percent)
 im131 = a131.plot(clip_interval=(1, 99.95)*u.percent)
 
+# sphinx_gallery_defer_figures
+
 ###############################################################################
 #  Now, patching the the ``im131`` plot with a screen operator.
 
 operator_t.SCREEN.patch_artist(im131)
+
+# sphinx_gallery_defer_figures
 
 ###############################################################################
 # Plot the result we get
