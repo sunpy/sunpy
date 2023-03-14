@@ -38,6 +38,7 @@ import math
 import traceback
 import collections
 import collections.abc
+import mmap
 
 from astropy.io import fits
 
@@ -99,8 +100,14 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                 message += repr(e)
                 warn_user(message)
 
-        if memmap == True and pairs[0].data.base is None:
-            warn_user("Data array is not actually memory mapped. Use 'disable_image_compression=True' or 'do_not_scale_image_data=True' to preserve memory mapping.")
+            if memmap == True and not (isinstance(pairs[0].data.base, mmap.mmap) and pairs[0].data.base is not None):
+                try:
+                    if pairs[0].header['BZERO'] != 0:
+                        warn_user("Data array is not memory mapped. Use 'disable_image_compression=True' to preserve memory mapping.")
+                    elif pairs[0].header['BSCALE'] != 1:
+                        warn_user("Data array is not memory mapped. Use 'do_not_scale_image_data=True' to preserve memory mapping.")
+                except KeyError:
+                    warn_user("Data array is not memory mapped.")
 
     return pairs
 
