@@ -12,7 +12,16 @@ for image overlays.
 """
 
 import matplotlib
+
+###############################################################################
+# We need to tell ``matplotlib`` to use a backend from ``mplcairo``.  The
+# backend formally needs to be set prior to importing ``matplotlib.pyplot``.
+
 matplotlib.use("module://mplcairo.base")  # noqa
+
+###############################################################################
+# We can now import everything else
+
 import matplotlib.pyplot as plt
 from mplcairo import operator_t
 
