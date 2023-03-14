@@ -7,6 +7,8 @@ build:
   jobs:
     pre_install:
       - git update-index --assume-unchanged .rtd-environment.yml docs/conf.py
+    post_install:
+      - pip install --force-reinstall --no-binary pycairo
 
 conda:
   environment: .rtd-environment.yml
