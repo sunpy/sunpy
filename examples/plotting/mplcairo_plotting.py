@@ -12,6 +12,7 @@ for image overlays.
 """
 
 import matplotlib
+matplotlib.use("module://mplcairo.base")  # isort:skip
 import matplotlib.pyplot as plt
 from mplcairo import operator_t
 
@@ -20,9 +21,6 @@ import astropy.units as u
 import sunpy.data.sample
 import sunpy.map
 from sunpy.coordinates import Helioprojective
-
-matplotlib.use("module://mplcairo.base")
-
 
 ###############################################################################
 # Let's load two solar images, ``a171`` and ``a131`` we want to blend together
