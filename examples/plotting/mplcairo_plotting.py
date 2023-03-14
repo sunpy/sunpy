@@ -11,13 +11,15 @@ contrast, ``mplcairo`` provides a wide range of blending operators
 for image overlays.
 """
 
-from sunpy.coordinates import Helioprojective
-import sunpy.map
-import sunpy.data.sample
-import astropy.units as u
-from mplcairo import operator_t
-import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.pyplot as plt
+from mplcairo import operator_t
+
+import astropy.units as u
+
+import sunpy.data.sample
+import sunpy.map
+from sunpy.coordinates import Helioprojective
 
 matplotlib.use("module://mplcairo.base")
 
