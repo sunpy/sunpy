@@ -659,7 +659,7 @@ class Database:
     
     def get_entry_by_hdu_index(self, file_name, hdu_index=0):
         """
-        Get a hdu index entry by its unique index number. If an entry with the
+        Get a entry by its unique index number. If an entry with the
         given index does not exist, :exc:`sunpy.database.HDUEntryNotFoundError` is
         raised.
         """
