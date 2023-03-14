@@ -71,7 +71,7 @@ TIME_FORMAT_LIST = [
 _ONE_DAY_TIMEDELTA = TimeDelta(1 * u.day)
 
 
-def is_time_equal(t1 :u.nanosecond, t2 :u.nanosecond) -> bool:
+def is_time_equal(t1, t2):
     """
     Work around for https://github.com/astropy/astropy/issues/6970.
 
@@ -296,7 +296,7 @@ def _variables_for_parse_time_docstring():
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def parse_time(time_string : str, *, format:str=None, **kwargs) -> astropy.time.Time:
+def parse_time(time_string, *, format=None, **kwargs):
     """
     Takes a time input and will parse and return a `astropy.time.Time`.
 
