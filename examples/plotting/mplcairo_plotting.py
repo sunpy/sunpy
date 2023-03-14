@@ -11,16 +11,16 @@ contrast, ``mplcairo`` provides a wide range of blending operators
 for image overlays.
 """
 
-import matplotlib
-matplotlib.use("module://mplcairo.base")
-import matplotlib.pyplot as plt
-from mplcairo import operator_t
-
-import astropy.units as u
-
-import sunpy.data.sample
-import sunpy.map
 from sunpy.coordinates import Helioprojective
+import sunpy.map
+import sunpy.data.sample
+import astropy.units as u
+from mplcairo import operator_t
+import matplotlib.pyplot as plt
+import matplotlib
+
+matplotlib.use("module://mplcairo.base")
+
 
 ###############################################################################
 # Let's load two solar images, ``a171`` and ``a131`` we want to blend together
@@ -34,8 +34,8 @@ with Helioprojective.assume_spherical_screen(a171.observer_coordinate):
 ###############################################################################
 # Now, using matplotlib and mplcairo to blend the two solar images.
 # Setting axes according to ``a171`` image.
-# Plotting both the images, The clip_interval argument in both 
-# plot() functions sets the range of pixel values to display in the 
+# Plotting both the images, The clip_interval argument in both
+# plot() functions sets the range of pixel values to display in the
 # plot, with values outside of this range being clipped.
 
 
