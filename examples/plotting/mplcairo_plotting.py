@@ -12,7 +12,7 @@ for image overlays.
 """
 
 import matplotlib
-matplotlib.use("module://mplcairo.base")  # isort:skip
+matplotlib.use("module://mplcairo.base")  # noqa
 import matplotlib.pyplot as plt
 from mplcairo import operator_t
 
