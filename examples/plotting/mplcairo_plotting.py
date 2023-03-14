@@ -24,6 +24,8 @@ print(f"Backend is: {matplotlib.get_backend()}")  # noqa
 ###############################################################################
 # We can now import everything else
 
+print(f"Backend was: {matplotlib.get_backend()}")  # noqa
+matplotlib.use("module://mplcairo.base")  # noqa
 print(f"Backend is: {matplotlib.get_backend()}")  # noqa
 
 import matplotlib.pyplot as plt
