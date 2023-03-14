@@ -12,7 +12,7 @@ for image overlays.
 """
 
 import matplotlib
-matplotlib.use("module://mplcairo.qt")
+matplotlib.use("module://mplcairo.base")
 import matplotlib.pyplot as plt
 from mplcairo import operator_t
 
