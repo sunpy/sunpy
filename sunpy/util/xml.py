@@ -180,7 +180,7 @@ def node_comments_to_dict(node, dic, history):
             continue
         if n.nodeType == n.ELEMENT_NODE:
             if n.getAttribute("comment") != '':
-                if n.nodeName =='HISTORY':
+                if n.nodeName == 'HISTORY':
                     history.append(n.getAttribute("comment"))
                 else:
                     dic.update({n.nodeName: n.getAttribute("comment")})
