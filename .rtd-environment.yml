@@ -7,4 +7,3 @@ dependencies:
   - openjpeg
   - graphviz!=2.42.*,!=2.43.*
   - pycairo
-  - pyqt
