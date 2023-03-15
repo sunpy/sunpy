@@ -122,10 +122,40 @@ jobs:
       envs: |
         - linux: base_deps
         - linux: py311-devdeps
-        - linux: py39-conda
-          libraries: ''
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  conda:
+    if: |
+      github.event_name == 'workflow_dispatch' || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          lfs: true
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: sunpy-test
+          environment-file: sunpy-dev-env.yml
+          python-version: 3.9
+      - name: Install sunpy
+        shell: bash -el {0}
+        run: |
+          pip install --no-deps --no-build-isolation .
+      - name: Run tests
+        shell: bash -el {0}
+        run: |
+          conda list
+          cd /tmp
+          pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/setup.cfg $GITHUB_WORKSPACE/docs -n auto
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
 
   publish:
     # Build wheels when pushing to any branch except main
@@ -168,7 +198,7 @@ jobs:
 
   notify:
     if: always() && github.event_name == 'workflow_dispatch'
-    needs: [publish_pure, online, cron]
+    needs: [publish_pure, online, cron, conda]
     runs-on: ubuntu-latest
     steps:
       - uses: Cadair/matrix-notify-action@main
