@@ -17,7 +17,12 @@ import matplotlib
 # We need to tell ``matplotlib`` to use a backend from ``mplcairo``.  The
 # backend formally needs to be set prior to importing ``matplotlib.pyplot``.
 
+matplotlib.use("module://mplcairo.qt")  # noqa
+
+# sphinx_gallery_start_ignore
+# Use the non-GUI mplcairo backend for the rendering of the example in the docs
 matplotlib.use("module://mplcairo.base")  # noqa
+# sphinx_gallery_end_ignore
 
 ###############################################################################
 # We can now import everything else
