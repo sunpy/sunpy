@@ -155,11 +155,13 @@ def xml_comments_to_dict(xmlstring):
         {u'inner': 'Two'}
     """
     key_comments_dict = {}
-    node_comments_to_dict(parseString(xmlstring), key_comments_dict)
-    return key_comments_dict
+    history = []
+    node_comments_to_dict(parseString(xmlstring), key_comments_dict, history)
+    history = "".join(history).strip()
+    return key_comments_dict, history
 
 
-def node_comments_to_dict(node, dic):
+def node_comments_to_dict(node, dic, history):
     """
     Scans through the children of the node and updates the dictionary with their 'Comment'
     Attributes
@@ -177,9 +179,10 @@ def node_comments_to_dict(node, dic):
         if n.nodeType == n.TEXT_NODE:
             continue
         if n.nodeType == n.ELEMENT_NODE:
-            if n.getAttribute("comment") is not None:
-                dic.update({n.nodeName: n.getAttribute("comment")})
-        node_comments_to_dict(n, dic)
-
-
+            if n.getAttribute("comment") != '':
+                if n.nodeName =='HISTORY':
+                    history.append(n.getAttribute("comment"))
+                else:
+                    dic.update({n.nodeName: n.getAttribute("comment")})
+        node_comments_to_dict(n, dic, history)
 
