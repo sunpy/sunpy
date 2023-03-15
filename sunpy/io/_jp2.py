@@ -76,7 +76,9 @@ def get_header(filepath):
 
     # Is this file a Helioviewer Project JPEG2000 file?
     pydict['helioviewer'] = xml_box[0].xml.find('helioviewer') is not None
-    pydict.update({'KEYCOMMENTS': xml_comments_to_dict(xmlstring)})
+    key_comments, history = xml_comments_to_dict(xmlstring)
+    pydict.update({'KEYCOMMENTS': key_comments})
+    pydict.update({'HISTORY': history})
     return [FileHeader(pydict)]
 
 
