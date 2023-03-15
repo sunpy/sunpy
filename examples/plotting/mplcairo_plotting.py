@@ -16,8 +16,16 @@ import matplotlib
 ###############################################################################
 # We need to tell ``matplotlib`` to use a backend from ``mplcairo``.  The
 # backend formally needs to be set prior to importing ``matplotlib.pyplot``.
+# The ``mplcairo.qt`` GUI backend should work on Linux and Windows, but
+# you will need to do something different on macOS or Jupyter (see
+# `their documentation <https://github.com/matplotlib/mplcairo#use>`__).
 
-matplotlib.use("module://mplcairo.base")  # noqa
+if matplotlib.get_backend() == "agg":  # noqa
+    # This is the non-GUI backend for when building the documentation
+    matplotlib.use("module://mplcairo.base")  # noqa
+else:  # noqa
+    # This is a GUI backend that you would normally use
+    matplotlib.use("module://mplcairo.qt")  # noqa
 
 ###############################################################################
 # We can now import everything else
