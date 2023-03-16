@@ -29,6 +29,7 @@ which include a wide range of
 # `their documentation <https://github.com/matplotlib/mplcairo#use>`__).
 
 import matplotlib
+
 if matplotlib.get_backend() == "agg":  # noqa
     # This is the non-GUI backend for when building the documentation
     matplotlib.use("module://mplcairo.base")  # noqa
