@@ -86,6 +86,6 @@ operator_t.SCREEN.patch_artist(im131)
 # sphinx_gallery_defer_figures
 
 ###############################################################################
-# Finally we render the plot to see the resulting composite.
+# Finally, we render the plot to see the composited maps.
 
 plt.show()
