@@ -70,7 +70,11 @@ dependencies:
   # Development
   - pre-commit
 
+  # Indirect dependency for mplcairo
+  - pycairo
+
   - pip:
+    - mplcairo
     - sphinx-bootstrap-theme
     - sphinx-changelog
     - sphinxext-opengraph
