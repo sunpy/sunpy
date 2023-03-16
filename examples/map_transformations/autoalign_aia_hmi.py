@@ -45,10 +45,16 @@ map_hmi.plot(axes=ax2)
 # Setting ``autoalign=True`` allows plotting the HMI image onto axes
 # defined by the AIA reference frame.  In contrast to the above code
 # block, we intentionally set the ``projection`` for the axes to be
-# the AIA map # instead of the HMI map.  We also need to manually set
+# the AIA map # instead of the HMI map. We also need to manually set
 # the plot limits because Matplotlib gets confused by the off-disk
-# parts of the image.  Note that the HMI image now has the same
+# parts of the image. We can see now that the HMI image now has the same
 # orientation as the AIA image.
+#
+# Note that off-disk HMI data is not retained here, we can use 
+# :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` to 
+# retain the off-disk HMI data. See, 
+# :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_spherical_screen.py`
+# for more reference.
 
 fig = plt.figure(figsize=(12, 5))
 ax1 = fig.add_subplot(121, projection=map_aia)
