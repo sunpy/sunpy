@@ -63,26 +63,19 @@ plt.legend([limb_aia[0], limb_euvi[0]],
            ['Limb as seen by AIA', 'Limb as seen by EUVI A'])
 
 ######################################################################
-# We now need to construct an output WCS. We build a custom header using
-# :func:`sunpy.map.header_helper.make_fitswcs_header` but we use a lot of the ``map_aia``
-# properties to do it.
+# Due to a mismatch between the solar radius as defined in ``map_aia``
+# and ``map_euvi``, our reprojection will not behave correctly on pixels
+# very near the limb. This can be prevented by equating the two radii.
 
-out_header = sunpy.map.make_fitswcs_header(
-    out_shape,
-    map_aia.reference_coordinate.replicate(rsun=map_euvi.reference_coordinate.rsun),
-    scale=u.Quantity(map_aia.scale),
-    instrument="EUVI",
-    observatory="AIA Observer",
-    wavelength=map_euvi.wavelength
-)
+map_euvi.meta['rsun_ref'] = map_aia.meta['rsun_ref']
 
 ######################################################################
-# We can now reproject the EUVI map to this output WCS header.
-# The :meth:`~sunpy.map.GenericMap.reproject_to` defaults to using
+# We can reproject the EUVI map to the AIA observer wcs using
+# :meth:`~sunpy.map.GenericMap.reproject_to`. This method defaults to using
 # the fast :func:`reproject.reproject_interp` algorithm, but a different
 # algorithm can be specified (e.g., :func:`reproject.reproject_adaptive`).
 
-outmap = map_euvi.reproject_to(out_header)
+outmap = map_euvi.reproject_to(map_aia.wcs)
 
 ######################################################################
 # We can now plot the STEREO/EUVI image as seen from the position of
@@ -110,9 +103,9 @@ ax2.coords[1].grid_lines_kwargs['edgecolor'] = 'k'
 mars = get_body_heliographic_stonyhurst('mars', map_aia.date)
 
 ######################################################################
-# To generate a target WCS, we first need an appropriate reference
-# coordinate, which is similar to the one for AIA, except now with
-# the observer at Mars.
+# Without a target Map wcs, we can generate our own for an arbitrary observer.
+# First, we need an appropriate reference coordinate. This will be similar to
+# the one contained in ``map_aia``, except with the observer placed at Mars.
 
 mars_ref_coord = SkyCoord(0*u.arcsec, 0*u.arcsec,
                           obstime=map_aia.reference_coordinate.obstime,
@@ -121,7 +114,9 @@ mars_ref_coord = SkyCoord(0*u.arcsec, 0*u.arcsec,
                           frame="helioprojective")
 
 ######################################################################
-# We then create the WCS header.
+# We now need to construct our output WCS; we build a custom header using
+# :func:`sunpy.map.header_helper.make_fitswcs_header` using the ``map_aia``
+# properties and our new, mars-based reference coordinate.
 
 mars_header = sunpy.map.make_fitswcs_header(
     out_shape,
