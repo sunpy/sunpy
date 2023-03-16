@@ -8,7 +8,7 @@ u.add_enabled_units([maxwell])
 
 MH = u.def_unit(
     "MH",
-    represents=(3.0437*10^6 * u.km * u.km),
+    represents=(3.0437*(10**6) * u.km * u.km),
     prefixes=True,
     doc="Provide millionths of solar hemisphere units")
 u.add_enabled_units([MH])
