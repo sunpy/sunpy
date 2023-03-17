@@ -46,8 +46,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     Parameters
     ----------
-    inputs : esp, eve, gbmsummary, lyra, noaaindices, noaapredictindices, norh, rhessi, xrs
-        These are the keywords for the source packages currently supported by TimeSeries.
+    \\*inputs
+        Inputs to parse for timeseries objects. See the example section for a
+        detailed list of possible inputs.
 
     source : `str`, optional
         A string to select the observational source of the data, currently
