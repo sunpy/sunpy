@@ -54,11 +54,11 @@ map_hmi.plot(axes=ax2)
 out_hmi = map_hmi.reproject_to(map_aia.wcs)
 
 ######################################################################
-# Plot the images side by side.   
-#                                                
-# Note that off-disk HMI data is not retained here, we can use 
-# :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` to 
-# retain the off-disk HMI data. See, 
+# Plot the images side by side.
+#
+# Note that off-disk HMI data is not retained here, we can use
+# :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` to
+# retain the off-disk HMI data. See,
 # :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_spherical_screen.py`
 # for more reference.
 

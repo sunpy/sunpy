@@ -50,9 +50,9 @@ map_hmi.plot(axes=ax2)
 # parts of the image. We can see now that the HMI image now has the same
 # orientation as the AIA image.
 #
-# Note that off-disk HMI data is not retained here, we can use 
-# :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` to 
-# retain the off-disk HMI data. See, 
+# Note that off-disk HMI data is not retained here, we can use
+# :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` to
+# retain the off-disk HMI data. See,
 # :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_spherical_screen.py`
 # for more reference.
 
