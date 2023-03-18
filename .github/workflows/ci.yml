@@ -170,4 +170,4 @@ jobs:
           homeserver: ${{ secrets.matrix_homeserver }}
           roomid: '!JYqfIVJjWANcHnfktY:cadair.com'
           ignore_pattern: '.*Load.*'
-          ignore_success: true
+          summarise_success: true
