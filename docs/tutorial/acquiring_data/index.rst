@@ -14,4 +14,3 @@ This section of the guide introduces ways to obtain different kind of solar data
     hek
     helioviewer
     sample-data
-    database
