@@ -267,9 +267,9 @@ For example, the following plot changes the default colormap to use an inverse G
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     fig = plt.figure()
-    smap.plot(cmap=plt.cm.Greys_r)
+    aia_map.plot(cmap=plt.cm.Greys_r)
     plt.colorbar()
     plt.show()
 
@@ -316,11 +316,11 @@ If you want to override the built-in colormap, consider the following example wh
     import sunpy.data.sample
     import matplotlib.pyplot as plt
 
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     cmap = plt.get_cmap('sohoeit171')
 
     fig = plt.figure()
-    smap.plot(cmap=cmap)
+    aia_map.plot(cmap=cmap)
     plt.colorbar()
     plt.show()
 
@@ -344,16 +344,16 @@ The following example shows the difference between a linear and logarithmic norm
     import matplotlib.pyplot as plt
     import matplotlib.colors as colors
 
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
     fig = plt.figure(figsize=(4, 9))
 
-    ax1 = fig.add_subplot(2, 1, 1, projection=smap)
-    smap.plot(norm=colors.Normalize(), title='Linear normalization')
+    ax1 = fig.add_subplot(2, 1, 1, projection=aia_map)
+    aia_map.plot(norm=colors.Normalize(), title='Linear normalization')
     plt.colorbar()
 
-    ax2 = fig.add_subplot(2, 1, 2, projection=smap)
-    smap.plot(norm=colors.LogNorm(), title='Logarithmic normalization')
+    ax2 = fig.add_subplot(2, 1, 2, projection=aia_map)
+    aia_map.plot(norm=colors.LogNorm(), title='Logarithmic normalization')
     plt.colorbar()
 
     plt.show()
@@ -390,7 +390,7 @@ default plot in pixel coordinates, you can override this behavior and plot in
 
 .. code-block:: python
 
-    >>> smap.plot()   # doctest: +SKIP
+    >>> aia_map.plot()   # doctest: +SKIP
     >>> ax.plot((100*u.arcsec).to_value(u.deg), (500*u.arcsec).to_value(u.deg),
     ...         transform=ax.get_transform('world'))   # doctest: +SKIP
 
@@ -470,24 +470,24 @@ units to plot a AIA image and a zoomed in view of an active region.
     y0 = -400 * u.arcsec
 
     # Create a sunpy Map, and a second submap over the region of interest.
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     bottom_left = SkyCoord(x0 - length, y0 - length,
-                        frame=smap.coordinate_frame)
+                        frame=aia_map.coordinate_frame)
     top_right = SkyCoord(x0 + length, y0 + length,
-                        frame=smap.coordinate_frame)
-    submap = smap.submap(bottom_left, top_right=top_right)
+                        frame=aia_map.coordinate_frame)
+    submap = aia_map.submap(bottom_left, top_right=top_right)
 
     # Create a new matplotlib figure, larger than default.
     fig = plt.figure(figsize=(5, 12))
 
     # Add a first Axis, using the WCS from the map.
-    ax1 = fig.add_subplot(2, 1, 1, projection=smap)
+    ax1 = fig.add_subplot(2, 1, 1, projection=aia_map)
 
     # Plot the Map on the axes with default settings.
-    smap.plot()
+    aia_map.plot()
 
     # Draw a box on the image
-    smap.draw_quadrangle(bottom_left, height=length * 2, width=length * 2)
+    aia_map.draw_quadrangle(bottom_left, height=length * 2, width=length * 2)
 
     # Create a second axis on the plot.
     ax2 = fig.add_subplot(2, 1, 2, projection=submap)
