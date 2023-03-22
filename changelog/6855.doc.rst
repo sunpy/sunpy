@@ -1,0 +1,1 @@
+Added a note in examples :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py` and :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_hmi.py` suggesting to use :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` to retain off-disk HMI data.
