@@ -21,12 +21,16 @@ import numpy as np
 import sunpy.map
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_horizons_coord
 from sunpy.time import parse_time
+from sunpy.util.config import get_and_create_download_dir
 
 ###############################################################################
 # Let's download a SOHO/LASCO C3 image Helioviewer.org and load it into a Map.
-# The reason to ise Helioviewer.org is that they provide processed images.
+# The reason to use Helioviewer.org is that they provide processed images.
+# We download to the default sunpy download directory.
 
-lasco_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2000/02/27 07:42').datetime, hvpy.DataSource.LASCO_C3.value), "LASCO_C3.JPEG2000")
+lasco_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2000/02/27 07:42').datetime,
+                                             hvpy.DataSource.LASCO_C3.value),
+                            get_and_create_download_dir() + "/LASCO_C3.jp2")
 lasco_map = sunpy.map.Map(lasco_file)
 
 ###############################################################################
