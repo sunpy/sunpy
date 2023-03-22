@@ -5,6 +5,7 @@ Installation
 ************
 
 This is the first chapter in the sunpy tutorial, and by the end of it you should have a working installation of Python and ``sunpy``.
+For more info on different ways to install ``sunpy`` beyond the recommended way below, see :ref:`guide_installing`.
 
 Installing Python
 =================
@@ -40,7 +41,3 @@ This will install ``sunpy`` and all of its dependencies.
 If you want to install another package later, you can run ``conda install <package_name>``.
 
 Now we've got a working installation of ``sunpy``, in the next few chapters we'll look at some of the basic data structures ``sunpy`` uses for representing times, coordinates, and data with physical units.
-
-Further reading
----------------
-For more info on different ways to install ``sunpy`` (beyond the recommended way described above), see :ref:`guide_installing`.
