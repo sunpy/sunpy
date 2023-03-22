@@ -65,8 +65,8 @@ Further Info
     :maxdepth: 1
     :hidden:
 
-    intro/index
-    intro/installation
+    tutorial/index
+    tutorial/installation
     generated/gallery/index
     guide/index
     reference/index
