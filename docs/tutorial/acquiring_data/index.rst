@@ -4,7 +4,9 @@
 Acquiring Data
 **************
 
-This section of the guide introduces ways to obtain different kind of solar data from different places.
+This section of the tutorial introduces ways to obtain different kind of solar data from different places.
+The main tutorial below focuses on ``Fido``, which is a generic search interface that sunpy provides.
+There are some data-provider specific tutorials that you might want to visit after going through this tutorial:
 
 .. toctree::
     :maxdepth: 1
