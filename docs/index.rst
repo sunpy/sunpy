@@ -29,7 +29,6 @@ Once you've installed sunpy, start here.
     #. :ref:`acquiring_data`
     #. :ref:`map_guide`
     #. :ref:`timeseries_guide`
-    #. :ref:`plotting`
 
 Next Steps
 ==========
