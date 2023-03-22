@@ -216,7 +216,7 @@ For example, to create a plot just type:
 
 
 This creates a plot window with all axes defined, a plot title, and the image of the map data defined by the contents of the map.
-In non-interactive mode the plot window blocks the command line terminal and must be closed before doing anything else.
+In non-interactive mode the plot window blocks execution and must be closed before doing anything else.
 
 plot()
 ------
