@@ -132,11 +132,6 @@ class GenericTimeSeries:
                 warn_user(f'Unknown units for {col}')
                 self.units[col] = u.dimensionless_unscaled
 
-        # TODO: Fix this?
-        # Validate input data
-        # self._validate_meta()
-        # self._validate_units()
-
 # #### Attribute definitions #### #
 
     @property
@@ -806,42 +801,6 @@ class GenericTimeSeries:
                              "(len(self._data) == 0)")
 
 # #### Miscellaneous #### #
-
-    def _validate_meta(self):
-        """
-        Validates the meta-information associated with a
-        `~sunpy.timeseries.TimeSeries`.
-
-        This method includes very basic validation checks which apply to
-        all of the kinds of files that SunPy can read. Datasource-
-        specific validation should be handled in the relevant file in
-        the "sunpy.timeseries.sources".
-        """
-        for meta_property in ('cunit1', 'cunit2', 'waveunit'):
-            if (self.meta.get(meta_property) and
-                u.Unit(self.meta.get(meta_property),
-                       parse_strict='silent').physical_type == 'unknown'):
-
-                warn_user(f"Unknown value for {meta_property.upper()}.")
-
-    def _validate_units(self, units, **kwargs):
-        """
-        Validates the astropy unit-information associated with a
-        `~sunpy.timeseries.TimeSeries`.
-
-        This method includes very basic validation checks which apply to
-        all of the kinds of files that SunPy can read. Datasource-
-        specific validation should be handled in the relevant file in
-        the "sunpy.timeseries.sources".
-        """
-        result = True
-        for key in units:
-            if not isinstance(units[key], astropy.units.UnitBase):
-                # If this is not a unit then this can't be a valid units dict.
-                result = False
-                warn_user(f"Invalid unit given for {key}.")
-
-        return result
 
     def _sanitize_metadata(self, **kwargs):
         """
