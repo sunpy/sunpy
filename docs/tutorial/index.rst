@@ -34,4 +34,3 @@ The one exception is the two chapters that explore Maps and Timeseries - these a
    acquiring_data/index
    maps
    timeseries
-   plotting
