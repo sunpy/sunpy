@@ -4,12 +4,10 @@
 Guides
 ******
 
-Welcome to guides for different parts of the ``sunpy`` core package.
+Welcome to the guides for different parts of the ``sunpy`` core package.
 
-What is this?
--------------
-These guides provide a set of in-depth explanations for various parts of the sunpy core package.
-They assumes you have some knowledge of what sunpy is and how it works - if you're starting fresh you might want to check out the :ref:`tutorial` first.
+These guides provide a set of in-depth explanations for various parts of the ``sunpy`` core package.
+They assumes you have some knowledge of what ``sunpy`` is and how it works - if you're starting fresh you might want to check out the :ref:`tutorial` first.
 
 How to use the guides
 ---------------------
