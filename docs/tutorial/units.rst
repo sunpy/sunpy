@@ -74,6 +74,11 @@ Unit Equivalencies
 Dropping Units
 ==============
 
+As shown above, you can retrieve the just the numerical value of a `~astropy.units.Quantity`,
+
+  >>> length.value
+
+
 Quantities as function arguments
 ================================
 
