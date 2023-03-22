@@ -47,7 +47,7 @@ map_hmi.plot(axes=ax2)
 # block, we intentionally set the ``projection`` for the axes to be
 # the AIA map instead of the HMI map. We also need to manually set
 # the plot limits because Matplotlib gets confused by the off-disk
-# parts of the image. We can see now that the HMI image now has the same
+# parts of the image. The HMI image now has the same
 # orientation as the AIA image.
 #
 # Note that off-disk HMI data is not retained here, we can use
