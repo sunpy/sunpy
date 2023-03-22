@@ -201,14 +201,19 @@ To be consistent with Matplotlib, sunpy has developed a standard plotting interf
 
 peek()
 ------
-For quick and easy access to a plot `~sunpy.map.GenericMap` (and `~sunpy.timeseries.GenericTimeSeries`, see next section) define their own ``peek()`` methods which create a plot for you and show it without you having to deal with any Matplotlib setup.
+For quick and easy access to a plot `~sunpy.map.GenericMap` and `~sunpy.timeseries.GenericTimeSeries` (see next section), both define their own ``peek()`` methods which create a plot for you and show it without you having to deal with any Matplotlib setup.
 This is so that it is easy to take a quick look at your data.
 
 For example, to create a plot just type:
 
-.. code-block:: python
+.. plot::
+    :include-source:
 
-    >>> my_map.peek()   # doctest: +SKIP
+    import sunpy.map
+    import sunpy.data.sample
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    aia_map.peek()
+
 
 This creates a plot window with all axes defined, a plot title, and the image of the map data defined by the contents of the map.
 In non-interactive mode the plot window blocks the command line terminal and must be closed before doing anything else.
@@ -247,57 +252,6 @@ contours on the Map:
     plt.colorbar()
     plt.show()
 
-In this example, the `~matplotlib.figure.Figure` and
-`~astropy.visualization.wcsaxes.WCSAxes` instances are created explicitly, and
-then used to modify the plot:
-
-.. plot::
-    :include-source:
-
-    import matplotlib.pyplot as plt
-    import astropy.units as u
-    from astropy.coordinates import SkyCoord
-
-    import sunpy.map
-    import sunpy.data.sample
-
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
-    fig = plt.figure()
-    # Provide the Map as a projection, which creates a WCSAxes object
-    ax = plt.subplot(projection=smap)
-
-    im = smap.plot()
-
-    # Prevent the image from being re-scaled while overplotting.
-    ax.set_autoscale_on(False)
-
-    xc = [0,100,1000] * u.arcsec
-    yc = [0,100,1000] * u.arcsec
-
-    coords = SkyCoord(xc, yc, frame=smap.coordinate_frame)
-
-    p = ax.plot_coord(coords, 'o')
-
-    # Set title.
-    ax.set_title('Custom plot with WCSAxes')
-
-    plt.colorbar()
-    plt.show()
-
-It is possible to create the same plot, explicitly not using `~astropy.visualization.wcsaxes`, however, this will not have the features of `~astropy.visualization.wcsaxes` which include correct representation of rotation and plotting in different coordinate systems.
-Please see this example :ref:`sphx_glr_generated_gallery_map_plot_frameless_image.py`.
-
-
-Check out the following foundational examples in the Example Gallery for plotting Maps:
-
-* :ref:`sphx_glr_generated_gallery_plotting_aia_example.py`
-
-* :ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`
-
-* :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py`
-
-* :ref:`sphx_glr_generated_gallery_plotting_grid_plotting.py`
 
 Plotting Keywords
 -----------------
@@ -407,6 +361,7 @@ The following example shows the difference between a linear and logarithmic norm
 Note how the colorbar does not change since these two plots share the same colormap.
 Meanwhile, the data values associated with each color do change because the normalization is different.
 
+
 .. _wcsaxes-plotting:
 
 Maps with coordinate systems
@@ -438,6 +393,62 @@ default plot in pixel coordinates, you can override this behavior and plot in
     >>> smap.plot()   # doctest: +SKIP
     >>> ax.plot((100*u.arcsec).to_value(u.deg), (500*u.arcsec).to_value(u.deg),
     ...         transform=ax.get_transform('world'))   # doctest: +SKIP
+
+
+In this next example, the `~matplotlib.figure.Figure` and
+`~astropy.visualization.wcsaxes.WCSAxes` instances are created explicitly, and
+then used to modify the plot.
+
+Here we can plot a sunpy map, and also overplot some points defined in arcseconds, highlighting the advantage of using WCSAxes.
+
+.. plot::
+    :include-source:
+
+    import matplotlib.pyplot as plt
+    import astropy.units as u
+    from astropy.coordinates import SkyCoord
+
+    import sunpy.map
+    import sunpy.data.sample
+
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+
+    fig = plt.figure()
+    # Provide the Map as a projection, which creates a WCSAxes object
+    ax = plt.subplot(projection=aia_map)
+
+    im = aia_map.plot()
+
+    # Prevent the image from being re-scaled while overplotting.
+    ax.set_autoscale_on(False)
+
+    xc = [0,100,1000] * u.arcsec
+    yc = [0,100,1000] * u.arcsec
+
+    coords = SkyCoord(xc, yc, frame=aia_map.coordinate_frame)
+
+    p = ax.plot_coord(coords, 'o')
+
+    # Set title.
+    ax.set_title('Custom plot with WCSAxes')
+
+    plt.colorbar()
+    plt.show()
+
+It is possible to create the same plot, explicitly not using `~astropy.visualization.wcsaxes`, however, this will not have the features of `~astropy.visualization.wcsaxes` which include correct representation of rotation and plotting in different coordinate systems.
+Please see this example :ref:`sphx_glr_generated_gallery_map_plot_frameless_image.py`.
+
+
+Check out the following foundational examples in the Example Gallery for plotting Maps:
+
+* :ref:`sphx_glr_generated_gallery_plotting_aia_example.py`
+
+* :ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`
+
+* :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py`
+
+* :ref:`sphx_glr_generated_gallery_plotting_grid_plotting.py`
+
 
 Finally, here is a more complex example using sunpy maps, wcsaxes and Astropy
 units to plot a AIA image and a zoomed in view of an active region.
@@ -499,6 +510,7 @@ units to plot a AIA image and a zoomed in view of an active region.
     )
 
     plt.show()
+
 
 Clipping and Masking Data
 -------------------------
