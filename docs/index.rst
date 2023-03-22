@@ -71,6 +71,7 @@ Further Info
     intro/index
     intro/installation
     generated/gallery/index
+    guide/index
     reference/index
     whatsnew/index
     about
