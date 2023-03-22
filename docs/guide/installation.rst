@@ -4,15 +4,18 @@
 Installation
 ************
 
-The SunPy project `maintains a range of packages <https://sunpy.org/project/affiliated>`__ that leverage the wider ecosystem of scientific Python packages for solar physics.
+The SunPy project `maintains a range of affiliated packages <https://sunpy.org/project/affiliated>`__ that leverage the wider ecosystem of scientific Python packages for solar physics.
+This page focuses on how to install the ``sunpy`` core package, but these instructions should apply to most of the affiliated packages as well.
 
 conda
 =====
 Full instructions for installing using conda are in :ref:`installing`.
-This is the recommended way to install sunpy, because it creates a fresh Python environment that is independent from any other Python install or packages on your system.
+This is the recommended way to install sunpy, because it creates a fresh Python environment that is independent from any other Python install or packages on your system, and allows the installation of non-python packages.
+SunPy publishes many of it's packages to the `conda-forge <https://conda-forge.org/>`__ channel.
+If you have an existing conda install, without the conda-forge channel added you can configure the conda-forge channel by following the `instructions in the conda-forge <https://conda-forge.org/docs/user/introduction.html#how-can-i-install-packages-from-conda-forge>`__ documentation.
 
-Updating a package
-------------------
+Updating a conda package
+------------------------
 You can update to the latest version of any package by running:
 
 .. code-block:: bash
@@ -56,3 +59,11 @@ The available options are: ``[asdf]``, ``[dask]``, ``[database]``, ``[image]``, 
     If you get a ``PermissionError`` this means that you do not have the required administrative access to install new packages to your Python installation.
     Do **not** install ``sunpy`` or other Python packages using ``sudo``.
     This error implies you have an incorrectly configured virtual environment or it is not activated.
+
+Updating a pip package
+----------------------
+You can update to the latest version of any package by running:
+
+.. code-block:: bash
+
+    $ pip install --upgrade <package_name>
