@@ -217,27 +217,7 @@ hoverxref_domains = ["py"]
 hoverxref_mathjax = True
 hoverxref_modal_hover_delay = 500
 hoverxref_tooltip_maxwidth = 600  # RTD main window is 696px
-hoverxref_intersphinx = [
-    "astropy",
-    "matplotlib",
-    "numpy",
-    "python",
-    "scipy",
-    "hvpy",
-    "asdf",
-    "zeep",
-    "sunkit_instruments",
-    "sunkit_image",
-    "sqlalchemy",
-    "skimage",
-    "reproject",
-    "parfive",
-    "pandas",
-    "mpl_animators",
-    "drms",
-    "astroquery",
-    "aiapy",
-]
+hoverxref_intersphinx = list(intersphinx_mapping.keys())
 hoverxref_role_types = {
     # Roles within the py domain
     "attr": "tooltip",
@@ -249,7 +229,7 @@ hoverxref_role_types = {
     "meth": "tooltip",
     "mod": "tooltip",
     "obj": "tooltip",
-    # Roles within the standard domain
+    # Roles within the std domain
     "confval": "tooltip",
     "hoverxref": "tooltip",
     "ref": "tooltip", # Would be used by hoverxref_auto_ref if we set it to True
