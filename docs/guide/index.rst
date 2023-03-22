@@ -16,3 +16,4 @@ Although there are code snippets in various bits of the guides, these are to hel
    :maxdepth: 2
 
    installation
+   logger
