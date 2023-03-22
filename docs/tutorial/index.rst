@@ -27,7 +27,6 @@ The one exception is the two chapters that explore Maps and Timeseries - these a
    :maxdepth: 2
 
    installation
-   logger
    units
    time
    coordinates

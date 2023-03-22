@@ -57,6 +57,11 @@ The output should look something like: ::
 
 This information is especially useful if you are running into a bug and need help.
 
+Making use of the logger
+========================
+
+For information on configuring and using ``sunpy``\'s logging system, a useful tool for troubleshooting, see :ref:`logger`.
+
 :file:`sunpy` install location
 ===================================
 
