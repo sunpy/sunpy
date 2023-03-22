@@ -7,8 +7,6 @@ Units
 This section of the guide talks about representing physical units in sunpy.
 sunpy makes use of the `astropy.units` for this task.
 
-Quantity objects
-================
 All functions in sunpy that accept or return numbers associated with physical quantities accept and return `~astropy.units.Quantity` objects.
 These objects represent a number (or an array of numbers) and a unit.
 This means sunpy is always explicit about the units associated with a value.
@@ -19,7 +17,10 @@ To save on typing it's standard practice to import the units module as ``u``::
 
    >>> import astropy.units as u
 
-Once we have imported the units module we can create a `~astropy.units.Quantity` by multiplying a number by a unit::
+Adding Units to Data
+====================
+
+We can create a `~astropy.units.Quantity` by multiplying a number by a unit::
 
    >>> length = 10 * u.meter
    >>> length
@@ -33,13 +34,8 @@ A `~astropy.units.Quantity` has both a ``.unit`` and a ``.value`` attribute::
   >>> length.unit
   Unit("m")
 
-These `~astropy.units.Quantity` objects can also be converted to other units or unit systems::
-
-  >>> length.to(u.km)
-  <Quantity 0.01 km>
-
-  >>> length.cgs
-  <Quantity 1000. cm>
+Arithmetic Operations With Units
+================================
 
 Probably most usefully, `~astropy.units.Quantity` objects will propagate units through arithmetic operations when appropriate::
 
@@ -61,6 +57,22 @@ However, operations which do not make physical sense for the units specified wil
   ...
   astropy.units.core.UnitConversionError: Can only apply 'add' function to quantities with compatible dimensions
 
+Converting Units
+================
+
+These `~astropy.units.Quantity` objects can also be converted to other units or unit systems::
+
+  >>> length.to(u.km)
+  <Quantity 0.01 km>
+
+  >>> length.cgs
+  <Quantity 1000. cm>
+
+Unit Equivalencies
+==================
+
+Dropping Units
+==============
 
 Quantities as function arguments
 ================================
