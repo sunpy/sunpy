@@ -13,12 +13,6 @@ This section of the guide introduces ways to obtain different kind of solar data
     hek
 
 
-.. _fido_guide:
-
-****************************
-Finding and Downloading Data
-****************************
-
 This guide outlines how to search for and download data using the `~sunpy.net.Fido` interface for search and download.
 `~sunpy.net.Fido` is a unified interface for searching and fetching solar physics data irrespective of the underlying client or webservice through which the data is obtained.
 It therefore supplies a single, easy, and consistent way to obtain most forms of solar physics data.
@@ -42,7 +36,7 @@ Fido supports a number of different remote data sources. To see a list the Fido 
     cover multiple instruments and data products like the Virtual Solar
     Observatory and some are specific to a single source.
     <BLANKLINE>
-    For details of using `~sunpy.net.Fido` see :ref:`fido_guide`.
+    For details of using `~sunpy.net.Fido` see :ref:`acquiring_data`.
     <BLANKLINE>
     <BLANKLINE>
           Client                                                    Description

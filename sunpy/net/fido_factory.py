@@ -258,7 +258,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     cover multiple instruments and data products like the Virtual Solar
     Observatory and some are specific to a single source.
 
-    For details of using `~sunpy.net.Fido` see :ref:`fido_guide`.
+    For details of using `~sunpy.net.Fido` see :ref:`acquiring_data`.
 
     """
 
