@@ -1,0 +1,1 @@
+Split the installation docs into a new Installation tutorial, and an installation guide.
