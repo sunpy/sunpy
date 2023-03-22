@@ -1,0 +1,1 @@
+Fully deprecated `sunpy.database`, with an expected removal version of sunpy 6.0.
