@@ -24,6 +24,8 @@ Then create and activate new virtual environment
 .. code-block:: bash
 
     $ conda create --name sunpy
+    $ conda config --add channels conda-forge
+    $ conda config --set channel_priority strict
     $ conda activate sunpy
 
 In this case the environment is named 'sunpy'.
