@@ -1,4 +1,4 @@
-.. _guide:
+.. _tutorial:
 
 **********************
 The sunpy tutorial
