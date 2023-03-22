@@ -195,6 +195,10 @@ Plotting Maps
 =============
 
 The `~sunpy.map.GenericMap` object has a built-in plot method such that it is easy to quickly view your map.
+sunpy makes use of `Matplotlib <https://matplotlib.org/>`_ for all of its plotting - as such, it tries to follow the Matplotlib plotting philosophy.
+We refer the reader to the `Matplotlib usage documentation <https://matplotlib.org/stable/users/explain/api_interfaces.html>`__ to learn more about the Matplotlib and to become familiar with the basics.
+To be consistent with Matplotlib, sunpy has developed a standard plotting interface which supports both simple and advanced Matplotlib usage.
+
 To create a plot just type:
 
 .. code-block:: python
