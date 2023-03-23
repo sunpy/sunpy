@@ -23,7 +23,7 @@ aia = sunpy.map.Map(AIA_171_IMAGE)
 # then transform that pixel coordinate to a map coordinate.
 
 pixel_pos = np.argwhere(aia.data == aia.data.max()) * u.pixel
-hpc_max = aia.pixel_to_world(pixel_pos[:, 1], pixel_pos[:, 0])
+hpc_max = aia.wcs.pixel_to_world(pixel_pos[:, 1], pixel_pos[:, 0])
 
 ###############################################################################
 # Let's now plot the results.
