@@ -12,5 +12,4 @@ This section of the guide introduces ways to obtain different kind of solar data
     fido
     jsoc
     hek
-    helioviewer
     sample-data
