@@ -63,7 +63,7 @@ plt.show()
 # Now we need to turn the pixel coordinates into the world location so
 # they can be easily overlaid on the Map.
 
-hpc_max = aiamap.pixel_to_world(coordinates[:, 1]*u.pixel, coordinates[:, 0]*u.pixel)
+hpc_max = aiamap.wcs.pixel_to_world(coordinates[:, 1]*u.pixel, coordinates[:, 0]*u.pixel)
 
 ###############################################################################
 # Finally we do an AIA plot to check for the local maxima locations

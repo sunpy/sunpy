@@ -337,7 +337,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
         The coordinates of a rotated edge.
     """
     # Coordinates
-    c = smap.pixel_to_world(pixels[:, 0], pixels[:, 1])
+    c = smap.wcs.pixel_to_world(pixels[:, 0].value, pixels[:, 1].value)
 
     # Only apply solar rotation if all coordinates are on the disk.
     if np.all(~coordinate_is_on_solar_disk(c)):
@@ -450,15 +450,14 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         # using the output map, and then replace the observer in place before
         # transforming to HGS. This is acceptable because the pixel -> world
         # transformation is independent of the observer.
-        input_pixels = xy.T * u.pix
-        map_coord = smap.pixel_to_world(*input_pixels)
+        input_pixels = xy.T
+        map_coord = smap.wcs.pixel_to_world(*input_pixels)
         output_hpc_coords = SkyCoord(map_coord.Tx,
                                      map_coord.Ty,
                                      map_coord.distance,
                                      obstime=new_observer.obstime,
                                      observer=new_observer,
                                      frame=Helioprojective)
-
         heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
 
         # Compute the differential rotation.
@@ -481,10 +480,10 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
             coordinates_at_map_observer = rotated_coord.transform_to(smap.coordinate_frame)
 
         # Go back to pixel coordinates
-        x2, y2 = smap.world_to_pixel(coordinates_at_map_observer)
+        x2, y2 = smap.wcs.world_to_pixel(coordinates_at_map_observer)
 
     # Re-stack the data to make it correct output form
-    xy2 = np.dstack([x2.T.value.flat, y2.T.value.flat])[0]
+    xy2 = np.dstack([x2.T.flat, y2.T.flat])[0]
     # Set the off disk coordinates to NaN so they are not included in the output image.
     xy2[where_off_disk_from_map_observer.flat] = np.nan
 

@@ -56,7 +56,7 @@ def all_coordinates_from_map(smap):
         system "coordinate_system".
     """
     x, y = all_pixel_indices_from_map(smap)
-    return smap.pixel_to_world(x, y)
+    return smap.wcs.pixel_to_world(x.value, y.value)
 
 
 def all_corner_coords_from_map(smap):
@@ -65,7 +65,7 @@ def all_corner_coords_from_map(smap):
     """
     ny, nx = smap.data.shape
     y, x = np.indices((ny + 1, nx + 1))
-    return smap.pixel_to_world((x - 0.5) * u.pix, (y - 0.5) * u.pix)
+    return smap.wcs.pixel_to_world(x - 0.5, y - 0.5)
 
 
 def map_edges(smap):
@@ -161,9 +161,9 @@ def _edge_coordinates(smap):
     # We need to strip the units from edges before handing it to np.concatenate,
     # as the .unit attribute is not propagated in np.concatenate for numpy<1.17
     # When sunpy depends on numpy>=1.17 this unit replacing code can be removed
-    edge_pixels = u.Quantity(np.concatenate(edges).value, unit=u.pix, copy=False)
+    edge_pixels = np.concatenate(edges).value
     # Calculate the edge of the world
-    return smap.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
+    return smap.wcs.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
 
 
 def contains_full_disk(smap):

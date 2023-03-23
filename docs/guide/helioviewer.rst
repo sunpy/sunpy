@@ -1,14 +1,11 @@
-************************
-Querying Helioviewer.org
-************************
+************************************************
+Switching from ``HelioviewerClient`` to ``hvpy``
+************************************************
 
-The Helioviewer Project now maintains a Python wrapper around their API.
+In order versions of sunpy it was possible to query Heliovewer using ``HelioviewerClient``.
+The Helioviewer Project now maintains a Python wrapper around their API that supersedes this.
 It is called `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ and their documentation has several examples of how to use it.
-
-Migration guide
-===============
-
-If you are using ``HelioviewerClient`` this guide shows to switch to using ``hvpy``.
+This page explains how to migrate from ``HelioviewerClient`` to ``hvpy``.
 
 ``HelioviewerClient().data_sources`` is replaced by `hvpy.DataSource`, an `~enum.Enum` that lists every known data source for Helioviewer.org.
 

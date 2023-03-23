@@ -989,15 +989,15 @@ class GenericMap(NDData):
         """
         The physical coordinate at the center of the bottom left ([0, 0]) pixel.
         """
-        return self.pixel_to_world(0*u.pix, 0*u.pix)
+        return self.wcs.pixel_to_world(0, 0)
 
     @property
     def top_right_coord(self):
         """
         The physical coordinate at the center of the the top right ([-1, -1]) pixel.
         """
-        top_right = u.Quantity(self.dimensions) - 1 * u.pix
-        return self.pixel_to_world(*top_right)
+        top_right = np.array([self.dimensions.x.value, self.dimensions.y.value]) - 1
+        return self.wcs.pixel_to_world(*top_right)
 
     @property
     def center(self):
@@ -1007,8 +1007,8 @@ class GenericMap(NDData):
         If the array has an even number of pixels in a given dimension,
         the coordinate returned lies on the edge between the two central pixels.
         """
-        center = (u.Quantity(self.dimensions) - 1 * u.pix) / 2.
-        return self.pixel_to_world(*center)
+        center = (np.array([self.dimensions.x.value, self.dimensions.y.value]) - 1) / 2.
+        return self.wcs.pixel_to_world(*center)
 
     @u.quantity_input
     def shift_reference_coord(self, axis1: u.deg, axis2: u.deg):
