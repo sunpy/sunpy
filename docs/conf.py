@@ -185,11 +185,13 @@ intersphinx_mapping = {
         "https://docs.scipy.org/doc/scipy/reference/",
         (None, "http://www.astropy.org/astropy-data/intersphinx/scipy.inv"),
     ),
-    "matplotlib": ("https://matplotlib.org/stable", None),
     "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
+    "asdf": ("https://asdf.readthedocs.io/en/stable/", None),
     "astropy": ("https://docs.astropy.org/en/stable/", None),
     "astroquery": ("https://astroquery.readthedocs.io/en/latest/", None),
     "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
+    "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
     "mpl_animators": ("https://docs.sunpy.org/projects/mpl-animators/en/stable/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
@@ -199,8 +201,6 @@ intersphinx_mapping = {
     "sunkit_image": ("https://docs.sunpy.org/projects/sunkit-image/en/stable/", None),
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
-    "asdf": ("https://asdf.readthedocs.io/en/stable/", None),
-    "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
 }
 
 # -- Options for hoverxref -----------------------------------------------------
@@ -212,14 +212,14 @@ if os.environ.get("READTHEDOCS"):
         # A RTD thing to avoid a CSRF block when docs are using a custom domain
         hoverxref_api_host = "/_"
 
-hoverxref_tooltip_maxwidth = 600  # RTD main window is 696px
-hoverxref_auto_ref = True
-hoverxref_mathjax = True
-# hoverxref has to be applied to these
+hoverxref_auto_ref = False
 hoverxref_domains = ["py"]
-
+hoverxref_mathjax = True
+hoverxref_modal_hover_delay = 500
+hoverxref_tooltip_maxwidth = 600  # RTD main window is 696px
+hoverxref_intersphinx = list(intersphinx_mapping.keys())
 hoverxref_role_types = {
-    # roles with py domain
+    # Roles within the py domain
     "attr": "tooltip",
     "class": "tooltip",
     "const": "tooltip",
@@ -229,13 +229,12 @@ hoverxref_role_types = {
     "meth": "tooltip",
     "mod": "tooltip",
     "obj": "tooltip",
-    # roles with std domain
+    # Roles within the std domain
     "confval": "tooltip",
     "hoverxref": "tooltip",
-    "ref": "tooltip",
+    "ref": "tooltip", # Would be used by hoverxref_auto_ref if we set it to True
     "term": "tooltip",
 }
-hoverxref_intersphinx = ["numpy", "astropy", "python"]
 
 # -- Options for HTML output ---------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for

@@ -228,23 +228,3 @@ def _bin_data_for_summary(energy_bins, count_data):
         summary_counts.append(summed_counts/energy_width/count_data["exposure"])
 
     return np.array(summary_counts).T
-
-
-def _parse_detector(detector):
-    """
-    Check and fix detector name strings.
-
-    Parameters
-    ----------
-    detector : `str`
-        The detector name to check.
-    """
-    oklist = ['n0', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9',
-              'n10', 'n11']
-    altlist = [str(i) for i in range(12)]
-    if detector in oklist:
-        return detector
-    elif detector in altlist:
-        return 'n' + detector
-    else:
-        raise ValueError('Detector string could not be interpreted')
