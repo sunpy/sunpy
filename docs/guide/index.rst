@@ -18,3 +18,9 @@ Although there are code snippets in various bits of the guides, these are to hel
    installation
    logger
    helioviewer
+
+
+.. toctree::
+   :maxdepth: 2
+
+   coordinates/index

@@ -1,9 +1,10 @@
 .. _sunpy-coordinates:
 
-Coordinates (`sunpy.coordinates`)
-*********************************
+***********
+Coordinates
+***********
 
-This sub-package contains:
+The `sunpy.coordinates` sub-package contains:
 
 * A robust framework for working with solar-physics coordinate systems
 * Functions to obtain the locations of solar-system bodies (`sunpy.coordinates.ephemeris`)
@@ -12,7 +13,16 @@ This sub-package contains:
 The SunPy coordinate framework extends the
 :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
 
-.. _sunpy-coordinate-systems:
+This page contains a short overview of how coordinates work in sunpy.
+For more detailed information see the following pages:
+
+.. toctree::
+   :maxdepth: 1
+
+   carrington
+   rotatedsunframe
+   velocities
+   wcs
 
 Supported Coordinate Systems
 ============================
@@ -312,38 +322,3 @@ correctly. It should also be noted that, if you create a Heliographic frame and
 then transform to a projective frame with an ``rsun`` attribute, it will not
 match the ``radius`` coordinate in the Heliographic frame. This is because you may
 mean to be describing a point above the defined 'surface' of the Sun.
-
-More Detailed Information
-=========================
-
-.. toctree::
-   :maxdepth: 1
-
-   carrington
-   rotatedsunframe
-   velocities
-   wcs
-   other_api
-
-
-Reference/API
-=============
-
-.. automodapi:: sunpy.coordinates
-
-.. automodapi:: sunpy.coordinates.ephemeris
-
-.. automodapi:: sunpy.coordinates.sun
-
-.. automodapi:: sunpy.coordinates.utils
-    :no-inheritance-diagram:
-
-
-Attribution
-===========
-
-Some of this documentation was adapted from Astropy under the terms of the `BSD
-License
-<https://raw.githubusercontent.com/astropy/astropy/master/LICENSE.rst>`_.
-
-This sub-package was initially developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.
