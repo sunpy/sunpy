@@ -44,31 +44,56 @@ def test_implicit_goes_satno(goes_nc_files, sat_no):
     assert ts_goes.observatory == sat_no
 
 
-def test_implicit_goes_satno_missing():
+@pytest.mark.parametrize("goes_nc_files",
+                         [goes_fits_filepath_com,
+                          goes13_filepath_nc,
+                          goes15_filepath_nc,
+                          goes17_filepath_nc,
+                          goes15_1m_avg_filepath,
+                          goes16_1m_avg_filepath])
+def test_implicit_goes_satno_missing(goes_nc_files):
     # Test a GOES TimeSeries for a missing satellite number
-    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc)
-    del ts_goes.meta.metas[0]['id']
+    ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files)
+    keys_to_delete = ["id", "filename_id", "telescop", "instrument"]
+    for key in keys_to_delete:
+        if key in ts_goes.meta.metas[0].keys():
+            del ts_goes.meta.metas[0][key]
     assert ts_goes.observatory is None
 
 
-def test_columns_units():
+@pytest.mark.parametrize("goes_nc_files",
+                         [goes_fits_filepath_com,
+                          goes13_filepath_nc,
+                          goes15_filepath_nc,
+                          goes17_filepath_nc,
+                          goes15_1m_avg_filepath,
+                          goes16_1m_avg_filepath])
+def test_columns_units(goes_nc_files):
     # Test that all columns have associated units
-    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source='XRS')
+    ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source='XRS')
     assert np.all([isinstance(unit_val, u.UnitBase) for unit_val in ts_goes.units.values()])
 
 
-def test_goes_netcdf_time_parsing15():
+@pytest.mark.parametrize("goes_nc_files, times",
+                         [(goes_fits_filepath_com, '2012-05-31 23:59:59.089'),
+                          (goes13_filepath_nc, '2017-09-01 00:00:00.631'),
+                          (goes15_filepath_nc, '2013-10-28 00:00:01.385'),
+                          (goes15_1m_avg_filepath, '2019-01-02 00:00:00.000')])
+def test_goes_netcdf_time_parsing15(goes_nc_files, times):
     # Testing to make sure the time is correctly parsed (to ignore leap seconds)
     # Tests for 13, 14, 15
-    ts_goes = sunpy.timeseries.TimeSeries(goes15_filepath_nc, source="XRS")
-    assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2013-10-28 00:00:01.385'
+    ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source="XRS")
+    assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == times
 
 
-def test_goes_netcdf_time_parsing17():
+@pytest.mark.parametrize("goes_nc_files, times",
+                         [(goes17_filepath_nc, '2020-10-16 00:00:00.477'),
+                          (goes16_1m_avg_filepath, '2021-01-01 22:20:00.000')])
+def test_goes_netcdf_time_parsing17(goes_nc_files, times):
     # Testing to make sure the time is correctly parsed (to ignore leap seconds)
     # Tests for GOES-R (16, 17)
-    ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
-    assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == '2020-10-16 00:00:00.477'
+    ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source="XRS")
+    assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == times
 
 
 def test_goes_leap_seconds():
