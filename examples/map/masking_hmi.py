@@ -3,8 +3,8 @@
 Masking HMI based on the intensity of AIA
 =========================================
 
-In this example we will demonstrate how to mask out regions within a
-HMI map based on the intensity values of AIA.
+In this example we will demonstrate how to mask out regions within
+a HMI image based on the intensity values of AIA.
 """
 # sphinx_gallery_thumbnail_number = 3
 
